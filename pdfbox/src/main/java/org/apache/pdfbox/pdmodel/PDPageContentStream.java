@@ -251,7 +251,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         }
         setResources(resources);
         // configure NumberFormat
-        setMaximumFractionDigits(10);
+        setMaximumFractionDigits(5);
     }
 
     /**
@@ -290,6 +290,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param fontSize The font size to draw the text.
      * @throws IOException If there is an error writing the font information.
      */
+    @Override
     public void setFont(PDFont font, float fontSize) throws IOException
     {
         if (fontStack.isEmpty())
@@ -330,6 +331,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param text The Unicode text to show.
      * @throws IOException If an io exception occurs.
      */
+    @Override
     public void showText(String text) throws IOException
     {
         if (!isInTextMode())
@@ -577,6 +579,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * q operator. Saves the current graphics state.
      * @throws IOException If an error occurs while writing to the stream.
      */
+    @Override
     public void saveGraphicsState() throws IOException
     {
         if (!fontStack.isEmpty())
@@ -598,6 +601,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * Q operator. Restores the current graphics state.
      * @throws IOException If an error occurs while writing to the stream.
      */
+    @Override
     public void restoreGraphicsState() throws IOException
     {
         if (!fontStack.isEmpty())

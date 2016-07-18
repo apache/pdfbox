@@ -48,6 +48,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.NumberFormatUtil;
 
 /**
  * Provides the ability to write to a content stream.
@@ -97,6 +98,7 @@ public abstract class PDAbstractContentStream implements Closeable
 
     // number format
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
+    private final byte[] formatBuffer = new byte[32];
 
     /**
      * Create a new appearance stream.
@@ -1367,7 +1369,17 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     protected void writeOperand(float real) throws IOException
     {
-        write(formatDecimal.format(real));
+        int byteCount = NumberFormatUtil.formatFloatFast(real, formatDecimal.getMaximumFractionDigits(), formatBuffer);
+
+        if (byteCount == -1)
+        {
+            //Fast formatting failed
+            write(formatDecimal.format(real));
+        }
+        else
+        {
+            output.write(formatBuffer, 0, byteCount);
+        }
         output.write(' ');
     }
 
