@@ -112,8 +112,6 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         widget.setPage(page);
         page.getAnnotations().add(widget);
         pdSignature.setName(signatureName);
-        pdSignature.setByteRange(new int[] { 0, 0, 0, 0 });
-        pdSignature.setContents(new byte[4096]);
         pdfStructure.setPdSignature(pdSignature);
         log.info("PDSignature has been created");
     }
