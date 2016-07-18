@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
  * Builder for visible signature design.
- * Uses use param() instead of setParam()
+ * Setters use param() instead of setParam() to allow chaining.
  *
  * @author Vakhtang Koroghlishvili
  */
@@ -188,12 +188,7 @@ public class PDVisibleSignDesigner
         PDRectangle mediaBox = firstPage.getMediaBox();
         pageHeight(mediaBox.getHeight());
         pageWidth = mediaBox.getWidth();
-
-        float x = pageWidth;
-        float y = 0;
-        pageWidth += y;
-        float tPercent = (100 * y / (x + y));
-        imageSizeInPercents = 100 - tPercent;
+        imageSizeInPercents = 100;
     }
 
     /**
