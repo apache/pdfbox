@@ -17,6 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
 import java.awt.image.BufferedImage;
+
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,13 +26,14 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
- * Builder for visible signature design.
- * Setters use param() instead of setParam() to allow chaining.
+ * Class for visible signature design properties. Setters use param() instead of setParam() to allow
+ * chaining.
  *
  * @author Vakhtang Koroghlishvili
  */
@@ -193,15 +196,23 @@ public class PDVisibleSignDesigner
 
     /**
      * Set the image for the signature.
-     * 
-     * @param path of image location
-     * @return image Stream
+     *
+     * @param path Path of the image file.
+     * @return Visible Signature Configuration Object
      * @throws IOException
      */
     public PDVisibleSignDesigner signatureImage(String path) throws IOException
     {
-        InputStream fin = new FileInputStream(path);
-        readImageStream(fin);
+        InputStream in = null;
+        try
+        {
+            in = new BufferedInputStream(new FileInputStream(path));
+            readImageStream(in);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(in);
+        }
         return this;
     }
 
