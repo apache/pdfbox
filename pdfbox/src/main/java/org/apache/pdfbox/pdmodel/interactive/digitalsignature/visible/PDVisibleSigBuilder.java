@@ -44,8 +44,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
- * Implementation of PDFTemplateBuilder.
- * @see PDFTemplateBuilder
+ * Implementation of {@link PDFTemplateBuilder}.
+ *
  * @author Vakhtang Koroghlishvili
  */
 public class PDVisibleSigBuilder implements PDFTemplateBuilder
@@ -240,8 +240,8 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     @Override
     public void createInnerFormStream(PDDocument template)
     {
-        PDStream innterFormStream = new PDStream(template);
-        pdfStructure.setInnterFormStream(innterFormStream);
+        PDStream innerFormStream = new PDStream(template);
+        pdfStructure.setInnerFormStream(innerFormStream);
         log.info("Stream of another form (inner form - it will be inside holder form) " +
                  "has been created");
     }
@@ -334,18 +334,15 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         // 100 means that document width is 100% via the rectangle. if rectangle
         // is 500px, images 100% is 500px.
-        // String imgFormComment = "q "+imageWidthSize+ " 0 0 50 0 0 cm /" +
+        // String imgFormContent = "q "+imageWidthSize+ " 0 0 50 0 0 cm /" +
         // imageName + " Do Q\n" + builder.toString();
-        String imgFormComment = "q " + 100 + " 0 0 50 0 0 cm /" + imageName.getName() + " Do Q\n";
-        String holderFormComment = "q 1 0 0 1 0 0 cm /" + innerFormName.getName() + " Do Q \n";
-        String innerFormComment = "q 1 0 0 1 0 0 cm /" + imageObjectName.getName() + " Do Q\n";
+        String imgFormContent    = "q " + 100 + " 0 0 50 0 0 cm /" + imageName.getName() + " Do Q\n";
+        String holderFormContent = "q 1 0 0 1 0 0 cm /" + innerFormName.getName() + " Do Q\n";
+        String innerFormContent  = "q 1 0 0 1 0 0 cm /" + imageObjectName.getName() + " Do Q\n";
 
-        appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(),
-                holderFormComment);
-        appendRawCommands(pdfStructure.getInnerFormStream().createOutputStream(),
-                innerFormComment);
-        appendRawCommands(pdfStructure.getImageFormStream().createOutputStream(),
-                imgFormComment);
+        appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(), holderFormContent);
+        appendRawCommands(pdfStructure.getInnerFormStream().createOutputStream(), innerFormContent);
+        appendRawCommands(pdfStructure.getImageFormStream().createOutputStream(), imgFormContent);
         log.info("Injected appearance stream to pdf");
     }
 
