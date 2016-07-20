@@ -18,12 +18,15 @@ package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
 import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -152,7 +155,7 @@ public class PDFTemplateCreator
         pdfBuilder.createVisualSignature(template);
         pdfBuilder.createWidgetDictionary(pdSignatureField, holderFormResources);
         
-        ByteArrayInputStream in = pdfStructure.getTemplateAppearanceStream();
+        InputStream in = getVisualSignatureAsStream(pdfStructure.getVisualSignature());
         logger.info("stream returning started, size= " + in.available());
         
         // we must close the document
@@ -160,5 +163,14 @@ public class PDFTemplateCreator
         
         // return result of the stream 
         return in;
+    }
+
+    private InputStream getVisualSignatureAsStream(COSDocument visualSignature) throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        COSWriter writer = new COSWriter(baos);
+        writer.write(visualSignature);
+        writer.close();
+        return new ByteArrayInputStream(baos.toByteArray());
     }
 }

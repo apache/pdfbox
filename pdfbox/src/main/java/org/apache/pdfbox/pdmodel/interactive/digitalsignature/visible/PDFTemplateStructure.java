@@ -61,7 +61,7 @@ public class PDFTemplateStructure
     private PDResources holderFormResources;
     private PDFormXObject holderForm;
     private PDAppearanceDictionary appearanceDictionary;
-    private PDStream innterFormStream;
+    private PDStream innerFormStream;
     private PDResources innerFormResources;
     private PDFormXObject innerForm;
     private PDStream imageFormStream;
@@ -362,7 +362,7 @@ public class PDFTemplateStructure
      */
     public PDStream getInnerFormStream()
     {
-        return innterFormStream;
+        return innerFormStream;
     }
 
     /**
@@ -371,7 +371,7 @@ public class PDFTemplateStructure
      */
     public void setInnterFormStream(PDStream innerFormStream)
     {
-        this.innterFormStream = innerFormStream;
+        this.innerFormStream = innerFormStream;
     }
 
     /**
@@ -567,12 +567,27 @@ public class PDFTemplateStructure
     {
         this.acroFormFields = acroFormFields;
     }
-    
-   /**
-    * Gets AP of the created template
-    * @return the templates Appearance Stream
-    * @throws IOException
-    */
+
+    /**
+     * Returns the visual signature COSDocument as a stream and closes the template field
+     * PDDocument.
+     *
+     * @return the visual signature COSDocument as a stream
+     * @throws IOException
+     * @deprecated This will be removed in 2.1 because the method name is misleading and confusing,
+     * and the work done rather belongs into the calling class:
+     * <pre>
+     * {@code
+     * COSDocument visualSignature = structure.getVisualSignature();
+     *  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+     *  COSWriter writer = new COSWriter(baos);
+     *  writer.write(visualSignature);
+     *  writer.close();
+     *  structure.getTemplate().close();
+     *  ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+     * } </pre>
+     */
+    @Deprecated
     public ByteArrayInputStream getTemplateAppearanceStream() throws IOException
     {
         COSDocument visualSignature = getVisualSignature();
