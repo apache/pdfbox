@@ -102,6 +102,7 @@ public class PDSignature implements COSObjectable
      *
      * @return The COS dictionary that matches this Java object.
      */
+    @Override
     public COSDictionary getCOSObject()
     {
         return dictionary;
@@ -138,7 +139,10 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Sets the name.
+     * Sets the name of the person or authority signing the document. According to the PDF
+     * specification, this value should be used only when it is not possible to extract the name
+     * from the signature.
+     *
      * @param name the name to be used
      */
     public void setName(String name)
@@ -147,7 +151,8 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Sets the location.
+     * Sets the CPU host name or physical location of the signing.
+     *
      * @param location the location to be used
      */
     public void setLocation(String location)
@@ -156,7 +161,7 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Sets the reason.
+     * Sets the reason for the signing, such as (I agree...).
      *
      * @param reason the reason to be used
      */
@@ -166,7 +171,8 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Sets the contact info.
+     * Sets the contact info provided by the signer to enable a recipient to contact the signer to
+     * verify the signature, e.g. a phone number.
      *
      * @param contactInfo the contact info to be used
      */
@@ -205,7 +211,9 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Returns the name.
+     * Returns the name of the person or authority signing the document. According to the PDF
+     * specification, this value should be used only when it is not possible to extract the name
+     * from the signature.
      *
      * @return the name
      */
@@ -215,7 +223,7 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Returns the location.
+     * Returns the CPU host name or physical location of the signing.
      *
      * @return the location
      */
@@ -225,7 +233,7 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Returns the reason.
+     * Returns the reason for the signing, such as (I agree...).
      *
      * @return the reason
      */
@@ -235,9 +243,10 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Returns the contact info.
+     * Returns the contact info provided by the signer to enable a recipient to contact the signer
+     * to verify the signature, e.g. a phone number.
      *
-     * @return teh contact info
+     * @return the contact info
      */
     public String getContactInfo()
     {
