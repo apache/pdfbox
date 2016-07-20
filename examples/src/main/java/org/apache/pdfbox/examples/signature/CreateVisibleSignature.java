@@ -52,10 +52,10 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
 
     public void setvisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
-            FileInputStream image, int page) 
+            FileInputStream imageStream, int page) 
             throws IOException
     {
-        visibleSignDesigner = new PDVisibleSignDesigner(filename, image, page);
+        visibleSignDesigner = new PDVisibleSignDesigner(filename, imageStream, page);
         visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).signatureFieldName("signature");
     }
     
@@ -204,7 +204,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
         CreateVisibleSignature signing = new CreateVisibleSignature(keystore, pin.clone());
 
-        FileInputStream image = new FileInputStream(args[3]);
+        FileInputStream imageStream = new FileInputStream(args[3]);
 
         String name = documentFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
@@ -212,7 +212,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
         // page is 1-based here
         int page = 1;
-        signing.setvisibleSignDesigner (args[2], 0, 0, -50, image, page);
+        signing.setvisibleSignDesigner (args[2], 0, 0, -50, imageStream, page);
+        imageStream.close();
         signing.setVisibleSignatureProperties ("name", "location", "Security", 0, page, true);
         signing.signPDF(documentFile, signedDocumentFile, tsaClient);
     }
