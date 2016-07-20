@@ -367,11 +367,11 @@ public class PDFTemplateStructure
 
     /**
      * Sets inner form stream
-     * @param innterFormStream
+     * @param innerFormStream
      */
-    public void setInnterFormStream(PDStream innterFormStream)
+    public void setInnterFormStream(PDStream innerFormStream)
     {
-        this.innterFormStream = innterFormStream;
+        this.innterFormStream = innerFormStream;
     }
 
     /**
