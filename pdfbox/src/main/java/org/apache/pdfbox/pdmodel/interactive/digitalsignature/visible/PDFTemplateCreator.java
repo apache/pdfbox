@@ -34,28 +34,29 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
- * Using that class, we build pdf template.
+ * Class to build PDF template.
+ *
  * @author Vakhtang Koroghlishvili
  */
 public class PDFTemplateCreator
 {
-    PDFTemplateBuilder pdfBuilder;
+    private final PDFTemplateBuilder pdfBuilder;
     private static final Log logger = LogFactory.getLog(PDFTemplateCreator.class);
 
     /**
-     * sets PDFBuilder
+     * Constructor.
      * 
-     * @param bookBuilder
+     * @param templateBuilder
      */
-    public PDFTemplateCreator(PDFTemplateBuilder bookBuilder)
+    public PDFTemplateCreator(PDFTemplateBuilder templateBuilder)
     {
-        pdfBuilder = bookBuilder;
+        pdfBuilder = templateBuilder;
     }
 
     /**
-     * that method returns object of PDFStructure
+     * Returns the PDFTemplateStructure object.
      * 
-     * @return PDFStructure
+     * @return
      */
     public PDFTemplateStructure getPdfStructure()
     {
@@ -63,7 +64,8 @@ public class PDFTemplateCreator
     }
 
     /**
-     * this method builds pdf  step by step, and finally it returns stream of visible signature
+     * Build a PDF with a visible signature step by step, and return it as a stream.
+     *
      * @param properties
      * @return InputStream
      * @throws IOException
