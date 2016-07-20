@@ -17,15 +17,11 @@
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
 import java.awt.geom.AffineTransform;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -61,7 +57,7 @@ public class PDFTemplateStructure
     private PDResources holderFormResources;
     private PDFormXObject holderForm;
     private PDAppearanceDictionary appearanceDictionary;
-    private PDStream innterFormStream;
+    private PDStream innerFormStream;
     private PDResources innerFormResources;
     private PDFormXObject innerForm;
     private PDStream imageFormStream;
@@ -74,6 +70,8 @@ public class PDFTemplateStructure
     private PDFormXObject imageForm;
     private COSDictionary widgetDictionary;
 
+    // no constructor
+    
     /**
      * Returns document page.
      * @return the page
@@ -362,16 +360,16 @@ public class PDFTemplateStructure
      */
     public PDStream getInnerFormStream()
     {
-        return innterFormStream;
+        return innerFormStream;
     }
 
     /**
      * Sets inner form stream
-     * @param innterFormStream
+     * @param innerFormStream
      */
-    public void setInnterFormStream(PDStream innterFormStream)
+    public void setInnterFormStream(PDStream innerFormStream)
     {
-        this.innterFormStream = innterFormStream;
+        this.innerFormStream = innerFormStream;
     }
 
     /**
@@ -566,25 +564,6 @@ public class PDFTemplateStructure
     public void setAcroFormFields(List<PDField> acroFormFields)
     {
         this.acroFormFields = acroFormFields;
-    }
-    
-   /**
-    * Gets AP of the created template
-    * @return the templates Appearance Stream
-    * @throws IOException
-    */
-    public ByteArrayInputStream getTemplateAppearanceStream() throws IOException
-    {
-        COSDocument visualSignature = getVisualSignature();
-        ByteArrayOutputStream memoryOut = new ByteArrayOutputStream();
-        COSWriter memoryWriter = new COSWriter(memoryOut);
-        memoryWriter.write(visualSignature);
-
-        ByteArrayInputStream input = new ByteArrayInputStream(memoryOut.toByteArray());
-
-        getTemplate().close();
-
-        return input;
     }
 
     /**
