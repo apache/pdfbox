@@ -327,7 +327,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void injectAppearanceStreams(PDStream holderFormStream, PDStream innterFormStream,
+    public void injectAppearanceStreams(PDStream holderFormStream, PDStream innerFormStream,
                                         PDStream imageFormStream, COSName imageObjectName,
                                         COSName imageName, COSName innerFormName,
                                         PDVisibleSignDesigner properties) throws IOException
