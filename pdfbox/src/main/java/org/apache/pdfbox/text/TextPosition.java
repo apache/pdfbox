@@ -159,7 +159,9 @@ public final class TextPosition
     }
 
     /**
-     * Return the string of characters stored in this object.
+     * Return the string of characters stored in this object. The length can be different than the
+     * CharacterCodes length e.g. if ligatures are used ("fi", "fl", "ffl") where one glyph
+     * represents several unicode characters.
      *
      * @return The string on the screen.
      */
@@ -480,7 +482,7 @@ public final class TextPosition
     /**
      * Get the widths of each individual character.
      *
-     * @return An array that is the same length as the length of the string.
+     * @return An array that has the same length as the CharacterCodes array.
      */
     public float[] getIndividualWidths()
     {
