@@ -44,7 +44,8 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
- * Implementation of {@link PDFTemplateBuilder}.
+ * Implementation of {@link PDFTemplateBuilder}. This builds the signature PDF but doesn't keep the
+ * elements, these are kept in its PDF template structure.
  *
  * @author Vakhtang Koroghlishvili
  */
@@ -54,7 +55,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     private static final Log log = LogFactory.getLog(PDVisibleSigBuilder.class);
 
     /**
-     * Constructor.
+     * Constructor, creates PDF template structure.
      */
     public PDVisibleSigBuilder()
     {
@@ -71,6 +72,13 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         log.info("PDF page has been created");
     }
 
+    /**
+     * Creates a PDDocument and adds the page parameter to it and keeps this as a template in the
+     * PDF template Structure.
+     *
+     * @param page
+     * @throws IOException
+     */
     @Override
     public void createTemplate(PDPage page) throws IOException
     {
@@ -103,15 +111,15 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createSignature(PDSignatureField pdSignatureField, PDPage page,
-                                String signatureName) throws IOException
+    public void createSignature(PDSignatureField pdSignatureField, PDPage page, String signerName)
+            throws IOException
     {
         PDSignature pdSignature = new PDSignature();
         PDAnnotationWidget widget = pdSignatureField.getWidgets().get(0);
         pdSignatureField.setValue(pdSignature);
         widget.setPage(page);
         page.getAnnotations().add(widget);
-        pdSignature.setName(signatureName);
+        pdSignature.setName(signerName);
         pdfStructure.setPdSignature(pdSignature);
         log.info("PDSignature has been created");
     }
@@ -241,7 +249,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     public void createInnerFormStream(PDDocument template)
     {
         PDStream innerFormStream = new PDStream(template);
-        pdfStructure.setInnerFormStream(innerFormStream);
+        pdfStructure.setInnterFormStream(innerFormStream);
         log.info("Stream of another form (inner form - it will be inside holder form) " +
                  "has been created");
     }
