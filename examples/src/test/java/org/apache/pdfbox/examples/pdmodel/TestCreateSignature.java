@@ -79,6 +79,8 @@ public class TestCreateSignature extends TestCase
      *
      * @throws IOException
      * @throws GeneralSecurityException
+     * @throws CMSException
+     * @throws OperatorCreationException
      */
     public void testDetachedSHA256()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
@@ -105,6 +107,8 @@ public class TestCreateSignature extends TestCase
      *
      * @throws IOException
      * @throws GeneralSecurityException
+     * @throws CMSException
+     * @throws OperatorCreationException
      */
     public void testDetachedSHA256WithTSA()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
@@ -153,6 +157,8 @@ public class TestCreateSignature extends TestCase
      * Test creating visual signature.
      *
      * @throws IOException
+     * @throws CMSException
+     * @throws OperatorCreationException
      * @throws GeneralSecurityException
      */
     public void testCreateVisibleSignature()
@@ -170,6 +176,7 @@ public class TestCreateSignature extends TestCase
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
         File destFile = new File(outDir + "signed_visible.pdf");
         signing.signPDF(new File(inPath), destFile, null);
+        fis.close();
 
         checkSignature(destFile);
     }
