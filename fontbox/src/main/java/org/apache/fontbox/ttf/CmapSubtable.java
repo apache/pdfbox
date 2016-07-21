@@ -354,7 +354,7 @@ public class CmapSubtable
         for (int i = 0; i < entryCount; i++)
         {
             tmpGlyphToChar.put(glyphIdArray[i], firstCode + i);
-            characterCodeToGlyphId.put((firstCode + i), glyphIdArray[i]);
+            characterCodeToGlyphId.put(firstCode + i, glyphIdArray[i]);
         }
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(Collections.max(tmpGlyphToChar.keySet()) + 1);
         for (Entry<Integer, Integer> entry : tmpGlyphToChar.entrySet())
@@ -401,7 +401,7 @@ public class CmapSubtable
                 {
                     if (rangeOffset == 0)
                     {
-                        int glyphid = (j + delta) % 65536;
+                        int glyphid = (j + delta) & 0xFFFF;
                         tmpGlyphToChar.put(glyphid, j);
                         characterCodeToGlyphId.put(j, glyphid);
                     }
@@ -414,8 +414,7 @@ public class CmapSubtable
                         int glyphIndex = data.readUnsignedShort();
                         if (glyphIndex != 0)
                         {
-                            glyphIndex += delta;
-                            glyphIndex %= 65536;
+                            glyphIndex = (glyphIndex + delta) & 0xFFFF;
                             if (!tmpGlyphToChar.containsKey(glyphIndex))
                             {
                                 tmpGlyphToChar.put(glyphIndex, j);
