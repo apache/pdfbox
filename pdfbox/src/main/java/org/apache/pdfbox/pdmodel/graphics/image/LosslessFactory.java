@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
-import java.awt.Color;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -58,50 +57,59 @@ public final class LosslessFactory
         int bpc;
         PDDeviceColorSpace deviceColorSpace;
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
         int height = image.getHeight();
         int width = image.getWidth();
+        int[] rgbLineBuffer = new int[width];
+        byte[] imageData;
 
         if ((image.getType() == BufferedImage.TYPE_BYTE_GRAY && image.getColorModel().getPixelSize() <= 8)
                 || (image.getType() == BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() == 1))
         {
-            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
-
             // grayscale images need one color per sample
             bpc = image.getColorModel().getPixelSize();
             deviceColorSpace = PDDeviceGray.INSTANCE;
+            
+            ByteArrayOutputStream bos = new ByteArrayOutputStream((width*bpc/8)+(width*bpc%8 != 0 ? 1:0)*height);
+            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
+            
             for (int y = 0; y < height; ++y)
             {
-                for (int x = 0; x < width; ++x)
+                for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
                 {
-                    mcios.writeBits(image.getRGB(x, y) & 0xFF, bpc);
+                    mcios.writeBits(pixel & 0xFF, bpc);
                 }
-                while (mcios.getBitOffset() != 0)
+                
+                int bitOffset = mcios.getBitOffset();
+                if (bitOffset != 0)
                 {
-                    mcios.writeBit(0);
+                    mcios.writeBits(0, 8-bitOffset);
                 }
             }
             mcios.flush();
             mcios.close();
+            
+            imageData = bos.toByteArray();
         }
         else
         {
             // RGB
             bpc = 8;
             deviceColorSpace = PDDeviceRGB.INSTANCE;
+            imageData = new byte[width*height*3];
+            int byteIdx = 0;
+            
             for (int y = 0; y < height; ++y)
             {
-                for (int x = 0; x < width; ++x)
+                for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
                 {
-                    Color color = new Color(image.getRGB(x, y));
-                    bos.write(color.getRed());
-                    bos.write(color.getGreen());
-                    bos.write(color.getBlue());
+                    imageData[byteIdx++] = (byte)((pixel >> 16) & 0xFF);
+                    imageData[byteIdx++] = (byte)((pixel >> 8) & 0xFF);
+                    imageData[byteIdx++] = (byte)(pixel & 0xFF);
                 }
             }
         }
 
-        PDImageXObject pdImage = prepareImageXObject(document, bos.toByteArray(), 
+        PDImageXObject pdImage = prepareImageXObject(document, imageData, 
                 image.getWidth(), image.getHeight(), bpc, deviceColorSpace);
 
         // alpha -> soft mask
@@ -248,7 +256,8 @@ public final class LosslessFactory
             byte [] byteArray, int width, int height, int bitsPerComponent, 
             PDColorSpace initColorSpace) throws IOException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //pre-size the output stream to half of the input
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(byteArray.length/2);
 
         Filter filter = FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
         filter.encode(new ByteArrayInputStream(byteArray), baos, new COSDictionary(), 0);
