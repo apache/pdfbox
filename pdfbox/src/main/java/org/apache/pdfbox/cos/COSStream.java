@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.filter.Filter;
@@ -213,6 +212,12 @@ public class COSStream extends COSDictionary implements Closeable
         return new FilterOutputStream(cosOut)
         {
             @Override
+            public void write(byte[] b, int off, int len) throws IOException
+            {
+                this.out.write(b, off, len);
+            }
+            
+            @Override
             public void close() throws IOException
             {
                 super.close();
@@ -255,6 +260,12 @@ public class COSStream extends COSDictionary implements Closeable
         isWriting = true;
         return new FilterOutputStream(out)
         {
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException
+            {
+                this.out.write(b, off, len);
+            }
+            
             @Override
             public void close() throws IOException
             {
