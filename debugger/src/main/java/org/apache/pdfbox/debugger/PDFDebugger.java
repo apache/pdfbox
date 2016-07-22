@@ -95,6 +95,7 @@ import org.apache.pdfbox.debugger.ui.OSXAdapter;
 import org.apache.pdfbox.debugger.ui.PDFTreeCellRenderer;
 import org.apache.pdfbox.debugger.ui.PDFTreeModel;
 import org.apache.pdfbox.debugger.ui.PageEntry;
+import org.apache.pdfbox.debugger.ui.ReaderBottomPanel;
 import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
@@ -139,6 +140,7 @@ public class PDFDebugger extends JFrame
     private JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextPane jTextPane1;
+    private ReaderBottomPanel statusBar;
     private Tree tree;
     private final JPanel documentPanel = new JPanel();
     
@@ -236,6 +238,9 @@ public class PDFDebugger extends JFrame
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
         getContentPane().add(jSplitPane1, BorderLayout.CENTER);
+
+        statusBar = new ReaderBottomPanel();
+        getContentPane().add(statusBar, BorderLayout.SOUTH);
 
         // create menus
         JMenuBar menuBar = new JMenuBar();
@@ -603,6 +608,8 @@ public class PDFDebugger extends JFrame
             {
                 Object selectedNode = path.getLastPathComponent();
                 
+                statusBar.getStatusLabel().setText("");
+                
                 if (isPage(selectedNode))
                 {
                     showPage(selectedNode);
@@ -826,7 +833,7 @@ public class PDFDebugger extends JFrame
         COSBase typeItem = page.getItem(COSName.TYPE);
         if (COSName.PAGE.equals(typeItem))
         {
-            PagePane pagePane = new PagePane(document, page);
+            PagePane pagePane = new PagePane(document, page, statusBar.getStatusLabel());
             replaceRightComponent(new JScrollPane(pagePane.getPanel()));
         }
     }

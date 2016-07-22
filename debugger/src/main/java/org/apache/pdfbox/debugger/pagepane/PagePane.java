@@ -53,12 +53,14 @@ public class PagePane implements ActionListener, AncestorListener
     private JLabel label;
     private ZoomMenu zoomMenu;
     private RotationMenu rotationMenu;
+    private final JLabel statuslabel;
 
-    public PagePane(PDDocument document, COSDictionary page)
+    public PagePane(PDDocument document, COSDictionary page, JLabel statuslabel)
     {
         PDPage pdPage = new PDPage(page);
         pageIndex = document.getPages().indexOf(pdPage);
         this.document = document;
+        this.statuslabel = statuslabel;
         initUI();
     }
 
@@ -151,9 +153,13 @@ public class PagePane implements ActionListener, AncestorListener
         protected BufferedImage doInBackground() throws IOException
         {
             label.setIcon(null);
-            label.setText("Loading...");
+            label.setText("Rendering...");
             PDFRenderer renderer = new PDFRenderer(document);
+            long t0 = System.currentTimeMillis();
+            statuslabel.setText("Rendering...");
             BufferedImage bim = renderer.renderImage(pageIndex, scale);
+            float t = ((System.currentTimeMillis() - t0) / 1000f);
+            statuslabel.setText("Rendered in " + t + " second" + (t > 1 ? "s" : ""));
             return ImageUtil.getRotatedImage(bim, rotation);
         }
 
