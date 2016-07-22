@@ -40,7 +40,7 @@ public class ReaderBottomPanel extends JPanel
         FlowLayout flowLayout = new FlowLayout();
         this.setLayout(flowLayout);
         this.setComponentOrientation(java.awt.ComponentOrientation.LEFT_TO_RIGHT);
-        this.setPreferredSize(new Dimension(1000, 20));
+        this.setPreferredSize(new Dimension(1000, 24));
         flowLayout.setAlignment(FlowLayout.LEFT);
         statusLabel = new JLabel();
         statusLabel.setText("Ready");
