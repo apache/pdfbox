@@ -57,14 +57,12 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private ZoomMenu zoomMenu;
     private RotationMenu rotationMenu;
     private final JLabel statuslabel;
-    private final float height, width;
+    private final PDPage page;
 
-    public PagePane(PDDocument document, COSDictionary page, JLabel statuslabel)
+    public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
-        PDPage pdPage = new PDPage(page);
-        pageIndex = document.getPages().indexOf(pdPage);
-        height = pdPage.getCropBox().getHeight();
-        width  = pdPage.getCropBox().getWidth();
+        page = new PDPage(pageDict);
+        pageIndex = document.getPages().indexOf(page);
         this.document = document;
         this.statuslabel = statuslabel;
         initUI();
@@ -156,28 +154,32 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseMoved(MouseEvent e)
     {
+        float height = page.getCropBox().getHeight();
+        float width  = page.getCropBox().getWidth();
+        float offsetX = page.getCropBox().getLowerLeftX();
+        float offsetY = page.getCropBox().getLowerLeftY();
         float zoomScale = zoomMenu.getPageZoomScale();
         float x = e.getX() / zoomScale;
         float y = e.getY() / zoomScale;
         int x1, y1;
-        switch (RotationMenu.getRotationDegrees())
+        switch ((RotationMenu.getRotationDegrees() + page.getRotation()) % 360)
         {
-            case 0:
-            default:
-                x1 = (int) x;
-                y1 = (int) (height - y);
-                break;
             case 90:
-                x1 = (int) y;
-                y1 = (int) x;
+                x1 = (int) (y + offsetX);
+                y1 = (int) (x + offsetY);
                 break;
             case 180:
-                x1 = (int) (width - x);
-                y1 = (int) y;
+                x1 = (int) (width - x + offsetX);
+                y1 = (int) (y - offsetY);
                 break;
             case 270:
-                x1 = (int) (width - y);
-                y1 = (int) (height - x);
+                x1 = (int) (width - y + offsetX);
+                y1 = (int) (height - x + offsetY);
+                break;
+            case 0:
+            default:
+                x1 = (int) (x + offsetX);
+                y1 = (int) (height - y + offsetY);
                 break;
         }
         statuslabel.setText(x1 + "," + y1);
