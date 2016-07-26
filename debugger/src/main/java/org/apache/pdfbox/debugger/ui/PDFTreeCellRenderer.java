@@ -190,7 +190,8 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             COSDictionary dict = (COSDictionary)nodeValue;
             
             if (COSName.ANNOT.equals(dict.getCOSName(COSName.TYPE))
-                    && COSName.WIDGET.equals(dict.getCOSName(COSName.SUBTYPE)))
+                    && COSName.WIDGET.equals(dict.getCOSName(COSName.SUBTYPE)) || 
+                    dict.containsKey(COSName.T) && dict.containsKey(COSName.KIDS))
             {
                 String name = dict.getString(COSName.T);
                 while (name == null)
