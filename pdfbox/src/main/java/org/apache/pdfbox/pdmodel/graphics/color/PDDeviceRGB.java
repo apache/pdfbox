@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.Transparency;
-import java.awt.color.CMMException;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -35,19 +34,6 @@ import org.apache.pdfbox.cos.COSName;
  */
 public final class PDDeviceRGB extends PDDeviceColorSpace
 {
-    static
-    {
-        try
-        {
-            // Initialize before INSTANCE object is used due to weird errors (PDFBOX-2184, PDFBOX-3375)
-            ColorSpace.getInstance(ColorSpace.CS_sRGB).toRGB(new float[] { 0, 0, 0, 0 });
-        }
-        catch (CMMException ex)
-        {
-            // ignored
-        }
-    }
-
     /**  This is the single instance of this class. */
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
     
