@@ -23,6 +23,9 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.apache.pdfbox.cos.COSName;
 
 /**
@@ -38,6 +41,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
     
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
+    private final Lock m_aRWLock = new ReentrantLock ();
     private volatile ColorSpace awtColorSpace;
     
     private PDDeviceRGB()
@@ -54,7 +58,8 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         {
             return;
         }
-        synchronized (this)
+        m_aRWLock.lock ();
+        try
         {
             // we might have been waiting for another thread, so check again
             if (awtColorSpace != null)
@@ -67,6 +72,10 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
             // condition caused by lazy initialization of the color transform, so we perform
             // an initial color conversion while we're still synchronized, see PDFBOX-2184
             awtColorSpace.toRGB(new float[] { 0, 0, 0, 0 });
+        }
+        finally
+        {
+            m_aRWLock.unlock();
         }
     }
     
