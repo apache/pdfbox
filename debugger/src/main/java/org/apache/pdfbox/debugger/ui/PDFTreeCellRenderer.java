@@ -194,16 +194,6 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
                     dict.containsKey(COSName.T) && dict.containsKey(COSName.KIDS))
             {
                 String name = dict.getString(COSName.T);
-                while (name == null)
-                {
-                    COSBase base = dict.getDictionaryObject(COSName.PARENT);
-                    if (!(base instanceof COSDictionary))
-                    {
-                        break;
-                    }
-                    dict = (COSDictionary) base;
-                    name = dict.getString(COSName.T);
-                }
                 if (name != null)
                 {
                     sb.append("   Name: ");
