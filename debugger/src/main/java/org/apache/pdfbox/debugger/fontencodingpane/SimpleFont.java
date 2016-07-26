@@ -46,26 +46,29 @@ class SimpleFont implements FontPane
         attributes.put("Font", font.getName());
         attributes.put("Glyph count", Integer.toString(totalAvailableGlyph));
 
-        view = new FontEncodingView(tableData, attributes, new String[] {"Code", "Glyph Name","Unicode Character"});
+        view = new FontEncodingView(tableData, attributes, new String[] {"Code", "Glyph Name","Unicode Character","Glyph"});
     }
 
     private Object[][] getGlyphs(PDSimpleFont font) throws IOException
     {
-        Object[][] glyphs = new Object[256][3];
+        Object[][] glyphs = new Object[256][4];
 
         for (int index = 0; index <= 255; index++)
         {
             glyphs[index][0] = index;
             if (font.getEncoding().contains(index))
             {
-                glyphs[index][1] = font.getEncoding().getName(index);
+                String glyphName = font.getEncoding().getName(index);
+                glyphs[index][1] = glyphName;
                 glyphs[index][2] = font.toUnicode(index);
+                glyphs[index][3] = font.getPath(glyphName);
                 totalAvailableGlyph++;
             }
             else
             {
                 glyphs[index][1] = NO_GLYPH;
                 glyphs[index][2] = NO_GLYPH;
+                glyphs[index][3] = font.getPath(".notdef");
             }
         }
         return glyphs;
