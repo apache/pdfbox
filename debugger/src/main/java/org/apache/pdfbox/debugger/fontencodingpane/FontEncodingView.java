@@ -20,10 +20,18 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.Map;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -123,12 +131,28 @@ class FontEncodingView
     {
 
         @Override
-        public Component getTableCellRendererComponent(JTable jTable, Object o, boolean b, boolean b1, int i, int i1)
+        public Component getTableCellRendererComponent(JTable jTable, Object o, boolean b, boolean b1, int row, int col)
         {
+            if (o instanceof GeneralPath)
+            {
+                GeneralPath path = (GeneralPath) o;
+                Rectangle2D bounds2D = path.getBounds2D();
+                if (bounds2D.isEmpty())
+                {
+                    JLabel label = new JLabel(SimpleFont.NO_GLYPH, SwingConstants.CENTER);
+                    label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
+                    label.setForeground(Color.RED);
+                    return label;
+                }
+                Rectangle cellRect = jTable.getCellRect(row, col, false);
+                BufferedImage bim = renderGlyph(path, bounds2D, cellRect);
+                return new JLabel(new ImageIcon(bim));
+
+                //TODO possible improvement? render all glyphs with the same scale in the same bounding box
+            }
             if (o != null)
             {
-                JLabel label = new JLabel(o.toString());
-                label.setHorizontalAlignment(SwingConstants.CENTER);
+                JLabel label = new JLabel(o.toString(), SwingConstants.CENTER);
                 label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
                 if (SimpleFont.NO_GLYPH.equals(o) || ".notdef".equals(o))
                 {
@@ -139,7 +163,33 @@ class FontEncodingView
             }
             return new JLabel();
         }
+
+        private BufferedImage renderGlyph(GeneralPath path, Rectangle2D bounds2D, Rectangle cellRect)
+        {
+            path.transform(AffineTransform.getTranslateInstance(-bounds2D.getMinX(), -bounds2D.getMinY()));
+            double scaleX = bounds2D.getWidth() / cellRect.getWidth();
+            double scaleY = bounds2D.getHeight() / cellRect.getHeight();
+            double scale = 1 / Math.ceil(Math.max(scaleX, scaleY)) / 2;
+            BufferedImage bim = new BufferedImage((int) cellRect.getWidth(), (int) cellRect.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g = (Graphics2D) bim.getGraphics();
+            g.setBackground(Color.white);
+            g.clearRect(0, 0, bim.getWidth(), bim.getHeight());
+
+            // flip
+            g.scale(1, -1);
+            g.translate(0, -bim.getHeight());
+
+            // center
+            g.translate((cellRect.getWidth() - bounds2D.getWidth() * scale) / 2, cellRect.getHeight() / 4);
+
+            g.scale(scale, scale);
+            g.setColor(Color.black);
+            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.fill(path);
+            g.dispose();
+            return bim;
+        }
     }
 }
-
-
