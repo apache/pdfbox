@@ -365,20 +365,23 @@ public final class DateConverter
 
         if (timeZoneString != null)
         {
-            
-            Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(
-                        dateString.substring(0, dateString.indexOf(timeZoneString))
-                    );
-            
+            // can't use parseDateTime immediately, first do handling for time that has no seconds
+            int teeIndex = dateString.indexOf('T');
+            int tzIndex = dateString.indexOf(timeZoneString);
+            String toParse = dateString.substring(0, tzIndex);
+            if (tzIndex - teeIndex == 6)
+            {
+                toParse = dateString.substring(0, tzIndex) + ":00";
+            }
+            Calendar cal = javax.xml.bind.DatatypeConverter.parseDateTime(toParse);
+
             TimeZone z = TimeZone.getTimeZone(timeZoneString);
-            cal.setTimeZone(z);
-            
+            cal.setTimeZone(z);            
             return cal;
         }
         else
         {
-            // can't use parseDateTime immediately, 
-            // first do handling for time that has no seconds
+            // can't use parseDateTime immediately, first do handling for time that has no seconds
             int teeIndex = dateString.indexOf('T');
             if (teeIndex == -1)
             {
