@@ -57,6 +57,8 @@ public class DateConverterTest
         //Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
                      DateConverter.toCalendar("2015-12-08T12:07-05:00"));
+        assertEquals(DateConverter.toCalendar("2011-11-20T10:09:00Z"),
+                     DateConverter.toCalendar("2011-11-20T10:09Z"));
         
         // Test some time zone offsets
         jaxbCal = javax.xml.bind.DatatypeConverter.parseDateTime("2015-02-02T16:37:19.192Z");
