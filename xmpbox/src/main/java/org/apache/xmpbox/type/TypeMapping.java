@@ -176,40 +176,40 @@ public final class TypeMapping
         // constructor parameters
         Object[] params = new Object[] { metadata, nsuri, prefix, name, value };
         // type
+        Class<? extends AbstractSimpleProperty> clz =
+                type.getImplementingClass().asSubclass(AbstractSimpleProperty.class);
         try
         {
-            Class<? extends AbstractSimpleProperty> clz = type.getImplementingClass().asSubclass(
-                    AbstractSimpleProperty.class);
             Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(SIMPLEPROPERTYCONSTPARAMS);
             return cons.newInstance(params);
         }
         catch (NoSuchMethodError e)
         {
-            throw new IllegalArgumentException("Failed to instanciate property", e);
+            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
         catch (IllegalArgumentException e)
         {
-            throw new IllegalArgumentException("Failed to instanciate property", e);
+            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
         catch (InstantiationException e)
         {
-            throw new IllegalArgumentException("Failed to instanciate property", e);
+            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
         catch (IllegalAccessException e)
         {
-            throw new IllegalArgumentException("Failed to instanciate property", e);
+            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
         catch (InvocationTargetException e)
         {
-            throw new IllegalArgumentException("Failed to instanciate property", e);
+            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
         catch (SecurityException e)
         {
-            throw new IllegalArgumentException("Failed to instanciate property", e);
+            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
         catch (NoSuchMethodException e)
         {
-            throw new IllegalArgumentException("Failed to instanciate property", e);
+            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
     }
 
