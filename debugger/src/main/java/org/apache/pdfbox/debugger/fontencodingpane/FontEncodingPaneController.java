@@ -16,19 +16,47 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.swing.JPanel;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 
-interface FontPane
+abstract class FontPane
 {
-    JPanel getPanel();
+    abstract JPanel getPanel();
+
+    /**
+     * Calculate vertical bounds common to all rendered glyphs.
+     *
+     * @param tableData
+     * @param glyphIndex the table index that has glyphs.
+     * @return an array with two elements: min lower bound (but max 0), and max upper bound (but min
+     * 0).
+     */
+    double[] getYBounds(Object[][] tableData, int glyphIndex)
+    {
+        double minY = 0;
+        double maxY = 0;
+        for (int i = 0; i < tableData.length; ++i)
+        {
+            GeneralPath path = (GeneralPath) tableData[i][glyphIndex];
+            Rectangle2D bounds2D = path.getBounds2D();
+            if (bounds2D.isEmpty())
+            {
+                continue;
+            }
+            minY = Math.min(minY, bounds2D.getMinY());
+            maxY = Math.max(maxY, bounds2D.getMaxY());
+        }
+        return new double[]{minY, maxY};
+    }
 }
 
 /**
@@ -52,14 +80,17 @@ public class FontEncodingPaneController
         try
         {
             PDFont font = resources.getFont(fontName);
-            if (font instanceof PDSimpleFont)
+            if (font instanceof PDType3Font)
+            {
+                fontPane = new Type3Font((PDType3Font) font);
+            }
+            else if (font instanceof PDSimpleFont)
             {
                 fontPane = new SimpleFont((PDSimpleFont) font);
             }
-            else if (font instanceof PDType0Font
-                    && ((PDType0Font) font).getDescendantFont() instanceof PDCIDFontType2)
+            else if (font instanceof PDType0Font)
             {
-                fontPane = new Type0Font((PDCIDFontType2) ((PDType0Font) font).getDescendantFont(), font);
+                fontPane = new Type0Font(((PDType0Font) font).getDescendantFont(), (PDType0Font) font);
             }
         }
         catch (IOException e)

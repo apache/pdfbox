@@ -25,7 +25,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -41,6 +40,7 @@ import javax.swing.table.TableCellRenderer;
 
 /**
  * @author Khyrul Bashar
+ * @author Tilman Hausherr
  * A class that creates the UI for font encoding pane.
  */
 class FontEncodingView
@@ -53,10 +53,11 @@ class FontEncodingView
      * @param headerAttributes Map<String, String> instance which contains info for showing in header
      *                         panel. Here keys will be info type.
      * @param columnNames String array containing the columns name.
+     * @param yBounds min low and max high bound of all glyphs.
      */
-    FontEncodingView(Object[][] tableData, Map<String, String> headerAttributes, String[] columnNames)
+    FontEncodingView(Object[][] tableData, Map<String, String> headerAttributes, String[] columnNames, double[] yBounds)
     {
-        createView(getHeaderPanel(headerAttributes), getTable(tableData, columnNames));
+        createView(getHeaderPanel(headerAttributes), getTable(tableData, columnNames, yBounds));
     }
 
     private void createView(JPanel headerPanel, JTable table)
@@ -86,11 +87,11 @@ class FontEncodingView
         panel.add(scrollPane, gbc);
     }
 
-    private JTable getTable(Object[][] tableData, String[] columnNames)
+    private JTable getTable(Object[][] tableData, String[] columnNames, double[] yBounds)
     {
         JTable table = new JTable(tableData, columnNames);
         table.setRowHeight(40);
-        table.setDefaultRenderer(Object.class, new GlyphCellRenderer());
+        table.setDefaultRenderer(Object.class, new GlyphCellRenderer(yBounds));
         return table;
     }
 
@@ -103,7 +104,6 @@ class FontEncodingView
             Iterator<String> keys = attributes.keySet().iterator();
             int row = 0;
             while (keys.hasNext())
-
             {
                 String key = keys.next();
                 JLabel encodingNameLabel = new JLabel(key + ": " + attributes.get(key));
@@ -116,7 +116,6 @@ class FontEncodingView
                 gbc.anchor = GridBagConstraints.LINE_START;
 
                 headerPanel.add(encodingNameLabel, gbc);
-
             }
         }
         return headerPanel;
@@ -129,6 +128,12 @@ class FontEncodingView
 
     private static final class GlyphCellRenderer implements TableCellRenderer
     {
+        private final double[] yBounds;
+
+        private GlyphCellRenderer(double[] yBounds)
+        {
+            this.yBounds = yBounds;
+        }
 
         @Override
         public Component getTableCellRendererComponent(JTable jTable, Object o, boolean b, boolean b1, int row, int col)
@@ -147,8 +152,6 @@ class FontEncodingView
                 Rectangle cellRect = jTable.getCellRect(row, col, false);
                 BufferedImage bim = renderGlyph(path, bounds2D, cellRect);
                 return new JLabel(new ImageIcon(bim));
-
-                //TODO possible improvement? render all glyphs with the same scale in the same bounding box
             }
             if (o != null)
             {
@@ -166,23 +169,26 @@ class FontEncodingView
 
         private BufferedImage renderGlyph(GeneralPath path, Rectangle2D bounds2D, Rectangle cellRect)
         {
-            path.transform(AffineTransform.getTranslateInstance(-bounds2D.getMinX(), -bounds2D.getMinY()));
-            double scaleX = bounds2D.getWidth() / cellRect.getWidth();
-            double scaleY = bounds2D.getHeight() / cellRect.getHeight();
-            double scale = 1 / Math.ceil(Math.max(scaleX, scaleY)) / 2;
             BufferedImage bim = new BufferedImage((int) cellRect.getWidth(), (int) cellRect.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D g = (Graphics2D) bim.getGraphics();
             g.setBackground(Color.white);
             g.clearRect(0, 0, bim.getWidth(), bim.getHeight());
 
+            double scale = 1 / ((yBounds[1] - yBounds[0]) / cellRect.getHeight());
+
             // flip
             g.scale(1, -1);
             g.translate(0, -bim.getHeight());
 
-            // center
-            g.translate((cellRect.getWidth() - bounds2D.getWidth() * scale) / 2, cellRect.getHeight() / 4);
+            // horizontal center
+            g.translate((cellRect.getWidth() - bounds2D.getWidth() * scale) / 2, 0);
 
+            // scale from the glyph to the cell
             g.scale(scale, scale);
+
+            // Adjust for negative y min bound
+            g.translate(0, -yBounds[0]);
+
             g.setColor(Color.black);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
