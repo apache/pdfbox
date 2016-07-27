@@ -41,7 +41,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
     
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
-    private final Lock m_aRWLock = new ReentrantLock ();
+    private final Lock lock = new ReentrantLock ();
     private volatile ColorSpace awtColorSpace;
     
     private PDDeviceRGB()
@@ -58,7 +58,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         {
             return;
         }
-        m_aRWLock.lock ();
+        lock.lock ();
         try
         {
             // we might have been waiting for another thread, so check again
@@ -75,7 +75,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         }
         finally
         {
-            m_aRWLock.unlock();
+            lock.unlock();
         }
     }
     
