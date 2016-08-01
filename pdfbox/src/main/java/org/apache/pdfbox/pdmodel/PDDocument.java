@@ -501,13 +501,17 @@ public class PDDocument implements Closeable
     /**
      * This will import and copy the contents from another location. Currently the content stream is stored in a scratch
      * file. The scratch file is associated with the document. If you are adding a page to this document from another
-     * document and want to copy the contents to this document's scratch file then use this method otherwise just use
-     * the {@link #addPage} method.
-     * 
-     * Unlike {@link #addPage}, this method does a deep copy. If your page has annotations, and if
-     * these link to pages not in the target document, then the target document might become huge.
-     * What you need to do is to delete page references of such annotations. See
+     * document and want to copy the contents to this
+     * document's scratch file then use this method otherwise just use the {@link #addPage addPage}
+     * method.
+     * <p>
+     * Unlike {@link #addPage addPage}, this method creates a new PDPage object. If your page has
+     * annotations, and if these link to pages not in the target document, then the target document
+     * might become huge. What you need to do is to delete page references of such annotations. See
      * <a href="http://stackoverflow.com/a/35477351/535646">here</a> for how to do this.
+     * <p>
+     * Inherited (global) resources are ignored. If you need them, call
+     * <code>importedPage.setRotation(page.getRotation());</code>
      *
      * @param page The page to import.
      * @return The page that was imported.
@@ -531,6 +535,14 @@ public class PDDocument implements Closeable
         catch (IOException e)
         {
             IOUtils.closeQuietly(in);
+        }
+        importedPage.setCropBox(page.getCropBox());
+        importedPage.setMediaBox(page.getMediaBox());
+        importedPage.setRotation(page.getRotation());
+        if (page.getResources() != null && !page.getCOSObject().containsKey(COSName.RESOURCES))
+        {
+            LOG.warn("inherited resources of source document are not imported to destination page");
+            LOG.warn("call importedPage.setResources(page.getResources()) to do this");
         }
         return importedPage;
     }
