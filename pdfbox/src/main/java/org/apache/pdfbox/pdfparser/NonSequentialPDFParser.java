@@ -542,8 +542,10 @@ public class NonSequentialPDFParser extends PDFParser
         long prev = startXrefOffset;
         // ---- parse whole chain of xref tables/object streams using PREV
         // reference
-        while (prev > 0)
+        long lastPrev = -1;
+        while (prev > 0 && prev != lastPrev)
         {
+            lastPrev = prev;
             // seek to xref table
             setPdfSource(prev);
 
@@ -615,6 +617,11 @@ public class NonSequentialPDFParser extends PDFParser
                     }
                 }
             }
+        }
+        if (prev == lastPrev)
+        {
+            //TODO better idea needed? PDFBOX-3446
+            throw new IOException("/Prev loop at offset " + prev);
         }
         // ---- build valid xrefs out of the xref chain
         xrefTrailerResolver.setStartxref(startXrefOffset);
