@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 
 /**
  * @author Khyrul Bashar
@@ -64,7 +65,15 @@ class SimpleFont extends FontPane
                 String glyphName = font.getEncoding().getName(index);
                 glyphs[index][1] = glyphName;
                 glyphs[index][2] = font.toUnicode(index);
-                glyphs[index][3] = font.getPath(glyphName);
+                if (font instanceof PDVectorFont)
+                {
+                    // using names didn't work with the file from PDFBOX-3445
+                    glyphs[index][3] = ((PDVectorFont) font).getPath(index);
+                }
+                else
+                {
+                    glyphs[index][3] = font.getPath(glyphName);
+                }
                 totalAvailableGlyph++;
             }
             else
