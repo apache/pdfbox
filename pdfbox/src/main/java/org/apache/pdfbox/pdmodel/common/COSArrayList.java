@@ -293,19 +293,18 @@ public class COSArrayList<E> implements List<E>
         List<Float> retval = null;
         if (floatArray != null)
         {
-            List<Float> numbers = new ArrayList<Float>();
+            List<Float> numbers = new ArrayList<Float>(floatArray.size());
             for (int i = 0; i < floatArray.size(); i++)
             {
-                COSNumber num;
-                if (floatArray.get(i) instanceof COSObject)
+                COSBase base = floatArray.getObject(i);
+                if (base instanceof COSNumber)
                 {
-                    num = (COSNumber) ((COSObject) floatArray.get(i)).getObject();
+                    numbers.add(((COSNumber) base).floatValue());
                 }
                 else
                 {
-                    num = (COSNumber) floatArray.get(i);
+                    numbers.add(null);
                 }
-                numbers.add(num.floatValue());
             }
             retval = new COSArrayList<Float>(numbers, floatArray);
         }
