@@ -249,6 +249,10 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             if (siz > 0 && code >= firstChar && code <= lastChar && idx < siz)
             {
                 width = getWidths().get(idx);
+                if (width == null)
+                {
+                    width = 0f;
+                }
                 codeToWidthMap.put(code, width);
                 return width;
             }
