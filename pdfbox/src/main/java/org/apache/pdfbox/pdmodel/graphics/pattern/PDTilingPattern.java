@@ -126,7 +126,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     {
         // ignores invalid values, see PDFBOX-1094-065514-XStep32767.pdf
         float xStep = getCOSObject().getFloat( COSName.X_STEP, 0 );
-        return xStep == Short.MAX_VALUE ? 0 : xStep;
+        return xStep >= Short.MAX_VALUE ? 0 : xStep;
     }
 
     /**
@@ -146,7 +146,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     {
         // ignores invalid values, see PDFBOX-1094-065514-XStep32767.pdf
         float yStep = getCOSObject().getFloat( COSName.Y_STEP, 0 );
-        return yStep == Short.MAX_VALUE ? 0 : yStep;
+        return yStep >= Short.MAX_VALUE ? 0 : yStep;
     }
     
     public PDStream getContentStream()
