@@ -911,7 +911,8 @@ public abstract class PDFont implements COSObjectable
                 getWidths();
                 if (widths != null)
                 {
-                    width = widths.get(charCode-firstChar).floatValue();
+                    Float w = widths.get(charCode - firstChar);
+                    width = w == null ? 0 : w;
                 }
             }
         }
