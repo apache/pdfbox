@@ -224,6 +224,11 @@ public class CMapParser
                         {
                             tokenBytes = (byte[]) nextToken;
                         }
+                        if (tokenBytes.length == 0)
+                        {
+                            // PDFBOX-3450: ignore <>
+                            continue;
+                        }
                         boolean done = false;
                         // don't add 1:1 mappings to reduce the memory footprint
                         if (Arrays.equals(startCode, tokenBytes))
