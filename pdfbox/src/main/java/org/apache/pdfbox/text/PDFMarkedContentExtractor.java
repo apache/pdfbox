@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDMarkedContent;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequence;
 import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
 import org.apache.pdfbox.contentstream.operator.markedcontent.DrawObject;
@@ -111,6 +112,31 @@ public class PDFMarkedContentExtractor extends PDFTextStreamEngine
         if (!this.currentMarkedContents.isEmpty())
         {
             this.currentMarkedContents.peek().addXObject(xobject);
+        }
+    }
+
+    /**
+     * Return the currently stacked marked content.
+     *
+     * @return the currently stacked marked content.
+     */
+    public Stack<PDMarkedContent> getCurrentMarkedContentStack()
+    {
+        return currentMarkedContents;
+    }
+
+    /**
+     * Handle transparency groups. In case of an instance then send it up stream and then set
+     * the visible flag to false.
+     *
+     * @param group The transparency group.
+     */
+    @Override
+    protected void processTransparencyGroup(PDTransparencyGroup group) throws IOException
+    {
+        super.processTransparencyGroup(group);
+        if(!this.currentMarkedContents.isEmpty()) {
+            this.currentMarkedContents.peek().setTransparencyGroup(true);
         }
     }
 
