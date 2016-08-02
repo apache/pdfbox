@@ -118,7 +118,8 @@ public class PDType3Font extends PDSimpleFont
         int lastChar = dict.getInt(COSName.LAST_CHAR, -1);
         if (getWidths().size() > 0 && code >= firstChar && code <= lastChar)
         {
-            return getWidths().get(code - firstChar);
+            Float w = getWidths().get(code - firstChar);
+            return w == null ? 0 : w;
         }
         else
         {
