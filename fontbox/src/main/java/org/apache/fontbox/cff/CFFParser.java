@@ -217,6 +217,12 @@ public class CFFParser
         for (int i = 0; i < count; i++)
         {
             int length = offsets[i + 1] - offsets[i];
+            if (length < 0)
+            {
+                throw new IOException("Negative index data length + " + length + " at " + 
+                        i + ": offsets[" + (i + 1) + "]=" + offsets[i + 1] + 
+                        ", offsets[" + i + "]=" + offsets[i]);
+            }
             indexDataValues[i] = new String(input.readBytes(length), Charsets.ISO_8859_1);
         }
         return indexDataValues;
@@ -1113,19 +1119,19 @@ public class CFFParser
         public Boolean getBoolean(String name, boolean defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null ? entry.getBoolean(0) : defaultValue;
+            return entry != null && entry.getArray().size() > 0 ? entry.getBoolean(0) : defaultValue;
         }
 
         public List<Number> getArray(String name, List<Number> defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null ? entry.getArray() : defaultValue;
+            return entry != null && entry.getArray().size() > 0 ? entry.getArray() : defaultValue;
         }
 
         public Number getNumber(String name, Number defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null ? entry.getNumber(0) : defaultValue;
+            return entry != null && entry.getArray().size() > 0 ? entry.getNumber(0) : defaultValue;
         }
 
         /**
