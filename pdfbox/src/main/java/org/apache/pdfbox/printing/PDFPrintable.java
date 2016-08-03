@@ -172,8 +172,8 @@ public final class PDFPrintable implements Printable
             if (dpi > 0)
             {
                 float dpiScale = dpi / 72;
-                image = new BufferedImage((int)(imageableWidth * dpiScale),
-                                          (int)(imageableHeight * dpiScale),
+                image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
+                                          (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);
 
                 printerGraphics = graphics2D;
