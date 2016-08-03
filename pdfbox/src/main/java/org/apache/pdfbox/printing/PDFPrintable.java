@@ -148,6 +148,12 @@ public final class PDFPrintable implements Printable
                 {
                     scale = 1;
                 }
+                
+                // only stretch to fit when enabled
+                if (scale < 1 && scaling == Scaling.STRETCH_TO_FIT)
+                {
+                    scale = 1;
+                }
             }
 
             // set the graphics origin to the origin of the imageable area (i.e the margins)
@@ -166,8 +172,8 @@ public final class PDFPrintable implements Printable
             if (dpi > 0)
             {
                 float dpiScale = dpi / 72;
-                image = new BufferedImage((int)(imageableWidth * dpiScale),
-                                          (int)(imageableHeight * dpiScale),
+                image = new BufferedImage((int)(imageableWidth * dpiScale / scale),
+                                          (int)(imageableHeight * dpiScale / scale),
                                           BufferedImage.TYPE_INT_ARGB);
 
                 printerGraphics = graphics2D;
