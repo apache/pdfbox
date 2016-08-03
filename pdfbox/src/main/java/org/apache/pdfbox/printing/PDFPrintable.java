@@ -148,6 +148,12 @@ public final class PDFPrintable implements Printable
                 {
                     scale = 1;
                 }
+                
+                // only stretch to fit when enabled
+                if (scale < 1 && scaling == Scaling.STRETCH_TO_FIT)
+                {
+                    scale = 1;
+                }
             }
 
             // set the graphics origin to the origin of the imageable area (i.e the margins)
