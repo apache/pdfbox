@@ -256,14 +256,14 @@ public class Type2CharString extends Type1CharString
         {
             if (flag)
             {
-                addCommand(asNumberList(0f, numbers.get(0).floatValue() + nominalWidthX),
+                addCommand(Arrays.asList((Number) 0f, numbers.get(0).floatValue() + nominalWidthX),
                         new CharStringCommand(13));
                 numbers = numbers.subList(1, numbers.size());
-            } 
+            }
             else
             {
-                addCommand(asNumberList(0f, defWidthX),
-                    new CharStringCommand(13));
+                addCommand(Arrays.asList((Number) 0f, defWidthX),
+                        new CharStringCommand(13));
             }
         }
         return numbers;
@@ -372,16 +372,6 @@ public class Type2CharString extends Type1CharString
     {
         type1Sequence.addAll(numbers);
         type1Sequence.add(command);
-    }
-
-    private List<Number> asNumberList(Float... a)
-    {
-        List<Number> list = new ArrayList<Number>(a.length);
-        for(int i = 0; i < a.length; i++)
-        {
-            list.add(a[i]);
-        }
-        return list;
     }
 
     private static <E> List<List<E>> split(List<E> list, int size)
