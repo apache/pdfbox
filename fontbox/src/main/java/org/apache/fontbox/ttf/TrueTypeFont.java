@@ -560,7 +560,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
             {
                 throw new IOException("The TrueType font does not contain a Unicode cmap");
             }
-            else
+            else if (cmapTable.getCmaps().length > 0)
             {
                 // fallback to the first cmap (may not be Unicode, so may produce poor results)
                 cmap = cmapTable.getCmaps()[0];
