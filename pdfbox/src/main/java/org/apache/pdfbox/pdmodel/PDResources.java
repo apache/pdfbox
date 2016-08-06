@@ -17,7 +17,10 @@
 package org.apache.pdfbox.pdmodel;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -48,6 +51,11 @@ public final class PDResources implements COSObjectable
 {
     private final COSDictionary resources;
     private final ResourceCache cache;
+    
+    // PDFBOX-3442 cache fonts that are not indirect objects, as these aren't cached in ResourceCache
+    // and this would result in huge memory footprint in text extraction
+    private final Map <COSName,SoftReference<PDFont>> directFontCache = 
+            new HashMap<COSName, SoftReference<PDFont>>();
 
     /**
      * Constructor for embedding.
@@ -102,7 +110,7 @@ public final class PDResources implements COSObjectable
      * Returns the font resource with the given name, or null if none exists.
      *
      * @param name Name of the font resource.
-     * @throws java.io.IOException if something went wrong.
+     * @throws IOException if something went wrong.
      */
     public PDFont getFont(COSName name) throws IOException
     {
@@ -115,6 +123,18 @@ public final class PDResources implements COSObjectable
                 return cached;
             }
         }
+        else if (indirect == null)
+        {
+            SoftReference<PDFont> ref = directFontCache.get(name);
+            if (ref != null)
+            {
+                PDFont cached = ref.get();
+                if (cached != null)
+                {
+                    return cached;
+                }
+            }
+        }
 
         PDFont font = null;
         COSDictionary dict = (COSDictionary)get(COSName.FONT, name);
@@ -123,9 +143,13 @@ public final class PDResources implements COSObjectable
             font = PDFontFactory.createFont(dict);
         }
         
-        if (cache != null)
+        if (cache != null && indirect != null)
         {
             cache.put(indirect, font);
+        }
+        else if (indirect == null)
+        {
+            directFontCache.put(name, new SoftReference<PDFont>(font));
         }
         return font;
     }
@@ -231,7 +255,7 @@ public final class PDResources implements COSObjectable
      * Returns the shading resource with the given name, or null if none exists.
      *
      * @param name Name of the shading resource.
-     * @throws java.io.IOException if something went wrong.
+     * @throws IOException if something went wrong.
      */
     public PDShading getShading(COSName name) throws IOException
     {
@@ -264,7 +288,7 @@ public final class PDResources implements COSObjectable
      * Returns the pattern resource with the given name, or null if none exists.
      * 
      * @param name Name of the pattern resource.
-     * @throws java.io.IOException if something went wrong.
+     * @throws IOException if something went wrong.
      */
     public PDAbstractPattern getPattern(COSName name) throws IOException
     {
@@ -355,7 +379,7 @@ public final class PDResources implements COSObjectable
      * Returns the XObject resource with the given name, or null if none exists.
      * 
      * @param name Name of the XObject resource.
-     * @throws java.io.IOException if something went wrong.
+     * @throws IOException if something went wrong.
      */
     public PDXObject getXObject(COSName name) throws IOException
     {
