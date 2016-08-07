@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.font.encoding;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -32,6 +34,8 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class DictionaryEncoding extends Encoding
 {
+    private static final Log LOG = LogFactory.getLog(DictionaryEncoding.class);
+    
     private final COSDictionary encoding;
     private final Encoding baseEncoding;
     private final Map<Integer, String> differences = new HashMap<Integer, String>();
@@ -91,10 +95,11 @@ public class DictionaryEncoding extends Encoding
         encoding = fontEncoding;
 
         Encoding base = null;
-        if (encoding.containsKey(COSName.BASE_ENCODING))
+        boolean hasBaseEncoding = encoding.containsKey(COSName.BASE_ENCODING);
+        if (hasBaseEncoding)
         {
             COSName name = encoding.getCOSName(COSName.BASE_ENCODING);
-            base = Encoding.getInstance(name); // may be null
+            base = Encoding.getInstance(name); // null when the name is invalid
         }
 
         if (base == null)
@@ -113,6 +118,8 @@ public class DictionaryEncoding extends Encoding
                 }
                 else
                 {
+                    // triggering this error indicates a bug in PDFBox. Every font should always have
+                    // a built-in encoding, if not, we parsed it incorrectly.
                     throw new IllegalArgumentException("Symbolic fonts must have a built-in " + 
                                                        "encoding");
                 }
