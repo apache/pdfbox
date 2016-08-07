@@ -40,8 +40,11 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     private int unitsPerEm = -1;
     protected Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
     private final TTFDataStream data;
-    private Map<String, Integer> postScriptNames;
+    private volatile Map<String, Integer> postScriptNames;
     
+    private final Object lockReadtable = new Object();
+    private final Object lockPSNames = new Object();
+
     /**
      * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
      * 
@@ -110,18 +113,21 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      * @param table the table to read.
      * @throws IOException if there was an error accessing the table.
      */
-    public synchronized byte[] getTableBytes(TTFTable table) throws IOException
+    public byte[] getTableBytes(TTFTable table) throws IOException
     {
-        // save current position
-        long currentPosition = data.getCurrentPosition();
-        data.seek(table.getOffset());
+        synchronized (lockReadtable)
+        {
+            // save current position
+            long currentPosition = data.getCurrentPosition();
+            data.seek(table.getOffset());
 
-        // read all data
-        byte[] bytes = data.read((int)table.getLength());
+            // read all data
+            byte[] bytes = data.read((int) table.getLength());
 
-        // restore current position
-        data.seek(currentPosition);
-        return bytes;
+            // restore current position
+            data.seek(currentPosition);
+            return bytes;
+        }
     }
 
     /**
@@ -131,12 +137,23 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      * @return The table with the given tag.
      * @throws IOException if there was an error reading the table.
      */
-    protected synchronized TTFTable getTable(String tag) throws IOException
+    protected TTFTable getTable(String tag) throws IOException
     {
+        // after the initial parsing of the ttf there aren't any write operations
+        // to the HashMap anymore, so that we don't have to synchronize the read access
         TTFTable ttfTable = tables.get(tag);
-        if (ttfTable != null && !ttfTable.getInitialized())
+        if (ttfTable != null)
         {
-            readTable(ttfTable);
+            if (!ttfTable.initialized)
+            {
+                synchronized (lockReadtable)
+                {
+                    if (!ttfTable.initialized)
+                    {
+                        readTable(ttfTable);
+                    }
+                }
+            }
         }
         return ttfTable;
     }
@@ -429,23 +446,34 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         }
     }
 
-    private synchronized void readPostScriptNames() throws IOException
+    private void readPostScriptNames() throws IOException
     {
-        if (postScriptNames == null && getPostScript() != null)
+        Map<String, Integer> psnames = postScriptNames;
+        if (psnames == null)
         {
-            String[] names = getPostScript().getGlyphNames();
-            if (names != null)
+            // the getter is already synchronized
+            PostScriptTable post = getPostScript();
+            synchronized (lockPSNames)
             {
-                postScriptNames = new HashMap<String, Integer>(names.length);
-                for (int i = 0; i < names.length; i++)
+                psnames = postScriptNames;
+                if (psnames == null)
                 {
-                    postScriptNames.put(names[i], i);
+                    String[] names = post != null ? post.getGlyphNames() : null;
+                    if (names != null)
+                    {
+                        psnames = new HashMap<String, Integer>(names.length);
+                        for (int i = 0; i < names.length; i++)
+                        {
+                            psnames.put(names[i], i);
+                        }
+                    }
+                    else
+                    {
+                        psnames = new HashMap<String, Integer>();
+                    }
+                    postScriptNames = psnames;
                 }
             }
-            else
-            {
-                postScriptNames = new HashMap<String, Integer>();
-            }                    
         }
     }
 
