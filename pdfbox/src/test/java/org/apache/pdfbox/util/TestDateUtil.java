@@ -295,6 +295,8 @@ public class TestDateUtil extends TestCase
             // ambiguous big-endian date
             checkParse(2073,12,25, 0, 8, 0, 0, 0, "2073 12 25:08"); 
             
+            // PDFBOX-3315 GMT+12
+            checkParse(2016, 4,11,16,01,15, 12, 0, "D:20160411160115+12'00'");   
     }
 
     private static void checkToString(int yr, int mon, int day, 
@@ -370,6 +372,7 @@ public class TestDateUtil extends TestCase
      */
     public void testParseTZ() 
     {
+        // 1st parameter is what to expect
         checkParseTZ(0*HRS+0*MINS, "+00:00");
         checkParseTZ(0*HRS+0*MINS, "-0000");
         checkParseTZ(1*HRS+0*MINS, "+1:00");
@@ -391,6 +394,9 @@ public class TestDateUtil extends TestCase
         checkParseTZ((5*HRS+0*MINS), "+0500");
         checkParseTZ((11*HRS+0*MINS), "+11'00'");
         checkParseTZ(0, "Z");
+        // PDFBOX-3315
+        checkParseTZ(12*HRS+0*MINS, "+12:00");
+        checkParseTZ(12*HRS+0*MINS, "-12:00");
     }
     
     private static void checkFormatOffset(double off, String expect) 
@@ -405,6 +411,7 @@ public class TestDateUtil extends TestCase
      */
     public void testFormatTZoffset()
     {
+        // 2nd parameter is what to expect
         checkFormatOffset(-12.1, "+11:54");
         checkFormatOffset(12.1, "-11:54");
         checkFormatOffset(0, "+00:00");
@@ -413,8 +420,8 @@ public class TestDateUtil extends TestCase
         checkFormatOffset(-0.5, "-00:30");
         checkFormatOffset(.1, "+00:06");
         checkFormatOffset(-0.1, "-00:06");
-        checkFormatOffset(-12, "+00:00");
-        checkFormatOffset(12, "+00:00");
+        checkFormatOffset(-12, "+12:00");
+        checkFormatOffset(12, "+12:00");
         checkFormatOffset(-11.5, "-11:30");
         checkFormatOffset(11.5, "+11:30");
         checkFormatOffset(11.9, "+11:54");
