@@ -34,8 +34,6 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class DictionaryEncoding extends Encoding
 {
-    private static final Log LOG = LogFactory.getLog(DictionaryEncoding.class);
-    
     private final COSDictionary encoding;
     private final Encoding baseEncoding;
     private final Map<Integer, String> differences = new HashMap<Integer, String>();
