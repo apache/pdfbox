@@ -227,7 +227,7 @@ public class DateConverter
     }
     
     /**
-     * Constrain a timezone offset to the range  [-11:59 thru +11:59].
+     * Constrain a timezone offset to the range  [-11:59 thru +12:00].
      * @param proposedOffset A value intended to be a timezone offset.
      * @return The corresponding value reduced to the above noted range 
      * by adding or subtracting multiples of a full day.
@@ -235,6 +235,10 @@ public class DateConverter
     public static int restrainTZoffset(long proposedOffset) 
     {
         proposedOffset = ((proposedOffset+HALF_DAY)%DAY+DAY)%DAY; 
+        if (proposedOffset == 0)
+        {
+            return HALF_DAY;
+        }
         // 0 <= proposedOffset < DAY
         proposedOffset = (proposedOffset-HALF_DAY)%HALF_DAY;   
         // -HALF_DAY < proposedOffset < HALF_DAY
