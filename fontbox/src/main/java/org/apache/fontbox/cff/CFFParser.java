@@ -210,7 +210,7 @@ public class CFFParser
             }
             else
             {
-                throw new IllegalArgumentException();
+                throw new IOException("invalid DICT data b0 byte: " + b0);
             }
         }
         return entry;
