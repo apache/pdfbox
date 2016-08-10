@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
@@ -444,6 +445,36 @@ public class PDCIDFontType2 extends PDCIDFont
                 return glyph.getPath();
             }
             return new GeneralPath();
+        }
+    }
+
+    @Override
+    public GeneralPath getNormalizedPath(int code) throws IOException
+    {
+        boolean hasScaling = ttf.getUnitsPerEm() != 1000;
+        float scale = 1000f / ttf.getUnitsPerEm();
+        int gid = codeToGID(code);
+
+        GeneralPath path = getPath(code);
+
+        // Acrobat only draws GID 0 for embedded CIDFonts, see PDFBOX-2372
+        if (gid == 0 && !isEmbedded())
+        {
+            path = null;
+        }
+
+        if (path == null)
+        {
+            // empty glyph (e.g. space, newline)
+            return new GeneralPath();
+        }
+        else
+        {
+            if (hasScaling)
+            {
+                path.transform(AffineTransform.getScaleInstance(scale, scale));
+            }
+            return path;
         }
     }
 

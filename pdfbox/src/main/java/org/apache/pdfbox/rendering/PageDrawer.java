@@ -47,13 +47,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType1CFont;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.blend.SoftMaskPaint;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -92,26 +87,21 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     // parent document renderer - note: this is needed for not-yet-implemented resource caching
     private final PDFRenderer renderer;
-    
+    // glyph caches
+    private final Map<PDFont, GlyphCache> glyphCaches = new HashMap<PDFont, GlyphCache>();
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
     private AffineTransform xform;
-
     // the page box to draw (usually the crop box but may be another)
     private PDRectangle pageSize;
-    
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
-
     // last clipping path
     private Area lastClip;
-
     // buffered clipping area for text being drawn
     private Area textClippingArea;
-
-    // glyph cache
-    private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
+    
     
     /**
      * Constructor.
@@ -330,27 +320,41 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         AffineTransform at = textRenderingMatrix.createAffineTransform();
         at.concatenate(font.getFontMatrix().createAffineTransform());
 
-        Glyph2D glyph2D = createGlyph2D(font);
-        drawGlyph2D(glyph2D, font, code, displacement, at);
+        // create cache if it does not exist
+        PDVectorFont vectorFont = ((PDVectorFont)font);
+        GlyphCache cache = glyphCaches.get(font);
+        if (cache == null)
+        {
+            cache = new GlyphCache(vectorFont);
+            glyphCaches.put(font, cache);
+        }
+        
+        // cache glyph path if is not already cache
+        GeneralPath path = cache.getPathForCharacterCode(code);
+        if (path == null)
+        {
+            path = vectorFont.getNormalizedPath(code);
+            cache.put(code, path);
+        }
+        
+        drawGlyph(path, font, code, displacement, at);
     }
 
     /**
      * Render the font using the Glyph2D interface.
      * 
-     * @param glyph2D the Glyph2D implementation provided a GeneralPath for each glyph
+     * @param path the Glyph2D implementation provided a GeneralPath for each glyph
      * @param font the font
      * @param code character code
      * @param displacement the glyph's displacement (advance)
      * @param at the transformation
      * @throws IOException if something went wrong
      */
-    private void drawGlyph2D(Glyph2D glyph2D, PDFont font, int code, Vector displacement,
-                             AffineTransform at) throws IOException
+    private void drawGlyph(GeneralPath path, PDFont font, int code, Vector displacement, AffineTransform at) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
-
-        GeneralPath path = glyph2D.getPathForCharacterCode(code);
+        
         if (path != null)
         {
             // stretch non-embedded glyph if it does not match the width contained in the PDF
@@ -391,72 +395,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
     }
-
-    /**
-     * Provide a Glyph2D for the given font.
-     * 
-     * @param font the font
-     * @return the implementation of the Glyph2D interface for the given font
-     * @throws IOException if something went wrong
-     */
-    private Glyph2D createGlyph2D(PDFont font) throws IOException
-    {
-        Glyph2D glyph2D = fontGlyph2D.get(font);
-        // Is there already a Glyph2D for the given font?
-        if (glyph2D != null)
-        {
-            return glyph2D;
-        }
-
-        if (font instanceof PDTrueTypeFont)
-        {
-            PDTrueTypeFont ttfFont = (PDTrueTypeFont)font;
-            glyph2D = new TTFGlyph2D(ttfFont);  // TTF is never null
-        }
-        else if (font instanceof PDType1Font)
-        {
-            PDType1Font pdType1Font = (PDType1Font)font;
-            glyph2D = new Type1Glyph2D(pdType1Font); // T1 is never null
-        }
-        else if (font instanceof PDType1CFont)
-        {
-            PDType1CFont type1CFont = (PDType1CFont)font;
-            glyph2D = new Type1Glyph2D(type1CFont);
-        }
-        else if (font instanceof PDType0Font)
-        {
-            PDType0Font type0Font = (PDType0Font) font;
-            if (type0Font.getDescendantFont() instanceof PDCIDFontType2)
-            {
-                glyph2D = new TTFGlyph2D(type0Font); // TTF is never null
-            }
-            else if (type0Font.getDescendantFont() instanceof PDCIDFontType0)
-            {
-                // a Type0 CIDFont contains CFF font
-                PDCIDFontType0 cidType0Font = (PDCIDFontType0)type0Font.getDescendantFont();
-                glyph2D = new CIDType0Glyph2D(cidType0Font); // todo: could be null (need incorporate fallback)
-            }
-        }
-        else
-        {
-            throw new IllegalStateException("Bad font type: " + font.getClass().getSimpleName());
-        }
-
-        // cache the Glyph2D instance
-        if (glyph2D != null)
-        {
-            fontGlyph2D.put(font, glyph2D);
-        }
-
-        if (glyph2D == null)
-        {
-            // todo: make sure this never happens
-            throw new UnsupportedOperationException("No font for " + font.getName());
-        }
-
-        return glyph2D;
-    }
-
+    
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3)
     {
@@ -968,14 +907,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
     }
 
-    private static class AnnotationBorder
-    {
-        private float[] dashArray = null;
-        private boolean underline = false;
-        private float width = 0;
-        private PDColor color;
-    }
-    
     // return border info. BorderStyle must be provided as parameter because
     // method is not available in the base class
     private AnnotationBorder getAnnotationBorder(PDAnnotation annotation, 
@@ -1034,7 +965,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         return ab;
     }
-
+    
     private void drawAnnotationLinkBorder(PDAnnotationLink link) throws IOException
     {
         AnnotationBorder ab = getAnnotationBorder(link, link.getBorderStyle());
@@ -1155,6 +1086,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         graphics.setTransform(prev);
+    }
+
+    private static class AnnotationBorder
+    {
+        private float[] dashArray = null;
+        private boolean underline = false;
+        private float width = 0;
+        private PDColor color;
     }
 
     /**

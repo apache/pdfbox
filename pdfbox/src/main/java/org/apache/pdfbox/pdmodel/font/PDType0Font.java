@@ -46,12 +46,46 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private static final Log LOG = LogFactory.getLog(PDType0Font.class);
 
     private final PDCIDFont descendantFont;
+    private final Set<Integer> noUnicode = new HashSet<Integer>(); 
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
     private boolean isDescendantCJK;
     private PDCIDFontType2Embedder embedder;
-    private final Set<Integer> noUnicode = new HashSet<Integer>(); 
     
+    /**
+     * Constructor for reading a Type0 font from a PDF file.
+     * 
+     * @param fontDictionary The font dictionary according to the PDF specification.
+     * @throws IOException if the descendant font is missing.
+     */
+    public PDType0Font(COSDictionary fontDictionary) throws IOException
+    {
+        super(fontDictionary);
+        COSArray descendantFonts = (COSArray)dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
+        COSDictionary descendantFontDictionary = (COSDictionary) descendantFonts.getObject(0);
+
+        if (descendantFontDictionary == null)
+        {
+            throw new IOException("Missing descendant font dictionary");
+        }
+
+        descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
+        readEncoding();
+        fetchCMapUCS2();
+    }
+
+    /**
+    * Private. Creates a new TrueType font for embedding.
+    */
+    private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset)
+            throws IOException
+    {
+        embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this);
+        descendantFont = embedder.getCIDFont();
+        readEncoding();
+        fetchCMapUCS2();
+    }
+
     /**
     * Loads a TTF to be embedded into a document as a Type 0 font.
     *
@@ -106,40 +140,6 @@ public class PDType0Font extends PDFont implements PDVectorFont
             throws IOException
     {
         return new PDType0Font(doc, ttf, embedSubset);
-    }
-
-    /**
-     * Constructor for reading a Type0 font from a PDF file.
-     * 
-     * @param fontDictionary The font dictionary according to the PDF specification.
-     * @throws IOException if the descendant font is missing.
-     */
-    public PDType0Font(COSDictionary fontDictionary) throws IOException
-    {
-        super(fontDictionary);
-        COSArray descendantFonts = (COSArray)dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
-        COSDictionary descendantFontDictionary = (COSDictionary) descendantFonts.getObject(0);
-
-        if (descendantFontDictionary == null)
-        {
-            throw new IOException("Missing descendant font dictionary");
-        }
-
-        descendantFont = PDFontFactory.createDescendantFont(descendantFontDictionary, this);
-        readEncoding();
-        fetchCMapUCS2();
-    }
-
-    /**
-    * Private. Creates a new TrueType font for embedding.
-    */
-    private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset)
-            throws IOException
-    {
-        embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this);
-        descendantFont = embedder.getCIDFont();
-        readEncoding();
-        fetchCMapUCS2();
     }
 
     @Override
@@ -506,6 +506,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
         return descendantFont.getPath(code);
     }
 
+    
+    @Override
+    public GeneralPath getNormalizedPath(int code) throws IOException
+    {
+        return descendantFont.getNormalizedPath(code);
+    }
+    
     @Override
     public boolean hasGlyph(int code) throws IOException
     {

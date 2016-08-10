@@ -51,19 +51,18 @@ import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
  * @author Villu Ruusmann
  * @author John Hewson
  */
-public class PDType1CFont extends PDSimpleFont
+public class PDType1CFont extends PDSimpleFont implements PDVectorFont
 {
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
 
     private final Map<String, Float> glyphHeights = new HashMap<String, Float>();
-    private Float avgWidth = null;
-    private Matrix fontMatrix;
     private final AffineTransform fontMatrixTransform;
-
     private final CFFType1Font cffFont; // embedded font
     private final FontBoxFont genericFont; // embedded or system font for rendering
     private final boolean isEmbedded;
     private final boolean isDamaged;
+    private Float avgWidth = null;
+    private Matrix fontMatrix;
     private BoundingBox fontBBox;
 
     /**
@@ -133,16 +132,6 @@ public class PDType1CFont extends PDSimpleFont
         fontMatrixTransform.scale(1000, 1000);
     }
     
-    private class ByteSource implements CFFParser.ByteSource
-    {
-        @Override
-        public byte[] getBytes() throws IOException
-        {
-            PDStream ff3Stream = getFontDescriptor().getFontFile3();
-            return IOUtils.toByteArray(ff3Stream.createInputStream());
-        }
-    }
-
     @Override
     public FontBoxFont getFontBoxFont()
     {
@@ -171,6 +160,32 @@ public class PDType1CFont extends PDSimpleFont
         }
     }
 
+    @Override
+    public boolean hasGlyph(int code) throws IOException
+    {
+        String name = getEncoding().getName(code);
+        return hasGlyph(name);
+    }
+
+    @Override
+    public GeneralPath getPath(int code) throws IOException
+    {
+        String name = getEncoding().getName(code);
+        return getPath(name);
+    }
+
+    @Override
+    public GeneralPath getNormalizedPath(int code) throws IOException
+    {
+        String name = getEncoding().getName(code);
+        GeneralPath path = getPath(name);
+        if (path == null)
+        {
+            return getPath(".notdef");
+        }
+        return path;
+    }
+    
     @Override
     public boolean hasGlyph(String name) throws IOException
     {
@@ -211,7 +226,7 @@ public class PDType1CFont extends PDSimpleFont
     {
         return getEncoding().getName(code);
     }
-    
+
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
@@ -234,7 +249,7 @@ public class PDType1CFont extends PDSimpleFont
             }
         }
     }
-
+    
     @Override
     public int readCode(InputStream in) throws IOException
     {
@@ -331,7 +346,7 @@ public class PDType1CFont extends PDSimpleFont
         int code = inverted.get(name);
         return new byte[] { (byte)code };
     }
-    
+
     @Override
     public float getStringWidth(String string) throws IOException
     {
@@ -344,7 +359,7 @@ public class PDType1CFont extends PDSimpleFont
         }
         return width;
     }
-
+    
     @Override
     public float getAverageFontWidth()
     {
@@ -371,7 +386,7 @@ public class PDType1CFont extends PDSimpleFont
         // todo: not implemented, highly suspect
         return 500;
     }
-    
+
     /**
      * Maps a PostScript glyph name to the name in the underlying font, for example when
      * using a TTF font we might map "W" to "uni0057".
@@ -396,5 +411,15 @@ public class PDType1CFont extends PDSimpleFont
             }
         }
         return ".notdef";
+    }
+    
+    private class ByteSource implements CFFParser.ByteSource
+    {
+        @Override
+        public byte[] getBytes() throws IOException
+        {
+            PDStream ff3Stream = getFontDescriptor().getFontFile3();
+            return IOUtils.toByteArray(ff3Stream.createInputStream());
+        }
     }
 }
