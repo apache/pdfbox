@@ -87,22 +87,27 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     // parent document renderer - note: this is needed for not-yet-implemented resource caching
     private final PDFRenderer renderer;
-    // glyph caches
-    private final Map<PDFont, GlyphCache> glyphCaches = new HashMap<PDFont, GlyphCache>();
+    
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
     private AffineTransform xform;
+    
     // the page box to draw (usually the crop box but may be another)
     private PDRectangle pageSize;
+    
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
+    
     // last clipping path
     private Area lastClip;
+    
     // buffered clipping area for text being drawn
     private Area textClippingArea;
-    
-    
+
+    // glyph caches
+    private final Map<PDFont, GlyphCache> glyphCaches = new HashMap<PDFont, GlyphCache>();
+
     /**
      * Constructor.
      *
@@ -329,7 +334,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             glyphCaches.put(font, cache);
         }
         
-        // cache glyph path if is not already cached
+        // cache glyph path if is not already cache
         GeneralPath path = cache.getPathForCharacterCode(code);
         if (path == null)
         {
