@@ -334,14 +334,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             glyphCaches.put(font, cache);
         }
         
-        // cache glyph path if is not already cache
         GeneralPath path = cache.getPathForCharacterCode(code);
-        if (path == null)
-        {
-            path = vectorFont.getNormalizedPath(code);
-            cache.put(code, path);
-        }
-        
         drawGlyph(path, font, code, displacement, at);
     }
 

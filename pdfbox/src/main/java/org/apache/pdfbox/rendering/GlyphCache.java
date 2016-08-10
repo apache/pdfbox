@@ -42,11 +42,6 @@ final class GlyphCache
     {
         this.font = font;
     }
-
-    public void put(int code, GeneralPath path)
-    {
-        cache.put(code, path);
-    }
     
     public GeneralPath getPathForCharacterCode(int code)
     {
