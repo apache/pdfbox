@@ -341,9 +341,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * Render the font using the Glyph2D interface.
+     * Renders a glyph.
      * 
-     * @param path the Glyph2D implementation provided a GeneralPath for each glyph
+     * @param path the GeneralPath for the glyph
      * @param font the font
      * @param code character code
      * @param displacement the glyph's displacement (advance)
