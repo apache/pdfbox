@@ -37,7 +37,7 @@ import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSe
  *
  * @author Johannes Koch
  */
-public class PDFMarkedContentExtractor extends PDFTextStreamEngine
+public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
 {
     private final boolean suppressDuplicateOverlappingText = true;
     private final List<PDMarkedContent> markedContents = new ArrayList<PDMarkedContent>();

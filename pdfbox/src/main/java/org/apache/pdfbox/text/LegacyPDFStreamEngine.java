@@ -63,15 +63,18 @@ import org.apache.pdfbox.contentstream.operator.text.ShowText;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 
 /**
- * PDFStreamEngine subclass for advanced processing of text via TextPosition.
+ * LEGACY text calculations which are known to be incorrect but are depended on by PDFTextStripper.
  *
- * @see org.apache.pdfbox.text.TextPosition
- * @author Ben Litchfield
- * @author John Hewson
+ * This class exists only so that we don't break the code of users who have their own subclasses
+ * of PDFTextStripper. It replaces the good implementation of showGlyph in PDFStreamEngine, with
+ * a bad implementation which is backwards compatible.
+ *
+ * DO NOT USE THIS CODE UNLESS YOU ARE WORKING WITH PDFTextStripper.
+ * THIS CODE IS DELIBERATELY INCORRECT, USE PDFStreamEngine INSTEAD.
  */
-class PDFTextStreamEngine extends PDFStreamEngine
+class LegacyPDFStreamEngine extends PDFStreamEngine
 {
-    private static final Log LOG = LogFactory.getLog(PDFTextStreamEngine.class);
+    private static final Log LOG = LogFactory.getLog(LegacyPDFStreamEngine.class);
 
     private int pageRotation;
     private PDRectangle pageSize;
@@ -81,7 +84,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
     /**
      * Constructor.
      */
-    PDFTextStreamEngine() throws IOException
+    LegacyPDFStreamEngine() throws IOException
     {
         addOperator(new BeginText());
         addOperator(new Concatenate());
@@ -123,7 +126,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
     {
         this.pageRotation = page.getRotation();
         this.pageSize = page.getCropBox();
-        
+
         if (pageSize.getLowerLeftX() == 0 && pageSize.getLowerLeftY() == 0)
         {
             translateMatrix = null;
@@ -132,7 +135,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         {
             // translation matrix for cropbox
             translateMatrix = Matrix.getTranslateInstance(-pageSize.getLowerLeftX(), -pageSize.getLowerLeftY());
-        }            
+        }
         super.processPage(page);
     }
 
@@ -145,6 +148,9 @@ class PDFTextStreamEngine extends PDFStreamEngine
     {
         //
         // legacy calculations which were previously in PDFStreamEngine
+        //
+        //  DO NOT USE THIS CODE UNLESS YOU ARE WORKING WITH PDFTextStripper.
+        //  THIS CODE IS DELIBERATELY INCORRECT
         //
 
         PDGraphicsState state = getGraphicsState();
@@ -162,7 +168,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
         }
         // 1/2 the bbox is used as the height todo: why?
         float glyphHeight = bbox.getHeight() / 2;
-        
+
         // sometimes the bbox has very high values, but CapHeight is OK
         PDFontDescriptor fontDescriptor = font.getFontDescriptor();
         if (fontDescriptor != null)
@@ -196,7 +202,7 @@ class PDFTextStreamEngine extends PDFStreamEngine
             TrueTypeFont ttf = null;
             if (font instanceof PDTrueTypeFont)
             {
-                 ttf = ((PDTrueTypeFont)font).getTrueTypeFont();
+                ttf = ((PDTrueTypeFont)font).getTrueTypeFont();
             }
             else if (font instanceof PDType0Font)
             {
@@ -211,6 +217,14 @@ class PDFTextStreamEngine extends PDFStreamEngine
                 displacementX *= 1000f / ttf.getUnitsPerEm();
             }
         }
+
+        //
+        // legacy calculations which were previously in PDFStreamEngine
+        //
+        //  DO NOT USE THIS CODE UNLESS YOU ARE WORKING WITH PDFTextStripper.
+        //  THIS CODE IS DELIBERATELY INCORRECT
+        //
+
         // (modified) combined displacement, this is calculated *without* taking the character
         // spacing and word spacing into account, due to legacy code in TextStripper
         float tx = displacementX * fontSize * horizontalScaling;
