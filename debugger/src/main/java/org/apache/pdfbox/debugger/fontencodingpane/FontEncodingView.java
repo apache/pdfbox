@@ -38,6 +38,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.Map;
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * @author Khyrul Bashar
@@ -107,9 +108,11 @@ class FontEncodingView
             int row = 0;
             while (keys.hasNext())
             {
+                int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                                    "headerFontSize", "" + headerPanel.getFont().getSize()));
                 String key = keys.next();
                 JLabel encodingNameLabel = new JLabel(key + ": " + attributes.get(key));
-                encodingNameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+                encodingNameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                 encodingNameLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 
                 GridBagConstraints gbc = new GridBagConstraints();
@@ -148,7 +151,9 @@ class FontEncodingView
                 if (bounds2D.isEmpty())
                 {
                     JLabel label = new JLabel(SimpleFont.NO_GLYPH, SwingConstants.CENTER);
-                    label.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+                    int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                                        "encodingFontSize", "" + label.getFont().getSize()));
+                    label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                     label.setForeground(Color.GRAY);
                     return label;
                 }
@@ -159,7 +164,9 @@ class FontEncodingView
             if (o != null)
             {
                 JLabel label = new JLabel(o.toString(), SwingConstants.CENTER);
-                label.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+                int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
+                        "encodingFontSize", "" + label.getFont().getSize()));
+                label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                 if (SimpleFont.NO_GLYPH.equals(o) || ".notdef".equals(o))
                 {
                     label.setText(o.toString());
