@@ -64,6 +64,7 @@ public class FileOpenSaveDialog
     public FileOpenSaveDialog(Component parentUI, FileFilter fileFilter)
     {
         mainUI = parentUI;
+        fileChooser.resetChoosableFileFilters();
         fileChooser.setFileFilter(fileFilter);
     }
 
@@ -74,16 +75,21 @@ public class FileOpenSaveDialog
      * @return true if the file is saved successfully or false if failed.
      * @throws IOException if there is an error in creation of the file.
      */
-    public boolean saveFile(byte[] bytes) throws IOException
+    public boolean saveFile(byte[] bytes, String extension) throws IOException
     {
         int result = fileChooser.showSaveDialog(mainUI);
         if (result == JFileChooser.APPROVE_OPTION)
         {
-            File selectedFile = fileChooser.getSelectedFile();
+            String filename = fileChooser.getSelectedFile().getAbsolutePath();
+            if (extension != null && !filename.endsWith(extension))
+            {
+                filename += "." + extension;
+            }
+            
             FileOutputStream outputStream = null;
             try
             {
-                outputStream = new FileOutputStream(selectedFile);
+                outputStream = new FileOutputStream(filename);
                 outputStream.write(bytes);
             }
             finally
