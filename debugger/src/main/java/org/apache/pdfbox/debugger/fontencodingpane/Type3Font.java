@@ -16,14 +16,13 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
+
+import javax.swing.JPanel;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.swing.JPanel;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
-import org.apache.pdfbox.pdmodel.font.PDType3Font;
 
 /**
  * @author Khyrul Bashar
@@ -32,8 +31,8 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
 class Type3Font extends FontPane
 {
     public static final String NO_GLYPH = "No glyph";
-    private int totalAvailableGlyph = 0;
     private final FontEncodingView view;
+    private int totalAvailableGlyph = 0;
 
     /**
      * Constructor.
@@ -45,9 +44,9 @@ class Type3Font extends FontPane
         Object[][] tableData = getGlyphs(font);
 
         Map<String, String> attributes = new LinkedHashMap<String, String>();
-        attributes.put("Encoding", getEncodingName(font));
         attributes.put("Font", font.getName());
-        attributes.put("Glyph count", Integer.toString(totalAvailableGlyph));
+        attributes.put("Encoding", getEncodingName(font));
+        attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
 
         view = new FontEncodingView(tableData, attributes, new String[] {"Code", "Glyph Name", "Unicode Character"}, null);
     }

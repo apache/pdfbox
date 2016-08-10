@@ -16,13 +16,6 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
-import java.awt.Dimension;
-import java.awt.geom.GeneralPath;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import javax.swing.JPanel;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -32,6 +25,14 @@ import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.geom.GeneralPath;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * @author Khyrul Bashar
  * A class that shows the CIDToGID table along with unicode characters for Type0Fonts when descendent
@@ -39,8 +40,8 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  */
 class Type0Font extends FontPane
 {
-    private final FontEncodingView view;
     public static final String NO_GLYPH = "No glyph";
+    private final FontEncodingView view;
     private int totalAvailableGlyph = 0;
     
     /**
@@ -56,7 +57,7 @@ class Type0Font extends FontPane
         {
             Map<String, String> attributes = new LinkedHashMap<String, String>();
             attributes.put("Font", descendantFont.getName());
-            attributes.put("CID count", Integer.toString(cidtogid.length));
+            attributes.put("CIDs", Integer.toString(cidtogid.length));
 
             view = new FontEncodingView(cidtogid, attributes, 
                     new String[]{"CID", "GID", "Unicode Character", "Glyph"}, getYBounds(cidtogid, 3));
@@ -66,8 +67,8 @@ class Type0Font extends FontPane
             Object[][] tab = readMap(descendantFont, parentFont);
             Map<String, String> attributes = new LinkedHashMap<String, String>();
             attributes.put("Font", descendantFont.getName());
-            attributes.put("CID count", Integer.toString(tab.length));
-            attributes.put("Glyph count", Integer.toString(totalAvailableGlyph));
+            attributes.put("CIDs", Integer.toString(tab.length));
+            attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
             
             view = new FontEncodingView(tab, attributes, 
                     new String[]{"Code", "CID", "GID", "Unicode Character", "Glyph"}, getYBounds(tab, 4));

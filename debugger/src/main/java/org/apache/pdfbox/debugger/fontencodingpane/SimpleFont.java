@@ -16,12 +16,13 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
+
+import javax.swing.JPanel;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import javax.swing.JPanel;
-import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 
 /**
  * @author Khyrul Bashar
@@ -29,9 +30,9 @@ import org.apache.pdfbox.pdmodel.font.PDVectorFont;
  */
 class SimpleFont extends FontPane
 {
-    public static final String NO_GLYPH = "No glyph";
-    private int totalAvailableGlyph = 0;
+    public static final String NO_GLYPH = "None";
     private final FontEncodingView view;
+    private int totalAvailableGlyph = 0;
 
     /**
      * Constructor.
@@ -45,9 +46,9 @@ class SimpleFont extends FontPane
         double[] yBounds = getYBounds(tableData, 3);
 
         Map<String, String> attributes = new LinkedHashMap<String, String>();
-        attributes.put("Encoding", getEncodingName(font));
         attributes.put("Font", font.getName());
-        attributes.put("Glyph count", Integer.toString(totalAvailableGlyph));
+        attributes.put("Encoding", getEncodingName(font));
+        attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
 
         view = new FontEncodingView(tableData, attributes, 
                 new String[] {"Code", "Glyph Name", "Unicode Character", "Glyph"}, yBounds);
