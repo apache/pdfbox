@@ -57,10 +57,9 @@ public class PDCIDFontType0 extends PDCIDFont
     private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
     private final boolean isEmbedded;
     private final boolean isDamaged;
-
+    private final AffineTransform fontMatrixTransform;
     private Float avgWidth = null;
     private Matrix fontMatrix;
-    private final AffineTransform fontMatrixTransform;
     private BoundingBox fontBBox;
 
     /**
@@ -190,16 +189,6 @@ public class PDCIDFontType0 extends PDCIDFont
         return fontMatrix;
     }
     
-    private class ByteSource implements CFFParser.ByteSource
-    {
-        @Override
-        public byte[] getBytes() throws IOException
-        {
-            PDStream ff3Stream = getFontDescriptor().getFontFile3();
-            return IOUtils.toByteArray(ff3Stream.createInputStream());
-        }
-    }
-
     @Override
     public BoundingBox getBoundingBox()
     {
@@ -328,6 +317,12 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
+    public GeneralPath getNormalizedPath(int code) throws IOException
+    {
+        return getPath(code);
+    }
+
+    @Override
     public boolean hasGlyph(int code) throws IOException
     {
         int cid = codeToCID(code);
@@ -447,5 +442,15 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         // todo: not implemented, highly suspect
         return 500;
+    }
+
+    private class ByteSource implements CFFParser.ByteSource
+    {
+        @Override
+        public byte[] getBytes() throws IOException
+        {
+            PDStream ff3Stream = getFontDescriptor().getFontFile3();
+            return IOUtils.toByteArray(ff3Stream.createInputStream());
+        }
     }
 }

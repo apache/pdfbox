@@ -42,38 +42,20 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.pdmodel.font.encoding.ZapfDingbatsEncoding;
 import org.apache.pdfbox.util.Matrix;
 
 
 import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
-import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
-import org.apache.pdfbox.pdmodel.font.encoding.ZapfDingbatsEncoding;
 
 /**
  * A PostScript Type 1 Font.
  *
  * @author Ben Litchfield
  */
-public class PDType1Font extends PDSimpleFont
+public class PDType1Font extends PDSimpleFont implements PDVectorFont
 {
-    private static final Log LOG = LogFactory.getLog(PDType1Font.class);
-
-    // alternative names for glyphs which are commonly encountered
-    private static final Map<String, String> ALT_NAMES = new HashMap<String, String>();
-    static
-    {
-        ALT_NAMES.put("ff", "f_f");
-        ALT_NAMES.put("ffi", "f_f_i");
-        ALT_NAMES.put("ffl", "f_f_l");
-        ALT_NAMES.put("fi", "f_i");
-        ALT_NAMES.put("fl", "f_l");
-        ALT_NAMES.put("st", "s_t");
-        ALT_NAMES.put("IJ", "I_J");
-        ALT_NAMES.put("ij", "i_j");
-        ALT_NAMES.put("ellipsis", "elipsis"); // misspelled in ArialMT
-    }
-    private static final int PFB_START_MARKER = 0x80;
-
     // todo: replace with enum? or getters?
     public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
     public static final PDType1Font TIMES_BOLD = new PDType1Font("Times-Bold");
@@ -89,6 +71,23 @@ public class PDType1Font extends PDSimpleFont
     public static final PDType1Font COURIER_BOLD_OBLIQUE = new PDType1Font("Courier-BoldOblique");
     public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
+    private static final Log LOG = LogFactory.getLog(PDType1Font.class);
+    // alternative names for glyphs which are commonly encountered
+    private static final Map<String, String> ALT_NAMES = new HashMap<String, String>();
+    private static final int PFB_START_MARKER = 0x80;
+
+    static
+    {
+        ALT_NAMES.put("ff", "f_f");
+        ALT_NAMES.put("ffi", "f_f_i");
+        ALT_NAMES.put("ffl", "f_f_l");
+        ALT_NAMES.put("fi", "f_i");
+        ALT_NAMES.put("fl", "f_l");
+        ALT_NAMES.put("st", "s_t");
+        ALT_NAMES.put("IJ", "I_J");
+        ALT_NAMES.put("ij", "i_j");
+        ALT_NAMES.put("ellipsis", "elipsis"); // misspelled in ArialMT
+    }
 
     /**
      * embedded font.
@@ -102,14 +101,13 @@ public class PDType1Font extends PDSimpleFont
     
     private final boolean isEmbedded;
     private final boolean isDamaged;
-    private Matrix fontMatrix;
     private final AffineTransform fontMatrixTransform;
-    private BoundingBox fontBBox;
-
     /**
      * to improve encoding speed.
      */
     private final Map <Integer,byte[]> codeToBytesMap;
+    private Matrix fontMatrix;
+    private BoundingBox fontBBox;
 
     /**
      * Creates a Type 1 standard 14 font for embedding.
@@ -562,9 +560,34 @@ public class PDType1Font extends PDSimpleFont
     }
 
     @Override
+    public GeneralPath getPath(int code) throws IOException
+    {
+        String name = getEncoding().getName(code);
+        return getPath(name);
+    }
+
+    @Override
+    public GeneralPath getNormalizedPath(int code) throws IOException
+    {
+        String name = getEncoding().getName(code);
+        GeneralPath path = getPath(name);
+        if (path == null)
+        {
+            return getPath(".notdef");
+        }
+        return path;
+    }
+    
+    @Override
     public boolean hasGlyph(String name) throws IOException
     {
         return genericFont.hasGlyph(getNameInFont(name));
+    }
+
+    @Override
+    public boolean hasGlyph(int code) throws IOException
+    {
+        return !getEncoding().getName(code).equals(".notdef");
     }
 
     @Override

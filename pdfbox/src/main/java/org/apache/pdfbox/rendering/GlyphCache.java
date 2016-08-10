@@ -22,64 +22,66 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 
 /**
- * GeneralPath conversion for CFF CIDFont.
+ * A simple glyph outline cache.
  *
  * @author John Hewson
  */
-final class CIDType0Glyph2D implements Glyph2D
+final class GlyphCache
 {
-    private static final Log LOG = LogFactory.getLog(CIDType0Glyph2D.class);
-
+    private static final Log LOG = LogFactory.getLog(GlyphCache.class);
+    
+    private final PDVectorFont font;
     private final Map<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
-    private final PDCIDFontType0 font;
-    private final String fontName;
 
-    /**
-     * Constructor.
-     *
-     * @param font Type 0 CIDFont
-     */
-    CIDType0Glyph2D(PDCIDFontType0 font) // todo: what about PDCIDFontType2?
+    public GlyphCache(PDVectorFont font)
     {
         this.font = font;
-        fontName = font.getBaseFont();
     }
 
-    @Override
+    public void put(int code, GeneralPath path)
+    {
+        cache.put(code, path);
+    }
+    
     public GeneralPath getPathForCharacterCode(int code)
     {
         GeneralPath path = cache.get(code);
-        if (path == null)
+        if (path != null)
         {
-            try
+            return path;
+        }
+
+        try
+        {
+            if (!font.hasGlyph(code))
             {
-                if (!font.hasGlyph(code))
+                String fontName = ((PDFont)font).getName();
+                if (font instanceof PDType0Font)
                 {
-                    int cid = font.getParent().codeToCID(code);
+                    int cid = ((PDType0Font) font).codeToCID(code);
                     String cidHex = String.format("%04x", cid);
                     LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " + fontName);
                 }
-    
-                path = font.getPath(code);
-                cache.put(code, path);
-                return path;
+                else
+                {
+                    LOG.warn("No glyph for " + code + " in font " + fontName);
+                }
             }
-            catch (IOException e)
-            {
-                // todo: escalate this error?
-                LOG.error("Glyph rendering failed", e);
-                path = new GeneralPath();
-            }
-        }
-        return path;
-    }
 
-    @Override
-    public void dispose()
-    {
-        cache.clear();
+            path = font.getNormalizedPath(code);
+            cache.put(code, path);
+            return path;
+        }
+        catch (IOException e)
+        {
+            // todo: escalate this error?
+            LOG.error("Glyph rendering failed", e);
+            return new GeneralPath();
+        }
     }
 }
