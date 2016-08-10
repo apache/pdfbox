@@ -17,22 +17,6 @@
 
 package org.apache.pdfbox.debugger.ui;
 
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -40,6 +24,28 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.debugger.treestatus.TreeStatus;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.tree.TreePath;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Khyrul Bashar
@@ -72,10 +78,7 @@ public class Tree extends JTree
             TreePath path = getClosestPathForLocation(event.getX(), event.getY());
             setSelectionPath(path);
             treePopupMenu.removeAll();
-            for (JMenuItem menuItem : getPopupMenuItems(path))
-            {
-                treePopupMenu.add(menuItem);
-            }
+            addPopupMenuItems(path);
             return event.getPoint();
         }
         return null;
@@ -84,14 +87,12 @@ public class Tree extends JTree
     /**
      * Produce the popup menu items depending on the node of a certain TreePath.
      * @param nodePath is instance of TreePath of the specified Node.
-     * @return the JMenuItem list for the node
      */
-    private List<JMenuItem> getPopupMenuItems(TreePath nodePath)
+    private void addPopupMenuItems(TreePath nodePath)
     {
         Object obj = nodePath.getLastPathComponent();
-        List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
 
-        menuItems.add(getTreePathMenuItem(nodePath));
+        treePopupMenu.add(getTreePathMenuItem(nodePath));
 
         if (obj instanceof MapEntry)
         {
@@ -104,22 +105,30 @@ public class Tree extends JTree
 
         if (obj instanceof COSStream)
         {
+            treePopupMenu.addSeparator();
+
             COSStream stream = (COSStream) obj;
-            menuItems.add(getUnFilteredStreamSaveMenu(stream));
+            treePopupMenu.add(getStreamSaveMenu(stream, nodePath));
+
             if (stream.getFilters() != null)
             {
                 if (stream.getFilters() instanceof COSArray && ((COSArray) stream.getFilters()).size() >= 2)
                 {
-                    for (JMenuItem menuItem : getPartiallyFilteredStreamSaveMenu(stream))
+                    for (JMenuItem menuItem : getPartiallyDecodedStreamSaveMenu(stream))
                     {
-                        menuItems.add(menuItem);
+                        treePopupMenu.add(menuItem);
                     }
                 }
-                menuItems.add(getFilteredStreamSaveMenu(stream));
+                treePopupMenu.add(getRawStreamSaveMenu(stream));
+            }
+
+            JMenuItem open = getFileOpenMenu(stream, nodePath);
+            if (open != null)
+            {
+                treePopupMenu.addSeparator();
+                treePopupMenu.add(open);
             }
         }
-        
-        return menuItems;
     }
 
     /**
@@ -143,13 +152,13 @@ public class Tree extends JTree
     }
 
     /**
-     * Produce JMenuItem that saves filtered stream
+     * Produce JMenuItem that saves the raw stream
      * @param cosStream stream to save
-     * @return JMenuItem for saving filtered stream
+     * @return JMenuItem for saving the raw stream
      */
-    private JMenuItem getFilteredStreamSaveMenu(final COSStream cosStream)
+    private JMenuItem getRawStreamSaveMenu(final COSStream cosStream)
     {
-        JMenuItem saveMenuItem = new JMenuItem("Save Filtered Stream (" + getFilters(cosStream) + ")...");
+        JMenuItem saveMenuItem = new JMenuItem("Save Raw Stream (" + getFilters(cosStream) + ") As...");
         saveMenuItem.addActionListener(new ActionListener()
         {
             @Override
@@ -158,7 +167,7 @@ public class Tree extends JTree
                 try
                 {
                     byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
-                    saveStream(bytes);
+                    saveStream(bytes, null, null);
                 }
                 catch (IOException e)
                 {
@@ -199,13 +208,55 @@ public class Tree extends JTree
     }
 
     /**
-     * Produce JMenuItem that saves unfiltered stream
+     * Produce JMenuItem that saves the stream
      * @param cosStream stream to save
-     * @return JMenuItem for saving unfiltered stream
+     * @return JMenuItem for saving stream
      */
-    private JMenuItem getUnFilteredStreamSaveMenu(final COSStream cosStream)
+    private JMenuItem getStreamSaveMenu(final COSStream cosStream, final TreePath nodePath)
     {
-        JMenuItem saveMenuItem = new JMenuItem("Save Unfiltered Stream...");
+        // set file extension based on stream type
+        final String extension = getFileExtensionForStream(cosStream, nodePath);
+        final FileFilter fileFilter;
+
+        if (extension != null)
+        {
+            if (extension.equals("pdb"))
+            {
+                fileFilter = new FileNameExtensionFilter("Type 1 Font (*.pfb)", "pfb");
+            }
+            else if (extension.equals("ttf"))
+            {
+                fileFilter = new FileNameExtensionFilter("TrueType Font (*.ttf)", "ttf");
+            }
+            else if (extension.equals("cff"))
+            {
+                fileFilter = new FileNameExtensionFilter("Compact Font Format (*.cff)", "cff");
+            }
+            else if (extension.equals("otf"))
+            {
+                fileFilter = new FileNameExtensionFilter("OpenType Font (*.otf)", "otf");
+            }
+            else
+            {
+                fileFilter = null;
+            }
+        }
+        else
+        {
+            fileFilter = null;
+        }
+
+        String format;
+        if (extension != null)
+        {
+            format = " " + extension.toUpperCase();
+        }
+        else
+        {
+            format = "";
+        }
+
+        JMenuItem saveMenuItem = new JMenuItem("Save Stream As" + format + "...");
         saveMenuItem.addActionListener(new ActionListener()
         {
             @Override
@@ -214,7 +265,7 @@ public class Tree extends JTree
                 try
                 {
                     byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
-                    saveStream(bytes);
+                    saveStream(bytes, fileFilter, extension);
                 }
                 catch (IOException e)
                 {
@@ -226,11 +277,88 @@ public class Tree extends JTree
     }
 
     /**
-     * produce possible partially filtered stream saving menu items
-     * @param cosStream stream to save
-     * @return JMenuItems for saving partially filtered streams
+     * Returns the recommended file extension for the given cos stream.
      */
-    private List<JMenuItem> getPartiallyFilteredStreamSaveMenu(final COSStream cosStream)
+    private String getFileExtensionForStream(final COSStream cosStream, final TreePath nodePath)
+    {
+        String name = nodePath.getLastPathComponent().toString();
+        if (name.equals("FontFile"))
+        {
+            return "pfb";
+        }
+        else if (name.equals("FontFile2"))
+        {
+            return "ttf";
+        }
+        else if (name.equals("FontFile3"))
+        {
+            if (cosStream.getCOSName(COSName.SUBTYPE) == COSName.OPEN_TYPE)
+            {
+                return "otf";
+            }
+            else
+            {
+                return "cff";
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Produce JMenuItem that opens the stream with the system's default app.
+     */
+    private JMenuItem getFileOpenMenu(final COSStream cosStream, final TreePath nodePath)
+    {
+        // if we know the file type, create a system open menu 
+        final String extension = getFileExtensionForStream(cosStream, nodePath);
+        if (extension == null)
+        {
+            return null;
+        }
+
+        JMenuItem openMenuItem = new JMenuItem("Open with Default Application");
+        openMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent)
+            {
+                try
+                {
+                    byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
+                    File temp = File.createTempFile("pdfbox", "." + extension);
+                    temp.deleteOnExit();
+
+                    FileOutputStream outputStream = null;
+                    try
+                    {
+                        outputStream = new FileOutputStream(temp);
+                        outputStream.write(bytes);
+
+                        Desktop.getDesktop().open(temp);
+                    }
+                    finally
+                    {
+                        if (outputStream != null)
+                        {
+                            outputStream.close();
+                        }
+                    }
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+        return openMenuItem;
+    }
+
+    /**
+     * produce possible partially decoded stream saving menu items
+     * @param cosStream stream to save
+     * @return JMenuItems for saving partially decoded streams
+     */
+    private List<JMenuItem> getPartiallyDecodedStreamSaveMenu(final COSStream cosStream)
     {
         List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
         PDStream stream = new PDStream(cosStream);
@@ -267,7 +395,7 @@ public class Tree extends JTree
                 try
                 {
                     InputStream data = stream.createInputStream(stopFilters);
-                    saveStream(IOUtils.toByteArray(data));
+                    saveStream(IOUtils.toByteArray(data), null, null);
                 }
                 catch (IOException e)
                 {
@@ -281,11 +409,12 @@ public class Tree extends JTree
     /**
      * Save the stream.
      * @param bytes byte array of the stream.
+     * @param filter an optional FileFilter
      * @throws IOException if there is an error in creation of the file.
      */
-    private void saveStream(byte[] bytes) throws IOException
+    private void saveStream(byte[] bytes, FileFilter filter, String extension) throws IOException
     {
-        FileOpenSaveDialog saveDialog = new FileOpenSaveDialog(parent, null);
-        saveDialog.saveFile(bytes);
+        FileOpenSaveDialog saveDialog = new FileOpenSaveDialog(parent, filter);
+        saveDialog.saveFile(bytes, extension);
     }
 }
