@@ -16,6 +16,14 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -30,13 +38,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.Map;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingConstants;
-import javax.swing.table.TableCellRenderer;
 
 /**
  * @author Khyrul Bashar
@@ -98,6 +99,7 @@ class FontEncodingView
     private JPanel getHeaderPanel(Map<String, String> attributes)
     {
         JPanel headerPanel = new JPanel(new GridBagLayout());
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 5, 0));
 
         if (attributes != null)
         {
@@ -107,7 +109,8 @@ class FontEncodingView
             {
                 String key = keys.next();
                 JLabel encodingNameLabel = new JLabel(key + ": " + attributes.get(key));
-                encodingNameLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 17));
+                encodingNameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+                encodingNameLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 0));
 
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
@@ -145,22 +148,22 @@ class FontEncodingView
                 if (bounds2D.isEmpty())
                 {
                     JLabel label = new JLabel(SimpleFont.NO_GLYPH, SwingConstants.CENTER);
-                    label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
-                    label.setForeground(Color.RED);
+                    label.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+                    label.setForeground(Color.GRAY);
                     return label;
                 }
                 Rectangle cellRect = jTable.getCellRect(row, col, false);
                 BufferedImage bim = renderGlyph(path, bounds2D, cellRect);
-                return new JLabel(new ImageIcon(bim));
+                return new JLabel(new ImageIcon(bim), SwingConstants.CENTER);
             }
             if (o != null)
             {
                 JLabel label = new JLabel(o.toString(), SwingConstants.CENTER);
-                label.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
+                label.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
                 if (SimpleFont.NO_GLYPH.equals(o) || ".notdef".equals(o))
                 {
                     label.setText(o.toString());
-                    label.setForeground(Color.RED);
+                    label.setForeground(Color.GRAY);
                 }
                 return label;
             }

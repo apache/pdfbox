@@ -16,7 +16,22 @@
 
 package org.apache.pdfbox.debugger.pagepane;
 
-import java.awt.Color;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.debugger.ui.ImageUtil;
+import org.apache.pdfbox.debugger.ui.RotationMenu;
+import org.apache.pdfbox.debugger.ui.ZoomMenu;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.rendering.PDFRenderer;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingWorker;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -27,20 +42,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingWorker;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.debugger.ui.ImageUtil;
-import org.apache.pdfbox.debugger.ui.RotationMenu;
-import org.apache.pdfbox.debugger.ui.ZoomMenu;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.rendering.PDFRenderer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Display the page number and a page rendering.
@@ -50,14 +52,14 @@ import org.apache.pdfbox.rendering.PDFRenderer;
  */
 public class PagePane implements ActionListener, AncestorListener, MouseMotionListener, MouseListener
 {
+    private final PDDocument document;
+    private final JLabel statuslabel;
+    private final PDPage page;
     private JPanel panel;
     private int pageIndex = -1;
-    private final PDDocument document;
     private JLabel label;
     private ZoomMenu zoomMenu;
     private RotationMenu rotationMenu;
-    private final JLabel statuslabel;
-    private final PDPage page;
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -77,14 +79,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         
         JLabel pageLabel = new JLabel(pageLabelText);
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pageLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
-        pageLabel.setBackground(Color.GREEN);
+        pageLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 20));
+        pageLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 10, 0));
         panel.add(pageLabel);
         
         label = new JLabel();
         label.addMouseMotionListener(this);
         label.addMouseListener(this);
-        label.setBackground(panel.getBackground());
         label.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(label);
         panel.addAncestorListener(this);
@@ -230,12 +231,16 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             label.setIcon(null);
             label.setText("Rendering...");
-            PDFRenderer renderer = new PDFRenderer(document);
-            long t0 = System.currentTimeMillis();
             statuslabel.setText("Rendering...");
+            
+            PDFRenderer renderer = new PDFRenderer(document);
+            
+            long t0 = System.nanoTime();
             BufferedImage bim = renderer.renderImage(pageIndex, scale);
-            float t = (System.currentTimeMillis() - t0) / 1000f;
-            statuslabel.setText("Rendered in " + t + " second" + (t > 1 ? "s" : ""));
+            long t1 = System.nanoTime();
+
+            long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
+            statuslabel.setText("Rendered in " + ms + " ms");
             return ImageUtil.getRotatedImage(bim, rotation);
         }
 
