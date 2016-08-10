@@ -16,7 +16,9 @@
 
 package org.apache.pdfbox.debugger.pagepane;
 
+import java.awt.Graphics2D;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.ImageUtil;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
@@ -94,7 +96,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         zoomMenu.changeZoomSelection(zoomMenu.getPageZoomScale());
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
-        new RenderWorker(zoomMenu.getPageZoomScale(), 0).execute();
+        new RenderWorker(zoomMenu.getPageZoomScale(), 0, false, false, false).execute();
     }
 
     /**
@@ -111,9 +113,18 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (ZoomMenu.isZoomMenu(actionCommand) || RotationMenu.isRotationMenu(actionCommand))
+        if (ZoomMenu.isZoomMenu(actionCommand) ||
+            RotationMenu.isRotationMenu(actionCommand) ||
+            actionEvent.getSource() == PDFDebugger.showTextStripper ||
+            actionEvent.getSource() == PDFDebugger.showFontBBox ||
+            actionEvent.getSource() == PDFDebugger.showGlyphBounds)
         {
-            new RenderWorker(ZoomMenu.getZoomScale(), RotationMenu.getRotationDegrees()).execute();
+            new RenderWorker(ZoomMenu.getZoomScale(),
+                             RotationMenu.getRotationDegrees(),
+                             PDFDebugger.showTextStripper.isSelected(),
+                             PDFDebugger.showFontBBox.isSelected(),
+                             PDFDebugger.showGlyphBounds.isSelected()
+                            ).execute();
             zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
         }
     }
@@ -128,6 +139,15 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         rotationMenu.addMenuListeners(this);
         rotationMenu.setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
         rotationMenu.setEnableMenu(true);
+
+        PDFDebugger.showTextStripper.setEnabled(true);
+        PDFDebugger.showTextStripper.addActionListener(this);
+
+        PDFDebugger.showFontBBox.setEnabled(true);
+        PDFDebugger.showFontBBox.addActionListener(this);
+
+        PDFDebugger.showGlyphBounds.setEnabled(true);
+        PDFDebugger.showGlyphBounds.addActionListener(this);
     }
 
     @Override
@@ -183,7 +203,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 y1 = (int) (height - y + offsetY);
                 break;
         }
-        statuslabel.setText(x1 + "," + y1);
+        statuslabel.setText("x: " + x1 + ", y: " + y1);
     }
 
     @Override
@@ -219,11 +239,18 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         private final float scale;
         private final int rotation;
-
-        private RenderWorker(float scale, int rotation)
+        private boolean showTextStripper;
+        private boolean showFontBBox;
+        private boolean showGlyphBounds;
+        
+        private RenderWorker(float scale, int rotation, boolean showTextStripper,
+                             boolean showFontBBox, boolean showGlyphBounds)
         {
             this.scale = scale;
             this.rotation = rotation;
+            this.showTextStripper = showTextStripper;
+            this.showFontBBox = showFontBBox;
+            this.showGlyphBounds = showGlyphBounds;
         }
 
         @Override
@@ -233,15 +260,23 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             label.setText("Rendering...");
             statuslabel.setText("Rendering...");
             
-            PDFRenderer renderer = new PDFRenderer(document);
+            PDFRenderer renderer = new DebugPDFRenderer(document, this.showGlyphBounds);
             
             long t0 = System.nanoTime();
-            BufferedImage bim = renderer.renderImage(pageIndex, scale);
+            BufferedImage image = renderer.renderImage(pageIndex, scale);
             long t1 = System.nanoTime();
 
             long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
             statuslabel.setText("Rendered in " + ms + " ms");
-            return ImageUtil.getRotatedImage(bim, rotation);
+            
+            // debug overlays
+            DebugTextOverlay debugText = new DebugTextOverlay(document, pageIndex, scale, 
+                                                              showTextStripper, showFontBBox);
+            Graphics2D g = image.createGraphics();
+            debugText.renderTo(g);
+            g.dispose();
+            
+            return ImageUtil.getRotatedImage(image, rotation);
         }
 
         @Override
