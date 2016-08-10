@@ -41,6 +41,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Matrix;
 
@@ -1148,5 +1149,18 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         writeOperand(getResources().add(state));
         writeOperator("gs");
+    }
+
+    /**
+     * Set the text rendering mode. This determines whether showing text shall cause glyph outlines
+     * to be stroked, filled, used as a clipping boundary, or some combination of the three.
+     *
+     * @param rm The text rendering mode.
+     * @throws IOException If the content stream could not be written.
+     */
+    public void setRenderingMode(RenderingMode rm) throws IOException
+    {
+        writeOperand(rm.intValue());
+        writeOperator("Tr");
     }
 }
