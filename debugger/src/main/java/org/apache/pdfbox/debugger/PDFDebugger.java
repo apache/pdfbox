@@ -157,6 +157,7 @@ public class PDFDebugger extends JFrame
     // view menu
     private JMenuItem viewModeItem;
     public static JCheckBoxMenuItem showTextStripper;
+    public static JCheckBoxMenuItem showTextStripperBeads;
     public static JCheckBoxMenuItem showFontBBox;
     public static JCheckBoxMenuItem showGlyphBounds;
     
@@ -573,9 +574,13 @@ public class PDFDebugger extends JFrame
 
         viewMenu.addSeparator();
         
-        showTextStripper = new JCheckBoxMenuItem("Show TextStripper Bounds");
+        showTextStripper = new JCheckBoxMenuItem("Show TextStripper TextPositions");
         showTextStripper.setEnabled(false);
         viewMenu.add(showTextStripper);
+
+        showTextStripperBeads = new JCheckBoxMenuItem("Show TextStripper Beads");
+        showTextStripperBeads.setEnabled(false);
+        viewMenu.add(showTextStripperBeads);
         
         showFontBBox = new JCheckBoxMenuItem("Show Approximate Text Bounds");
         showFontBBox.setEnabled(false);

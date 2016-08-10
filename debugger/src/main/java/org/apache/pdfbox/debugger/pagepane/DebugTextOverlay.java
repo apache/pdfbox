@@ -16,9 +16,12 @@
 
 package org.apache.pdfbox.debugger.pagepane;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,8 +34,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Draws an overlay showing the locations of text found by PDFTextStripper and another heuristic.
@@ -47,6 +52,7 @@ final class DebugTextOverlay
     private int pageIndex;
     private float scale;
     private boolean showTextStripper;
+    private boolean showTextStripperBeads;
     private boolean showFontBBox;
         
     private class DebugTextStripper extends PDFTextStripper
@@ -70,11 +76,28 @@ final class DebugTextOverlay
             // scale and rotate
             transform(graphics, page, scale);
 
+            // set stroke width
+            graphics.setStroke(new BasicStroke(0.5f));
+            
             setStartPage(pageIndex + 1);
             setEndPage(pageIndex + 1);
 
             Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
             writeText(document, dummy);
+
+            if (DebugTextOverlay.this.showTextStripperBeads)
+            {
+                // beads in green
+                List<PDThreadBead> pageArticles = page.getThreadBeads();
+                for (PDThreadBead bead : pageArticles)
+                {
+                    PDRectangle r = bead.getRectangle();
+                    GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
+                    Shape s = flip.createTransformedShape(p);
+                    graphics.setColor(Color.green);
+                    graphics.draw(s);
+                }
+            }
         }
 
         // scale rotate translate
@@ -162,12 +185,14 @@ final class DebugTextOverlay
     }
 
     public DebugTextOverlay(PDDocument document, int pageIndex, float scale,
-                            boolean showTextStripper, boolean showFontBBox)
+                            boolean showTextStripper, boolean showTextStripperBeads,
+                            boolean showFontBBox)
     {
         this.document = document;
         this.pageIndex = pageIndex;
         this.scale = scale;
         this.showTextStripper = showTextStripper;
+        this.showTextStripperBeads = showTextStripperBeads;
         this.showFontBBox = showFontBBox;
     }
     
