@@ -106,8 +106,8 @@ final class DebugPageDrawer extends PageDrawer
 
             // draw
             graphics.setClip(graphics.getDeviceConfiguration().getBounds());
-            graphics.setColor(new Color(88, 152, 82)); // green
-            graphics.setStroke(new BasicStroke(1f));
+            graphics.setColor(Color.cyan);
+            graphics.setStroke(new BasicStroke(.5f));
             graphics.draw(bbox);
 
             // restore
