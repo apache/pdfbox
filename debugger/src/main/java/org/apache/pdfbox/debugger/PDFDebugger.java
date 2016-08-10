@@ -16,53 +16,6 @@
  */
 package org.apache.pdfbox.debugger;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FileDialog;
-import java.awt.Toolkit;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.TransferHandler;
-import javax.swing.UIManager;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -104,6 +57,53 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.printing.PDFPageable;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.TransferHandler;
+import javax.swing.UIManager;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.TreePath;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * PDF Debugger.
  * 
@@ -125,25 +125,20 @@ public class PDFDebugger extends JFrame
 
     private static final int SHORCUT_KEY_MASK =
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-    
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
+    private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
+    private final JPanel documentPanel = new JPanel();
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
     private boolean isPageMode;
-
     private PDDocument document;
     private String currentFilePath;
-    
-    private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
-    private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
-    
     private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextPane jTextPane1;
     private ReaderBottomPanel statusBar;
     private Tree tree;
-    private final JPanel documentPanel = new JPanel();
-    
     // file menu
     private JMenuItem saveAsMenuItem;
     private JMenuItem saveMenuItem;
@@ -177,6 +172,81 @@ public class PDFDebugger extends JFrame
     }
 
     /**
+     * Entry point.
+     * 
+     * @param args the command line arguments
+     * @throws Exception If anything goes wrong.
+     */
+    public static void main(String[] args) throws Exception
+    {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+        // handle uncaught exceptions
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler()
+        {
+            @Override
+            public void uncaughtException(Thread thread, Throwable throwable)
+            {
+                new ErrorDialog(throwable).setVisible(true);
+            }
+        });
+        
+        // open file, if any
+        String filename = null;
+        String password = "";
+        boolean viewPages = true;
+        
+        for( int i = 0; i < args.length; i++ )
+        {
+            if( args[i].equals( PASSWORD ) )
+            {
+                i++;
+                if( i >= args.length )
+                {
+                    usage();
+                }
+                password = args[i];
+            }
+            else if( args[i].equals(VIEW_STRUCTURE) )
+            {
+                viewPages = false;
+            }
+            else
+            {
+                filename = args[i];
+            }
+        }
+        final PDFDebugger viewer = new PDFDebugger(viewPages);
+        
+        
+        if (filename != null)
+        {
+            File file = new File(filename);
+            if (file.exists())
+            {
+                viewer.readPDFFile( filename, password );
+            }
+        }
+        viewer.setVisible(true);
+    }
+    
+    /**
+     * This will print out a message telling how to use this utility.
+     */
+    private static void usage()
+    {
+        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
+                + "\nOptions:\n"
+                + "  -password <password> : Password to decrypt the document\n"
+                + "  -viewstructure       : activate structure mode on startup\n"
+                + "  <inputfile>          : The PDF document to be loaded\n";
+        
+        System.err.println(message);
+        System.exit(1);
+    }
+    
+    /**
      * This method is called from within the constructor to initialize the form.
      */
     private void initComponents()
@@ -209,7 +279,7 @@ public class PDFDebugger extends JFrame
         });
         
         jScrollPane1.setBorder(new BevelBorder(BevelBorder.RAISED));
-        jScrollPane1.setPreferredSize(new Dimension(300, 500));
+        jScrollPane1.setPreferredSize(new Dimension(350, 500));
         tree.addTreeSelectionListener(new TreeSelectionListener()
         {
             @Override
@@ -250,7 +320,9 @@ public class PDFDebugger extends JFrame
         setJMenuBar(menuBar);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-700)/2, (screenSize.height-600)/2, 700, 600);
+        int width = 1000;
+        int height = 970;
+        setBounds((screenSize.width - width) / 2, (screenSize.height - height) / 2, width, height);
 
         // drag and drop to open files
         setTransferHandler(new TransferHandler()
@@ -420,7 +492,7 @@ public class PDFDebugger extends JFrame
         
         return editMenu;
     }
-    
+
     private JMenu createViewMenu()
     {
         JMenu viewMenu = new JMenu("View");
@@ -465,7 +537,7 @@ public class PDFDebugger extends JFrame
         
         return viewMenu;
     }
-    
+
     private JMenu createFindMenu()
     {
         findMenu = new JMenu("Find");
@@ -519,7 +591,7 @@ public class PDFDebugger extends JFrame
     {
         return findMenuItem;
     }
-
+    
     /**
      * Returns the Edit &gt; Find &gt; Find Next menu item.
      */
@@ -535,7 +607,7 @@ public class PDFDebugger extends JFrame
     {
         return findPreviousMenuItem;
     }
-    
+
     /**
      * This method is called via reflection on Mac OS X.
      */
@@ -1025,7 +1097,7 @@ public class PDFDebugger extends JFrame
         }
         return data;
     }
-
+    
     private void exitMenuItemActionPerformed(ActionEvent evt)
     {
         if( document != null )
@@ -1066,7 +1138,7 @@ public class PDFDebugger extends JFrame
             }
         }
     }
-    
+
     /**
      * Exit the Application.
      */
@@ -1090,67 +1162,7 @@ public class PDFDebugger extends JFrame
         }
         System.exit(0);
     }
-
-    /**
-     * Entry point.
-     * 
-     * @param args the command line arguments
-     * @throws Exception If anything goes wrong.
-     */
-    public static void main(String[] args) throws Exception
-    {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
-
-        // handle uncaught exceptions
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler()
-        {
-            @Override
-            public void uncaughtException(Thread thread, Throwable throwable)
-            {
-                new ErrorDialog(throwable).setVisible(true);
-            }
-        });
-        
-        // open file, if any
-        String filename = null;
-        String password = "";
-        boolean viewPages = true;
-        
-        for( int i = 0; i < args.length; i++ )
-        {
-            if( args[i].equals( PASSWORD ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                password = args[i];
-            }
-            else if( args[i].equals(VIEW_STRUCTURE) )
-            {
-                viewPages = false;
-            }
-            else
-            {
-                filename = args[i];
-            }
-        }
-        final PDFDebugger viewer = new PDFDebugger(viewPages);
-        
-        
-        if (filename != null)
-        {
-            File file = new File(filename);
-            if (file.exists())
-            {
-                viewer.readPDFFile( filename, password );
-            }
-        }
-        viewer.setVisible(true);
-    }
-
+    
     private void readPDFFile(String filePath, String password) throws IOException
     {
         File file = new File(filePath);
@@ -1233,7 +1245,7 @@ public class PDFDebugger extends JFrame
             tree.setSelectionPath(treeStatus.getPathForString("Root"));
         }
     }
-    
+
     /**
      * This will parse a document.
      *
@@ -1306,20 +1318,5 @@ public class PDFDebugger extends JFrame
             }
             recentFilesMenu.setEnabled(true);
         }
-    }
-
-    /**
-     * This will print out a message telling how to use this utility.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFDebugger [options] <inputfile>\n"
-                + "\nOptions:\n"
-                + "  -password <password> : Password to decrypt the document\n"
-                + "  -viewstructure       : activate structure mode on startup\n"
-                + "  <inputfile>          : The PDF document to be loaded\n";
-        
-        System.err.println(message);
-        System.exit(1);
     }
 }
