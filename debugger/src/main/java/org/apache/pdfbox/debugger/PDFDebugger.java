@@ -33,6 +33,7 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -127,6 +129,7 @@ public class PDFDebugger extends JFrame
             Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
+    
     private final JPanel documentPanel = new JPanel();
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
@@ -157,6 +160,9 @@ public class PDFDebugger extends JFrame
     public static JCheckBoxMenuItem showFontBBox;
     public static JCheckBoxMenuItem showGlyphBounds;
     
+    // configuration
+    public static Properties configuration;
+    
     /**
      * Constructor.
      */
@@ -171,6 +177,7 @@ public class PDFDebugger extends JFrame
     public PDFDebugger(boolean viewPages)
     {
         isPageMode = viewPages;
+        loadConfiguration();
         initComponents();
     }
 
@@ -247,6 +254,32 @@ public class PDFDebugger extends JFrame
         
         System.err.println(message);
         System.exit(1);
+    }
+    
+    /**
+     * Loads the local configuration file, if any.
+     */
+    private void loadConfiguration()
+    {
+        File file = new File("config.properties");
+        if (file.exists())
+        {
+            try
+            {
+                InputStream is = new FileInputStream(file);
+                configuration = new Properties();
+                configuration.load(is);
+                is.close();
+            }
+            catch(IOException e)
+            {
+                throw new RuntimeException(e);
+            }
+        }
+        else
+        {
+            configuration = new Properties();
+        }
     }
     
     /**
