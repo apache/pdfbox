@@ -39,7 +39,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 public class Stream
 {
-    public static final String UNFILTERED = "Unfiltered";
+    public static final String DECODED = "Decoded (Plain Text)";
     public static final String IMAGE = "Image";
 
     private final COSStream stream;
@@ -124,7 +124,7 @@ public class Stream
                 sb.append(((COSName) filterArray.get(i)).getName());
             }
         }
-        return "Filtered (" + sb.toString() + ")";
+        return "Encoded (" + sb.toString() + ")";
     }
 
     /**
@@ -137,7 +137,7 @@ public class Stream
     {
         try
         {
-            if (UNFILTERED.equals(key))
+            if (DECODED.equals(key))
             {
                 return stream.createInputStream();
             }
@@ -194,7 +194,7 @@ public class Stream
             filterList.put(IMAGE, null);
         }
 
-        filterList.put(UNFILTERED, null);
+        filterList.put(DECODED, null);
         PDStream pdStream = new PDStream(stream);
 
         if (pdStream.getFilters() != null)
