@@ -58,7 +58,7 @@ import org.apache.pdfbox.util.QuickSort;
  *
  * @author Ben Litchfield
  */
-public class PDFTextStripper extends PDFTextStreamEngine
+public class PDFTextStripper extends LegacyPDFStreamEngine
 {
     private static float defaultIndentThreshold = 2.0f;
     private static float defaultDropThreshold = 2.5f;
