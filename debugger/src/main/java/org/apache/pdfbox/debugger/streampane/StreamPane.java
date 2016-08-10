@@ -141,8 +141,8 @@ public class StreamPane implements ActionListener
         }
         else
         {
-            panel.add(createHeaderPanel(stream.getFilterList(), Stream.UNFILTERED, this));
-            requestStreamText(Stream.UNFILTERED);
+            panel.add(createHeaderPanel(stream.getFilterList(), Stream.DECODED, this));
+            requestStreamText(Stream.DECODED);
         }
 
         tabbedPane = new JTabbedPane();
@@ -258,7 +258,7 @@ public class StreamPane implements ActionListener
                     encoding = "UTF-8";
                 }
                 InputStream inputStream = stream.getStream(filterKey);
-                if (isContentStream && Stream.UNFILTERED.equals(filterKey))
+                if (isContentStream && Stream.DECODED.equals(filterKey))
                 {
                     StyledDocument document = getContentStreamDocument(inputStream);
                     if (document != null)
