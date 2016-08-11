@@ -197,11 +197,18 @@ public final class DateConverter
     }
     
     /*
-     * Constrain a timezone offset to the range  [-11:59 thru +12:00].
+     * Constrain a timezone offset to the range [-14:00 thru +14:00].
      * by adding or subtracting multiples of a full day.
      */
     private static int restrainTZoffset(long proposedOffset)
     {
+        if (proposedOffset <= 14 * MILLIS_PER_HOUR && proposedOffset >= -14 * MILLIS_PER_HOUR)
+        {
+            // https://www.w3.org/TR/xmlschema-2/#dateTime-timezones
+            // Timezones between 14:00 and -14:00 are valid
+            return (int) proposedOffset;
+        }
+        // Constrain a timezone offset to the range  [-11:59 thru +12:00].
         proposedOffset = ((proposedOffset + HALF_DAY) % DAY + DAY) % DAY;
         if (proposedOffset == 0)
         {
