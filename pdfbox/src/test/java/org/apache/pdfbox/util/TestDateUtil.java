@@ -379,8 +379,8 @@ public class TestDateUtil extends TestCase
         checkParseTZ(-(1*HRS+0*MINS), "-1:00");
         checkParseTZ(-(1*HRS+30*MINS), "-0130");
         checkParseTZ(11*HRS+59*MINS, "1159");
-        checkParseTZ(-(11*HRS+30*MINS), "1230");
-        checkParseTZ(11*HRS+30*MINS, "-12:30");
+        checkParseTZ(12*HRS+30*MINS, "1230");
+        checkParseTZ(-(12*HRS+30*MINS), "-12:30");
         checkParseTZ(0*HRS+0*MINS, "Z");
         checkParseTZ(-(8*HRS+0*MINS), "PST");
         checkParseTZ(0*HRS+0*MINS, "EDT");  // EDT does not parse
@@ -394,9 +394,11 @@ public class TestDateUtil extends TestCase
         checkParseTZ((5*HRS+0*MINS), "+0500");
         checkParseTZ((11*HRS+0*MINS), "+11'00'");
         checkParseTZ(0, "Z");
-        // PDFBOX-3315
+        // PDFBOX-3315, PDFBOX-2420
         checkParseTZ(12*HRS+0*MINS, "+12:00");
-        checkParseTZ(12*HRS+0*MINS, "-12:00");
+        checkParseTZ(-(12*HRS+0*MINS), "-12:00");
+        checkParseTZ(14*HRS+0*MINS, "1400");
+        checkParseTZ(-(14*HRS+0*MINS), "-1400");
     }
     
     private static void checkFormatOffset(double off, String expect) 
@@ -412,15 +414,15 @@ public class TestDateUtil extends TestCase
     public void testFormatTZoffset()
     {
         // 2nd parameter is what to expect
-        checkFormatOffset(-12.1, "+11:54");
-        checkFormatOffset(12.1, "-11:54");
+        checkFormatOffset(-12.1, "-12:06");
+        checkFormatOffset(12.1, "+12:06");
         checkFormatOffset(0, "+00:00");
         checkFormatOffset(-1, "-01:00");
         checkFormatOffset(.5, "+00:30");
         checkFormatOffset(-0.5, "-00:30");
         checkFormatOffset(.1, "+00:06");
         checkFormatOffset(-0.1, "-00:06");
-        checkFormatOffset(-12, "+12:00");
+        checkFormatOffset(-12, "-12:00");
         checkFormatOffset(12, "+12:00");
         checkFormatOffset(-11.5, "-11:30");
         checkFormatOffset(11.5, "+11:30");
@@ -428,6 +430,9 @@ public class TestDateUtil extends TestCase
         checkFormatOffset(11.1, "+11:06");
         checkFormatOffset(-11.9, "-11:54");
         checkFormatOffset(-11.1, "-11:06");
+        // PDFBOX-2420
+        checkFormatOffset(14, "+14:00");
+        checkFormatOffset(-14, "-14:00");
     }
     
     // testbody precedes
