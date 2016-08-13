@@ -390,7 +390,17 @@ public class PublicKeySecurityHandler extends SecurityHandler
         ByteArrayInputStream bytearrayinputstream = new ByteArrayInputStream(algorithmparameters.getEncoded("ASN.1"));
         ASN1InputStream asn1inputstream = new ASN1InputStream(bytearrayinputstream);
         DERObject derobject = asn1inputstream.readObject();
-        KeyGenerator keygenerator = KeyGenerator.getInstance(s);
+        KeyGenerator keygenerator;
+        try
+        {
+            keygenerator = KeyGenerator.getInstance(s);
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            // happens when using the command line app .jar file
+            throw new IOException("Could not find a suitable javax.crypto provider for algorithm " + 
+                    s + "; possible reason: using an unsigned .jar file", e);
+        }
         keygenerator.init(128);
         SecretKey secretkey = keygenerator.generateKey();
         Cipher cipher = Cipher.getInstance(s);
