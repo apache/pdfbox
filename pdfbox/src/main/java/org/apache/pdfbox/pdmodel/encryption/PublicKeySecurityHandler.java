@@ -398,7 +398,7 @@ public class PublicKeySecurityHandler extends SecurityHandler
         catch (NoSuchAlgorithmException e)
         {
             // happens when using the command line app .jar file
-            throw new IOException("Could not find a suitable javax.crypto provider for algorithm " + 
+            throw new NoSuchAlgorithmException("Could not find a suitable javax.crypto provider for algorithm " + 
                     s + "; possible reason: using an unsigned .jar file", e);
         }
         keygenerator.init(128);
