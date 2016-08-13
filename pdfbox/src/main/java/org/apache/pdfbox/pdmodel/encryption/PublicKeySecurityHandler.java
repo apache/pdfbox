@@ -415,8 +415,9 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         }
         catch (NoSuchAlgorithmException e)
         {
-            // should never happen, if this happens throw IOException instead
-            throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
+            // happens when using the command line app .jar file
+            throw new IOException("Could not find a suitable javax.crypto provider for algorithm " + 
+                    algorithm + "; possible reason: using an unsigned .jar file", e);
         }
         catch (NoSuchPaddingException e)
         {
