@@ -210,7 +210,7 @@ public class XMPSchemaBasic extends XMPSchema
      */
     public String getLabel()
     {
-        return getTextProperty( prefix + "p:Label" );
+        return getTextProperty( prefix + ":Label" );
     }
     
     /**
