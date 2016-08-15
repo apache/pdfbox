@@ -55,6 +55,11 @@ class PlainText
         paragraphs = new ArrayList<Paragraph>();
         for (String part : parts)
         {
+        	// Acrobat prints a space for an empty paragraph
+        	if (part.length() == 0)
+        	{
+        		part = " ";
+        	}
             paragraphs.add(new Paragraph(part));
         }
     }
