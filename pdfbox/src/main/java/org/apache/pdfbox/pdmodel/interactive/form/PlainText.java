@@ -51,7 +51,7 @@ class PlainText
      */
     PlainText(String textValue)
     {
-        List<String> parts = Arrays.asList(textValue.split("\\n"));
+        List<String> parts = Arrays.asList(textValue.split("\\r\\n|\\n|\\r|\\u2028|\\u2029"));
         paragraphs = new ArrayList<Paragraph>();
         for (String part : parts)
         {
