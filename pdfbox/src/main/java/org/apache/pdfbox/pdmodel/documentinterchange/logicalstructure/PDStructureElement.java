@@ -162,7 +162,7 @@ public class PDStructureElement extends PDStructureNode
     /**
      * Returns the attributes together with their revision numbers (A).
      * 
-     * @return the attributes
+     * @return the attributes as a list, never null.
      */
     public Revisions<PDAttributeObject> getAttributes()
     {
@@ -329,7 +329,7 @@ public class PDStructureElement extends PDStructureNode
     /**
      * Returns the class names together with their revision numbers (C).
      * 
-     * @return the class names
+     * @return the class names as a list, never null.
      */
     public Revisions<String> getClassNames()
     {
