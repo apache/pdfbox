@@ -63,7 +63,7 @@ public class TestPreflightPath
         assertEquals(1, position);
 
         Integer i = path.getPathElement(position, Integer.class);
-        assertEquals(new Integer(6), i);
+        assertEquals(Integer.valueOf(6), i);
 
         Object str = path.peek();
         assertEquals(3, path.size());
