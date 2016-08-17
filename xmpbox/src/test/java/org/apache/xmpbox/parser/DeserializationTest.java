@@ -143,14 +143,14 @@ public class DeserializationTest
         Assert.assertEquals(2, thumbs.size());
 
         ThumbnailType thumb = thumbs.get(0);
-        Assert.assertEquals(new Integer(162), thumb.getHeight());
-        Assert.assertEquals(new Integer(216), thumb.getWidth());
+        Assert.assertEquals(Integer.valueOf(162), thumb.getHeight());
+        Assert.assertEquals(Integer.valueOf(216), thumb.getWidth());
         Assert.assertEquals("JPEG", thumb.getFormat());
         Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
         thumb = thumbs.get(1);
-        Assert.assertEquals(new Integer(162), thumb.getHeight());
-        Assert.assertEquals(new Integer(216), thumb.getWidth());
+        Assert.assertEquals(Integer.valueOf(162), thumb.getHeight());
+        Assert.assertEquals(Integer.valueOf(216), thumb.getWidth());
         Assert.assertEquals("JPEG", thumb.getFormat());
         Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
