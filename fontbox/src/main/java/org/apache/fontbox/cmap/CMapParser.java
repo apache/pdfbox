@@ -603,7 +603,7 @@ public class CMapParser
             String value = buffer.toString();
             if (value.indexOf('.') >= 0)
             {
-                retval = new Double(value);
+                retval = Double.valueOf(value);
             }
             else
             {
