@@ -68,6 +68,22 @@ public class COSArrayList<E> implements List<E>
     }
 
     /**
+     * This constructor is to be used if the array doesn't exist, but is to be created and added to
+     * the parent dictionary as soon as the first element is added to the array.
+     *
+     * @param dictionary The dictionary that holds the item, and will hold the array if an item is
+     * added.
+     * @param dictionaryKey The key into the dictionary to set the item.
+     */
+    public COSArrayList(COSDictionary dictionary, COSName dictionaryKey)
+    {
+        array = new COSArray();
+        actual = new ArrayList<E>();
+        parentDict = dictionary;
+        dictKey = dictionaryKey;
+    }
+    
+    /**
      * This is a really special constructor.  Sometimes the PDF spec says
      * that a dictionary entry can either be a single item or an array of those
      * items.  But in the PDModel interface we really just want to always return
