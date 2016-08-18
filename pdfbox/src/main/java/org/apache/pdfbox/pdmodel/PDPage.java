@@ -647,9 +647,7 @@ public class PDPage implements COSObjectable, PDContentStream
         COSArray annots = (COSArray) page.getDictionaryObject(COSName.ANNOTS);
         if (annots == null)
         {
-            annots = new COSArray();
-            page.setItem(COSName.ANNOTS, annots);
-            retval = new COSArrayList<PDAnnotation>(new ArrayList<PDAnnotation>(), annots);
+            return new COSArrayList<PDAnnotation>(page, COSName.ANNOTS);
         }
         else
         {
