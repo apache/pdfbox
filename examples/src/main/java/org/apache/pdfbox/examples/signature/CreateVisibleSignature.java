@@ -35,18 +35,15 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
- * This is an example for visual signing a pdf with bouncy castle.
+ * This is an example for visual signing a pdf.
 
  * @see CreateSignature
  * @author Vakhtang Koroghlishvili
  */
 public class CreateVisibleSignature extends CreateSignatureBase
 {
-    private static final BouncyCastleProvider BCPROVIDER = new BouncyCastleProvider();
-
     private SignatureOptions signatureOptions;
     private PDVisibleSignDesigner visibleSignDesigner;
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
@@ -188,7 +185,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         }
 
         File ksFile = new File(args[0]);
-        KeyStore keystore = KeyStore.getInstance("PKCS12", BCPROVIDER);
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
         char[] pin = args[1].toCharArray();
         keystore.load(new FileInputStream(ksFile), pin);
 
