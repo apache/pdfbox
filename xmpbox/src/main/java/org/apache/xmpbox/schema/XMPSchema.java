@@ -746,8 +746,7 @@ public class XMPSchema extends AbstractStructuredType
      */
     public void removeUnqualifiedArrayValue(String arrayName, AbstractField fieldValue)
     {
-        String qualifiedArrayName = arrayName;
-        ArrayProperty array = (ArrayProperty) getAbstractProperty(qualifiedArrayName);
+        ArrayProperty array = (ArrayProperty) getAbstractProperty(arrayName);
         if (array != null)
         {
             List<AbstractField> toDelete = new ArrayList<AbstractField>();
@@ -791,8 +790,7 @@ public class XMPSchema extends AbstractStructuredType
      */
     public void addUnqualifiedSequenceValue(String simpleSeqName, String seqValue)
     {
-        String qualifiedSeqName = simpleSeqName;
-        ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
+        ArrayProperty seq = (ArrayProperty) getAbstractProperty(simpleSeqName);
         TextType li = createTextType(XmpConstants.LIST_NAME, seqValue);
         if (seq != null)
         {
@@ -839,8 +837,7 @@ public class XMPSchema extends AbstractStructuredType
      */
     public void addUnqualifiedSequenceValue(String seqName, AbstractField seqValue)
     {
-        String qualifiedSeqName = seqName;
-        ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
+        ArrayProperty seq = (ArrayProperty) getAbstractProperty(seqName);
         if (seq != null)
         {
             seq.getContainer().addProperty(seqValue);
@@ -884,8 +881,7 @@ public class XMPSchema extends AbstractStructuredType
      */
     public void removeUnqualifiedSequenceDateValue(String seqName, Calendar date)
     {
-        String qualifiedSeqName = seqName;
-        ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
+        ArrayProperty seq = (ArrayProperty) getAbstractProperty(seqName);
         if (seq != null)
         {
             List<AbstractField> toDelete = new ArrayList<AbstractField>();
@@ -946,9 +942,8 @@ public class XMPSchema extends AbstractStructuredType
      */
     public List<Calendar> getUnqualifiedSequenceDateValueList(String seqName)
     {
-        String qualifiedSeqName = seqName;
         List<Calendar> retval = null;
-        ArrayProperty seq = (ArrayProperty) getAbstractProperty(qualifiedSeqName);
+        ArrayProperty seq = (ArrayProperty) getAbstractProperty(seqName);
         if (seq != null)
         {
             retval = new ArrayList<Calendar>();
@@ -1026,12 +1021,11 @@ public class XMPSchema extends AbstractStructuredType
      */
     public void setUnqualifiedLanguagePropertyValue(String name, String language, String value)
     {
-        String qualifiedName = name;
         if (language == null || language.isEmpty())
         {
             language = XmpConstants.X_DEFAULT;
         }
-        AbstractField property = getAbstractProperty(qualifiedName);
+        AbstractField property = getAbstractProperty(name);
         ArrayProperty arrayProp;
         if (property != null)
         {
