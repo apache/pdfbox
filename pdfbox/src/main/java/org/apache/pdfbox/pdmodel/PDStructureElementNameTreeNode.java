@@ -55,7 +55,7 @@ public class PDStructureElementNameTreeNode extends PDNameTreeNode<PDStructureEl
     }
 
     @Override
-    protected PDNameTreeNode createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDStructureElement> createChildNode( COSDictionary dic )
     {
         return new PDStructureElementNameTreeNode(dic);
     }

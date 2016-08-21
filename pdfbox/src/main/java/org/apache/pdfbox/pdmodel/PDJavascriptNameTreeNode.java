@@ -59,7 +59,7 @@ public class PDJavascriptNameTreeNode extends PDNameTreeNode<PDActionJavaScript>
     }
 
     @Override
-    protected PDNameTreeNode createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDActionJavaScript> createChildNode( COSDictionary dic )
     {
         return new PDJavascriptNameTreeNode(dic);
     }
