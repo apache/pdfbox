@@ -71,14 +71,14 @@ public class SetLineDashPattern extends OperatorProcessor
             }
             else
             {
-                LOG.error("dash array has non number element " + base + ", ignored");
+                LOG.warn("dash array has non number element " + base + ", ignored");
                 dashArray = new COSArray();
                 break;
             }
         }
         if (dashArray.size() > 0 && allZero)
         {
-            LOG.error("dash lengths all zero, ignored");
+            LOG.warn("dash lengths all zero, ignored");
             dashArray = new COSArray();
         }
         context.setLineDashPattern(dashArray, dashPhase);
