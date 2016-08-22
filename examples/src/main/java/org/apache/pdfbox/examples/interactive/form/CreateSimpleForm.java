@@ -18,6 +18,7 @@
 package org.apache.pdfbox.examples.interactive.form;
 
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -25,7 +26,10 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
@@ -72,8 +76,10 @@ public final class CreateSimpleForm
         textBox.setPartialName("SampleField");
         // Acrobat sets the font size to 12 as default
         // This is done by setting the font size to '12' on the
-        // field level.
-        defaultAppearanceString = "/Helv 12 Tf 0 g";
+        // field level. 
+        // The text color is set to blue in this example.
+        // To use black, replace "0 0 1 rg" with "0 0 0 rg" or "0 g".
+        defaultAppearanceString = "/Helv 12 Tf 0 0 1 rg";
         textBox.setDefaultAppearance(defaultAppearanceString);
         
         // add the field to the acroform
@@ -84,7 +90,15 @@ public final class CreateSimpleForm
         PDRectangle rect = new PDRectangle(50, 750, 200, 50);
         widget.setRectangle(rect);
         widget.setPage(page);
-        
+
+        // set green border and yellow background
+        // if you prefer defaults, just delete this code block
+        PDAppearanceCharacteristicsDictionary fieldAppearance
+                = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
+        fieldAppearance.setBorderColour(new PDColor(new float[]{0,1,0}, PDDeviceRGB.INSTANCE));
+        fieldAppearance.setBackground(new PDColor(new float[]{1,1,0}, PDDeviceRGB.INSTANCE));
+        widget.setAppearanceCharacteristics(fieldAppearance);
+
         // make sure the annotation is visible on screen and paper
         widget.setPrinted(true);
         
