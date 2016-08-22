@@ -192,14 +192,23 @@ class AppearanceGeneratorHelper
                 appearanceStream, output);
         PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
         
-        // TODO: support more entries like patterns, background color etc.
+        // TODO: support more entries like patterns, etc.
         if (appearanceCharacteristics != null)
         {
+            PDColor backgroundColour = appearanceCharacteristics.getBackground();
+            if (backgroundColour != null)
+            {
+                contents.setNonStrokingColor(backgroundColour);
+                PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+                contents.addRect(bbox.getLowerLeftX(),bbox.getLowerLeftY(),bbox.getWidth(), bbox.getHeight());
+                contents.fill();
+            }
+
             float lineWidth = 0f;
             PDColor borderColour = appearanceCharacteristics.getBorderColour();
             if (borderColour != null)
             {
-                contents.setNonStrokingColor(borderColour);
+                contents.setStrokingColor(borderColour);
                 lineWidth = 1f;
             }
             PDBorderStyleDictionary borderStyle = widget.getBorderStyle();
@@ -210,7 +219,10 @@ class AppearanceGeneratorHelper
 
             if (lineWidth > 0)
             {
-                contents.setLineWidth(lineWidth);
+                if (lineWidth != 1)
+                {
+                    contents.setLineWidth(lineWidth);
+                }
                 PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
                 PDRectangle clipRect = applyPadding(bbox, Math.max(DEFAULT_PADDING, lineWidth/2)); 
                 contents.addRect(clipRect.getLowerLeftX(),clipRect.getLowerLeftY(),clipRect.getWidth(), clipRect.getHeight());
