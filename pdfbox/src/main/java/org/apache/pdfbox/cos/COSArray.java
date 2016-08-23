@@ -561,7 +561,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      *  @return the COSArray as List
      */
-    public List<?> toList()
+    public List<? extends COSBase> toList()
     {
         List<COSBase> retList = new ArrayList<COSBase>(size());
         for (int i = 0; i < size(); i++)
