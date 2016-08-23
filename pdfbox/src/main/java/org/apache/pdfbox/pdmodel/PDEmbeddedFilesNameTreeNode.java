@@ -54,7 +54,7 @@ public class PDEmbeddedFilesNameTreeNode extends PDNameTreeNode<PDComplexFileSpe
     }
 
     @Override
-    protected PDNameTreeNode createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDComplexFileSpecification> createChildNode( COSDictionary dic )
     {
         return new PDEmbeddedFilesNameTreeNode(dic);
     }
