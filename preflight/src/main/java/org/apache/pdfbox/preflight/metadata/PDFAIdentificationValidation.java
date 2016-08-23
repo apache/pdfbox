@@ -82,7 +82,7 @@ public class PDFAIdentificationValidation
             }
         }
         checkConformanceLevel(ve, id.getConformance());
-        checkPartNumber(ve, id.getPart());
+        checkPartNumber(ve, id.getPart() == null ?  -1 : id.getPart());
         return ve;
     }
 

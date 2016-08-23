@@ -190,7 +190,7 @@ public class PDFAIdentificationSchema extends XMPSchema
     /**
      * Give the PDFAVersionId (as an integer)
      * 
-     * @return Part value (Integer)
+     * @return Part value (Integer) or null if it is missing
      */
     public Integer getPart()
     {
