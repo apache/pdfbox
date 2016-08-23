@@ -64,7 +64,7 @@ public class PDDestinationNameTreeNode extends PDNameTreeNode<PDPageDestination>
     }
 
     @Override
-    protected PDNameTreeNode createChildNode( COSDictionary dic )
+    protected PDNameTreeNode<PDPageDestination> createChildNode( COSDictionary dic )
     {
         return new PDDestinationNameTreeNode(dic);
     }
