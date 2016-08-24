@@ -555,8 +555,16 @@ public class PDFMergerUtility
             newPage.setCropBox(page.getCropBox());
             newPage.setMediaBox(page.getMediaBox());
             newPage.setRotation(page.getRotation());
-            // this is smart enough to just create references for resources that are used on multiple pages
-            newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(page.getResources())));
+            PDResources resources = page.getResources();
+            if (resources != null)
+            {
+                // this is smart enough to just create references for resources that are used on multiple pages
+                newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(resources)));
+            }
+            else
+            {
+                newPage.setResources(new PDResources());
+            }
             if (mergeStructTree)
             {
                 updateStructParentEntries(newPage, destParentTreeNextKey);
