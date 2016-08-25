@@ -84,6 +84,7 @@ public class DomXmpParser
             dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             dbFactory.setXIncludeAware(false);
             dbFactory.setExpandEntityReferences(false);
+            dbFactory.setIgnoringComments(true);
             dbFactory.setNamespaceAware(true);
             dBuilder = dbFactory.newDocumentBuilder();
             nsFinder = new NamespaceFinder();
