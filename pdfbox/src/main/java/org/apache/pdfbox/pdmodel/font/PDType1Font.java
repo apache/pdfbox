@@ -233,9 +233,10 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                     int length1 = stream.getInt(COSName.LENGTH1);
                     int length2 = stream.getInt(COSName.LENGTH2);
 
-                    // repair Length1 if necessary
+                    // repair Length1 and Length2 if necessary
                     byte[] bytes = fontFile.toByteArray();
                     length1 = repairLength1(bytes, length1);
+                    length2 = repairLength2(bytes, length1, length2);
                     
                     if (bytes.length > 0 && (bytes[0] & 0xff) == PFB_START_MARKER)
                     {
@@ -336,6 +337,27 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         }
 
         return length1;
+    }
+
+    /**
+     * Some Type 1 fonts have an invalid Length2, see PDFBOX-3475. A negative /Length2 brings an
+     * IllegalArgumentException in Arrays.copyOfRange(), a huge value eats up memory because of
+     * padding.
+     *
+     * @param bytes Type 1 stream bytes
+     * @param length1 Length1 from the Type 1 stream
+     * @param length2 Length2 from the Type 1 stream
+     * @return repaired Length2 value
+     */
+    private int repairLength2(byte[] bytes, int length1, int length2)
+    {
+        // repair Length2 if necessary
+        if (length2 < 0 || length2 > bytes.length - length1)
+        {
+            LOG.warn("Ignored invalid Length2 " + length2 + " for Type 1 font " + getName());
+            length2 = bytes.length - length1;
+        }
+        return length2;
     }
 
     /**
