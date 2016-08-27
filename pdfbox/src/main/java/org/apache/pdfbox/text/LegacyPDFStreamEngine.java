@@ -319,8 +319,8 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
 
         processTextPosition(new TextPosition(pageRotation, pageSize.getWidth(),
                 pageSize.getHeight(), translatedTextRenderingMatrix, nextX, nextY,
-                dyDisplay, dxDisplay,
-                spaceWidthDisplay, unicode, new int[] { code } , font, fontSize,
+                Math.abs(dyDisplay), dxDisplay,
+                Math.abs(spaceWidthDisplay), unicode, new int[] { code } , font, fontSize,
                 (int)(fontSize * textMatrix.getScalingFactorX())));
     }
 
