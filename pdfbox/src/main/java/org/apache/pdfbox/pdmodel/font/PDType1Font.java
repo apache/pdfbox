@@ -357,7 +357,7 @@ public class PDType1Font extends PDSimpleFont
         if (length2 < 0 || length2 > bytes.length - length1)
         {
             LOG.warn("Ignored invalid Length2 " + length2 + " for Type 1 font " + getName());
-            length2 = bytes.length - length1;
+            return bytes.length - length1;
         }
         return length2;
     }
