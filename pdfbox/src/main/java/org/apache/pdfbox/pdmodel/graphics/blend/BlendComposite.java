@@ -45,21 +45,22 @@ public final class BlendComposite implements Composite
      * @param blendMode Desired blend mode
      * @param constantAlpha Constant alpha, must be in the inclusive range
      * [0.0...1.0] or it will be clipped.
+     * @return a blend composite.
      */
     public static Composite getInstance(BlendMode blendMode, float constantAlpha)
     {
+        if (constantAlpha < 0)
+        {
+            LOG.warn("using 0 instead of incorrect Alpha " + constantAlpha);
+            constantAlpha = 0;
+        }
+        else if (constantAlpha > 1)
+        {
+            LOG.warn("using 1 instead of incorrect Alpha " + constantAlpha);
+            constantAlpha = 1;
+        }
         if (blendMode == BlendMode.NORMAL)
         {
-            if (constantAlpha < 0)
-            {
-                LOG.warn("using 0 instead of incorrect Alpha " + constantAlpha);
-                constantAlpha = 0;
-            }
-            else if (constantAlpha > 1)
-            {
-                LOG.warn("using 1 instead of incorrect Alpha " + constantAlpha);
-                constantAlpha = 1;
-            }
             return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, constantAlpha);
         }
         else
