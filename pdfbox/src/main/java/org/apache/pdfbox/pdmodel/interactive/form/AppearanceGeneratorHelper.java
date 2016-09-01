@@ -129,6 +129,10 @@ class AppearanceGeneratorHelper
                     appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
                     
                     PDRectangle rect = widget.getRectangle();
+                    if (rect == null)
+                    {
+                        throw new IOException("widget of field " + field.getFullyQualifiedName() + " has no rectangle");
+                    }
                     
                     // Calculate the entries for the bounding box and the transformation matrix
                     // settings for the appearance stream
