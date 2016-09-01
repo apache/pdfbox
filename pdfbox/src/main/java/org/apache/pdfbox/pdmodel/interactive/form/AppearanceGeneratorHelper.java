@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -47,6 +49,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 class AppearanceGeneratorHelper
 {
+    private static final Log LOG = LogFactory.getLog(AppearanceGeneratorHelper.class);
+
     private static final Operator BMC = Operator.getOperator("BMC");
     private static final Operator EMC = Operator.getOperator("EMC");
  
@@ -126,13 +130,14 @@ class AppearanceGeneratorHelper
                 }
                 else
                 {
-                    appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
-                    
                     PDRectangle rect = widget.getRectangle();
                     if (rect == null)
                     {
-                        throw new IOException("widget of field " + field.getFullyQualifiedName() + " has no rectangle");
+                        LOG.warn("widget of field " + field.getFullyQualifiedName() + " has no rectangle, no appearance stream created");
+                        continue;
                     }
+                    
+                    appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
                     
                     // Calculate the entries for the bounding box and the transformation matrix
                     // settings for the appearance stream
