@@ -76,7 +76,7 @@ public class ControlCharacterTest {
     	acroForm.getField("pdfbox-nul").setValue("NUL\0NUL");
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void characterTAB() throws IOException
     {
     	acroForm.getField("pdfbox-tab").setValue("TAB\tTAB");
