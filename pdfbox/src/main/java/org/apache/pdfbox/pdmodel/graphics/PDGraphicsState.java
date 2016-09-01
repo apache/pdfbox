@@ -505,11 +505,26 @@ public class PDGraphicsState implements Cloneable
 
     public Composite getStrokeJavaComposite() {
 
-        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) alphaConstants);
+        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) clipAlpha(alphaConstants));
     }
 
     public Composite getNonStrokeJavaComposite() {
 
-        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) nonStrokingAlphaConstants);
+        return AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float) clipAlpha(nonStrokingAlphaConstants));
+    }
+
+    private double clipAlpha(double alpha)
+    {
+        if (alpha < 0)
+        {
+            LOG.warn("using 0 instead of incorrect Alpha " + alpha);
+            return 0;
+        }
+        else if (alpha > 1)
+        {
+            LOG.warn("using 1 instead of incorrect Alpha " + alpha);
+            return 1;
+        }
+        return alpha;
     }
 }
