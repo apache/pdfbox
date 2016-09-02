@@ -34,6 +34,15 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
     private PDColorSpace colorSpace;
 
     /**
+     * Creates a group object with /Transparency subtype entry.
+     */
+    public PDTransparencyGroupAttributes()
+    {
+        dictionary = new COSDictionary();
+        dictionary.setItem(COSName.S, COSName.TRANSPARENCY);
+    }
+
+    /**
      * Creates a group object from a given dictionary
      * @param dic {@link COSDictionary} object
      */
