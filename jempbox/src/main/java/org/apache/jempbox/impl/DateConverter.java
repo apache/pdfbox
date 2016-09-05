@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -226,11 +227,11 @@ public class DateConverter
         }
         else if (pm == '+' && hh <= 12)
         {
-            tz.setID(String.format("GMT+%02d:%02d", hh, mm));
+            tz.setID(String.format(Locale.US, "GMT+%02d:%02d", hh, mm));
         }
         else if (pm == '-' && hh <= 14)
         {
-            tz.setID(String.format("GMT-%02d:%02d", hh, mm));
+            tz.setID(String.format(Locale.US, "GMT-%02d:%02d", hh, mm));
         }
         else
         {
