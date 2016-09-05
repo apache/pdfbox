@@ -156,12 +156,12 @@ public class COSWriter implements ICOSVisitor, Closeable
     public static final byte[] ENDSTREAM = StringUtil.getBytes("endstream");
 
     private NumberFormat formatXrefOffset = new DecimalFormat("0000000000",
-            DecimalFormatSymbols.getInstance(Locale.US));
+            new DecimalFormatSymbols(Locale.US));
     /**
      * The decimal format for the xref object generation number data.
      */
     private NumberFormat formatXrefGeneration = new DecimalFormat("00000",
-            DecimalFormatSymbols.getInstance(Locale.US));
+            new DecimalFormatSymbols(Locale.US));
 
     private NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
 
