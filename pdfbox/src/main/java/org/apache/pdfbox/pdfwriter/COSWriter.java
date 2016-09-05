@@ -26,6 +26,7 @@ import java.io.SequenceInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -159,10 +160,12 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
     
-    private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000");
+    private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000",
+            DecimalFormatSymbols.getInstance(Locale.US));
 
     // the decimal format for the xref object generation number data
-    private final NumberFormat formatXrefGeneration = new DecimalFormat("00000");
+    private final NumberFormat formatXrefGeneration = new DecimalFormat("00000",
+            DecimalFormatSymbols.getInstance(Locale.US));
 
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
 
