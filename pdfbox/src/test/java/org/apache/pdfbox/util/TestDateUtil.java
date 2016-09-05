@@ -129,9 +129,9 @@ public class TestDateUtil extends TestCase
                 int hr, int min, int sec, int offsetHours, int offsetMinutes,
                 String orig) throws Exception 
     {
-        String pdfDate = String.format("D:%04d%02d%02d%02d%02d%02d%+03d'%02d'", 
+        String pdfDate = String.format(Locale.US, "D:%04d%02d%02d%02d%02d%02d%+03d'%02d'", 
                 yr,mon,day,hr,min,sec,offsetHours,offsetMinutes);
-        String iso8601Date = String.format("%04d-%02d-%02d"
+        String iso8601Date = String.format(Locale.US, "%04d-%02d-%02d"
                 + "T%02d:%02d:%02d%+03d:%02d", 
                 yr,mon,day,hr,min,sec,offsetHours,offsetMinutes);
         Calendar cal = DateConverter.toCalendar(orig);
@@ -307,9 +307,9 @@ public class TestDateUtil extends TestCase
         GregorianCalendar cal = new GregorianCalendar(tz, Locale.ENGLISH);
         cal.set(yr, mon-1, day, hr, min, sec);
         // create expected strings
-        String pdfDate = String.format("D:%04d%02d%02d%02d%02d%02d%+03d'%02d'", 
+        String pdfDate = String.format(Locale.US, "D:%04d%02d%02d%02d%02d%02d%+03d'%02d'", 
                 yr,mon,day,hr,min,sec,offsetHours, offsetMinutes);
-        String iso8601Date = String.format("%04d-%02d-%02d"
+        String iso8601Date = String.format(Locale.US, "%04d-%02d-%02d"
                 + "T%02d:%02d:%02d%+03d:%02d", 
                 yr,mon,day,hr,min,sec,offsetHours, offsetMinutes);
         // compare outputs from toString and toISO8601 with expected values
