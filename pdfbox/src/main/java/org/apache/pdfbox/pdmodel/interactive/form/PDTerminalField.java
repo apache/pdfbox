@@ -155,8 +155,11 @@ public abstract class PDTerminalField extends PDField
 
     /**
      * Returns the widget annotations associated with this field.
-     * 
-     * @return The list of widget annotations.
+     *
+     * @return The list of widget annotations. Be aware that this list is <i>not</i> backed by the
+     * actual widget collection of the field, so adding or deleting has no effect on the PDF
+     * document until you call {@link #setWidgets(java.util.List) setWidgets()} with the modified
+     * list.
      */
     @Override
     public List<PDAnnotationWidget> getWidgets()
