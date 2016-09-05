@@ -122,8 +122,10 @@ public class PDNonTerminalField extends PDField
     
     /**
      * Returns this field's children. These may be either terminal or non-terminal fields.
-     * 
-     * @return he list of child fields.
+     *
+     * @return the list of child fields. Be aware that this list is <i>not</i> backed by the
+     * children of the field, so adding or deleting has no effect on the PDF document until you call
+     * {@link #setChildren(java.util.List) setChildren()} with the modified list.
      */
     public List<PDField> getChildren()
     {
@@ -193,6 +195,8 @@ public class PDNonTerminalField extends PDField
      *
      * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
+     * @param object
+     * @throws java.io.IOException
      */
     public void setValue(COSBase object) throws IOException
     {
@@ -207,6 +211,7 @@ public class PDNonTerminalField extends PDField
      * @param value Plain text
      * @throws IOException if the value could not be set
      */
+    @Override
     public void setValue(String value) throws IOException
     {
         getCOSObject().setString(COSName.V, value);
@@ -232,6 +237,7 @@ public class PDNonTerminalField extends PDField
      *
      * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
+     * @param value
      */
     public void setDefaultValue(COSBase value)
     {
@@ -241,6 +247,7 @@ public class PDNonTerminalField extends PDField
     @Override
     public List<PDAnnotationWidget> getWidgets()
     {
+        //TODO shouldn't we return a non modifiable list?
         return Collections.emptyList();
     }
 }
