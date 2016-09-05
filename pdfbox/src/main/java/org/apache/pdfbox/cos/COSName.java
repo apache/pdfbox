@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.pdfbox.util.Charsets;
+import org.apache.pdfbox.util.Hex;
 
 /**
  * A PDF Name object.
@@ -703,7 +704,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
             else
             {
                 output.write('#');
-                output.write(String.format("%02X", current).getBytes(Charsets.US_ASCII));
+                Hex.writeHexByte(b, output);
             }
         }
     }
