@@ -514,10 +514,11 @@ public class PDPage implements COSObjectable, PDContentStream
     }
 
     /**
-     * This will get a list of PDThreadBead objects, which are article threads in the document.
-     * This will return an empty list if there are no thread beads.
-     * 
-     * @return A list of article threads on this page.
+     * This will get a list of PDThreadBead objects, which are article threads in the document. This
+     * will return an empty list if there are no thread beads.
+     *
+     * @return A list of article threads on this page, never null. The returned list is backed by
+     * the beads COSArray, so any adding or deleting in this list will change the document too.
      */
     public List<PDThreadBead> getThreadBeads()
     {
@@ -539,7 +540,6 @@ public class PDPage implements COSObjectable, PDContentStream
             pdObjects.add(bead);
         }
         return new COSArrayList<PDThreadBead>(pdObjects, beads);
-
     }
 
     /**
