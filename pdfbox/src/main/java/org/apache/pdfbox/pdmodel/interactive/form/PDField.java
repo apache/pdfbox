@@ -133,8 +133,8 @@ public abstract class PDField implements COSObjectable
      * 
      * @return a List of {@link PDAnnotationWidget} annotations. Be aware that this list is
      * <i>not</i> backed by the actual widget collection of the field, so adding or deleting has no
-     * effect on the PDF document until you call {@link #setWidgets(java.util.List) setWidgets()}
-     * with the modified list.
+     * effect on the PDF document. For {@link PDTerminalField} you'd have to call
+     * {@link PDTerminalField#setWidgets(java.util.List) setWidgets()} with the modified list.
      */
     public abstract List<PDAnnotationWidget> getWidgets();
     
