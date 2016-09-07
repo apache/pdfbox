@@ -113,14 +113,13 @@ public class PDFTextStripperByArea extends PDFTextStripper
      */
     public void extractRegions( PDPage page ) throws IOException
     {
-        Iterator<String> regionIter = regions.iterator();
-        while( regionIter.hasNext() )
+        for (String region : regions)
         {
             setStartPage(getCurrentPageNo());
             setEndPage(getCurrentPageNo());
             //reset the stored text for the region so this class
             //can be reused.
-            String regionName = regionIter.next();
+            String regionName = region;
             ArrayList<List<TextPosition>> regionCharactersByArticle = new ArrayList<List<TextPosition>>();
             regionCharactersByArticle.add( new ArrayList<TextPosition>() );
             regionCharacterList.put( regionName, regionCharactersByArticle );
@@ -140,10 +139,8 @@ public class PDFTextStripperByArea extends PDFTextStripper
     @Override
     protected void processTextPosition( TextPosition text )
     {
-        Iterator<String> regionIter = regionArea.keySet().iterator();
-        while( regionIter.hasNext() )
+        for (String region : regionArea.keySet())
         {
-            String region = regionIter.next();
             Rectangle2D rect = regionArea.get( region );
             if( rect.contains( text.getX(), text.getY() ) )
             {
@@ -162,10 +159,8 @@ public class PDFTextStripperByArea extends PDFTextStripper
     @Override
     protected void writePage() throws IOException
     {
-        Iterator<String> regionIter = regionArea.keySet().iterator();
-        while( regionIter.hasNext() )
+        for (String region : regionArea.keySet())
         {
-            String region = regionIter.next();
             charactersByArticle = regionCharacterList.get( region );
             output = regionText.get( region );
             super.writePage();
