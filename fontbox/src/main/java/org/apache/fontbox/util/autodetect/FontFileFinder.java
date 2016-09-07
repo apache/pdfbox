@@ -111,10 +111,8 @@ public class FontFileFinder
             File[] filelist = directory.listFiles();
             if (filelist != null)
             {
-                int numOfFiles = filelist.length;
-                for (int i=0;i<numOfFiles;i++)
+                for (File file : filelist)
                 {
-                    File file = filelist[i];
                     if (file.isDirectory())
                     {
                         // skip hidden directories
