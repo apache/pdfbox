@@ -19,7 +19,6 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
@@ -62,9 +61,9 @@ public class WriteDecodedDoc
         {
             doc = PDDocument.load(new File(in), password);
             doc.setAllSecurityToBeRemoved(true);
-            for (Iterator<COSObject> i = doc.getDocument().getObjects().iterator(); i.hasNext();)
+            for (COSObject cosObject : doc.getDocument().getObjects())
             {
-                COSBase base = i.next().getObject();
+                COSBase base = cosObject.getObject();
                 if (base instanceof COSStream)
                 {
                     COSStream stream = (COSStream)base;
