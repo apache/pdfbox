@@ -623,7 +623,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            graphics.fill(linePath);
+            if (linePath.getBounds2D().getWidth() > 0 && linePath.getBounds2D().getHeight() > 0)
+            {
+                graphics.fill(linePath);
+            }
         }
         
         linePath.reset();
