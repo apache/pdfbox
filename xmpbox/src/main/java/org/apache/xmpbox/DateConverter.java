@@ -67,7 +67,7 @@ public final class DateConverter
      */
     private DateConverter()
     {
-    };
+    }
 
     /**
      * This will convert a string to a calendar.

@@ -32,6 +32,6 @@ public enum PDTransitionDimension
     /**
      * Vertical
      */
-    V;
+    V
 
 }
