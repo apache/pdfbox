@@ -55,9 +55,11 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
@@ -97,13 +99,16 @@ public class PDDocument implements Closeable
     
     // fonts to subset before saving
     private final Set<PDFont> fontsToSubset = new HashSet<PDFont>();
-    
+
     // Signature interface
     private SignatureInterface signInterface;
-    
+
+    // helper class used to create external signature
+    private SigningSupport signingSupport;
+
     // document-wide cached resources
     private ResourceCache resourceCache = new DefaultResourceCache();
-    
+
     /**
      * Creates an empty PDF document.
      * You need to add at least one page for the document to be valid.
@@ -171,7 +176,34 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Add a signature.
+     * Add parameters of signature to be created externally using default signature options. See
+     * {@link #saveIncrementalForExternalSigning(OutputStream)} method description on external
+     * signature creation scenario details.
+     *
+     * @param sigObject is the PDSignatureField model
+     * @throws IOException if there is an error creating required fields
+     */
+    public void addSignature(PDSignature sigObject) throws IOException
+    {
+        addSignature(sigObject, new SignatureOptions());
+    }
+
+    /**
+     * Add parameters of signature to be created externally. See
+     * {@link #saveIncrementalForExternalSigning(OutputStream)} method description on external
+     * signature creation scenario details.
+     *
+     * @param sigObject is the PDSignatureField model
+     * @param options signature options
+     * @throws IOException if there is an error creating required fields
+     */
+    public void addSignature(PDSignature sigObject, SignatureOptions options) throws IOException
+    {
+        addSignature(sigObject, null, options);
+    }
+
+    /**
+     * Add a signature to be created using the instance of given interface.
      * 
      * @param sigObject is the PDSignatureField model
      * @param signatureInterface is an interface which provides signing capabilities
@@ -1151,6 +1183,52 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * Save PDF incrementally without closing for external signature creation scenario. The general
+     * sequence is:
+     * <pre>
+     *    PDDocument pdDocument = ...;
+     *    OutputStream outputStream = ...;
+     *    SignatureOptions signatureOptions = ...; // options to specify fine tuned signature options or null for defaults
+     *    PDSignature pdSignature = ...;
+     *
+     *    // add signature parameters to be used when creating signature dictionary
+     *    pdDocument.addSignature(pdSignature, signatureOptions);
+     *    // prepare PDF for signing and obtain helper class to be used
+     *    ExternalSigningSupport externalSigningSupport = pdDocument.saveIncrementalForExternalSigning(outputStream);
+     *    // get data to be signed
+     *    InputStream dataToBeSigned = externalSigningSupport.getContent();
+     *    // invoke signature service
+     *    byte[] signature = sign(dataToBeSigned);
+     *    // set resulted CMS signature
+     *    externalSigningSupport.setSignature(signature);
+     *
+     *    // last step is to close the document
+     *    pdDocument.close();
+     * </pre>
+     * <p>
+     * Note that after calling this method, only {@code close()} method may invoked for
+     * {@code PDDocument} instance and only AFTER {@link ExternalSigningSupport} instance is used.
+     * </p>
+     *
+     * @param output stream to write final PDF
+     * @return instance to be used for external signing and setting CMS signature
+     * @throws IOException if the output could not be written
+     * @throws IllegalStateException if the document was not loaded from a file or a stream or
+     * signature optionss were not set.
+     */
+    public ExternalSigningSupport saveIncrementalForExternalSigning(OutputStream output) throws IOException
+    {
+        if (pdfSource == null)
+        {
+            throw new IllegalStateException("document was not loaded from a file or a stream");
+        }
+        COSWriter writer = new COSWriter(output, pdfSource);
+        writer.write(this);
+        signingSupport = new SigningSupport(writer);
+        return signingSupport;
+    }
+
+    /**
      * Returns the page at the given index.
      *
      * @param pageIndex the page index
@@ -1191,6 +1269,12 @@ public class PDDocument implements Closeable
     {
         if (!document.isClosed())
         {
+            // close resources and COSWriter
+            if (signingSupport != null)
+            {
+                signingSupport.close();
+            }
+
             // close all intermediate I/O streams
             document.close();
             
