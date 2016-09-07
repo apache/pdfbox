@@ -66,6 +66,7 @@ import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.COSFilterInputStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
@@ -220,6 +221,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private RandomAccessRead tempIncInput;
     private OutputStream incrementalOutput;
     private SignatureInterface signatureInterface;
+    private byte[] incrementPart;
 
     /**
      * COSWriter constructor comment.
@@ -744,7 +746,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         // copy the new incremental data into a buffer (e.g. signature dict, trailer)
         ByteArrayOutputStream byteOut = (ByteArrayOutputStream) output;
         byteOut.flush();
-        byte[] buffer = byteOut.toByteArray();
+        incrementPart = byteOut.toByteArray();
 
         // overwrite the ByteRange in the buffer
         byte[] byteRangeBytes = byteRange.getBytes(Charsets.ISO_8859_1);
@@ -752,26 +754,76 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             if (i >= byteRangeBytes.length)
             {
-                buffer[(int)(byteRangeOffset + i - inLength)] = 0x20; // SPACE
+                incrementPart[(int) (byteRangeOffset + i - inLength)] = 0x20; // SPACE
             }
             else
             {
-                buffer[(int)(byteRangeOffset + i - inLength)] = byteRangeBytes[i];
+                incrementPart[(int) (byteRangeOffset + i - inLength)] = byteRangeBytes[i];
             }
         }
 
-        // get only the incremental bytes to be signed (includes /ByteRange but not /Contents)
-        byte[] signBuffer = new byte[buffer.length - (int)signatureLength];
-        int bufSignatureOffset = (int)(signatureOffset - inLength);
-        System.arraycopy(buffer, 0, signBuffer, 0, bufSignatureOffset);
-        System.arraycopy(buffer, bufSignatureOffset + (int)signatureLength,
-                         signBuffer, bufSignatureOffset, buffer.length - bufSignatureOffset - (int)signatureLength);
+        if (signatureInterface != null)
+        {
+            // data to be signed
+            final InputStream dataToSign = getDataToSign();
 
-        SequenceInputStream signStream = new SequenceInputStream(new RandomAccessInputStream(incrementalInput),
-                new ByteArrayInputStream(signBuffer));
+            // sign the bytes
+            byte[] signatureBytes = signatureInterface.sign(dataToSign);
+            writeExternalSignature(signatureBytes);
+        }
+        // else signature should created externally and set via writeSignature()
+    }
 
-        // sign the bytes
-        byte[] signatureBytes = Hex.getBytes(signatureInterface.sign(signStream));
+    /**
+     * Return the stream of PDF data to be signed. Clients should use this method only to create
+     * signatures externally. {@link #write(PDDocument)} method should have been called prior. The
+     * created signature should be set using {@link #writeExternalSignature(byte[])}.
+     * <p>
+     * When {@link SignatureInterface} instance is used, COSWriter obtains and writes the signature
+     * itsef.
+     * </p>
+     * Note that caller must close the obtained stream.
+     *
+     * @return data stream to be signed
+     * @throws IllegalStateException if PDF is not prepared for external signing
+     * @throws IOException if input data is closed
+     */
+    public InputStream getDataToSign() throws IOException
+    {
+        if (incrementPart == null || incrementalInput == null)
+        {
+            throw new IllegalStateException("PDF not prepared for signing");
+        }
+        // range of incremental bytes to be signed (includes /ByteRange but not /Contents)
+        int incPartSigOffset = (int) (signatureOffset - incrementalInput.length());
+        int afterSigOffset = incPartSigOffset + (int) signatureLength;
+        int[] range =
+        {
+            0, incPartSigOffset,
+            afterSigOffset, incrementPart.length - afterSigOffset
+        };
+
+        return new SequenceInputStream(
+                new RandomAccessInputStream(incrementalInput),
+                new COSFilterInputStream(incrementPart, range));
+    }
+
+    /**
+     * Write externally created signature of PDF data obtained via {@link #getDataToSign()} method.
+     *
+     * @param cmsSignature CMS signature byte array
+     * @throws IllegalStateException if PDF is not prepared for external signing
+     * @throws IOException if source data stream is closed
+     */
+    public void writeExternalSignature(byte[] cmsSignature) throws IOException
+    {
+
+        if (incrementPart == null || incrementalInput == null)
+        {
+            throw new IllegalStateException("PDF not prepared for setting signature");
+        }
+        byte[] signatureBytes = Hex.getBytes(cmsSignature);
+
         // substract 2 bytes because of the enclosing "<>"
         if (signatureBytes.length > signatureLength - 2)
         {
@@ -779,11 +831,15 @@ public class COSWriter implements ICOSVisitor, Closeable
         }
 
         // overwrite the signature Contents in the buffer
-        System.arraycopy(signatureBytes, 0, buffer, bufSignatureOffset + 1, signatureBytes.length);
+        int incPartSigOffset = (int) (signatureOffset - incrementalInput.length());
+        System.arraycopy(signatureBytes, 0, incrementPart, incPartSigOffset + 1, signatureBytes.length);
 
         // write the data to the incremental output stream
         IOUtils.copy(new RandomAccessInputStream(incrementalInput), incrementalOutput);
-        incrementalOutput.write(buffer);
+        incrementalOutput.write(incrementPart);
+
+        // prevent further use
+        incrementPart = null;
     }
 
     private void writeXrefRange(long x, long y) throws IOException
@@ -1219,7 +1275,8 @@ public class COSWriter implements ICOSVisitor, Closeable
     }
 
     /**
-     * This will write the pdf document.
+     * This will write the pdf document. If signature should be created externally,
+     * {@link #writeExternalSignature(byte[])} should be invoked to set signature after calling this method.
      *
      * @param doc The document to write.
      *
@@ -1231,10 +1288,12 @@ public class COSWriter implements ICOSVisitor, Closeable
     }
 
     /**
-     * This will write the pdf document.
+     * This will write the pdf document. If signature should be created externally,
+     * {@link #writeExternalSignature(byte[])} should be invoked to set signature after calling this method.
      *
      * @param doc The document to write.
-     * @param signInterface class to be used for signing 
+     * @param signInterface class to be used for signing; {@code null} if external signing would be performed
+     *                      or there will be no signing at all
      *
      * @throws IOException If an error occurs while generating the data.
      * @throws IllegalStateException If the document has an encryption dictionary but no protection
