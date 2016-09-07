@@ -123,7 +123,7 @@ public class OSXAdapter implements InvocationHandler
         // com.apple.eawt.Application reflectively
         try {
             Method enablePrefsMethod = macOSXApplication.getClass().getDeclaredMethod("setEnabledPreferencesMenu", new Class[] { boolean.class });
-            enablePrefsMethod.invoke(macOSXApplication, new Object[] { Boolean.valueOf(enablePrefsMenu) });
+            enablePrefsMethod.invoke(macOSXApplication, new Object[] { enablePrefsMenu });
         } catch (Exception ex) {
             System.err.println("OSXAdapter could not access the About Menu");
             throw new RuntimeException(ex);
@@ -188,7 +188,7 @@ public class OSXAdapter implements InvocationHandler
         if (result == null) {
             return true;
         }
-        return Boolean.valueOf(result.toString()).booleanValue();
+        return Boolean.valueOf(result.toString());
     }
 
     // InvocationHandler implementation
