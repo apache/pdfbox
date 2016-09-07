@@ -32,5 +32,5 @@ public enum PDTransitionMotion
     /**
      * Outward from the center of the page
      */
-    O;
+    O
 }

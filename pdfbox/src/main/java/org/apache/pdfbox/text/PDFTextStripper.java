@@ -1870,7 +1870,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 LOG.error("Could not close BidiMirroring.txt ", e);
             }
         }
-    };
+    }
 
     /**
      * This method parses the bidi file provided as inputstream.

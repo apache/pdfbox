@@ -52,7 +52,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
         float lineWidth = getLineWidth();
         try
         {
-            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();;
+            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
             contentStream.setStrokingColorOnDemand(getColor());
             boolean hasBackground = contentStream
                     .setNonStrokingColorOnDemand(((PDAnnotationSquareCircle) getAnnotation()).getInteriorColor());

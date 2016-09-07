@@ -53,7 +53,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
         float lineWidth = getLineWidth();
         try
         {
-            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();;
+            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
             contentStream.setStrokingColorOnDemand(getColor());
             boolean hasBackground = contentStream
                     .setNonStrokingColorOnDemand(((PDAnnotationLink) getAnnotation()).getColor());
