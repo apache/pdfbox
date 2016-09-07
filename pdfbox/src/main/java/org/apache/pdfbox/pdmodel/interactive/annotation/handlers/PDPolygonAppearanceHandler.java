@@ -58,7 +58,6 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         {
             PDAnnotation annotation = getAnnotation();
             PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
-            ;
             contentStream.setStrokingColorOnDemand(getColor());
 
             // TODO: handle opacity settings
