@@ -52,7 +52,7 @@ public class Overlay
     public enum Position
     {
         FOREGROUND, BACKGROUND
-    };
+    }
 
     private LayoutPage defaultOverlayPage;
     private LayoutPage firstPageOverlayPage;

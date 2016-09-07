@@ -88,7 +88,7 @@ public class XrefTrailerResolver
         /**
          * XRef stream type.
          */
-        STREAM;
+        STREAM
     }
     
     private final Map<Long, XrefTrailerObj> bytePosToXrefMap = new HashMap<Long, XrefTrailerObj>();
