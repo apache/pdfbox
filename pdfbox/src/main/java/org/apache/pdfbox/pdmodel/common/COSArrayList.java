@@ -429,10 +429,8 @@ public class COSArrayList<E> implements List<E>
             else
             {
                 array = new COSArray();
-                Iterator<?> iter = cosObjectableList.iterator();
-                while( iter.hasNext() )
+                for (Object next : cosObjectableList)
                 {
-                    Object next = iter.next();
                     if( next instanceof String )
                     {
                         array.add( new COSString( (String)next ) );
@@ -468,10 +466,8 @@ public class COSArrayList<E> implements List<E>
     private List<COSBase> toCOSObjectList( Collection<?> list )
     {
         List<COSBase> cosObjects = new ArrayList<COSBase>();
-        Iterator<?> iter = list.iterator();
-        while( iter.hasNext() )
+        for (Object next : list)
         {
-            Object next = iter.next();
             if( next instanceof String )
             {
                 cosObjects.add( new COSString( (String)next ) );
