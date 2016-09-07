@@ -33,6 +33,7 @@ import java.security.cert.CertificateException;
 import java.util.Calendar;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 
 /**
@@ -49,8 +50,12 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 public class CreateSignature extends CreateSignatureBase
 {
 
+    private boolean externalSignature;
+    private ExternalSigningSupport externalSigning;
+
     /**
      * Initialize the signature creator with a keystore and certficate password.
+     *
      * @param keystore the pkcs12 keystore containing the signing certificate
      * @param pin the password for recovering the key
      * @throws KeyStoreException if the keystore has not been initialized (loaded)
@@ -125,11 +130,24 @@ public class CreateSignature extends CreateSignatureBase
         // the signing date, needed for valid signature
         signature.setSignDate(Calendar.getInstance());
 
-        // register signature dictionary and sign interface
-        document.addSignature(signature, this);
+        if (externalSignature)
+        {
+            System.out.println("Sign externally...");
+            document.addSignature(signature);
+            externalSigning = document.saveIncrementalForExternalSigning(output);
+            // invoke external signature service
+            byte[] cmsSignature = sign(externalSigning.getContent());
+            // set signature bytes received from the service
+            externalSigning.setSignature(cmsSignature);
+        }
+        else
+        {
+            // register signature dictionary and sign interface
+            document.addSignature(signature, this);
 
-        // write incremental (only for signing purpose)
-        document.saveIncremental(output);
+            // write incremental (only for signing purpose)
+            document.saveIncremental(output);
+        }
     }
 
     public static void main(String[] args) throws IOException, GeneralSecurityException
@@ -141,7 +159,8 @@ public class CreateSignature extends CreateSignatureBase
         }
 
         String tsaUrl = null;
-        for(int i = 0; i < args.length; i++)
+        boolean externalSig = false;
+        for (int i = 0; i < args.length; i++)
         {
             if (args[i].equals("-tsa"))
             {
@@ -149,8 +168,13 @@ public class CreateSignature extends CreateSignatureBase
                 if (i >= args.length)
                 {
                     usage();
+                    System.exit(1);
                 }
                 tsaUrl = args[i];
+            }
+            if (args[i].equals("-e"))
+            {
+                externalSig = true;
             }
         }
 
@@ -170,6 +194,7 @@ public class CreateSignature extends CreateSignatureBase
 
         // sign PDF
         CreateSignature signing = new CreateSignature(keystore, password);
+        signing.setExternalSignature(externalSig);
 
         File inFile = new File(args[2]);
         String name = inFile.getName();
@@ -184,6 +209,12 @@ public class CreateSignature extends CreateSignatureBase
         System.err.println("usage: java " + CreateSignature.class.getName() + " " +
                            "<pkcs12_keystore> <password> <pdf_to_sign>\n" + "" +
                            "options:\n" +
-                           "  -tsa <url>    sign timestamp using the given TSA server");
+                           "  -tsa <url>    sign timestamp using the given TSA server\n" +
+                           "  -e            sign using external signature creation scenario");
+    }
+
+    public void setExternalSignature(boolean externalSignature)
+    {
+        this.externalSignature = externalSignature;
     }
 }
