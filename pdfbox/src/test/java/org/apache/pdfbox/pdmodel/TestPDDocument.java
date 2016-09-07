@@ -238,27 +238,4 @@ public class TestPDDocument extends TestCase
         boolean deleted = f.delete();
         assertTrue("delete good file failed after successful load() and close()", deleted);
     }
-
-    /**
-     * PDFBOX-3481: Test whether XRef generation results in unusable PDFs if Arab numbering is
-     * default.
-     */
-    public void testSaveArabicLocale() throws IOException, COSVisitorException
-    {
-        Locale defaultLocale = Locale.getDefault();
-        Locale arabicLocale = new Locale.Builder().setLanguageTag("ar-EG-u-nu-arab").build();
-        Locale.setDefault(arabicLocale);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        PDDocument doc = new PDDocument();
-        doc.addPage(new PDPage());
-        doc.save(baos);
-        doc.close();
-
-        PDDocument.load(new ByteArrayInputStream(baos.toByteArray())).close();
-        PDDocument.loadNonSeq(new ByteArrayInputStream(baos.toByteArray()), null).close();
-
-        Locale.setDefault(defaultLocale);
-    }
 }
