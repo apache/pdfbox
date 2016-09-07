@@ -551,10 +551,9 @@ public class COSParser extends BaseParser
                 }
                 else if (baseObj instanceof COSArray)
                 {
-                    final Iterator<COSBase> arrIter = ((COSArray) baseObj).iterator();
-                    while (arrIter.hasNext())
+                    for (COSBase cosBase : ((COSArray) baseObj))
                     {
-                        addNewToList(toBeParsedList, arrIter.next(), addedObjects);
+                        addNewToList(toBeParsedList, cosBase, addedObjects);
                     }
                 }
                 else if (baseObj instanceof COSObject)
