@@ -44,9 +44,9 @@ abstract class FontPane
     {
         double minY = 0;
         double maxY = 0;
-        for (int i = 0; i < tableData.length; ++i)
+        for (Object[] aTableData : tableData)
         {
-            GeneralPath path = (GeneralPath) tableData[i][glyphIndex];
+            GeneralPath path = (GeneralPath) aTableData[glyphIndex];
             Rectangle2D bounds2D = path.getBounds2D();
             if (bounds2D.isEmpty())
             {
