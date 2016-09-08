@@ -632,19 +632,17 @@ public class XMPSchema extends AbstractStructuredType
         if (array != null)
         {
             List<AbstractField> toDelete = new ArrayList<AbstractField>();
-            Iterator<AbstractField> it = array.getContainer().getAllProperties().iterator();
-            while (it.hasNext())
+            for (AbstractField abstractField : array.getContainer().getAllProperties())
             {
-                AbstractSimpleProperty tmp = (AbstractSimpleProperty) it.next();
+                AbstractSimpleProperty tmp = (AbstractSimpleProperty) abstractField;
                 if (tmp.getStringValue().equals(fieldValue))
                 {
                     toDelete.add(tmp);
                 }
             }
-            Iterator<AbstractField> eraseProperties = toDelete.iterator();
-            while (eraseProperties.hasNext())
+            for (AbstractField aToDelete : toDelete)
             {
-                array.getContainer().removeProperty(eraseProperties.next());
+                array.getContainer().removeProperty(aToDelete);
             }
         }
     }
@@ -750,19 +748,17 @@ public class XMPSchema extends AbstractStructuredType
         if (array != null)
         {
             List<AbstractField> toDelete = new ArrayList<AbstractField>();
-            Iterator<AbstractField> it = array.getContainer().getAllProperties().iterator();
-            while (it.hasNext())
+            for (AbstractField abstractField : array.getContainer().getAllProperties())
             {
-                AbstractSimpleProperty tmp = (AbstractSimpleProperty) it.next();
+                AbstractSimpleProperty tmp = (AbstractSimpleProperty) abstractField;
                 if (tmp.equals(fieldValue))
                 {
                     toDelete.add(tmp);
                 }
             }
-            Iterator<AbstractField> eraseProperties = toDelete.iterator();
-            while (eraseProperties.hasNext())
+            for (AbstractField aToDelete : toDelete)
             {
-                array.getContainer().removeProperty(eraseProperties.next());
+                array.getContainer().removeProperty(aToDelete);
             }
         }
     }
@@ -885,19 +881,16 @@ public class XMPSchema extends AbstractStructuredType
         if (seq != null)
         {
             List<AbstractField> toDelete = new ArrayList<AbstractField>();
-            Iterator<AbstractField> it = seq.getContainer().getAllProperties().iterator();
-            while (it.hasNext())
+            for (AbstractField tmp : seq.getContainer().getAllProperties())
             {
-                AbstractField tmp = it.next();
                 if (tmp instanceof DateType && ((DateType) tmp).getValue().equals(date))
                 {
                     toDelete.add(tmp);
                 }
             }
-            Iterator<AbstractField> eraseProperties = toDelete.iterator();
-            while (eraseProperties.hasNext())
+            for (AbstractField aToDelete : toDelete)
             {
-                seq.getContainer().removeProperty(eraseProperties.next());
+                seq.getContainer().removeProperty(aToDelete);
             }
         }
     }
@@ -996,10 +989,9 @@ public class XMPSchema extends AbstractStructuredType
                 reordered.add(tmp);
                 toDelete.add(tmp);
             }
-            Iterator<AbstractField> eraseProperties = toDelete.iterator();
-            while (eraseProperties.hasNext())
+            for (AbstractField aToDelete : toDelete)
             {
-                alt.removeProperty(eraseProperties.next());
+                alt.removeProperty(aToDelete);
             }
             it = reordered.iterator();
             while (it.hasNext())
@@ -1205,10 +1197,9 @@ public class XMPSchema extends AbstractStructuredType
         while (itNewValues.hasNext())
         {
             TextType tmpNewValue = (TextType) itNewValues.next();
-            Iterator<AbstractField> itOldValues = arrayProperty.getContainer().getAllProperties().iterator();
-            while (itOldValues.hasNext())
+            for (AbstractField abstractField : arrayProperty.getContainer().getAllProperties())
             {
-                TextType tmpOldValue = (TextType) itOldValues.next();
+                TextType tmpOldValue = (TextType) abstractField;
                 if (tmpOldValue.getStringValue().equals(tmpNewValue.getStringValue()))
                 {
                     return true;
