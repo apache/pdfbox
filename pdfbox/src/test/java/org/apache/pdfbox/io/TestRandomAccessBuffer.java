@@ -18,8 +18,6 @@
 package org.apache.pdfbox.io;
 
 import java.io.IOException;
-import java.nio.Buffer;
-import java.util.Vector;
 
 import junit.framework.TestCase;
 
