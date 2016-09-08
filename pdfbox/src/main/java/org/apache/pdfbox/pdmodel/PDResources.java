@@ -409,12 +409,44 @@ public final class PDResources implements COSObjectable
             xobject = PDXObject.createXObject(value, this);
         }
 
-        // we can't cache PDImageXObject, because it holds page resources, see PDFBOX-2370
-        if (cache != null && !(xobject instanceof PDImageXObject))
+        if (cache != null)
         {
-            cache.put(indirect, xobject);
+            if (isAllowedCache(xobject))
+            {
+                cache.put(indirect, xobject);
+            }
         }
         return xobject;
+    }
+
+    private boolean isAllowedCache(PDXObject xobject)
+    {
+        if (xobject instanceof PDImageXObject)
+        {
+            COSBase colorSpace = xobject.getCOSObject().getDictionaryObject(COSName.COLORSPACE);
+            if (colorSpace instanceof COSName)
+            {
+                // don't cache if it might use page resources, see PDFBOX-2370 and PDFBOX-3484
+                COSName colorSpaceName = (COSName) colorSpace;
+                if (colorSpaceName.equals(COSName.DEVICECMYK) && hasColorSpace(COSName.DEFAULT_CMYK))
+                {
+                    return false;
+                }
+                if (colorSpaceName.equals(COSName.DEVICERGB) && hasColorSpace(COSName.DEFAULT_RGB))
+                {
+                    return false;
+                }
+                if (colorSpaceName.equals(COSName.DEVICEGRAY) && hasColorSpace(COSName.DEFAULT_GRAY))
+                {
+                    return false;
+                }
+                if (hasColorSpace(colorSpaceName))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
