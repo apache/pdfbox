@@ -53,6 +53,7 @@ import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
@@ -74,6 +75,14 @@ public class PDDocument implements Closeable
 {
     private static final Log LOG = LogFactory.getLog(PDDocument.class);
 
+    /**
+     * avoid concurrency issues with PDDeviceRGB
+     */
+    static
+    {
+    	PDDeviceRGB.INSTANCE.toRGB(new float[]{1,1,1,1});
+    }
+    
     private final COSDocument document;
 
     // cached values
