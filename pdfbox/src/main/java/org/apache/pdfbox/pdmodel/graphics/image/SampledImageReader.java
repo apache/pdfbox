@@ -122,6 +122,11 @@ final class SampledImageReader
         final int bitsPerComponent = pdImage.getBitsPerComponent();
         final float[] decode = getDecodeArray(pdImage);
 
+        if (width <= 0 || height <= 0)
+        {
+            throw new IOException("image weight and height must be positive");
+        }
+
         //
         // An AWT raster must use 8/16/32 bits per component. Images with < 8bpc
         // will be unpacked into a byte-backed raster. Images with 16bpc will be reduced
