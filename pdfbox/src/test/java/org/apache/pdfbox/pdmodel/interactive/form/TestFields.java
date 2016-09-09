@@ -24,6 +24,7 @@ import junit.framework.TestSuite;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * This will test the form fields in PDFBox.
@@ -183,6 +184,44 @@ public class TestFields extends TestCase
                     "org.apache.pdfbox.cos.COSStream");
             assertEquals(textField.getValue().length(),145396);
             
+        }
+        finally
+        {
+            if( doc != null )
+            {
+                doc.close();
+            }
+        }
+    }
+    
+    
+    /**
+     * This will test the handling of a widget with a missing (required) /Rect entry.
+     *
+     * @throws IOException If there is an error loading the form or the field.
+     */
+    public void testWidgetMissingRect() throws IOException
+    {
+        PDDocument doc = null;
+        
+        try
+        {
+            doc = PDDocument.load(new File(PATH_OF_PDF));
+            
+            PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
+            
+            PDTextField textField = (PDTextField)form.getField("TextField-DefaultValue");
+            PDAnnotationWidget widget = textField.getWidgets().get(0);
+
+            // initially there is an Appearance Entry in the form
+            assertNotNull(widget.getCOSObject().getDictionaryObject(COSName.AP));
+            widget.getCOSObject().removeItem(COSName.RECT);
+            textField.setValue("field value");
+            
+            // There shall be no appearance entry if there is no /Rect to
+            // behave as Adobe Acrobat does
+            assertNull(widget.getCOSObject().getDictionaryObject(COSName.AP));
+             
         }
         finally
         {
