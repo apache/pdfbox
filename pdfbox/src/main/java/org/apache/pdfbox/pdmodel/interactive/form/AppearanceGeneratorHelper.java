@@ -106,6 +106,14 @@ class AppearanceGeneratorHelper
 
         for (PDAnnotationWidget widget : field.getWidgets())
         {
+            PDRectangle rect = widget.getRectangle();
+            if (rect == null)
+            {
+            	widget.getCOSObject().removeItem(COSName.AP);
+                LOG.warn("widget of field " + field.getFullyQualifiedName() + " has no rectangle, no appearance stream created");
+                continue;
+            }
+        	
             PDFormFieldAdditionalActions actions = field.getActions();
 
             // in case all tests fail the field will be formatted by acrobat
@@ -130,13 +138,6 @@ class AppearanceGeneratorHelper
                 }
                 else
                 {
-                    PDRectangle rect = widget.getRectangle();
-                    if (rect == null)
-                    {
-                        LOG.warn("widget of field " + field.getFullyQualifiedName() + " has no rectangle, no appearance stream created");
-                        continue;
-                    }
-
                     appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
 
                     // Calculate the entries for the bounding box and the transformation matrix
