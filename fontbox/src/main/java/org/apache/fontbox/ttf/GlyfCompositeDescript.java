@@ -101,10 +101,8 @@ public class GlyfCompositeDescript extends GlyfDescript
         int firstIndex = 0;
         int firstContour = 0;
 
-        Iterator<GlyfCompositeComp> i = components.iterator();
-        while (i.hasNext())
+        for (GlyfCompositeComp comp : components)
         {
-            GlyfCompositeComp comp = i.next();
             comp.setFirstIndex(firstIndex);
             comp.setFirstContour(firstContour);
 

@@ -1379,10 +1379,9 @@ public class COSWriter implements ICOSVisitor, Closeable
             COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
             if( info != null )
             {
-                Iterator<COSBase> values = info.getValues().iterator();
-                while( values.hasNext() )
+                for (COSBase cosBase : info.getValues())
                 {
-                    md5.update(values.next().toString().getBytes(Charsets.ISO_8859_1));
+                    md5.update(cosBase.toString().getBytes(Charsets.ISO_8859_1));
                 }
             }
             // reuse origin documentID if available as first value
