@@ -89,9 +89,8 @@ public class PDFXRefStream implements PDFXRef
 
         int[] wEntry = getWEntry();
         COSArray wAsArray = new COSArray();
-        for ( int i = 0; i < wEntry.length; i++ )
+        for (int j : wEntry)
         {
-            int j = wEntry[i];
             wAsArray.add(COSInteger.get(j));
         }
         stream.setItem(COSName.W, wAsArray);
