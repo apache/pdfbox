@@ -64,7 +64,7 @@ public class COSStandardOutputStream extends FilterOutputStream
      * @param out The underlying stream to write to.
      * @param position The current position of output stream.
      */
-    public COSStandardOutputStream(OutputStream out, int position)
+    public COSStandardOutputStream(OutputStream out, long position)
     {
         super(out);
         this.position = position;
