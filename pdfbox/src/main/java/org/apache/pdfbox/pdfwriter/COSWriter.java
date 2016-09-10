@@ -746,7 +746,6 @@ public class COSWriter implements ICOSVisitor, Closeable
      * When {@link SignatureInterface} instance is used, COSWriter obtains and writes the signature
      * itsef.
      * </p>
-     * Note that caller must close the obtained stream.
      *
      * @return data stream to be signed
      * @throws IllegalStateException if PDF is not prepared for external signing
