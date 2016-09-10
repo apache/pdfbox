@@ -1183,6 +1183,9 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * <p>
+     * <b>(This is a new feature for 2.0.3. The API for external signing might change based on feedback after release!)</b>
+     * <p>
      * Save PDF incrementally without closing for external signature creation scenario. The general
      * sequence is:
      * <pre>
