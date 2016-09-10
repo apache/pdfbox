@@ -59,7 +59,6 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.cos.ICOSVisitor;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccessBuffer;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
@@ -168,8 +167,6 @@ public class COSWriter implements ICOSVisitor, Closeable
     private final NumberFormat formatXrefGeneration = new DecimalFormat("00000",
             DecimalFormatSymbols.getInstance(Locale.US));
 
-    private final NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
-
     // the stream where we create the pdf output
     private OutputStream output;
 
@@ -218,7 +215,6 @@ public class COSWriter implements ICOSVisitor, Closeable
     private long signatureOffset, signatureLength;
     private long byteRangeOffset, byteRangeLength;
     private RandomAccessRead incrementalInput;
-    private RandomAccessRead tempIncInput;
     private OutputStream incrementalOutput;
     private SignatureInterface signatureInterface;
     private byte[] incrementPart;
@@ -230,27 +226,8 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public COSWriter(OutputStream os)
     {
-        super();
         setOutput(os);
         setStandardOutput(new COSStandardOutputStream(output));
-        formatDecimal.setMaximumFractionDigits( 10 );
-        formatDecimal.setGroupingUsed( false );
-    }
-    
-    /**
-     * COSWriter constructor for incremental updates. 
-     *
-     * @param outputStream output stream where the new PDF data will be written
-     * @param inputStream input stream containing source PDF data
-     * 
-     * @throws IOException if something went wrong
-     * @deprecated Use {@link #COSWriter(OutputStream, RandomAccessRead)} instead
-     */
-    public COSWriter(OutputStream outputStream, InputStream inputStream) throws IOException
-    {
-        super();
-        tempIncInput = new RandomAccessBuffer(inputStream);
-        initWriter(outputStream, tempIncInput);
     }
 
     /**
@@ -263,12 +240,6 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
     {
-        super();
-        initWriter(outputStream, inputData);
-    }
-
-    private void initWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
-    {
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
         setStandardOutput(new COSStandardOutputStream(output, (int)inputData.length()));
@@ -276,9 +247,6 @@ public class COSWriter implements ICOSVisitor, Closeable
         incrementalInput = inputData;
         incrementalOutput = outputStream;
         incrementalUpdate = true;
-
-        formatDecimal.setMaximumFractionDigits( 10 );
-        formatDecimal.setGroupingUsed( false );
     }
 
     private void prepareIncrement(PDDocument doc)
@@ -346,10 +314,6 @@ public class COSWriter implements ICOSVisitor, Closeable
             getOutput().close();
         }
         if (incrementalOutput != null)
-        {
-            incrementalOutput.close();
-        }
-        if (tempIncInput != null)
         {
             incrementalOutput.close();
         }
