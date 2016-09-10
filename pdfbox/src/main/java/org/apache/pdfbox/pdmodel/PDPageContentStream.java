@@ -667,9 +667,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             throw new IllegalStateException("The color space must be set before setting a color");
         }
 
-        for (int i = 0; i < components.length; i++)
+        for (float component : components)
         {
-            writeOperand(components[i]);
+            writeOperand(component);
         }
 
         PDColorSpace currentStrokingColorSpace = strokingColorSpaceStack.peek();
@@ -741,9 +741,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             throw new IllegalStateException("The color space must be set before setting a color");
         }
 
-        for (int i = 0; i < components.length; i++)
+        for (float component : components)
         {
-            writeOperand(components[i]);
+            writeOperand(component);
         }
 
         PDColorSpace currentNonStrokingColorSpace = nonStrokingColorSpaceStack.peek();
