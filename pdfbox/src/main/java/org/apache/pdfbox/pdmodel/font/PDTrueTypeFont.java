@@ -312,8 +312,11 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     {
         if (getFontDescriptor() != null) {
             PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
-            return new BoundingBox(bbox.getLowerLeftX(), bbox.getLowerLeftY(),
-                                   bbox.getUpperRightX(), bbox.getUpperRightY());
+            if (bbox != null)
+            {
+                return new BoundingBox(bbox.getLowerLeftX(), bbox.getLowerLeftY(),
+                        bbox.getUpperRightX(), bbox.getUpperRightY());
+            }
         }
         return ttf.getFontBBox();
     }
