@@ -387,6 +387,10 @@ public class CFFParser
             // see PDFBOX-1522
             sb.append("0");
         }
+        if (sb.length() == 0)
+        {
+            return 0d;
+        }
         return Double.valueOf(sb.toString());
     }
 
