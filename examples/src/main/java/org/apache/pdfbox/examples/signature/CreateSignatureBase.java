@@ -60,6 +60,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
     private PrivateKey privateKey;
     private Certificate certificate;
     private TSAClient tsaClient;
+    private boolean externalSigning;
 
     /**
      * Initialize the signature creator with a keystore (pkcs12) and pin that should be used for the
@@ -236,4 +237,21 @@ public abstract class CreateSignatureBase implements SignatureInterface
         }
     }
 
+    /**
+     * Set if external signing scenario should be used.
+     * If {@code false}, SignatureInterface would be used for signing.
+     * <p>
+     *     Default: {@code false}
+     * </p>
+     * @param externalSigning {@code true} if external signing should be performed
+     */
+    public void setExternalSigning(boolean externalSigning)
+    {
+        this.externalSigning = externalSigning;
+    }
+
+    public boolean isExternalSigning()
+    {
+        return externalSigning;
+    }
 }

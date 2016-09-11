@@ -50,9 +50,6 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 public class CreateSignature extends CreateSignatureBase
 {
 
-    private boolean externalSignature;
-    private ExternalSigningSupport externalSigning;
-
     /**
      * Initialize the signature creator with a keystore and certficate password.
      *
@@ -130,11 +127,12 @@ public class CreateSignature extends CreateSignatureBase
         // the signing date, needed for valid signature
         signature.setSignDate(Calendar.getInstance());
 
-        if (externalSignature)
+        if (isExternalSigning())
         {
             System.out.println("Sign externally...");
             document.addSignature(signature);
-            externalSigning = document.saveIncrementalForExternalSigning(output);
+            ExternalSigningSupport externalSigning =
+                    document.saveIncrementalForExternalSigning(output);
             // invoke external signature service
             byte[] cmsSignature = sign(externalSigning.getContent());
             // set signature bytes received from the service
@@ -194,7 +192,7 @@ public class CreateSignature extends CreateSignatureBase
 
         // sign PDF
         CreateSignature signing = new CreateSignature(keystore, password);
-        signing.setExternalSignature(externalSig);
+        signing.setExternalSigning(externalSig);
 
         File inFile = new File(args[2]);
         String name = inFile.getName();
@@ -211,10 +209,5 @@ public class CreateSignature extends CreateSignatureBase
                            "options:\n" +
                            "  -tsa <url>    sign timestamp using the given TSA server\n" +
                            "  -e            sign using external signature creation scenario");
-    }
-
-    public void setExternalSignature(boolean externalSignature)
-    {
-        this.externalSignature = externalSignature;
     }
 }
