@@ -122,9 +122,9 @@ class RC4Cipher
      */
     public void write( byte[] data, OutputStream output ) throws IOException
     {
-        for( int i = 0; i < data.length; i++ )
+        for (byte aData : data)
         {
-            write( data[i], output );
+            write(aData, output);
         }
     }
 

@@ -113,11 +113,8 @@ public class PDFText2HTML extends PDFTextStripper
             StringBuilder titleText = new StringBuilder();
             while (textIter.hasNext())
             {
-                Iterator<TextPosition> textByArticle = textIter.next().iterator();
-                while (textByArticle.hasNext())
+                for (TextPosition position : textIter.next())
                 {
-                    TextPosition position = textByArticle.next();
-
                     float currentFontSize = position.getFontSize();
                     //If we're past 64 chars we will assume that we're past the title
                     //64 is arbitrary
