@@ -23,7 +23,6 @@ package org.apache.pdfbox.preflight.font;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING;
 
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
