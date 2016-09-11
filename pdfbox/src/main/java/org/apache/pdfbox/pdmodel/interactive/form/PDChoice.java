@@ -228,7 +228,7 @@ public abstract class PDChoice extends PDVariableText
         {
             return COSArrayList.convertIntegerCOSArrayToList((COSArray) value);
         }
-        return Collections.<Integer>emptyList();
+        return Collections.emptyList();
     }
 
     /**

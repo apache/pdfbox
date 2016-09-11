@@ -177,7 +177,7 @@ public class AcroFormValidationProcess extends AbstractProcess
         if (field instanceof PDTerminalField)
         {
             // The widget validation will be done by the widget annotation, a widget contained in a Field can't have action. 
-            PDAnnotationWidget widget = ((PDTerminalField)field).getWidgets().get(0); // fixme: fails to check multiple widgets
+            PDAnnotationWidget widget = field.getWidgets().get(0); // fixme: fails to check multiple widgets
             if (res && widget != null)
             {
                 ContextHelper.validateElement(ctx, widget.getCOSObject(), ANNOTATIONS_PROCESS);
@@ -189,7 +189,7 @@ public class AcroFormValidationProcess extends AbstractProcess
                     return false;
                 }
             }
-            return exploreWidgets(ctx, ((PDTerminalField)field).getWidgets());
+            return exploreWidgets(ctx, field.getWidgets());
         }
         else
         {

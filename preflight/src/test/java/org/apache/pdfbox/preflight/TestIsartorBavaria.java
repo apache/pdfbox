@@ -86,7 +86,7 @@ public class TestIsartorBavaria
                     String error = new StringTokenizer(path, "//").nextToken().trim();
                     String[] errTab = error.split(",");
                     Set<String> errorSet = new HashSet<String>(Arrays.asList(errTab));
-                    data.add(new Object[] { (File) pdfFile, errorSet } );
+                    data.add(new Object[] { pdfFile, errorSet } );
                 }
             }
         }
@@ -113,7 +113,7 @@ public class TestIsartorBavaria
                             String error = new StringTokenizer(path, "//").nextToken().trim();
                             errorSet.addAll(Arrays.asList(error.split(",")));
                         }
-                        data.add(new Object[] { (File) pdfFile, errorSet } );
+                        data.add(new Object[] { pdfFile, errorSet } );
                     }
                 }
             }

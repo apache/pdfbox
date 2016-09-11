@@ -1015,7 +1015,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setStroke(stroke);
         graphics.setClip(null);
         COSArray pathsArray = (COSArray) base;
-        for (COSBase baseElement : (Iterable<? extends COSBase>) pathsArray.toList())
+        for (COSBase baseElement : pathsArray)
         {
             if (!(baseElement instanceof COSArray))
             {

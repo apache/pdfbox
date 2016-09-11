@@ -243,7 +243,7 @@ public final class PDAcroForm implements COSObjectable
                     	}
                     	Integer pageRef = annotationToPageRef.get(widget.getCOSObject());
                     	if (pageRef != null) {
-                    		page = document.getPage((int) pageRef);
+                    		page = document.getPage(pageRef);
                     	}
                     }
 

@@ -41,7 +41,7 @@ public abstract class BlendMode
         BlendMode result = null;
         if (cosBlendMode instanceof COSName)
         {
-            result = BLEND_MODES.get((COSName)cosBlendMode);
+            result = BLEND_MODES.get(cosBlendMode);
         }
         else if (cosBlendMode instanceof COSArray)
         {
