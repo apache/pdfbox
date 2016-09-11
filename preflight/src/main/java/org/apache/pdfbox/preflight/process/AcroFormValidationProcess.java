@@ -177,16 +177,19 @@ public class AcroFormValidationProcess extends AbstractProcess
         if (field instanceof PDTerminalField)
         {
             // The widget validation will be done by the widget annotation, a widget contained in a Field can't have action. 
-            PDAnnotationWidget widget = field.getWidgets().get(0); // fixme: fails to check multiple widgets
-            if (res && widget != null)
+            List<PDAnnotationWidget> widgets = field.getWidgets();
+            if (res && widgets != null)
             {
-                ContextHelper.validateElement(ctx, widget.getCOSObject(), ANNOTATIONS_PROCESS);
-                COSBase act = widget.getCOSObject().getDictionaryObject(COSName.A);
-                if (act != null)
+                for (PDAnnotationWidget widget : widgets)
                 {
-                    addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD,
-                            "\"A\" must not be used in a widget annotation"));
-                    return false;
+                    ContextHelper.validateElement(ctx, widget.getCOSObject(), ANNOTATIONS_PROCESS);
+                    COSBase act = widget.getCOSObject().getDictionaryObject(COSName.A);
+                    if (act != null)
+                    {
+                        addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD,
+                                "\"A\" must not be used in a widget annotation"));
+                        return false;
+                    }
                 }
             }
             return exploreWidgets(ctx, field.getWidgets());
