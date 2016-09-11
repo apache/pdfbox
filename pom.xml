@@ -30,7 +30,7 @@
   <artifactId>pdfbox-reactor</artifactId>
   <packaging>pom</packaging>
 
-  <name>PDFBox reactor 2</name>
+  <name>PDFBox reactor</name>
 
   <scm>
     <connection>
