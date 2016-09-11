@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
-import junit.framework.TestCase;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,6 +26,8 @@ import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.apache.pdfbox.cos.COSName;
@@ -50,23 +50,42 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPValidationException;
 import org.bouncycastle.util.Store;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 /**
- * Test for CreateSignature
+ * Test for CreateSignature. Each test case will run twice: once with SignatureInterface
+ * and once using external signature creation scenario.
  */
-public class TestCreateSignature extends TestCase
+@RunWith(Parameterized.class)
+public class TestCreateSignature
 {
-    private final String inDir = "src/test/resources/org/apache/pdfbox/examples/signature/";
-    private final String outDir = "target/test-output/";
-    private final String keystorePath = inDir + "keystore.p12";
-    private final String jpegPath = inDir + "stamp.jpg";
-    private final String password = "123456";
-    private Certificate certificate;
+    private static final String inDir = "src/test/resources/org/apache/pdfbox/examples/signature/";
+    private static final String outDir = "target/test-output/";
+    private static final String keystorePath = inDir + "keystore.p12";
+    private static final String jpegPath = inDir + "stamp.jpg";
+    private static final String password = "123456";
+    private static Certificate certificate;
 
-    @Override
-    protected void setUp() throws Exception
+    @Parameterized.Parameter
+    public boolean externallySign;
+
+    /**
+     * Values for {@link #externallySign} test parameter to specify if signing should be conducted
+     * using externally singing scenario ({@code true}) or SignatureInterface ({@code false}).
+     */
+    @Parameterized.Parameters
+    public static Collection signingTypes()
     {
-        super.setUp();
+        return Arrays.asList(false, true);
+    }
+
+    @BeforeClass
+    public static void init() throws Exception
+    {
         new File("target/test-output").mkdirs();
         
         KeyStore keystore = KeyStore.getInstance("PKCS12");
@@ -82,6 +101,7 @@ public class TestCreateSignature extends TestCase
      * @throws CMSException
      * @throws OperatorCreationException
      */
+    @Test
     public void testDetachedSHA256()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
@@ -91,9 +111,12 @@ public class TestCreateSignature extends TestCase
 
         // sign PDF
         CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
-        signing.signDetached(new File(inDir + "sign_me.pdf"), new File(outDir + "signed.pdf"));
+        signing.setExternalSigning(externallySign);
 
-        checkSignature(new File(outDir + "signed.pdf"));
+        final String fileName = getOutputFileName("signed{0}.pdf");
+        signing.signDetached(new File(inDir + "sign_me.pdf"), new File(outDir + fileName));
+
+        checkSignature(new File(outDir + fileName));
     }
 
     /**
@@ -110,6 +133,7 @@ public class TestCreateSignature extends TestCase
      * @throws CMSException
      * @throws OperatorCreationException
      */
+    @Test
     public void testDetachedSHA256WithTSA()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
@@ -140,13 +164,14 @@ public class TestCreateSignature extends TestCase
         try
         {
             String inPath = inDir + "sign_me_tsa.pdf";
-            String outPath = outDir + "signed_tsa.pdf";
+            String outPath = outDir + getOutputFileName("signed{0}_tsa.pdf");
             CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+            signing.setExternalSigning(externallySign);
             signing.signDetached(new File(inPath), new File(outPath), tsaClient);
         }
         catch (IOException e)
         {
-            assertTrue(e.getCause() instanceof TSPValidationException);
+            Assert.assertTrue(e.getCause() instanceof TSPValidationException);
         }
 
         // TODO verify the signed PDF file
@@ -161,6 +186,7 @@ public class TestCreateSignature extends TestCase
      * @throws OperatorCreationException
      * @throws GeneralSecurityException
      */
+    @Test
     public void testCreateVisibleSignature()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
@@ -172,13 +198,20 @@ public class TestCreateSignature extends TestCase
         String inPath = inDir + "sign_me.pdf";
         FileInputStream fis = new FileInputStream(jpegPath);
         CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
-        signing.setvisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
+        signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
-        File destFile = new File(outDir + "signed_visible.pdf");
+        signing.setExternalSigning(externallySign);
+
+        File destFile = new File(outDir + getOutputFileName("signed{0}_visible.pdf"));
         signing.signPDF(new File(inPath), destFile, null);
         fis.close();
 
         checkSignature(destFile);
+    }
+
+    private String getOutputFileName(String filePattern)
+    {
+        return MessageFormat.format(filePattern,(externallySign ? "_ext" : ""));
     }
 
     // This check fails with a file created with the code before PDFBOX-3011 was solved.
@@ -189,7 +222,7 @@ public class TestCreateSignature extends TestCase
         List<PDSignature> signatureDictionaries = document.getSignatureDictionaries();
         if (signatureDictionaries.isEmpty())
         {
-            fail("no signature found");
+            Assert.fail("no signature found");
         }
         for (PDSignature sig : document.getSignatureDictionaries())
         {
@@ -210,12 +243,12 @@ public class TestCreateSignature extends TestCase
             X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
             X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
 
-            assertEquals(certificate, certFromSignedData);
+            Assert.assertEquals(certificate, certFromSignedData);
 
             // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
             if (!signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
             {
-                fail("Signature verification failed");
+                Assert.fail("Signature verification failed");
             }
             break;
         }

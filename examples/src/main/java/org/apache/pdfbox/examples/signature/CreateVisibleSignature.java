@@ -31,7 +31,9 @@ import java.util.Calendar;
 import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
@@ -48,7 +50,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private PDVisibleSignDesigner visibleSignDesigner;
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
 
-    public void setvisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
+    public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
             FileInputStream imageStream, int page) 
             throws IOException
     {
@@ -124,21 +126,36 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // the signing date, needed for valid signature
         signature.setSignDate(Calendar.getInstance());
 
+        // do not set SignatureInterface instance, if external signing used
+        SignatureInterface signatureInterface = isExternalSigning() ? null : this;
+
         // register signature dictionary and sign interface
         if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
         {
             signatureOptions = new SignatureOptions();
             signatureOptions.setVisualSignature(visibleSignatureProperties.getVisibleSignature());
             signatureOptions.setPage(visibleSignatureProperties.getPage() - 1);
-            doc.addSignature(signature, this, signatureOptions);
+            doc.addSignature(signature, signatureInterface, signatureOptions);
         }
         else
         {
-            doc.addSignature(signature, this);
+            doc.addSignature(signature, signatureInterface);
         }
 
-        // write incremental (only for signing purpose)
-        doc.saveIncremental(fos);
+        if (isExternalSigning())
+        {
+            System.out.println("Signing externally " + signedFile.getName());
+            ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
+            // invoke external signature service
+            byte[] cmsSignature = sign(externalSigning.getContent());
+            // set signature bytes received from the service
+            externalSigning.setSignature(cmsSignature);
+        }
+        else
+        {
+            // write incremental (only for signing purpose)
+            doc.saveIncremental(fos);
+        }
         doc.close();
         
         // do not close options before saving, because some COSStream objects within options 
@@ -152,6 +169,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * [1] pin
      * [2] document that will be signed
      * [3] image of visible signature
+     *
      * @param args
      * @throws java.security.KeyStoreException
      * @throws java.security.cert.CertificateException
@@ -171,7 +189,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
         }
 
         String tsaUrl = null;
-        for(int i = 0; i < args.length; i++)
+        boolean externalSig = false;
+        for (int i = 0; i < args.length; i++)
         {
             if (args[i].equals("-tsa"))
             {
@@ -179,8 +198,13 @@ public class CreateVisibleSignature extends CreateSignatureBase
                 if (i >= args.length)
                 {
                     usage();
+                    System.exit(1);
                 }
                 tsaUrl = args[i];
+            }
+            if (args[i].equals("-e"))
+            {
+                externalSig = true;
             }
         }
 
@@ -209,9 +233,10 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
         // page is 1-based here
         int page = 1;
-        signing.setvisibleSignDesigner (args[2], 0, 0, -50, imageStream, page);
+        signing.setVisibleSignDesigner(args[2], 0, 0, -50, imageStream, page);
         imageStream.close();
-        signing.setVisibleSignatureProperties ("name", "location", "Security", 0, page, true);
+        signing.setVisibleSignatureProperties("name", "location", "Security", 0, page, true);
+        signing.setExternalSigning(externalSig);
         signing.signPDF(documentFile, signedDocumentFile, tsaClient);
     }
 
@@ -223,6 +248,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
         System.err.println("Usage: java " + CreateVisibleSignature.class.getName()
                 + " <pkcs12-keystore-file> <pin> <input-pdf> <sign-image>\n" + "" +
                            "options:\n" +
-                           "  -tsa <url>    sign timestamp using the given TSA server");
+                           "  -tsa <url>    sign timestamp using the given TSA server\n"+
+                           "  -e            sign using external signature creation scenario");
     }
+
 }
