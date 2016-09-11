@@ -43,7 +43,7 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
 {
     public Type1FontValidator(PreflightContext context, PDSimpleFont font)
     {
-        super(context, font, font.getCOSObject(), new Type1Container((PDSimpleFont)font));
+        super(context, font, font.getCOSObject(), new Type1Container(font));
     }
 
     @Override
