@@ -365,9 +365,9 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
     protected void setArrayOfNumber(String name, float[] values)
     {
         COSArray array = new COSArray();
-        for (int i = 0; i < values.length; i++)
+        for (float value : values)
         {
-            array.add(new COSFloat(values[i]));
+            array.add(new COSFloat(value));
         }
         COSBase oldBase = this.getCOSObject().getDictionaryObject(name);
         this.getCOSObject().setItem(name, array);
