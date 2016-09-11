@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
