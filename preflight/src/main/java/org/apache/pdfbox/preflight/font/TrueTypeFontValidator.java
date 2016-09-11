@@ -73,7 +73,7 @@ public class TrueTypeFontValidator extends SimpleFontValidator<TrueTypeContainer
              * For symbolic font, no encoding entry is allowed and only one encoding entry is expected into the FontFile
              * CMap (Check latter when the FontFile stream will be checked)
              */
-            if (fd.isSymbolic() && ((COSDictionary) fontDictionary).getItem(COSName.ENCODING) != null)
+            if (fd.isSymbolic() && fontDictionary.getItem(COSName.ENCODING) != null)
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING,
                         fd.getFontName() + ": The Encoding should be missing for the Symbolic TTF"));
