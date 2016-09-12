@@ -240,7 +240,9 @@ public class MacRomanEncoding extends Encoding
             {0330, "ydieresis"},
             {0264, "yen"},
             {0172, "z"},
-            {060, "zero"}
+            {060, "zero"},
+            // adding an additional mapping as defined in Appendix D of the pdf spec
+            {0312, "space"}
     };
     
     /**
@@ -259,9 +261,6 @@ public class MacRomanEncoding extends Encoding
         {
             add((Integer) encodingEntry[CHAR_CODE], encodingEntry[CHAR_NAME].toString());
         }
-        // adding an additional mapping as defined in Appendix D of the pdf spec
-        // don't add the reverse mapping as we have to preserve the origin mapping for the given glyph name
-        codeToName.put(0312, "space");
     }
     
     @Override
