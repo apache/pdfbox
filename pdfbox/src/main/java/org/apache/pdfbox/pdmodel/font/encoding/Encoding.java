@@ -115,9 +115,13 @@ public abstract class Encoding implements COSObjectable
     {
         // remove existing reverse mapping first
         String oldName = codeToName.get(code);
-        if (oldName != null && code == inverted.get(oldName))
+        if (oldName != null)
         {
-            inverted.remove(oldName);
+            Integer oldCode = inverted.get(oldName);
+            if (oldCode != null && oldCode == code)
+            {
+                inverted.remove(oldName);
+            }
         }
         inverted.put(name, code);
         codeToName.put(code, name);
