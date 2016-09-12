@@ -87,7 +87,9 @@ public abstract class Encoding implements COSObjectable
     }
 
     /**
-     * This will add a character encoding.
+     * This will add a character encoding. An already existing mapping is preservered when creating the reverse mapping.
+     * 
+     * @see {@link #overwrite(int, String)}
      * 
      * @param code character code
      * @param name PostScript glyph name
@@ -95,7 +97,30 @@ public abstract class Encoding implements COSObjectable
     protected void add(int code, String name)
     {
         codeToName.put(code, name);
+        if (!inverted.containsKey(name))
+        {
+            inverted.put(name, code);
+        }
+    }
+
+    /**
+     * This will add a character encoding. An already existing mapping is overwritten when creating the reverse mapping.
+     * 
+     * @see {@link Encoding#add(int, String)}
+     *
+     * @param code character code
+     * @param name PostScript glyph name
+     */
+    protected void overwrite(int code, String name)
+    {
+        // remove existing reverse mapping first
+        String oldName = codeToName.get(code);
+        if (oldName != null && code == inverted.get(oldName))
+        {
+            inverted.remove(oldName);
+        }
         inverted.put(name, code);
+        codeToName.put(code, name);
     }
 
     /**
