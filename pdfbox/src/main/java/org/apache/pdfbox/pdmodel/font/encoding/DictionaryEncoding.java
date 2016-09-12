@@ -148,7 +148,7 @@ public class DictionaryEncoding extends Encoding
             else if( next instanceof COSName )
             {
                 COSName name = (COSName)next;
-                add(currentIndex, name.getName());
+                overwrite(currentIndex, name.getName());
                 this.differences.put(currentIndex, name.getName());
                 currentIndex++;
             }
