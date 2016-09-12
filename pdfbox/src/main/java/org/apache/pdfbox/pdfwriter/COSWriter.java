@@ -242,7 +242,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     {
         // write to buffer instead of output
         setOutput(new ByteArrayOutputStream());
-        setStandardOutput(new COSStandardOutputStream(output, (int)inputData.length()));
+        setStandardOutput(new COSStandardOutputStream(output, inputData.length()));
 
         incrementalInput = inputData;
         incrementalOutput = outputStream;
