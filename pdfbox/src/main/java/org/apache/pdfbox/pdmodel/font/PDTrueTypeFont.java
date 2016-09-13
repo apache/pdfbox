@@ -444,11 +444,6 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     @Override
     public GeneralPath getPath(int code) throws IOException
     {
-        if (ttf.getGlyph() == null)
-        {
-            throw new IOException("glyf table is missing in font " + getName());
-        }
-
         int gid = codeToGID(code);
         GlyphData glyph = ttf.getGlyph().getGlyph(gid);
         
