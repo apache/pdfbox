@@ -175,7 +175,7 @@ public class TTFParser
             }
         }
 
-        boolean isPostScript = font.tables.containsKey(CFFTable.TAG);
+        boolean isPostScript = allowCFF() && font.tables.containsKey(CFFTable.TAG);
         
         HeaderTable head = font.getHeader();
         if (head == null)
@@ -230,6 +230,11 @@ public class TTFParser
         {
             throw new IOException("cmap is mandatory");
         }
+    }
+
+    protected boolean allowCFF()
+    {
+        return false;
     }
 
     private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
