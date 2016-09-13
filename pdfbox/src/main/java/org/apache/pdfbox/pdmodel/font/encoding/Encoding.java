@@ -89,7 +89,7 @@ public abstract class Encoding implements COSObjectable
     /**
      * This will add a character encoding. An already existing mapping is preservered when creating the reverse mapping.
      * 
-     * @see {@link #overwrite(int, String)}
+     * @see #overwrite(int, String)
      * 
      * @param code character code
      * @param name PostScript glyph name
@@ -106,7 +106,7 @@ public abstract class Encoding implements COSObjectable
     /**
      * This will add a character encoding. An already existing mapping is overwritten when creating the reverse mapping.
      * 
-     * @see {@link Encoding#add(int, String)}
+     * @see Encoding#add(int, String)
      *
      * @param code character code
      * @param name PostScript glyph name
