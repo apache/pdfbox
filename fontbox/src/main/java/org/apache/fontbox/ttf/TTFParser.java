@@ -174,8 +174,8 @@ public class TTFParser
                 font.readTable(table);
             }
         }
-
-        boolean isPostScript = font.tables.containsKey(CFFTable.TAG);
+        
+        boolean isPostScript = allowCFF() && font.tables.containsKey(CFFTable.TAG);
         
         HeaderTable head = font.getHeader();
         if (head == null)
@@ -232,6 +232,11 @@ public class TTFParser
         }
     }
 
+    protected boolean allowCFF()
+    {
+        return false;
+    }
+    
     private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
         TTFTable table = null;
