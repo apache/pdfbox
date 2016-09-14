@@ -127,9 +127,7 @@ public class PDUserAttributeObject extends PDAttributeObject
     @Override
     public String toString()
     {
-        return new StringBuilder().append(super.toString())
-            .append(", userProperties=")
-            .append(this.getOwnerUserProperties()).toString();
+        return super.toString() + ", userProperties=" + this.getOwnerUserProperties();
     }
 
 }

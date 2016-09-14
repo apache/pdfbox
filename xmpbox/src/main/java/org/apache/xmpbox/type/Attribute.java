@@ -118,9 +118,7 @@ public class Attribute
 
     public String toString()
     {
-        StringBuilder sb = new StringBuilder(80);
-        sb.append("[attr:{").append(nsURI).append("}").append(name).append("=").append(value).append("]");
-        return sb.toString();
+        return "[attr:{" + nsURI + "}" + name + "=" + value + "]";
     }
 
 }

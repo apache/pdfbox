@@ -197,7 +197,7 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
     @Override
     public String toString()
     {
-        return new StringBuilder("O=").append(this.getOwner()).toString();
+        return "O=" + this.getOwner();
     }
 
     /**
