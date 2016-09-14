@@ -193,10 +193,9 @@ public class PDMarkedContent
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder("tag=").append(this.tag)
-            .append(", properties=").append(this.properties);
-        sb.append(", contents=").append(this.contents);
-        return sb.toString();
+        return "tag=" + this.tag +
+                ", properties=" + this.properties +
+                ", contents=" + this.contents;
     }
 
 }

@@ -109,7 +109,7 @@ public class PDMarkedContentReference implements COSObjectable
     @Override
     public String toString()
     {
-        return new StringBuilder().append("mcid=").append(this.getMCID()).toString();
+        return "mcid=" + this.getMCID();
     }
 
 }
