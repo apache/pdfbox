@@ -666,14 +666,13 @@ public final class Matrix implements Cloneable
     @Override
     public String toString()
     {
-        StringBuffer sb = new StringBuffer( "" );
-        sb.append("[");
-        sb.append(single[0] + ",");
-        sb.append(single[1] + ",");
-        sb.append(single[3] + ",");
-        sb.append(single[4] + ",");
-        sb.append(single[6] + ",");
-        sb.append(single[7] + "]");
-        return sb.toString();
+        String sb = "" + "[" +
+                single[0] + "," +
+                single[1] + "," +
+                single[3] + "," +
+                single[4] + "," +
+                single[6] + "," +
+                single[7] + "]";
+        return sb;
     }
 }
