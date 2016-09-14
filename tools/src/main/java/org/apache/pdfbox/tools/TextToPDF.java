@@ -341,11 +341,11 @@ public class TextToPDF
         StringBuilder message = new StringBuilder();       
         message.append("Usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <outputfile> <textfile>\n");
         message.append("\nOptions:\n");
-        message.append("  -standardFont <name> : " + DEFAULT_FONT.getBaseFont() + " (default)\n");
+        message.append("  -standardFont <name> : ").append(DEFAULT_FONT.getBaseFont()).append(" (default)\n");
 
         for (String std14String : std14)
         {
-            message.append("                         " + std14String + "\n");
+            message.append("                         ").append(std14String).append("\n");
         }
         message.append("  -ttf <ttf file>      : The TTF font to use.\n");
         message.append("  -fontSize <fontSize> : default: " + DEFAULT_FONT_SIZE );
