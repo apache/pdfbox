@@ -148,8 +148,6 @@ public class ErrorDialog extends JDialog
     /**
      * Creates the display with the top-level exception message followed by a pane (that toggles)
      * for detailed stack traces.
-     *
-     * @param t a non-null exception
      */
     final JComponent createContent()
     {

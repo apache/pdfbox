@@ -152,7 +152,7 @@ public class TestCOSInteger extends TestCOSNumber
     }
 
     /**
-     * Tests writePDF() - this method takes an {@link OutputStream} and writes this object to it.
+     * Tests writePDF() - this method takes an {@link java.io.OutputStream} and writes this object to it.
      */
     public void testWritePDF()
     {

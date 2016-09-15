@@ -288,7 +288,7 @@ public class TestCOSFloat extends TestCOSNumber
     }
 
     /**
-     * Tests writePDF() - this method takes an {@link OutputStream} and writes
+     * Tests writePDF() - this method takes an {@link java.io.OutputStream} and writes
      * this object to it.
      */
     public void testWritePDF()
