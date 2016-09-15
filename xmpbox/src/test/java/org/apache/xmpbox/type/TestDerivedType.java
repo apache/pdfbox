@@ -82,8 +82,8 @@ public class TestDerivedType
     public void before() throws Exception
     {
         xmp = XMPMetadata.createXMPMetadata();
-        constructor = clz.getConstructor(new Class[] { XMPMetadata.class, String.class, String.class, String.class,
-                Object.class });
+        constructor = clz.getConstructor(XMPMetadata.class, String.class, String.class, String.class,
+                Object.class);
     }
 
     protected TextType instanciate(XMPMetadata metadata, String namespaceURI, String prefix, String propertyName,
