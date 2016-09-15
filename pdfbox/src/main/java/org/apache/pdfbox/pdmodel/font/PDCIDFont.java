@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -308,14 +307,16 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         if (averageWidth == 0)
         {
             float totalWidths = 0.0f;
-            float characterCount = 0.0f;
+            int characterCount = 0;
             if (widths != null)
             {
-                characterCount = widths.size();
-                Collection<Float> widthsValues = widths.values();
-                for (Float width : widthsValues)
+                for (Float width : widths.values())
                 {
-                    totalWidths += width;
+                    if (width > 0)
+                    {
+                        totalWidths += width;
+                        ++characterCount;
+                    }
                 }
             }
             averageWidth = totalWidths / characterCount;
