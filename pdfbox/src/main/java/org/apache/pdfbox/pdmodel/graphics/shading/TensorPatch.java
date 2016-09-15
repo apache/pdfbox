@@ -29,7 +29,7 @@ class TensorPatch extends Patch
     /**
      * Constructor of a patch for type 7 shading.
      *
-     * @param points 16 control points
+     * @param tcp 16 control points
      * @param color 4 corner colors
      */
     protected TensorPatch(Point2D[] tcp, float[][] color)

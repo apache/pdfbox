@@ -1919,7 +1919,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     }
 
     /**
-     * Used within {@link #normalize(List, boolean, boolean)} to create a single {@link WordWithTextPositions} entry.
+     * Used within {@link #normalize(List)} to create a single {@link WordWithTextPositions} entry.
      */
     private WordWithTextPositions createWord(String word, List<TextPosition> wordPositions)
     {
@@ -1983,7 +1983,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     }
 
     /**
-     * Used within {@link #normalize(List, boolean, boolean)} to handle a {@link TextPosition}.
+     * Used within {@link #normalize(List)} to handle a {@link TextPosition}.
      * 
      * @return The StringBuilder that must be used when calling this method.
      */
