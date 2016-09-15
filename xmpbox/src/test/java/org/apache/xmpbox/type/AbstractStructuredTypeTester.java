@@ -69,8 +69,8 @@ public abstract class AbstractStructuredTypeTester extends AbstractTypeTester
         // default method
         Assert.assertNull(structured.getProperty(fieldName));
         // accessor
-        Method get = clz.getMethod(calculateSimpleGetter(fieldName), new Class[0]);
-        Object result = get.invoke(structured, new Object[0]);
+        Method get = clz.getMethod(calculateSimpleGetter(fieldName));
+        Object result = get.invoke(structured);
         Assert.assertNull(result);
 
     }
@@ -161,13 +161,13 @@ public abstract class AbstractStructuredTypeTester extends AbstractTypeTester
         AbstractStructuredType structured = getStructured();
         String setter = calculateSimpleSetter(fieldName);
         Object value = getJavaValue(type);
-        Method set = clz.getMethod(setter, new Class<?>[] { getJavaType(type) });
-        set.invoke(structured, new Object[] { value });
+        Method set = clz.getMethod(setter, getJavaType(type));
+        set.invoke(structured, value);
         // check property set
         Assert.assertEquals(value, ((AbstractSimpleProperty) structured.getProperty(fieldName)).getValue());
         // check getter
-        Method get = clz.getMethod(calculateSimpleGetter(fieldName), new Class[0]);
-        Object result = get.invoke(structured, new Object[0]);
+        Method get = clz.getMethod(calculateSimpleGetter(fieldName));
+        Object result = get.invoke(structured);
         Assert.assertTrue(getJavaType(type).isAssignableFrom(result.getClass()));
         Assert.assertEquals(value, result);
     }
