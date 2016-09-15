@@ -82,16 +82,16 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
         if (cardinality == Cardinality.Simple)
         {
             String getter = calculateSimpleGetter(fieldName);
-            Method get = getSchemaClass().getMethod(getter, new Class[0]);
-            Object result = get.invoke(schema, new Object[0]);
+            Method get = getSchemaClass().getMethod(getter);
+            Object result = get.invoke(schema);
             Assert.assertNull(result);
         }
         else
         {
             // arrays
             String getter = calculateArrayGetter(fieldName);
-            Method get = getSchemaClass().getMethod(getter, new Class[0]);
-            Object result = get.invoke(schema, new Object[0]);
+            Method get = getSchemaClass().getMethod(getter);
+            Object result = get.invoke(schema);
             Assert.assertNull(result);
         }
 
@@ -218,15 +218,15 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
         Object value = getJavaValue(type);
         AbstractSimpleProperty asp = typeMapping.instanciateSimpleProperty(schema.getNamespace(), schema
                 .getPrefix(), fieldName, value, type);
-        Method set = getSchemaClass().getMethod(setter, new Class<?>[] { type.getImplementingClass() });
-        set.invoke(schema, new Object[] { asp });
+        Method set = getSchemaClass().getMethod(setter, type.getImplementingClass());
+        set.invoke(schema, asp);
         // check property set
         AbstractSimpleProperty stored = (AbstractSimpleProperty) schema.getProperty(fieldName);
         Assert.assertEquals(value, stored.getValue());
         // check getter
         String getter = calculateSimpleGetter(fieldName) + "Property";
-        Method get = getSchemaClass().getMethod(getter, new Class[0]);
-        Object result = get.invoke(schema, new Object[0]);
+        Method get = getSchemaClass().getMethod(getter);
+        Object result = get.invoke(schema);
         Assert.assertTrue(type.getImplementingClass().isAssignableFrom(result.getClass()));
         Assert.assertEquals(asp, result);
     }
@@ -259,23 +259,23 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
         // TypeDescription<AbstractSimpleProperty> td =
         // typeMapping.getSimpleDescription(type);
         Object value1 = getJavaValue(type);
-        Method set = getSchemaClass().getMethod(setter, new Class<?>[] { getJavaType(type) });
-        set.invoke(schema, new Object[] { value1 });
+        Method set = getSchemaClass().getMethod(setter, getJavaType(type));
+        set.invoke(schema, value1);
         // retrieve complex property
         String getter = calculateArrayGetter(fieldName) + "Property";
-        Method getcp = getSchemaClass().getMethod(getter, new Class[0]);
-        Object ocp = getcp.invoke(schema, new Object[0]);
+        Method getcp = getSchemaClass().getMethod(getter);
+        Object ocp = getcp.invoke(schema);
         Assert.assertTrue(ocp instanceof ArrayProperty);
         ArrayProperty cp = (ArrayProperty) ocp;
         // check size is ok (1)
         Assert.assertEquals(1, cp.getContainer().getAllProperties().size());
         // add a new one
         Object value2 = getJavaValue(type);
-        set.invoke(schema, new Object[] { value2 });
+        set.invoke(schema, value2);
         Assert.assertEquals(2, cp.getContainer().getAllProperties().size());
         // remove the first
         String remover = "remove" + calculateFieldNameForMethod(fieldName);
-        Method remove = getSchemaClass().getMethod(remover, new Class<?>[] { getJavaType(type) });
+        Method remove = getSchemaClass().getMethod(remover, getJavaType(type));
         remove.invoke(schema, value1);
         Assert.assertEquals(1, cp.getContainer().getAllProperties().size());
 

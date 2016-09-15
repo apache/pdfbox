@@ -134,7 +134,7 @@ public final class TypeMapping
             Class<? extends AbstractStructuredType> propertyTypeClass = type.getImplementingClass().asSubclass(
                     AbstractStructuredType.class);
             Constructor<? extends AbstractStructuredType> construct = propertyTypeClass
-                    .getConstructor(new Class<?>[] { XMPMetadata.class });
+                    .getConstructor(XMPMetadata.class);
             AbstractStructuredType tmp = construct.newInstance(metadata);
             tmp.setPropertyName(propertyName);
             return tmp;
