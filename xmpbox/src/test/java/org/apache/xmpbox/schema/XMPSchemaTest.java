@@ -57,7 +57,7 @@ public class XMPSchemaTest
     /**
      * Check if Bag (Unordered Array) management is ok
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      */
     @Test
     public void testBagManagement() throws Exception
@@ -99,8 +99,8 @@ public class XMPSchemaTest
     /**
      * Check if Seq (Ordered Array) management is ok
      * 
-     * @throws InappropriateTypeException
-     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws java.io.IOException
      */
     @Test
     public void testSeqManagement() throws Exception
@@ -235,7 +235,7 @@ public class XMPSchemaTest
     /**
      * Test All common simple properties management in XMPSchema
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      * @throws BadFieldValueException
      */
     @Test
@@ -380,8 +380,8 @@ public class XMPSchemaTest
     /**
      * check if merging is ok
      * 
-     * @throws InappropriateTypeException
-     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws java.io.IOException
      */
     @Test
     public void testMergeSchema() throws Exception
