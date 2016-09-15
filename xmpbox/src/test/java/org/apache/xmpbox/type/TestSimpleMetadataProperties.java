@@ -49,7 +49,7 @@ public class TestSimpleMetadataProperties
     /**
      * Check the detection of a bad type
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testBooleanBadTypeDetection()
@@ -60,7 +60,7 @@ public class TestSimpleMetadataProperties
     /**
      * Check the detection of a bad type
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testDateBadTypeDetection()
@@ -71,7 +71,7 @@ public class TestSimpleMetadataProperties
     /**
      * Check the detection of a bad type
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testIntegerBadTypeDetection()
@@ -82,7 +82,7 @@ public class TestSimpleMetadataProperties
     /**
      * Check the detection of a bad type
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testRealBadTypeDetection() throws Exception
@@ -93,7 +93,7 @@ public class TestSimpleMetadataProperties
     /**
      * Check the detection of a bad type
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testTextBadTypeDetection() throws Exception
@@ -179,9 +179,9 @@ public class TestSimpleMetadataProperties
     }
 
     /**
-     * Throw InappropriateType Exception
+     * Throw IllegalArgumentException
      * 
-     * @throws InappropriateTypeException
+     * @throws IllegalArgumentException
      */
     @Test(expected = IllegalArgumentException.class)
     public void testExceptionWithCause() throws Exception

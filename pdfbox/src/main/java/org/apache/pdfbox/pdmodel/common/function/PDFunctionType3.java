@@ -166,7 +166,7 @@ public class PDFunctionType3 extends PDFunction
     /**
      * Get the encode for the input parameter.
      *
-     * @param paramNum The function parameter number.
+     * @param n The function parameter number.
      *
      * @return The encode parameter range or null if none is set.
      */
