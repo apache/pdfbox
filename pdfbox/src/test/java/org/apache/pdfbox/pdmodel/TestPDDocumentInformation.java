@@ -48,9 +48,9 @@ public class TestPDDocumentInformation extends TestCase
            assertNull("Wrong subject", info.getSubject());
            assertNull("Wrong trapped", info.getTrapped());
 
-           List<String> expectedMetadataKeys = Arrays.asList(new String[] {"CreationDate", "Author", "Creator",
-                                                                           "Producer", "ModDate", "Company",
-                                                                           "SourceModified", "Title"});
+           List<String> expectedMetadataKeys = Arrays.asList("CreationDate", "Author", "Creator",
+                                                             "Producer", "ModDate", "Company",
+                                                             "SourceModified", "Title");
            assertEquals("Wrong metadata key count", expectedMetadataKeys.size(),
                                                     info.getMetadataKeys().size());
            for (String key : expectedMetadataKeys)
