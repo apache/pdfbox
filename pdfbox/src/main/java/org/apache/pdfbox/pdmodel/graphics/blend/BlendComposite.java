@@ -144,7 +144,9 @@ public final class BlendComposite implements Composite
             Object srcPixel = null;
             Object dstPixel = null;
             float[] srcComponents = new float[numSrcComponents];
-            float[] dstComponents = new float[numDstComponents];
+            // PDFBOX-3501 let getNormalizedComponents allocate to avoid 
+            // ArrayIndexOutOfBoundsException for bitonal target
+            float[] dstComponents = null;
 
             float[] srcColor = new float[numSrcColorComponents];
             float[] srcConverted;
