@@ -61,10 +61,11 @@ public class COSFloat extends COSNumber
         }
         catch( NumberFormatException e )
         {
-            if (aFloat.matches("^0\\.0+\\-\\d+"))
+            if (aFloat.matches("^0\\.0*\\-\\d+"))
             {
                 // PDFBOX-2990 has 0.00000-33917698
                 // PDFBOX-3369 has 0.00-35095424
+                // PDFBOX-3500 has 0.-262
                 try
                 {
                     valueAsString = "-" + valueAsString.replaceFirst("\\-", "");
