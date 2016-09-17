@@ -623,7 +623,7 @@ public class CmapSubtable
      * Class used to manage CMap - Format 2.
      * 
      */
-    private class SubHeader
+    private static class SubHeader
     {
         private final int firstCode;
         private final int entryCount;

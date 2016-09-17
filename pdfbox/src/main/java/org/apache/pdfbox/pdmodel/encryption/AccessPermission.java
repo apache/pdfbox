@@ -49,7 +49,7 @@ package org.apache.pdfbox.pdmodel.encryption;
 public class AccessPermission
 {
 
-    private static final int DEFAULT_PERMISSIONS = 0xFFFFFFFF ^ 3;//bits 0 & 1 need to be zero
+    private static final int DEFAULT_PERMISSIONS = ~3; //bits 0 & 1 need to be zero
     private static final int PRINT_BIT = 3;
     private static final int MODIFICATION_BIT = 4;
     private static final int EXTRACT_BIT = 5;
@@ -115,7 +115,7 @@ public class AccessPermission
         }
         else
         {
-            permissions = permissions & (0xFFFFFFFF ^ (1 << (bit-1)));
+            permissions = permissions & (~(1 << (bit - 1)));
         }
         bytes = permissions;
 
