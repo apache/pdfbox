@@ -59,7 +59,7 @@ public class XrefTrailerResolver
     /**
      * A class which represents a xref/trailer object.
      */
-    private class XrefTrailerObj
+    private static class XrefTrailerObj
     {
         protected COSDictionary trailer = null;
 

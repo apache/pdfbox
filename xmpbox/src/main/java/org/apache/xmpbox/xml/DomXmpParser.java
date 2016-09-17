@@ -882,7 +882,7 @@ public class DomXmpParser
         }
     }
 
-    protected class NamespaceFinder
+    protected static class NamespaceFinder
     {
 
         private final Stack<Map<String, String>> stack = new Stack<Map<String, String>>();
