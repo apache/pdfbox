@@ -262,7 +262,7 @@ public final class PDFontDescriptor implements COSObjectable
         }
         else
         {
-            flags = flags & (0xFFFFFFFF ^ bit);
+            flags = flags & (~bit);
         }
         setFlags( flags );
     }

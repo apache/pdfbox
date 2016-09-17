@@ -666,7 +666,7 @@ final class FontMapperImpl implements FontMapper
     /**
      * A potential match for a font substitution.
      */
-    private class FontMatch implements Comparable<FontMatch>
+    private static class FontMatch implements Comparable<FontMatch>
     {
         double score;
         final FontInfo info;
