@@ -742,7 +742,7 @@ public class CMapParser
     /**
      * Internal class.
      */
-    private final class LiteralName
+    private static final class LiteralName
     {
         private String name;
 
@@ -755,7 +755,7 @@ public class CMapParser
     /**
      * Internal class.
      */
-    private final class Operator
+    private static final class Operator
     {
         private String op;
 

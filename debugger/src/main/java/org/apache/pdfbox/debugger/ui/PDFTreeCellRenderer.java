@@ -329,7 +329,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
     /**
      * An ImageIcon which allows other ImageIcon overlays.
      */
-    private class OverlayIcon extends ImageIcon
+    private static class OverlayIcon extends ImageIcon
     {
         private final ImageIcon base;
         private final List<ImageIcon> overlays;
