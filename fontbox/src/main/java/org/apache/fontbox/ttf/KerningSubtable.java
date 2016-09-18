@@ -248,11 +248,11 @@ public class KerningSubtable
         return (bits & mask) >> shift;
     }
 
-    private static interface PairData
+    private interface PairData
     {
-        abstract void read(TTFDataStream data) throws IOException;
+        void read(TTFDataStream data) throws IOException;
 
-        abstract int getKerning(int l, int r);
+        int getKerning(int l, int r);
     }
 
     private static class PairData0Format0 implements Comparator<int[]>, PairData
