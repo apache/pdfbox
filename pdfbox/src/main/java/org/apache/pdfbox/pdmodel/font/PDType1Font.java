@@ -46,6 +46,7 @@ import org.apache.pdfbox.util.Matrix;
 
 
 import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
+import org.apache.pdfbox.pdmodel.font.encoding.SymbolEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.ZapfDingbatsEncoding;
 
@@ -125,6 +126,10 @@ public class PDType1Font extends PDSimpleFont
         if ("ZapfDingbats".equals(baseFont))
         {
             encoding = ZapfDingbatsEncoding.INSTANCE;
+        }
+        else if ("Symbol".equals(baseFont))
+        {
+            encoding = SymbolEncoding.INSTANCE;
         }
         else
         {
