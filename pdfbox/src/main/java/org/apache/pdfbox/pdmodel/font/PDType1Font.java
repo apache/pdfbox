@@ -48,6 +48,7 @@ import org.apache.pdfbox.util.Matrix;
 
 
 import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
+import org.apache.pdfbox.pdmodel.font.encoding.SymbolEncoding;
 
 /**
  * A PostScript Type 1 Font.
@@ -123,6 +124,10 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         if ("ZapfDingbats".equals(baseFont))
         {
             encoding = ZapfDingbatsEncoding.INSTANCE;
+        }
+        else if ("Symbol".equals(baseFont))
+        {
+            encoding = SymbolEncoding.INSTANCE;
         }
         else
         {
