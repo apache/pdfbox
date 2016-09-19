@@ -326,6 +326,13 @@
             </roles>
         </developer>
         <developer>
+            <id>tallison</id>
+            <name>Tim Allison</name>
+            <roles>
+                <role>PMC Member</role>
+            </roles>
+        </developer>
+        <developer>
             <id>tchojecki</id>
             <name>Thomas Chojecki</name>
             <roles>
