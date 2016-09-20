@@ -623,16 +623,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            if (LOG.isDebugEnabled())
-            {
-               // PDFBOX-3482, delete after solving
-               logPath(linePath);
-            }
             graphics.fill(linePath);
-            if (LOG.isDebugEnabled())
-            {
-                LOG.debug("fill done");
-            }
         }
         
         linePath.reset();
@@ -643,35 +634,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
             setRenderingHints();
         }
-    }
-
-    void logPath(GeneralPath path)
-    {
-        PathIterator iter = path.getPathIterator(null);
-        while (!iter.isDone())
-        {
-            float[] coords = new float[6];
-            switch (iter.currentSegment(coords))
-            {
-                case PathIterator.SEG_MOVETO:
-                    LOG.debug(String.format("moveto  %f %f", coords[0], coords[1]));
-                    break;
-                case PathIterator.SEG_LINETO:
-                    LOG.debug(String.format("lineto  %f %f", coords[0], coords[1]));
-                    break;
-                case PathIterator.SEG_CUBICTO:
-                    LOG.debug(String.format("cubicto %f %f  %f %f", coords[0], coords[1], coords[2], coords[3]));
-                    break;
-                case PathIterator.SEG_QUADTO:
-                    LOG.debug(String.format("quadto  %f %f  %f %f  %f %f", coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]));
-                    break;
-                case PathIterator.SEG_CLOSE:
-                    LOG.debug("close");
-                    break;
-            }
-            iter.next();
-        }
-        LOG.debug("");
     }
 
     /**
