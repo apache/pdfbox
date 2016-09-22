@@ -62,6 +62,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
     private BufferedImage image;
     private AffineTransform flipAT;
     private AffineTransform rotateAT;
+    private AffineTransform transAT;
     private final String filename;
     static final int SCALE = 4;
     private Graphics2D g2d;
@@ -133,6 +134,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         {
             cyanShape = flipAT.createTransformedShape(cyanShape);
             cyanShape = rotateAT.createTransformedShape(cyanShape);
+            cyanShape = transAT.createTransformedShape(cyanShape);
 
             g2d.setColor(Color.CYAN);
             g2d.draw(cyanShape);
@@ -236,6 +238,9 @@ public class DrawPrintTextLocations extends PDFTextStripper
             rotateAT.rotate(Math.toRadians(rotation));
         }
 
+        // cropbox
+        transAT = AffineTransform.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY());
+
         g2d = image.createGraphics();
         g2d.setStroke(new BasicStroke(0.1f));
         g2d.scale(SCALE, SCALE);
@@ -252,9 +257,8 @@ public class DrawPrintTextLocations extends PDFTextStripper
         for (PDThreadBead bead : pageArticles)
         {
             PDRectangle r = bead.getRectangle();
-            GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
-
-            Shape s = flipAT.createTransformedShape(p);
+            Shape s = r.toGeneralPath().createTransformedShape(transAT);
+            s = flipAT.createTransformedShape(s);
             s = rotateAT.createTransformedShape(s);
             g2d.setColor(Color.green);
             g2d.draw(s);
@@ -290,8 +294,9 @@ public class DrawPrintTextLocations extends PDFTextStripper
                     (text.getYDirAdj() - text.getHeightDir()),
                     text.getWidthDirAdj(),
                     text.getHeightDir());
+            Shape sh = rotateAT.createTransformedShape(rect);
             g2d.setColor(Color.red);
-            g2d.draw(rect);
+            g2d.draw(sh);
 
             // in blue:
             // show rectangle with the real vertical bounds, based on the font bounding box y values
