@@ -165,7 +165,12 @@ public class XrefTrailerResolver
             LOG.warn( "Cannot add XRef entry for '" + objKey.getNumber() + "' because XRef start was not signalled." );
             return;
         }
-        curXrefTrailerObj.xrefTable.put( objKey, offset );
+        // PDFBOX-3506 check before adding to the map, to avoid entries from the table being 
+        // overwritten by obsolete entries in hybrid files (/XRefStm entry)
+        if (!curXrefTrailerObj.xrefTable.containsKey(objKey) )
+        {
+            curXrefTrailerObj.xrefTable.put(objKey, offset);
+        }
     }
 
     /**
