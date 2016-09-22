@@ -35,13 +35,20 @@ import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * This is an example on how to get some x/y coordinates of text and to show them in a rendered
@@ -53,6 +60,9 @@ import org.apache.pdfbox.util.Matrix;
 public class DrawPrintTextLocations extends PDFTextStripper
 {
     private BufferedImage image;
+    private AffineTransform flipAT;
+    private AffineTransform rotateAT;
+    private AffineTransform transAT;
     private final String filename;
     static final int SCALE = 4;
     private Graphics2D g2d;
@@ -109,6 +119,89 @@ public class DrawPrintTextLocations extends PDFTextStripper
         }
     }
 
+    @Override
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode, Vector displacement) throws IOException
+    {
+        super.showGlyph(textRenderingMatrix, font, code, unicode, displacement);
+
+        // in cyan:
+        // show actual glyph bounds. This must be done here and not in writeString(),
+        // because writeString processes only the glyphs with unicode, 
+        // see e.g. the file in PDFBOX-3274
+        Shape cyanShape = calculateGlyphBounds(textRenderingMatrix, font, code);
+
+        if (cyanShape != null)
+        {
+            cyanShape = flipAT.createTransformedShape(cyanShape);
+            cyanShape = rotateAT.createTransformedShape(cyanShape);
+            cyanShape = transAT.createTransformedShape(cyanShape);
+
+            g2d.setColor(Color.CYAN);
+            g2d.draw(cyanShape);
+        }
+    }
+
+    // this calculates the real individual glyph bounds
+    private Shape calculateGlyphBounds(Matrix textRenderingMatrix, PDFont font, int code) throws IOException
+    {
+        GeneralPath path = null;
+        AffineTransform at = textRenderingMatrix.createAffineTransform();
+        at.concatenate(font.getFontMatrix().createAffineTransform());
+        if (font instanceof PDType3Font)
+        {
+            PDType3Font t3Font = (PDType3Font) font;
+            PDType3CharProc charProc = t3Font.getCharProc(code);
+            if (charProc != null)
+            {
+                PDRectangle glyphBBox = charProc.getGlyphBBox();
+                if (glyphBBox != null)
+                {
+                    path = glyphBBox.toGeneralPath();
+                }
+            }
+        }
+        else if (font instanceof PDVectorFont)
+        {
+            PDVectorFont vectorFont = (PDVectorFont) font;
+            path = vectorFont.getPath(code);
+
+            if (font instanceof PDTrueTypeFont)
+            {
+                PDTrueTypeFont ttFont = (PDTrueTypeFont) font;
+                int unitsPerEm = ttFont.getTrueTypeFont().getHeader().getUnitsPerEm();
+                at.scale(1000d / unitsPerEm, 1000d / unitsPerEm);
+            }
+            if (font instanceof PDType0Font)
+            {
+                PDType0Font t0font = (PDType0Font) font;
+                if (t0font.getDescendantFont() instanceof PDCIDFontType2)
+                {
+                    int unitsPerEm = ((PDCIDFontType2) t0font.getDescendantFont()).getTrueTypeFont().getHeader().getUnitsPerEm();
+                    at.scale(1000d / unitsPerEm, 1000d / unitsPerEm);
+                }
+            }
+        }
+        else if (font instanceof PDSimpleFont)
+        {
+            PDSimpleFont simpleFont = (PDSimpleFont) font;
+
+            // these two lines do not always work, e.g. for the TT fonts in file 032431.pdf
+            // which is why PDVectorFont is tried first.
+            String name = simpleFont.getEncoding().getName(code);
+            path = simpleFont.getPath(name);
+        }
+        else
+        {
+            // shouldn't happen, please open issue in JIRA
+            System.out.println("Unknown font class: " + font.getClass());
+        }
+        if (path == null)
+        {
+            return null;
+        }
+        return at.createTransformedShape(path.getBounds2D());
+    }
+
     private void stripPage(int page) throws IOException
     {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -116,6 +209,37 @@ public class DrawPrintTextLocations extends PDFTextStripper
         
         PDPage pdPage = document.getPage(page);
         PDRectangle cropBox = pdPage.getCropBox();
+
+        // flip y-axis
+        flipAT = new AffineTransform();
+        flipAT.translate(0, pdPage.getBBox().getHeight());
+        flipAT.scale(1, -1);
+
+        // page may be rotated
+        rotateAT = new AffineTransform();
+        int rotation = pdPage.getRotation();
+        if (rotation != 0)
+        {
+            PDRectangle mediaBox = pdPage.getMediaBox();
+            switch (rotation)
+            {
+                case 90:
+                    rotateAT.translate(mediaBox.getHeight(), 0);
+                    break;
+                case 270:
+                    rotateAT.translate(0, mediaBox.getWidth());
+                    break;
+                case 180:
+                    rotateAT.translate(mediaBox.getWidth(), mediaBox.getHeight());
+                    break;
+                default:
+                    break;
+            }
+            rotateAT.rotate(Math.toRadians(rotation));
+        }
+
+        // cropbox
+        transAT = AffineTransform.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY());
 
         g2d = image.createGraphics();
         g2d.setStroke(new BasicStroke(0.1f));
@@ -133,11 +257,9 @@ public class DrawPrintTextLocations extends PDFTextStripper
         for (PDThreadBead bead : pageArticles)
         {
             PDRectangle r = bead.getRectangle();
-            GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
-            AffineTransform flip = new AffineTransform();
-            flip.translate(0, pdPage.getBBox().getHeight());
-            flip.scale(1, -1);
-            Shape s = flip.createTransformedShape(p);
+            Shape s = r.toGeneralPath().createTransformedShape(transAT);
+            s = flipAT.createTransformedShape(s);
+            s = rotateAT.createTransformedShape(s);
             g2d.setColor(Color.green);
             g2d.draw(s);
         }
@@ -172,8 +294,9 @@ public class DrawPrintTextLocations extends PDFTextStripper
                     (text.getYDirAdj() - text.getHeightDir()),
                     text.getWidthDirAdj(),
                     text.getHeightDir());
+            Shape sh = rotateAT.createTransformedShape(rect);
             g2d.setColor(Color.red);
-            g2d.draw(rect);
+            g2d.draw(sh);
 
             // in blue:
             // show rectangle with the real vertical bounds, based on the font bounding box y values
@@ -200,39 +323,11 @@ public class DrawPrintTextLocations extends PDFTextStripper
             }
             Shape s = at.createTransformedShape(rect);
 
-            // flip y-axis
-            AffineTransform flip = new AffineTransform();
-            flip.translate(0, getCurrentPage().getBBox().getHeight());
-            flip.scale(1, -1);
-            s = flip.createTransformedShape(s);
+            s = flipAT.createTransformedShape(s);
+            s = rotateAT.createTransformedShape(s);
 
-            AffineTransform transform = g2d.getTransform();
-            int rotation = getCurrentPage().getRotation();
-            if (rotation != 0)
-            {
-                PDRectangle mediaBox = getCurrentPage().getMediaBox();
-                switch (rotation)
-                {
-                    case 90:
-                        g2d.translate(mediaBox.getHeight(), 0);
-                        break;
-                    case 270:
-                        g2d.translate(0, mediaBox.getWidth());
-                        break;
-                    case 180:
-                        g2d.translate(mediaBox.getWidth(), mediaBox.getHeight());
-                        break;
-                    default:
-                        break;
-                }
-                g2d.rotate(Math.toRadians(rotation));
-            }
             g2d.setColor(Color.blue);
             g2d.draw(s);
-            if (rotation != 0)
-            {
-                g2d.setTransform(transform);
-            }
         }
     }
 
