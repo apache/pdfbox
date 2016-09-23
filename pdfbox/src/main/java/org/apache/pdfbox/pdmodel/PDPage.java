@@ -160,7 +160,7 @@ public class PDPage implements COSObjectable, PDContentStream
             }
             return new SequenceInputStream(Collections.enumeration(inputStreams));
         }
-        return null;
+        return new ByteArrayInputStream(new byte[0]);
     }
 
     /**
