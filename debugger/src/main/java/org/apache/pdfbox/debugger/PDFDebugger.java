@@ -191,7 +191,10 @@ public class PDFDebugger extends JFrame
     public static void main(String[] args) throws Exception
     {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        if (System.getProperty("apple.laf.useScreenMenuBar") == null)
+        {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+        }
 
         // handle uncaught exceptions
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler()
@@ -297,7 +300,7 @@ public class PDFDebugger extends JFrame
         tree.setCellRenderer(new PDFTreeCellRenderer());
         tree.setModel(null);
 
-        setTitle("PDFBox Debugger");
+        setTitle("Apache PDFBox Debugger");
 
         addWindowListener(new java.awt.event.WindowAdapter()
         {
