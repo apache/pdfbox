@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import java.io.IOException;
+import java.util.List;
 import junit.framework.TestCase;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSFloat;
@@ -80,5 +81,19 @@ public class TestPDPageContentStream extends TestCase
         assertEquals(0.7f, ((COSFloat)pageTokens.get(2)).floatValue());
         assertEquals(0.8f, ((COSFloat)pageTokens.get(3)).floatValue());
         assertEquals("K", ((Operator)pageTokens.get(4)).getName());
+    }
+
+    /**
+     * PDFBOX-3510: missing content stream should not fail.
+     * 
+     * @throws IOException 
+     */
+    public void testMissingContentStream() throws IOException
+    {
+        PDPage page = new PDPage();
+        PDFStreamParser parser = new PDFStreamParser(page);
+        parser.parse();
+        List<Object> tokens = parser.getTokens();
+        assertEquals(0, tokens.size());
     }
 }
