@@ -17,10 +17,13 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,6 +43,7 @@ public class CmapSubtable
     private int platformEncodingId;
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
+    private Map<Integer, List<Integer>> glyphIdToCharacterCodeMultiple = new HashMap<Integer, List<Integer>>();
     private Map<Integer, Integer> characterCodeToGlyphId;
 
     /**
@@ -432,16 +436,25 @@ public class CmapSubtable
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(maxGlyphId + 1);
         for (Entry<Integer, Integer> entry : characterCodeToGlyphId.entrySet())
         {
-            // link the glyphId with the right character code
-            // TODO ambiguous glyphid to charcode mapping will be skipped
-            if (glyphIdToCharacterCode[entry.getValue()] > 0)
+            if (glyphIdToCharacterCode[entry.getValue()] == -1)
             {
-                LOG.debug("Skipped glyphID-char mapping (" + entry.getValue() + "->"
-                        + entry.getKey() + ") due to the already existing mapping ("
-                        + entry.getValue() + "->" + glyphIdToCharacterCode[entry.getValue()] + ")");
+                // add new value to the array
+                glyphIdToCharacterCode[entry.getValue()] = entry.getKey();
             }
             else
-                glyphIdToCharacterCode[entry.getValue()] = entry.getKey();
+            {
+                // there is already a mapping for the given glyphId
+                List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(entry.getValue());
+                if (mappedValues == null)
+                {
+                    mappedValues = new ArrayList<Integer>();
+                    glyphIdToCharacterCodeMultiple.put(entry.getValue(), mappedValues);
+                    mappedValues.add(glyphIdToCharacterCode[entry.getValue()]);
+                    // mark value as multiple mapping
+                    glyphIdToCharacterCode[entry.getValue()] = Integer.MIN_VALUE;
+                }
+                mappedValues.add(entry.getKey());
+            }
         }
     }
 
@@ -592,8 +605,25 @@ public class CmapSubtable
      *
      * @param gid glyph id
      * @return character code
+     * 
+     * @deprecated the mapping may be ambiguous. The first mapped value is returned by default.
      */
     public Integer getCharacterCode(int gid)
+    {
+        int code = getCharCode(gid);
+        // ambiguous mapping, use the first mapping
+        if (code == Integer.MIN_VALUE)
+        {
+            List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
+            if (mappedValues != null)
+            {
+                return mappedValues.get(0);
+            }
+        }
+        return code;
+    }
+
+    private Integer getCharCode(int gid)
     {
         if (gid < 0 || gid >= glyphIdToCharacterCode.length)
         {
@@ -608,6 +638,37 @@ public class CmapSubtable
             return null;
         }
         return code;
+    }
+
+    /**
+     * Fills the given map with gid to unicode mappings.
+     * 
+     * @param gidToUni the map to put the mappings into
+     * @param maxGid the maximum gid value
+     * 
+     */
+    public void createGID2UnicodeMapping(Map<Integer, Integer> gidToUni, int maxGid)
+    {
+        for (int gid = 1; gid <= maxGid; gid++)
+        {
+            // skip composite glyph components that have no code point
+            Integer codePoint = getCharCode(gid);
+            if (codePoint != null)
+            {
+                if (codePoint > 0)
+                {
+                    gidToUni.put(gid, codePoint); // CID = GID
+                }
+                else if (codePoint == Integer.MIN_VALUE)
+                {
+                    List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
+                    for (Integer mappedValue : mappedValues)
+                    {
+                        gidToUni.put(gid, mappedValue); // CID = GID
+                    }
+                }
+            }
+        }
     }
 
     @Override
