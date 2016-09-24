@@ -256,7 +256,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         for (GlyfCompositeComp c : components)
         {
             GlyphDescription gd = descriptions.get(c.getGlyphIndex());
-            if (c.getFirstIndex() <= i && i < (c.getFirstIndex() + gd.getPointCount()))
+            if (c.getFirstIndex() <= i && gd != null && i < (c.getFirstIndex() + gd.getPointCount()))
             {
                 return c;
             }
@@ -269,7 +269,7 @@ public class GlyfCompositeDescript extends GlyfDescript
         for (GlyfCompositeComp c : components)
         {
             GlyphDescription gd = descriptions.get(c.getGlyphIndex());
-            if (c.getFirstContour() <= i && i < (c.getFirstContour() + gd.getContourCount()))
+            if (c.getFirstContour() <= i && gd != null && i < (c.getFirstContour() + gd.getContourCount()))
             {
                 return c;
             }
