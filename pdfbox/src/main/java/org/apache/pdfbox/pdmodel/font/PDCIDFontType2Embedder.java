@@ -80,15 +80,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 
         // build GID -> Unicode map
         gidToUni = new HashMap<Integer, Integer>(ttf.getMaximumProfile().getNumGlyphs());
-        for (int gid = 1, max = ttf.getMaximumProfile().getNumGlyphs(); gid <= max; gid++)
-        {
-            // skip composite glyph components that have no code point
-            Integer codePoint = cmap.getCharacterCode(gid);
-            if (codePoint != null)
-            {
-                gidToUni.put(gid, codePoint); // CID = GID
-            }
-        }
+        cmap.createGID2UnicodeMapping(gidToUni, ttf.getMaximumProfile().getNumGlyphs());
         // ToUnicode CMap
         buildToUnicodeCMap(null);
     }
