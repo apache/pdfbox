@@ -347,17 +347,15 @@ public class CmapSubtable
         {
             return;
         }
-        Map<Integer, Integer> tmpGlyphToChar = new HashMap<Integer, Integer>(numGlyphs);
         characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
         int[] glyphIdArray = data.readUnsignedShortArray(entryCount);
         int maxGlyphId = 0;
         for (int i = 0; i < entryCount; i++)
         {
             maxGlyphId = Math.max(maxGlyphId, glyphIdArray[i]);
-            tmpGlyphToChar.put(glyphIdArray[i], firstCode + i);
             characterCodeToGlyphId.put(firstCode + i, glyphIdArray[i]);
         }
-        buildGlyphIdToCharacterCodeLookup(tmpGlyphToChar, maxGlyphId);
+        buildGlyphIdToCharacterCodeLookup(maxGlyphId);
     }
 
     /**
@@ -378,13 +376,11 @@ public class CmapSubtable
         int reservedPad = data.readUnsignedShort();
         int[] startCount = data.readUnsignedShortArray(segCount);
         int[] idDelta = data.readUnsignedShortArray(segCount);
+        long idRangeOffsetPosition = data.getCurrentPosition();
         int[] idRangeOffset = data.readUnsignedShortArray(segCount);
 
-        Map<Integer, Integer> tmpGlyphToChar = new HashMap<Integer, Integer>(numGlyphs);
         characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
         int maxGlyphId = 0;
-
-        long currentPosition = data.getCurrentPosition();
 
         for (int i = 0; i < segCount; i++)
         {
@@ -392,6 +388,7 @@ public class CmapSubtable
             int end = endCount[i];
             int delta = idDelta[i];
             int rangeOffset = idRangeOffset[i];
+            long segmentRangeOffset = idRangeOffsetPosition + (i * 2) + rangeOffset;
             if (start != 65535 && end != 65535)
             {
                 for (int j = start; j <= end; j++)
@@ -400,25 +397,18 @@ public class CmapSubtable
                     {
                         int glyphid = (j + delta) & 0xFFFF;
                         maxGlyphId = Math.max(glyphid, maxGlyphId);
-                        tmpGlyphToChar.put(glyphid, j);
                         characterCodeToGlyphId.put(j, glyphid);
                     }
                     else
                     {
-                        long glyphOffset = currentPosition + ((rangeOffset / 2) +
-                                (j - start) + 
-                                (i - segCount)) * 2;
+                        long glyphOffset = segmentRangeOffset + ((j - start) * 2);
                         data.seek(glyphOffset);
                         int glyphIndex = data.readUnsignedShort();
                         if (glyphIndex != 0)
                         {
                             glyphIndex = (glyphIndex + delta) & 0xFFFF;
-                            if (!tmpGlyphToChar.containsKey(glyphIndex))
-                            {
-                                maxGlyphId = Math.max(glyphIndex, maxGlyphId);
-                                tmpGlyphToChar.put(glyphIndex, j);
-                                characterCodeToGlyphId.put(j, glyphIndex);
-                            }
+                            maxGlyphId = Math.max(glyphIndex, maxGlyphId);
+                            characterCodeToGlyphId.put(j, glyphIndex);
                         }
                     }
                 }
@@ -429,21 +419,29 @@ public class CmapSubtable
          * this is the final result key=glyphId, value is character codes Create an array that contains MAX(GlyphIds)
          * element, or -1
          */
-        if (tmpGlyphToChar.isEmpty())
+        if (characterCodeToGlyphId.isEmpty())
         {
             LOG.warn("cmap format 4 subtable is empty");
             return;
         }
-        buildGlyphIdToCharacterCodeLookup(tmpGlyphToChar, maxGlyphId);
+        buildGlyphIdToCharacterCodeLookup(maxGlyphId);
     }
 
-    private void buildGlyphIdToCharacterCodeLookup(Map<Integer, Integer> tmpGlyphToChar, int maxGlyphId)
+    private void buildGlyphIdToCharacterCodeLookup(int maxGlyphId)
     {
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(maxGlyphId + 1);
-        for (Entry<Integer, Integer> entry : tmpGlyphToChar.entrySet())
+        for (Entry<Integer, Integer> entry : characterCodeToGlyphId.entrySet())
         {
             // link the glyphId with the right character code
-            glyphIdToCharacterCode[entry.getKey()] = entry.getValue();
+            // TODO ambiguous glyphid to charcode mapping will be skipped
+            if (glyphIdToCharacterCode[entry.getValue()] > 0)
+            {
+                LOG.debug("Skipped glyphID-char mapping (" + entry.getValue() + "->"
+                        + entry.getKey() + ") due to the already existing mapping ("
+                        + entry.getValue() + "->" + glyphIdToCharacterCode[entry.getValue()] + ")");
+            }
+            else
+                glyphIdToCharacterCode[entry.getValue()] = entry.getKey();
         }
     }
 
