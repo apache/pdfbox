@@ -17,7 +17,7 @@
 package org.apache.pdfbox.debugger.fontencodingpane;
 
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
-import org.apache.pdfbox.pdmodel.font.PDVectorFont;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 
 import javax.swing.JPanel;
 import java.io.IOException;
@@ -28,9 +28,9 @@ import java.util.Map;
  * @author Khyrul Bashar
  * A class that shows the glyph table along with unicode characters for SimpleFont.
  */
-class SimpleFont extends FontPane
+class Type3Font extends FontPane
 {
-    public static final String NO_GLYPH = "None";
+    public static final String NO_GLYPH = "No glyph";
     private final FontEncodingView view;
     private int totalAvailableGlyph = 0;
 
@@ -39,49 +39,35 @@ class SimpleFont extends FontPane
      * @param font PDSimpleFont instance.
      * @throws IOException If fails to parse unicode characters.
      */
-    SimpleFont(PDSimpleFont font) throws IOException
+    Type3Font(PDType3Font font) throws IOException
     {
         Object[][] tableData = getGlyphs(font);
-        
-        double[] yBounds = getYBounds(tableData, 3);
 
         Map<String, String> attributes = new LinkedHashMap<String, String>();
         attributes.put("Font", font.getName());
         attributes.put("Encoding", getEncodingName(font));
         attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
 
-        view = new FontEncodingView(tableData, attributes, 
-                new String[] {"Code", "Glyph Name", "Unicode Character", "Glyph"}, yBounds);
+        view = new FontEncodingView(tableData, attributes, new String[] {"Code", "Glyph Name", "Unicode Character"}, null);
     }
 
-    private Object[][] getGlyphs(PDSimpleFont font) throws IOException
+    private Object[][] getGlyphs(PDType3Font font) throws IOException
     {
-        Object[][] glyphs = new Object[256][4];
+        Object[][] glyphs = new Object[256][3];
 
         for (int index = 0; index <= 255; index++)
         {
             glyphs[index][0] = index;
             if (font.getEncoding().contains(index))
             {
-                String glyphName = font.getEncoding().getName(index);
-                glyphs[index][1] = glyphName;
+                glyphs[index][1] = font.getEncoding().getName(index);
                 glyphs[index][2] = font.toUnicode(index);
-                if (font instanceof PDVectorFont)
-                {
-                    // using names didn't work with the file from PDFBOX-3445
-                    glyphs[index][3] = ((PDVectorFont) font).getPath(index);
-                }
-                else
-                {
-                    glyphs[index][3] = font.getPath(glyphName);
-                }
                 totalAvailableGlyph++;
             }
             else
             {
                 glyphs[index][1] = NO_GLYPH;
                 glyphs[index][2] = NO_GLYPH;
-                glyphs[index][3] = font.getPath(".notdef");
             }
         }
         return glyphs;
