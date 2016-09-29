@@ -15,22 +15,29 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
+import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import junit.framework.TestCase;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
-import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
-import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
+import junit.framework.TestCase;
 
 /**
  * Unit tests for CCITTFactory
@@ -194,5 +201,55 @@ public class CCITTFactoryTest extends TestCase
         assertEquals(1, document.getNumberOfPages());
 
         document.close();
+    }
+    
+    /**
+     * Tests that CCITTFactory#createFromFile(PDDocument document, File file) doesn't lock the source file
+     */
+    public void testCreateFromFileLock() throws IOException
+    {
+        // copy the source file to a temp directory, as we will be deleting it
+        String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
+        File copiedTiffFile = new File(testResultsDir, "ccittg3.tif");
+        copyFile(new File(tiffG3Path), copiedTiffFile);
+        PDDocument document = new PDDocument();
+        CCITTFactory.createFromFile(document, copiedTiffFile);
+        assertTrue(copiedTiffFile.delete());
+    }
+
+    /**
+     * Tests that CCITTFactory#createFromFile(PDDocument document, File file, int number) doesn't lock the source file
+     */
+    public void testCreateFromFileNumberLock() throws IOException
+    {
+        // copy the source file to a temp directory, as we will be deleting it
+        String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
+        File copiedTiffFile = new File(testResultsDir, "ccittg3n.tif");
+        copyFile(new File(tiffG3Path), copiedTiffFile);
+        PDDocument document = new PDDocument();
+        CCITTFactory.createFromFile(document, copiedTiffFile, 0);
+        assertTrue(copiedTiffFile.delete());
+    }
+
+    private void copyFile(File source, File dest) throws IOException
+    {
+        InputStream is = null;
+        OutputStream os = null;
+        try
+        {
+            is = new FileInputStream(source);
+            os = new FileOutputStream(dest);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) > 0)
+            {
+                os.write(buffer, 0, length);
+            }
+        }
+        finally
+        {
+            is.close();
+            os.close();
+        }
     }
 }
