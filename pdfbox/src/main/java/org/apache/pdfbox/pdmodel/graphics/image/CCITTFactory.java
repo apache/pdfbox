@@ -158,10 +158,17 @@ public final class CCITTFactory
      * @return a new Image XObject
      * @throws IOException if there is an error reading the TIFF data.
      */
-    public static PDImageXObject createFromFile(PDDocument document, File file)
-            throws IOException
+    public static PDImageXObject createFromFile(PDDocument document, File file) throws IOException
     {
-        return createFromRandomAccessImpl(document, new RandomAccessFile(file, "r"), 0);
+        RandomAccessFile raf = new RandomAccessFile(file, "r");
+        try
+        {
+            return createFromRandomAccessImpl(document, raf, 0);
+        }
+        finally
+        {
+            raf.close();
+        }
     }
 
     /**
@@ -181,7 +188,15 @@ public final class CCITTFactory
     public static PDImageXObject createFromFile(PDDocument document, File file, int number)
             throws IOException
     {
-        return createFromRandomAccessImpl(document, new RandomAccessFile(file, "r"), number);
+        RandomAccessFile raf = new RandomAccessFile(file, "r");
+        try
+        {
+            return createFromRandomAccessImpl(document, raf, number);
+        }
+        finally
+        {
+            raf.close();
+        }
     }
     
     /**
