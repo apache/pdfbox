@@ -1069,7 +1069,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         float y = pageSize.getHeight() - bbox.getLowerLeftY() - bbox.getHeight();
 
         Matrix m = new Matrix(graphics.getTransform());
-        switch (getPage().getRotation())
+        switch (pageRotation)
         {
             case 0:
             default:
