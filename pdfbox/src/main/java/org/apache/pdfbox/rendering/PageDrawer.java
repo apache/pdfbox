@@ -94,7 +94,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     
     // the page box to draw (usually the crop box but may be another)
     private PDRectangle pageSize;
-    
+
+    private int pageRotation;
+
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
@@ -1190,26 +1192,49 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             width = maxX - minX;
             height = maxY - minY;
 
-            image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); // FIXME - color space
+            if (pageRotation == 0 || pageRotation == 180)
+            {
+                image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); // FIXME - color space
+            }
+            else
+            {
+                image = new BufferedImage(height, width, BufferedImage.TYPE_INT_ARGB); // FIXME - color space
+            }
             Graphics2D g = image.createGraphics();
 
             // flip y-axis
-            int rotation = getPage().getRotation();
-            if (rotation == 0 || rotation == 180)
+            if (pageRotation == 0 || pageRotation == 180)
             {
                 g.translate(0, height);
-                g.scale(1, -1);
             }
             else
             {
                 g.translate(0, width);
-                g.scale(1, -1);
             }
+            g.scale(1, -1);
 
             // apply device transform (DPI)
             // the initial translation is ignored, because we're not writing into the initial graphics device
             Matrix m = new Matrix(xform);
             g.scale(m.getScalingFactorX(), m.getScalingFactorY());
+
+            AffineTransform xformOriginal = xform;
+            xform = AffineTransform.getScaleInstance(m.getScalingFactorX(), m.getScalingFactorY());
+            PDRectangle pageSizeOriginal = pageSize;
+            if (pageRotation == 0 || pageRotation == 180)
+            {
+                pageSize = new PDRectangle(0, 0,
+                        (float) bounds.getWidth() / m.getScalingFactorX(),
+                        (float) bounds.getHeight() / m.getScalingFactorY());
+            }
+            else
+            {
+                pageSize = new PDRectangle(0, 0,
+                        (float) bounds.getHeight() / m.getScalingFactorY(),
+                        (float) bounds.getWidth() / m.getScalingFactorX());
+            }
+            int pageRotationOriginal = pageRotation;
+            pageRotation = 0;
 
             // adjust the origin
             g.translate(-clipRect.getX(), -clipRect.getY());
@@ -1231,6 +1256,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 lastClip = lastClipOriginal;                
                 graphics.dispose();
                 graphics = g2dOriginal;
+                pageSize = pageSizeOriginal;
+                xform = xformOriginal;
+                pageRotation = pageRotationOriginal;
             }
         }
 
@@ -1251,6 +1279,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         public Raster getLuminosityRaster()
         {
+            //TODO use image width() ? Need rotated PDF to be sure.
             BufferedImage gray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
             Graphics g = gray.getGraphics();
             g.drawImage(image, 0, 0, null);
