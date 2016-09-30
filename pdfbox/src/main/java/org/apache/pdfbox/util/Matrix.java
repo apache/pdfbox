@@ -605,8 +605,6 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the y-shear element of this matrix.
-     *
-     * @see #getScalingFactorY()
      */
     public float getShearY()
     {
@@ -623,6 +621,8 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the y-scaling element of this matrix.
+     *
+     * @see #getScalingFactorY()
      */
     public float getScaleY()
     {
