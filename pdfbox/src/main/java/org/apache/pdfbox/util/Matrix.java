@@ -40,7 +40,7 @@ public final class Matrix implements Cloneable
     private final float[] single;
 
     /**
-     * Constructor.
+     * Constructor. This produces an identity matrix.
      */
     public Matrix()
     {
@@ -49,7 +49,9 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Creates a matrix from a 6-element COS array.
+     * Creates a matrix from a 6-element (a b c d e f) COS array.
+     *
+     * @param array
      */
     public Matrix(COSArray array)
     {
@@ -64,7 +66,21 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Creates a matrix with the given 6 elements.
+     * Creates a transformation matrix with the given 6 elements. Transformation matrices are
+     * discussed in 8.3.3, "Common Transformations" and 8.3.4, "Transformation Matrices" of the PDF
+     * specification. For simple purposes (rotate, scale, translate) it is recommended to use the
+     * static methods below.
+     *
+     * @see Matrix#getRotateInstance(double, float, float)
+     * @see Matrix#getScaleInstance(float, float)
+     * @see Matrix#getTranslateInstance(float, float)
+     *
+     * @param a the X coordinate scaling element (m00) of the 3x3 matrix
+     * @param b the Y coordinate shearing element (m10) of the 3x3 matrix
+     * @param c the X coordinate shearing element (m01) of the 3x3 matrix
+     * @param d the Y coordinate scaling element (m11) of the 3x3 matrix
+     * @param e the X coordinate translation element (m02) of the 3x3 matrix
+     * @param f the Y coordinate translation element (m12) of the 3x3 matrix
      */
     public Matrix(float a, float b, float c, float d, float e, float f)
     {
@@ -80,6 +96,7 @@ public final class Matrix implements Cloneable
 
     /**
      * Creates a matrix with the same elements as the given AffineTransform.
+     * @param at
      */
     public Matrix(AffineTransform at)
     {
@@ -578,6 +595,8 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the x-scaling element of this matrix.
+     * 
+     * @see #getScalingFactorX() 
      */
     public float getScaleX()
     {
@@ -586,6 +605,8 @@ public final class Matrix implements Cloneable
 
     /**
      * Returns the y-shear element of this matrix.
+     *
+     * @see #getScalingFactorY()
      */
     public float getShearY()
     {
