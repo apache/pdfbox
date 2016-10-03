@@ -470,7 +470,7 @@ public abstract class PDFStreamEngine
             else if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = clear();
+                arguments.clear();
             }
             else
             {
