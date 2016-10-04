@@ -33,7 +33,6 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +49,6 @@ import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
-import org.apache.pdfbox.pdmodel.graphics.blend.SoftMaskPaint;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -412,47 +410,31 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         linePath.closePath();
     }
 
-    /**
-     * Generates AWT raster for a soft mask
-     * 
-     * @param softMask soft mask
-     * @return AWT raster for soft mask
-     * @throws IOException
-     */
-    private Raster createSoftMaskRaster(PDSoftMask softMask) throws IOException
+    //TODO: move soft mask apply to getPaint()?
+    private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException
     {
-        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true);
-        COSName subtype = softMask.getSubType();
-        if (COSName.ALPHA.equals(subtype))
+        if (softMask == null)
         {
-            return transparencyGroup.getAlphaRaster();
+            return parentPaint;
         }
-        else if (COSName.LUMINOSITY.equals(subtype))
+        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true);
+        BufferedImage image = transparencyGroup.getImage();
+        BufferedImage gray = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        if (COSName.ALPHA.equals(softMask.getSubType()))
         {
-            return transparencyGroup.getLuminosityRaster();
+            gray.setData(image.getAlphaRaster());
+        }
+        else if (COSName.LUMINOSITY.equals(softMask.getSubType()))
+        {
+            Graphics g = gray.getGraphics();
+            g.drawImage(image, 0, 0, null);
+            g.dispose();
         }
         else
         {
             throw new IOException("Invalid soft mask subtype.");
         }
-    }
-
-    private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException
-    {
-        if (softMask != null) 
-        {
-            //TODO PDFBOX-2934
-            if (COSName.ALPHA.equals(softMask.getSubType()))
-            {
-                LOG.info("alpha smask not implemented yet, is ignored");
-                return parentPaint;
-            }
-            return new SoftMaskPaint(parentPaint, createSoftMaskRaster(softMask));
-        }
-        else 
-        {
-            return parentPaint;
-        }
+        return new SoftMask(parentPaint, gray, transparencyGroup.getBounds());
     }
 
     // returns the stroking AWT Paint
@@ -466,6 +448,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // returns the non-stroking AWT Paint
     private Paint getNonStrokingPaint() throws IOException
     {
+        //TODO why no soft mask?
         return getPaint(getGraphicsState().getNonStrokingColor());
     }
 
@@ -722,6 +705,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (pdImage.isStencil())
         {
             // fill the image with paint
+            //TODO why no soft mask?
             BufferedImage image = pdImage.getStencilImage(getNonStrokingPaint());
 
             // draw the image
@@ -1115,6 +1099,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         private final BufferedImage image;
         private final PDRectangle bbox;
 
+        private final int minX;
+        private final int minY;
         private final int width;
         private final int height;
 
@@ -1146,8 +1132,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Shape deviceClip = dpiTransform.createTransformedShape(clip);
             Rectangle2D bounds = deviceClip.getBounds2D();
 
-            int minX = (int) Math.floor(bounds.getMinX());
-            int minY = (int) Math.floor(bounds.getMinY());
+            minX = (int) Math.floor(bounds.getMinX());
+            minY = (int) Math.floor(bounds.getMinY());
             int maxX = (int) Math.floor(bounds.getMaxX()) + 1;
             int maxY = (int) Math.floor(bounds.getMaxY()) + 1;
 
@@ -1210,19 +1196,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return bbox;
         }
 
-        public Raster getAlphaRaster()
+        public Rectangle2D getBounds()
         {
-            return image.getAlphaRaster();
-        }
-
-        public Raster getLuminosityRaster()
-        {
-            BufferedImage gray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-            Graphics g = gray.getGraphics();
-            g.drawImage(image, 0, 0, null);
-            g.dispose();
-
-            return gray.getRaster();
+            Point2D size = new Point2D.Double(pageSize.getWidth(), pageSize.getHeight());
+            // apply the underlying Graphics2D device's DPI transform and y-axis flip
+            Matrix m = new Matrix(xform);
+            AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
+            size = dpiTransform.transform(size, size);
+            // Flip y
+            return new Rectangle2D.Double(minX, size.getY() - minY - height, width, height);
         }
     }
 }
