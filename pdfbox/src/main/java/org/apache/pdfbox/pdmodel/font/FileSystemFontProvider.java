@@ -285,7 +285,14 @@ final class FileSystemFontProvider extends FontProvider
         try
         {
             File file = getDiskCacheFile();
-            writer = new BufferedWriter(new FileWriter(file));
+            try
+            {
+                writer = new BufferedWriter(new FileWriter(file));
+            }
+            catch (SecurityException e)
+            {
+                return;
+            }
 
             for (FSFontInfo fontInfo : fontInfoList)
             {
@@ -360,7 +367,15 @@ final class FileSystemFontProvider extends FontProvider
         
         List<FSFontInfo> results = new ArrayList<FSFontInfo>();
         File file = getDiskCacheFile();
-        if (file.exists())
+        boolean fileExists = false;
+        try
+        {
+            fileExists = file.exists();
+        }
+        catch (SecurityException e)
+        {
+        }
+        if (fileExists)
         {
             BufferedReader reader = null;
             try
