@@ -93,8 +93,7 @@ class SoftMask implements Paint
             WritableRaster raster = (WritableRaster)context.getRaster(x1, y1, w, h);
 
             // buffer
-            BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            WritableRaster output = image.getRaster();
+            WritableRaster output = getColorModel().createCompatibleWritableRaster(w, h);
 
             // the soft mask has its own bbox
             x1 = x1 - (int)bboxDevice.getX();
@@ -110,18 +109,13 @@ class SoftMask implements Paint
 
                     // get the alpha value from the gray mask, if within mask bounds
                     gray[0] = 0;
-                    if (x1 + x < mask.getWidth() && y1 + y < mask.getHeight())
+                    if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < mask.getWidth() && y1 + y < mask.getHeight())
                     {
-                        try
-                        {
-                            mask.getRaster().getPixel(x1 + x, y1 + y, gray);
-                        }
-                        catch (ArrayIndexOutOfBoundsException e)
-                        {
-                            //TODO bounds check not yet correct
-                        }
+                        mask.getRaster().getPixel(x1 + x, y1 + y, gray);
+
+                        // multiply alpha
+                        rgba[3] = Math.round(rgba[3] * (gray[0] / 255f));
                     }
-                    rgba[3] = Math.round(rgba[3] * (gray[0] / 255f)); // multiply alpha
                     output.setPixel(x, y, rgba);
                 }
             }
