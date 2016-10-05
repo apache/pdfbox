@@ -57,6 +57,8 @@ import org.apache.pdfbox.pdmodel.font.encoding.SymbolEncoding;
  */
 public class PDType1Font extends PDSimpleFont implements PDVectorFont
 {
+    private static final Log LOG = LogFactory.getLog(PDType1Font.class);
+
     // todo: replace with enum? or getters?
     public static final PDType1Font TIMES_ROMAN = new PDType1Font("Times-Roman");
     public static final PDType1Font TIMES_BOLD = new PDType1Font("Times-Bold");
@@ -72,7 +74,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     public static final PDType1Font COURIER_BOLD_OBLIQUE = new PDType1Font("Courier-BoldOblique");
     public static final PDType1Font SYMBOL = new PDType1Font("Symbol");
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
-    private static final Log LOG = LogFactory.getLog(PDType1Font.class);
+
     // alternative names for glyphs which are commonly encountered
     private static final Map<String, String> ALT_NAMES = new HashMap<String, String>();
     private static final int PFB_START_MARKER = 0x80;
