@@ -611,6 +611,10 @@ public class CmapSubtable
     public Integer getCharacterCode(int gid)
     {
         int code = getCharCode(gid);
+        if (code == -1)
+        {
+            return null;
+        }
         // ambiguous mapping, use the first mapping
         if (code == Integer.MIN_VALUE)
         {
@@ -623,21 +627,13 @@ public class CmapSubtable
         return code;
     }
 
-    private Integer getCharCode(int gid)
+    private int getCharCode(int gid)
     {
         if (gid < 0 || gid >= glyphIdToCharacterCode.length)
         {
-            return null;
+            return -1;
         }
-
-        // workaround for the fact that glyphIdToCharacterCode doesn't distinguish between
-        // missing character codes and code 0.
-        int code = glyphIdToCharacterCode[gid];
-        if (code == -1)
-        {
-            return null;
-        }
-        return code;
+        return glyphIdToCharacterCode[gid];
     }
 
     /**
@@ -651,22 +647,23 @@ public class CmapSubtable
     {
         for (int gid = 1; gid <= maxGid; gid++)
         {
+            int codePoint = getCharCode(gid);
             // skip composite glyph components that have no code point
-            Integer codePoint = getCharCode(gid);
-            if (codePoint != null)
+            if (codePoint == -1)
             {
-                if (codePoint > 0)
+                continue;
+            }
+            if (codePoint == Integer.MIN_VALUE)
+            {
+                List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
+                for (Integer mappedValue : mappedValues)
                 {
-                    gidToUni.put(gid, codePoint); // CID = GID
+                    gidToUni.put(gid, mappedValue); // CID = GID
                 }
-                else if (codePoint == Integer.MIN_VALUE)
-                {
-                    List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
-                    for (Integer mappedValue : mappedValues)
-                    {
-                        gidToUni.put(gid, mappedValue); // CID = GID
-                    }
-                }
+            }
+            else
+            {
+                gidToUni.put(gid, codePoint); // CID = GID
             }
         }
     }
