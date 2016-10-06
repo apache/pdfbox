@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,7 +49,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     private final PDType0Font parent;
     private final COSDictionary dict;
     private final COSDictionary cidFont;
-    private final Map<Integer, Integer> gidToUni;
 
     /**
      * Creates a new TrueType font embedder for the given TTF as a PDCIDFontType2.
@@ -73,16 +73,16 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         dict.setItem(COSName.ENCODING, COSName.IDENTITY_H); // CID = GID
 
         // descendant CIDFont
-        cidFont = createCIDFont();
+        cidFont = createCIDFont(embedSubset);
         COSArray descendantFonts = new COSArray();
         descendantFonts.add(cidFont);
         dict.setItem(COSName.DESCENDANT_FONTS, descendantFonts);
 
-        // build GID -> Unicode map
-        gidToUni = new HashMap<Integer, Integer>(ttf.getMaximumProfile().getNumGlyphs());
-        cmap.createGID2UnicodeMapping(gidToUni, ttf.getMaximumProfile().getNumGlyphs());
-        // ToUnicode CMap
-        buildToUnicodeCMap(null);
+        if (!embedSubset)
+        {
+            // build GID -> Unicode map
+            buildToUnicodeCMap(null);
+        }
     }
 
     /**
@@ -100,7 +100,8 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             int oldGID = entry.getValue();
             cidToGid.put(oldGID, newGID);
         }
-
+        // build unicode mapping before subsetting as the subsetted font won't have a cmap
+        buildToUnicodeCMap(gidToCid);
         // rebuild the relevant part of the font
         buildFontFile2(ttfSubset);
         addNameTag(tag);
@@ -135,9 +136,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             }
 
             // skip composite glyph components that have no code point
-            Integer codePoint = gidToUni.get(cid); // old GID -> Unicode
-            if (codePoint != null)
+            List<Integer> codes = cmap.getCharCodes(cid); // old GID -> Unicode
+            if (codes != null)
             {
+                // use the first entry even for ambiguous mappings
+                int codePoint = codes.get(0);
                 if (codePoint > 0xFFFF)
                 {
                     hasSurrogates = true;
@@ -174,7 +177,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         return info;
     }
 
-    private COSDictionary createCIDFont() throws IOException
+    private COSDictionary createCIDFont(boolean embedSubset) throws IOException
     {
         COSDictionary cidFont = new COSDictionary();
 
@@ -193,7 +196,12 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         cidFont.setItem(COSName.FONT_DESC, fontDescriptor.getCOSObject());
 
         // W - widths
-        buildWidths(cidFont);
+        if (!embedSubset)
+        {
+            // subsetted fonts have a reduced amount of widths
+            // and will be created after subsetting
+            buildWidths(cidFont);
+        }
 
         // CIDToGIDMap
         cidFont.setItem(COSName.CID_TO_GID_MAP, COSName.IDENTITY);
