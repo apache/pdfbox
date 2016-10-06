@@ -42,9 +42,16 @@ public abstract class NativeFontDirFinder implements FontDirFinder
             for (String searchableDirectorie : searchableDirectories)
             {
                 File fontDir = new File(searchableDirectorie);
-                if (fontDir.exists() && fontDir.canRead())
+                try
                 {
-                    fontDirList.add(fontDir);
+                    if (fontDir.exists() && fontDir.canRead())
+                    {
+                        fontDirList.add(fontDir);
+                    }
+                }
+                catch (SecurityException e)
+                {
+                    // should continue if this fails
                 }
             }
         }
