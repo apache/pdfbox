@@ -114,11 +114,8 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
      */
     public static int parseInt(String token)
     {
-        if (token.startsWith("+"))
-        {
-            token = token.substring(1);
-        }
-        return Integer.parseInt(token);
+        //TODO Beginning with JDK7 Integer.parseInt accepts leading +'s
+        return Integer.parseInt(token.startsWith("+") ? token.substring(1) : token);
     }
 
     /**
