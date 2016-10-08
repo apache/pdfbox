@@ -135,8 +135,8 @@ final class FontMapperImpl implements FontMapper
      */
     public synchronized void setProvider(FontProvider fontProvider)
     {
-        this.fontProvider = fontProvider;
         fontInfoByName = createFontInfoByName(fontProvider.getFontInfo());
+        this.fontProvider = fontProvider;
     }
 
     /**
