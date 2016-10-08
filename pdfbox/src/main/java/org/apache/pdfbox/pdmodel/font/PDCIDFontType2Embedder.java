@@ -73,7 +73,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         dict.setItem(COSName.ENCODING, COSName.IDENTITY_H); // CID = GID
 
         // descendant CIDFont
-        cidFont = createCIDFont(embedSubset);
+        cidFont = createCIDFont();
         COSArray descendantFonts = new COSArray();
         descendantFonts.add(cidFont);
         dict.setItem(COSName.DESCENDANT_FONTS, descendantFonts);
@@ -108,7 +108,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         buildWidths(cidToGid);
         buildCIDToGIDMap(cidToGid);
         buildCIDSet(cidToGid);
-        buildToUnicodeCMap(gidToCid);
     }
 
     private void buildToUnicodeCMap(Map<Integer, Integer> newGIDToOldCID) throws IOException
@@ -177,7 +176,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         return info;
     }
 
-    private COSDictionary createCIDFont(boolean embedSubset) throws IOException
+    private COSDictionary createCIDFont() throws IOException
     {
         COSDictionary cidFont = new COSDictionary();
 
@@ -196,12 +195,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         cidFont.setItem(COSName.FONT_DESC, fontDescriptor.getCOSObject());
 
         // W - widths
-        if (!embedSubset)
-        {
-            // subsetted fonts have a reduced amount of widths
-            // and will be created after subsetting
-            buildWidths(cidFont);
-        }
+        buildWidths(cidFont);
 
         // CIDToGIDMap
         cidFont.setItem(COSName.CID_TO_GID_MAP, COSName.IDENTITY);
