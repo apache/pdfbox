@@ -161,12 +161,13 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param documentIDArray  document id
      * @param decryptionMaterial Information used to decrypt the document.
      *
+     * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException If there is an error accessing data.
      */
     @Override
     public void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
                                      DecryptionMaterial decryptionMaterial)
-                                     throws IOException
+                                     throws InvalidPasswordException, IOException
     {
         if(!(decryptionMaterial instanceof StandardDecryptionMaterial))
         {
