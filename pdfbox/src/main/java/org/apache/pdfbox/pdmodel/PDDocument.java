@@ -313,6 +313,14 @@ public class PDDocument implements Closeable
         acroForm.setAppendOnly(true);
 
         boolean checkFields = checkSignatureField(acroFormFields, signatureField);
+        if (checkFields)
+        {
+            signatureField.getCOSObject().setNeedToBeUpdated(true);
+        }
+        else
+        {
+            acroFormFields.add(signatureField);
+        }
 
         // Get the object from the visual signature
         COSDocument visualSignature = options.getVisualSignature();
@@ -364,26 +372,25 @@ public class PDDocument implements Closeable
         return signatureField;
     }
 
-    // return true if the field already existed in the field list, in that case, it is marked for update
+    /**
+     * Check if the field already exists in the field list.
+     *
+     * @param acroFormFields the list of AcroForm fields.
+     * @param signatureField the signature field.
+     * @return true if the field already existed in the field list, false if not.
+     */
     private boolean checkSignatureField(List<PDField> acroFormFields, PDSignatureField signatureField)
     {
-        boolean checkFields = false;
         for (PDField field : acroFormFields)
         {
             if (field instanceof PDSignatureField
                     && field.getCOSObject().equals(signatureField.getCOSObject()))
             {
-                checkFields = true;
-                signatureField.getCOSObject().setNeedToBeUpdated(true);
-                break;
+                return true;
             }
             // fixme: this code does not check non-terminal fields, there could be a descendant signature
         }
-        if (!checkFields)
-        {
-            acroFormFields.add(signatureField);
-        }
-        return checkFields;
+        return false;
     }
 
     private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
@@ -469,7 +476,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * This will add a signature field to the document.
+     * This will add a list of signature fields to the document.
      * 
      * @param sigFields are the PDSignatureFields that should be added to the document
      * @param signatureInterface is a interface which provides signing capabilities
@@ -504,7 +511,15 @@ public class PDDocument implements Closeable
             sigField.getCOSObject().setNeedToBeUpdated(true);
             
             // Check if the field already exists
-            checkSignatureField(acroformFields, sigField);
+            boolean checkSignatureField = checkSignatureField(acroformFields, sigField);
+            if (checkSignatureField)
+            {
+                sigField.getCOSObject().setNeedToBeUpdated(true);
+            }
+            else
+            {
+                acroformFields.add(sigField);
+            }
 
             // Check if we need to add a signature
             if (sigField.getSignature() != null)
@@ -1161,7 +1176,7 @@ public class PDDocument implements Closeable
         }
     }
 
-   /**
+    /**
      * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
      * file or a stream, not if the document was created in PDFBox itself.
      *
