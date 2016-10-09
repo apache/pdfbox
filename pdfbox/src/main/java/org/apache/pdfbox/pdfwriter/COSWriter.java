@@ -507,15 +507,6 @@ public class COSWriter implements ICOSVisitor, Closeable
     public void doWriteObject( COSBase obj ) throws IOException
     {
         writtenObjects.add( obj );
-        if(obj instanceof COSDictionary)
-        {
-            COSBase itemType = ((COSDictionary) obj).getItem(COSName.TYPE);
-            if (COSName.SIG.equals(itemType) || COSName.DOC_TIME_STAMP.equals(itemType))
-            {
-                reachedSignature = true;
-            }
-        }
-
         // find the physical reference
         currentObjectKey = getObjectKey( obj );
         // add a x ref entry
@@ -743,7 +734,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      * signatures externally. {@link #write(PDDocument)} method should have been called prior.
      * The created signature should be set using {@link #writeExternalSignature(byte[])}.
      * <p>
-     * When {@link SignatureInterface} instance is used, COSWriter obtains and writes the signature itsef.
+     * When {@link SignatureInterface} instance is used, COSWriter obtains and writes the signature itself.
      * </p>
      *
      * @return data stream to be signed
@@ -978,6 +969,14 @@ public class COSWriter implements ICOSVisitor, Closeable
     @Override
     public Object visitFromDictionary(COSDictionary obj) throws IOException
     {
+        if (!reachedSignature)
+        {
+            COSBase itemType = obj.getItem(COSName.TYPE);
+            if (COSName.SIG.equals(itemType) || COSName.DOC_TIME_STAMP.equals(itemType))
+            {
+                reachedSignature = true;
+            }
+        }        
         getStandardOutput().write(DICT_OPEN);
         getStandardOutput().writeEOL();
         for (Map.Entry<COSName, COSBase> entry : obj.entrySet())
