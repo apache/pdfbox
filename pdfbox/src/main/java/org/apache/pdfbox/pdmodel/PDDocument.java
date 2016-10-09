@@ -55,6 +55,7 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandlerFactory;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -301,6 +302,11 @@ public class PDDocument implements Closeable
             // backward linking
             signatureField.getWidgets().get(0).setPage(page);
         }
+        else
+        {
+            sigObject.getCOSObject().setNeedToBeUpdated(true);
+        }
+
         // to conform PDF/A-1 requirement:
         // The /F key's Print flag bit shall be set to 1 and 
         // its Hidden, Invisible and NoView flag bits shall be set to 0
@@ -349,7 +355,16 @@ public class PDDocument implements Closeable
               ((COSArrayList<?>) annotations).toList().equals(((COSArrayList<?>) acroFormFields).toList()) &&
               checkFields))
         {
-            annotations.add(signatureField.getWidgets().get(0));
+            PDAnnotationWidget widget = signatureField.getWidgets().get(0);
+            // use check to prevent the annotation widget from appearing twice
+            if (checkSignatureAnnotation(annotations, widget))
+            {
+                widget.getCOSObject().setNeedToBeUpdated(true);
+            }
+            else
+            {
+                annotations.add(widget);
+            }   
         }
         page.getCOSObject().setNeedToBeUpdated(true);
     }
@@ -389,6 +404,25 @@ public class PDDocument implements Closeable
                 return true;
             }
             // fixme: this code does not check non-terminal fields, there could be a descendant signature
+        }
+        return false;
+    }
+
+    /**
+     * Check if the widget already exists in the annotation list
+     *
+     * @param acroFormFields the list of AcroForm fields.
+     * @param signatureField the signature field.
+     * @return true if the widget already existed in the annotation list, false if not.
+     */
+    private boolean checkSignatureAnnotation(List<PDAnnotation> annotations, PDAnnotationWidget widget)
+    {
+        for (PDAnnotation annotation : annotations)
+        {
+            if (annotation.getCOSObject().equals(widget.getCOSObject()))
+            {
+                return true;
+            }
         }
         return false;
     }
