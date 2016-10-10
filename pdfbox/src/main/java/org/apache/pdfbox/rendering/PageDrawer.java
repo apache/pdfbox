@@ -499,20 +499,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException
     {
-        if (softMask != null) 
-        {
-            //TODO PDFBOX-2934
-            if (COSName.ALPHA.equals(softMask.getSubType()))
-            {
-                LOG.info("alpha smask not implemented yet, is ignored");
-                return parentPaint;
-            }
-            return new SoftMaskPaint(parentPaint, createSoftMaskRaster(softMask));
-        }
-        else 
+        if (softMask == null || softMask.getGroup() == null)
         {
             return parentPaint;
         }
+        //TODO PDFBOX-2934
+        if (COSName.ALPHA.equals(softMask.getSubType()))
+        {
+            LOG.info("alpha smask not implemented yet, is ignored");
+            return parentPaint;
+        }
+        return new SoftMaskPaint(parentPaint, createSoftMaskRaster(softMask));
     }
 
     // returns the stroking AWT Paint
