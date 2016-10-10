@@ -17,6 +17,7 @@
 package org.apache.pdfbox.cos;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
 import org.apache.pdfbox.util.SmallMap;
@@ -1467,9 +1469,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public COSBase getObjectFromPath(String objPath)
     {
-        COSBase retval = null;
         String[] path = objPath.split(PATH_SEPARATOR);
-        retval = this;
+        COSBase retval = this;
         for (String pathString : path)
         {
             if (retval instanceof COSArray)
@@ -1501,25 +1502,54 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     @Override
     public String toString()
     {
-        StringBuilder retVal = new StringBuilder(getClass().getSimpleName());
-        retVal.append("{");
-        for (COSName key : items.keySet())
+        try
         {
-            retVal.append("(");
-            retVal.append(key);
-            retVal.append(":");
-            if (getDictionaryObject(key) != null)
-            {
-                retVal.append(getDictionaryObject(key).toString());
-            }
-            else
-            {
-                retVal.append("<null>");
-            }
-            retVal.append(") ");
+            return getDictionaryString(this, new ArrayList<COSBase>());
         }
-        retVal.append("}");
-        return retVal.toString();
+        catch (IOException e)
+        {
+            return "COSDictionary{" + e.getMessage() + "}";
+        }
     }
 
+    private static String getDictionaryString(COSBase base, List<COSBase> objs) throws IOException
+    {
+        if (base == null)
+        {
+            return "null";
+        }
+        if (objs.contains(base))
+        {
+            // avoid endless recursion
+            return String.valueOf(base.hashCode());
+        }
+        objs.add(base);
+        if (base instanceof COSDictionary)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("COSDictionary{");
+            for (Map.Entry<COSName, COSBase> x : ((COSDictionary) base).entrySet())
+            {
+                sb.append(x.getKey());
+                sb.append(":");
+                sb.append(getDictionaryString(x.getValue(), objs));
+                sb.append(";");
+            }
+            sb.append("}");
+            if (base instanceof COSStream)
+            {
+                InputStream stream = ((COSStream) base).createRawInputStream();
+                byte[] b = IOUtils.toByteArray(stream);
+                sb.append("COSStream{").append(Arrays.hashCode(b)).append("}");
+                stream.close();
+            }
+            return sb.toString();
+        }
+        if (base instanceof COSObject)
+        {
+            COSObject obj = (COSObject) base;
+            return "COSObject{" + getDictionaryString(obj.getObject(), objs) + "}";
+        }
+        return base.toString();
+    }
 }
