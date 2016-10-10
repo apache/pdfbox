@@ -421,7 +421,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     //TODO: move soft mask apply to getPaint()?
     private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException
     {
-        if (softMask == null)
+        if (softMask == null || softMask.getGroup() == null)
         {
             return parentPaint;
         }
