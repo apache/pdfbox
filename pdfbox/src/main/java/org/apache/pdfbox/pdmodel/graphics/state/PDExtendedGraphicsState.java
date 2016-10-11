@@ -96,6 +96,14 @@ public class PDExtendedGraphicsState implements COSObjectable
             {
                 gs.setOverprintMode( getOverprintMode().doubleValue() );
             }
+            else if( key.equals( COSName.OP ) )
+            {
+                gs.setOverprint( getStrokingOverprintControl());
+            }
+            else if( key.equals( COSName.OP_NS ) )
+            {
+                gs.setNonStrokingOverprint(getNonStrokingOverprintControl());
+            }
             else if( key.equals( COSName.FONT ) )
             {
                 PDFontSetting setting = getFontSetting();
