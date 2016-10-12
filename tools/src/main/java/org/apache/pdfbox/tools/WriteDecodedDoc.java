@@ -176,7 +176,7 @@ public class WriteDecodedDoc
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [options] <inputfile> [outputfile]\n"
                 + "\nOptions:\n"
                 + "  -password <password> : Password to decrypt the document\n"
-                + "  skipImages           : Don't uncompress images\n"
+                + "  -skipImages          : Don't uncompress images\n"
                 + "  <inputfile>          : The PDF document to be decompressed\n"
                 + "  [outputfile]         : The filename for the decompressed pdf\n";
        
