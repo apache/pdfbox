@@ -75,7 +75,19 @@ public class WriteDecodedDoc
                     {
                         continue;
                     }
-                    byte[] bytes = new PDStream(stream).toByteArray();
+                    byte[] bytes;
+                    try
+                    {
+                        bytes = new PDStream(stream).toByteArray();
+                    }
+                    catch (IOException ex)
+                    {
+                        System.err.println("skip " + 
+                                cosObject.getObjectNumber() + " " + 
+                                cosObject.getGenerationNumber() + " obj: " + 
+                                ex.getMessage());
+                        continue;
+                    }
                     stream.removeItem(COSName.FILTER);
                     OutputStream streamOut = stream.createOutputStream();
                     streamOut.write(bytes);
