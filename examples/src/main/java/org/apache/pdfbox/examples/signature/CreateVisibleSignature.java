@@ -28,15 +28,20 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Calendar;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
  * This is an example for visual signing a pdf.
@@ -63,7 +68,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
     {
         visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
                 preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
-                setPdVisibleSignature(visibleSignDesigner).buildSignature();
+                setPdVisibleSignature(visibleSignDesigner);
     }
 
     /**
@@ -107,8 +112,18 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // load document
         PDDocument doc = PDDocument.load(inputFile);
 
-        // create signature dictionary
-        PDSignature signature = new PDSignature();
+        PDSignature signature;
+
+        // You will usually not need this:
+        // sign a PDF with an existing empty signature, as created by the 
+        // CreateEmptySignatureForm example. Delete this line if you want to insert a new signature.
+        signature = findExistingSignature(doc, "Signature1");
+
+        if (signature == null)
+        {
+            // create signature dictionary
+            signature = new PDSignature();
+        }
 
         // default filter
         signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
@@ -118,6 +133,9 @@ public class CreateVisibleSignature extends CreateSignatureBase
         
         if (visibleSignatureProperties != null)
         {
+            // this builds the signature structures in a separate document
+            visibleSignatureProperties.buildSignature();
+
             signature.setName(visibleSignatureProperties.getSignerName());
             signature.setLocation(visibleSignatureProperties.getSignerLocation());
             signature.setReason(visibleSignatureProperties.getSignatureReason());
@@ -161,6 +179,44 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // do not close options before saving, because some COSStream objects within options 
         // are transferred to the signed document.
         IOUtils.closeQuietly(signatureOptions);
+    }
+
+    // Find an existing signature (assumed to be empty). You will usually not need this.
+    private PDSignature findExistingSignature(PDDocument doc, String sigFieldName)
+    {
+        PDSignature signature = null;
+        PDSignatureField signatureField;
+        PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+        if (acroForm != null)
+        {
+            signatureField = (PDSignatureField) acroForm.getField(sigFieldName);
+            if (signatureField != null)
+            {
+                // retrieve signature dictionary
+                signature = signatureField.getSignature();
+                if (signature == null)
+                {
+                    signature = new PDSignature();
+                    // after solving PDFBOX-3524
+                    // signatureField.setValue(signature)
+                    // until then:
+                    signatureField.getCOSObject().setItem(COSName.V, signature);
+                }
+                else
+                {
+                    //TODO add your error handling here:
+                    // it doesn't make sense to replace an existing signature
+                }
+                // position according to existing field widget
+                PDAnnotationWidget widget = signatureField.getWidgets().get(0);
+                PDRectangle rect = widget.getRectangle();
+                // need to substract from height because this is done later too
+                // see in PDVisibleSigBuilder.createSignatureRectangle()
+                visibleSignDesigner.xAxis(rect.getLowerLeftX())
+                        .yAxis(-rect.getLowerLeftY() + visibleSignatureProperties.getPdVisibleSignature().getPageHeight() - visibleSignDesigner.getHeight());
+            }
+        }
+        return signature;
     }
 
     /**
