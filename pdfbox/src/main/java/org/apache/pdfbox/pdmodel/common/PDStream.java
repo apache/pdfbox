@@ -493,16 +493,11 @@ public class PDStream implements COSObjectable
     public byte[] toByteArray() throws IOException
     {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
         InputStream is = null;
         try
         {
             is = createInputStream();
-            int amountRead;
-            while ((amountRead = is.read(buf)) != -1)
-            {
-                output.write(buf, 0, amountRead);
-            }
+            IOUtils.copy(is, output);
         } 
         finally
         {
