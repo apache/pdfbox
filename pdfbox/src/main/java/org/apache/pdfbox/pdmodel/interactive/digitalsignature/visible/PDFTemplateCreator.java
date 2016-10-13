@@ -102,7 +102,7 @@ public class PDFTemplateCreator
         // The line below has no effect with the CreateVisibleSignature example. 
         // The signature field is needed as a "holder" for the /AP tree, 
         // but the /P and /V PDSignatureField entries are ignored by PDDocument.addSignature
-        pdfBuilder.createSignature(pdSignatureField, page, properties.getSignatureFieldName()); 
+        pdfBuilder.createSignature(pdSignatureField, page, ""); 
        
         // that is /AcroForm/DR entry
         pdfBuilder.createAcroFormDictionary(acroForm, pdSignatureField);
