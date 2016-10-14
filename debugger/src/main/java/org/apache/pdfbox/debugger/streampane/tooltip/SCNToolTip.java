@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 
 /**
  * @author Khyrul Bashar
@@ -48,6 +49,11 @@ final class SCNToolTip extends ColorToolTip
         catch (IOException e)
         {
             e.printStackTrace();
+        }
+        if (colorSpace instanceof PDPattern)
+        {
+            setToolTipText("<html>Pattern</html>");
+            return;
         }
         if (colorSpace != null)
         {
