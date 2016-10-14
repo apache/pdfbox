@@ -34,6 +34,7 @@ import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
@@ -180,9 +181,10 @@ public class PDFParser extends COSParser
      * to all the pdf's objects. It can handle linearized pdfs, which will have an xref at the end pointing to an xref
      * at the beginning of the file. Last the root object is parsed.
      * 
+     * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException If something went wrong.
      */
-    protected void initialParse() throws IOException
+    protected void initialParse() throws InvalidPasswordException, IOException
     {
         COSDictionary trailer = null;
         // parse startxref
@@ -229,10 +231,11 @@ public class PDFParser extends COSParser
      * This will parse the stream and populate the COSDocument object.  This will close
      * the keystore stream when it is done parsing.
      *
+     * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException If there is an error reading from the stream or corrupt data
      * is found.
      */
-    public void parse() throws IOException
+    public void parse() throws InvalidPasswordException, IOException
     {
          // set to false if all is processed
          boolean exceptionOccurred = true; 
@@ -265,9 +268,10 @@ public class PDFParser extends COSParser
     /**
      * Prepare for decryption.
      * 
+     * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException if something went wrong
      */
-    private void prepareDecryption() throws IOException
+    private void prepareDecryption() throws InvalidPasswordException, IOException
     {
         COSBase trailerEncryptItem = document.getTrailer().getItem(COSName.ENCRYPT);
         if (trailerEncryptItem != null && !(trailerEncryptItem instanceof COSNull))
