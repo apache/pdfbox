@@ -32,7 +32,6 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
-import java.awt.Color;
 import java.awt.color.CMMException;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
@@ -142,7 +141,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
 
             // create a color in order to trigger a ProfileDataException
             // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740
-            new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
+            awtColorSpace.fromRGB(new float[3]);
         }
         catch (RuntimeException e)
         {
