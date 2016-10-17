@@ -115,7 +115,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>http://www.pdfa.org/wp-content/uploads/2011/08/isartor-pdfa-2008-08-13.zip</url>
+                            <url>https://www.pdfa.org/wp-content/until2016_uploads/2011/08/isartor-pdfa-2008-08-13.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <md5>9f129c834bc6f9f8dabad4491c4c10ec</md5>
