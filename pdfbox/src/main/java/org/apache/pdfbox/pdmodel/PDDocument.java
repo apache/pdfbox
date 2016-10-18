@@ -853,7 +853,7 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws InvalidPasswordException If the file required a non-empty password.
      * @throws IOException in case of a file reading or parsing error
      */
     public static PDDocument load(File file) throws InvalidPasswordException, IOException
@@ -869,7 +869,7 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws InvalidPasswordException If the file required a non-empty password.
      * @throws IOException in case of a file reading or parsing error
      */
     public static PDDocument load(File file, MemoryUsageSetting memUsageSetting)
@@ -978,8 +978,8 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException in case of a file reading or parsing error
+     * @throws InvalidPasswordException If the PDF required a non-empty password.
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input) throws InvalidPasswordException, IOException
     {
@@ -996,8 +996,8 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException in case of a file reading or parsing error
+     * @throws InvalidPasswordException If the PDF required a non-empty password.
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, MemoryUsageSetting memUsageSetting)
             throws InvalidPasswordException, IOException
@@ -1015,7 +1015,7 @@ public class PDDocument implements Closeable
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException in case of a file reading or parsing error
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, String password)
             throws InvalidPasswordException, IOException
@@ -1034,7 +1034,7 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws IOException in case of a file reading or parsing error
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, String password, InputStream keyStore, String alias)
             throws IOException
@@ -1054,7 +1054,7 @@ public class PDDocument implements Closeable
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException in case of a file reading or parsing error
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, String password, MemoryUsageSetting memUsageSetting)
             throws InvalidPasswordException, IOException
@@ -1075,7 +1075,8 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws IOException in case of a file reading or parsing error
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, String password, InputStream keyStore, 
                                   String alias, MemoryUsageSetting memUsageSetting) throws IOException
@@ -1102,8 +1103,8 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException in case of a file reading or parsing error
+     * @throws InvalidPasswordException If the PDF required a non-empty password.
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(byte[] input) throws InvalidPasswordException, IOException
     {
@@ -1119,7 +1120,7 @@ public class PDDocument implements Closeable
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException in case of a file reading or parsing error
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(byte[] input, String password)
             throws InvalidPasswordException, IOException
@@ -1137,7 +1138,8 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws IOException in case of a file reading or parsing error
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(byte[] input, String password, InputStream keyStore, 
             String alias) throws IOException
@@ -1156,7 +1158,8 @@ public class PDDocument implements Closeable
      * 
      * @return loaded document
      * 
-     * @throws IOException in case of a file reading or parsing error
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(byte[] input, String password, InputStream keyStore, 
             String alias, MemoryUsageSetting memUsageSetting) throws IOException
