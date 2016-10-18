@@ -92,6 +92,7 @@ import org.apache.pdfbox.debugger.ui.DocumentEntry;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
 import org.apache.pdfbox.debugger.ui.ExtensionFileFilter;
 import org.apache.pdfbox.debugger.ui.FileOpenSaveDialog;
+import org.apache.pdfbox.debugger.ui.LogDialog;
 import org.apache.pdfbox.debugger.ui.MapEntry;
 import org.apache.pdfbox.debugger.ui.OSXAdapter;
 import org.apache.pdfbox.debugger.ui.PDFTreeCellRenderer;
@@ -180,6 +181,10 @@ public class PDFDebugger extends JFrame
         isPageMode = viewPages;
         loadConfiguration();
         initComponents();
+
+        // use our custom logger
+        LogDialog.init(this, statusBar.getLogLabel());
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
     }
 
     /**
@@ -239,7 +244,7 @@ public class PDFDebugger extends JFrame
             File file = new File(filename);
             if (file.exists())
             {
-                viewer.readPDFFile( filename, password );
+                viewer.readPDFFile(filename, password);
             }
         }
         viewer.setVisible(true);
@@ -1239,6 +1244,8 @@ public class PDFDebugger extends JFrame
         }
         currentFilePath = file.getPath();
         recentFiles.removeFile(file.getPath());
+        LogDialog.instance().clear();
+        
         parseDocument( file, password );
         
         initTree();

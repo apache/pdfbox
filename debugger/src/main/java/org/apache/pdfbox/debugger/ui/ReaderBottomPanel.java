@@ -16,12 +16,16 @@
  */
 package org.apache.pdfbox.debugger.ui;
 
+import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
-
-import javax.swing.JPanel;
-
+import java.awt.Window;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JLabel;
-import java.awt.FlowLayout;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
 /**
  * A panel to display at the bottom of the window for status and other stuff.
  *
@@ -29,31 +33,47 @@ import java.awt.FlowLayout;
  */
 public class ReaderBottomPanel extends JPanel
 {
-
     private JLabel statusLabel = null;
-
-    /**
-     * This is the default constructor.
-     */
+    private JLabel logLabel = null;
+    
     public ReaderBottomPanel()
     {
-        FlowLayout flowLayout = new FlowLayout();
-        this.setLayout(flowLayout);
-        this.setComponentOrientation(java.awt.ComponentOrientation.LEFT_TO_RIGHT);
-        this.setPreferredSize(new Dimension(1000, 24));
-        flowLayout.setAlignment(FlowLayout.LEFT);
+        BorderLayout layout = new BorderLayout();
+        this.setLayout(layout);
+        
         statusLabel = new JLabel();
         statusLabel.setText("Ready");
-        this.add(statusLabel, null);
-    }
+        this.add(statusLabel, BorderLayout.WEST);
 
-    /**
-     * Return the status label.
-     *
-     * @return JLabel The status label.
-     */
+        logLabel = new JLabel();
+        logLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        logLabel.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                Window viewer = LogDialog.instance().getOwner();
+                
+                // show the log window
+                LogDialog.instance().setSize(800, 400);
+                LogDialog.instance().setVisible(true);
+                LogDialog.instance().setLocation(viewer.getLocationOnScreen().x + viewer.getWidth() / 2,
+                                                 viewer.getLocationOnScreen().y + viewer.getHeight() / 2);
+            }
+        });
+        this.add(logLabel, BorderLayout.EAST);
+
+        this.setBorder(new EmptyBorder(0, 5, 0, 5));
+        this.setPreferredSize(new Dimension(1000, 24));
+    }
+    
     public JLabel getStatusLabel()
     {
         return statusLabel;
+    }
+
+    public JLabel getLogLabel()
+    {
+        return logLabel;
     }
 }
