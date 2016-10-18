@@ -106,7 +106,10 @@
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
-                <version>1.2.1</version>
+                <version>1.3.0</version>
+                <configuration>
+                    <skip>${skipTests}</skip>
+                </configuration>
                 <executions>
                     <execution>
                         <id>get-isartor</id>
@@ -152,7 +155,7 @@
 									<pluginExecutionFilter>
 										<groupId>com.googlecode.maven-download-plugin</groupId>
 										<artifactId>download-maven-plugin</artifactId>
-										<versionRange>[1.2.1,)</versionRange>
+										<versionRange>[1.3.0,)</versionRange>
 										<goals>
 											<goal>wget</goal>
 										</goals>
