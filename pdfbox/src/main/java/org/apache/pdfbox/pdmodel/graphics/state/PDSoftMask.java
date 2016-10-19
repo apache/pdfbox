@@ -76,10 +76,11 @@ public final class PDSoftMask implements COSObjectable
 
     /**
      * Creates a new soft mask.
+     *
+     * @param dictionary The soft mask dictionary.
      */
     public PDSoftMask(COSDictionary dictionary)
     {
-        super();
         this.dictionary = dictionary;
     }
 
@@ -114,7 +115,11 @@ public final class PDSoftMask implements COSObjectable
             COSBase cosGroup = getCOSObject().getDictionaryObject(COSName.G);
             if (cosGroup != null)
             {
-                group = (PDTransparencyGroup) PDXObject.createXObject(cosGroup, null);
+                PDXObject x = PDXObject.createXObject(cosGroup, null);
+                if (x instanceof PDTransparencyGroup)
+                {
+                    group = (PDTransparencyGroup) x;
+                }
             }
         }
         return group;
