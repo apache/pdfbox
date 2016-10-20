@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -113,11 +114,10 @@ final class PDFieldFactory
         String retval = dic.getNameAsString(COSName.FT);
         if (retval == null)
         {
-            COSDictionary parent = (COSDictionary) dic.getDictionaryObject(COSName.PARENT,
-                    COSName.P);
-            if (parent != null)
+            COSBase base = dic.getDictionaryObject(COSName.PARENT, COSName.P);
+            if (base instanceof COSDictionary)
             {
-                retval = findFieldType(parent);
+                retval = findFieldType((COSDictionary) base);
             }
         }
         return retval;
