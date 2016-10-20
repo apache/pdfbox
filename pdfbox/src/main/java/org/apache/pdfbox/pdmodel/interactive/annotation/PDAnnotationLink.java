@@ -70,7 +70,6 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDAnnotationLink()
     {
-        super();
         getCOSObject().setItem(COSName.SUBTYPE, COSName.getPDFName(SUB_TYPE));
     }
 
@@ -92,8 +91,12 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDAction getAction()
     {
-        COSDictionary action = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.A);
-        return PDActionFactory.createAction(action);
+        COSBase base = getCOSObject().getDictionaryObject(COSName.A);
+        if (base instanceof COSDictionary)
+        {
+            return PDActionFactory.createAction((COSDictionary) base);
+        }
+        return null;
     }
 
     /**
@@ -195,10 +198,10 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public PDActionURI getPreviousURI()
     {
-        COSDictionary pa = (COSDictionary) getCOSObject().getDictionaryObject("PA");
-        if (pa != null)
+        COSBase base = getCOSObject().getDictionaryObject("PA");
+        if (base instanceof COSDictionary)
         {
-            return new PDActionURI(pa);
+            return new PDActionURI((COSDictionary) base);
         }
         return null;
     }
@@ -212,7 +215,7 @@ public class PDAnnotationLink extends PDAnnotation
     {
         COSArray newQuadPoints = new COSArray();
         newQuadPoints.setFloatArray(quadPoints);
-        getCOSObject().setItem("QuadPoints", newQuadPoints);
+        getCOSObject().setItem(COSName.QUADPOINTS, newQuadPoints);
     }
 
     /**
@@ -222,10 +225,10 @@ public class PDAnnotationLink extends PDAnnotation
      */
     public float[] getQuadPoints()
     {
-        COSArray quadPoints = (COSArray) getCOSObject().getDictionaryObject("QuadPoints");
-        if (quadPoints != null)
+        COSBase base = getCOSObject().getDictionaryObject(COSName.QUADPOINTS);
+        if (base instanceof COSArray)
         {
-            return quadPoints.toFloatArray();
+            return ((COSArray) base).toFloatArray();
         }
         // Should never happen as this is a required item
         return null; 
