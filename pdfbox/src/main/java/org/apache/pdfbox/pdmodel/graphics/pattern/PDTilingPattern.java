@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
@@ -53,7 +54,6 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public PDTilingPattern()
     {
-        super();
         getCOSObject().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_TILING_PATTERN);
     }
 
@@ -174,10 +174,10 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public PDResources getResources()
     {
         PDResources retval = null;
-        COSDictionary resources = (COSDictionary) getCOSObject().getDictionaryObject(COSName.RESOURCES);
-        if( resources != null )
+        COSBase base = getCOSObject().getDictionaryObject(COSName.RESOURCES);
+        if (base instanceof COSDictionary)
         {
-            retval = new PDResources( resources );
+            retval = new PDResources((COSDictionary) base);
         }
         return retval;
     }
@@ -202,10 +202,10 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     public PDRectangle getBBox()
     {
         PDRectangle retval = null;
-        COSArray array = (COSArray)getCOSObject().getDictionaryObject( COSName.BBOX );
-        if( array != null )
+        COSBase base = getCOSObject().getDictionaryObject(COSName.BBOX);
+        if (base instanceof COSArray)
         {
-            retval = new PDRectangle( array );
+            retval = new PDRectangle((COSArray) base);
         }
         return retval;
     }
