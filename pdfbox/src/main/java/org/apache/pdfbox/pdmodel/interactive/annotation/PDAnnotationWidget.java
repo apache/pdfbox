@@ -40,7 +40,6 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAnnotationWidget()
     {
-        super();
         getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
     }
 
@@ -144,8 +143,12 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAction getAction()
     {
-        COSDictionary action = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.A);
-        return PDActionFactory.createAction(action);
+        COSBase base = this.getCOSObject().getDictionaryObject(COSName.A);
+        if (base instanceof COSDictionary)
+        {
+            return PDActionFactory.createAction((COSDictionary) base);
+        }
+        return null;
     }
 
     /**
@@ -166,13 +169,12 @@ public class PDAnnotationWidget extends PDAnnotation
      */
     public PDAnnotationAdditionalActions getActions()
     {
-        COSDictionary aa = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.AA);
-        PDAnnotationAdditionalActions retval = null;
-        if (aa != null)
+        COSBase base = this.getCOSObject().getDictionaryObject(COSName.AA);
+        if (base instanceof COSDictionary)
         {
-            retval = new PDAnnotationAdditionalActions(aa);
+            return new PDAnnotationAdditionalActions((COSDictionary) base);
         }
-        return retval;
+        return null;
     }
 
     /**
