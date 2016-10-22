@@ -332,7 +332,7 @@ terminanschreiben.pdf=7.1
 # Bavaria unclear
 
 PDFExportDialog2.pdf=
-Pardes13_Rez02.pdf=1.4.6
+Pardes13_Rez02.pdf=
 
 # <ptt:T_Real>IEEE754D,L,3A4901F387D31108</ptt:T_Real> because of <pdfaProperty:valueType>Real</pdfaProperty:valueType>
 good0016.pdf=7.1

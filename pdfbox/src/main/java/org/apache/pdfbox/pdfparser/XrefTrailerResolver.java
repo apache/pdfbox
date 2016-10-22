@@ -129,7 +129,17 @@ public class XrefTrailerResolver
         SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
         return bytePosToXrefMap.get(sortedOffset.last()).trailer;
     }
-    
+
+    /**
+     * Returns the count of trailers.
+     *
+     * @return the count of trailers.
+     */
+    public final int getTrailerCount()
+    {
+        return bytePosToXrefMap.size();
+    }
+
     /**
      * Signals that a new XRef object (table or stream) starts.
      * @param startBytePos the offset to start at
