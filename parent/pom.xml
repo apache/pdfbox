@@ -226,6 +226,7 @@
                     <configuration>
                         <excludes>
                             <exclude>release.properties</exclude>
+                            <exclude>cacerts_jdk8u101</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
