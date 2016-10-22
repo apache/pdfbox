@@ -60,6 +60,7 @@ public final class Printing
         //printWithDialog(document);
         //printWithDialogAndAttributes(document);
         //printWithPaper(document);
+        document.close();
     }
 
     /**
