@@ -64,7 +64,7 @@ public class TrailerValidationProcess extends AbstractProcess
 
         COSDictionary linearizedDict = getLinearizedDictionary(pdfDoc);
         // linearized files have two trailers, everything else is not a linearized file
-        // so don't make the checks for linearized files
+        // so don't make the checks for updated linearized files
         if (linearizedDict != null && ctx.getXrefTrailerResolver().getTrailerCount() == 2)
         {
             // it is a linearized PDF, check the linearized dictionary
