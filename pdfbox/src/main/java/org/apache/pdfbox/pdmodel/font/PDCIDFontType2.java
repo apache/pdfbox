@@ -127,7 +127,7 @@ public class PDCIDFontType2 extends PDCIDFont
     
                     if (otf.hasLayoutTables())
                     {
-                        LOG.error("OpenType Layout tables used in font " + getBaseFont() +
+                        LOG.info("OpenType Layout tables used in font " + getBaseFont() +
                                   " are not implemented in PDFBox and will be ignored");
                     }
                 }
