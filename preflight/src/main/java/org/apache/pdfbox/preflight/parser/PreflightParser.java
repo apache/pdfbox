@@ -236,6 +236,7 @@ public class PreflightParser extends PDFParser
         ctx.setDocument(preflightDocument);
         preflightDocument.setContext(ctx);
         ctx.setXrefTrailerResolver(xrefTrailerResolver);
+        ctx.setFileLen(this.fileLen);
     }
 
     @Override

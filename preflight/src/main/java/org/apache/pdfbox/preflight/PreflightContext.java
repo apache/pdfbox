@@ -79,6 +79,8 @@ public class PreflightContext implements Closeable
 
     private Integer currentPageNumber = null;
     
+    private long fileLen;
+
     /**
      * Create the DocumentHandler using the DataSource which represent the PDF file to check.
      * 
@@ -277,4 +279,13 @@ public class PreflightContext implements Closeable
         return currentPageNumber;
     }
 
+    public void setFileLen(long fileLen)
+    {
+        this.fileLen = fileLen;
+    }
+
+    public long getFileLen()
+    {
+        return fileLen;
+    }
 }
