@@ -65,7 +65,7 @@ public final class Decrypt
     
     private void parseCommandLineArgs(String[] args)
     {
-        if( args.length < 1 || args.length > 5 )
+        if( args.length < 1 || args.length > 8 )
         {
             usage();
         }
