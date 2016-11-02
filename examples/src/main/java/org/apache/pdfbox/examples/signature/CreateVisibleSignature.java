@@ -32,8 +32,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -99,6 +97,20 @@ public class CreateVisibleSignature extends CreateSignatureBase
      */
     public void signPDF(File inputFile, File signedFile, TSAClient tsaClient) throws IOException
     {
+        this.signPDF(inputFile, signedFile, tsaClient, null);
+    }
+
+    /**
+     * Sign pdf file and create new file that ends with "_signed.pdf".
+     *
+     * @param inputFile The source pdf document file.
+     * @param signedFile The file to be signed.
+     * @param tsaClient optional TSA client
+     * @param signatureFieldName optional name of an existing (unsigned) signature field
+     * @throws IOException
+     */
+    public void signPDF(File inputFile, File signedFile, TSAClient tsaClient, String signatureFieldName) throws IOException
+    {
         setTsaClient(tsaClient);
 
         if (inputFile == null || !inputFile.exists())
@@ -114,10 +126,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
         PDSignature signature;
 
-        // You will usually not need this:
-        // sign a PDF with an existing empty signature, as created by the 
-        // CreateEmptySignatureForm example. Delete this line if you want to insert a new signature.
-        signature = findExistingSignature(doc, "Signature1");
+        // sign a PDF with an existing empty signature, as created by the CreateEmptySignatureForm example. 
+        signature = findExistingSignature(doc, signatureFieldName);
 
         if (signature == null)
         {
@@ -209,16 +219,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
                 }
                 else
                 {
-                    //TODO add your error handling here:
-                    // it doesn't make sense to replace an existing signature
+                    throw new IllegalStateException("The signature field " + sigFieldName + " is already signed.");
                 }
-                // position according to existing field widget
-                PDAnnotationWidget widget = signatureField.getWidgets().get(0);
-                PDRectangle rect = widget.getRectangle();
-                // need to substract from height because this is done later too
-                // see in PDVisibleSigBuilder.createSignatureRectangle()
-                visibleSignDesigner.xAxis(rect.getLowerLeftX())
-                        .yAxis(-rect.getLowerLeftY() + visibleSignatureProperties.getPdVisibleSignature().getPageHeight() - visibleSignDesigner.getHeight());
             }
         }
         return signature;
