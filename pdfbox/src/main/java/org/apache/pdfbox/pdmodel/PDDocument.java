@@ -308,6 +308,9 @@ public class PDDocument implements Closeable
             sigObject.getCOSObject().setNeedToBeUpdated(true);
         }
 
+        // TODO This "overwrites" the settings of the original signature field which might not be intended by the user
+        // better make it configurable (not all users need/want PDF/A but their own setting):
+
         // to conform PDF/A-1 requirement:
         // The /F key's Print flag bit shall be set to 1 and 
         // its Hidden, Invisible and NoView flag bits shall be set to 0
@@ -477,7 +480,13 @@ public class PDDocument implements Closeable
         // Read and set the rectangle for visual signature
         COSArray rectArray = (COSArray) annotDict.getDictionaryObject(COSName.RECT);
         PDRectangle rect = new PDRectangle(rectArray);
-        signatureField.getWidgets().get(0).setRectangle(rect);
+        PDRectangle existingRectangle = signatureField.getWidgets().get(0).getRectangle();
+
+        //in case of an existing field keep the original rect
+        if (existingRectangle == null || existingRectangle.getCOSArray().size() != 4)
+        {
+            signatureField.getWidgets().get(0).setRectangle(rect);
+        }
     }
 
     private void assignAppearanceDictionary(PDSignatureField signatureField, COSDictionary apDict)
