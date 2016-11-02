@@ -582,12 +582,27 @@ public class NonSequentialPDFParser extends PDFParser
                     fixedOffset = checkXRefOffset(streamOffset);
                     if (fixedOffset > -1 && fixedOffset != streamOffset)
                     {
+                        LOG.warn("/XRefStm offset " + streamOffset + " is incorrect, corrected to " + fixedOffset);
                         streamOffset = (int)fixedOffset;
                         trailer.setInt(COSName.XREF_STM, streamOffset);
                     }
                     setPdfSource(streamOffset);
                     skipSpaces();
-                    parseXrefObjStream(prev, false); 
+                    try
+                    {
+                        parseXrefObjStream(prev, false);
+                    }
+                    catch (IOException ex)
+                    {
+                        if (isLenient)
+                        {
+                            LOG.error("Failed to parse /XRefStm at offset " + streamOffset, ex);
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
                 }
                 prev = trailer.getInt(COSName.PREV);
                 if (prev > 0)
