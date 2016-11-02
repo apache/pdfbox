@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import java.awt.Color;
 import java.awt.color.ColorSpace;
 import java.util.Arrays;
 import org.apache.commons.logging.Log;
@@ -139,9 +140,11 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             }
             initialColor = new PDColor(initial, this);
 
-            // create a color in order to trigger a ProfileDataException
+            // do things that trigger a ProfileDataException
             // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740
             awtColorSpace.fromRGB(new float[3]);
+            // this one triggers an exception for PDFBOX-3549 with KCMS
+            new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
         }
         catch (RuntimeException e)
         {
