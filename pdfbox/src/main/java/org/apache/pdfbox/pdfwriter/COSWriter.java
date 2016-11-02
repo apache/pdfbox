@@ -218,6 +218,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private OutputStream incrementalOutput;
     private SignatureInterface signatureInterface;
     private byte[] incrementPart;
+    private COSArray byteRangeArray;
 
     /**
      * COSWriter constructor comment.
@@ -693,6 +694,13 @@ public class COSWriter implements ICOSVisitor, Closeable
         long afterLength = getStandardOutput().getPos() - (inLength + signatureLength) - (signatureOffset - inLength);
 
         String byteRange = "0 " + beforeLength + " " + afterOffset + " " + afterLength + "]";
+        
+        // Assign the values to the actual COSArray, so that the user can access it before closing
+        byteRangeArray.set(0, COSInteger.ZERO);
+        byteRangeArray.set(1, COSInteger.get(beforeLength));
+        byteRangeArray.set(2, COSInteger.get(afterOffset));
+        byteRangeArray.set(3, COSInteger.get(afterLength));
+
         if (byteRangeLength - byteRange.length() < 0)
         {
             throw new IOException("Can't write new ByteRange, not enough space");
@@ -1047,6 +1055,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                     }
                     else if(reachedSignature && COSName.BYTERANGE.equals(entry.getKey()))
                     {
+                        byteRangeArray = (COSArray) entry.getValue();
                         byteRangeOffset = getStandardOutput().getPos() + 1;
                         value.accept(this);
                         byteRangeLength = getStandardOutput().getPos() - 1 - byteRangeOffset;
