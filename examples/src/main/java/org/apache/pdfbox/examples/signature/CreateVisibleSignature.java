@@ -168,6 +168,11 @@ public class CreateVisibleSignature extends CreateSignatureBase
             byte[] cmsSignature = sign(externalSigning.getContent());
             // set signature bytes received from the service
             externalSigning.setSignature(cmsSignature);
+
+            // if you want to add the signature in a separate step, then set an empty byte array
+            // and call signature.getByteRange() and remember the offset signature.getByteRange()[1]+1.
+            // you can write the ascii hex signature at a later time even if you don't have the
+            // PDDocument object anymore, with classic java file random access methods.
         }
         else
         {
