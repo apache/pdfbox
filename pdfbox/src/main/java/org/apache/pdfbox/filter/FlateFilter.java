@@ -160,6 +160,7 @@ public class FlateFilter implements Filter
                 read = in.read(buf); 
                 inflater.setInput(buf,0,read); 
             }
+            inflater.end();
         }
         out.close();
     } 
