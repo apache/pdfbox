@@ -1947,7 +1947,14 @@ public class COSParser extends BaseParser
         }
         if (headerVersion < 0)
         {
-            throw new IOException( "Error getting header version: " + header);
+            if (isLenient)
+            {
+                headerVersion = 1.7f;
+            }
+            else
+            {
+                throw new IOException("Error getting header version: " + header);
+            }
         }
         document.setVersion(headerVersion);
         // rewind
