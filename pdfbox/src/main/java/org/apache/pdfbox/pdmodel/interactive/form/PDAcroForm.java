@@ -453,7 +453,7 @@ public final class PDAcroForm implements COSObjectable
         // get the field from the field tree
         for (PDField field : getFieldTree())
         {
-            if (field.getFullyQualifiedName().compareTo(fullyQualifiedName) == 0)
+        	if (field.getFullyQualifiedName().equals(fullyQualifiedName))
             {
                 return field;
             }
