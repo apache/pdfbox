@@ -30,7 +30,6 @@ import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 
@@ -56,7 +55,7 @@ final class JBIG2Filter extends Filter
         DecodeResult result = new DecodeResult(new COSDictionary());
         result.getParameters().addAll(parameters);
 
-        COSInteger bits = (COSInteger) parameters.getDictionaryObject(COSName.BITS_PER_COMPONENT);
+        int bits = parameters.getInt(COSName.BITS_PER_COMPONENT, 1);
         COSDictionary params = getDecodeParams(parameters, index);
 
         COSStream globals = null;
@@ -93,9 +92,9 @@ final class JBIG2Filter extends Filter
 
             // I am assuming since JBIG2 is always black and white
             // depending on your renderer this might or might be needed
-            if (image.getColorModel().getPixelSize() != bits.intValue())
+            if (image.getColorModel().getPixelSize() != bits)
             {
-                if (bits.intValue() != 1)
+                if (bits != 1)
                 {
                     LOG.warn("Attempting to handle a JBIG2 with more than 1-bit depth");
                 }
