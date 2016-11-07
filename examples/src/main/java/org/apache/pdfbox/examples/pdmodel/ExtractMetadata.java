@@ -146,10 +146,8 @@ public final class ExtractMetadata
             return;
         }
         System.out.println(title);
-        Iterator<String> iter = list.iterator();
-        while (iter.hasNext())
+        for (String string : list)
         {
-            String string = iter.next();
             System.out.println("  " + string);
         }
     }
@@ -161,10 +159,8 @@ public final class ExtractMetadata
             return;
         }
         System.out.println(title);
-        Iterator<Calendar> iter = list.iterator();
-        while (iter.hasNext())
+        for (Calendar calendar : list)
         {
-            Calendar calendar = iter.next();
             System.out.println("  " + format(calendar));
         }
     }
