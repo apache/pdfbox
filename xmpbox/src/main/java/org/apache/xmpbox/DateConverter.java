@@ -289,7 +289,7 @@ public final class DateConverter
      */
     public static String toISO8601(Calendar cal, boolean printMillis)
     {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
 
         retval.append(cal.get(Calendar.YEAR));
         retval.append("-");
