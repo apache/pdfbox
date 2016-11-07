@@ -102,7 +102,7 @@ public class ContentStreamWriter
      * @param tokens The tokens to write to the stream.
      * @throws IOException If there is an error writing to the stream.
      */
-    public void writeTokens( List tokens ) throws IOException
+    public void writeTokens( List<?> tokens ) throws IOException
     {
         for (Object token : tokens)
         {
