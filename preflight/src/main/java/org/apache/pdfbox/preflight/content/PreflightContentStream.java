@@ -299,7 +299,7 @@ public class PreflightContentStream extends PreflightStreamEngine
             return;
         }
 
-        FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
+        FontContainer<?> fontContainer = context.getFontContainer(font.getCOSObject());
         if (renderingMode == RenderingMode.NEITHER && (fontContainer == null || !fontContainer.isEmbeddedFont()))
         {
             // font not embedded and rendering mode is 3. Valid case and nothing to check
