@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.ant;
 import java.io.File;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.pdfbox.tools.ExtractText;
@@ -36,7 +35,7 @@ import org.apache.tools.ant.types.FileSet;
  */
 public class PDFToTextTask extends Task
 {
-    private final List fileSets = new ArrayList();
+    private final List<FileSet> fileSets = new ArrayList<FileSet>();
 
     /**
      * Adds a set of files (nested fileset attribute).
@@ -55,11 +54,10 @@ public class PDFToTextTask extends Task
     public void execute()
     {
         log( "PDFToTextTask executing" );
-        Iterator fileSetIter = fileSets.iterator();
-        while( fileSetIter.hasNext() )
+
+        for (FileSet fileSet : fileSets)
         {
-            FileSet next = (FileSet)fileSetIter.next();
-            DirectoryScanner dirScanner = next.getDirectoryScanner( getProject() );
+            DirectoryScanner dirScanner = fileSet.getDirectoryScanner(getProject());
             dirScanner.scan();
             String[] files = dirScanner.getIncludedFiles();
             for (String file : files)
