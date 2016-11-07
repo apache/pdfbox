@@ -245,7 +245,7 @@ public class PDFStreamParser extends BaseParser
             {
                 /* We will be filling buf with the rest of the number.  Only
                  * allow 1 "." and "-" and "+" at start of number. */
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 buf.append( c );
                 seqSource.read();
 
@@ -422,7 +422,7 @@ public class PDFStreamParser extends BaseParser
 
         //average string size is around 2 and the normal string buffer size is
         //about 16 so lets save some space.
-        StringBuffer buffer = new StringBuffer(4);
+        StringBuilder buffer = new StringBuilder(4);
         int nextChar = seqSource.peek();
         while(
             nextChar != -1 && // EOF
