@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 
@@ -82,7 +81,7 @@ public class JBIG2Filter implements Filter
         {
             decodeParms = (COSDictionary) ((COSArray) decodeP).getObject(filterIndex);
         }
-        COSInteger bits = (COSInteger) options.getDictionaryObject(COSName.BITS_PER_COMPONENT);
+        int bits = options.getInt(COSName.BITS_PER_COMPONENT, 1);
         COSStream st = null;
         if (decodeParms != null)
         {
@@ -102,9 +101,9 @@ public class JBIG2Filter implements Filter
         {
             // I am assuming since JBIG2 is always black and white 
             // depending on your renderer this might or might be needed
-            if(bi.getColorModel().getPixelSize() != bits.intValue()) 
+            if (bi.getColorModel().getPixelSize() != bits)
             {
-                if(bits.intValue() != 1)
+                if (bits != 1)
                 {
                     LOG.error("Do not know how to deal with JBIG2 with more than 1 bit");
                     return;
