@@ -194,7 +194,7 @@ public class PDDocumentCatalog implements COSObjectable
      *
      * @param threads The list of threads, or null to clear it.
      */
-    public void setThreads(List threads)
+    public void setThreads(List<PDThread> threads)
     {
         root.setItem(COSName.THREADS, COSArrayList.converterToCOSArray(threads));
     }

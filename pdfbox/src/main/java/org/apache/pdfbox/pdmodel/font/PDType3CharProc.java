@@ -169,7 +169,7 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
         throw new IOException("Unexpected end of stream");
     }
 
-    private float parseWidth(Operator operator, List arguments) throws IOException
+    private float parseWidth(Operator operator, List<COSBase> arguments) throws IOException
     {
         if (operator.getName().equals("d0") || operator.getName().equals("d1"))
         {

@@ -284,7 +284,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList(actuals, fields);
+            retval = new COSArrayList<String>(actuals, fields);
         }
         return retval;
     }
@@ -324,7 +324,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList(actuals, fields);
+            retval = new COSArrayList<String>(actuals, fields);
         }
         return retval;
     }
@@ -413,7 +413,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList(actuals, fields);
+            retval = new COSArrayList<String>(actuals, fields);
         }
         return retval;
     }
@@ -530,7 +530,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList(actuals, fields);
+            retval = new COSArrayList<String>(actuals, fields);
         }
         return retval;
     }
