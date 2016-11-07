@@ -222,7 +222,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @throws ContentStreamException
      *             ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY if the operand is invalid
      */
-    protected void validateRenderingIntent(Operator operator, List arguments) throws ContentStreamException
+    protected void validateRenderingIntent(Operator operator, List<?> arguments) throws ContentStreamException
     {
         if ("ri".equals(operator.getName()))
         {

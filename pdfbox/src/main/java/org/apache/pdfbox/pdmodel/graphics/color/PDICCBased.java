@@ -370,10 +370,10 @@ public final class PDICCBased extends PDCIEBasedColorSpace
 
     /**
      * Sets the list of alternateColorSpace color spaces.
-     * This should be a list of PDColorSpace objects.
+     *
      * @param list the list of color space objects
      */
-    public void setAlternateColorSpaces(List list)
+    public void setAlternateColorSpaces(List<PDColorSpace> list)
     {
         COSArray altArray = null;
         if(list != null)

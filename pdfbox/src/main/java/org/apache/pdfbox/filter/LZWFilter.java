@@ -157,7 +157,7 @@ public class LZWFilter extends Filter
         decoded.flush();
     }
 
-    private void checkIndexBounds(List codeTable, long index, MemoryCacheImageInputStream in)
+    private void checkIndexBounds(List<byte[]> codeTable, long index, MemoryCacheImageInputStream in)
             throws IOException
     {
         if (index < 0)
