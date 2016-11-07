@@ -502,7 +502,7 @@ public abstract class BaseParser
                     case '6':
                     case '7':
                     {
-                        StringBuffer octal = new StringBuffer();
+                        StringBuilder octal = new StringBuilder();
                         octal.append( next );
                         c = seqSource.read();
                         char digit = (char)c;
