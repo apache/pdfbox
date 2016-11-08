@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
