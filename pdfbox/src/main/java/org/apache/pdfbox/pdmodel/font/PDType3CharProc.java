@@ -140,10 +140,11 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     }
 
     /**
-     * todo.
-     * 
-     * @return
-     * @throws IOException
+     * Get the width from a type3 charproc stream.
+     *
+     * @return the glyph width.
+     * @throws IOException if the stream could not be read, or did not have d0 or d1 as first
+     * operator, or if their first argument was not a number.
      */
     public float getWidth() throws IOException
     {
@@ -173,19 +174,12 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
     {
         if (operator.getName().equals("d0") || operator.getName().equals("d1"))
         {
-            Object obj = arguments.get(0);
-            if (obj instanceof Number)
-            {
-                return ((Number) obj).floatValue();
-            }
-            else if (obj instanceof COSNumber)
+            COSBase obj = arguments.get(0);
+            if (obj instanceof COSNumber)
             {
                 return ((COSNumber) obj).floatValue();
             }
-            else
-            {
-                throw new IOException("Unexpected argument type: " + obj.getClass().getName());
-            }
+            throw new IOException("Unexpected argument type: " + obj.getClass().getName());
         }
         else
         {
