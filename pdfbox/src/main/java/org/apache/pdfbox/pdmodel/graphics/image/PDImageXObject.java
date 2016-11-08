@@ -63,7 +63,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     private SoftReference<BufferedImage> cachedImage;
     private PDColorSpace colorSpace;
-    private final PDResources resources; // current resource dictionary (has color spaces)
+
+    /**
+     * current resource dictionary (has color spaces)
+     */
+    private final PDResources resources;
 
     /**
      * Creates a thumbnail Image XObject from the given COSBase and name.
@@ -79,7 +83,10 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     /**
-     * Creates an Image XObject in the given document.
+     * Creates an Image XObject in the given document. This constructor is for internal PDFBox use
+     * and is not for PDF generation. Users who want to create images should look at {@link #createFromFileByExtension(File, PDDocument)
+     * }.
+     *
      * @param document the current document
      * @throws java.io.IOException if there is an error creating the XObject.
      */
@@ -89,7 +96,10 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     /**
-     * Creates an Image XObject in the given document using the given filtered stream.
+     * Creates an Image XObject in the given document using the given filtered stream. This
+     * constructor is for internal PDFBox use and is not for PDF generation. Users who want to
+     * create images should look at {@link #createFromFileByExtension(File, PDDocument) }.
+     *
      * @param document the current document
      * @param encodedStream an encoded stream of image data
      * @param cosFilter the filter or a COSArray of filters
@@ -137,7 +147,10 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     /**
-     * Creates an Image XObject with the given stream as its contents and current color spaces.
+     * Creates an Image XObject with the given stream as its contents and current color spaces. This
+     * constructor is for internal PDFBox use and is not for PDF generation. Users who want to
+     * create images should look at {@link #createFromFileByExtension(File, PDDocument) }.
+     *
      * @param stream the XObject stream to read
      * @param resources the current resources
      * @throws java.io.IOException if there is an error creating the XObject.
