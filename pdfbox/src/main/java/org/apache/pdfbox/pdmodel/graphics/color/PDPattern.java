@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
@@ -45,6 +46,8 @@ public final class PDPattern extends PDSpecialColorSpace
     public PDPattern(PDResources resources)
     {
         this.resources = resources;
+        array = new COSArray();
+        array.add(COSName.PATTERN);
     }
 
     /**
@@ -57,6 +60,9 @@ public final class PDPattern extends PDSpecialColorSpace
     {
         this.resources = resources;
         this.underlyingColorSpace = colorSpace;
+        array = new COSArray();
+        array.add(COSName.PATTERN);
+        array.add(colorSpace);
     }
 
     @Override
