@@ -59,11 +59,11 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
 
     /**
      * Creates a new tiling pattern from the given COS dictionary.
-     * @param resourceDictionary The COSDictionary for this pattern resource.
+     * @param dictionary The COSDictionary for this pattern.
      */
-    public PDTilingPattern(COSDictionary resourceDictionary)
+    public PDTilingPattern(COSDictionary dictionary)
     {
-        super(resourceDictionary);
+        super(dictionary);
     }
 
     @Override
