@@ -222,7 +222,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @throws ContentStreamException
      *             ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY if the operand is invalid
      */
-    protected void validateRenderingIntent(Operator operator, List<?> arguments) throws ContentStreamException
+    protected void validateRenderingIntent(Operator operator, List<COSBase> arguments) throws ContentStreamException
     {
         if ("ri".equals(operator.getName()))
         {
@@ -230,10 +230,6 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             if (arguments.get(0) instanceof COSName)
             {
                 riArgument0 = ((COSName) arguments.get(0)).getName();
-            }
-            else if (arguments.get(0) instanceof String)
-            {
-                riArgument0 = (String) arguments.get(0);
             }
 
             if (!RenderingIntents.contains(riArgument0))
@@ -518,7 +514,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * @param arguments
      * @throws IOException
      */
-    protected void checkSetColorSpaceOperators(Operator operator, List<?> arguments) throws IOException
+    protected void checkSetColorSpaceOperators(Operator operator, List<COSBase> arguments) throws IOException
     {
         if (!("CS".equals(operator.getName()) || "cs".equals(operator.getName())))
         {
@@ -526,11 +522,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         }
 
         String colorSpaceName;
-        if (arguments.get(0) instanceof String)
-        {
-            colorSpaceName = (String) arguments.get(0);
-        }
-        else if (arguments.get(0) instanceof COSString)
+        if (arguments.get(0) instanceof COSString)
         {
             colorSpaceName = (arguments.get(0)).toString();
         }
