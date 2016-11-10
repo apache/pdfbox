@@ -96,6 +96,16 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
             LOG.debug("color[" + n + "]: " + color + "/" + String.format("%02x", color)
                     + "-> color[" + n + "]: " + colorComponentTab[n]);
         }
+
+        // "Each set of vertex data shall occupy a whole number of bytes.
+        // If the total number of bits required is not divisible by 8, the last data byte
+        // for each vertex is padded at the end with extra bits, which shall be ignored."
+        int bitOffset = input.getBitOffset();
+        if (bitOffset != 0)
+        {
+            input.readBits(8 - bitOffset);
+        }
+
         return new Vertex(p, colorComponentTab);
     }
 
