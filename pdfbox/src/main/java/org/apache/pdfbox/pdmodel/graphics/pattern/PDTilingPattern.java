@@ -43,7 +43,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     /** tiling type 1 = constant spacing.*/
     public static final int TILING_CONSTANT_SPACING = 1;
 
-    /**  tiling type 2 = no distortion. */
+    /** tiling type 2 = no distortion. */
     public static final int TILING_NO_DISTORTION = 2;
 
     /** tiling type 3 = constant spacing and faster tiling. */
@@ -54,7 +54,12 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public PDTilingPattern()
     {
+        super(new COSStream());
+        getCOSObject().setName(COSName.TYPE, COSName.PATTERN.getName());
         getCOSObject().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_TILING_PATTERN);
+        
+        // Resources required per PDF specification; when missing, pattern is not displayed in Adobe Reader
+        setResources(new PDResources());
     }
 
     /**
@@ -186,7 +191,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      * This will set the resources for this pattern.
      * @param resources The new resources for this pattern.
      */
-    public void setResources( PDResources resources )
+    public final void setResources( PDResources resources )
     {
         getCOSObject().setItem(COSName.RESOURCES, resources);
     }
