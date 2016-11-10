@@ -27,16 +27,16 @@ import java.util.List;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 
-public class Type0Container extends FontContainer
+public class Type0Container extends FontContainer<PDFont>
 {
-    private FontContainer delegateFontContainer;
+    private FontContainer<?> delegateFontContainer;
 
     public Type0Container(PDFont font)
     {
         super(font);
     }
 
-    public void setDelegateFontContainer(FontContainer delegateFontContainer)
+    public void setDelegateFontContainer(FontContainer<?> delegateFontContainer)
     {
         this.delegateFontContainer = delegateFontContainer;
     }

@@ -444,7 +444,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
                     try
                     {
                         PDFont aFont = PDFontFactory.createFont(xObjFont);
-                        FontContainer aContainer = this.context.getFontContainer(aFont.getCOSObject());
+                        FontContainer<?> aContainer = this.context.getFontContainer(aFont.getCOSObject());
                         // another font is used in the Type3, check if the font is valid.
                         if (!aContainer.isValid())
                         {
