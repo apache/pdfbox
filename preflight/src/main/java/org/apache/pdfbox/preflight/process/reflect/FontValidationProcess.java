@@ -68,11 +68,11 @@ public class FontValidationProcess extends AbstractProcess
         else
         {
             PDFont font = (PDFont) vPath.peek();
-            FontContainer fontContainer = context.getFontContainer(font.getCOSObject());
+            FontContainer<?> fontContainer = context.getFontContainer(font.getCOSObject());
             if (fontContainer == null)
             {
                 // if fontContainer isn't null the font is already checked
-                FontValidator<? extends FontContainer> validator = getFontValidator(context, font);
+                FontValidator<? extends FontContainer<? extends PDFont>> validator = getFontValidator(context, font);
                 if (validator != null)
                 {
                     validator.validate();
@@ -88,7 +88,7 @@ public class FontValidationProcess extends AbstractProcess
      * @param font the font object.
      * @return the font validator instance for the font type.
      */
-    protected FontValidator<? extends FontContainer> getFontValidator(PreflightContext context, PDFont font)
+    protected FontValidator<? extends FontContainer<? extends PDFont>> getFontValidator(PreflightContext context, PDFont font)
     {
         String subtype = font.getSubType();
         if (FONT_DICTIONARY_VALUE_TRUETYPE.equals(subtype))

@@ -48,6 +48,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType0;
 import org.apache.pdfbox.pdmodel.font.PDCIDFontType2;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -133,7 +134,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             return;
         }
 
-        FontValidator<? extends FontContainer> cidFontValidator = createDescendantValidator(cidFont);
+        FontValidator<? extends FontContainer<? extends PDCIDFont>> cidFontValidator = createDescendantValidator(cidFont);
         if (cidFontValidator != null)
         {
             this.fontContainer.setDelegateFontContainer(cidFontValidator.getFontContainer());
@@ -141,10 +142,10 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         }
     }
 
-    protected FontValidator<? extends FontContainer> createDescendantValidator(COSDictionary cidFont)
+    protected FontValidator<? extends FontContainer<? extends PDCIDFont>> createDescendantValidator(COSDictionary cidFont)
     {
         String subtype = cidFont.getNameAsString(COSName.SUBTYPE);
-        FontValidator<? extends FontContainer> cidFontValidator = null;
+        FontValidator<? extends FontContainer<? extends PDCIDFont>> cidFontValidator = null;
         if (FONT_DICTIONARY_VALUE_TYPE0.equals(subtype))
         {
             cidFontValidator = createCIDType0FontValidator(cidFont);
@@ -164,7 +165,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
     /**
      * Create the validation object for CIDType0 Font
      */
-    protected FontValidator<? extends FontContainer> createCIDType0FontValidator(COSDictionary fDict)
+    protected FontValidator<? extends FontContainer<PDCIDFontType0>> createCIDType0FontValidator(COSDictionary fDict)
     {
         try
         {
@@ -184,7 +185,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      * @param fDict a CIDType2 font dictionary.
      * @return a CIDType2 tont font validator.
      */
-    protected FontValidator<? extends FontContainer> createCIDType2FontValidator(COSDictionary fDict)
+    protected FontValidator<? extends FontContainer<PDCIDFontType2>> createCIDType2FontValidator(COSDictionary fDict)
     {
         try
         {
