@@ -227,6 +227,26 @@ public final class JPEGFactory
         return pdImage;
     }
 
+    private static ImageWriter getJPEGImageWriter() throws IOException
+    {
+        ImageWriter writer = null;
+        Iterator<ImageWriter> writers = ImageIO.getImageWritersBySuffix("jpeg");
+        while (writers.hasNext())
+        {
+            if (writer != null)
+            {
+                writer.dispose();
+            }
+            writer = writers.next();
+            // PDFBOX-3566: avoid CLibJPEGImageWriter, which is not a JPEGImageWriteParam
+            if (writer.getDefaultWriteParam() instanceof JPEGImageWriteParam)
+            {
+                return writer;
+            }
+        }
+        throw new IOException("No ImageWriter found for JPEG format");
+    }
+
     private static void encodeImageToJPEGStream(BufferedImage image, float quality, int dpi,
                                                 OutputStream out) throws IOException
     {
@@ -236,7 +256,7 @@ public final class JPEGFactory
         try
         {
             // find JAI writer
-            imageWriter = ImageIO.getImageWritersBySuffix("jpeg").next();
+            imageWriter = getJPEGImageWriter();
             ios = ImageIO.createImageOutputStream(out);
             imageWriter.setOutput(ios);
 
