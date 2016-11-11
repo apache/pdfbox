@@ -38,6 +38,10 @@ import org.apache.pdfbox.util.Charsets;
  */
 public class CreatePatternsPDF
 {
+    private CreatePatternsPDF()
+    {
+    }
+
     public static void main(String[] args) throws IOException
     {
         PDDocument doc = new PDDocument();
