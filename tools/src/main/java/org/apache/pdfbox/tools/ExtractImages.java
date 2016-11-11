@@ -39,6 +39,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
+import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 
 /**
  * Extracts the images from a PDF file.
@@ -192,7 +195,21 @@ public final class ExtractImages
 
         public void run() throws IOException
         {
-            processPage(getPage());
+            PDPage page = getPage();
+            processPage(page);
+            PDResources res = page.getResources();
+            for (COSName name : res.getExtGStateNames())
+            {
+                PDSoftMask softMask = res.getExtGState(name).getSoftMask();
+                if (softMask != null)
+                {
+                    PDTransparencyGroup group = softMask.getGroup();
+                    if (group != null)
+                    {
+                        processSoftMask(group);
+                    }
+                }
+            }
         }
 
         @Override
