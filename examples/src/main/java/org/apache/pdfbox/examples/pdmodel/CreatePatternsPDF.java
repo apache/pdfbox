@@ -36,7 +36,7 @@ import org.apache.pdfbox.util.Charsets;
  *
  * @author Tilman Hausherr
  */
-public class CreatePatternsPDF
+public final class CreatePatternsPDF
 {
     private CreatePatternsPDF()
     {
