@@ -183,9 +183,7 @@ public abstract class PDFStreamEngine
      */
     protected void processSoftMask(PDTransparencyGroup group) throws IOException
     {
-        // clear the current soft mask (this mask) to avoid recursion
         saveGraphicsState();
-        getGraphicsState().setSoftMask(null);
         processTransparencyGroup(group);
         restoreGraphicsState();
     }
@@ -206,6 +204,9 @@ public abstract class PDFStreamEngine
 
         // transform the CTM using the stream's matrix
         getGraphicsState().getCurrentTransformationMatrix().concatenate(group.getMatrix());
+
+        // clear the current soft mask (this mask) to avoid recursion / unwanted effects
+        getGraphicsState().setSoftMask(null);
 
         // clip to bounding box
         clipToRect(group.getBBox());
