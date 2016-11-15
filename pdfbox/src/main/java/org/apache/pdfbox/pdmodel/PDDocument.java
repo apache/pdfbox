@@ -1365,7 +1365,6 @@ public class PDDocument implements Pageable, Closeable
         {
             writer = new COSWriter( output );
             writer.write( this );
-            writer.close();
         }
         finally
         {
