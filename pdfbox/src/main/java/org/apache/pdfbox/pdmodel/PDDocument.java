@@ -1230,7 +1230,6 @@ public class PDDocument implements Closeable
         try
         {
             writer.write(this);
-            writer.close();
         }
         finally
         {
