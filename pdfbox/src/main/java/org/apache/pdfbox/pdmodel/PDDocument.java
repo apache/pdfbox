@@ -1257,7 +1257,6 @@ public class PDDocument implements Closeable
             }
             writer = new COSWriter(output, pdfSource);
             writer.write(this, signInterface);
-            writer.close();
         }
         finally
         {
