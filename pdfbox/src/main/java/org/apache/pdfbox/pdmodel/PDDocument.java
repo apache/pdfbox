@@ -1411,7 +1411,6 @@ public class PDDocument implements Pageable, Closeable
             output.write("\r\n".getBytes("ISO-8859-1"));
             writer = new COSWriter( output, input );
             writer.write( this );
-            writer.close();
         }
         finally
         {
