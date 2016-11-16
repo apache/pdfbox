@@ -304,6 +304,9 @@ public abstract class PDFStreamEngine
             // clip to bounding box
             clipToRect(bbox);
 
+            // needed for patterns in appearance streams, e.g. PDFBOX-2182
+            initialMatrix = aa.clone();
+
             processStreamOperators(appearance);
         }
         
