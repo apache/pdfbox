@@ -432,9 +432,21 @@ public class PageDrawer extends PDFStreamEngine
                 phaseStart = (int)transformWidth(phaseStart);
 
                 // empty dash array is illegal
-                if (dashArray.length == 0)
+                // avoid also infinite and NaN values (PDFBOX-3360)
+                if (dashArray.length == 0 || Float.isInfinite(phaseStart) || Float.isNaN(phaseStart))
                 {
                     dashArray = null;
+                }
+                else
+                {
+                    for (int i = 0; i < dashArray.length; ++i)
+                    {
+                        if (Float.isInfinite(dashArray[i]) || Float.isNaN(dashArray[i]))
+                        {
+                            dashArray = null;
+                            break;
+                        }
+                    }
                 }
             }
             currentStroke = new BasicStroke(lineWidth, stroke.getEndCap(), stroke.getLineJoin(),
