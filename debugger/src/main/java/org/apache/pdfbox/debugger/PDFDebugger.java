@@ -149,6 +149,7 @@ public class PDFDebugger extends JFrame
     private JMenuItem saveMenuItem;
     private JMenu recentFilesMenu;
     private JMenuItem printMenuItem;
+    private JMenuItem reopenMenuItem;
     
     // edit > find menu
     private JMenu findMenu;
@@ -344,6 +345,32 @@ public class PDFDebugger extends JFrame
             }
         });
         fileMenu.add(openUrlMenuItem);
+        
+        reopenMenuItem = new JMenuItem("Reopen");
+        reopenMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent evt)
+            {
+                try
+                {
+                    if (currentFilePath.startsWith("http"))
+                    {
+                        readPDFurl(currentFilePath, "");
+                    }
+                    else
+                    {
+                        readPDFFile(currentFilePath, "");
+                    }
+                }
+                catch (IOException e)
+                {
+                    new ErrorDialog(e).setVisible(true);
+                }
+            }
+        });
+        reopenMenuItem.setEnabled(false);
+        fileMenu.add(reopenMenuItem);
 
         try
         {
@@ -1202,6 +1229,7 @@ public class PDFDebugger extends JFrame
         URL url = new URL(urlString);
         document = PDDocument.load(url.openStream(), password);
         printMenuItem.setEnabled(true);
+        reopenMenuItem.setEnabled(true);
 
         initTree();
 
@@ -1274,6 +1302,7 @@ public class PDFDebugger extends JFrame
             break;
         }        
         printMenuItem.setEnabled(true);
+        reopenMenuItem.setEnabled(true);
     }
 
     private void addRecentFileItems()
