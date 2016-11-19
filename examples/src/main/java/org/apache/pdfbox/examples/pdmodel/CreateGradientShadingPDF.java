@@ -157,6 +157,6 @@ public class CreateGradientShadingPDF
      */
     private static void usage()
     {
-        System.err.println("usage: java o" + CreateGradientShadingPDF.class.getName() + " <outputfile.pdf>");
+        System.err.println("usage: java " + CreateGradientShadingPDF.class.getName() + " <outputfile.pdf>");
     }
 }
