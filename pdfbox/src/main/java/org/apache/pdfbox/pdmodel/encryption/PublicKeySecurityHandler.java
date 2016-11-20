@@ -171,7 +171,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                     {
                         foundRecipient = true;
                         PrivateKey privateKey = (PrivateKey) material.getPrivateKey();
-                        envelopedData = ri.getContent(new JceKeyTransEnvelopedRecipient(privateKey).setProvider("BC"));
+                        envelopedData = ri.getContent(new JceKeyTransEnvelopedRecipient(privateKey));
                         break;
                     }
                     j++;
