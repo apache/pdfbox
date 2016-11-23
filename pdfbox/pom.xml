@@ -149,6 +149,7 @@
                         <exclude>src/test/resources/input/rendering/*.ai</exclude>
                         <exclude>src/test/resources/input/*.txt</exclude>
                         <exclude>src/test/resources/output/*</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/pdmodel/sRGB.*</exclude>
                         <exclude>release.properties</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.der</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
