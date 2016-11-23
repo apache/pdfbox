@@ -157,7 +157,7 @@ public class TestPDDocumentCatalog
             assertTrue(outputIntents.isEmpty());
             
             // add an OutputIntent
-            colorProfile = TestPDDocumentCatalog.class.getResourceAsStream("sRGB Color Space Profile.icm");
+            colorProfile = TestPDDocumentCatalog.class.getResourceAsStream("sRGB.icc");
             // create output intent
             PDOutputIntent oi = new PDOutputIntent(doc, colorProfile); 
             oi.setInfo("sRGB IEC61966-2.1"); 
