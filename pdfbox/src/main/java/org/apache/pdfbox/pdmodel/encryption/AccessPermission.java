@@ -209,7 +209,8 @@ public class AccessPermission
 
     /**
      * Set if the user can print.
-     * This method will have no effect if the object is in read only mode
+     * <p>
+     * This method will have no effect if the object is in read only mode.
      *
      * @param allowPrinting A boolean determining if the user can print.
      */
@@ -233,7 +234,8 @@ public class AccessPermission
 
     /**
      * Set if the user can modify the document.
-     * This method will have no effect if the object is in read only mode
+     * <p>
+     * This method will have no effect if the object is in read only mode.
      *
      * @param allowModifications A boolean determining if the user can modify the document.
      */
@@ -258,7 +260,8 @@ public class AccessPermission
 
     /**
      * Set if the user can extract content from the document.
-     * This method will have no effect if the object is in read only mode
+     * <p>
+     * This method will have no effect if the object is in read only mode.
      *
      * @param allowExtraction A boolean determining if the user can extract content
      *                        from the document.
@@ -272,7 +275,11 @@ public class AccessPermission
     }
 
     /**
-     * This will tell if the user can add/modify text annotations, fill in interactive forms fields.
+     * This will tell if the user can add or modify text annotations and fill in interactive forms
+     * fields and, if {@link #canModify() canModify()} returns true, create or modify interactive
+     * form fields (including signature fields). Note that if
+     * {@link #canFillInForm() canFillInForm()} returns true, it is still possible to fill in
+     * interactive forms (including signature fields) even if this method here returns false.
      *
      * @return true If supplied with the user password they are allowed to modify annotations.
      */
@@ -282,10 +289,15 @@ public class AccessPermission
     }
 
     /**
-     * Set if the user can modify annotations.
-     * This method will have no effect if the object is in read only mode
+     * Set if the user can add or modify text annotations and fill in interactive forms fields and,
+     * if {@link #canModify() canModify()} returns true, create or modify interactive form fields
+     * (including signature fields). Note that if {@link #canFillInForm() canFillInForm()} returns
+     * true, it is still possible to fill in interactive forms (including signature fields) even the
+     * parameter here is false.
+     * <p>
+     * This method will have no effect if the object is in read only mode.
      *
-     * @param allowAnnotationModification A boolean determining if the user can modify annotations.
+     * @param allowAnnotationModification A boolean determining the new setting.
      */
     public void setCanModifyAnnotations( boolean allowAnnotationModification )
     {
@@ -296,7 +308,8 @@ public class AccessPermission
     }
 
     /**
-     * This will tell if the user can fill in interactive forms.
+     * This will tell if the user can fill in interactive form fields (including signature fields)
+     * even if {@link #canModifyAnnotations() canModifyAnnotations()} returns false.
      *
      * @return true If supplied with the user password they are allowed to fill in form fields.
      */
@@ -306,8 +319,12 @@ public class AccessPermission
     }
 
     /**
-     * Set if the user can fill in interactive forms.
-     * This method will have no effect if the object is in read only mode
+     * Set if the user can fill in interactive form fields (including signature fields) even if
+     * {@link #canModifyAnnotations() canModifyAnnotations()} returns false. Therefore, if you want
+     * to prevent a user from filling in interactive form fields, you need to call
+     * {@link #setCanModifyAnnotations(boolean) setCanModifyAnnotations(false)} as well.
+     *<p>
+     * This method will have no effect if the object is in read only mode.
      *
      * @param allowFillingInForm A boolean determining if the user can fill in interactive forms.
      */
@@ -333,7 +350,8 @@ public class AccessPermission
 
     /**
      * Set if the user can extract content from the document for accessibility purposes.
-     * This method will have no effect if the object is in read only mode
+     * <p>
+     * This method will have no effect if the object is in read only mode.
      *
      * @param allowExtraction A boolean determining if the user can extract content
      *                        from the document.
@@ -359,7 +377,8 @@ public class AccessPermission
 
     /**
      * Set if the user can insert/rotate/delete pages.
-     * This method will have no effect if the object is in read only mode
+     * <p>
+     * This method will have no effect if the object is in read only mode.
      *
      * @param allowAssembly A boolean determining if the user can assemble the document.
      */
@@ -384,7 +403,8 @@ public class AccessPermission
 
     /**
      * Set if the user can print the document in a degraded format.
-     * This method will have no effect if the object is in read only mode
+     * <p>
+     * This method will have no effect if the object is in read only mode.
      *
      * @param allowAssembly A boolean determining if the user can print the
      *        document in a degraded format.
