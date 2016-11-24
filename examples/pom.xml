@@ -74,6 +74,17 @@
         <filtering>true</filtering>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/main/resources/org/apache/pdfbox/resources/pdfa/sRGB.*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
 </project>
