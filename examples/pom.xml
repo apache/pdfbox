@@ -106,6 +106,7 @@
         <configuration>
           <excludes>
             <exclude>src/test/resources/org/apache/pdfbox/examples/signature/*</exclude>
+            <exclude>src/main/resources/org/apache/pdfbox/resources/pdfa/sRGB.*</exclude>
           </excludes>
         </configuration>
       </plugin>
