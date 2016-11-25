@@ -200,9 +200,9 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * Get the value of the stroke alpha constants property.
+     * Get the value of the stroke alpha constant property.
      *
-     * @return The value of the stroke alpha constants parameter.
+     * @return The value of the stroke alpha constant parameter.
      */
     public double getAlphaConstant()
     {
@@ -210,9 +210,9 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * set the value of the stroke alpha constants property.
+     * set the value of the stroke alpha constant property.
      *
-     * @param value The value of the stroke alpha constants parameter.
+     * @param value The value of the stroke alpha constant parameter.
      */
     public void setAlphaConstant(double value)
     {
@@ -220,21 +220,45 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * Get the value of the non-stroke alpha constants property.
+     * Get the value of the non-stroke alpha constant property.
      *
-     * @return The value of the non-stroke alpha constants parameter.
+     * @return The value of the non-stroke alpha constant parameter.
+     * @deprecated use {@link #getNonStrokeAlphaConstant() }
      */
+    @Deprecated
     public double getNonStrokeAlphaConstants()
     {
         return nonStrokingAlphaConstant;
     }
 
     /**
-     * set the value of the non-stroke alpha constants property.
+     * set the value of the non-stroke alpha constant property.
      *
-     * @param value The value of the non-stroke alpha constants parameter.
+     * @param value The value of the non-stroke alpha constant parameter.
+     * @deprecated use {@link #setNonStrokeAlphaConstant(double) }
      */
+    @Deprecated
     public void setNonStrokeAlphaConstants(double value)
+    {
+        nonStrokingAlphaConstant = value;
+    }
+
+    /**
+     * Get the value of the non-stroke alpha constant property.
+     *
+     * @return The value of the non-stroke alpha constant parameter.
+     */
+    public double getNonStrokeAlphaConstant()
+    {
+        return nonStrokingAlphaConstant;
+    }
+
+    /**
+     * set the value of the non-stroke alpha constant property.
+     *
+     * @param value The value of the non-stroke alpha constant parameter.
+     */
+    public void setNonStrokeAlphaConstant(double value)
     {
         nonStrokingAlphaConstant = value;
     }
