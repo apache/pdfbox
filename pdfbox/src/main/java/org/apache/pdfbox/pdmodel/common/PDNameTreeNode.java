@@ -225,8 +225,11 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
                 for( int i=0; i<kids.size() && retval == null; i++ )
                 {
                     PDNameTreeNode<T> childNode = kids.get( i );
-                    if( childNode.getLowerLimit().compareTo( name ) <= 0 &&
-                        childNode.getUpperLimit().compareTo( name ) >= 0 )
+                    String upperLimit = childNode.getUpperLimit();
+                    String lowerLimit = childNode.getLowerLimit();
+                    if (upperLimit == null || lowerLimit == null || 
+                        upperLimit.compareTo(lowerLimit) < 0 ||
+                        (lowerLimit.compareTo(name) <= 0 && upperLimit.compareTo(name) >= 0))
                     {
                         retval = childNode.getValue( name );
                     }
