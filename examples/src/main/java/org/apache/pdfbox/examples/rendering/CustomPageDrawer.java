@@ -182,7 +182,7 @@ public class CustomPageDrawer
             saveGraphicsState();
             
             // 35% alpha
-            getGraphicsState().setNonStrokeAlphaConstants(0.35);
+            getGraphicsState().setNonStrokeAlphaConstant(0.35);
             super.showAnnotation(annotation);
             
             // restore
