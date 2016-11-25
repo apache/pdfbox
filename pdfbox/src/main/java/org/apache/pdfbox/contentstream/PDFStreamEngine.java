@@ -215,7 +215,7 @@ public abstract class PDFStreamEngine
         // the current stroking and nonstroking alpha constants to 1.0, and the current soft mask to None.
         getGraphicsState().setBlendMode(BlendMode.NORMAL);
         getGraphicsState().setAlphaConstant(1);
-        getGraphicsState().setNonStrokeAlphaConstants(1);
+        getGraphicsState().setNonStrokeAlphaConstant(1);
         getGraphicsState().setSoftMask(null);
 
         // clip to bounding box
