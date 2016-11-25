@@ -61,6 +61,7 @@ import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 
 /**
  * Processes a PDF content stream and executes certain operations.
@@ -180,6 +181,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Processes a soft mask transparency group stream.
+     * @param group
+     * @throws IOException
      */
     protected void processSoftMask(PDTransparencyGroup group) throws IOException
     {
@@ -190,6 +193,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Processes a transparency group stream.
+     * @param group
+     * @throws IOException
      */
     protected void processTransparencyGroup(PDTransparencyGroup group) throws IOException
     {
@@ -205,7 +210,12 @@ public abstract class PDFStreamEngine
         // transform the CTM using the stream's matrix
         getGraphicsState().getCurrentTransformationMatrix().concatenate(group.getMatrix());
 
-        // clear the current soft mask (this mask) to avoid recursion / unwanted effects
+        // Before execution of the transparency group XObject’s content stream, 
+        // the current blend mode in the graphics state shall be initialized to Normal, 
+        // the current stroking and nonstroking alpha constants to 1.0, and the current soft mask to None.
+        getGraphicsState().setBlendMode(BlendMode.NORMAL);
+        getGraphicsState().setAlphaConstant(1);
+        getGraphicsState().setNonStrokeAlphaConstants(1);
         getGraphicsState().setSoftMask(null);
 
         // clip to bounding box
