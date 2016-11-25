@@ -131,7 +131,7 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.CA_NS ) )
             {
-                gs.setNonStrokeAlphaConstants(getNonStrokingAlphaConstant() );
+                gs.setNonStrokeAlphaConstant(getNonStrokingAlphaConstant() );
             }
             else if( key.equals( COSName.AIS ) )
             {
