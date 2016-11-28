@@ -118,20 +118,21 @@ final class DCTFilter extends Filter
                         Field field = reader.getClass().getDeclaredField("colorSpaceCode");
                         field.setAccessible(true);
                         int colorSpaceCode = field.getInt(reader);
-                        
-                        if (colorSpaceCode == 7 || colorSpaceCode == 8 || colorSpaceCode == 9 || colorSpaceCode == 11)
+                        switch (colorSpaceCode)
                         {
-                            // YCCK
-                            transform = 2;
-                        }
-                        else if (colorSpaceCode == 4)
-                        {
-                            // CMYK
-                            transform = 0;
-                        }
-                        else
-                        {
-                            throw new IOException("Unexpected color space: " + colorSpaceCode);
+                            case 7:
+                            case 8:
+                            case 9:
+                            case 11:
+                                // YCCK
+                                transform = 2;
+                                break;
+                            case 4:
+                                // CMYK
+                                transform = 0;
+                                break;
+                            default:
+                                throw new IOException("Unexpected color space: " + colorSpaceCode);
                         }
                     }
                     catch (NoSuchFieldException e1)
