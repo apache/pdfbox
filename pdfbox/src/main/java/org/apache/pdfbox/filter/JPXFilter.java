@@ -19,6 +19,7 @@ package org.apache.pdfbox.filter;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferUShort;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,14 +57,28 @@ public final class JPXFilter extends Filter
         BufferedImage image = readJPX(encoded, result);
 
         WritableRaster raster = image.getRaster();
-        if (raster.getDataBuffer().getDataType() != DataBuffer.TYPE_BYTE)
+        switch (raster.getDataBuffer().getDataType())
         {
-            throw new IOException("Not implemented: greater than 8-bit depth");
-        }
-        DataBufferByte buffer = (DataBufferByte)raster.getDataBuffer();
-        decoded.write(buffer.getData());
+            case DataBuffer.TYPE_BYTE:
+                DataBufferByte byteBuffer = (DataBufferByte) raster.getDataBuffer();
+                decoded.write(byteBuffer.getData());
+                return result;
 
-        return result;
+            case DataBuffer.TYPE_USHORT:
+                DataBufferUShort wordBuffer = (DataBufferUShort) raster.getDataBuffer();
+                int size = wordBuffer.getSize();
+                short[] data = wordBuffer.getData();
+                for (int i = 0; i < size; ++i)
+                {
+                    short w = data[i];
+                    decoded.write(w >> 8);
+                    decoded.write(w);
+                }
+                return result;
+
+            default:
+                throw new IOException("Data type " + raster.getDataBuffer().getDataType() + " not implemented");
+        }        
     }
 
     // try to read using JAI Image I/O
