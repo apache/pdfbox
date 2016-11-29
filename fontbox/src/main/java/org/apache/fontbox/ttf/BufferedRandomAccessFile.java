@@ -165,7 +165,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
                 leftover += bytesRead;
             }
         }
-        return leftover;
+        return leftover > 0 ? leftover : -1;
     }
 
     /**
