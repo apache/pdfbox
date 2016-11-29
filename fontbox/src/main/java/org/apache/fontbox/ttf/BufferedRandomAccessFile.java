@@ -39,12 +39,12 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     private final byte buffer[];
     private int bufend = 0;
     private int bufpos = 0;
-    
+
     /**
      * The position inside the actual file.
      */
     private long realpos = 0;
-    
+
     /**
      * Buffer size.
      */
@@ -165,7 +165,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
                 leftover += bytesRead;
             }
         }
-        return leftover;
+        return (leftover > 0) ? leftover : -1;
     }
 
     /**
