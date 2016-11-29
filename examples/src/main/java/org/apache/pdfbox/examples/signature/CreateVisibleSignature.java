@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -40,6 +41,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleS
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSignDesigner;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
+import org.apache.pdfbox.util.Hex;
 
 /**
  * This is an example for visual signing a pdf.
@@ -52,6 +54,24 @@ public class CreateVisibleSignature extends CreateSignatureBase
     private SignatureOptions signatureOptions;
     private PDVisibleSignDesigner visibleSignDesigner;
     private final PDVisibleSigProperties visibleSignatureProperties = new PDVisibleSigProperties();
+    private boolean lateExternalSigning = false;
+
+    public boolean isLateExternalSigning()
+    {
+        return lateExternalSigning;
+    }
+
+    /**
+     * Set late external signing. Enable this if you want to activate the demo code where the
+     * signature is kept and added in an extra step without using PDFBox methods. This is disabled
+     * by default.
+     *
+     * @param lateExternalSigning
+     */
+    public void setLateExternalSigning(boolean lateExternalSigning)
+    {
+        this.lateExternalSigning = lateExternalSigning;
+    }
 
     public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
             FileInputStream imageStream, int page) 
@@ -176,13 +196,35 @@ public class CreateVisibleSignature extends CreateSignatureBase
             ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
             // invoke external signature service
             byte[] cmsSignature = sign(externalSigning.getContent());
-            // set signature bytes received from the service
-            externalSigning.setSignature(cmsSignature);
 
-            // if you want to add the signature in a separate step, then set an empty byte array
+            // Explanation of late external signing (off by default):
+            // If you want to add the signature in a separate step, then set an empty byte array
             // and call signature.getByteRange() and remember the offset signature.getByteRange()[1]+1.
-            // you can write the ascii hex signature at a later time even if you don't have the
+            // you can write the ascii hex signature at a later time even if you don't have this
             // PDDocument object anymore, with classic java file random access methods.
+            // If you can't remember the offset value from ByteRange because your context has changed, 
+            // then open the file with PDFBox, find the field with findExistingSignature() or
+            // PODDocument.getLastSignatureDictionary() and get the ByteRange from there.
+            // Close the file and then write the signature as explained earlier in this comment.
+            if (isLateExternalSigning())
+            {
+                // this saves the file with a 0 signature
+                externalSigning.setSignature(new byte[0]);
+                
+                // remember the offset (add 1 because of "<")
+                int offset = signature.getByteRange()[1] + 1;
+
+                // now write the signature at the correct offset without any PDFBox methods
+                RandomAccessFile raf = new RandomAccessFile(signedFile, "rw");
+                raf.seek(offset);
+                raf.write(Hex.getBytes(cmsSignature));
+                raf.close();
+            }
+            else
+            {
+                // set signature bytes received from the service and save the file
+                externalSigning.setSignature(cmsSignature);
+            }
         }
         else
         {
@@ -252,6 +294,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
         }
 
         String tsaUrl = null;
+        // External signing is needed if you are using an external signing service, e.g. to sign
+        // several files at once.
         boolean externalSig = false;
         for (int i = 0; i < args.length; i++)
         {
