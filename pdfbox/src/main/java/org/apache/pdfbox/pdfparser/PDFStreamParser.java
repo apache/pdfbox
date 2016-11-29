@@ -248,6 +248,12 @@ public class PDFStreamParser extends BaseParser
                 StringBuilder buf = new StringBuilder();
                 buf.append( c );
                 seqSource.read();
+                
+                // Ignore double negative (this is consistent with Adobe Reader)
+                if (c == '-' && seqSource.peek() == c)
+                {
+                    seqSource.read();
+                }
 
                 boolean dotNotRead = c != '.';
                 while( Character.isDigit(c = (char) seqSource.peek()) || dotNotRead && c == '.')
