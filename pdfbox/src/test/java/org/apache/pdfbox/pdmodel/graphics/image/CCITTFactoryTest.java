@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -229,6 +230,23 @@ public class CCITTFactoryTest extends TestCase
         PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile, 0);
         assertTrue(copiedTiffFile.delete());
+    }
+
+    /**
+     * Tests that byte/short tag values are read correctly (ignoring possible garbage in remaining
+     * bytes).
+     */
+    public void testByteShortPaddedWithGarbage() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        String basePath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3-garbage-padded-fields";
+        for (String ext : Arrays.asList(".tif", "-bigendian.tif"))
+        {
+            String tiffPath = basePath + ext;
+            PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffPath));
+            validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
+        }
+        document.close();
     }
 
     private void copyFile(File source, File dest) throws IOException

@@ -306,35 +306,26 @@ public final class CCITTFactory
                 int tag = readshort(endianess, reader);
                 int type = readshort(endianess, reader);
                 int count = readlong(endianess, reader);
-                int val = readlong(endianess, reader); // See note
-
-                // Note, we treated that value as a long. The value always occupies 4 bytes
-                // But it might only use the first byte or two. Depending on endianess we might
-                // need to correct.
-                // Note we ignore all other types, they are of little interest for PDFs/CCITT Fax
-                if (endianess == 'M')
+                int val;
+                // Note that when the type is shorter than 4 bytes, the rest can be garbage
+                // and must be ignored. E.g. short (2 bytes) from "01 00 38 32" (little endian)
+                // is 1, not 842530817 (seen in a real-life TIFF image).
+                switch (type)
                 {
-                    switch (type)
-                    {
-                        case 1:
-                        {
-                            val = val >> 24;
-                            break; // byte value
-                        }
-                        case 3:
-                        {
-                            val = val >> 16;
-                            break; // short value
-                        }
-                        case 4:
-                        {
-                            break; // long value
-                        }
-                        default:
-                        {
-                            // do nothing
-                        }
-                    }
+                    case 1: // byte value
+                        val = reader.read();
+                        reader.read();
+                        reader.read();
+                        reader.read();
+                        break;
+                    case 3: // short value
+                        val = readshort(endianess, reader);
+                        reader.read();
+                        reader.read();
+                        break;
+                    default: // long and other types
+                        val = readlong(endianess, reader);
+                        break;
                 }
                 switch (tag)
                 {
