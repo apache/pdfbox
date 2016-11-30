@@ -85,7 +85,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     int arraySize = array.size();
                     for (int i = 0; i < arraySize; i++)
                     {
-                        COSNumber width = (COSNumber) array.get(i);
+                        COSNumber width = (COSNumber) array.getObject(i);
                         this.widths.put(startRange + i, width.floatValue());
                     }
                 }
