@@ -158,7 +158,7 @@ public abstract class PDCIDFont extends PDSimpleFont
                         int arraySize = array.size();
                         for (int i=0; i<arraySize; i++) 
                         {
-                            COSNumber width = (COSNumber)array.get(i);
+                            COSNumber width = (COSNumber)array.getObject(i);
                             widthCache.put(startRange+i, width.floatValue());
                         }
                     }
