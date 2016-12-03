@@ -1182,6 +1182,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             g.translate(-clipRect.getX(), -clipRect.getY());
 
             graphics = g;
+            setRenderingHints();
             try
             {
                 if (isSoftMask)
