@@ -1225,7 +1225,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             size = dpiTransform.transform(size, size);
             // Flip y
             return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * m.getScalingFactorX(),
-                    size.getY() - minY - height + pageSize.getLowerLeftY() * m.getScalingFactorX(),
+                    size.getY() - minY - height + pageSize.getLowerLeftY() * m.getScalingFactorY(),
                     width, height);
         }
     }
