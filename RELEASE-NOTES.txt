@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.12
+Release Notes -- Apache PDFBox -- Version 1.8.13
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.11 release. It 
+This is an incremental bugfix release based on the earlier 1.8.12 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,40 +13,50 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-1995] - AdobePDFSchema.getProducer() returns empty string
-[PDFBOX-2428] - An error occured when reading table hmtx
-[PDFBOX-3024] - Preflight validation call PDType0Font.clear at the wrong time
-[PDFBOX-3116] - COSNumber NumberFormatException for large number
-[PDFBOX-3201] - Skip zlib-header and checksum to avoid DataFormatException
-[PDFBOX-3204] - JVM crashes on PDFRenderer.renderImageWithDPI
-[PDFBOX-3217] - PdfaExtensionHelper.populatePDFAPropertyType
-[PDFBOX-3226] - No such Element Exception processing File
-[PDFBOX-3229] - Decryption fails when Metadata not encrypted but EncryptMetadata is true/default.
-[PDFBOX-3235] - ColorSpace validation fails for inlined image
-[PDFBOX-3237] - ASCII85Filter does not use or recognize the correct end-of-data terminator
-[PDFBOX-3254] - Corrupted XMP causes java.lang.StringIndexOutOfBoundsException
-[PDFBOX-3257] - XMPSchemaBasic setCreateDate and setModifyDate don't work if already set
-[PDFBOX-3258] - XMPBox XMPBasicSchema setters don't work if already set
-[PDFBOX-3259] - ClassCastException in PDTilingPattern.getContents
-[PDFBOX-3285] - All lines that use a given font stop rendering if 'ö' is inserted - 
-ArrayIndexOutOfBoundsException in TTFSubFont.buildPostTable
-[PDFBOX-3297] - Infinite loop
-[PDFBOX-3299] - TIFF-files with FillOrder=2 can't be converted to PDF
-[PDFBOX-3308] - Missing endOfName chars
-[PDFBOX-3321] - ASCII stream data size is increased when written
+[PDFBOX-2420] - DateConverter doesn't handle time zones outside -12 to +12 range properly
+[PDFBOX-2919] - org.apache.fontbox.cff.CFFParser.readEntry sometimes throws java.lang.IllegalArgumentException
+[PDFBOX-3315] - Dates falsely detected as different by preflight
+[PDFBOX-3335] - Issue while Merging PDF with Hidden Layers
+[PDFBOX-3341] - currentAccessPermission.setReadOnly() not set in StandardSecurityHandler
+[PDFBOX-3355] - PDPageLabels.getLabelsByPageIndices() returns Uppercase letters for style a
+[PDFBOX-3368] - ContainsKey don't work for the Map<String, Object> returned by PDStructureTreeRoot.getRoleMap
+[PDFBOX-3369] - Error expected floating point number actual='0.00-35095424'
+[PDFBOX-3409] - TextToPDF drops leading spaces
+[PDFBOX-3420] - Can't sign pdf with a particular attachment
+[PDFBOX-3446] - Infinite loop while parsing
+[PDFBOX-3448] - NullPointerException at org.apache.pdfbox.pdmodel.common.COSArrayList.convertFloatCOSArrayToList
+[PDFBOX-3450] - ArrayIndexOutOfBoundsException at org.apache.fontbox.cmap.CMapParser.increment
+[PDFBOX-3463] - XMPSchemaBasic.getLabel() always returns null
+[PDFBOX-3466] - Java 9 warnings
+[PDFBOX-3472] - NPE when PDF/A identification metadata does not contain ID
+[PDFBOX-3477] - CA and ca values should be clipped
+[PDFBOX-3481] - Localization in XRef generation results in unusable PDFs
+[PDFBOX-3487] - ClassCastException in COSWriter.write() when saving PDF
+[PDFBOX-3491] - NumberFormatException in CFFParser.readRealNumber
+[PDFBOX-3500] - Error expected floating point number actual='0.-262'
+[PDFBOX-3532] - Java 6 errors
+[PDFBOX-3546] - IOException over DataFormatException, "invalid stored block lengths" on a valid PDF
+[PDFBOX-3551] - CLI Decrypt broken, only allows 1 argument
+[PDFBOX-3555] - FlateFilter.decode cause native memory leaks
+[PDFBOX-3558] - NPE in JBig2Filter if BitsPerComponent is missing
+[PDFBOX-3570] - JDK-8054565 Java 8 close contract issue
+[PDFBOX-3571] - sRGB Color Space Profile is subject to 3rd party copyright
+[PDFBOX-3578] - java.lang.IllegalArgumentException: dash lengths all zero
+[PDFBOX-3590] - AccessPermission not applied
+[PDFBOX-3594] - Use PDOutlineItem#findDestinationPage() cannot get PDPage, return was null
+[PDFBOX-3609] - ClassCastException in PDCIDFont.readWidths()
 
 Improvement
 
-[PDFBOX-1840] - Automatically load isartor for preflight tests
-[PDFBOX-3196] - Update maven plugins and apache parent pom
-[PDFBOX-3231] - Update PDPropBuildDataDict
-[PDFBOX-3251] - Improve parsing and validation of ColorSpace for inline image
-[PDFBOX-3295] - Improve parsing performance of object streams
+[PDFBOX-3352] - Calendar values are parsed with unknown timezones
 
-Wish
+New Feature
 
-[PDFBOX-3241] - return original PDF Header
+[PDFBOX-3410] - TextToPDF needs orientation control
 
+Task
+
+[PDFBOX-3577] - remove mygrid repository in 1.8
 
 Release Contents
 ----------------
