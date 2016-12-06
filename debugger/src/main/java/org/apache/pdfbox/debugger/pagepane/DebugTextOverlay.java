@@ -137,16 +137,17 @@ final class DebugTextOverlay
             {
                 if (DebugTextOverlay.this.showTextStripper)
                 {
+                    AffineTransform at = (AffineTransform) flip.clone();
+                    at.concatenate(text.getTextMatrix().createAffineTransform());
+
                     // in red:
                     // show rectangles with the "height" (not a real height, but used for text extraction 
                     // heuristics, it is 1/2 of the bounding box height and starts at y=0)
-                    Rectangle2D.Float rect = new Rectangle2D.Float(
-                            text.getXDirAdj(),
-                            (text.getYDirAdj() - text.getHeightDir()),
-                            text.getWidthDirAdj(),
-                            text.getHeightDir());
+                    Rectangle2D.Float rect = new Rectangle2D.Float(0, 0, 
+                            text.getWidthDirAdj() / text.getTextMatrix().getScalingFactorX(),
+                            text.getHeightDir() / text.getTextMatrix().getScalingFactorY());
                     graphics.setColor(Color.red);
-                    graphics.draw(rect);
+                    graphics.draw(at.createTransformedShape(rect));
                 }
 
                 if (DebugTextOverlay.this.showFontBBox)
