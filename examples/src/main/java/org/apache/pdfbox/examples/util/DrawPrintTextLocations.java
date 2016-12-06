@@ -286,17 +286,21 @@ public class DrawPrintTextLocations extends PDFTextStripper
                     + text.getWidthOfSpace() + " width="
                     + text.getWidthDirAdj() + "]" + text.getUnicode());
 
+            // glyph space -> user space
+            // note: text.getTextMatrix() is *not* the Text Matrix, it's the Text Rendering Matrix
+            AffineTransform at = text.getTextMatrix().createAffineTransform();
+
             // in red:
             // show rectangles with the "height" (not a real height, but used for text extraction 
             // heuristics, it is 1/2 of the bounding box height and starts at y=0)
-            Rectangle2D.Float rect = new Rectangle2D.Float(
-                    text.getXDirAdj(),
-                    (text.getYDirAdj() - text.getHeightDir()),
-                    text.getWidthDirAdj(),
-                    text.getHeightDir());
-            Shape sh = rotateAT.createTransformedShape(rect);
+            Rectangle2D.Float rect = new Rectangle2D.Float(0, 0, 
+                    text.getWidthDirAdj() / text.getTextMatrix().getScalingFactorX(),
+                    text.getHeightDir() / text.getTextMatrix().getScalingFactorY());
+            Shape s = at.createTransformedShape(rect);
+            s = flipAT.createTransformedShape(s);
+            s = rotateAT.createTransformedShape(s);
             g2d.setColor(Color.red);
-            g2d.draw(sh);
+            g2d.draw(s);
 
             // in blue:
             // show rectangle with the real vertical bounds, based on the font bounding box y values
@@ -308,9 +312,6 @@ public class DrawPrintTextLocations extends PDFTextStripper
             float xadvance = font.getWidth(text.getCharacterCodes()[0]); // todo: should iterate all chars
             rect = new Rectangle2D.Float(0, bbox.getLowerLeftY(), xadvance, bbox.getHeight());
             
-            // glyph space -> user space
-            // note: text.getTextMatrix() is *not* the Text Matrix, it's the Text Rendering Matrix
-            AffineTransform at = text.getTextMatrix().createAffineTransform();
             if (font instanceof PDType3Font)
             {
                 // bbox and font matrix are unscaled
@@ -321,8 +322,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
                 // bbox and font matrix are already scaled to 1000
                 at.scale(1/1000f, 1/1000f);
             }
-            Shape s = at.createTransformedShape(rect);
-
+            s = at.createTransformedShape(rect);
             s = flipAT.createTransformedShape(s);
             s = rotateAT.createTransformedShape(s);
 
