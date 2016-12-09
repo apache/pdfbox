@@ -166,6 +166,9 @@ public final class PDAcroForm implements COSObjectable
      * <p>Flattening a form field will take the current appearance and make that part
      * of the pages content stream. All form fields and annotations associated are removed.</p>
      * 
+     * <p>Invisible and hidden fields will be skipped and will not become part of the
+     * page content stream</p>
+     * 
      * <p>The appearances for the form fields widgets will <strong>not</strong> be generated<p>
      * 
      * @throws IOException 
@@ -194,6 +197,9 @@ public final class PDAcroForm implements COSObjectable
      * 
      * <p>Flattening a form field will take the current appearance and make that part
      * of the pages content stream. All form fields and annotations associated are removed.</p>
+     * 
+     * <p>Invisible and hidden fields will be skipped and will not become part of the
+     * page content stream</p>
      * 
      * @param fields
      * @param refreshAppearances if set to true the appearances for the form field widgets will be updated
