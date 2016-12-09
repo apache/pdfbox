@@ -125,7 +125,19 @@ public class PDAcroFormFlattenTest {
 		
 		flattenAndCompare(sourceUrl, targetFileName);       
     }
-	
+    
+	/*
+	 * PDFBOX-3262 Hidden fields
+	 */
+	// @Test
+    public void testFlattenPDFBOX3262() throws IOException
+    {
+		String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf";
+		String targetFileName = "hidden_fields.pdf";
+		
+		flattenAndCompare(sourceUrl, targetFileName);       
+    }
+    	
 	/*
 	 * PDFBOX-3396 Signed Document 1.
 	 */
