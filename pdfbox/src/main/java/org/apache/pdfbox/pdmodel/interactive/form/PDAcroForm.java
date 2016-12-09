@@ -234,7 +234,7 @@ public final class PDAcroForm implements COSObjectable
         {
             for (PDAnnotationWidget widget : field.getWidgets())
             {
-                if (widget.getNormalAppearanceStream() != null)
+                if (!widget.isInvisible() && !widget.isHidden() && widget.getNormalAppearanceStream() != null)
                 {
                     PDPage page = widget.getPage();
 
