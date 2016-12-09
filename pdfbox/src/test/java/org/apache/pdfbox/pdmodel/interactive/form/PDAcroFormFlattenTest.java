@@ -135,7 +135,7 @@ public class PDAcroFormFlattenTest {
 		String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf";
 		String targetFileName = "hidden_fields.pdf";
 		
-		flattenAndCompare(sourceUrl, targetFileName);       
+		assertTrue(flattenAndCompare(sourceUrl, targetFileName));       
     }
     	
 	/*
@@ -213,7 +213,7 @@ public class PDAcroFormFlattenTest {
 	/*
 	 * Flatten and compare with generated image samples.
 	 */
-	private static void flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
+	private static boolean flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
 	{
 		
 		generateSamples(sourceUrl,targetFileName);
@@ -235,6 +235,7 @@ public class PDAcroFormFlattenTest {
             // don't fail, rendering is different on different systems, result must be viewed manually
             System.out.println("Rendering of " + outputFile + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
             removeMatchingRenditions(inputFile);
+            return false;
         }
         else
         {
@@ -243,6 +244,8 @@ public class PDAcroFormFlattenTest {
         	inputFile.delete();
         	outputFile.delete();
         }
+        
+        return true;
 	}	
 	
 	/*
