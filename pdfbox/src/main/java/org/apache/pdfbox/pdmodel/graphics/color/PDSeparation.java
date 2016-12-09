@@ -115,6 +115,12 @@ public class PDSeparation extends PDSpecialColorSpace
     @Override
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
+        if (alternateColorSpace instanceof PDLab)
+        {
+            // PDFBOX-3622 - regular converter fails for Lab colorspaces
+            return toRGBImage2(raster);
+        }
+        
         // use the tint transform to convert the sample into
         // the alternate color space (this is usually 1:many)
         WritableRaster altRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
@@ -147,6 +153,40 @@ public class PDSeparation extends PDSpecialColorSpace
 
         // convert the alternate color space to RGB
         return alternateColorSpace.toRGBImage(altRaster);
+    }
+
+    // converter that works without using super implementation of toRGBImage()
+    private BufferedImage toRGBImage2(WritableRaster raster) throws IOException
+    {
+        int width = raster.getWidth();
+        int height = raster.getHeight();
+        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        WritableRaster rgbRaster = rgbImage.getRaster();
+        float[] samples = new float[1];
+
+        Map<Integer, int[]> calculatedValues = new HashMap<Integer, int[]>();
+        Integer hash;
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                raster.getPixel(x, y, samples);
+                int[] rgb = calculatedValues.get(hash = Float.floatToIntBits(samples[0]));
+                if (rgb == null)
+                {
+                    samples[0] /= 255;
+                    float[] altColor = tintTransform.eval(samples);
+                    float[] fltab = alternateColorSpace.toRGB(altColor);
+                    rgb = new int[3];
+                    rgb[0] = (int) (fltab[0] * 255);
+                    rgb[1] = (int) (fltab[1] * 255);
+                    rgb[2] = (int) (fltab[2] * 255);
+                    calculatedValues.put(hash, rgb);
+                }
+                rgbRaster.setPixel(x, y, rgb);
+            }
+        }
+        return rgbImage;
     }
 
     protected void tintTransform(float[] samples, int[] alt) throws IOException
