@@ -64,6 +64,21 @@ public final class CreatePDFA
 
             // load the font as this needs to be embedded
             PDFont font = PDType0Font.load(doc, new File(fontfile));
+            
+            // A PDF/A file needs to have the font embedded if the font is used for text rendering
+            // in rendering modes other than text rendering mode 3.
+            //
+            // This requirement includes the PDF standard fonts, so don't use their static PDFType1Font classes such as
+            // PDFType1Font.HELVETICA.
+            //
+            // As there are many different font licenses it is up to the developer to check if the license terms for the
+            // font loaded allows embedding in the PDF.
+            // 
+            if (!font.isEmbedded())
+            {
+            	throw new IllegalStateException("PDF/A compliance requires that all fonts used for"
+            			+ " text rendering in rendering modes other than rendering mode 3 are embedded.");
+            }
 
             // create a page with the message
             PDPageContentStream contents = new PDPageContentStream(doc, page);
