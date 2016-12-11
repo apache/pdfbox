@@ -464,6 +464,7 @@ public class PDFDebugger extends JFrame
         fileMenu.add(openUrlMenuItem);
         
         reopenMenuItem = new JMenuItem("Reopen");
+        reopenMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, SHORCUT_KEY_MASK));
         reopenMenuItem.addActionListener(new ActionListener()
         {
             @Override
