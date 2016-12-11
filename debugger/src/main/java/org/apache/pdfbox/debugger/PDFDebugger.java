@@ -321,6 +321,7 @@ public class PDFDebugger extends JFrame
 
         JMenu fileMenu = new JMenu("File");
         fileMenu.add(openMenuItem);
+        fileMenu.setMnemonic('F');
 
         JMenuItem openUrlMenuItem = new JMenuItem("Open URL...");
         openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, SHORCUT_KEY_MASK));
@@ -427,6 +428,7 @@ public class PDFDebugger extends JFrame
     private JMenu createEditMenu()
     {
         JMenu editMenu = new JMenu("Edit");
+        editMenu.setMnemonic('E');
         
         JMenuItem cutMenuItem = new JMenuItem("Cut");
         cutMenuItem.setEnabled(false);
@@ -452,6 +454,7 @@ public class PDFDebugger extends JFrame
     private JMenu createViewMenu()
     {
         JMenu viewMenu = new JMenu("View");
+        viewMenu.setMnemonic('V');
         if (isPageMode)
         {
             viewModeItem = new JMenuItem("Show Internal Structure");
