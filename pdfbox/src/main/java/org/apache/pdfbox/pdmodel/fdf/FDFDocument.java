@@ -22,10 +22,10 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import org.apache.pdfbox.cos.COSDictionary;
@@ -302,7 +302,8 @@ public class FDFDocument implements Closeable
      */
     public void saveXFDF(File fileName) throws IOException
     {
-        saveXFDF(new BufferedWriter(new FileWriter(fileName)));
+        saveXFDF(new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")));
     }
 
     /**
@@ -314,7 +315,8 @@ public class FDFDocument implements Closeable
      */
     public void saveXFDF(String fileName) throws IOException
     {
-        saveXFDF(new BufferedWriter(new FileWriter(fileName)));
+        saveXFDF(new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")));
     }
 
     /**
