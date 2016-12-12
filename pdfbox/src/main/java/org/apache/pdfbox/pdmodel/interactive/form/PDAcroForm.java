@@ -709,7 +709,38 @@ public final class PDAcroForm implements COSObjectable
      */
     private boolean resolveNeedsTranslation(PDAppearanceStream appearanceStream)
     {
-        // TODO: implement special cases for files in PDFBOX-3396
+boolean needsTranslation = false;
+        
+        PDResources resources = appearanceStream.getResources();
+        if (resources != null && resources.getXObjectNames().iterator().hasNext())
+        {           
+            
+            Iterator<COSName> xObjectNames = resources.getXObjectNames().iterator();
+            
+            while (xObjectNames.hasNext())
+            {
+                try
+                {
+                    // if the BBox of the PDFormXObject does not start at 0,0
+                    // there is no need do translate as this is done by the BBox definition.
+                    PDFormXObject xObject = (PDFormXObject) resources.getXObject(xObjectNames.next());
+                    PDRectangle bbox = xObject.getBBox();
+                    float llX = bbox.getLowerLeftX();
+                    float llY = bbox.getLowerLeftY();
+                    if (llX == 0 && llY == 0)
+                    {
+                        needsTranslation = true;
+                    }
+                }
+                catch (IOException e)
+                {
+                    // we can safely ignore the exception here
+                    // as this might only cause a misplacement
+                }
+            }
+            return needsTranslation;
+        }
+        
         return true;
     }
     
