@@ -1177,6 +1177,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         (float) bounds.getHeight() / Math.abs(m.getScalingFactorY()));
             int pageRotationOriginal = pageRotation;
             pageRotation = 0;
+            int clipWindingRuleOriginal = clipWindingRule;
+            clipWindingRule = -1;
+            GeneralPath linePathOriginal = linePath;
+            linePath = new GeneralPath();
 
             // adjust the origin
             g.translate(-clipRect.getX(), -clipRect.getY());
@@ -1200,6 +1204,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 lastClip = lastClipOriginal;                
                 graphics.dispose();
                 graphics = g2dOriginal;
+                clipWindingRule = clipWindingRuleOriginal;
+                linePath = linePathOriginal;
                 pageSize = pageSizeOriginal;
                 xform = xformOriginal;
                 pageRotation = pageRotationOriginal;
