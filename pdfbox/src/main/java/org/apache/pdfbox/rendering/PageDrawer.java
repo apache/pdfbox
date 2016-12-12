@@ -1213,6 +1213,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // apply device transform (DPI)
             g.transform(xform);
 
+            int clipWindingRuleOriginal = clipWindingRule;
+            clipWindingRule = -1;
+            GeneralPath linePathOriginal = linePath;
+            linePath = new GeneralPath();
+
             // adjust the origin
             g.translate(-clipRect.getX(), -clipRect.getY());
 
@@ -1231,9 +1236,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             finally 
             {
-                lastClip = lastClipOriginal;                
+                lastClip = lastClipOriginal;
                 graphics.dispose();
                 graphics = g2dOriginal;
+                clipWindingRule = clipWindingRuleOriginal;
+                linePath = linePathOriginal;
             }
         }
 
