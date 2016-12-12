@@ -214,6 +214,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         GeneralPath oldLinePath = linePath;
         linePath = new GeneralPath();
+        int oldClipWindingRule = clipWindingRule;
+        clipWindingRule = -1;
 
         Area oldLastClip = lastClip;
         lastClip = null;
@@ -224,6 +226,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics = oldGraphics;
         linePath = oldLinePath;
         lastClip = oldLastClip;
+        clipWindingRule = oldClipWindingRule;
     }
 
     /**
