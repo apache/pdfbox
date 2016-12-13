@@ -143,7 +143,14 @@ public class PDExtendedGraphicsState implements COSObjectable
             }
             else if( key.equals( COSName.SMASK ) ) 
             {
-                gs.setSoftMask(getSoftMask());
+                PDSoftMask softmask = getSoftMask();
+                if (softmask != null)
+                {
+                    // Softmask must know the CTM at the time the ExtGState is activated. Read
+                    // https://bugs.ghostscript.com/show_bug.cgi?id=691157#c7 for a good explanation.
+                    softmask.setInitialTransformationMatrix(gs.getCurrentTransformationMatrix().clone());
+                }
+                gs.setSoftMask(softmask);
             }
             else if( key.equals( COSName.BM ) ) 
             {
