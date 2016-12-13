@@ -187,6 +187,8 @@ public abstract class PDFStreamEngine
     protected void processSoftMask(PDTransparencyGroup group) throws IOException
     {
         saveGraphicsState();
+        Matrix softMaskCTM = getGraphicsState().getSoftMask().getInitialTransformationMatrix();
+        getGraphicsState().setCurrentTransformationMatrix(softMaskCTM);
         processTransparencyGroup(group);
         restoreGraphicsState();
     }
