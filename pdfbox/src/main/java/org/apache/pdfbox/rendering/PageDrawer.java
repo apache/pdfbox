@@ -526,7 +526,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // returns the non-stroking AWT Paint
     private Paint getNonStrokingPaint() throws IOException
     {
-        return getPaint(getGraphicsState().getNonStrokingColor());
+        return applySoftMaskToPaint(
+                getPaint(getGraphicsState().getNonStrokingColor()),
+                getGraphicsState().getSoftMask());
     }
 
     // create a new stroke based on the current CTM and the current stroke
@@ -932,6 +934,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         Paint paint = shading.toPaint(ctm);
+        paint = applySoftMaskToPaint(paint, getGraphicsState().getSoftMask());
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(paint);
