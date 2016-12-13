@@ -858,6 +858,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void shadingFill(COSName shadingName) throws IOException
     {
         PDShading shading = getResources().getShading(shadingName);
+        if (shading == null)
+        {
+            LOG.error("shading " + shadingName + " does not exist in resources dictionary");
+            return;
+        }
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         Paint paint = shading.toPaint(ctm);
 
