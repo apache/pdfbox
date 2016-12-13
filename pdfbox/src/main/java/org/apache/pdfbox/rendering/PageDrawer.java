@@ -428,7 +428,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return parentPaint;
         }
-        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true);
+        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, softMask.getInitialTransformationMatrix());
         BufferedImage image = transparencyGroup.getImage();
         BufferedImage gray = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
         if (COSName.ALPHA.equals(softMask.getSubType()))
@@ -1058,7 +1058,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
     {
-        TransparencyGroup group = new TransparencyGroup(form, false);
+        TransparencyGroup group =
+                new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix());
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
@@ -1131,13 +1132,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         /**
          * Creates a buffered image for a transparency group result.
          */
-        private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask) throws IOException
+        private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask, Matrix ctm) throws IOException
         {
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
 
             // get the CTM x Form Matrix transform
-            Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
             Matrix transform = Matrix.concatenate(ctm, form.getMatrix());
 
             // transform the bbox
