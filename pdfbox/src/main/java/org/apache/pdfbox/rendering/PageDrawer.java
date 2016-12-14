@@ -1156,7 +1156,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             BufferedImage image = group.getImage();
             Paint awtPaint = new TexturePaint(image,
                     new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
-            awtPaint = applySoftMaskToPaint(awtPaint, softMask); // todo: PDFBOX-994 problem here?
+            awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
             graphics.fill(new Rectangle2D.Float(0, 0, bbox.getWidth() * (float)xform.getScaleX(),
                                                 bbox.getHeight() * (float)xform.getScaleY()));
@@ -1215,7 +1215,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             width = maxX - minX;
             height = maxY - minY;
 
-            image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB); // FIXME - color space
+            // FIXME - color space
+            if (form.getGroup().getColorSpace() instanceof PDDeviceGray)
+            {
+                image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+            }
+            else
+            {
+                image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            }
             Graphics2D g = image.createGraphics();
 
             // flip y-axis
