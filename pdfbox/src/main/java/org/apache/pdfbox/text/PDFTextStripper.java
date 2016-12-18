@@ -538,8 +538,6 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     Collections.sort(textList, comparator);
                 }
             }
-            
-            Iterator<TextPosition> textIter = textList.iterator();
 
             startArticle();
             startOfArticle = true;
@@ -549,7 +547,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             // the line from presentation form to logical form (if needed).
             List<LineItem> line = new ArrayList<LineItem>();
 
-            textIter = textList.iterator(); // start from the beginning again
+            Iterator<TextPosition> textIter = textList.iterator();
             // PDF files don't always store spaces. We will need to guess where we should add
             // spaces based on the distances between TextPositions. Historically, this was done
             // based on the size of the space character provided by the font. In general, this
