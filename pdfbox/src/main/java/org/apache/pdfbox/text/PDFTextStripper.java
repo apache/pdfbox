@@ -1813,7 +1813,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
             if ((level & 1) != 0)
             {
-                for (; --end >= start;)
+                while (--end >= start)
                 {
                     char character = word.charAt(end);
                     if (Character.isMirrored(word.codePointAt(end)))
