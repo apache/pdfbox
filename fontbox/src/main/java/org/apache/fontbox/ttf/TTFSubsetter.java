@@ -764,7 +764,7 @@ public final class TTFSubsetter
         segCount++;
 
         // write format 4 subtable
-        int searchRange = 2 * (int)Math.pow(2, Math.floor(log2(segCount)));
+        int searchRange = 2 * (int)Math.pow(2, log2(segCount));
         writeUint16(out, 4); // format
         writeUint16(out, 8 * 2 + segCount * 4*2); // length
         writeUint16(out, 0); // language
