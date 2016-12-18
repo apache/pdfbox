@@ -164,7 +164,7 @@ public class PDFDebugger extends JFrame
     public static JCheckBoxMenuItem showGlyphBounds;
     
     // configuration
-    public static Properties configuration;
+    public static Properties configuration = new Properties();
     
     /**
      * Constructor.
@@ -277,7 +277,6 @@ public class PDFDebugger extends JFrame
             try
             {
                 InputStream is = new FileInputStream(file);
-                configuration = new Properties();
                 configuration.load(is);
                 is.close();
             }
@@ -285,10 +284,6 @@ public class PDFDebugger extends JFrame
             {
                 throw new RuntimeException(e);
             }
-        }
-        else
-        {
-            configuration = new Properties();
         }
     }
     
