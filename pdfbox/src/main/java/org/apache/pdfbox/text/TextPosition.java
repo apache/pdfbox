@@ -35,48 +35,6 @@ public final class TextPosition
 
     private static final Map<Integer, String> DIACRITICS = createDiacritics();
 
-    // Adds non-decomposing diacritics to the hash with their related combining character.
-    // These are values that the unicode spec claims are equivalent but are not mapped in the form
-    // NFKC normalization method. Determined by going through the Combining Diacritical Marks
-    // section of the Unicode spec and identifying which characters are not  mapped to by the
-    // normalization.
-    private static Map<Integer, String> createDiacritics()
-    {
-        Map<Integer, String> map = new HashMap<Integer, String>(31);
-        map.put(0x0060, "\u0300");
-        map.put(0x02CB, "\u0300");
-        map.put(0x0027, "\u0301");
-        map.put(0x02B9, "\u0301");
-        map.put(0x02CA, "\u0301");
-        map.put(0x005e, "\u0302");
-        map.put(0x02C6, "\u0302");
-        map.put(0x007E, "\u0303");
-        map.put(0x02C9, "\u0304");
-        map.put(0x00B0, "\u030A");
-        map.put(0x02BA, "\u030B");
-        map.put(0x02C7, "\u030C");
-        map.put(0x02C8, "\u030D");
-        map.put(0x0022, "\u030E");
-        map.put(0x02BB, "\u0312");
-        map.put(0x02BC, "\u0313");
-        map.put(0x0486, "\u0313");
-        map.put(0x055A, "\u0313");
-        map.put(0x02BD, "\u0314");
-        map.put(0x0485, "\u0314");
-        map.put(0x0559, "\u0314");
-        map.put(0x02D4, "\u031D");
-        map.put(0x02D5, "\u031E");
-        map.put(0x02D6, "\u031F");
-        map.put(0x02D7, "\u0320");
-        map.put(0x02B2, "\u0321");
-        map.put(0x02CC, "\u0329");
-        map.put(0x02B7, "\u032B");
-        map.put(0x02CD, "\u0331");
-        map.put(0x005F, "\u0332");
-        map.put(0x204E, "\u0359");
-        return map;
-    }
-
     // text matrix for the start of the text object, coordinates are in display units
     // and have not been adjusted
     private final Matrix textMatrix;
@@ -156,6 +114,48 @@ public final class TextPosition
         {
             y = this.pageWidth - getYLowerLeftRot(rotationAngle);
         }
+    }
+
+    // Adds non-decomposing diacritics to the hash with their related combining character.
+    // These are values that the unicode spec claims are equivalent but are not mapped in the form
+    // NFKC normalization method. Determined by going through the Combining Diacritical Marks
+    // section of the Unicode spec and identifying which characters are not  mapped to by the
+    // normalization.
+    private static Map<Integer, String> createDiacritics()
+    {
+        Map<Integer, String> map = new HashMap<Integer, String>(31);
+        map.put(0x0060, "\u0300");
+        map.put(0x02CB, "\u0300");
+        map.put(0x0027, "\u0301");
+        map.put(0x02B9, "\u0301");
+        map.put(0x02CA, "\u0301");
+        map.put(0x005e, "\u0302");
+        map.put(0x02C6, "\u0302");
+        map.put(0x007E, "\u0303");
+        map.put(0x02C9, "\u0304");
+        map.put(0x00B0, "\u030A");
+        map.put(0x02BA, "\u030B");
+        map.put(0x02C7, "\u030C");
+        map.put(0x02C8, "\u030D");
+        map.put(0x0022, "\u030E");
+        map.put(0x02BB, "\u0312");
+        map.put(0x02BC, "\u0313");
+        map.put(0x0486, "\u0313");
+        map.put(0x055A, "\u0313");
+        map.put(0x02BD, "\u0314");
+        map.put(0x0485, "\u0314");
+        map.put(0x0559, "\u0314");
+        map.put(0x02D4, "\u031D");
+        map.put(0x02D5, "\u031E");
+        map.put(0x02D6, "\u031F");
+        map.put(0x02D7, "\u0320");
+        map.put(0x02B2, "\u0321");
+        map.put(0x02CC, "\u0329");
+        map.put(0x02B7, "\u032B");
+        map.put(0x02CD, "\u0331");
+        map.put(0x005F, "\u0332");
+        map.put(0x204E, "\u0359");
+        return map;
     }
 
     /**
