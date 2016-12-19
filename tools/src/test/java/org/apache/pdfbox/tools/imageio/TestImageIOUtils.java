@@ -85,6 +85,11 @@ public class TestImageIOUtils extends TestCase
                     {
                         suffix = "JPEG2000";
                     }
+                    if ("jb2".equals(suffix))
+                    {
+                        // jbig2 usually not available
+                        suffix = "PNG";
+                    }
                     boolean writeOK = ImageIOUtil.writeImage(imageObject.getImage(), suffix,
                             new ByteArrayOutputStream());
                     assertTrue(writeOK);
