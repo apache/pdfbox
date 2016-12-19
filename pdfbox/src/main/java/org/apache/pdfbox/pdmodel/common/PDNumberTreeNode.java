@@ -109,7 +109,7 @@ public class PDNumberTreeNode implements COSObjectable
      */
     public void setKids( List<? extends PDNumberTreeNode> kids )
     {
-        if (kids != null && kids.size() > 0)
+        if (kids != null && !kids.isEmpty())
         {
             PDNumberTreeNode firstKid = kids.get(0);
             PDNumberTreeNode lastKid = kids.get(kids.size() - 1);
@@ -135,33 +135,30 @@ public class PDNumberTreeNode implements COSObjectable
      *
      * @throws IOException If there is a problem creating the values.
      */
-    public Object getValue( Integer index ) throws IOException
+    public Object getValue(Integer index) throws IOException
     {
-        Object retval = null;
-        Map<Integer,COSObjectable> names = getNumbers();
-        if( names != null )
+        Map<Integer, COSObjectable> names = getNumbers();
+        if (names != null)
         {
-            retval = names.get( index );
+            return names.get(index);
+        }
+        Object retval = null;
+        List<PDNumberTreeNode> kids = getKids();
+        if (kids != null)
+        {
+            for (int i = 0; i < kids.size() && retval == null; i++)
+            {
+                PDNumberTreeNode childNode = kids.get(i);
+                if (childNode.getLowerLimit().compareTo(index) <= 0 &&
+                    childNode.getUpperLimit().compareTo(index) >= 0)
+                {
+                    retval = childNode.getValue(index);
+                }
+            }
         }
         else
         {
-            List<PDNumberTreeNode> kids = getKids();
-            if ( kids != null )
-            {
-                for( int i=0; i<kids.size() && retval == null; i++ )
-                {
-                    PDNumberTreeNode childNode = kids.get( i );
-                    if( childNode.getLowerLimit().compareTo( index ) <= 0 &&
-                        childNode.getUpperLimit().compareTo( index ) >= 0 )
-                    {
-                        retval = childNode.getValue( index );
-                    }
-                }
-            }
-            else
-            {
-                LOG.warn("NumberTreeNode does not have \"nums\" nor \"kids\" objects.");
-            }
+            LOG.warn("NumberTreeNode does not have \"nums\" nor \"kids\" objects.");
         }
         return retval;
     }
@@ -256,7 +253,7 @@ public class PDNumberTreeNode implements COSObjectable
             }
             Integer lower = null;
             Integer upper = null;
-            if( keys.size() > 0 )
+            if (!keys.isEmpty())
             {
                 lower = keys.get( 0 );
                 upper = keys.get( keys.size()-1 );
