@@ -891,7 +891,7 @@ public class PDFDebugger extends JFrame
         if (obj instanceof MapEntry)
         {
             MapEntry entry = (MapEntry) obj;
-            return (COSName.ENCRYPT.equals(entry.getKey()) && entry.getValue() instanceof COSDictionary);
+            return COSName.ENCRYPT.equals(entry.getKey()) && entry.getValue() instanceof COSDictionary;
         }
         return false;
     }
