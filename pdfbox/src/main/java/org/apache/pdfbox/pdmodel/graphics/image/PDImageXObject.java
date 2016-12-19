@@ -692,6 +692,10 @@ public final class PDImageXObject extends PDXObject implements PDImage
         {
             return "png";
         }
+        else if (filters.contains(COSName.JBIG2_DECODE))
+        {
+            return "jb2";
+        }
         else
         {
             LOG.warn("getSuffix() returns null, filters: " + filters);
