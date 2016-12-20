@@ -242,7 +242,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
                 colorSpace = PDDeviceCMYK.INSTANCE;
                 break;
             default:
-                break;
+                return null;
             }
             return new PDColor((COSArray) c, colorSpace);
         }
