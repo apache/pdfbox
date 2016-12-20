@@ -230,7 +230,7 @@ class AppearanceGeneratorHelper
                 lineWidth = borderStyle.getWidth();
             }
 
-            if (lineWidth > 0)
+            if (lineWidth > 0 && borderColour != null)
             {
                 if (lineWidth != 1)
                 {
