@@ -229,7 +229,7 @@ public class PDAppearanceCharacteristicsDictionary implements COSObjectable
         COSBase c = this.getCOSObject().getItem(itemName);
         if (c instanceof COSArray)
         {
-            PDColorSpace colorSpace = null;
+            PDColorSpace colorSpace;
             switch (((COSArray) c).size())
             {
             case 1:
