@@ -1035,7 +1035,8 @@ public class PDFDebugger extends JFrame
             isContentStream = true;
         }
         else if (COSName.FORM.equals(stream.getCOSName(COSName.SUBTYPE)) ||
-                COSName.PATTERN.equals(stream.getCOSName(COSName.TYPE)))
+                COSName.PATTERN.equals(stream.getCOSName(COSName.TYPE)) ||
+                stream.getInt(COSName.PATTERN_TYPE) == 1)
         {
             if (stream.containsKey(COSName.RESOURCES))
             {
