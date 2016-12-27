@@ -22,7 +22,10 @@ import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
 
 import java.io.File;
@@ -42,7 +45,7 @@ public final class RemoveAllText
      */
     private RemoveAllText()
     {
-        //example class should not be instantiated
+        // example class should not be instantiated
     }
 
     /**
@@ -52,9 +55,9 @@ public final class RemoveAllText
      *
      * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main(String[] args) throws IOException
     {
-        if( args.length != 2 )
+        if (args.length != 2)
         {
             usage();
         }
@@ -63,44 +66,22 @@ public final class RemoveAllText
             PDDocument document = null;
             try
             {
-                document = PDDocument.load( new File(args[0]) );
-                if( document.isEncrypted() )
+                document = PDDocument.load(new File(args[0]));
+                if (document.isEncrypted())
                 {
-                    System.err.println( "Error: Encrypted documents are not supported for this example." );
-                    System.exit( 1 );
+                    System.err.println(
+                            "Error: Encrypted documents are not supported for this example.");
+                    System.exit(1);
                 }
-                for( PDPage page : document.getPages() )
+                for (PDPage page : document.getPages())
                 {
-                    PDFStreamParser parser = new PDFStreamParser(page);
-                    parser.parse();
-                    List<Object> tokens = parser.getTokens();
-                    List<Object> newTokens = new ArrayList<Object>();
-                    for (Object token : tokens)
-                    {
-                        if( token instanceof Operator)
-                        {
-                            Operator op = (Operator)token;
-                            if( op.getName().equals( "TJ") || op.getName().equals( "Tj" ))
-                            {
-                                //remove the one argument to this operator
-                                newTokens.remove( newTokens.size() -1 );
-                                continue;
-                            }
-                        }
-                        newTokens.add( token );
-                    }
-                    PDStream newContents = new PDStream( document );
-                    OutputStream out = newContents.createOutputStream(COSName.FLATE_DECODE);
-                    ContentStreamWriter writer = new ContentStreamWriter( out );
-                    writer.writeTokens( newTokens );
-                    out.close();
-                    page.setContents( newContents );
+                    removeAllTextTokens(page, document);
                 }
-                document.save( args[1] );
+                document.save(args[1]);
             }
             finally
             {
-                if( document != null )
+                if (document != null)
                 {
                     document.close();
                 }
@@ -108,12 +89,84 @@ public final class RemoveAllText
         }
     }
 
+    private static void processResources(PDResources resources) throws IOException
+    {
+        Iterable<COSName> names = resources.getXObjectNames();
+        for (COSName name : names)
+        {
+            PDXObject xobject = resources.getXObject(name);
+            if (xobject instanceof PDFormXObject)
+            {
+                removeAllTextTokens((PDFormXObject) xobject);
+            }
+        }
+    }
+
+    private static void removeAllTextTokens(PDPage page, PDDocument document) throws IOException
+    {
+        PDFStreamParser parser = new PDFStreamParser(page);
+        parser.parse();
+        List<Object> tokens = parser.getTokens();
+        List<Object> newTokens = new ArrayList<Object>();
+        for (Object token : tokens)
+        {
+            if (token instanceof Operator)
+            {
+                String opname = ((Operator) token).getName();
+                if ("TJ".equals(opname) || "Tj".equals(opname))
+                {
+                    // remove the one argument to this operator
+                    newTokens.remove(newTokens.size() - 1);
+                    continue;
+                }
+            }
+            newTokens.add(token);
+        }
+        PDStream newContents = new PDStream(document);
+        OutputStream out = newContents.createOutputStream(COSName.FLATE_DECODE);
+        ContentStreamWriter writer = new ContentStreamWriter(out);
+        writer.writeTokens(newTokens);
+        out.close();
+        page.setContents(newContents);
+        processResources(page.getResources());
+    }
+
+    private static void removeAllTextTokens(PDFormXObject xobject) throws IOException
+    {
+        PDStream stream = xobject.getContentStream();
+        PDFStreamParser parser = new PDFStreamParser(xobject);
+        parser.parse();
+        List<Object> tokens = parser.getTokens();
+        List<Object> newTokens = new ArrayList<Object>();
+        for (Object token : tokens)
+        {
+            if (token instanceof Operator)
+            {
+                Operator op = (Operator) token;
+                if (op.getName().equals("TJ") || op.getName().equals("Tj")
+                        || op.getName().equals("'") || op.getName().equals("\""))
+                {
+                    // remove the one argument to this operator
+                    newTokens.remove(newTokens.size() - 1);
+                    continue;
+                }
+            }
+            newTokens.add(token);
+        }
+        OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE);
+        ContentStreamWriter writer = new ContentStreamWriter(out);
+        writer.writeTokens(newTokens);
+        out.close();
+        processResources(xobject.getResources());
+    }
+
     /**
      * This will print the usage for this document.
      */
     private static void usage()
     {
-        System.err.println( "Usage: java " + RemoveAllText.class.getName() + " <input-pdf> <output-pdf>" );
+        System.err.println(
+                "Usage: java " + RemoveAllText.class.getName() + " <input-pdf> <output-pdf>");
     }
 
 }
