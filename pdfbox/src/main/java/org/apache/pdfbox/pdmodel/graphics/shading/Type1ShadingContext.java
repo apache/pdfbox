@@ -77,7 +77,8 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
         }
         catch (NoninvertibleTransformException ex)
         {
-            LOG.error(ex, ex);
+            LOG.error(ex.getMessage() + ", matrix: " + matrix, ex);
+            rat = new AffineTransform();
         }
     }
 
