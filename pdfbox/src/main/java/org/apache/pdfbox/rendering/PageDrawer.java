@@ -717,7 +717,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (pdImage.isStencil())
         {
             // fill the image with paint
-            //TODO why no soft mask?
             BufferedImage image = pdImage.getStencilImage(getNonStrokingPaint());
 
             // draw the image
@@ -1153,8 +1152,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // apply the underlying Graphics2D device's DPI transform
             Matrix m = new Matrix(xform);
             AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
-            Shape deviceClip = dpiTransform.createTransformedShape(clip);
-            Rectangle2D bounds = deviceClip.getBounds2D();
+            Rectangle2D bounds = dpiTransform.createTransformedShape(clip.getBounds2D()).getBounds2D();
 
             minX = (int) Math.floor(bounds.getMinX());
             minY = (int) Math.floor(bounds.getMinY());
