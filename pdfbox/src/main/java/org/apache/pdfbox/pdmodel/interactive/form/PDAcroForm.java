@@ -44,6 +44,7 @@ import org.apache.pdfbox.pdmodel.fdf.FDFCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -709,7 +710,7 @@ public final class PDAcroForm implements COSObjectable
      */
     private boolean resolveNeedsTranslation(PDAppearanceStream appearanceStream)
     {
-boolean needsTranslation = false;
+        boolean needsTranslation = false;
         
         PDResources resources = appearanceStream.getResources();
         if (resources != null && resources.getXObjectNames().iterator().hasNext())
@@ -723,13 +724,16 @@ boolean needsTranslation = false;
                 {
                     // if the BBox of the PDFormXObject does not start at 0,0
                     // there is no need do translate as this is done by the BBox definition.
-                    PDFormXObject xObject = (PDFormXObject) resources.getXObject(xObjectNames.next());
-                    PDRectangle bbox = xObject.getBBox();
-                    float llX = bbox.getLowerLeftX();
-                    float llY = bbox.getLowerLeftY();
-                    if (llX == 0 && llY == 0)
+                    PDXObject xObject = resources.getXObject(xObjectNames.next());
+                    if (xObject instanceof PDFormXObject)
                     {
-                        needsTranslation = true;
+                        PDRectangle bbox = ((PDFormXObject)xObject).getBBox();
+                        float llX = bbox.getLowerLeftX();
+                        float llY = bbox.getLowerLeftY();
+                        if (llX == 0 && llY == 0)
+                        {
+                            needsTranslation = true;
+                        }
                     }
                 }
                 catch (IOException e)
