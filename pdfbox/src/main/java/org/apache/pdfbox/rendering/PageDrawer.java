@@ -100,6 +100,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private int pageRotation;
 
+    // whether image of a transparency group must be flipped
+    // needed when in a tiling pattern
+    private boolean flipTG = false;
+
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
@@ -221,9 +225,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         Area oldLastClip = lastClip;
         lastClip = null;
 
+        boolean oldFlipTG = flipTG;
+        flipTG = true;
+
         setRenderingHints();
         processTilingPattern(pattern, color, colorSpace, patternMatrix);
 
+        flipTG = oldFlipTG;
         graphics = oldGraphics;
         linePath = oldLinePath;
         lastClip = oldLastClip;
@@ -1148,6 +1156,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // adjust (x,y) at the initial scale + cropbox
         graphics.translate((x - pageSize.getLowerLeftX()) * xScale, (y + pageSize.getLowerLeftY()) * yScale); 
 
+        if (flipTG)
+        {
+            graphics.translate(0, group.getImage().getHeight());
+            graphics.scale(1, -1);
+        }
+
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if (softMask != null)
         {
@@ -1229,6 +1243,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // flip y-axis
             g.translate(0, image.getHeight());
             g.scale(1, -1);
+            
+            boolean oldFlipTG = flipTG;
+            flipTG = false;
 
             // apply device transform (DPI)
             // the initial translation is ignored, because we're not writing into the initial graphics device
@@ -1267,6 +1284,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             finally 
             {
+                flipTG = oldFlipTG;
                 lastClip = lastClipOriginal;
                 graphics.dispose();
                 graphics = g2dOriginal;
