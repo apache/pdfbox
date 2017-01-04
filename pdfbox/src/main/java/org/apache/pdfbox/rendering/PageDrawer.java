@@ -176,7 +176,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics = (Graphics2D) g;
         xform = graphics.getTransform();
         this.pageSize = pageSize;
-        pageRotation = getPage().getRotation();
+        pageRotation = getPage().getRotation() % 360;
 
         setRenderingHints();
 
@@ -1151,59 +1151,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         float x = bbox.getLowerLeftX();
         float y = pageSize.getHeight() - bbox.getLowerLeftY() - bbox.getHeight();
 
-        Matrix m = new Matrix(graphics.getTransform());
-        switch (pageRotation)
-        {
-            case 0:
-            default:
-                // set to the initial translation plus cropbox, and
-                // adjust apply (x,y) at the initial scale
-                // however... what if the initial xform was e.g. rotated at 45Â°?
-                graphics.setTransform(AffineTransform.getTranslateInstance(
-                        xform.getTranslateX() + (x - pageSize.getLowerLeftX()) * xform.getScaleX(),
-                        xform.getTranslateY() + (y + pageSize.getLowerLeftY()) * xform.getScaleY()));
-                break;
-            case 90:
-                graphics.setTransform(new AffineTransform());
+        Matrix m = new Matrix(xform);
+        float xScale = Math.abs(m.getScalingFactorX());
+        float yScale = Math.abs(m.getScalingFactorY());
+        
+        // adjust the initial translation (includes the translation used to "help" the rotation)
+        graphics.setTransform(AffineTransform.getTranslateInstance(xform.getTranslateX(), xform.getTranslateY()));
 
-                // adjust the initial translation (includes the translation used to "help" the rotation)
-                graphics.translate(xform.getTranslateX(), xform.getTranslateY());
+        graphics.rotate(Math.toRadians(pageRotation));
 
-                graphics.rotate(Math.toRadians(90));
-
-                graphics.translate(x * m.getScalingFactorX(), y * m.getScalingFactorY());
-
-                // adjust cropbox
-                graphics.translate(-(pageSize.getLowerLeftX()) * m.getScalingFactorX(), (pageSize.getLowerLeftY()) * m.getScalingFactorY());
-                break;
-            case 180:
-                graphics.setTransform(new AffineTransform());
-
-                // adjust the initial translation (includes the translation used to "help" the rotation)
-                graphics.translate(xform.getTranslateX(), xform.getTranslateY());
-
-                graphics.rotate(Math.toRadians(180));
-
-                graphics.translate(x * m.getScalingFactorX(), y * m.getScalingFactorY());
-
-                // adjust cropbox
-                graphics.translate(-(pageSize.getLowerLeftX()) * m.getScalingFactorX(), (pageSize.getLowerLeftY()) * m.getScalingFactorY());
-                break;
-            case 270:
-                graphics.setTransform(new AffineTransform());
-
-                // adjust the initial translation (includes the translation used to "help" the rotation)
-                graphics.translate(xform.getTranslateX(), xform.getTranslateY());
-
-                graphics.rotate(Math.toRadians(270));
-
-                graphics.translate(x * m.getScalingFactorX(), y * m.getScalingFactorY());
-
-                // adjust cropbox
-                graphics.translate(-(pageSize.getLowerLeftX()) * m.getScalingFactorX(), (pageSize.getLowerLeftY()) * m.getScalingFactorY());
-                break;
-        }
- 
+        // adjust (x,y) at the initial scale + cropbox
+        graphics.translate((x - pageSize.getLowerLeftX()) * xScale, (y + pageSize.getLowerLeftY()) * yScale); 
 
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if (softMask != null)
@@ -1257,7 +1215,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
 
             // apply the underlying Graphics2D device's DPI transform
-            Rectangle2D bounds = xform.createTransformedShape(clip.getBounds2D()).getBounds2D();
+            Matrix m = new Matrix(xform);
+            AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
+            Shape deviceClip = dpiTransform.createTransformedShape(clip);
 
             int minX = (int) Math.floor(bounds.getMinX());
             int minY = (int) Math.floor(bounds.getMinY());
@@ -1279,36 +1239,20 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Graphics2D g = image.createGraphics();
 
             // flip y-axis
-            int rotation = getPage().getRotation();
-            if (rotation == 0 || rotation == 180)
-            {
-                g.translate(0, height);
-            }
-            else
-            {
-                g.translate(0, width);
-            }
+            g.translate(0, image.getHeight());
+            g.scale(1, -1);
 
             // apply device transform (DPI)
             // the initial translation is ignored, because we're not writing into the initial graphics device
-            Matrix m = new Matrix(xform);
             g.scale(m.getScalingFactorX(), m.getScalingFactorY());
-            
+            g.transform(dpiTransform);
+
             AffineTransform xformOriginal = xform;
             xform = AffineTransform.getScaleInstance(m.getScalingFactorX(), m.getScalingFactorY());
             PDRectangle pageSizeOriginal = pageSize;
-            if (pageRotation == 0 || pageRotation == 180)
-            {
-                pageSize = new PDRectangle(0, 0,
-                        (float) bounds.getWidth() / m.getScalingFactorX(),
-                        (float) bounds.getHeight() / m.getScalingFactorY());
-            }
-            else
-            {
-                pageSize = new PDRectangle(0, 0,
-                        (float) bounds.getHeight() / m.getScalingFactorY(),
-                        (float) bounds.getWidth() / m.getScalingFactorX());
-            }
+            pageSize = new PDRectangle(0, 0,
+                        (float) bounds.getWidth() / Math.abs(m.getScalingFactorX()),
+                        (float) bounds.getHeight() / Math.abs(m.getScalingFactorY()));
             int pageRotationOriginal = pageRotation;
             pageRotation = 0;
 
