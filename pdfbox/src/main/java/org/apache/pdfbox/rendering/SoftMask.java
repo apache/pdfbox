@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.rendering;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
@@ -27,6 +28,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
+import java.io.IOException;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 
 /**
  * A Paint which applies a soft mask to an underlying Paint.
@@ -41,6 +44,7 @@ class SoftMask implements Paint
     private final Paint paint;
     private final BufferedImage mask;
     private final Rectangle2D bboxDevice;
+    private int bc = 0;
 
     /**
      * Creates a new soft mask paint.
@@ -48,12 +52,27 @@ class SoftMask implements Paint
      * @param paint underlying paint.
      * @param mask soft mask
      * @param bboxDevice bbox of the soft mask in the underlying Graphics2D device space
+     * @param backdropColor the color to be used outside the transparency group’s bounding box; if
+     * null, black will be used.
      */
-    SoftMask(Paint paint, BufferedImage mask, Rectangle2D bboxDevice)
+    SoftMask(Paint paint, BufferedImage mask, Rectangle2D bboxDevice, PDColor backdropColor)
     {
         this.paint = paint;
         this.mask = mask;
-        this.bboxDevice = bboxDevice;
+        this.bboxDevice = bboxDevice;        
+        if (backdropColor != null)
+        {
+            try
+            {
+                Color color = new Color(backdropColor.toRGB());
+                // http://stackoverflow.com/a/25463098/535646
+                bc = (299 * color.getRed() + 587 * color.getGreen() + 114 * color.getBlue()) / 1000;
+            }
+            catch (IOException ex)
+            {
+                // keep default
+            }
+        }
     }
 
     @Override
@@ -121,6 +140,10 @@ class SoftMask implements Paint
                         mask.getRaster().getPixel(x1 + x, y1 + y, gray);
 
                         pixelOutput[3] = Math.round(pixelOutput[3] * (gray[0] / 255f));
+                    }
+                    else
+                    {
+                        pixelOutput[3] = Math.round(pixelOutput[3] * (bc / 255f));
                     }
                     output.setPixel(x, y, pixelOutput);
                 }

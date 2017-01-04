@@ -430,7 +430,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, softMask.getInitialTransformationMatrix());
         BufferedImage image = transparencyGroup.getImage();
+        if (image == null)
+        {
+            // Adobe Reader ignores empty softmasks instead of using bc color
+            // sample file: PDFJS-6967_reduced_outside_softmask.pdf
+            return parentPaint;
+        }
         BufferedImage gray = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        PDColor backdropColor = null;
         if (COSName.ALPHA.equals(softMask.getSubType()))
         {
             gray.setData(image.getAlphaRaster());
@@ -440,12 +447,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Graphics g = gray.getGraphics();
             g.drawImage(image, 0, 0, null);
             g.dispose();
+            
+            COSArray backdropColorArray = softMask.getBackdropColor();
+            PDColorSpace colorSpace = softMask.getGroup().getGroup().getColorSpace();
+            if (colorSpace != null && backdropColorArray != null)
+            {
+                backdropColor = new PDColor(backdropColorArray, colorSpace);
+            }
         }
         else
         {
             throw new IOException("Invalid soft mask subtype.");
         }
-        return new SoftMask(parentPaint, gray, transparencyGroup.getBounds());
+        return new SoftMask(parentPaint, gray, transparencyGroup.getBounds(), backdropColor);
     }
 
     // returns the stroking AWT Paint
@@ -1146,6 +1160,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area clip = (Area)getGraphicsState().getCurrentClippingPath().clone();
             clip.intersect(new Area(transformedBox));
             Rectangle2D clipRect = clip.getBounds2D();
+            if (isSoftMask && clipRect.isEmpty())
+            {
+                image = null;
+                bbox = null;
+                minX = 0;
+                minY = 0;
+                width = 0;
+                height = 0;
+                return;
+            }
             this.bbox = new PDRectangle((float)clipRect.getX(), (float)clipRect.getY(),
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
 
