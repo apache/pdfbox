@@ -99,7 +99,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     // the page box to draw (usually the crop box but may be another)
     private PDRectangle pageSize;
-    
+
+    private int pageRotation;
+
     // clipping winding rule used for the clipping path
     private int clipWindingRule = -1;
     private GeneralPath linePath = new GeneralPath();
@@ -1280,18 +1282,34 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (rotation == 0 || rotation == 180)
             {
                 g.translate(0, height);
-                g.scale(1, -1);
             }
             else
             {
                 g.translate(0, width);
-                g.scale(1, -1);
             }
 
             // apply device transform (DPI)
             // the initial translation is ignored, because we're not writing into the initial graphics device
             Matrix m = new Matrix(xform);
             g.scale(m.getScalingFactorX(), m.getScalingFactorY());
+            
+            AffineTransform xformOriginal = xform;
+            xform = AffineTransform.getScaleInstance(m.getScalingFactorX(), m.getScalingFactorY());
+            PDRectangle pageSizeOriginal = pageSize;
+            if (pageRotation == 0 || pageRotation == 180)
+            {
+                pageSize = new PDRectangle(0, 0,
+                        (float) bounds.getWidth() / m.getScalingFactorX(),
+                        (float) bounds.getHeight() / m.getScalingFactorY());
+            }
+            else
+            {
+                pageSize = new PDRectangle(0, 0,
+                        (float) bounds.getHeight() / m.getScalingFactorY(),
+                        (float) bounds.getWidth() / m.getScalingFactorX());
+            }
+            int pageRotationOriginal = pageRotation;
+            pageRotation = 0;
 
             int clipWindingRuleOriginal = clipWindingRule;
             clipWindingRule = -1;
@@ -1319,6 +1337,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 lastClip = lastClipOriginal;
                 graphics.dispose();
                 graphics = g2dOriginal;
+                pageSize = pageSizeOriginal;
+                xform = xformOriginal;
+                pageRotation = pageRotationOriginal;
                 clipWindingRule = clipWindingRuleOriginal;
                 linePath = linePathOriginal;
             }
