@@ -176,6 +176,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics = (Graphics2D) g;
         xform = graphics.getTransform();
         this.pageSize = pageSize;
+        pageRotation = getPage().getRotation();
 
         setRenderingHints();
 
@@ -1151,7 +1152,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         float y = pageSize.getHeight() - bbox.getLowerLeftY() - bbox.getHeight();
 
         Matrix m = new Matrix(graphics.getTransform());
-        switch (getPage().getRotation())
+        switch (pageRotation)
         {
             case 0:
             default:
