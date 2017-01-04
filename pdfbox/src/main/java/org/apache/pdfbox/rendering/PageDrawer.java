@@ -1147,8 +1147,60 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         AffineTransform prev = graphics.getTransform();
         float x = bbox.getLowerLeftX();
         float y = pageSize.getHeight() - bbox.getLowerLeftY() - bbox.getHeight();
-        graphics.setTransform(AffineTransform.getTranslateInstance(x * xform.getScaleX(),
-                                                                   y * xform.getScaleY()));
+
+        Matrix m = new Matrix(graphics.getTransform());
+        switch (getPage().getRotation())
+        {
+            case 0:
+            default:
+                // set to the initial translation plus cropbox, and
+                // adjust apply (x,y) at the initial scale
+                // however... what if the initial xform was e.g. rotated at 45Â°?
+                graphics.setTransform(AffineTransform.getTranslateInstance(
+                        xform.getTranslateX() + (x - pageSize.getLowerLeftX()) * xform.getScaleX(),
+                        xform.getTranslateY() + (y + pageSize.getLowerLeftY()) * xform.getScaleY()));
+                break;
+            case 90:
+                graphics.setTransform(new AffineTransform());
+
+                // adjust the initial translation (includes the translation used to "help" the rotation)
+                graphics.translate(xform.getTranslateX(), xform.getTranslateY());
+
+                graphics.rotate(Math.toRadians(90));
+
+                graphics.translate(x * m.getScalingFactorX(), y * m.getScalingFactorY());
+
+                // adjust cropbox
+                graphics.translate(-(pageSize.getLowerLeftX()) * m.getScalingFactorX(), (pageSize.getLowerLeftY()) * m.getScalingFactorY());
+                break;
+            case 180:
+                graphics.setTransform(new AffineTransform());
+
+                // adjust the initial translation (includes the translation used to "help" the rotation)
+                graphics.translate(xform.getTranslateX(), xform.getTranslateY());
+
+                graphics.rotate(Math.toRadians(180));
+
+                graphics.translate(x * m.getScalingFactorX(), y * m.getScalingFactorY());
+
+                // adjust cropbox
+                graphics.translate(-(pageSize.getLowerLeftX()) * m.getScalingFactorX(), (pageSize.getLowerLeftY()) * m.getScalingFactorY());
+                break;
+            case 270:
+                graphics.setTransform(new AffineTransform());
+
+                // adjust the initial translation (includes the translation used to "help" the rotation)
+                graphics.translate(xform.getTranslateX(), xform.getTranslateY());
+
+                graphics.rotate(Math.toRadians(270));
+
+                graphics.translate(x * m.getScalingFactorX(), y * m.getScalingFactorY());
+
+                // adjust cropbox
+                graphics.translate(-(pageSize.getLowerLeftX()) * m.getScalingFactorX(), (pageSize.getLowerLeftY()) * m.getScalingFactorY());
+                break;
+        }
+ 
 
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if (softMask != null)
@@ -1177,8 +1229,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         private final BufferedImage image;
         private final PDRectangle bbox;
 
-        private final int minX;
-        private final int minY;
         private final int width;
         private final int height;
 
@@ -1206,8 +1256,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // apply the underlying Graphics2D device's DPI transform
             Rectangle2D bounds = xform.createTransformedShape(clip.getBounds2D()).getBounds2D();
 
-            minX = (int) Math.floor(bounds.getMinX());
-            minY = (int) Math.floor(bounds.getMinY());
+            int minX = (int) Math.floor(bounds.getMinX());
+            int minY = (int) Math.floor(bounds.getMinY());
             int maxX = (int) Math.floor(bounds.getMaxX()) + 1;
             int maxY = (int) Math.floor(bounds.getMaxY()) + 1;
 
@@ -1226,11 +1276,22 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Graphics2D g = image.createGraphics();
 
             // flip y-axis
-            g.translate(0, height);
-            g.scale(1, -1);
+            int rotation = getPage().getRotation();
+            if (rotation == 0 || rotation == 180)
+            {
+                g.translate(0, height);
+                g.scale(1, -1);
+            }
+            else
+            {
+                g.translate(0, width);
+                g.scale(1, -1);
+            }
 
             // apply device transform (DPI)
-            g.transform(xform);
+            // the initial translation is ignored, because we're not writing into the initial graphics device
+            Matrix m = new Matrix(xform);
+            g.scale(m.getScalingFactorX(), m.getScalingFactorY());
 
             int clipWindingRuleOriginal = clipWindingRule;
             clipWindingRule = -1;
