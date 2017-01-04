@@ -487,29 +487,42 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     //TODO: move soft mask apply to getPaint()?
     private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException
     {
-        if (softMask == null)
+        if (softMask == null || softMask.getGroup() == null)
         {
             return parentPaint;
         }
         TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, softMask.getInitialTransformationMatrix());
         BufferedImage image = transparencyGroup.getImage();
+        if (image == null)
+        {
+            // Adobe Reader ignores empty softmasks instead of using bc color
+            // sample file: PDFJS-6967_reduced_outside_softmask.pdf
+            return parentPaint;
+        }
         BufferedImage gray = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        PDColor backdropColor = null;
         if (COSName.ALPHA.equals(softMask.getSubType()))
         {
             gray.setData(image.getAlphaRaster());
-            return parentPaint;
         }
         else if (COSName.LUMINOSITY.equals(softMask.getSubType()))
         {
             Graphics g = gray.getGraphics();
             g.drawImage(image, 0, 0, null);
             g.dispose();
+            
+            COSArray backdropColorArray = softMask.getBackdropColor();
+            PDColorSpace colorSpace = softMask.getGroup().getGroup().getColorSpace();
+            if (colorSpace != null && backdropColorArray != null)
+            {
+                backdropColor = new PDColor(backdropColorArray, colorSpace);
+            }
         }
         else
         {
             throw new IOException("Invalid soft mask subtype.");
         }
-        return new SoftMask(parentPaint, gray, transparencyGroup.getBounds(), null);
+        return new SoftMask(parentPaint, gray, transparencyGroup.getBounds(), backdropColor);
     }
 
     // returns the stroking AWT Paint
@@ -1154,7 +1167,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.rotate(Math.toRadians(pageRotation));
 
         // adjust (x,y) at the initial scale + cropbox
-        graphics.translate((x - pageSize.getLowerLeftX()) * xScale, (y + pageSize.getLowerLeftY()) * yScale); 
+        graphics.translate((x - pageSize.getLowerLeftX()) * xScale, (y + pageSize.getLowerLeftY()) * yScale);
 
         if (flipTG)
         {
@@ -1212,14 +1225,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area clip = (Area)getGraphicsState().getCurrentClippingPath().clone();
             clip.intersect(new Area(transformedBox));
             Rectangle2D clipRect = clip.getBounds2D();
+            if (isSoftMask && clipRect.isEmpty())
+            {
+                image = null;
+                bbox = null;
+                minX = 0;
+                minY = 0;
+                width = 0;
+                height = 0;
+                return;
+            }
             this.bbox = new PDRectangle((float)clipRect.getX(), (float)clipRect.getY(),
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
 
             // apply the underlying Graphics2D device's DPI transform
             Matrix m = new Matrix(xform);
             AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
-            Shape deviceClip = dpiTransform.createTransformedShape(clip);
-            Rectangle2D bounds = deviceClip.getBounds2D();
+            Rectangle2D bounds = dpiTransform.createTransformedShape(clip.getBounds2D()).getBounds2D();
 
             minX = (int) Math.floor(bounds.getMinX());
             minY = (int) Math.floor(bounds.getMinY());
@@ -1243,13 +1265,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // flip y-axis
             g.translate(0, image.getHeight());
             g.scale(1, -1);
-            
+
             boolean oldFlipTG = flipTG;
             flipTG = false;
 
             // apply device transform (DPI)
             // the initial translation is ignored, because we're not writing into the initial graphics device
-            g.scale(m.getScalingFactorX(), m.getScalingFactorY());
             g.transform(dpiTransform);
 
             AffineTransform xformOriginal = xform;
@@ -1261,7 +1282,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         (float) bounds.getHeight() / Math.abs(m.getScalingFactorY()));
             int pageRotationOriginal = pageRotation;
             pageRotation = 0;
-
             int clipWindingRuleOriginal = clipWindingRule;
             clipWindingRule = -1;
             GeneralPath linePathOriginal = linePath;
@@ -1289,11 +1309,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 lastClip = lastClipOriginal;
                 graphics.dispose();
                 graphics = g2dOriginal;
+                clipWindingRule = clipWindingRuleOriginal;
+                linePath = linePathOriginal;
                 pageSize = pageSizeOriginal;
                 xform = xformOriginal;
                 pageRotation = pageRotationOriginal;
-                clipWindingRule = clipWindingRuleOriginal;
-                linePath = linePathOriginal;
             }
         }
 
