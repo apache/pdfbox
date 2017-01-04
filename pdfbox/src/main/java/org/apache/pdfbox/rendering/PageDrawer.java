@@ -1255,7 +1255,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             AffineTransform xformOriginal = xform;
             xform = AffineTransform.getScaleInstance(m.getScalingFactorX(), m.getScalingFactorY());
             PDRectangle pageSizeOriginal = pageSize;
-            pageSize = new PDRectangle(0, 0,
+            pageSize = new PDRectangle(minX / Math.abs(m.getScalingFactorX()), 
+                                       minY / Math.abs(m.getScalingFactorY()),
                         (float) bounds.getWidth() / Math.abs(m.getScalingFactorX()),
                         (float) bounds.getHeight() / Math.abs(m.getScalingFactorY()));
             int pageRotationOriginal = pageRotation;
@@ -1314,7 +1315,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
             size = dpiTransform.transform(size, size);
             // Flip y
-            return new Rectangle2D.Double(minX, size.getY() - minY - height, width, height);
+            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * m.getScalingFactorX(),
+                    size.getY() - minY - height + pageSize.getLowerLeftY() * m.getScalingFactorY(),
+                    width, height);
         }
     }
 }
