@@ -1073,6 +1073,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         TransparencyGroup group =
                 new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix());
+        BufferedImage image = group.getImage();
+        if (image == null)
+        {
+            // image is empty, don't bother
+            return;
+        }
 
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
@@ -1098,14 +1104,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         if (flipTG)
         {
-            graphics.translate(0, group.getImage().getHeight());
+            graphics.translate(0, image.getHeight());
             graphics.scale(1, -1);
         }
 
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if (softMask != null)
         {
-            BufferedImage image = group.getImage();
             Paint awtPaint = new TexturePaint(image,
                     new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
@@ -1115,7 +1120,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            graphics.drawImage(group.getImage(), null, null);
+            graphics.drawImage(image, null, null);
         }
 
         graphics.setTransform(prev);
@@ -1160,7 +1165,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area clip = (Area)getGraphicsState().getCurrentClippingPath().clone();
             clip.intersect(new Area(transformedBox));
             Rectangle2D clipRect = clip.getBounds2D();
-            if (isSoftMask && clipRect.isEmpty())
+            if (clipRect.isEmpty())
             {
                 image = null;
                 bbox = null;
@@ -1241,7 +1246,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             finally 
             {
                 flipTG = oldFlipTG;
-                lastClip = lastClipOriginal;                
+                lastClip = lastClipOriginal;
                 graphics.dispose();
                 graphics = g2dOriginal;
                 clipWindingRule = clipWindingRuleOriginal;
