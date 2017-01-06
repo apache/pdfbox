@@ -491,7 +491,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return parentPaint;
         }
-        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, softMask.getInitialTransformationMatrix());
+        PDColor backdropColor = null;
+        if (COSName.LUMINOSITY.equals(softMask.getSubType()))
+        {
+            COSArray backdropColorArray = softMask.getBackdropColor();
+            PDColorSpace colorSpace = softMask.getGroup().getGroup().getColorSpace();
+            if (colorSpace != null && backdropColorArray != null)
+            {
+                backdropColor = new PDColor(backdropColorArray, colorSpace);
+            }
+        }
+        TransparencyGroup transparencyGroup = new TransparencyGroup(softMask.getGroup(), true, 
+                softMask.getInitialTransformationMatrix(), backdropColor);
         BufferedImage image = transparencyGroup.getImage();
         if (image == null)
         {
@@ -500,7 +511,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return parentPaint;
         }
         BufferedImage gray = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-        PDColor backdropColor = null;
         if (COSName.ALPHA.equals(softMask.getSubType()))
         {
             gray.setData(image.getAlphaRaster());
@@ -510,13 +520,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Graphics g = gray.getGraphics();
             g.drawImage(image, 0, 0, null);
             g.dispose();
-            
-            COSArray backdropColorArray = softMask.getBackdropColor();
-            PDColorSpace colorSpace = softMask.getGroup().getGroup().getColorSpace();
-            if (colorSpace != null && backdropColorArray != null)
-            {
-                backdropColor = new PDColor(backdropColorArray, colorSpace);
-            }
         }
         else
         {
@@ -1145,7 +1148,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
     {
         TransparencyGroup group =
-                new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix());
+                new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix(), null);
         BufferedImage image = group.getImage();
         if (image == null)
         {
@@ -1214,8 +1217,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         /**
          * Creates a buffered image for a transparency group result.
+         *
+         * @param form the transparency group of the form or soft mask.
+         * @param isSoftMask true if this is a soft mask.
+         * @param ctm the relevant current transformation matrix. For soft masks, this is the CTM at
+         * the time the soft mask is set (not at the time the soft mask is used for fill/stroke!),
+         * for forms, this is the CTM at the time the form is invoked.
+         * @param backdropColor the color according to the /bc entry to be used for luminosity soft
+         * masks.
+         * @throws IOException
          */
-        private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask, Matrix ctm) throws IOException
+        private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask, Matrix ctm, 
+                PDColor backdropColor) throws IOException
         {
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
@@ -1266,6 +1279,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             }
             Graphics2D g = image.createGraphics();
+            if (isSoftMask && backdropColor != null)
+            {
+                // "If the subtype is Luminosity, the transparency group XObject G shall be 
+                // composited with a fully opaque backdrop whose colour is everywhere defined 
+                // by the soft-mask dictionary’s BC entry."
+                g.setBackground(new Color(backdropColor.toRGB()));
+                g.clearRect(0, 0, width, height);
+            }
 
             // flip y-axis
             g.translate(0, image.getHeight());
