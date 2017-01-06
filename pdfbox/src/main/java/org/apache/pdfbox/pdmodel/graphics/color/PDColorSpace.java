@@ -42,7 +42,7 @@ import java.awt.image.ColorModel;
 public abstract class PDColorSpace implements COSObjectable
 {
     /**
-     * Creates a color space space given a name or array.
+     * Creates a color space given a name or array.
      * @param colorSpace the color space COS object
      * @return a new color space
      * @throws IOException if the color space is unknown or cannot be created
