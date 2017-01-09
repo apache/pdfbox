@@ -208,6 +208,11 @@ public abstract class PDFStreamEngine
 
         PDResources parent = pushResources(group);
         Stack<PDGraphicsState> savedStack = saveGraphicsStack();
+        
+        Matrix parentMatrix = initialMatrix;
+
+        // the stream's initial matrix includes the parent CTM, e.g. this allows a scaled form
+        initialMatrix = getGraphicsState().getCurrentTransformationMatrix().clone();
 
         // transform the CTM using the stream's matrix
         getGraphicsState().getCurrentTransformationMatrix().concatenate(group.getMatrix());
@@ -224,6 +229,8 @@ public abstract class PDFStreamEngine
         clipToRect(group.getBBox());
 
         processStreamOperators(group);
+        
+        initialMatrix = parentMatrix;
 
         restoreGraphicsStack(savedStack);
         popResources(parent);
