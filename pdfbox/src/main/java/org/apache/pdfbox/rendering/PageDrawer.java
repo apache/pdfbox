@@ -541,6 +541,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setPaint(getStrokingPaint());
         graphics.setStroke(getStroke());
         setClip();
+        //TODO bbox of shading pattern should be used here? (see fillPath)
         graphics.draw(linePath);
         linePath.reset();
     }
@@ -571,6 +572,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
             Area area = new Area(linePath);
             area.intersect(new Area(graphics.getClip()));
+            intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
             graphics.fill(area);
         }
         else
@@ -585,6 +587,29 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // JDK 1.7 has a bug where rendering hints are reset by the above call to
             // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
             setRenderingHints();
+        }
+    }
+
+    // checks whether this is a shading pattern and if yes,
+    // get the transformed BBox and intersect with current paint area
+    // need to do it here and not in shading getRaster() because it may have been rotated
+    private void intersectShadingBBox(PDColor color, Area area) throws IOException
+    {
+        if (color.getColorSpace() instanceof PDPattern)
+        {
+            PDColorSpace colorSpace = color.getColorSpace();
+            PDAbstractPattern pat = ((PDPattern) colorSpace).getPattern(color);
+            if (pat instanceof PDShadingPattern)
+            {
+                PDShading shading = ((PDShadingPattern) pat).getShading();
+                PDRectangle bbox = shading.getBBox();
+                if (bbox != null)
+                {
+                    Matrix m = Matrix.concatenate(getInitialMatrix(), pat.getMatrix());
+                    Area bboxArea = new Area(bbox.transform(m));
+                    area.intersect(bboxArea);
+                }
+            }
         }
     }
 
@@ -888,7 +913,20 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setPaint(paint);
         graphics.setClip(null);
         lastClip = null;
-        graphics.fill(getGraphicsState().getCurrentClippingPath());
+
+        // get the transformed BBox and intersect with current clipping path
+        // need to do it here and not in shading getRaster() because it may have been rotated
+        PDRectangle bbox = shading.getBBox();
+        if (bbox != null)
+        {
+            Area bboxArea = new Area(bbox.transform(ctm));
+            bboxArea.intersect(getGraphicsState().getCurrentClippingPath());
+            graphics.fill(bboxArea);
+        }
+        else
+        {
+            graphics.fill(getGraphicsState().getCurrentClippingPath());
+        }
     }
 
     @Override

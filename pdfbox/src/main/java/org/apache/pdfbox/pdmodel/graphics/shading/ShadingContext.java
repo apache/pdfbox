@@ -70,6 +70,8 @@ public abstract class ShadingContext
                 DataBuffer.TYPE_BYTE);
 
         bboxRect = shading.getBBox();
+        // all bbox handling will be removed in further commit
+        bboxRect = null;
         if (bboxRect != null)
         {
             transformBBox(matrix, xform);
