@@ -1371,10 +1371,10 @@ public class COSParser extends BaseParser
         long objectNr = objectKey.getNumber();
         int objectGen = objectKey.getGeneration();
         long originOffset = source.getPosition();
-        source.seek(offset);
         String objectString = createObjectString(objectNr, objectGen);
         try 
         {
+            source.seek(offset);
             if (isString(objectString.getBytes(ISO_8859_1)))
             {
                 // everything is ok, return origin object key
