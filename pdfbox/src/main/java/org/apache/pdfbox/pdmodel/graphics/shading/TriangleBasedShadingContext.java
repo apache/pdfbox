@@ -165,19 +165,9 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
         {
             for (int row = 0; row < h; row++)
             {
-                int currentY = y + row;
-                if (bboxRect != null && (currentY < minBBoxY || currentY > maxBBoxY))
-                {
-                    continue;
-                }
                 for (int col = 0; col < w; col++)
                 {
-                    int currentX = x + col;
-                    if (bboxRect != null && (currentX < minBBoxX || currentX > maxBBoxX))
-                    {
-                        continue;
-                    }
-                    Point p = new Point(currentX, currentY);
+                    Point p = new Point(x + col, y + row);
                     int value;
                     if (pixelTable.containsKey(p))
                     {

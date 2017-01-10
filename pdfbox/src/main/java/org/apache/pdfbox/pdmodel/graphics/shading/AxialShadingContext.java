@@ -178,24 +178,12 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
-            double currentY = y + j;
-            if (bboxRect != null && (currentY < minBBoxY || currentY > maxBBoxY))
-            {
-                continue;
-            }
             for (int i = 0; i < w; i++)
             {
-                double currentX = x + i;
-                if (bboxRect != null && (currentX < minBBoxX || currentX > maxBBoxX))
-                {
-                    continue;
-                }
                 useBackground = false;
                 float[] values = new float[] { x + i, y + j };
                 rat.transform(values, 0, values, 0, 1);
-                currentX = values[0];
-                currentY = values[1];
-                double inputValue = x1x0 * (currentX - coords[0]) + y1y0 * (currentY - coords[1]);
+                double inputValue = x1x0 * (values[0] - coords[0]) + y1y0 * (values[1] - coords[1]);
                 // TODO this happens if start == end, see PDFBOX-1442
                 if (denom == 0)
                 {

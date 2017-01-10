@@ -103,20 +103,8 @@ class Type1ShadingContext extends ShadingContext implements PaintContext
         int[] data = new int[w * h * 4];
         for (int j = 0; j < h; j++)
         {
-            int currentY = y + j;
-            if (bboxRect != null && (currentY < minBBoxY || currentY > maxBBoxY))
-            {
-                continue;
-            }
-
             for (int i = 0; i < w; i++)
             {
-                int currentX = x + i;
-                if (bboxRect != null && (currentX < minBBoxX || currentX > maxBBoxX))
-                {
-                    continue;
-                }
-
                 int index = (j * w + i) * 4;
                 boolean useBackground = false;
                 float[] values = new float[] { x + i, y + j };
