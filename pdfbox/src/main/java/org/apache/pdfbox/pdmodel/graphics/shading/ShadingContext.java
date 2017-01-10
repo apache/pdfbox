@@ -39,9 +39,6 @@ public abstract class ShadingContext
 {
     private static final Log LOG = LogFactory.getLog(ShadingContext.class);
 
-    protected PDRectangle bboxRect;
-    protected float minBBoxX, minBBoxY, maxBBoxX, maxBBoxY;
-
     private float[] background;
     private int rgbBackground;
     private final PDShading shading;
@@ -69,14 +66,6 @@ public abstract class ShadingContext
         outputColorModel = new ComponentColorModel(outputCS, true, false, Transparency.TRANSLUCENT,
                 DataBuffer.TYPE_BYTE);
 
-        bboxRect = shading.getBBox();
-        // all bbox handling will be removed in further commit
-        bboxRect = null;
-        if (bboxRect != null)
-        {
-            transformBBox(matrix, xform);
-        }
-        
         // get background values if available
         COSArray bg = shading.getBackground();
         if (bg != null)
@@ -104,29 +93,6 @@ public abstract class ShadingContext
     int getRgbBackground()
     {
         return rgbBackground;
-    }
-    
-    private void transformBBox(Matrix matrix, AffineTransform xform)
-    {
-        float[] bboxTab = new float[4];
-        bboxTab[0] = bboxRect.getLowerLeftX();
-        bboxTab[1] = bboxRect.getLowerLeftY();
-        bboxTab[2] = bboxRect.getUpperRightX();
-        bboxTab[3] = bboxRect.getUpperRightY();
-
-        // transform the coords using the given matrix
-        matrix.createAffineTransform().transform(bboxTab, 0, bboxTab, 0, 2);
-
-        xform.transform(bboxTab, 0, bboxTab, 0, 2);
-        minBBoxX = Math.min(bboxTab[0], bboxTab[2]);
-        minBBoxY = Math.min(bboxTab[1], bboxTab[3]);
-        maxBBoxX = Math.max(bboxTab[0], bboxTab[2]);
-        maxBBoxY = Math.max(bboxTab[1], bboxTab[3]);
-        if (minBBoxX >= maxBBoxX || minBBoxY >= maxBBoxY)
-        {
-            LOG.warn("empty BBox is ignored");
-            bboxRect = null;
-        }
     }
 
     /**
