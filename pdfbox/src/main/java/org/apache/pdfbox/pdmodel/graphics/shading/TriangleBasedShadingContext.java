@@ -169,9 +169,10 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                 {
                     Point p = new Point(x + col, y + row);
                     int value;
-                    if (pixelTable.containsKey(p))
+                    Integer v = pixelTable.get(p);
+                    if (v != null)
                     {
-                        value = pixelTable.get(p);
+                        value = v;
                     }
                     else
                     {
