@@ -516,7 +516,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param transform the transformation matrix
      * @throws IOException If there is an error writing to the stream.
      * @throws IllegalStateException If the method was called within a text block.
-     * @deprecated Use {@link #drawImage} or {@link #drawForm} instead.
+     * @deprecated Use {@link #drawImage(PDImageXObject, Matrix) drawImage(PDImageXObject, Matrix)}
+     * or {@link #drawForm(PDFormXObject) drawForm(PDFormXObject)} with
+     * {@link #transform(Matrix) transform(Matrix)} instead.
      */
     @Deprecated
     public void drawXObject(PDXObject xobject, AffineTransform transform) throws IOException
