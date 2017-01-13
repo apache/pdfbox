@@ -525,7 +525,68 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             throw new IOException("Invalid soft mask subtype.");
         }
-        return new SoftMask(parentPaint, gray, transparencyGroup.getBounds(), backdropColor);
+        gray = getRotatedImage(gray);
+        Rectangle2D tpgBounds = transparencyGroup.getBounds();
+        adjustRectangle(tpgBounds);
+        return new SoftMask(parentPaint, gray, tpgBounds, backdropColor);
+    }
+
+    // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
+    //TODO: 
+    // 1. check whether this works properly with cropbox
+    // after all transparency problems have been solved:
+    // 2. shouldn't this be done in transparencyGroup.getBounds() ?
+    // 3. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask
+    // 4. Is it possible to create the softmask and transparency group in the correct rotation?
+    //    (needs rendering identity testing before committing!)
+    private void adjustRectangle(Rectangle2D r)
+    {
+        if (pageRotation == 90)
+        {
+            r.setRect(pageSize.getHeight() * new Matrix(xform).getScalingFactorY() - r.getY() - r.getHeight(), 
+                    r.getX(), 
+                    r.getWidth(), 
+                    r.getHeight());
+        }
+        if (pageRotation == 180)
+        {
+            r.setRect(r.getX(), 
+                    pageSize.getHeight() * new Matrix(xform).getScalingFactorY() - r.getY() - r.getHeight(), 
+                    r.getWidth(), 
+                    r.getHeight());
+        }
+        if (pageRotation == 270)
+        {
+            r.setRect(r.getY(), r.getX(), r.getWidth(), r.getHeight());
+        }
+    }
+
+    // return quadrant-rotated image with adjusted size
+    private BufferedImage getRotatedImage(BufferedImage gray) throws IOException
+    {
+        BufferedImage gray2;
+        AffineTransform at;
+        switch (pageRotation % 360)
+        {
+            case 90:
+                gray2 = new BufferedImage(gray.getHeight(), gray.getWidth(), BufferedImage.TYPE_BYTE_GRAY);
+                at = AffineTransform.getQuadrantRotateInstance(1, gray.getHeight() / 2d, gray.getHeight() / 2d);
+                break;
+            case 180:
+                gray2 = new BufferedImage(gray.getWidth(), gray.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+                at = AffineTransform.getQuadrantRotateInstance(2, gray.getWidth()/ 2d, gray.getHeight() / 2d);
+                break;
+            case 270:
+                gray2 = new BufferedImage(gray.getHeight(), gray.getWidth(), BufferedImage.TYPE_BYTE_GRAY);
+                at = AffineTransform.getQuadrantRotateInstance(3, gray.getWidth()/ 2d, gray.getWidth() / 2d);
+                break;
+            default:
+                return gray;
+        }
+        Graphics2D g2 = (Graphics2D) gray2.getGraphics();
+        g2.drawImage(gray, at, null);
+        g2.dispose();
+        return gray2;
     }
 
     // returns the stroking AWT Paint
