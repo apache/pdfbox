@@ -19,6 +19,7 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -146,7 +147,13 @@ public final class PrintURLs
                 }
             }
         }
-        catch (ReflectiveOperationException ex)
+        catch (NoSuchMethodException e)
+        {
+        }
+        catch (IllegalAccessException e)
+        {
+        }
+        catch (InvocationTargetException e)
         {
         }
         return null;
