@@ -29,12 +29,17 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import org.apache.pdfbox.pdmodel.common.function.PDFunction;
+import org.apache.pdfbox.pdmodel.common.function.PDFunctionTypeIdentity;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 
 /**
  * A Paint which applies a soft mask to an underlying Paint.
  * 
+ * @author Petr Slaby
  * @author John Hewson
+ * @author Matthias Bläsing
+ * @author Tilman Hausherr
  */
 class SoftMask implements Paint
 {
@@ -45,6 +50,7 @@ class SoftMask implements Paint
     private final BufferedImage mask;
     private final Rectangle2D bboxDevice;
     private int bc = 0;
+    private final PDFunction transferFunction;
 
     /**
      * Creates a new soft mask paint.
@@ -54,12 +60,21 @@ class SoftMask implements Paint
      * @param bboxDevice bbox of the soft mask in the underlying Graphics2D device space
      * @param backdropColor the color to be used outside the transparency group’s bounding box; if
      * null, black will be used.
+     * @param transferFunction the transfer function, may be null.
      */
-    SoftMask(Paint paint, BufferedImage mask, Rectangle2D bboxDevice, PDColor backdropColor)
+    SoftMask(Paint paint, BufferedImage mask, Rectangle2D bboxDevice, PDColor backdropColor, PDFunction transferFunction)
     {
         this.paint = paint;
         this.mask = mask;
-        this.bboxDevice = bboxDevice;        
+        this.bboxDevice = bboxDevice;
+        if (transferFunction instanceof PDFunctionTypeIdentity)
+        {
+            this.transferFunction = null;
+        }
+        else
+        {
+            this.transferFunction = transferFunction;
+        }
         if (backdropColor != null)
         {
             try
@@ -111,6 +126,14 @@ class SoftMask implements Paint
         {
             WritableRaster raster = (WritableRaster)context.getRaster(x1, y1, w, h);
             ColorModel rasterCM = context.getColorModel();
+            float input[] = null;
+            Float[] map = null;
+
+            if (transferFunction != null)
+            {
+                map = new Float[256];
+                input = new float[1];
+            }
 
             // buffer
             WritableRaster output = getColorModel().createCompatibleWritableRaster(w, h);
@@ -138,8 +161,36 @@ class SoftMask implements Paint
                     if (x1 + x >= 0 && y1 + y >= 0 && x1 + x < mask.getWidth() && y1 + y < mask.getHeight())
                     {
                         mask.getRaster().getPixel(x1 + x, y1 + y, gray);
-
-                        pixelOutput[3] = Math.round(pixelOutput[3] * (gray[0] / 255f));
+                        int g = gray[0];
+                        if (transferFunction != null)
+                        {
+                            // apply transfer function
+                            try
+                            {
+                                if (map[g] != null)
+                                {
+                                    // was calculated before
+                                    pixelOutput[3] = Math.round(pixelOutput[3] * map[g]);
+                                }
+                                else
+                                {
+                                    // calculate and store in map
+                                    input[0] = g / 255f;
+                                    float f = transferFunction.eval(input)[0];
+                                    map[g] = f;
+                                    pixelOutput[3] = Math.round(pixelOutput[3] * f);
+                                }
+                            }
+                            catch (IOException ex)
+                            {
+                                // ignore exception, treat as outside
+                                pixelOutput[3] = Math.round(pixelOutput[3] * (bc / 255f));
+                            }
+                        }
+                        else
+                        {
+                            pixelOutput[3] = Math.round(pixelOutput[3] * (g / 255f));
+                        }
                     }
                     else
                     {
