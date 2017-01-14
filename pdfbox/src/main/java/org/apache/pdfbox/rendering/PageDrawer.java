@@ -465,7 +465,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         gray = getRotatedImage(gray);
         Rectangle2D tpgBounds = transparencyGroup.getBounds();
         adjustRectangle(tpgBounds);
-        return new SoftMask(parentPaint, gray, tpgBounds, backdropColor);
+        return new SoftMask(parentPaint, gray, tpgBounds, backdropColor, softMask.getTransferFunction());
     }
 
     // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
