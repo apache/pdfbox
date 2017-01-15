@@ -976,7 +976,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         // apply the transfer function to each color, but keep alpha
-        float input[] = new float[1];
+        float[] input = new float[1];
         for (int x = 0; x < image.getWidth(); ++x)
         {
             for (int y = 0; y < image.getHeight(); ++y)
