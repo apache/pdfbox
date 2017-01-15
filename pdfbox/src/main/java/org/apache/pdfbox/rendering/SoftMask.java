@@ -126,7 +126,7 @@ class SoftMask implements Paint
         {
             WritableRaster raster = (WritableRaster)context.getRaster(x1, y1, w, h);
             ColorModel rasterCM = context.getColorModel();
-            float input[] = null;
+            float[] input = null;
             Float[] map = null;
 
             if (transferFunction != null)
