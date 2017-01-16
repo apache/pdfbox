@@ -393,11 +393,11 @@ public class PDStandardEncryption extends PDEncryptionDictionary
     /**
      * Set if the user can print the document in a degraded format.
      *
-     * @param allowAssembly A boolean determining if the user can print the
+     * @param canPrintDegraded A boolean determining if the user can print the
      *        document in a degraded format.
      */
-    public void setCanPrintDegraded( boolean allowAssembly )
+    public void setCanPrintDegraded( boolean canPrintDegraded )
     {
-        setPermissionBit( DEGRADED_PRINT_BIT, allowAssembly );
+        setPermissionBit( DEGRADED_PRINT_BIT, canPrintDegraded );
     }
 }
