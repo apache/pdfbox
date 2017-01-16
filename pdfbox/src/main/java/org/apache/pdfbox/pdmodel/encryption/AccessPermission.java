@@ -406,14 +406,14 @@ public class AccessPermission
      * <p>
      * This method will have no effect if the object is in read only mode.
      *
-     * @param allowAssembly A boolean determining if the user can print the
+     * @param canPrintDegraded A boolean determining if the user can print the
      *        document in a degraded format.
      */
-    public void setCanPrintDegraded( boolean allowAssembly )
+    public void setCanPrintDegraded( boolean canPrintDegraded )
     {
         if(!readOnly)
         {
-            setPermissionBit( DEGRADED_PRINT_BIT, allowAssembly );
+            setPermissionBit( DEGRADED_PRINT_BIT, canPrintDegraded );
         }
     }
 
