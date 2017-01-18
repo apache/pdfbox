@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitWidthDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -71,7 +72,10 @@ public final class CreateBookmarks
                 for( PDPage page : document.getPages() )
                 {
                     pageNum++;
-                    PDPageFitWidthDestination dest = new PDPageFitWidthDestination();
+                    PDPageDestination dest = new PDPageFitWidthDestination();
+                    // If you want to have several bookmarks pointing to different areas 
+                    // on the same page, have a look at the other classes derived from PDPageDestination.
+
                     dest.setPage( page );
                     PDOutlineItem bookmark = new PDOutlineItem();
                     bookmark.setDestination( dest );
