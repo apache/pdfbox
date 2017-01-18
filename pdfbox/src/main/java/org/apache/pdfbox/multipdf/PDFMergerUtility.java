@@ -427,6 +427,12 @@ public class PDFMergerUtility
             }
             else
             {
+                // search last sibling for dest, because /Last entry is sometimes wrong
+                PDOutlineItem destLastOutlineItem = destOutline.getFirstChild();
+                while (destLastOutlineItem.getNextSibling() != null)
+                {
+                    destLastOutlineItem = destLastOutlineItem.getNextSibling();
+                }
                 for (PDOutlineItem item : srcOutline.children())
                 {
                     // get each child, clone its dictionary, remove siblings info,
@@ -435,7 +441,8 @@ public class PDFMergerUtility
                     clonedDict.removeItem(COSName.PREV);
                     clonedDict.removeItem(COSName.NEXT);
                     PDOutlineItem clonedItem = new PDOutlineItem(clonedDict);
-                    destOutline.addLast(clonedItem);
+                    destLastOutlineItem.insertSiblingAfter(clonedItem);
+                    destLastOutlineItem = destLastOutlineItem.getNextSibling();
                 }
             }
         }
