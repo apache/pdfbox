@@ -458,7 +458,16 @@ final class Type1Parser
      */
     private void parseBinary(byte[] bytes) throws IOException
     {
-        byte[] decrypted = decrypt(bytes, EEXEC_KEY, 4);
+        byte[] decrypted;
+        // Sometimes, fonts use the hex format, so this needs to be converted before decryption
+        if (isBinary(bytes))
+        {
+            decrypted = decrypt(bytes, EEXEC_KEY, 4);
+        }
+        else
+        {
+            decrypted = decrypt(hexToBinary(bytes), EEXEC_KEY, 4);
+        }
         lexer = new Type1Lexer(decrypted);
 
         // find /Private dict
@@ -818,5 +827,67 @@ final class Type1Parser
             r = (cipher + r) * c1 + c2 & 0xffff;
         }
         return plainBytes;
+    }
+
+    // Check whether binary or hex encoded. See Adobe Type 1 Font Format specification
+    // 7.2 eexec encryption
+    private boolean isBinary(byte[] bytes)
+    {
+        if (bytes.length < 4)
+        {
+            return true;
+        }
+        byte by = bytes[0];
+        // The first ciphertext byte must not be an ASCII white space
+        // character code (blank, tab, carriage return or line feed).
+        if (by != 0x0a && by != 0x0d && by != 0x20 && by != '\t')
+        {
+            return true;
+        }
+        // "At least one of the first 4 ciphertext bytes must not be one of
+        // the ASCII hexadecimal character codes (a code for 0-9, A-F, or a-f)."
+        for (int i = 0; i < 4; ++i)
+        {
+            by = bytes[i];
+            if (by != 0x0a && by != 0x0d && by != 0x20 && by != '\t' && 
+                    Character.digit((char) by, 16) == -1)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private byte[] hexToBinary(byte[] bytes)
+    {
+        // calculate needed length
+        int len = 0;
+        for (int i = 0; i < bytes.length; ++i)
+        {
+            if (Character.digit((char) bytes[i], 16) != -1)
+            {
+                ++len;
+            }
+        }
+        byte[] res = new byte[len / 2];
+        int r = 0;
+        int prev = -1;
+        for (int i = 0; i < bytes.length; ++i)
+        {
+            int digit = Character.digit((char) bytes[i], 16);
+            if (digit != -1)
+            {
+                if (prev == -1)
+                {
+                    prev = digit;
+                }
+                else
+                {
+                    res[r++] = (byte) (prev * 16 + digit);
+                    prev = -1;
+                }
+            }
+        }
+        return res;
     }
 }
