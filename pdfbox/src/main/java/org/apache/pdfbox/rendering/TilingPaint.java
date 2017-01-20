@@ -34,7 +34,8 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -48,34 +49,36 @@ import org.apache.pdfbox.util.Matrix;
  */
 class TilingPaint implements Paint
 {
+    private static final Log LOG = LogFactory.getLog(TilingPaint.class);
     private final PDTilingPattern pattern;
     private final TexturePaint paint;
     private final PageDrawer drawer;
+    private final Matrix patternMatrix;
 
     /**
-     * Creates a new colored tiling Paint.
+     * Creates a new colored tiling Paint, i.e. one that has its own colors.
      *
      * @param drawer renderer to render the page
      * @param pattern tiling pattern dictionary
+     * @param xform device scale transform
      *
-     * @throws java.io.IOException if something goes wrong while drawing the
-     * pattern
+     * @throws java.io.IOException if something goes wrong while drawing the pattern
      */
     TilingPaint(PageDrawer drawer, PDTilingPattern pattern, AffineTransform xform)
             throws IOException
     {
-        this.drawer = drawer;
-        this.pattern = pattern;
-        this.paint = new TexturePaint(getImage(null, null, xform), getAnchorRect());
+        this(drawer, pattern, null, null, xform);
     }
 
     /**
-     * Creates a new uncolored tiling Paint.
+     * Creates a new tiling Paint. The parameters color and colorSpace must be null for a colored
+     * tiling Paint (because it has its own colors), and non null for an uncolored tiling Paint.
      *
      * @param drawer renderer to render the page
      * @param pattern tiling pattern dictionary
      * @param colorSpace color space for this tiling
      * @param color color for this tiling
+     * @param xform device scale transform
      *
      * @throws java.io.IOException if something goes wrong while drawing the pattern
      */
@@ -84,7 +87,10 @@ class TilingPaint implements Paint
     {
         this.drawer = drawer;
         this.pattern = pattern;
-        this.paint = new TexturePaint(getImage(colorSpace, color, xform), getAnchorRect());
+        // pattern space -> user space
+        patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
+        Rectangle2D anchorRect = getAnchorRect();
+        this.paint = new TexturePaint(getImage(colorSpace, color, xform, anchorRect), anchorRect);
     }
 
     /**
@@ -95,9 +101,6 @@ class TilingPaint implements Paint
                                       AffineTransform xform, RenderingHints hints)
     {
         AffineTransform xformPattern = (AffineTransform)xform.clone();
-
-        // pattern space -> user space
-        Matrix patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
 
         // applies the pattern matrix with scaling removed
         AffineTransform patternNoScale = patternMatrix.createAffineTransform();
@@ -112,20 +115,21 @@ class TilingPaint implements Paint
      * Returns the pattern image in parent stream coordinates.
      */
     private BufferedImage getImage(PDColorSpace colorSpace, PDColor color,
-                                          AffineTransform xform) throws IOException
+            AffineTransform xform, Rectangle2D anchorRect) throws IOException
     {
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         ColorModel cm = new ComponentColorModel(outputCS, true, false,
                 Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
-        Rectangle2D anchor = getAnchorRect();
-        float width = (float)Math.abs(anchor.getWidth());
-        float height = (float)Math.abs(anchor.getHeight());
+        float width = (float) Math.abs(anchorRect.getWidth());
+        float height = (float) Math.abs(anchorRect.getHeight());
 
         // device scale transform (i.e. DPI) (see PDFBOX-1466.pdf)
         Matrix xformMatrix = new Matrix(xform);
-        width *= xformMatrix.getScalingFactorX();
-        height *= xformMatrix.getScalingFactorY();
+        float xScale = xformMatrix.getScalingFactorX();
+        float yScale = xformMatrix.getScalingFactorY();
+        width *= xScale;
+        height *= yScale;
 
         int rasterWidth = Math.max(1, ceiling(width));
         int rasterHeight = Math.max(1, ceiling(height));
@@ -151,24 +155,22 @@ class TilingPaint implements Paint
         }
 
         // device scale transform (i.e. DPI)
-        graphics.scale(xformMatrix.getScalingFactorX(), xformMatrix.getScalingFactorY());
-
-        // pattern space -> user space
-        Matrix patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
+        graphics.scale(xScale, yScale);
 
         // apply only the scaling from the pattern transform, doing scaling here improves the
         // image quality and prevents large scale-down factors from creating huge tiling cells.
-        patternMatrix = Matrix.getScaleInstance(
+        Matrix newPatternMatrix;
+        newPatternMatrix = Matrix.getScaleInstance(
                 Math.abs(patternMatrix.getScalingFactorX()),
                 Math.abs(patternMatrix.getScalingFactorY()));
 
         // move origin to (0,0)
-        patternMatrix.concatenate(
+        newPatternMatrix.concatenate(
                 Matrix.getTranslateInstance(-pattern.getBBox().getLowerLeftX(),
                         -pattern.getBBox().getLowerLeftY()));
 
         // render using PageDrawer
-        drawer.drawTilingPattern(graphics, pattern, colorSpace, color, patternMatrix);
+        drawer.drawTilingPattern(graphics, pattern, colorSpace, color, newPatternMatrix);
         graphics.dispose();
 
         return image;
@@ -207,9 +209,6 @@ class TilingPaint implements Paint
         {
             yStep = pattern.getBBox().getHeight();
         }
-
-        // pattern space -> user space
-        Matrix patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
 
         float xScale = patternMatrix.getScalingFactorX();
         float yScale = patternMatrix.getScalingFactorY();
