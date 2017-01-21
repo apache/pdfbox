@@ -401,22 +401,41 @@ public class PDType1Font extends PDSimpleFont
         }
 
         String name = getGlyphList().codePointToName(unicode);
-        if (!encoding.contains(name))
+        if (isStandard14())
         {
-            throw new IllegalArgumentException(
-                    String.format("U+%04X ('%s') is not available in this font %s (generic: %s) encoding: %s",
-                                  unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
+            // genericFont not needed, thus simplified code
+            // this is important on systems with no installed fonts
+            if (!encoding.contains(name))
+            {
+                throw new IllegalArgumentException(
+                        String.format("U+%04X ('%s') is not available in this font %s encoding: %s",
+                                unicode, name, getName(), encoding.getEncodingName()));
+            }
+            if (name.equals(".notdef"))
+            {
+                throw new IllegalArgumentException(
+                        String.format("No glyph for U+%04X in font %s", unicode, getName()));
+            }
         }
-        
-        String nameInFont = getNameInFont(name);
+        else
+        {
+            if (!encoding.contains(name))
+            {
+                throw new IllegalArgumentException(
+                        String.format("U+%04X ('%s') is not available in this font %s (generic: %s) encoding: %s",
+                                unicode, name, getName(), genericFont.getName(), encoding.getEncodingName()));
+            }
+
+            String nameInFont = getNameInFont(name);
+
+            if (nameInFont.equals(".notdef") || !genericFont.hasGlyph(nameInFont))
+            {
+                throw new IllegalArgumentException(
+                        String.format("No glyph for U+%04X in font %s (generic: %s)", unicode, getName(), genericFont.getName()));
+            }
+        }
+
         Map<String, Integer> inverted = encoding.getNameToCodeMap();
-
-        if (nameInFont.equals(".notdef") || !genericFont.hasGlyph(nameInFont))
-        {
-            throw new IllegalArgumentException(
-                    String.format("No glyph for U+%04X in font %s (generic: %s)", unicode, getName(), genericFont.getName()));
-        }
-
         int code = inverted.get(name);
         bytes = new byte[] { (byte)code };
         codeToBytesMap.put(code, bytes);
