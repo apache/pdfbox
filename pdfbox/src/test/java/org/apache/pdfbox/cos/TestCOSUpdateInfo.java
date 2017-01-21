@@ -46,18 +46,11 @@ public class TestCOSUpdateInfo
 
         // COSObject
         COSUpdateInfo testCOSObject;
-        try
-        {
-            testCOSObject = new COSObject(null);
-            testCOSObject.setNeedToBeUpdated(true);
-            assertTrue(testCOSObject.isNeedToBeUpdated());
-            testCOSObject.setNeedToBeUpdated(false);
-            assertFalse(testCOSObject.isNeedToBeUpdated());
-        }
-        catch (IOException e)
-        {
-            fail(e.getMessage());
-        }
+        testCOSObject = new COSObject(null);
+        testCOSObject.setNeedToBeUpdated(true);
+        assertTrue(testCOSObject.isNeedToBeUpdated());
+        testCOSObject.setNeedToBeUpdated(false);
+        assertFalse(testCOSObject.isNeedToBeUpdated());
     }
 
 }
