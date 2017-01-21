@@ -36,9 +36,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
      *
      * @param object The object that this encapsulates.
      *
-     * @throws IOException If there is an error with the object passed in.
      */
-    public COSObject( COSBase object ) throws IOException
+    public COSObject(COSBase object)
     {
         setObject( object );
     }
@@ -92,10 +91,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * This will set the object that this object encapsulates.
      *
      * @param object The new object to encapsulate.
-     *
-     * @throws IOException If there is an error setting the updated object.
      */
-    public final void setObject( COSBase object ) throws IOException
+    public final void setObject(COSBase object)
     {
         baseObject = object;
     }
