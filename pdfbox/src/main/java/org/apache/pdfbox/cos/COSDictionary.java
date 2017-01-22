@@ -88,7 +88,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * <p>This method should be removed if further testing of COSDictionary uses
      * is not needed anymore.</p>
      */
-    private final void debugInstanceCount()
+    private void debugInstanceCount()
     {
         if (DO_DEBUG_INSTANCE_COUNT)
         {
