@@ -285,7 +285,7 @@ public class COSParser extends BaseParser
                         }
                     }
                 }
-                prev = trailer.getInt(COSName.PREV);
+                prev = trailer.getLong(COSName.PREV);
                 if (prev > 0)
                 {
                     // check the xref table reference
@@ -1190,6 +1190,7 @@ public class COSParser extends BaseParser
             return startXRefOffset;
         }
         source.seek(startXRefOffset);
+        skipSpaces();
         if (source.peek() == X && isString(XREF_TABLE))
         {
             return startXRefOffset;
@@ -1535,7 +1536,7 @@ public class COSParser extends BaseParser
     private long searchNearestValue(List<Long> values, long offset)
     {
         long newValue = -1;
-        long currentDifference = -1;
+        Long currentDifference = null;
         int currentOffsetIndex = -1;
         int numberOfOffsets = values.size();
         // find the nearest value
@@ -1543,7 +1544,7 @@ public class COSParser extends BaseParser
         {
             long newDifference = offset - values.get(i);
             // find the nearest offset
-            if (currentDifference == -1
+            if (currentDifference == null
                     || (Math.abs(currentDifference) > Math.abs(newDifference)))
             {
                 currentDifference = newDifference;
