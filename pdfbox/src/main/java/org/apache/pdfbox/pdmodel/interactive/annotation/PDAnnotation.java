@@ -627,8 +627,8 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will retrieve the border array. If none is available, it will return the default, which
-     * is [0 0 1].
+     * This will retrieve the border array. If none is available or if it doesn't have at least
+     * three elements, it will return the default, which is [0 0 1].
      *
      * @return the border array.
      */
@@ -636,7 +636,7 @@ public abstract class PDAnnotation implements COSObjectable
     {
         COSBase base = getCOSObject().getDictionaryObject(COSName.BORDER);
         COSArray border;
-        if (!(base instanceof COSArray))
+        if (!(base instanceof COSArray) || ((COSArray) base).size() < 3)
         {
             border = new COSArray();
             border.add(COSInteger.ZERO);
