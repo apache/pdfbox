@@ -33,6 +33,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -819,11 +820,75 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         if (pdImage.isStencil())
         {
-            // fill the image with paint
-            BufferedImage image = pdImage.getStencilImage(getNonStrokingPaint());
+            if (getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDPattern)
+            {
+                // the earlier code for stencils (see "else") doesn't work with patterns because the
+                // CTM is not taken into consideration.
+                // this code is based on the fact that it is easily possible to draw the mask and 
+                // the paint at the correct place with the existing code, but not in one step.
+                // so what we do is to draw both in separate images, then combine the two and draw
+                // the result. 
+                //TODO: take device scale into consideration, so that some patterns can get better
+                // at higher resolutions.
 
-            // draw the image
-            drawBufferedImage(image, at);
+                // draw the paint
+                Paint paint = getNonStrokingPaint();
+                Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
+                Rectangle2D bounds = at.createTransformedShape(unitRect).getBounds2D();
+                BufferedImage renderedPaint = 
+                        new BufferedImage((int) Math.ceil(bounds.getWidth()), 
+                                          (int) Math.ceil(bounds.getHeight()), 
+                                           BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = (Graphics2D) renderedPaint.getGraphics();
+                g.translate(-bounds.getMinX(), -bounds.getMinY());
+                g.setPaint(paint);
+                g.fill(bounds);
+                g.dispose();
+
+                // draw the mask
+                BufferedImage mask = pdImage.getImage();
+                BufferedImage renderedMask = new BufferedImage((int) Math.ceil(bounds.getWidth()), 
+                                                               (int) Math.ceil(bounds.getHeight()), 
+                                                               BufferedImage.TYPE_INT_RGB);
+                g = (Graphics2D) renderedMask.getGraphics();
+                g.translate(-bounds.getMinX(), -bounds.getMinY());
+                AffineTransform imageTransform = new AffineTransform(at);
+                imageTransform.scale(1.0 / mask.getWidth(), -1.0 / mask.getHeight());
+                imageTransform.translate(0, -mask.getHeight());
+                g.drawImage(mask, imageTransform, null);
+                g.dispose();
+
+                final float[] transparent = new float[4];
+                float[] alphaPixel = null;
+                WritableRaster raster = renderedPaint.getRaster();
+                WritableRaster alpha = renderedMask.getRaster();
+                int h = renderedMask.getRaster().getHeight();
+                int w = renderedMask.getRaster().getWidth();
+                for (int y = 0; y < h; y++)
+                {
+                    for (int x = 0; x < w; x++)
+                    {
+                        alphaPixel = alpha.getPixel(x, y, alphaPixel);
+                        if (alphaPixel[0] == 255)
+                        {
+                            raster.setPixel(x, y, transparent);
+                        }
+                    }
+                }
+                setClip();
+                graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
+                graphics.drawImage(renderedPaint, 
+                        AffineTransform.getTranslateInstance(bounds.getMinX(), bounds.getMinY()), 
+                        null);
+            }
+            else
+            {
+                // fill the image with stenciled paint
+                BufferedImage image = pdImage.getStencilImage(getNonStrokingPaint());
+
+                // draw the image
+                drawBufferedImage(image, at);
+            }
         }
         else
         {
