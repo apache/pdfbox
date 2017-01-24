@@ -75,6 +75,10 @@ public class Tree extends JTree
         if (event != null)
         {
             TreePath path = getClosestPathForLocation(event.getX(), event.getY());
+            if (path == null)
+            {
+                return null;
+            }
             setSelectionPath(path);
             treePopupMenu.removeAll();
             addPopupMenuItems(path);
