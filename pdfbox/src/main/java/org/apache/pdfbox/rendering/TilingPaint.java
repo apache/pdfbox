@@ -212,11 +212,28 @@ class TilingPaint implements Paint
 
         float xScale = patternMatrix.getScalingFactorX();
         float yScale = patternMatrix.getScalingFactorY();
+        float width = xStep * xScale;
+        float height = yStep * yScale;
+
+        int MAX = 5000;
+        if (Math.abs(width * height) > MAX * MAX)
+        {
+            // PDFBOX-3653: prevent huge sizes
+            LOG.info("Pattern surface is too large, will be clipped");
+            LOG.info("width: " + width + ", height: " + height);
+            LOG.info("XStep: " + xStep + ", YStep: " + yStep);
+            LOG.info("bbox: " + pattern.getBBox());
+            LOG.info("pattern matrix: " + pattern.getMatrix());
+            LOG.info("concatenated matrix: " + patternMatrix);
+            width = Math.min(MAX, Math.abs(width)) * Math.signum(width);
+            height = Math.min(MAX, Math.abs(height)) * Math.signum(height);
+            //TODO better solution needed
+        }
 
         // returns the anchor rect with scaling applied
         PDRectangle anchor = pattern.getBBox();
         return new Rectangle2D.Float(anchor.getLowerLeftX() * xScale,
                                      anchor.getLowerLeftY() * yScale,
-                                     xStep * xScale, yStep * yScale);
+                                     width, height);
     }
 }
