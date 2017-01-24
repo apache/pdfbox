@@ -822,14 +822,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             if (getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDPattern)
             {
-                // the earlier code for stencils (see "else") doesn't work with patterns because the
+                // The earlier code for stencils (see "else") doesn't work with patterns because the
                 // CTM is not taken into consideration.
                 // this code is based on the fact that it is easily possible to draw the mask and 
                 // the paint at the correct place with the existing code, but not in one step.
-                // so what we do is to draw both in separate images, then combine the two and draw
+                // Thus what we do is to draw both in separate images, then combine the two and draw
                 // the result. 
-                //TODO: take device scale into consideration, so that some patterns can get better
-                // at higher resolutions.
+                // Note that the device scale is not used. In theory, some patterns can get better
+                // at higher resolutions but the stencil would become more and more "blocky".
+                // If anybody wants to do this, have a look at the code in showTransparencyGroup().
 
                 // draw the paint
                 Paint paint = getNonStrokingPaint();
@@ -858,8 +859,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 g.drawImage(mask, imageTransform, null);
                 g.dispose();
 
-                final float[] transparent = new float[4];
-                float[] alphaPixel = null;
+                // apply the mask
+                final int[] transparent = new int[4];
+                int[] alphaPixel = null;
                 WritableRaster raster = renderedPaint.getRaster();
                 WritableRaster alpha = renderedMask.getRaster();
                 int h = renderedMask.getRaster().getHeight();
@@ -875,6 +877,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         }
                     }
                 }
+                
+                // draw the image
                 setClip();
                 graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
                 graphics.drawImage(renderedPaint, 
