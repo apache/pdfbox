@@ -215,7 +215,7 @@ class TilingPaint implements Paint
         float width = xStep * xScale;
         float height = yStep * yScale;
 
-        int MAX = 5000;
+        final int MAX = 5000;
         if (Math.abs(width * height) > MAX * MAX)
         {
             // PDFBOX-3653: prevent huge sizes
