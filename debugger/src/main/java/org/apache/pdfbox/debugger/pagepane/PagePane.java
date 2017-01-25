@@ -41,6 +41,7 @@ import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * Display the page number and a page rendering.
@@ -74,7 +75,14 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         String pageLabelText = pageIndex < 0 ? "Page number not found" : "Page " + (pageIndex + 1);
-        
+
+        // append PDF page label, if available
+        String lbl = PDFDebugger.getPageLabel(document, pageIndex);
+        if (lbl != null)
+        {
+            pageLabelText += " - " + lbl;
+        }
+
         JLabel pageLabel = new JLabel(pageLabelText);
         pageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         pageLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));

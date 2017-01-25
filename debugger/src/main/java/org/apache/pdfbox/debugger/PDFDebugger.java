@@ -101,6 +101,7 @@ import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.printing.PDFPageable;
 
@@ -1358,5 +1359,34 @@ public class PDFDebugger extends JFrame
         
         System.err.println(message);
         System.exit(1);
+    }
+
+    /**
+     * Convenience method to get the page label if available.
+     * 
+     * @param document
+     * @param pageIndex 0-based page number.
+     * @return a page label or null if not available.
+     */
+    static public String getPageLabel(PDDocument document, int pageIndex)
+    {
+        PDPageLabels pageLabels;
+        try
+        {
+            pageLabels = document.getDocumentCatalog().getPageLabels();
+        }
+        catch (IOException ex)
+        {
+            return ex.getMessage();
+        }
+        if (pageLabels != null)
+        {
+            String[] labels = pageLabels.getLabelsByPageIndices();
+            if (labels[pageIndex] != null)
+            {
+                return labels[pageIndex];
+            }
+        }
+        return null;
     }
 }
