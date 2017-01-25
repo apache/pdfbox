@@ -470,32 +470,34 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     // this adjusts the rectangle to the rotated image to put the soft mask at the correct position
-    //TODO: 
-    // 1. check whether this works properly with cropbox
-    // after all transparency problems have been solved:
-    // 2. shouldn't this be done in transparencyGroup.getBounds() ?
-    // 3. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask
-    // 4. Is it possible to create the softmask and transparency group in the correct rotation?
+    //TODO after all transparency problems have been solved:
+    // 1. shouldn't this be done in transparencyGroup.getBounds() ?
+    // 2. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask
+    // 3. Is it possible to create the softmask and transparency group in the correct rotation?
     //    (needs rendering identity testing before committing!)
     private void adjustRectangle(Rectangle2D r)
     {
+        Matrix m = new Matrix(xform);
         if (pageRotation == 90)
         {
-            r.setRect(pageSize.getHeight() * new Matrix(xform).getScalingFactorY() - r.getY() - r.getHeight(), 
-                    r.getX(), 
-                    r.getWidth(), 
-                    r.getHeight());
+            r.setRect(pageSize.getHeight() * m.getScalingFactorY() - r.getY() - r.getHeight(), 
+                      r.getX(), 
+                      r.getWidth(), 
+                      r.getHeight());
         }
         if (pageRotation == 180)
         {
-            r.setRect(r.getX(), 
-                    pageSize.getHeight() * new Matrix(xform).getScalingFactorY() - r.getY() - r.getHeight(), 
-                    r.getWidth(), 
-                    r.getHeight());
+            r.setRect(pageSize.getWidth() * m.getScalingFactorX() - r.getX() - r.getWidth(),
+                      pageSize.getHeight() * m.getScalingFactorY() - r.getY() - r.getHeight(),
+                      r.getWidth(),
+                      r.getHeight());
         }
         if (pageRotation == 270)
         {
-            r.setRect(r.getY(), r.getX(), r.getWidth(), r.getHeight());
+            r.setRect(r.getY(), 
+                      pageSize.getWidth() * m.getScalingFactorX() - r.getX() - r.getWidth(), 
+                      r.getWidth(), 
+                      r.getHeight());
         }
     }
 
