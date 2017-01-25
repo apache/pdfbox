@@ -30,11 +30,13 @@ public class PageEntry
 {
     private final COSDictionary dict;
     private final int pageNum;
-    
-    public PageEntry(COSDictionary page, int pageNum)
+    private final String pageLabel;    
+
+    public PageEntry(COSDictionary page, int pageNum, String pageLabel)
     {
         dict = page;
         this.pageNum = pageNum;
+        this.pageLabel = pageLabel;
     }
     
     public COSDictionary getDict()
@@ -50,7 +52,7 @@ public class PageEntry
     @Override
     public String toString()
     {
-        return "Page: " + pageNum;
+        return "Page: " + pageNum + (pageLabel == null ? "" : " - " + pageLabel);
     }
     
     public String getPath()

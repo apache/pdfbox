@@ -19,6 +19,7 @@ package org.apache.pdfbox.debugger.ui;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
  * Represents an abstract view of a document in the tree view.
@@ -44,7 +45,8 @@ public class DocumentEntry
     public PageEntry getPage(int index)
     {
         PDPage page = doc.getPages().get(index);
-        return new PageEntry(page.getCOSObject(), index + 1);
+        String pageLabel = PDFDebugger.getPageLabel(doc, index);
+        return new PageEntry(page.getCOSObject(), index + 1, pageLabel);
     }
     
     public int indexOf(PageEntry page)
