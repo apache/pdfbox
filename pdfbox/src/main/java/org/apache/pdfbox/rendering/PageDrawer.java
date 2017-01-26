@@ -61,6 +61,7 @@ import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
@@ -1383,7 +1384,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             height = maxY - minY;
 
             // FIXME - color space
-            if (form.getGroup().getColorSpace() instanceof PDDeviceGray)
+            if (isGray(form.getGroup().getColorSpace()))
             {
                 image = create2ByteGrayAlphaImage(width, height);
             }
@@ -1396,7 +1397,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 // "If the subtype is Luminosity, the transparency group XObject G shall be 
                 // composited with a fully opaque backdrop whose colour is everywhere defined 
-                // by the soft-mask dictionary’s BC entry."
+                // by the soft-mask dictionary's BC entry."
                 g.setBackground(new Color(backdropColor.toRGB()));
                 g.clearRect(0, 0, width, height);
             }
@@ -1484,7 +1485,27 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // Create a custom BufferedImage with the raster and a suitable color model
             return new BufferedImage(CM_GRAY_ALPHA, raster, false, null);
         }
-        
+
+        private boolean isGray(PDColorSpace colorSpace)
+        {
+            if (colorSpace instanceof PDDeviceGray)
+            {
+                return true;
+            }
+            if (colorSpace instanceof PDICCBased)
+            {
+                try
+                {
+                    return ((PDICCBased) colorSpace).getAlternateColorSpace() instanceof PDDeviceGray;
+                }
+                catch (IOException ex)
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
         public BufferedImage getImage()
         {
             return image;
