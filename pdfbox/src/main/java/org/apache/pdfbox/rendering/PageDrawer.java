@@ -22,10 +22,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.Paint;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
+import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
@@ -33,6 +36,11 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.HashMap;
@@ -1377,7 +1385,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // FIXME - color space
             if (form.getGroup().getColorSpace() instanceof PDDeviceGray)
             {
-                image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                image = create2ByteGrayAlphaImage(width, height);
             }
             else
             {
@@ -1448,6 +1456,35 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
 
+        // http://stackoverflow.com/a/21181943/535646
+        private BufferedImage create2ByteGrayAlphaImage(int width, int height) 
+        {
+            /**
+             * gray + alpha
+             */
+            int[] bandOffsets = new int[] {1, 0};
+            int bands = bandOffsets.length;
+            
+            /**
+             * Color Model usesd for raw GRAY + ALPHA
+             */
+            final ColorModel CM_GRAY_ALPHA
+                = new ComponentColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_GRAY),
+                        true, false, Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
+
+            // Init data buffer of type byte
+            DataBuffer buffer = new DataBufferByte(width * height * bands);
+
+            // Wrap the data buffer in a raster
+            WritableRaster raster =
+                    Raster.createInterleavedRaster(buffer, width, height,
+                            width * bands, bands, bandOffsets, new Point(0, 0));
+
+            // Create a custom BufferedImage with the raster and a suitable color model
+            return new BufferedImage(CM_GRAY_ALPHA, raster, false, null);
+        }
+        
         public BufferedImage getImage()
         {
             return image;
