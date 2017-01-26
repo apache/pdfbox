@@ -1469,7 +1469,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             /**
              * Color Model usesd for raw GRAY + ALPHA
              */
-            final ColorModel CM_GRAY_ALPHA
+            static final ColorModel CM_GRAY_ALPHA
                 = new ComponentColorModel(
                         ColorSpace.getInstance(ColorSpace.CS_GRAY),
                         true, false, Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
