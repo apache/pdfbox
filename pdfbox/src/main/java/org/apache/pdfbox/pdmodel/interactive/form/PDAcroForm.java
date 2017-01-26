@@ -386,8 +386,8 @@ public final class PDAcroForm implements COSObjectable
      * might either be terminal fields, non-terminal fields or a mixture of both. Non-terminal fields
      * mark branches which contents can be retrieved using {@link PDNonTerminalField#getChildren()}.
      * 
-     * @return A list of the documents root fields.
-     * 
+     * @return A list of the documents root fields, never null. If there are no fields then this
+     * method returns an empty list.
      */
     public List<PDField> getFields()
     {
