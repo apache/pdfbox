@@ -1422,7 +1422,7 @@ public class PDFDebugger extends JFrame
      * @param pageIndex 0-based page number.
      * @return a page label or null if not available.
      */
-    static public String getPageLabel(PDDocument document, int pageIndex)
+    public static String getPageLabel(PDDocument document, int pageIndex)
     {
         PDPageLabels pageLabels;
         try
