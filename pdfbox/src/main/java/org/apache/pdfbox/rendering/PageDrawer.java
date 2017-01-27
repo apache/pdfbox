@@ -1269,8 +1269,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // here is draw it directly onto the Graphics2D device at the appropriate position
         PDRectangle bbox = group.getBBox();
         AffineTransform prev = graphics.getTransform();
-        float x = bbox.getLowerLeftX();
-        float y = pageSize.getHeight() - bbox.getLowerLeftY() - bbox.getHeight();
 
         Matrix m = new Matrix(xform);
         float xScale = Math.abs(m.getScalingFactorX());
@@ -1281,8 +1279,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         graphics.rotate(Math.toRadians(pageRotation));
 
-        // adjust (x,y) at the initial scale + cropbox
-        graphics.translate((x - pageSize.getLowerLeftX()) * xScale, (y + pageSize.getLowerLeftY()) * yScale);
+        // adjust bbox (x,y) position at the initial scale + cropbox
+        float x = bbox.getLowerLeftX() - pageSize.getLowerLeftX();
+        float y = pageSize.getUpperRightY() - bbox.getUpperRightY();
+        graphics.translate(x * xScale, y * yScale);
 
         if (flipTG)
         {
