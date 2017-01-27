@@ -260,21 +260,19 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             alternateArray = new COSArray();
             int numComponents = getNumberOfComponents();
             COSName csName;
-            if(numComponents == 1)
+            switch (numComponents)
             {
-                csName = COSName.DEVICEGRAY;
-            }
-            else if(numComponents == 3)
-            {
-                csName = COSName.DEVICERGB;
-            }
-            else if(numComponents == 4)
-            {
-                csName = COSName.DEVICECMYK;
-            }
-            else
-            {
-                throw new IOException("Unknown color space number of components:" + numComponents);
+                case 1:
+                    csName = COSName.DEVICEGRAY;
+                    break;
+                case 3:
+                    csName = COSName.DEVICERGB;
+                    break;
+                case 4:
+                    csName = COSName.DEVICECMYK;
+                    break;
+                default:
+                    throw new IOException("Unknown color space number of components:" + numComponents);
             }
             alternateArray.add(csName);
         }
