@@ -17,6 +17,7 @@
 package org.apache.pdfbox.text;
 
 import java.text.Normalizer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
@@ -66,8 +67,8 @@ public final class TextPosition
      * Constructor.
      *
      * @param pageRotation rotation of the page that the text is located in
-     * @param pageWidth rotation of the page that the text is located in
-     * @param pageHeight rotation of the page that the text is located in
+     * @param pageWidth width of the page that the text is located in
+     * @param pageHeight height of the page that the text is located in
      * @param textMatrix text rendering matrix for start of text (in display units)
      * @param endX x coordinate of the end position
      * @param endY y coordinate of the end position
@@ -704,5 +705,165 @@ public final class TextPosition
     public String toString()
     {
         return getUnicode();
+    }
+
+    /**
+     * This will get the x coordinate of the end position. This is the unadjusted value passed into
+     * the constructor.
+     *
+     * @return The unadjusted x coordinate of the end position
+     */
+    public float getEndX()
+    {
+        return endX;
+    }
+
+    /**
+     * This will get the y coordinate of the end position. This is the unadjusted value passed into
+     * the constructor.
+     *
+     * @return The unadjusted y coordinate of the end position
+     */
+    public float getEndY()
+    {
+        return endY;
+    }
+
+    /**
+     * This will get the rotation of the page that the text is located in. This is the unadjusted
+     * value passed into the constructor.
+     *
+     * @return The unadjusted rotation of the page that the text is located in
+     */
+    public int getRotation()
+    {
+        return rotation;
+    }
+
+    /**
+     * This will get the height of the page that the text is located in. This is the unadjusted
+     * value passed into the constructor.
+     *
+     * @return The unadjusted height of the page that the text is located in
+     */
+    public float getPageHeight()
+    {
+        return pageHeight;
+    }
+
+    /**
+     * This will get the width of the page that the text is located in. This is the unadjusted value
+     * passed into the constructor.
+     *
+     * @return The unadjusted width of the page that the text is located in
+     */
+    public float getPageWidth()
+    {
+        return pageWidth;
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (!(o instanceof TextPosition))
+        {
+            return false;
+        }
+
+        TextPosition that = (TextPosition) o;
+
+        if (Float.compare(that.endX, endX) != 0)
+        {
+            return false;
+        }
+        if (Float.compare(that.endY, endY) != 0)
+        {
+            return false;
+        }
+        if (Float.compare(that.maxHeight, maxHeight) != 0)
+        {
+            return false;
+        }
+        if (rotation != that.rotation)
+        {
+            return false;
+        }
+        if (Float.compare(that.x, x) != 0)
+        {
+            return false;
+        }
+        if (Float.compare(that.y, y) != 0)
+        {
+            return false;
+        }
+        if (Float.compare(that.pageHeight, pageHeight) != 0)
+        {
+            return false;
+        }
+        if (Float.compare(that.pageWidth, pageWidth) != 0)
+        {
+            return false;
+        }
+        if (Float.compare(that.widthOfSpace, widthOfSpace) != 0)
+        {
+            return false;
+        }
+        if (Float.compare(that.fontSize, fontSize) != 0)
+        {
+            return false;
+        }
+        if (fontSizePt != that.fontSizePt)
+        {
+            return false;
+        }
+        if (Float.compare(that.direction, direction) != 0)
+        {
+            return false;
+        }
+        if (textMatrix != null ? !textMatrix.equals(that.textMatrix) : that.textMatrix != null)
+        {
+            return false;
+        }
+        if (!Arrays.equals(charCodes, that.charCodes))
+        {
+            return false;
+        }
+        if (font != null ? !font.equals(that.font) : that.font != null)
+        {
+            return false;
+        }
+        if (!Arrays.equals(widths, that.widths))
+        {
+            return false;
+        }
+        return unicode != null ? unicode.equals(that.unicode) : that.unicode == null;
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = textMatrix != null ? textMatrix.hashCode() : 0;
+        result = 31 * result + (endX != +0.0f ? Float.floatToIntBits(endX) : 0);
+        result = 31 * result + (endY != +0.0f ? Float.floatToIntBits(endY) : 0);
+        result = 31 * result + (maxHeight != +0.0f ? Float.floatToIntBits(maxHeight) : 0);
+        result = 31 * result + rotation;
+        result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
+        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+        result = 31 * result + (pageHeight != +0.0f ? Float.floatToIntBits(pageHeight) : 0);
+        result = 31 * result + (pageWidth != +0.0f ? Float.floatToIntBits(pageWidth) : 0);
+        result = 31 * result + (widthOfSpace != +0.0f ? Float.floatToIntBits(widthOfSpace) : 0);
+        result = 31 * result + Arrays.hashCode(charCodes);
+        result = 31 * result + (font != null ? font.hashCode() : 0);
+        result = 31 * result + (fontSize != +0.0f ? Float.floatToIntBits(fontSize) : 0);
+        result = 31 * result + fontSizePt;
+        result = 31 * result + Arrays.hashCode(widths);
+        result = 31 * result + (unicode != null ? unicode.hashCode() : 0);
+        result = 31 * result + (direction != +0.0f ? Float.floatToIntBits(direction) : 0);
+        return result;
     }
 }
