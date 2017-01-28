@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.logging.Log;
@@ -65,6 +66,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 
 /**
@@ -292,7 +294,7 @@ public class PDDocument implements Closeable
         {
             COSArray fieldArray = (COSArray) acroForm.getCOSObject().getDictionaryObject(COSName.FIELDS);
             fieldArray.setNeedToBeUpdated(true);
-            signatureField = findSignatureField(acroForm.getFields(), sigObject);
+            signatureField = findSignatureField(acroForm.getFieldIterator(), sigObject);
         }
         if (signatureField == null)
         {
@@ -321,7 +323,7 @@ public class PDDocument implements Closeable
         acroForm.setSignaturesExist(true);
         acroForm.setAppendOnly(true);
 
-        boolean checkFields = checkSignatureField(acroFormFields, signatureField);
+        boolean checkFields = checkSignatureField(acroForm.getFieldIterator(), signatureField);
         if (checkFields)
         {
             signatureField.getCOSObject().setNeedToBeUpdated(true);
@@ -372,12 +374,19 @@ public class PDDocument implements Closeable
         page.getCOSObject().setNeedToBeUpdated(true);
     }
 
-    // search acroform field list for signature field with specific signature dictionary
-    private PDSignatureField findSignatureField(List<PDField> fields, PDSignature sigObject)
+    /**
+     * Search acroform fields for signature field with specific signature dictionary.
+     * 
+     * @param fieldIterator iterator on all fields.
+     * @param sigObject signature object (the /V part).
+     * @return a signature field if found, or null if none was found.
+     */
+    private PDSignatureField findSignatureField(Iterator<PDField> fieldIterator, PDSignature sigObject)
     {
         PDSignatureField signatureField = null;
-        for (PDField pdField : fields)
+        while (fieldIterator.hasNext())
         {
+            PDField pdField = fieldIterator.next();
             if (pdField instanceof PDSignatureField)
             {
                 PDSignature signature = ((PDSignatureField) pdField).getSignature();
@@ -393,20 +402,20 @@ public class PDDocument implements Closeable
     /**
      * Check if the field already exists in the field list.
      *
-     * @param acroFormFields the list of AcroForm fields.
+     * @param fieldIterator iterator on all fields.
      * @param signatureField the signature field.
      * @return true if the field already existed in the field list, false if not.
      */
-    private boolean checkSignatureField(List<PDField> acroFormFields, PDSignatureField signatureField)
+    private boolean checkSignatureField(Iterator<PDField> fieldIterator, PDSignatureField signatureField)
     {
-        for (PDField field : acroFormFields)
+        while (fieldIterator.hasNext())
         {
+            PDField field = fieldIterator.next();
             if (field instanceof PDSignatureField
                     && field.getCOSObject().equals(signatureField.getCOSObject()))
             {
                 return true;
             }
-            // fixme: this code does not check non-terminal fields, there could be a descendant signature
         }
         return false;
     }
@@ -554,7 +563,7 @@ public class PDDocument implements Closeable
             sigField.getCOSObject().setNeedToBeUpdated(true);
             
             // Check if the field already exists
-            boolean checkSignatureField = checkSignatureField(acroformFields, sigField);
+            boolean checkSignatureField = checkSignatureField(acroForm.getFieldIterator(), sigField);
             if (checkSignatureField)
             {
                 sigField.getCOSObject().setNeedToBeUpdated(true);
