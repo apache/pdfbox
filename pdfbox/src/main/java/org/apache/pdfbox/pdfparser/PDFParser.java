@@ -198,14 +198,21 @@ public class PDFParser extends COSParser
             }
             catch (IOException exception)
             {
-                rebuildTrailer = true;
+                if (isLenient())
+                {
+                    rebuildTrailer = true;
+                }
+                else
+                {
+                    throw exception;
+                }
             }
         }
-        else
+        else if (isLenient())
         {
             rebuildTrailer = true;
         }
-        if (rebuildTrailer && isLenient())
+        if (rebuildTrailer)
         {
             trailer = rebuildTrailer();
         }
