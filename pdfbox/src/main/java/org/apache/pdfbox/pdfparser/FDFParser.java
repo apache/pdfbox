@@ -113,10 +113,17 @@ public class FDFParser extends COSParser
             }
             catch (IOException exception)
             {
-                rebuildTrailer = true;
+                if (isLenient())
+                {
+                    rebuildTrailer = true;
+                }
+                else
+                {
+                    throw exception;
+                }
             }
         }
-        else
+        else if (isLenient())
         {
             rebuildTrailer = true;
         }
