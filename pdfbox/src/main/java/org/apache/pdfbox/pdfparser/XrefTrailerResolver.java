@@ -74,6 +74,11 @@ public class XrefTrailerResolver
         {
             xrefType = XRefType.TABLE;
         }
+
+        public void reset()
+        {
+            xrefTable.clear();
+        }
     }
 
     /** 
@@ -345,5 +350,19 @@ public class XrefTrailerResolver
             }
         }
         return refObjNrs;
+    }
+
+    /**
+     * Reset all data so that it can be used to rebuild the trailer.
+     * 
+     */
+    protected void reset()
+    {
+        for (XrefTrailerObj trailerObj : bytePosToXrefMap.values())
+        {
+            trailerObj.reset();
+        }
+        curXrefTrailerObj = null;
+        resolvedXrefTrailer = null;
     }
 }

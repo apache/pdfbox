@@ -225,15 +225,20 @@ public class COSParser extends BaseParser
                 // parse the last trailer.
                 trailerOffset = source.getPosition();
                 // PDFBOX-1739 skip extra xref entries in RegisSTAR documents
-                while (isLenient && source.peek() != 't')
+                if (isLenient)
                 {
-                    if (source.getPosition() == trailerOffset)
+                    int nextCharacter = source.peek();
+                    while (nextCharacter != 't' && isDigit(nextCharacter))
                     {
-                        // warn only the first time
-                        LOG.warn("Expected trailer object at position " + trailerOffset
-                                + ", keep trying");
+                        if (source.getPosition() == trailerOffset)
+                        {
+                            // warn only the first time
+                            LOG.warn("Expected trailer object at position " + trailerOffset
+                                    + ", keep trying");
+                        }
+                        readLine();
+                        nextCharacter = source.peek();
                     }
-                    readLine();
                 }
                 if (!parseTrailer())
                 {
@@ -1334,9 +1339,22 @@ public class COSParser extends BaseParser
                         }
                     }
                     // remove all found object streams
-                    for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+                    if (!objStreams.isEmpty())
                     {
-                        objStreams.remove(key);
+                        for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+                        {
+                            objStreams.remove(key);
+                        }
+                        // remove all objects which are part of an object stream which wasn't found
+                        for (COSObjectKey key : objStreams)
+                        {
+                            Set<Long> objects = xrefTrailerResolver
+                                    .getContainedObjectNumbers((int) (key.getNumber()));
+                            for (Long objNr : objects)
+                            {
+                                xrefOffset.remove(new COSObjectKey(objNr, 0));
+                            }
+                        }
                     }
                     // remove all objects which are part of an object stream which wasn't found
                     for (COSObjectKey key : objStreams)
@@ -1687,6 +1705,7 @@ public class COSParser extends BaseParser
         bfSearchForObjects();
         if (bfSearchCOSObjectKeyOffsets != null)
         {
+            xrefTrailerResolver.reset();
             xrefTrailerResolver.nextXrefObj( 0, XRefType.TABLE );
             for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
@@ -1999,11 +2018,17 @@ public class COSParser extends BaseParser
         // Xref tables can have multiple sections. Each starts with a starting object id and a count.
         while(true)
         {
+            String currentLine = readLine();
+            String[] splitString = currentLine.split("\\s");
+            if (splitString.length != 2)
+            {
+                LOG.warn("Unexpected XRefTable Entry: " + currentLine);
+                break;
+            }
             // first obj id
-            long currObjID = readObjectNumber(); 
-            
+            long currObjID = Long.parseLong(splitString[0]);
             // the number of objects in the xref table
-            long count = readLong();
+            int count = Integer.parseInt(splitString[1]);
             
             skipSpaces();
             for(int i = 0; i < count; i++)
@@ -2017,8 +2042,8 @@ public class COSParser extends BaseParser
                     break;
                 }
                 //Ignore table contents
-                String currentLine = readLine();
-                String[] splitString = currentLine.split("\\s");
+                currentLine = readLine();
+                splitString = currentLine.split("\\s");
                 if (splitString.length < 3)
                 {
                     LOG.warn("invalid xref line: " + currentLine);

@@ -104,11 +104,23 @@ public class FDFParser extends COSParser
         COSDictionary trailer = null;
         // parse startxref
         long startXRefOffset = getStartxrefOffset();
+        boolean rebuildTrailer = false;
         if (startXRefOffset > 0)
         {
-            trailer = parseXref(startXRefOffset);
+            try
+            {
+                trailer = parseXref(startXRefOffset);
+            }
+            catch (IOException exception)
+            {
+                rebuildTrailer = true;
+            }
         }
         else
+        {
+            rebuildTrailer = true;
+        }
+        if (rebuildTrailer)
         {
             trailer = rebuildTrailer();
         }
