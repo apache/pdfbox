@@ -848,22 +848,22 @@ public final class TextPosition
     public int hashCode()
     {
         int result = textMatrix != null ? textMatrix.hashCode() : 0;
-        result = 31 * result + (endX != +0.0f ? Float.floatToIntBits(endX) : 0);
-        result = 31 * result + (endY != +0.0f ? Float.floatToIntBits(endY) : 0);
-        result = 31 * result + (maxHeight != +0.0f ? Float.floatToIntBits(maxHeight) : 0);
+        result = 31 * result + Float.floatToIntBits(endX);
+        result = 31 * result + Float.floatToIntBits(endY);
+        result = 31 * result + Float.floatToIntBits(maxHeight);
         result = 31 * result + rotation;
-        result = 31 * result + (x != +0.0f ? Float.floatToIntBits(x) : 0);
-        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
-        result = 31 * result + (pageHeight != +0.0f ? Float.floatToIntBits(pageHeight) : 0);
-        result = 31 * result + (pageWidth != +0.0f ? Float.floatToIntBits(pageWidth) : 0);
-        result = 31 * result + (widthOfSpace != +0.0f ? Float.floatToIntBits(widthOfSpace) : 0);
+        result = 31 * result + Float.floatToIntBits(x);
+        result = 31 * result + Float.floatToIntBits(y);
+        result = 31 * result + Float.floatToIntBits(pageHeight);
+        result = 31 * result + Float.floatToIntBits(pageWidth);
+        result = 31 * result + Float.floatToIntBits(widthOfSpace);
         result = 31 * result + Arrays.hashCode(charCodes);
         result = 31 * result + (font != null ? font.hashCode() : 0);
-        result = 31 * result + (fontSize != +0.0f ? Float.floatToIntBits(fontSize) : 0);
+        result = 31 * result + Float.floatToIntBits(fontSize);
         result = 31 * result + fontSizePt;
         result = 31 * result + Arrays.hashCode(widths);
         result = 31 * result + (unicode != null ? unicode.hashCode() : 0);
-        result = 31 * result + (direction != +0.0f ? Float.floatToIntBits(direction) : 0);
+        result = 31 * result + Float.floatToIntBits(direction);
         return result;
     }
 }
