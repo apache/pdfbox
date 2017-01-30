@@ -966,36 +966,21 @@ public class COSParser extends BaseParser
         }
 
         // get output stream to copy data to
-        if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
+        OutputStream out = stream.createRawOutputStream();
+        try
         {
-            OutputStream out = stream.createRawOutputStream();
-            try
+            if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
             {
                 readValidStream(out, streamLengthObj);
             }
-            finally
-            {
-                out.close();
-                // restore original (possibly incorrect) length
-                stream.setItem(COSName.LENGTH, streamLengthObj);
-            }
-        }
-        else
-        {
-            OutputStream out = stream.createRawOutputStream();
-            try
+            else
             {
                 readUntilEndStream(new EndstreamOutputStream(out));
             }
-            finally
-            {
-                out.close();
-                // restore original (possibly incorrect) length
-                if (streamLengthObj != null)
-                {
-                    stream.setItem(COSName.LENGTH, streamLengthObj);
-                }
-            }
+        }
+        finally
+        {
+            out.close();
         }
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
