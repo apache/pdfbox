@@ -2034,6 +2034,22 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
+     * Set the miter limit.
+     *
+     * @param miterLimit the new miter limit.
+     * @throws IOException If the content stream could not be written.
+     */
+    public void setMiterLimit(float miterLimit) throws IOException
+    {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: setMiterLimit is not allowed within a text block.");
+        }
+        writeOperand(miterLimit);
+        writeOperator("M");
+    }
+
+    /**
      * Begin a marked content sequence.
      *
      * @param tag the tag
