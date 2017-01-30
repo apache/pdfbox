@@ -995,10 +995,6 @@ public class COSParser extends BaseParser
                 {
                     stream.setItem(COSName.LENGTH, streamLengthObj);
                 }
-                else
-                {
-                    stream.removeItem(COSName.LENGTH);
-                }
             }
         }
         String endStream = readString();
