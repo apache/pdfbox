@@ -701,9 +701,11 @@ public class COSWriter implements ICOSVisitor, Closeable
         byteRangeArray.set(2, COSInteger.get(afterOffset));
         byteRangeArray.set(3, COSInteger.get(afterLength));
 
-        if (byteRangeLength - byteRange.length() < 0)
+        if (byteRange.length() > byteRangeLength)
         {
-            throw new IOException("Can't write new ByteRange, not enough space");
+            throw new IOException("Can't write new byteRange '" + byteRange + 
+                    "' not enough space: byteRange.length(): " + byteRange.length() + 
+                    ", byteRangeLength: " + byteRangeLength);
         }
 
         // copy the new incremental data into a buffer (e.g. signature dict, trailer)
