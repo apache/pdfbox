@@ -48,7 +48,7 @@ public class PDVisibleSignDesigner
     private BufferedImage image;
     private String signatureFieldName = "sig";
     private byte[] formatterRectangleParams = { 0, 0, 100, 50 };
-    private byte[] AffineTransformParams = { 1, 0, 0, 1, 0, 0 };
+    private byte[] affineTransformParams = { 1, 0, 0, 1, 0, 0 };
     private float imageSizeInPercents;
 
     /**
@@ -397,11 +397,11 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @return Affine Transform parameters of for PDF Matrix
+     * @return Affine Transform parameters for PDF Matrix
      */
     public byte[] getAffineTransformParams()
     {
-        return AffineTransformParams;
+        return affineTransformParams;
     }
 
     /**
@@ -411,7 +411,7 @@ public class PDVisibleSignDesigner
      */
     public PDVisibleSignDesigner affineTransformParams(byte[] affineTransformParams)
     {
-        AffineTransformParams = affineTransformParams;
+        this.affineTransformParams = affineTransformParams;
         return this;
     }
 
