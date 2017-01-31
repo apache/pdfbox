@@ -1302,6 +1302,7 @@ public class PDFDebugger extends JFrame
         }
         currentFilePath = urlString;
         URL url = new URL(urlString);
+        LogDialog.instance().clear();
         document = PDDocument.load(url.openStream(), password);
         printMenuItem.setEnabled(true);
         reopenMenuItem.setEnabled(true);
