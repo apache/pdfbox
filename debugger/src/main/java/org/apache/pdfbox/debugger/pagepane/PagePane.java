@@ -19,16 +19,18 @@ package org.apache.pdfbox.debugger.pagepane;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
@@ -252,7 +254,17 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             try
             {
-                label.setIcon(new ImageIcon(get()));
+                BufferedImage image = get();
+
+                // We cannot use "label.setIcon(new ImageIcon(get()))" here 
+                // because of blurry upscaling in JDK9. Instead, the label is now created with 
+                // a smaller size than the image to compensate that the
+                // image is scaled up with some screen configurations (e.g. 125% on windows).
+                // See PDFBOX-3665 for more sample code and discussion.
+                AffineTransform tx = panel.getGraphicsConfiguration().getDefaultTransform();
+                label.setSize((int) Math.ceil(image.getWidth() / tx.getScaleX()), 
+                              (int) Math.ceil(image.getHeight() / tx.getScaleY()));
+                label.setIcon(new HighResolutionImageIcon(image, label.getWidth(), label.getHeight()));
                 label.setText(null);
             }
             catch (InterruptedException e)
@@ -265,6 +277,38 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 label.setText(e.getMessage());
                 throw new RuntimeException(e);
             }
+        }
+
+        private class HighResolutionImageIcon implements Icon
+        {
+            private final BufferedImage image;
+            private final int baseWidth;
+            private final int baseHeight;
+
+            private HighResolutionImageIcon(BufferedImage image, int baseWidth, int baseHeight)
+            {
+                this.image = image;
+                this.baseWidth = baseWidth;
+                this.baseHeight = baseHeight;
+            }
+
+            @Override
+            public void paintIcon(Component c, Graphics g, int x, int y)
+            {
+                g.drawImage(image, x, y, getIconWidth(), getIconHeight(), null);
+            }
+
+            @Override
+            public int getIconWidth()
+            {
+                return baseWidth;
+            }
+
+            @Override
+            public int getIconHeight()
+            {
+                return baseHeight;
+            }            
         }
     }
 }
