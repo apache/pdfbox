@@ -41,8 +41,16 @@ public interface PDFTemplateBuilder
     /**
      * In order to create Affine Transform, using parameters.
      * @param params
+     * @deprecated use {@link #createAffineTransform(java.awt.geom.AffineTransform) }
      */
+    @Deprecated
     void createAffineTransform(byte[] params);
+
+    /**
+     * In order to create Affine Transform, using parameters.
+     * @param affineTransform
+     */
+    void createAffineTransform(AffineTransform affineTransform);
 
     /**
      * Creates specified size page.

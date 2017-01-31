@@ -161,11 +161,19 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
+    @Deprecated
     public void createAffineTransform(byte[] params)
     {
         AffineTransform transform = new AffineTransform(params[0], params[1], params[2],
                                                         params[3], params[4],  params[5]);
         pdfStructure.setAffineTransform(transform);
+        LOG.info("Matrix has been added");
+    }
+
+    @Override
+    public void createAffineTransform(AffineTransform affineTransform)
+    {
+        pdfStructure.setAffineTransform(affineTransform);
         LOG.info("Matrix has been added");
     }
 
