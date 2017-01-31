@@ -51,6 +51,7 @@ public class PDVisibleSignDesigner
     private byte[] formatterRectangleParams = { 0, 0, 100, 50 };
     private AffineTransform affineTransform = new AffineTransform();
     private float imageSizeInPercents;
+    private int rotation = 0;
 
     /**
      * Constructor.
@@ -193,6 +194,57 @@ public class PDVisibleSignDesigner
         pageHeight(mediaBox.getHeight());
         pageWidth = mediaBox.getWidth();
         imageSizeInPercents = 100;
+        rotation = firstPage.getRotation() % 360;
+    }
+
+    /**
+     * Adjust signature for page rotation. This is optional, call this after all x and y coordinates
+     * have been set if you want the signature to be postioned regardless of page orientation.
+     *
+     * @return Visible Signature Configuration Object
+     */
+    public PDVisibleSignDesigner adjustForRotation()
+    {
+        switch (rotation)
+        {
+            case 90:
+                float temp = yAxis;
+                yAxis = pageHeight - xAxis - imageWidth;
+                xAxis = temp;
+
+                temp = imageHeight;
+                imageHeight = imageWidth;
+                imageWidth = temp;
+
+                affineTransform = new AffineTransform(0, 0.5, -2, 0, 100, 0);
+                break;
+                
+            case 180:
+                float newX = pageWidth - xAxis - imageWidth;
+                float newY = pageHeight - yAxis - imageHeight;
+                xAxis = newX;
+                yAxis = newY;
+                
+                affineTransform = new AffineTransform(-1, 0, 0, -1, 100, 50);
+                break;
+
+            case 270:
+                temp = xAxis;
+                xAxis = pageWidth - yAxis - imageHeight;
+                yAxis = temp;
+
+                temp = imageHeight;
+                imageHeight = imageWidth;
+                imageWidth = temp;
+
+                affineTransform = new AffineTransform(0, -0.5, 2, 0, 0, 50);
+                break;
+
+            case 0:
+            default:
+                break;
+        }
+        return this;
     }
 
     /**
