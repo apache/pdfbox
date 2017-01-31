@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import java.io.BufferedInputStream;
@@ -48,7 +49,7 @@ public class PDVisibleSignDesigner
     private BufferedImage image;
     private String signatureFieldName = "sig";
     private byte[] formatterRectangleParams = { 0, 0, 100, 50 };
-    private byte[] affineTransformParams = { 1, 0, 0, 1, 0, 0 };
+    private AffineTransform affineTransform = new AffineTransform();
     private float imageSizeInPercents;
 
     /**
@@ -396,25 +397,58 @@ public class PDVisibleSignDesigner
     }
 
     /**
-     * 
      * @return Affine Transform parameters for PDF Matrix
+     * 
+     * @deprecated use {@link #getTransform() }.
      */
+    @Deprecated
     public byte[] getAffineTransformParams()
     {
-        return affineTransformParams;
+        return new byte[] 
+        {
+            (byte) affineTransform.getScaleX(), 
+            (byte) affineTransform.getShearY(), 
+            (byte) affineTransform.getShearX(), 
+            (byte) affineTransform.getScaleY(), 
+            (byte) affineTransform.getTranslateX(), 
+            (byte) affineTransform.getTranslateY()
+        };
+    }
+
+    /**
+     * @return Affine Transform parameters for PDF Matrix
+     */
+    public AffineTransform getTransform()
+    {
+        return affineTransform;
     }
 
     /**
      * 
      * @param affineTransformParams
      * @return Visible Signature Configuration Object
+     * @deprecated use {@link #transform}.
      */
+    @Deprecated
     public PDVisibleSignDesigner affineTransformParams(byte[] affineTransformParams)
     {
-        this.affineTransformParams = affineTransformParams;
+        affineTransform = new AffineTransform(affineTransformParams[0], affineTransformParams[1],
+                affineTransformParams[2], affineTransformParams[3],
+                affineTransformParams[4], affineTransformParams[5]);
         return this;
     }
 
+    /**
+     * 
+     * @param affineTransform
+     * @return Visible Signature Configuration Object
+     */
+    public PDVisibleSignDesigner transform(AffineTransform affineTransform)
+    {
+        this.affineTransform = new AffineTransform(affineTransform);
+        return this;
+    }
+    
     /**
      * 
      * @return formatter PDRectanle parameters
