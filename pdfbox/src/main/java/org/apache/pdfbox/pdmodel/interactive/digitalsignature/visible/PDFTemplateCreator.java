@@ -44,7 +44,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 public class PDFTemplateCreator
 {
     private final PDFTemplateBuilder pdfBuilder;
-    private static final Log logger = LogFactory.getLog(PDFTemplateCreator.class);
+    private static final Log LOG = LogFactory.getLog(PDFTemplateCreator.class);
 
     /**
      * Constructor.
@@ -75,7 +75,7 @@ public class PDFTemplateCreator
      */
     public InputStream buildPDF(PDVisibleSignDesigner properties) throws IOException
     {
-        logger.info("pdf building has been started");
+        LOG.info("pdf building has been started");
         PDFTemplateStructure pdfStructure = pdfBuilder.getStructure();
 
         // we create array of [Text, ImageB, ImageC, ImageI]
@@ -160,7 +160,7 @@ public class PDFTemplateCreator
         pdfBuilder.createWidgetDictionary(pdSignatureField, holderFormResources);
         
         InputStream in = getVisualSignatureAsStream(pdfStructure.getVisualSignature());
-        logger.info("stream returning started, size= " + in.available());
+        LOG.info("stream returning started, size= " + in.available());
         
         // we must close the document
         template.close();
