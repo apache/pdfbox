@@ -160,6 +160,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         LOG.info("Signature rectangle has been created");
     }
 
+    /**
+     * {@inheritDoc }
+     *
+     * @deprecated use {@link #createAffineTransform(java.awt.geom.AffineTransform) }
+     */
     @Override
     @Deprecated
     public void createAffineTransform(byte[] params)
