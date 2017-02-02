@@ -234,7 +234,7 @@ public abstract class PDSimpleFont extends PDFont
                 // each name in Differences array must also be in the latin character set
                 for (String name : ((DictionaryEncoding)encoding).getDifferences().values())
                 {
-                    if (name.equals(".notdef"))
+                    if (".notdef".equals(name))
                     {
                         // skip
                     }
@@ -349,7 +349,7 @@ public abstract class PDSimpleFont extends PDFont
             String nameInAFM = getEncoding().getName(code);
 
             // the Adobe AFMs don't include .notdef, but Acrobat uses 250, test with PDFBOX-2334
-            if (nameInAFM.equals(".notdef"))
+            if (".notdef".equals(nameInAFM))
             {
                 return 250f;
             }
