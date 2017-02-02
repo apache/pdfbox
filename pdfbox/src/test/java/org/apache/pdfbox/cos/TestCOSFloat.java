@@ -262,7 +262,7 @@ public class TestCOSFloat extends TestCOSNumber
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-        public WritePDFTester()
+        WritePDFTester()
         {
             setLoop(-1000, 3000, 200);
         }
