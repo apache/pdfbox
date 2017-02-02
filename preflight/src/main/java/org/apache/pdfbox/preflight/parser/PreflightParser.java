@@ -46,6 +46,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
@@ -113,6 +114,21 @@ public class PreflightParser extends PDFParser
     /**
      * Constructor.
      *
+     * @param file
+     * @param scratch
+     * @throws IOException if there is a reading error.
+     */
+    public PreflightParser(File file, ScratchFile scratch) throws IOException
+    {
+        // TODO move file handling outside of the parser
+        super(new RandomAccessBufferedFileInputStream(file), scratch);
+        this.setLenient(false);
+        this.dataSource = new FileDataSource(file);
+    }
+
+    /**
+     * Constructor.
+     *
      * @param filename
      * @throws IOException if there is a reading error.
      */
@@ -120,6 +136,19 @@ public class PreflightParser extends PDFParser
     {
         // TODO move file handling outside of the parser
         this(new File(filename));
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param filename
+     * @param scratch
+     * @throws IOException if there is a reading error.
+     */
+    public PreflightParser(String filename, ScratchFile scratch) throws IOException
+    {
+        // TODO move file handling outside of the parser
+        this(new File(filename), scratch);
     }
 
     /**
@@ -133,6 +162,22 @@ public class PreflightParser extends PDFParser
     {
         // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(dataSource.getInputStream()));
+        this.setLenient(false);
+        this.dataSource = dataSource;
+    }
+
+    /**
+     * Constructor. This one is slower than the file and the filename constructors, because
+     * a temporary file will be created.
+     *
+     * @param dataSource the datasource
+     * @param scratch
+     * @throws IOException if there is a reading error.
+     */
+    public PreflightParser(DataSource dataSource, ScratchFile scratch) throws IOException
+    {
+        // TODO move file handling outside of the parser
+        super(new RandomAccessBufferedFileInputStream(dataSource.getInputStream()), scratch);
         this.setLenient(false);
         this.dataSource = dataSource;
     }
