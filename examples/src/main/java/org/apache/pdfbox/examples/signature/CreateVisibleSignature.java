@@ -78,7 +78,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
             throws IOException
     {
         visibleSignDesigner = new PDVisibleSignDesigner(filename, imageStream, page);
-        visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent);
+        visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).adjustForRotation();
     }
     
     public void setVisibleSignatureProperties(String name, String location, String reason, int preferredSize, 
