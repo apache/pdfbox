@@ -19,9 +19,6 @@ package org.apache.pdfbox.cos;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
 
 import org.junit.Test;
 
