@@ -25,7 +25,6 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.util.Matrix;
 
@@ -37,8 +36,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 public abstract class ShadingContext
 {
-    private static final Log LOG = LogFactory.getLog(ShadingContext.class);
-
     private float[] background;
     private int rgbBackground;
     private final PDShading shading;
