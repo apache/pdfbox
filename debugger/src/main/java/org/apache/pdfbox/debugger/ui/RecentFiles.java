@@ -160,7 +160,7 @@ public class RecentFiles
 
     private void writeHistoryToPref(Queue<String> filePaths)
     {
-        if (filePaths.size() == 0)
+        if (filePaths.isEmpty())
         {
             return;
         }
