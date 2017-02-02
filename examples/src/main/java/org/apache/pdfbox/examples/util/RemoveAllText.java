@@ -143,8 +143,8 @@ public final class RemoveAllText
             if (token instanceof Operator)
             {
                 Operator op = (Operator) token;
-                if (op.getName().equals("TJ") || op.getName().equals("Tj")
-                        || op.getName().equals("'") || op.getName().equals("\""))
+                if ("TJ".equals(op.getName()) || "Tj".equals(op.getName()) ||
+                     "'".equals(op.getName()) || "\"".equals(op.getName()))
                 {
                     // remove the one argument to this operator
                     newTokens.remove(newTokens.size() - 1);
