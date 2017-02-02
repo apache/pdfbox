@@ -129,7 +129,7 @@ public final class PrintURLs
         }
     }
 
-    private static PDActionURI getActionURI(PDAnnotation annot) throws SecurityException, IllegalArgumentException
+    private static PDActionURI getActionURI(PDAnnotation annot)
     {
         // use reflection to catch all annotation types that have getAction()
         // If you can't use reflection, then check for classes
