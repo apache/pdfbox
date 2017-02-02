@@ -19,13 +19,15 @@ package org.apache.pdfbox.debugger.streampane;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,6 +36,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 import org.apache.pdfbox.debugger.ui.ImageUtil;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
@@ -114,7 +117,12 @@ class StreamImageView implements ActionListener, AncestorListener
 
     private void addImage(Image img)
     {
-        label.setIcon(new ImageIcon(img));
+        // for JDK9; see explanation in PagePane
+        AffineTransform tx = GraphicsEnvironment.getLocalGraphicsEnvironment().
+                getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
+        label.setSize((int) Math.ceil(img.getWidth(null) / tx.getScaleX()), 
+                      (int) Math.ceil(img.getHeight(null) / tx.getScaleY()));
+        label.setIcon(new HighResolutionImageIcon(img, label.getWidth(), label.getHeight()));
         label.revalidate();
     }
 
