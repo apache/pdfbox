@@ -38,7 +38,7 @@ final class GlyphCache
     private final PDVectorFont font;
     private final Map<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
 
-    public GlyphCache(PDVectorFont font)
+    GlyphCache(PDVectorFont font)
     {
         this.font = font;
     }
