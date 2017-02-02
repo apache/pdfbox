@@ -757,11 +757,7 @@ public final class PDAcroForm implements COSObjectable
     {
         // Check if there is a transformation within the XObjects content
     	PDResources resources = appearanceStream.getResources();
-        if (resources != null && resources.getXObjectNames().iterator().hasNext())
-        {        	
-            return true;
-        }
-        return false;
+        return resources != null && resources.getXObjectNames().iterator().hasNext();
     }
     
 }
