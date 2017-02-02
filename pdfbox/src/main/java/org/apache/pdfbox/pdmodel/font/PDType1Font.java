@@ -411,7 +411,7 @@ public class PDType1Font extends PDSimpleFont
                         String.format("U+%04X ('%s') is not available in this font %s encoding: %s",
                                 unicode, name, getName(), encoding.getEncodingName()));
             }
-            if (name.equals(".notdef"))
+            if (".notdef".equals(name))
             {
                 throw new IllegalArgumentException(
                         String.format("No glyph for U+%04X in font %s", unicode, getName()));
@@ -448,7 +448,7 @@ public class PDType1Font extends PDSimpleFont
         String name = codeToName(code);
 
         // width of .notdef is ignored for substitutes, see PDFBOX-1900
-        if (!isEmbedded && name.equals(".notdef"))
+        if (!isEmbedded && ".notdef".equals(name))
         {
             return 250;
         }

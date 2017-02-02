@@ -329,7 +329,7 @@ public class PDType3Font extends PDSimpleFont
     public PDType3CharProc getCharProc(int code)
     {
         String name = getEncoding().getName(code);
-        if (!name.equals(".notdef"))
+        if (!".notdef".equals(name))
         {
             COSStream stream;
             stream = (COSStream)getCharProcs().getDictionaryObject(COSName.getPDFName(name));
