@@ -101,6 +101,17 @@ public class Type1CharStringParser
                         sequence.remove(sequence.size()-1); // remove "return" command
                     }
                 }
+                else
+                {
+                    LOG.warn("CALLSUBR is ignored, operand: " + operand
+                            + ", subrs.size(): " + subrs.size() + " in glyph '"
+                            + glyphName + "' of font " + fontName);
+                    // remove all parameters (there can be more than one)
+                    while (sequence.get(sequence.size() - 1) instanceof Integer)
+                    {
+                        sequence.remove(sequence.size() - 1);
+                    }
+                }
             }
             else if (b0 == TWO_BYTE && input.peekUnsignedByte(0) == CALLOTHERSUBR)
             {
