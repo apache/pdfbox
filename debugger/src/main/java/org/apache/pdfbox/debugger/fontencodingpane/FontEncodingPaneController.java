@@ -82,7 +82,7 @@ public class FontEncodingPaneController
             PDFont font = resources.getFont(fontName);
             if (font instanceof PDType3Font)
             {
-                fontPane = new Type3Font((PDType3Font) font);
+                fontPane = new Type3Font((PDType3Font) font, resources);
             }
             else if (font instanceof PDSimpleFont)
             {

@@ -161,6 +161,30 @@ class FontEncodingView
                 BufferedImage bim = renderGlyph(path, bounds2D, cellRect);
                 return new JLabel(new ImageIcon(bim), SwingConstants.CENTER);
             }
+            if (o instanceof BufferedImage)
+            {
+                Rectangle cellRect = jTable.getCellRect(row, col, false);
+                BufferedImage glyphImage = (BufferedImage) o;
+                BufferedImage cellImage = new BufferedImage((int) cellRect.getWidth(), (int) cellRect.getHeight(), BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = (Graphics2D) cellImage.getGraphics();
+                g.setBackground(Color.white);
+                g.clearRect(0, 0, cellImage.getWidth(), cellImage.getHeight());
+
+                double scale = 1 / (glyphImage.getHeight() / cellRect.getHeight());
+
+                // horizontal center
+                g.translate((cellRect.getWidth() - glyphImage.getWidth() * scale) / 2, 0);
+
+                // scale from the glyph to the cell
+                g.scale(scale, scale);
+
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);              
+                g.drawImage(glyphImage, 0, 0, null);
+                g.dispose();
+                return new JLabel(new ImageIcon(cellImage));
+            }
             if (o != null)
             {
                 JLabel label = new JLabel(o.toString(), SwingConstants.CENTER);
