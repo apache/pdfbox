@@ -120,32 +120,35 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             synchronized (LOG)
             {
                 profile = ICC_Profile.getInstance(input);
-            }
-            if (is_sRGB(profile))
-            {
-                awtColorSpace = (ICC_ColorSpace)ColorSpace.getInstance(ColorSpace.CS_sRGB);
-                iccProfile = awtColorSpace.getProfile();
-            }
-            else
-            {
-                awtColorSpace = new ICC_ColorSpace(profile);
-                iccProfile = profile;
-            }
+                if (is_sRGB(profile))
+                {
+                    awtColorSpace = (ICC_ColorSpace) ColorSpace.getInstance(ColorSpace.CS_sRGB);
+                    iccProfile = awtColorSpace.getProfile();
+                }
+                else
+                {
+                    awtColorSpace = new ICC_ColorSpace(profile);
+                    iccProfile = profile;
+                }
 
-            // set initial colour
-            float[] initial = new float[getNumberOfComponents()];
-            for (int c = 0; c < getNumberOfComponents(); c++)
-            {
-                initial[c] = Math.max(0, getRangeForComponent(c).getMin());
-            }
-            initialColor = new PDColor(initial, this);
+                // set initial colour
+                float[] initial = new float[getNumberOfComponents()];
+                for (int c = 0; c < getNumberOfComponents(); c++)
+                {
+                    initial[c] = Math.max(0, getRangeForComponent(c).getMin());
+                }
+                initialColor = new PDColor(initial, this);
 
-            // do things that trigger a ProfileDataException
-            // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740
-            // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
-            awtColorSpace.fromRGB(new float[3]);
-            // this one triggers an exception for PDFBOX-3549 with KCMS
-            new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
+                // do things that trigger a ProfileDataException
+                // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740
+                // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
+                awtColorSpace.fromRGB(new float[3]);
+                awtColorSpace.toRGB(new float[awtColorSpace.getNumComponents()]);
+                awtColorSpace.fromCIEXYZ(new float[3]);
+                awtColorSpace.toCIEXYZ(new float[awtColorSpace.getNumComponents()]);
+                // this one triggers an exception for PDFBOX-3549 with KCMS
+                new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
+            }
         }
         catch (RuntimeException e)
         {
