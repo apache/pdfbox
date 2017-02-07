@@ -758,7 +758,7 @@ final class Type1Parser
     private Token read(Token.Kind kind) throws IOException
     {
         Token token = lexer.nextToken();
-        if (token.getKind() != kind)
+        if (token == null || token.getKind() != kind)
         {
             throw new IOException("Found " + token + " but expected " + kind);
         }
@@ -772,7 +772,7 @@ final class Type1Parser
     private void read(Token.Kind kind, String name) throws IOException
     {
         Token token = read(kind);
-        if (!token.getText().equals(name))
+        if (token == null || !token.getText().equals(name))
         {
             throw new IOException("Found " + token + " but expected " + name);
         }
