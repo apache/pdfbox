@@ -302,7 +302,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
 
     /**
      * Some Type 1 fonts have an invalid Length1, which causes the binary segment of the font
-     * to be truncated, see PDFBOX-2350.
+     * to be truncated, see PDFBOX-2350, PDFBOX-3677.
      *
      * @param bytes Type 1 stream bytes
      * @param length1 Length1 from the Type 1 stream
@@ -316,22 +316,12 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         {
             offset = bytes.length - 4;
         }
-        while (offset > 0)
+
+        offset = findBinaryOffsetAfterExec(bytes, offset);
+        if (offset == 0 && length1 > 0)
         {
-            if (bytes[offset + 0] == 'e' &&
-                bytes[offset + 1] == 'x' &&
-                bytes[offset + 2] == 'e' &&
-                bytes[offset + 3] == 'c')
-            {
-                offset += 4;
-                // skip additional CR LF space characters
-                while (offset < length1 && (bytes[offset] == '\r' || bytes[offset] == '\n' || bytes[offset] == ' '))
-                {
-                    offset++;
-                }
-                break;
-            }
-            offset--;
+            // 2nd try with brute force
+            offset = findBinaryOffsetAfterExec(bytes, bytes.length - 4);
         }
 
         if (length1 - offset != 0 && offset > 0)
@@ -344,6 +334,31 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         }
 
         return length1;
+    }
+
+    private static int findBinaryOffsetAfterExec(byte[] bytes, int startOffset)
+    {
+        int offset = startOffset;
+        while (offset > 0)
+        {
+            if (bytes[offset + 0] == 'e'
+                    && bytes[offset + 1] == 'x'
+                    && bytes[offset + 2] == 'e'
+                    && bytes[offset + 3] == 'c')
+            {
+                offset += 4;
+                // skip additional CR LF space characters
+                while (offset < bytes.length && 
+                        (bytes[offset] == '\r' || bytes[offset] == '\n' || 
+                         bytes[offset] == ' ' || bytes[offset] == '\t'))
+                {
+                    offset++;
+                }
+                break;
+            }
+            offset--;
+        }
+        return offset;
     }
 
     /**
