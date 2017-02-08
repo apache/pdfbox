@@ -837,18 +837,11 @@ final class Type1Parser
         {
             return true;
         }
-        byte by = bytes[0];
-        // The first ciphertext byte must not be an ASCII white space
-        // character code (blank, tab, carriage return or line feed).
-        if (by != 0x0a && by != 0x0d && by != 0x20 && by != '\t')
-        {
-            return true;
-        }
         // "At least one of the first 4 ciphertext bytes must not be one of
         // the ASCII hexadecimal character codes (a code for 0-9, A-F, or a-f)."
         for (int i = 0; i < 4; ++i)
         {
-            by = bytes[i];
+            byte by = bytes[i];
             if (by != 0x0a && by != 0x0d && by != 0x20 && by != '\t' && 
                     Character.digit((char) by, 16) == -1)
             {
