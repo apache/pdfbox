@@ -20,12 +20,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,6 +94,56 @@ public class PDButtonTest
         assertEquals(buttonField.getFieldType(), "Btn");
         assertTrue(buttonField.isRadioButton());
         assertFalse(buttonField.isPushButton());
+    }
+    
+    @Test
+    /**
+     * PDFBOX-3656
+     * 
+     * Test a radio button with options.
+     * This was causing an ArrayIndexOutOfBoundsException when trying to set to "Off", as this
+     * wasn't treated to be a valid option.
+     * 
+     * @throws IOException
+     */
+    public void testRadioButtonWithOptions()
+    {
+        URL url;
+        PDDocument pdfDocument = null;
+        
+        try
+        {
+            url = new URL("https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf");
+            InputStream is = url.openStream();
+            
+            pdfDocument = PDDocument.load(is);
+            
+            PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("Checking/Savings");
+            radioButton.setValue("Off");
+            for (PDAnnotationWidget widget : radioButton.getWidgets())
+            {
+                assertEquals("The widget should be set to Off", COSName.Off, widget.getCOSObject().getItem(COSName.AS));
+            }
+            
+        }
+        catch (IOException e)
+        {
+            fail("Unexpected IOException " + e.getMessage());
+        }
+        finally
+        {
+            if (pdfDocument != null)
+            {
+                try
+                {
+                    pdfDocument.close();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
         
     @Test

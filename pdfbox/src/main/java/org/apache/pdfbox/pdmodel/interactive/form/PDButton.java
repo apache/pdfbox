@@ -375,22 +375,29 @@ public abstract class PDButton extends PDTerminalField
             throw new IllegalArgumentException("The number of options doesn't match the number of widgets");
         }
         
-        // the value is the index of the matching option
-        int optionsIndex = options.indexOf(value);
-        getCOSObject().setName(COSName.V, String.valueOf(optionsIndex));
-
-        
-        // update the appearance state (AS)
-        for (int i = 0; i < widgets.size(); i++)
+        if (value.equals(COSName.Off.getName()))
         {
-            PDAnnotationWidget widget = widgets.get(i);
-            if (value.compareTo(options.get(i)) == 0)
+            updateByValue(value);
+        }
+        else
+        {
+            // the value is the index of the matching option
+            int optionsIndex = options.indexOf(value);
+            getCOSObject().setName(COSName.V, String.valueOf(optionsIndex));
+    
+            
+            // update the appearance state (AS)
+            for (int i = 0; i < widgets.size(); i++)
             {
-                widget.getCOSObject().setName(COSName.AS, String.valueOf(i));
-            }
-            else 
-            {
-                widget.getCOSObject().setItem(COSName.AS, COSName.Off);
+                PDAnnotationWidget widget = widgets.get(i);
+                if (value.compareTo(options.get(i)) == 0)
+                {
+                    widget.getCOSObject().setName(COSName.AS, String.valueOf(i));
+                }
+                else 
+                {
+                    widget.getCOSObject().setItem(COSName.AS, COSName.Off);
+                }
             }
         }
     }
