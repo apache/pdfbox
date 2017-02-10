@@ -342,6 +342,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             state.intersectClippingPath(textClippingArea);
             textClippingArea = null;
+
+            // PDFBOX-3681: lastClip needs to be reset, because after intersection it is still the same 
+            // object, thus setClip() would believe that it is cached.
+            lastClip = null;
         }
     }
 
