@@ -128,6 +128,7 @@ public class COSParser extends BaseParser
      * Contains all found objects of a brute force search.
      */
     private Map<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
+    private Long lastEOFMarker = null;
     private List<Long> bfSearchXRefTablesOffsets = null;
     private List<Long> bfSearchXRefStreamsOffsets = null;
 
@@ -1414,6 +1415,7 @@ public class COSParser extends BaseParser
     {
         if (bfSearchCOSObjectKeyOffsets == null)
         {
+            bfSearchForLastEOFMarker();
             bfSearchCOSObjectKeyOffsets = new HashMap<COSObjectKey, Long>();
             long originOffset = source.getPosition();
             long currentOffset = MINIMUM_SEARCH_OFFSET;
@@ -1439,38 +1441,25 @@ public class COSParser extends BaseParser
                             {
                                 source.seek(--tempOffset);
                             }
-                            int length = 0;
+                            boolean objectIDFound = false;
                             while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
                             {
                                 source.seek(--tempOffset);
-                                length++;
+                                objectIDFound = true;
                             }
-                            if (length > 0)
+                            if (objectIDFound)
                             {
                                 source.read();
-                                byte[] objIDBytes = source.readFully(length);
-                                String objIdString = new String(objIDBytes, 0,
-                                        objIDBytes.length, ISO_8859_1);
-                                Long objectID;
-                                try
-                                {
-                                    objectID = Long.valueOf(objIdString);
-                                }
-                                catch (NumberFormatException exception)
-                                {
-                                    objectID = null;
-                                }
-                                if (objectID != null)
-                                {
-                                    bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(objectID, genID), tempOffset+1);
-                                }
+                                long objectID = readObjectNumber();
+                                bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(objectID, genID),
+                                        tempOffset + 1);
                             }
                         }
                     }
                 }
                 currentOffset++;
             }
-            while (!source.isEOF());
+            while (currentOffset < lastEOFMarker && !source.isEOF());
             // reestablish origin position
             source.seek(originOffset);
         }
@@ -1556,6 +1545,37 @@ public class COSParser extends BaseParser
         }
         return newValue;
     }
+    
+    /**
+     * Brute force search for the last EOF marker.
+     * 
+     * @throws IOException if something went wrong
+     */
+    private void bfSearchForLastEOFMarker() throws IOException
+    {
+        if (lastEOFMarker == null)
+        {
+            long originOffset = source.getPosition();
+            source.seek(MINIMUM_SEARCH_OFFSET);
+            while (!source.isEOF())
+            {
+                // search for EOF marker
+                if (isString(EOF_MARKER))
+                {
+                    lastEOFMarker = source.getPosition();
+                    source.seek(lastEOFMarker + 5);
+                }
+                source.read();
+            }
+            source.seek(originOffset);
+            // no EOF marker found
+            if (lastEOFMarker == null)
+            {
+                lastEOFMarker = Long.MAX_VALUE;
+            }
+        }
+    }
+
     /**
      * Brute force search for all xref entries (tables).
      * 
