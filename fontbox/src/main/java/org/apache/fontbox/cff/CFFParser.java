@@ -501,14 +501,19 @@ public class CFFParser
         {
             parseCIDFontDicts(input, topDict, (CFFCIDFont) font, charStringsIndex.length);
 
-            // some malformed fonts have FontMatrix in their Font DICT, see PDFBOX-2495
-            if (topDict.getEntry("FontMatrix") == null)
+            List<Number> privMatrix = null;
+            List<Map<String, Object>> fontDicts = ((CFFCIDFont) font).getFontDicts();
+            if (fontDicts.size() > 0 && fontDicts.get(0).containsKey("FontMatrix"))
             {
-                List<Map<String, Object>> fontDicts = ((CFFCIDFont) font).getFontDicts();
-                if (fontDicts.size() > 0 && fontDicts.get(0).containsKey("FontMatrix"))
+                privMatrix = (List<Number>) fontDicts.get(0).get("FontMatrix");
+            }
+            // some malformed fonts have FontMatrix in their Font DICT, see PDFBOX-2495
+            List<Number> matrix = topDict.getArray("FontMatrix", null);
+            if (matrix == null)
+            {
+                if (privMatrix != null)
                 {
-                    List<Number> matrix = (List<Number>)fontDicts.get(0).get("FontMatrix");
-                    font.addValueToTopDict("FontMatrix", matrix);
+                    font.addValueToTopDict("FontMatrix", privMatrix);
                 }
                 else
                 {
@@ -518,6 +523,14 @@ public class CFFParser
                                     (double) 0, (double) 0)));
                 }
             }
+            else if (privMatrix != null)
+            {
+                // we have to multiply the font matrix from the top directory with the font matrix
+                // from the private directory. This should be done for synthetic fonts only but in
+                // case of PDFBOX-3579 it's needed as well to get the right scaling
+                concatenateMatrix(matrix, privMatrix);
+            }
+
         }
         else
         {
@@ -525,6 +538,34 @@ public class CFFParser
         }
 
         return font;
+    }
+
+    private void concatenateMatrix(List<Number> matrixDest, List<Number> matrixConcat)
+    {
+        // concatenate matrices
+        // (a b 0)
+        // (c d 0)
+        // (x y 1)
+        double a1 = matrixDest.get(0).doubleValue();
+        double b1 = matrixDest.get(1).doubleValue();
+        double c1 = matrixDest.get(2).doubleValue();
+        double d1 = matrixDest.get(3).doubleValue();
+        double x1 = matrixDest.get(4).doubleValue();
+        double y1 = matrixDest.get(5).doubleValue();
+
+        double a2 = matrixConcat.get(0).doubleValue();
+        double b2 = matrixConcat.get(1).doubleValue();
+        double c2 = matrixConcat.get(2).doubleValue();
+        double d2 = matrixConcat.get(3).doubleValue();
+        double x2 = matrixConcat.get(4).doubleValue();
+        double y2 = matrixConcat.get(5).doubleValue();
+
+        matrixDest.set(0, a1 * a2 + b1 * c2);
+        matrixDest.set(1, a1 * b2 + b1 * d1);
+        matrixDest.set(2, c1 * a2 + d1 * c2);
+        matrixDest.set(3, c1 * b2 + d1 * d2);
+        matrixDest.set(4, x1 * a2 + y1 * c2 + x2);
+        matrixDest.set(5, x1 * b2 + y1 * d2 + y2);
     }
 
     /**
