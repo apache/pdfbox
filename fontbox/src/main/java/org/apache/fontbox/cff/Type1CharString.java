@@ -41,19 +41,22 @@ public class Type1CharString
     private static final Log LOG = LogFactory.getLog(Type1CharString.class);
 
     private Type1CharStringReader font;
-    private String fontName, glyphName;
+    private final String fontName, glyphName;
     private GeneralPath path = null;
     private int width = 0;
     private Point2D.Float leftSideBearing = null;
     private Point2D.Float current = null;
     private boolean isFlex = false;
-    private List<Point.Float> flexPoints = new ArrayList<Point2D.Float>();
+    private final List<Point.Float> flexPoints = new ArrayList<Point2D.Float>();
     protected List<Object> type1Sequence;
     protected int commandCount;
 
     /**
      * Constructs a new Type1CharString object.
-     * @param font Parent Type 1 CharString font
+     *
+     * @param font Parent Type 1 CharString font.
+     * @param fontName Name of the font.
+     * @param glyphName Name of the glyph.
      * @param sequence Type 1 char string sequence
      */
     public Type1CharString(Type1CharStringReader font, String fontName, String glyphName,
@@ -65,7 +68,10 @@ public class Type1CharString
 
     /**
      * Constructor for use in subclasses.
-     * @param font Parent Type 1 CharString font
+     *
+     * @param font Parent Type 1 CharString font.
+     * @param fontName Name of the font.
+     * @param glyphName Name of the glyph.
      */
     protected Type1CharString(Type1CharStringReader font, String fontName, String glyphName)
     {
