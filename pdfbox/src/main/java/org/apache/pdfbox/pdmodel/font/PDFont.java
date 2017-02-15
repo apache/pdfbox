@@ -517,7 +517,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
             try
             {
-                if (toUnicode != null)
+                if (toUnicode != null && toUnicodeCMap != null)
                 {
                     int spaceMapping = toUnicodeCMap.getSpaceMapping();
                     if (spaceMapping > -1)
