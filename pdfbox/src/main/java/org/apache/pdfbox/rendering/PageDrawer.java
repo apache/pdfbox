@@ -248,8 +248,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         clipWindingRule = oldClipWindingRule;
     }
 
+    private float clampColor(float color)
+    {
+        return color < 0 ? 0 : (color > 1 ? 1 : color);        
+    }
+
     /**
      * Returns an AWT paint for the given PDColor.
+     * 
+     * @param color The color to get a paint for. This can be an actual color or a pattern.
+     * @throws IOException
      */
     protected Paint getPaint(PDColor color) throws IOException
     {
