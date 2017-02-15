@@ -39,7 +39,11 @@ public class SetMatrix extends OperatorProcessor
         {
             throw new MissingOperandException(operator, arguments);
         }
-        
+        if (!checkArrayTypesClass(arguments, COSNumber.class))
+        {
+            return;
+        }        
+
         COSNumber a = (COSNumber)arguments.get( 0 );
         COSNumber b = (COSNumber)arguments.get( 1 );
         COSNumber c = (COSNumber)arguments.get( 2 );
