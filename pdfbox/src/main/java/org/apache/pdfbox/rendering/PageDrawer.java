@@ -260,7 +260,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (!(colorSpace instanceof PDPattern))
         {
             float[] rgb = colorSpace.toRGB(color.getComponents());
-            return new Color(rgb[0], rgb[1], rgb[2]);
+            return new Color(clampColor(rgb[0]), clampColor(rgb[1]), clampColor(rgb[2]));
         }
         else
         {
