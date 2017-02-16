@@ -22,6 +22,9 @@ package org.apache.pdfbox.util;
  */
 public class NumberFormatUtil
 {
+    private NumberFormatUtil()
+    {
+    }
 
     /**
      * Maximum number of fraction digits supported by the format methods
