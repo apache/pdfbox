@@ -247,7 +247,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private float clampColor(float color)
     {
-        return (color < 0 ? 0 : (color > 1 ? 1 : color));        
+        return color < 0 ? 0 : (color > 1 ? 1 : color);        
     }
 
     /**
