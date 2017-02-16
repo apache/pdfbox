@@ -54,6 +54,24 @@ class TilingPaint implements Paint
     private final TexturePaint paint;
     private final PageDrawer drawer;
     private final Matrix patternMatrix;
+    private static final int MAXEDGE;
+    private static final String DEFAULTMAXEDGE = "3000";
+
+    static 
+    {
+        String s = System.getProperty("pdfbox.rendering.tilingpaint.maxedge", DEFAULTMAXEDGE);
+        int val;
+        try
+        {
+            val = Integer.parseInt(s);
+        }
+        catch (NumberFormatException ex)
+        {
+            LOG.error("Default will be used", ex);
+            val = Integer.parseInt(DEFAULTMAXEDGE);
+        }
+        MAXEDGE = val;
+    }
 
     /**
      * Creates a new colored tiling Paint, i.e. one that has its own colors.
@@ -215,8 +233,7 @@ class TilingPaint implements Paint
         float width = xStep * xScale;
         float height = yStep * yScale;
 
-        final int MAX = 5000;
-        if (Math.abs(width * height) > MAX * MAX)
+        if (Math.abs(width * height) > MAXEDGE * MAXEDGE)
         {
             // PDFBOX-3653: prevent huge sizes
             LOG.info("Pattern surface is too large, will be clipped");
@@ -225,8 +242,8 @@ class TilingPaint implements Paint
             LOG.info("bbox: " + pattern.getBBox());
             LOG.info("pattern matrix: " + pattern.getMatrix());
             LOG.info("concatenated matrix: " + patternMatrix);
-            width = Math.min(MAX, Math.abs(width)) * Math.signum(width);
-            height = Math.min(MAX, Math.abs(height)) * Math.signum(height);
+            width = Math.min(MAXEDGE, Math.abs(width)) * Math.signum(width);
+            height = Math.min(MAXEDGE, Math.abs(height)) * Math.signum(height);
             //TODO better solution needed
         }
 
