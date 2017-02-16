@@ -122,6 +122,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // glyph caches
     private final Map<PDFont, GlyphCache> glyphCaches = new HashMap<PDFont, GlyphCache>();
 
+    private final TilingPaintFactory tilingPaintFactory = new TilingPaintFactory(this);
+
     /**
      * Constructor.
      *
@@ -273,12 +275,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 if (tilingPattern.getPaintType() == PDTilingPattern.PAINT_COLORED)
                 {
                     // colored tiling pattern
-                    return new TilingPaint(this, tilingPattern, xform);
+                    return tilingPaintFactory.create(tilingPattern, null, null, xform);
                 }
                 else
                 {
                     // uncolored tiling pattern
-                    return new TilingPaint(this, tilingPattern,
+                    return tilingPaintFactory.create(tilingPattern, 
                             patternSpace.getUnderlyingColorSpace(), color, xform);
                 }
             }
