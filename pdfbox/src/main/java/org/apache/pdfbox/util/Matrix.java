@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSNumber;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.Arrays;
 
 /**
  * This class will be used for matrix manipulation.
@@ -695,5 +696,29 @@ public final class Matrix implements Cloneable
                 single[6] + "," +
                 single[7] + "]";
         return sb;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Arrays.hashCode(single);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+        {
+            return true;
+        }
+        if (obj == null)
+        {
+            return false;
+        }
+        if (getClass() != obj.getClass())
+        {
+            return false;
+        }
+        return Arrays.equals(this.single, ((Matrix) obj).single);
     }
 }
