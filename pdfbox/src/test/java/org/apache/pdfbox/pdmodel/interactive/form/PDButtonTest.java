@@ -145,7 +145,63 @@ public class PDButtonTest
             }
         }
     }
+
+    @Test
+    /**
+     * PDFBOX-3682
+     * 
+     * Test a radio button with options.
+     * Special handling for a radio button with /Opt and the On state not being named
+     * after the index.
+     * 
+     * @throws IOException
+     */
+    public void testOptionsAndNamesNotNumbers()
+    {
+        URL url;
+        PDDocument pdfDocument = null;
         
+        try
+        {
+            url = new URL("https://issues.apache.org/jira/secure/attachment/12852207/test.pdf");
+            InputStream is = url.openStream();
+            
+            pdfDocument = PDDocument.load(is);
+            
+            pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton").setValue("c");
+            PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton");
+            radioButton.setValue("c");
+
+            // test that the old behavior is now invalid
+            assertFalse("This shall no longer be 2", "2".equals(radioButton.getValueAsString()));
+            assertFalse("This shall no longer be 2", "2".equals(radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS)));
+            
+            // test for the correct behavior
+            assertTrue("This shall be c", "c".equals(radioButton.getValueAsString()));
+            assertTrue("This shall be c", "c".equals(radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS)));
+            
+            
+        }
+        catch (IOException e)
+        {
+            fail("Unexpected IOException " + e.getMessage());
+        }
+        finally
+        {
+            if (pdfDocument != null)
+            {
+                try
+                {
+                    pdfDocument.close();
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    
     @Test
     public void retrieveAcrobatCheckBoxProperties() throws IOException
     {

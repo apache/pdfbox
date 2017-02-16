@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -299,7 +299,7 @@ public abstract class PDButton extends PDTerminalField
     public Set<String> getOnValues()
     {
         // we need a set as the field can appear multiple times
-        Set<String> onValues = new HashSet<String>();
+        Set<String> onValues = new LinkedHashSet<String>();
         
         if (getExportValues().size() > 0)
         {
@@ -383,21 +383,14 @@ public abstract class PDButton extends PDTerminalField
         {
             // the value is the index of the matching option
             int optionsIndex = options.indexOf(value);
-            getCOSObject().setName(COSName.V, String.valueOf(optionsIndex));
-    
-            
-            // update the appearance state (AS)
-            for (int i = 0; i < widgets.size(); i++)
+
+            // get the values the options are pointing to as
+            // this might not be numerical
+            // see PDFBOX-3682
+            if (optionsIndex != -1)
             {
-                PDAnnotationWidget widget = widgets.get(i);
-                if (value.compareTo(options.get(i)) == 0)
-                {
-                    widget.getCOSObject().setName(COSName.AS, String.valueOf(i));
-                }
-                else 
-                {
-                    widget.getCOSObject().setItem(COSName.AS, COSName.Off);
-                }
+                String[] onValues = getOnValues().toArray(new String[getOnValues().size()]);
+                updateByValue(onValues[optionsIndex]);
             }
         }
     }
