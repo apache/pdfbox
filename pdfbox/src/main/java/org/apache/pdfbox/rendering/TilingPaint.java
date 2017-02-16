@@ -50,9 +50,7 @@ import org.apache.pdfbox.util.Matrix;
 class TilingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(TilingPaint.class);
-    private final PDTilingPattern pattern;
     private final TexturePaint paint;
-    private final PageDrawer drawer;
     private final Matrix patternMatrix;
     private static final int MAXEDGE;
     private static final String DEFAULTMAXEDGE = "3000";
@@ -103,12 +101,10 @@ class TilingPaint implements Paint
     TilingPaint(PageDrawer drawer, PDTilingPattern pattern, PDColorSpace colorSpace,
                        PDColor color, AffineTransform xform) throws IOException
     {
-        this.drawer = drawer;
-        this.pattern = pattern;
         // pattern space -> user space
         patternMatrix = Matrix.concatenate(drawer.getInitialMatrix(), pattern.getMatrix());
-        Rectangle2D anchorRect = getAnchorRect();
-        this.paint = new TexturePaint(getImage(colorSpace, color, xform, anchorRect), anchorRect);
+        Rectangle2D anchorRect = getAnchorRect(pattern);
+        paint = new TexturePaint(getImage(drawer, pattern, colorSpace, color, xform, anchorRect), anchorRect);
     }
 
     /**
@@ -132,8 +128,8 @@ class TilingPaint implements Paint
     /**
      * Returns the pattern image in parent stream coordinates.
      */
-    private BufferedImage getImage(PDColorSpace colorSpace, PDColor color,
-            AffineTransform xform, Rectangle2D anchorRect) throws IOException
+    private BufferedImage getImage(PageDrawer drawer, PDTilingPattern pattern, PDColorSpace colorSpace, 
+            PDColor color, AffineTransform xform, Rectangle2D anchorRect) throws IOException
     {
         ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         ColorModel cm = new ComponentColorModel(outputCS, true, false,
@@ -214,7 +210,7 @@ class TilingPaint implements Paint
     /**
      * Returns the anchor rectangle, which includes the XStep/YStep and scaling.
      */
-    private Rectangle2D getAnchorRect()
+    private Rectangle2D getAnchorRect(PDTilingPattern pattern)
     {
         float xStep = pattern.getXStep();
         if (xStep == 0)
