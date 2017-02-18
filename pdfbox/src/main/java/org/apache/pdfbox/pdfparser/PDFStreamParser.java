@@ -285,12 +285,15 @@ public class PDFStreamParser extends BaseParser
                         imageParams.setItem( (COSName)nextToken, (COSBase)value );
                     }
                     //final token will be the image data, maybe??
-                    Operator imageData = (Operator)nextToken;
-                    if (imageData.getImageData().length == 0)
+                    if (nextToken instanceof Operator)
                     {
-                        LOG.warn("empty inline image at stream offset " + seqSource.getPosition());
+                        Operator imageData = (Operator) nextToken;
+                        if (imageData.getImageData() == null || imageData.getImageData().length == 0)
+                        {
+                            LOG.warn("empty inline image at stream offset " + seqSource.getPosition());
+                        }
+                        beginImageOP.setImageData(imageData.getImageData());
                     }
-                    beginImageOP.setImageData( imageData.getImageData() );
                 }
                 break;
             }
