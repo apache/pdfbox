@@ -302,7 +302,7 @@ public final class PDInlineImage implements PDImage
         List<String> filters = getFilters();
         ByteArrayInputStream in = new ByteArrayInputStream(rawData);
         ByteArrayOutputStream out = new ByteArrayOutputStream(rawData.length);
-        for (int i = 0; i < filters.size(); i++)
+        for (int i = 0; filters != null && i < filters.size(); i++)
         {
             // TODO handling of abbreviated names belongs here, rather than in other classes
             out.reset();
