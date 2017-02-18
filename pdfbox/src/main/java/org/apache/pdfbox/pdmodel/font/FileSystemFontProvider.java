@@ -629,10 +629,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         finally
         {
-            if (ttf != null)
-            {
-                ttf.close();
-            }
+            ttf.close();
         }
     }
 
