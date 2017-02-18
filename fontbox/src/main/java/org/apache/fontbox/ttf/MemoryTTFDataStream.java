@@ -53,10 +53,7 @@ class MemoryTTFDataStream extends TTFDataStream
         }
         finally
         {
-            if( is != null )
-            {
-                is.close();
-            }
+            is.close();
         }
     }
     
