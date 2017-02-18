@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 
@@ -131,9 +132,9 @@ public final class Decrypt
     private void decrypt() throws IOException
     {
         PDDocument document = null;
+        InputStream keyStoreStream = null;
         try
         {
-            InputStream keyStoreStream = null;
             if( keyStore != null )
             {
                 keyStoreStream = new FileInputStream(keyStore);
@@ -165,6 +166,7 @@ public final class Decrypt
             {
                 document.close();
             }
+            IOUtils.closeQuietly(keyStoreStream);
         }
     }
 
