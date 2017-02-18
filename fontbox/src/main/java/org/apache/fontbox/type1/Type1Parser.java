@@ -772,7 +772,7 @@ final class Type1Parser
     private void read(Token.Kind kind, String name) throws IOException
     {
         Token token = read(kind);
-        if (token == null || !token.getText().equals(name))
+        if (!token.getText().equals(name))
         {
             throw new IOException("Found " + token + " but expected " + name);
         }
