@@ -34,6 +34,10 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
+        if (operator.getImageData().length == 0)
+        {
+            return;
+        }
         PDImage image = new PDInlineImage(operator.getImageParameters(),
                                           operator.getImageData(),
                                           context.getResources());
