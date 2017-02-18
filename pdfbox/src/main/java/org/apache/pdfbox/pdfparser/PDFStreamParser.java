@@ -286,6 +286,10 @@ public class PDFStreamParser extends BaseParser
                     }
                     //final token will be the image data, maybe??
                     Operator imageData = (Operator)nextToken;
+                    if (imageData.getImageData().length == 0)
+                    {
+                        LOG.warn("empty inline image at stream offset " + seqSource.getPosition());
+                    }
                     beginImageOP.setImageData( imageData.getImageData() );
                 }
                 break;
