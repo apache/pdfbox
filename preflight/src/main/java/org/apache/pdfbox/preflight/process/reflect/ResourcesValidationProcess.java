@@ -92,12 +92,9 @@ public class ResourcesValidationProcess extends AbstractProcess
     protected void validateFonts(PreflightContext context, PDResources resources) throws ValidationException
     {
         Map<String, PDFont> mapOfFonts = getFonts(resources.getCOSObject(), context);
-        if (mapOfFonts != null)
+        for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
         {
-            for (Entry<String, PDFont> entry : mapOfFonts.entrySet())
-            {
-                ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
-            }
+            ContextHelper.validateElement(context, entry.getValue(), FONT_PROCESS);
         }
     }
 
