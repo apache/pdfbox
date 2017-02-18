@@ -442,12 +442,9 @@ public class COSDocument extends COSBase implements Closeable
                     }
                 }
             }
-            if (streams != null)
+            for (COSStream stream : streams)
             {
-                for(COSStream stream : streams)
-                {
-                    stream.close();
-                }
+                stream.close();
             }
             if (scratchFile != null)
             {
