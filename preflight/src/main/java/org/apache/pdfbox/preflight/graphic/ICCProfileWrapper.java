@@ -24,6 +24,7 @@ package org.apache.pdfbox.preflight.graphic;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
+import java.io.InputStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -138,8 +139,15 @@ public class ICCProfileWrapper
                     COSStream stream = COSUtils.getAsStream(destOutputProfile, document.getDocument());
                     if (stream != null)
                     {
-                        ICC_Profile iccp = ICC_Profile.getInstance(stream.createInputStream());
-                        return new ICCProfileWrapper(iccp);
+                        InputStream is = stream.createInputStream();
+                        try
+                        {
+                            return new ICCProfileWrapper(ICC_Profile.getInstance(is));
+                        }
+                        finally
+                        {
+                            is.close();
+                        }
                     }
                 }
                 catch (IllegalArgumentException e)
