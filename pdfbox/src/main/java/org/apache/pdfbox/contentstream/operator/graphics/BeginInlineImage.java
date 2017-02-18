@@ -34,7 +34,7 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        if (operator.getImageData().length == 0)
+        if (operator.getImageData() == null || operator.getImageData().length == 0)
         {
             return;
         }
