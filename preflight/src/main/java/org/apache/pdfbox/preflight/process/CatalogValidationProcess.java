@@ -23,6 +23,7 @@ package org.apache.pdfbox.preflight.process;
 
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -357,7 +358,16 @@ public class CatalogValidationProcess extends AbstractProcess
                 return;
             }
 
-            ICC_Profile iccp = ICC_Profile.getInstance(stream.createInputStream());
+            InputStream is = stream.createInputStream();
+            ICC_Profile iccp = null;
+            try
+            {
+                iccp = ICC_Profile.getInstance(is);
+            }
+            finally
+            {
+                is.close();
+            }
             
             if (!validateICCProfileNEntry(stream, ctx, iccp))
             {
