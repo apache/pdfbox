@@ -83,7 +83,8 @@ class Type5ShadingContext extends GouraudShadingContext
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream());
         try
         {
-            while (true)
+            boolean eof = false;
+            while (!eof)
             {
                 Vertex p;
                 try
@@ -93,7 +94,7 @@ class Type5ShadingContext extends GouraudShadingContext
                 }
                 catch (EOFException ex)
                 {
-                    break;
+                    eof = true;
                 }
             }
         }
