@@ -16,16 +16,15 @@
  */
 package org.apache.pdfbox.contentstream.operator.text;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.contentstream.operator.MissingOperandException;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
-
-import java.io.IOException;
-import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
 /**
  * Tr: Set text rendering mode.
@@ -47,7 +46,12 @@ public class SetTextRenderingMode extends OperatorProcessor
             return;
         }
         COSNumber mode = (COSNumber) base0;
-        RenderingMode renderingMode = RenderingMode.fromInt(mode.intValue());
+        int val = mode.intValue();
+        if (val < 0 || val >= RenderingMode.values().length)
+        {
+            return;
+        }
+        RenderingMode renderingMode = RenderingMode.fromInt(val);
         context.getGraphicsState().getTextState().setRenderingMode(renderingMode);
     }
 
