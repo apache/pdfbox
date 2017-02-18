@@ -142,31 +142,36 @@ class Type3Font extends FontPane
         }
         PDPage page = new PDPage(new PDRectangle(fontBBox.getWidth() * scale, fontBBox.getHeight() * scale));
         page.setResources(resources);
-        PDPageContentStream cs = new PDPageContentStream(doc, page);
-        cs.transform(Matrix.getTranslateInstance(-fontBBox.getLowerLeftX(), -fontBBox.getLowerLeftY()));
         try
         {
-            AffineTransform at = font.getFontMatrix().createAffineTransform();
-            if (!at.isIdentity())
+            PDPageContentStream cs = new PDPageContentStream(doc, page);
+            cs.transform(Matrix.getTranslateInstance(-fontBBox.getLowerLeftX(), -fontBBox.getLowerLeftY()));
+            try
             {
-                at.invert();
-                cs.transform(new Matrix(at));
+                AffineTransform at = font.getFontMatrix().createAffineTransform();
+                if (!at.isIdentity())
+                {
+                    at.invert();
+                    cs.transform(new Matrix(at));
+                }
             }
+            catch (NoninvertibleTransformException ex)
+            {
+                // "shouldn't happen"
+            }
+            cs.beginText();
+            cs.setFont(font, scale);
+            //TODO support type3 font encoding in PDType3Font.encode
+            cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(Charsets.ISO_8859_1));
+            cs.endText();
+            cs.close();
+            doc.addPage(page);
+            return new PDFRenderer(doc).renderImage(0);
         }
-        catch (NoninvertibleTransformException ex)
+        finally
         {
-            // "shouldn't happen"
+            doc.close();
         }
-        cs.beginText();
-        cs.setFont(font, scale);
-        //TODO support type3 font encoding in PDType3Font.encode
-        cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(Charsets.ISO_8859_1));
-        cs.endText();
-        cs.close();
-        doc.addPage(page);
-        BufferedImage bim = new PDFRenderer(doc).renderImage(0);
-        doc.close();
-        return bim;
     }
 
     private String getEncodingName(PDSimpleFont font)
