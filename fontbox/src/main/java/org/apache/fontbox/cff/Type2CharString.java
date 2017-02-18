@@ -223,17 +223,23 @@ public class Type2CharString extends Type1CharString
         } 
         else if ("rcurveline".equals(name))
         {
-            addCommandList(split(numbers.subList(0, numbers.size() - 2), 6),
-                    new CharStringCommand(8));
-            addCommand(numbers.subList(numbers.size() - 2, numbers.size()),
-                    new CharStringCommand(5));
+            if (numbers.size() >= 2)
+            {
+                addCommandList(split(numbers.subList(0, numbers.size() - 2), 6),
+                        new CharStringCommand(8));
+                addCommand(numbers.subList(numbers.size() - 2, numbers.size()),
+                        new CharStringCommand(5));
+            }
         } 
         else if ("rlinecurve".equals(name))
         {
-            addCommandList(split(numbers.subList(0, numbers.size() - 6), 2),
-                    new CharStringCommand(5));
-            addCommand(numbers.subList(numbers.size() - 6, numbers.size()),
-                    new CharStringCommand(8));
+            if (numbers.size() >= 6)
+            {
+                addCommandList(split(numbers.subList(0, numbers.size() - 6), 2),
+                        new CharStringCommand(5));
+                addCommand(numbers.subList(numbers.size() - 6, numbers.size()),
+                        new CharStringCommand(8));
+            }
         } 
         else if ("vvcurveto".equals(name))
         {
@@ -313,7 +319,7 @@ public class Type2CharString extends Type1CharString
 
     private void drawAlternatingCurve(List<Number> numbers, boolean horizontal)
     {
-        while (numbers.size() > 0)
+        while (numbers.size() >= 4)
         {
             boolean last = numbers.size() == 5;
             if (horizontal)
@@ -337,7 +343,7 @@ public class Type2CharString extends Type1CharString
 
     private void drawCurve(List<Number> numbers, boolean horizontal)
     {
-        while (numbers.size() > 0)
+        while (numbers.size() >= 4)
         {
             boolean first = numbers.size() % 4 == 1;
 
