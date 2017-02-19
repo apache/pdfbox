@@ -1003,13 +1003,14 @@ public class COSWriter implements ICOSVisitor, Closeable
                     if (!incrementalUpdate)
                     {            
                         // write all XObjects as direct objects, this will save some size
+                        // PDFBOX-3684: but avoid dictionary that references itself
                         COSBase item = dict.getItem(COSName.XOBJECT);
-                        if (item != null)
+                        if (item != null && !COSName.XOBJECT.equals(entry.getKey()))
                         {
                             item.setDirect(true);
                         }
                         item = dict.getItem(COSName.RESOURCES);
-                        if (item != null)
+                        if (item != null && !COSName.RESOURCES.equals(entry.getKey()))
                         {
                             item.setDirect(true);
                         }
