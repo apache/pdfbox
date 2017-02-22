@@ -142,10 +142,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 // do things that trigger a ProfileDataException
                 // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740
                 // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
-                awtColorSpace.fromRGB(new float[3]);
                 awtColorSpace.toRGB(new float[awtColorSpace.getNumComponents()]);
-                awtColorSpace.fromCIEXYZ(new float[3]);
-                awtColorSpace.toCIEXYZ(new float[awtColorSpace.getNumComponents()]);
                 // this one triggers an exception for PDFBOX-3549 with KCMS
                 new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
             }
