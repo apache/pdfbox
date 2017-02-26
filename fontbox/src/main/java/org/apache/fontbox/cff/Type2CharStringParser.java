@@ -208,7 +208,7 @@ public class Type2CharStringParser
         return new CharStringCommand(b0);
     }
 
-    private Integer readNumber(int b0, DataInput input) throws IOException
+    private Number readNumber(int b0, DataInput input) throws IOException
     {
 
         if (b0 == 28)
@@ -230,15 +230,13 @@ public class Type2CharStringParser
             int b1 = input.readUnsignedByte();
 
             return -(b0 - 251) * 256 - b1 - 108;
-        } 
+        }
         else if (b0 == 255)
         {
             short value = input.readShort();
-            // The lower bytes are representing the digits after 
-            // the decimal point and aren't needed in this context
-            input.readUnsignedByte();
-            input.readUnsignedByte();
-            return (int) value;
+            // The lower bytes are representing the digits after the decimal point
+            double fraction = input.readUnsignedShort() / 65535d;
+            return value + fraction;
         } 
         else
         {
