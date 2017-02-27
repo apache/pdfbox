@@ -133,10 +133,10 @@ public class PDNonTerminalField extends PDField
         COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
         for (int i = 0; i < kids.size(); i++)
         {
-            COSDictionary cosDict = (COSDictionary)kids.getObject(i);
-            if (cosDict != null)
+            COSBase kid = kids.getObject(i);
+            if (kid instanceof COSDictionary)
             {
-                PDField field = PDField.fromDictionary(getAcroForm(), cosDict, this);
+                PDField field = PDField.fromDictionary(getAcroForm(), (COSDictionary) kid, this);
                 if (field != null)
                 {
                     children.add(field);
