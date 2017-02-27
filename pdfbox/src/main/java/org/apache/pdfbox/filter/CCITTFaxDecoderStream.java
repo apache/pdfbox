@@ -67,6 +67,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     private int[] changesCurrentRow;
     private int changesReferenceRowCount;
     private int changesCurrentRowCount;
+    private int lastChangingElement = 0;
 
     private boolean optionG32D = false;
 
@@ -194,7 +195,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
                         case VALUE_PASSMODE:
                             int pChangingElement = getNextChangingElement(index, white) + 1;
 
-                            if (pChangingElement >= changesReferenceRowCount || pChangingElement == -1) {
+                            if (pChangingElement >= changesReferenceRowCount) {
                                 index = columns;
                             }
                             else {
@@ -228,10 +229,18 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     }
 
     private int getNextChangingElement(final int a0, final boolean white) {
-        int start = white ? 0 : 1;
+        int start = (lastChangingElement & 0xFFFFFFFE) + (white ? 0 : 1);
+        if (start > 2) {
+            start -= 2;
+        }
+
+        if (a0 == 0) {
+            return start;
+        }
 
         for (int i = start; i < changesReferenceRowCount; i += 2) {
-            if (a0 < changesReferenceRow[i] || (a0 == 0 && changesReferenceRow[i] == 0)) {
+            if (a0 < changesReferenceRow[i]) {
+                lastChangingElement = i;
                 return i;
             }
         }
@@ -299,7 +308,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
         int index = 0;
         boolean white = true;
 
-        for (int i = 0; i <= changesCurrentRowCount; i++) {
+            lastChangingElement = 0;
+            for (int i = 0; i <= changesCurrentRowCount; i++) {
             int nextChange = columns;
 
             if (i != changesCurrentRowCount) {
