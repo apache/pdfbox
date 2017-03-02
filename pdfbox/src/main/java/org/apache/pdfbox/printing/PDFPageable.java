@@ -137,24 +137,25 @@ public final class PDFPageable extends Book
         format.setPaper(paper);
         
         // auto portrait/landscape
-        if (orientation == Orientation.AUTO)
+        switch (orientation)
         {
-            if (isLandscape)
-            {
+            case AUTO:
+                if (isLandscape)
+                {
+                    format.setOrientation(PageFormat.LANDSCAPE);
+                }
+                else
+                {
+                    format.setOrientation(PageFormat.PORTRAIT);
+                }   break;
+            case LANDSCAPE:
                 format.setOrientation(PageFormat.LANDSCAPE);
-            }
-            else
-            {
+                break;
+            case PORTRAIT:
                 format.setOrientation(PageFormat.PORTRAIT);
-            }
-        }
-        else if (orientation == Orientation.LANDSCAPE)
-        {
-            format.setOrientation(PageFormat.LANDSCAPE);
-        }
-        else if (orientation == Orientation.PORTRAIT)
-        {
-            format.setOrientation(PageFormat.PORTRAIT);
+                break;
+            default:
+                break;
         }
         
         return format;
