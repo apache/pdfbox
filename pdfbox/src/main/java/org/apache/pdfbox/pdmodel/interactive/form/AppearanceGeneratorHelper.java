@@ -436,27 +436,25 @@ class AppearanceGeneratorHelper
         {
             return new AffineTransform();
         }
-        else
+        float tx = 0, ty = 0;
+        switch (rotation)
         {
-            float tx=0, ty=0;
-
-            if (rotation == 90)
-            {
+            case 90:
                 tx = bbox.getUpperRightY();
-            }
-            else if (rotation == 180)
-            {
+                break;
+            case 180:
                 tx = bbox.getUpperRightY();
                 ty = bbox.getUpperRightX();
-            }
-                else if (rotation == 270)
-            {
+                break;
+            case 270:
                 ty = bbox.getUpperRightX();
-            }
-
-            Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), tx, ty);
-            return matrix.createAffineTransform();
+                break;
+            default:
+                break;
         }
+        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), tx, ty);
+        return matrix.createAffineTransform();
+
     }
 
     
