@@ -390,6 +390,7 @@ public class PDFDebugger extends JFrame
         fileMenu.add(recentFilesMenu);
 
         printMenuItem = new JMenuItem("Print");
+        printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, SHORCUT_KEY_MASK));
         printMenuItem.setEnabled(false);
         printMenuItem.addActionListener(new ActionListener()
         {
