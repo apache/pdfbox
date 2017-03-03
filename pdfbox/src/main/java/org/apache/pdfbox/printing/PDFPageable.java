@@ -140,14 +140,8 @@ public final class PDFPageable extends Book
         switch (orientation)
         {
             case AUTO:
-                if (isLandscape)
-                {
-                    format.setOrientation(PageFormat.LANDSCAPE);
-                }
-                else
-                {
-                    format.setOrientation(PageFormat.PORTRAIT);
-                }   break;
+                format.setOrientation(isLandscape ? PageFormat.LANDSCAPE : PageFormat.PORTRAIT);
+                break;
             case LANDSCAPE:
                 format.setOrientation(PageFormat.LANDSCAPE);
                 break;
