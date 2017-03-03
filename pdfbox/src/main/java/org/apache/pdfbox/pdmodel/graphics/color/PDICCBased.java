@@ -333,26 +333,19 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         {
             return iccProfile.getColorSpaceType();
         }
-        else
+
+        // if the ICC Profile could not be read
+        switch (alternateColorSpace.getNumberOfComponents())
         {
-            // if the ICC Profile could not be read
-            if (alternateColorSpace.getNumberOfComponents() == 1)
-            {
+            case 1:
                 return ICC_ColorSpace.TYPE_GRAY;
-            }
-            else if (alternateColorSpace.getNumberOfComponents() == 3)
-            {
+            case 3:
                 return ICC_ColorSpace.TYPE_RGB;
-            }
-            else if (alternateColorSpace.getNumberOfComponents() == 4)
-            {
+            case 4:
                 return ICC_ColorSpace.TYPE_CMYK;
-            }
-            else
-            {
+            default:
                 // should not happen as all ICC color spaces in PDF must have 1,3, or 4 components
                 return -1;
-            }
         }
     }
 
