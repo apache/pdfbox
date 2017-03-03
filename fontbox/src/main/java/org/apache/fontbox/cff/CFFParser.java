@@ -677,18 +677,18 @@ public class CFFParser
         DictData.Entry encodingEntry = topDict.getEntry("Encoding");
         CFFEncoding encoding;
         int encodingId = encodingEntry != null ? encodingEntry.getNumber(0).intValue() : 0;
-        if (encodingId == 0)
+        switch (encodingId)
         {
-            encoding = CFFStandardEncoding.getInstance();
-        }
-        else if (encodingId == 1)
-        {
-            encoding = CFFExpertEncoding.getInstance();
-        }
-        else
-        {
-            input.setPosition(encodingId);
-            encoding = readEncoding(input, charset);
+            case 0:
+                encoding = CFFStandardEncoding.getInstance();
+                break;
+            case 1:
+                encoding = CFFExpertEncoding.getInstance();
+                break;
+            default:
+                input.setPosition(encodingId);
+                encoding = readEncoding(input, charset);
+                break;
         }
         font.setEncoding(encoding);
 
