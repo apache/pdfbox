@@ -30,7 +30,7 @@ public interface PDVectorFont
     /**
      * Returns the glyph path for the given character code.
      *
-     * @param code character code
+     * @param code character code in a PDF. Not to be confused with unicode.
      * @throws java.io.IOException if the font could not be read
      */
     GeneralPath getPath(int code) throws IOException;
@@ -38,7 +38,7 @@ public interface PDVectorFont
     /**
      * Returns true if this font contains a glyph for the given character code.
      *
-     * @param code character code
+     * @param code character code in a PDF. Not to be confused with unicode.
      */
     boolean hasGlyph(int code) throws IOException;
 }
