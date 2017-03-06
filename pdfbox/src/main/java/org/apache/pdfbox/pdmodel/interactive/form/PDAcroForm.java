@@ -230,35 +230,24 @@ public final class PDAcroForm implements COSObjectable
         // the content stream to write to
         PDPageContentStream contentStream;
         
-        // Hold a reference between the annotations and the page they are on.
-        // This will only be used in case a PDAnnotationWidget doesn't contain
-        // a /P entry specifying the page it's on as the /P entry is optional
-        Map<COSDictionary, Integer> annotationToPageRef = null;
-        
-        // Iterate over all form fields and their widgets and create a
-        // FormXObject at the page content level from that
-        for (PDField field : fields)
+        // preserve all non widget annotations
+        for (PDPage page : document.getPages())
         {
-            for (PDAnnotationWidget widget : field.getWidgets())
+            isContentStreamWrapped = false;
+            
+            List<PDAnnotation> annotations = new ArrayList<PDAnnotation>();
+            
+            for (PDAnnotation annotation: page.getAnnotations())
             {
-                if (!widget.isInvisible() && !widget.isHidden() && widget.getNormalAppearanceStream() != null)
+                if (!(annotation instanceof PDAnnotationWidget))
                 {
-                    PDPage page = widget.getPage();
-
-                    // resolve the page from looking at the annotations
-                    if (widget.getPage() == null) {
-                    	if (annotationToPageRef == null) {
-                    		annotationToPageRef = buildAnnotationToPageRef();
-                    	}
-                    	Integer pageRef = annotationToPageRef.get(widget.getCOSObject());
-                    	if (pageRef != null) {
-                    		page = document.getPage(pageRef);
-                    	}
-                    }
-
+                    annotations.add(annotation);                 
+                }
+                else if (!annotation.isInvisible() && !annotation.isHidden() && annotation.getNormalAppearanceStream() != null)
+                {
                     if (!isContentStreamWrapped)
                     {
-                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
+                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
                         isContentStreamWrapped = true;
                     }
                     else
@@ -266,7 +255,7 @@ public final class PDAcroForm implements COSObjectable
                         contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
                     }
                     
-                    PDAppearanceStream appearanceStream = widget.getNormalAppearanceStream();
+                    PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
                     
                     PDFormXObject fieldObject = new PDFormXObject(appearanceStream.getCOSObject());
                     
@@ -285,48 +274,34 @@ public final class PDAcroForm implements COSObjectable
                     
                     if (needsTranslation)
                     {
-                    	transformationMatrix.translate(widget.getRectangle().getLowerLeftX(),
-                                widget.getRectangle().getLowerLeftY());
-                    	transformed = true;
+                        transformationMatrix.translate(annotation.getRectangle().getLowerLeftX(),
+                                annotation.getRectangle().getLowerLeftY());
+                        transformed = true;
                     }
 
                     if (needsScaling)
                     {                    
-	                    PDRectangle bbox = appearanceStream.getBBox();
-	                    PDRectangle fieldRect = widget.getRectangle();
-	                    
-	                    if (bbox.getWidth() - fieldRect.getWidth() != 0 && bbox.getHeight() - fieldRect.getHeight() != 0)
-	                    {
-	                    	float xScale = fieldRect.getWidth() / bbox.getWidth();
-	                    	float yScale = fieldRect.getHeight() / bbox.getHeight();
-	                    	Matrix scalingMatrix = Matrix.getScaleInstance(xScale, yScale);
-	                    	transformationMatrix.concatenate(scalingMatrix);
-	                    	transformed = true;
-	                    }
+                        PDRectangle bbox = appearanceStream.getBBox();
+                        PDRectangle fieldRect = annotation.getRectangle();
+                        
+                        if (bbox.getWidth() - fieldRect.getWidth() != 0 && bbox.getHeight() - fieldRect.getHeight() != 0)
+                        {
+                            float xScale = fieldRect.getWidth() / bbox.getWidth();
+                            float yScale = fieldRect.getHeight() / bbox.getHeight();
+                            Matrix scalingMatrix = Matrix.getScaleInstance(xScale, yScale);
+                            transformationMatrix.concatenate(scalingMatrix);
+                            transformed = true;
+                        }
                     }
 
                     if (transformed)
                     {
-                    	contentStream.transform(transformationMatrix);
+                        contentStream.transform(transformationMatrix);
                     }
                     
                     contentStream.drawForm(fieldObject);
                     contentStream.restoreGraphicsState();
                     contentStream.close();
-                }
-            }
-        }
-
-        // preserve all non widget annotations
-        for (PDPage page : document.getPages())
-        {
-            List<PDAnnotation> annotations = new ArrayList<PDAnnotation>();
-            
-            for (PDAnnotation annotation: page.getAnnotations())
-            {
-                if (!(annotation instanceof PDAnnotationWidget))
-                {
-                    annotations.add(annotation);                 
                 }
             }
             page.setAnnotations(annotations);
