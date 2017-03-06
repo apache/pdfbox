@@ -250,6 +250,7 @@ public class FDFField implements COSObjectable
     public COSBase getCOSValue() throws IOException
     {
         COSBase value = field.getDictionaryObject(COSName.V);
+        
         if (value instanceof COSName)
         {
             return value;
@@ -288,7 +289,7 @@ public class FDFField implements COSObjectable
         }
         else if (value instanceof String)
         {
-            cos = COSName.getPDFName((String) value);
+            cos = new COSString((String) value);
         }
         else if (value instanceof COSObjectable)
         {
