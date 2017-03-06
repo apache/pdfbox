@@ -189,7 +189,10 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
                             runLength = decodeRun(white ? blackRunTree : whiteRunTree);
                             index += runLength;
-                            changesCurrentRow[changesCurrentRowCount++] = index;
+                            if (changesCurrentRowCount < changesCurrentRow.length)
+                            {
+                                changesCurrentRow[changesCurrentRowCount++] = index;
+                            }
                             break;
 
                         case VALUE_PASSMODE:
