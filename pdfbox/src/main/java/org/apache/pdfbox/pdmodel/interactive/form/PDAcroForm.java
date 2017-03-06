@@ -657,25 +657,6 @@ public final class PDAcroForm implements COSObjectable
         dictionary.setFlag(COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly);
     }
     
-    private Map<COSDictionary, Integer> buildAnnotationToPageRef() {
-    	Map<COSDictionary, Integer> annotationToPageRef = new HashMap<COSDictionary, Integer>();
-    	
-    	int idx = 0;
-    	for (PDPage page : document.getPages()) {
-    		try {
-				for (PDAnnotation annotation : page.getAnnotations()) {
-					if (annotation instanceof PDAnnotationWidget) {
-						annotationToPageRef.put(annotation.getCOSObject(), idx);
-					}
-				}
-			} catch (IOException e) {
-				LOG.warn("Can't retriev annotations for page " + idx);
-			}
-    		idx++;
-    	}    	
-    	return annotationToPageRef;
-    }
-    
     /**
      * Check if there is a translation needed to place the annotations content.
      * 
