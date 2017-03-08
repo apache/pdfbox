@@ -115,6 +115,12 @@ public class CreateSignature extends CreateSignatureBase
     {
         setTsaClient(tsaClient);
 
+        int accessPermissions = getMDPPermission(document);
+        if (accessPermissions == 1)
+        {
+            throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
+        }     
+
         // create signature dictionary
         PDSignature signature = new PDSignature();
         signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
@@ -126,6 +132,12 @@ public class CreateSignature extends CreateSignatureBase
 
         // the signing date, needed for valid signature
         signature.setSignDate(Calendar.getInstance());
+
+        // Optional: certify 
+        if (accessPermissions == 0)
+        {
+            setMDPPermission(document, signature, 2);
+        }        
 
         if (isExternalSigning())
         {
