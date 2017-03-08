@@ -47,7 +47,6 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public PDAnnotationSquareCircle(String subType)
     {
-        super();
         setSubtype(subType);
     }
 
