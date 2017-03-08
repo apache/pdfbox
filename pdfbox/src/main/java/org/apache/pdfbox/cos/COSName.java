@@ -192,6 +192,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DOC = new COSName("Doc");
     public static final COSName DOC_CHECKSUM = new COSName("DocChecksum");
     public static final COSName DOC_TIME_STAMP = new COSName("DocTimeStamp");
+    public static final COSName DOCMDP = new COSName("DocMDP");
     public static final COSName DOMAIN = new COSName("Domain");
     public static final COSName DOS = new COSName("DOS");
     public static final COSName DP = new COSName("DP");
