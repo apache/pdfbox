@@ -58,7 +58,6 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      */
     public PDAnnotationTextMarkup(String subType)
     {
-        super();
         setSubtype(subType);
 
         // Quad points are required, set and empty array

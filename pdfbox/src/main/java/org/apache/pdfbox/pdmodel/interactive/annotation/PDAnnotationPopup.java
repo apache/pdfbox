@@ -39,7 +39,6 @@ public class PDAnnotationPopup extends PDAnnotation
      */
     public PDAnnotationPopup()
     {
-        super();
         getCOSObject().setItem(COSName.SUBTYPE, COSName.getPDFName(SUB_TYPE));
     }
 
