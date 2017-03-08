@@ -140,8 +140,8 @@ class TilingPaint implements Paint
 
         // device scale transform (i.e. DPI) (see PDFBOX-1466.pdf)
         Matrix xformMatrix = new Matrix(xform);
-        float xScale = xformMatrix.getScalingFactorX();
-        float yScale = xformMatrix.getScalingFactorY();
+        float xScale = Math.abs(xformMatrix.getScalingFactorX());
+        float yScale = Math.abs(xformMatrix.getScalingFactorY());
         width *= xScale;
         height *= yScale;
 
