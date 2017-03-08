@@ -76,7 +76,6 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public PDAnnotationMarkup()
     {
-        super();
     }
 
     /**
