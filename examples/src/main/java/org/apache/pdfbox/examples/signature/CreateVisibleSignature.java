@@ -144,6 +144,15 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // load document
         PDDocument doc = PDDocument.load(inputFile);
 
+        int accessPermissions = getMDPPermission(doc);
+        if (accessPermissions == 1)
+        {
+            throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
+        }
+        // Note that PDFBox has a bug that visual signing on certified files with permission 2
+        // doesn't work properly, see PDFBOX-3699. As long as this issue is open, you may want to 
+        // be careful with such files.        
+
         PDSignature signature;
 
         // sign a PDF with an existing empty signature, as created by the CreateEmptySignatureForm example. 
@@ -154,6 +163,12 @@ public class CreateVisibleSignature extends CreateSignatureBase
             // create signature dictionary
             signature = new PDSignature();
         }
+
+        // Optional: certify 
+        if (accessPermissions == 0)
+        {
+            setMDPPermission(doc, signature, 2);
+        }      
 
         // default filter
         signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
