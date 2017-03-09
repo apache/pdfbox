@@ -88,8 +88,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
         
         this.fillOrder = fillOrder;
 
-        this.changesReferenceRow = new int[columns+1];
-        this.changesCurrentRow = new int[columns+1];
+        this.changesReferenceRow = new int[columns + 2];
+        this.changesCurrentRow = new int[columns + 2];
 
         switch (type) {
             case TIFFExtension.COMPRESSION_CCITT_MODIFIED_HUFFMAN_RLE:
@@ -189,10 +189,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
                             runLength = decodeRun(white ? blackRunTree : whiteRunTree);
                             index += runLength;
-                            if (changesCurrentRowCount < changesCurrentRow.length)
-                            {
-                                changesCurrentRow[changesCurrentRowCount++] = index;
-                            }
+                            changesCurrentRow[changesCurrentRowCount++] = index;
                             break;
 
                         case VALUE_PASSMODE:
