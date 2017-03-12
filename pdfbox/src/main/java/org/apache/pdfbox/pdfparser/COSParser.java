@@ -252,7 +252,7 @@ public class COSParser extends BaseParser
                 {
                     int streamOffset = trailer.getInt(COSName.XREF_STM);
                     // check the xref stream reference
-                    fixedOffset = checkXRefStreamOffset(streamOffset, false);
+                    fixedOffset = checkXRefOffset(streamOffset);
                     if (fixedOffset > -1 && fixedOffset != streamOffset)
                     {
                         LOG.warn("/XRefStm offset " + streamOffset + " is incorrect, corrected to " + fixedOffset);
@@ -1199,30 +1199,32 @@ public class COSParser extends BaseParser
         }
         if (startXRefOffset > 0)
         {
-            long fixedOffset = checkXRefStreamOffset(startXRefOffset, true);
-            if (fixedOffset > -1)
+            if (checkXRefStreamOffset(startXRefOffset))
             {
-                return fixedOffset;
+                return startXRefOffset;
+            }
+            else
+            {
+                return calculateXRefFixedOffset(startXRefOffset, false);
             }
         }
-        // try to find a fixed offset
-        return calculateXRefFixedOffset(startXRefOffset, false);
+        // can't find a valid offset
+        return -1;
     }
 
     /**
      * Check if the cross reference stream can be found at the current offset.
      * 
      * @param startXRefOffset the expected start offset of the XRef stream
-     * @param checkOnly check only but don't repair the offset if set to true
      * @return the revised offset
      * @throws IOException if something went wrong
      */
-    private long checkXRefStreamOffset(long startXRefOffset, boolean checkOnly) throws IOException
+    private boolean checkXRefStreamOffset(long startXRefOffset) throws IOException
     {
         // repair mode isn't available in non-lenient mode
         if (!isLenient || startXRefOffset == 0)
         {
-            return startXRefOffset;
+            return true;
         }
         // seek to offset-1 
         source.seek(startXRefOffset-1);
@@ -1244,19 +1246,17 @@ public class COSParser extends BaseParser
                     source.seek(startXRefOffset);
                     if (dict != null && "XRef".equals(dict.getNameAsString(COSName.TYPE)))
                     {
-                        return startXRefOffset;
+                        return true;
                     }
                 }
                 catch (IOException exception)
                 {
-                // there wasn't an object of a xref stream
-                    // try to repair the offset
+                    // there wasn't an object of a xref stream
                     source.seek(startXRefOffset);
                 }
             }
         }
-        // try to find a fixed offset
-        return checkOnly ? -1 : calculateXRefFixedOffset(startXRefOffset, true);
+        return false;
     }
     
     /**
@@ -1338,28 +1338,34 @@ public class COSParser extends BaseParser
                     // remove all found object streams
                     if (!objStreams.isEmpty())
                     {
-                        for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
-                        {
-                            objStreams.remove(key);
-                        }
-                        // remove all objects which are part of an object stream which wasn't found
                         for (COSObjectKey key : objStreams)
                         {
-                            Set<Long> objects = xrefTrailerResolver
-                                    .getContainedObjectNumbers((int) (key.getNumber()));
-                            for (Long objNr : objects)
+                            if (bfSearchCOSObjectKeyOffsets.containsKey(key))
                             {
-                                xrefOffset.remove(new COSObjectKey(objNr, 0));
+                                // remove all parsed objects which are part of an object stream
+                                Set<Long> objects = xrefTrailerResolver
+                                        .getContainedObjectNumbers((int) (key.getNumber()));
+                                for (Long objNr : objects)
+                                {
+                                    COSObjectKey streamObjectKey = new COSObjectKey(objNr, 0);
+                                    Long streamObjectOffset = bfSearchCOSObjectKeyOffsets
+                                            .get(streamObjectKey);
+                                    if (streamObjectOffset != null && streamObjectOffset > 0)
+                                    {
+                                        bfSearchCOSObjectKeyOffsets.remove(streamObjectKey);
+                                    }
+                                }
                             }
-                        }
-                    }
-                    // remove all objects which are part of an object stream which wasn't found
-                    for (COSObjectKey key : objStreams)
-                    {
-                        Set<Long> objects = xrefTrailerResolver.getContainedObjectNumbers((int)(key.getNumber()));
-                        for (Long objNr :objects)
-                        {
-                            xrefOffset.remove(new COSObjectKey(objNr, 0));
+                            else
+                            {
+                                // remove all objects which are part of an object stream which wasn't found
+                                Set<Long> objects = xrefTrailerResolver
+                                        .getContainedObjectNumbers((int) (key.getNumber()));
+                                for (Long objNr : objects)
+                                {
+                                    xrefOffset.remove(new COSObjectKey(objNr, 0));
+                                }
+                            }
                         }
                     }
                     LOG.debug("Replaced read xref table with the results of a brute force search");
@@ -1648,7 +1654,7 @@ public class COSParser extends BaseParser
                     long newOffset = -1;
                     long xrefOffset = source.getPosition();
                     boolean objFound = false;
-                    for (int i = 1; i < 30 && !objFound; i++)
+                    for (int i = 1; i < 40 && !objFound; i++)
                     {
                         long currentOffset = xrefOffset - (i * 10);
                         if (currentOffset > 0)
