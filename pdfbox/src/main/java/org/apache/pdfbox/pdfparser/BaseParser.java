@@ -150,26 +150,29 @@ public abstract class BaseParser
     private COSBase parseCOSDictionaryValue() throws IOException
     {
         long numOffset = seqSource.getPosition();
-        COSBase number = parseDirObject();
+        COSBase value = parseDirObject();
         skipSpaces();
-        if (!isDigit())
+        // proceed if the given object is a number and the following is a number as well
+        if (!(value instanceof COSNumber) || !isDigit())
         {
-            return number;
+            return value;
         }
+        // read the remaining information of the object number
         long genOffset = seqSource.getPosition();
         COSBase generationNumber = parseDirObject();
         skipSpaces();
         readExpectedChar('R');
-        if (!(number instanceof COSInteger))
+        if (!(value instanceof COSInteger))
         {
-            throw new IOException("expected number, actual=" + number + " at offset " + numOffset);
+            throw new IOException("expected number, actual=" + value + " at offset " + numOffset);
         }
         if (!(generationNumber instanceof COSInteger))
         {
-            throw new IOException("expected number, actual=" + number + " at offset " + genOffset);
+            throw new IOException("expected number, actual=" + value + " at offset " + genOffset);
         }
-        COSObjectKey key = new COSObjectKey(((COSInteger) number).longValue(),
+        COSObjectKey key = new COSObjectKey(((COSInteger) value).longValue(),
                 ((COSInteger) generationNumber).intValue());
+        // dereference the object
         return getObjectFromPool(key);
     }
 
