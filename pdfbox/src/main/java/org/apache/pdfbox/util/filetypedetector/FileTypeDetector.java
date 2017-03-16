@@ -110,4 +110,9 @@ public final class FileTypeDetector
         //noinspection ConstantConditions
         return root.find(bytes);
     }
+
+    public static FileType detectFileType(final byte[] fileBytes) throws IOException
+    {
+        return root.find(fileBytes);
+    }
 }
