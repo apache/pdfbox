@@ -71,8 +71,23 @@ public final class JPEGFactory
     public static PDImageXObject createFromStream(PDDocument document, InputStream stream)
             throws IOException
     {
+        return createFromByteArray(document, IOUtils.toByteArray(stream));
+    }
+
+    /**
+     * Creates a new JPEG Image XObject from a byte array containing JPEG data.
+     *
+     * @param document the document where the image will be created
+     * @param byteArray bytes of JPEG image
+     * @return a new Image XObject
+     *
+     * @throws IOException if the input stream cannot be read
+     */
+    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray)
+            throws IOException
+    {
         // copy stream
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(IOUtils.toByteArray(stream));
+        ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
 
         // read image
         BufferedImage awtImage = readJPEG(byteStream);
