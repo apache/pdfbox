@@ -22,6 +22,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -283,6 +284,56 @@ public final class PDImageXObject extends PDXObject implements PDImage
             return LosslessFactory.createFromImage(doc, bim);
         }
         throw new IllegalArgumentException("Image type not supported: " + file.getName());
+    }
+
+    /**
+     * Create a PDImageXObject from bytes of an image file. The file format is determined by the
+     * file content. The following file types are supported: jpg, jpeg, tif, tiff, gif, bmp and png.
+     * This is a convenience method that calls {@link JPEGFactory#createFromBytesArray},
+     * {@link CCITTFactory#createFromFile} or {@link ImageIO#read} combined with
+     * {@link LosslessFactory#createFromImage}. (The later can also be used to create a
+     * PDImageXObject from a BufferedImage).
+     *
+     * @param byteArray bytes from an image file.
+     * @param document the document that shall use this PDImageXObject.
+     * @param name name of image file for exception messages, can be null.
+     * @return a PDImageXObject.
+     * @throws IOException if there is an error when reading the file or creating the
+     * PDImageXObject.
+     * @throws IllegalArgumentException if the image type is not supported.
+     */
+    public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name) throws IOException
+    {
+        FileType fileType;
+        try
+        {
+            fileType = FileTypeDetector.detectFileType(byteArray);
+        }
+        catch (IOException e)
+        {
+            throw new IOException("Could not determine file type: " + name, e);
+        }
+        if (fileType == null)
+        {
+            throw new IllegalArgumentException("Image type not supported: " + name);
+        }
+
+        if (fileType.equals(FileType.JPEG))
+        {
+            PDImageXObject imageXObject = JPEGFactory.createFromByteArray(document, byteArray);
+            return imageXObject;
+        }
+        if (fileType.equals(FileType.TIFF))
+        {
+            return CCITTFactory.createFromByteArray(document, byteArray);
+        }
+        if (fileType.equals(FileType.BMP) || fileType.equals(FileType.GIF) || fileType.equals(FileType.PNG))
+        {
+            ByteArrayInputStream bais = new ByteArrayInputStream(byteArray);
+            BufferedImage bim = ImageIO.read(bais);
+            return LosslessFactory.createFromImage(document, bim);
+        }
+        throw new IllegalArgumentException("Image type not supported: " + name);
     }
 
     // repairs parameters using decode result
