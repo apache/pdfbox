@@ -247,7 +247,7 @@ public abstract class PDField implements COSObjectable
             
             if (fieldValue instanceof COSName)
             {
-                currentField.setValue(((COSName) fieldValue).getName());;
+                currentField.setValue(((COSName) fieldValue).getName());
             }
             else if (fieldValue instanceof COSString)
             {
@@ -261,7 +261,7 @@ public abstract class PDField implements COSObjectable
             {
                 ((PDChoice) this).setValue(COSArrayList.convertCOSStringCOSArrayToList((COSArray) fieldValue));
             }
-            else if (fieldValue != null)
+            else
             {
                 throw new IOException("Error:Unknown type for field import" + fieldValue);
             }
