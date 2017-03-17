@@ -346,7 +346,9 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            LOG.error("Could not write to font cache", e);
+            LOG.warn("Could not write to font cache", e);
+            LOG.warn("Installed fonts information will have to be reloaded for each start");
+            LOG.warn("You can assign a directory to the 'pdfbox.fontcache' property");
         }
         finally
         {
