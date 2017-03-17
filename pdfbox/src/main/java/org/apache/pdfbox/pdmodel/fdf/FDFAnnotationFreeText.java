@@ -48,7 +48,6 @@ public class FDFAnnotationFreeText extends FDFAnnotation
      */
     public FDFAnnotationFreeText()
     {
-        super();
         annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
