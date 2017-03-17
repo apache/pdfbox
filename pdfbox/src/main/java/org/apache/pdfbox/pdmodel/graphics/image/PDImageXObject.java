@@ -320,8 +320,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
         if (fileType.equals(FileType.JPEG))
         {
-            PDImageXObject imageXObject = JPEGFactory.createFromByteArray(document, byteArray);
-            return imageXObject;
+            return JPEGFactory.createFromByteArray(document, byteArray);
         }
         if (fileType.equals(FileType.TIFF))
         {
