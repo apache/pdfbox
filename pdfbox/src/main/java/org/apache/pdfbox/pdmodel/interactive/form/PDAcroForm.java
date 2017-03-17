@@ -225,7 +225,7 @@ public final class PDAcroForm implements COSObjectable
     	
         // indicates if the original content stream
         // has been wrapped in a q...Q pair.
-        boolean isContentStreamWrapped = false;
+        boolean isContentStreamWrapped;
         
         // the content stream to write to
         PDPageContentStream contentStream;
