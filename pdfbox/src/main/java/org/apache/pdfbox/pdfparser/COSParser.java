@@ -223,24 +223,6 @@ public class COSParser extends BaseParser
                 // xref table and trailer
                 // use existing parser to parse xref table
                 parseXrefTable(prev);
-                // parse the last trailer.
-                trailerOffset = source.getPosition();
-                // PDFBOX-1739 skip extra xref entries in RegisSTAR documents
-                if (isLenient)
-                {
-                    int nextCharacter = source.peek();
-                    while (nextCharacter != 't' && isDigit(nextCharacter))
-                    {
-                        if (source.getPosition() == trailerOffset)
-                        {
-                            // warn only the first time
-                            LOG.warn("Expected trailer object at position " + trailerOffset
-                                    + ", keep trying");
-                        }
-                        readLine();
-                        nextCharacter = source.peek();
-                    }
-                }
                 if (!parseTrailer())
                 {
                     throw new IOException("Expected trailer object at position: "
@@ -1568,8 +1550,22 @@ public class COSParser extends BaseParser
                 // search for EOF marker
                 if (isString(EOF_MARKER))
                 {
-                    lastEOFMarker = source.getPosition();
-                    source.seek(lastEOFMarker + 5);
+                    long tempMarker = source.getPosition();
+                    source.seek(tempMarker + 5);
+                    try
+                    {
+                        // check if the following data is some valid pdf content
+                        // which most likely indicates that the pdf is linearized,
+                        // updated or just cut off somewhere in the middle
+                        skipSpaces();
+                        readObjectNumber();
+                        readGenerationNumber();
+                    }
+                    catch (IOException exception)
+                    {
+                        // save the EOF marker as the following data is most likely some garbage
+                        lastEOFMarker = tempMarker;
+                    }
                 }
                 source.read();
             }
@@ -1846,6 +1842,24 @@ public class COSParser extends BaseParser
      */
     private boolean parseTrailer() throws IOException
     {
+        // parse the last trailer.
+        trailerOffset = source.getPosition();
+        // PDFBOX-1739 skip extra xref entries in RegisSTAR documents
+        if (isLenient)
+        {
+            int nextCharacter = source.peek();
+            while (nextCharacter != 't' && isDigit(nextCharacter))
+            {
+                if (source.getPosition() == trailerOffset)
+                {
+                    // warn only the first time
+                    LOG.warn("Expected trailer object at position " + trailerOffset
+                            + ", keep trying");
+                }
+                readLine();
+                nextCharacter = source.peek();
+            }
+        }
         if(source.peek() != 't')
         {
             return false;
