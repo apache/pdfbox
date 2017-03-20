@@ -227,9 +227,13 @@ public class FDFField implements COSObjectable
         {
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray) value);
         }
-        else if (value instanceof COSString || value instanceof COSStream)
+        else if (value instanceof COSString)
         {
-            return value;
+            return ((COSString) value).getString();
+        }
+        else if (value instanceof COSStream)
+        {
+            return ((COSStream) value).toTextString();
         }
         else if (value != null)
         {
