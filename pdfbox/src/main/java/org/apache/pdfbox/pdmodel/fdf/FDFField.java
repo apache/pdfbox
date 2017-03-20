@@ -210,8 +210,8 @@ public class FDFField implements COSObjectable
 
     /**
      * This will get the value for the field. This will return type will either be <br>
-     * String : Checkboxes, Radio Button <br>
-     * java.util.List of strings: Choice Field PDTextStream: Textfields
+     * String : Checkboxes, Radio Button, Textfields<br>
+     * java.util.List of strings: Choice Field
      *
      * @return The value of the field.
      * @throws IOException If there is an error getting the value.
@@ -227,9 +227,13 @@ public class FDFField implements COSObjectable
         {
             return COSArrayList.convertCOSStringCOSArrayToList((COSArray) value);
         }
-        else if (value instanceof COSString || value instanceof COSStream)
+        else if (value instanceof COSString)
         {
-            return value;
+            return ((COSString) value).getString();
+        }
+        else if (value instanceof COSStream)
+        {
+            return ((COSStream) value).toTextString();
         }
         else if (value != null)
         {
