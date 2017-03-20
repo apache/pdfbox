@@ -133,7 +133,7 @@ class AppearanceGeneratorHelper
                 // TODO support appearances other than "normal"
                 
                 PDAppearanceStream appearanceStream;
-                if (appearance.isStream())
+                if (appearance != null && appearance.isStream())
                 {
                     appearanceStream = appearance.getAppearanceStream();
                 }
