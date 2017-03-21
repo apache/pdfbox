@@ -154,9 +154,13 @@ public class PDPage implements COSObjectable, PDContentStream
             List<InputStream> inputStreams = new ArrayList<InputStream>();
             for (int i = 0; i < streams.size(); i++)
             {
-                COSStream stream = (COSStream)streams.getObject(i);
-                inputStreams.add(stream.createInputStream());
-                inputStreams.add(new ByteArrayInputStream(delimiter));
+                COSBase strm = streams.getObject(i);
+                if (strm instanceof COSStream)
+                {
+                    COSStream stream = (COSStream) strm;
+                    inputStreams.add(stream.createInputStream());
+                    inputStreams.add(new ByteArrayInputStream(delimiter));
+                }
             }
             return new SequenceInputStream(Collections.enumeration(inputStreams));
         }
