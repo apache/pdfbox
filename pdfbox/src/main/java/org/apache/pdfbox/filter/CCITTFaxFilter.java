@@ -49,8 +49,8 @@ final class CCITTFaxFilter extends Filter
         int height = parameters.getInt(COSName.HEIGHT, COSName.H, 0);
         if (rows > 0 && height > 0)
         {
-            // ensure that rows doesn't contain implausible data, see PDFBOX-771
-            rows = Math.min(rows, height);
+            // PDFBOX-771, PDFBOX-3727: rows in DecodeParms sometimes contains an incorrect value
+            rows = height;
         }
         else
         {
