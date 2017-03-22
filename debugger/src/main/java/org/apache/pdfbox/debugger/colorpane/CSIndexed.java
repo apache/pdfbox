@@ -55,7 +55,7 @@ public class CSIndexed
         try
         {
             indexed = new PDIndexed(array);
-            colorCount = getHival(array);
+            colorCount = getHival(array) + 1;
             initUI(getColorantData());
         }
         catch (IOException e)
