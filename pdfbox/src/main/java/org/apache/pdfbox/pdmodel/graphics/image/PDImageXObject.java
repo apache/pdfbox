@@ -289,7 +289,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     /**
      * Create a PDImageXObject from bytes of an image file. The file format is determined by the
      * file content. The following file types are supported: jpg, jpeg, tif, tiff, gif, bmp and png.
-     * This is a convenience method that calls {@link JPEGFactory#createFromBytesArray},
+     * This is a convenience method that calls {@link JPEGFactory#createFromByteArray},
      * {@link CCITTFactory#createFromFile} or {@link ImageIO#read} combined with
      * {@link LosslessFactory#createFromImage}. (The later can also be used to create a
      * PDImageXObject from a BufferedImage).
