@@ -54,24 +54,30 @@ public class PDFunctionType2 extends PDFunction
     {
         super(function);
 
-        if (getCOSObject().getDictionaryObject(COSName.C0) == null)
-        {
-            c0 = new COSArray();
-            c0.add(new COSFloat(0));
-        }
-        else
+        if (getCOSObject().getDictionaryObject(COSName.C0) instanceof COSArray)
         {
             c0 = (COSArray) getCOSObject().getDictionaryObject(COSName.C0);
         }
-
-        if (getCOSObject().getDictionaryObject(COSName.C1) == null)
+        else
         {
-            c1 = new COSArray();
-            c1.add(new COSFloat(1));
+            c0 = new COSArray();
+        }
+        if (c0.size() == 0)
+        {
+            c0.add(new COSFloat(0));
+        }
+
+        if (getCOSObject().getDictionaryObject(COSName.C1) instanceof COSArray)
+        {
+            c1 = (COSArray) getCOSObject().getDictionaryObject(COSName.C1);
         }
         else
         {
-            c1 = (COSArray) getCOSObject().getDictionaryObject(COSName.C1);
+            c1 = new COSArray();
+        }
+        if (c1.size() == 0)
+        {
+            c1.add(new COSFloat(1));
         }
 
         exponent = getCOSObject().getFloat(COSName.N);
@@ -97,7 +103,7 @@ public class PDFunctionType2 extends PDFunction
         // exponential interpolation
         float xToN = (float) Math.pow(input[0], exponent); // x^exponent
 
-        float[] result = new float[c0.size()];
+        float[] result = new float[Math.min(c0.size(),c1.size())];
         for (int j = 0; j < result.length; j++)
         {
             float c0j = ((COSNumber) c0.get(j)).floatValue();
