@@ -532,6 +532,15 @@ final class Type1Parser
                 read(Token.NAME, "executeonly");
                 read(Token.NAME, "def");
             }
+            else if (key.equals("RD"))
+            {
+                // /RD {string currentfile exch readstring pop} bind executeonly def
+                read(Token.START_PROC);
+                readProc();
+                readMaybe(Token.NAME, "bind");                
+                readMaybe(Token.NAME, "executeonly");                
+                read(Token.NAME, "def");
+            }
             else
             {
                 readPrivate(key, readDictValue());
