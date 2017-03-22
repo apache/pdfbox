@@ -104,7 +104,7 @@ final class CCITTFaxFilter extends Filter
         // repair missing color space
         if (!parameters.containsKey(COSName.COLORSPACE))
         {
-            result.getParameters().setName(COSName.COLORSPACE, COSName.DEVICEGRAY.getName());
+            result.getParameters().setItem(COSName.COLORSPACE, COSName.DEVICEGRAY);
         }
 
         decoded.write(decompressed);
