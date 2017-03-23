@@ -1225,7 +1225,8 @@ public class PDDocument implements Closeable
     /**
      * This will save the document to an output stream.
      * 
-     * @param output The stream to write to.
+     * @param output The stream to write to. It is recommended to wrap it in a
+     * {@link java.io.BufferedOutputStream}, unless it is already buffered.
      *
      * @throws IOException if the output could not be written
      */
