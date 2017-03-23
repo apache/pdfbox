@@ -124,7 +124,7 @@ final class SampledImageReader
 
         if (width <= 0 || height <= 0)
         {
-            throw new IOException("image weight and height must be positive");
+            throw new IOException("image width and height must be positive");
         }
 
         //
