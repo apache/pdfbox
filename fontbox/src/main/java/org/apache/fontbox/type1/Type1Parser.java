@@ -502,19 +502,19 @@ final class Type1Parser
             // key/value
             String key = read(Token.LITERAL).getText();
 
-            if (key.equals("Subrs"))
+            if ("Subrs".equals(key))
             {
                 readSubrs(lenIV);
             }
-            else if (key.equals("OtherSubrs"))
+            else if ("OtherSubrs".equals(key))
             {
                 readOtherSubrs();
             }
-            else if (key.equals("lenIV"))
+            else if ("lenIV".equals(key))
             {
                 lenIV = readDictValue().get(0).intValue();
             }
-            else if (key.equals("ND"))
+            else if ("ND".equals(key))
             {
                 read(Token.START_PROC);
                 read(Token.NAME, "noaccess");
@@ -523,7 +523,7 @@ final class Type1Parser
                 read(Token.NAME, "executeonly");
                 read(Token.NAME, "def");
             }
-            else if (key.equals("NP"))
+            else if ("NP".equals(key))
             {
                 read(Token.START_PROC);
                 read(Token.NAME, "noaccess");
@@ -532,7 +532,7 @@ final class Type1Parser
                 read(Token.NAME, "executeonly");
                 read(Token.NAME, "def");
             }
-            else if (key.equals("RD"))
+            else if ("RD".equals(key))
             {
                 // /RD {string currentfile exch readstring pop} bind executeonly def
                 read(Token.START_PROC);
