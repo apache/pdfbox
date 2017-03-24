@@ -83,7 +83,7 @@ public class AddImageToPDF
                 BufferedImage awtImage = ImageIO.read( new File( image ) );
                 ximage = new PDPixelMap(doc, awtImage);
             }
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, true, true, true);
 
             //contentStream.drawImage(ximage, 20, 20 );
             // better method inspired by http://stackoverflow.com/a/22318681/535646
