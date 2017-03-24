@@ -58,7 +58,7 @@ public class AddImageToPDF
             // if you already have the image in a BufferedImage, 
             // call LosslessFactory.createFromImage() instead
             PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, doc);
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.APPEND, true);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.APPEND, true, true);
 
             // contentStream.drawImage(ximage, 20, 20 );
             // better method inspired by http://stackoverflow.com/a/22318681/535646
