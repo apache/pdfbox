@@ -20,9 +20,7 @@
 
 package org.apache.xmpbox.schema;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.JobType;
@@ -69,8 +67,7 @@ public class BasicJobTicketSchemaTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
-        InputStream is = new ByteArrayInputStream(bos.toByteArray());
-        XMPMetadata rxmp = builder.parse(is);
+        XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         Assert.assertNotNull(jt);
@@ -91,8 +88,7 @@ public class BasicJobTicketSchemaTest
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         serializer.serialize(metadata, bos, true);
-        InputStream is = new ByteArrayInputStream(bos.toByteArray());
-        XMPMetadata rxmp = builder.parse(is);
+        XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         Assert.assertNotNull(jt);
@@ -123,8 +119,7 @@ public class BasicJobTicketSchemaTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
-        InputStream is = new ByteArrayInputStream(bos.toByteArray());
-        XMPMetadata rxmp = builder.parse(is);
+        XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         Assert.assertNotNull(jt);
