@@ -51,7 +51,7 @@
     </properties>
     
     <prerequisites>
-    	<maven>3.0.0</maven>
+    	<maven>3.3.1</maven>
   	</prerequisites>
 
     <dependencyManagement>
@@ -146,17 +146,17 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
-                    <target>1.6</target>
-                    <source>1.6</source>
+                    <target>1.7</target>
+                    <source>1.7</source>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>1.6</source>
+                    <source>1.7</source>
                     <links>
-                        <link>http://download.oracle.com/javase/1.6.0/docs/api/</link>
+                        <link>http://download.oracle.com/javase/1.7.0/docs/api/</link>
                     </links>
                     <encoding>UTF-8</encoding>
                     <notimestamp>true</notimestamp>
@@ -198,7 +198,7 @@
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId>
 	            <artifactId>animal-sniffer-maven-plugin</artifactId>
-	            <version>1.14</version>
+	            <version>1.15</version>
 	            <executions>
 	               <execution>
 	                  <id>check-java-version</id>
@@ -209,7 +209,7 @@
 	                  <configuration>
 	                    <signature>
 	                      <groupId>org.codehaus.mojo.signature</groupId>
-	                      <artifactId>java16</artifactId>
+	                      <artifactId>java17</artifactId>
 	                      <version>1.0</version>
 	                    </signature>
 	                  </configuration>
@@ -222,7 +222,7 @@
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
-                    <version>0.11</version>
+                    <version>0.12</version>
                     <configuration>
                         <excludes>
                             <exclude>release.properties</exclude>
@@ -232,8 +232,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <!-- don't upgrade to 3.0.x as long as we have to ensure jdk6 compatibility -->
-                    <version>2.5.4</version>
+                    <version>3.3.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
