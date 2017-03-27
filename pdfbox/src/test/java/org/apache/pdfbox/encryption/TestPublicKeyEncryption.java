@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.encryption;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
@@ -103,16 +103,7 @@ public class TestPublicKeyEncryption extends TestCase
         keyStore1 = "test1.pfx";
         keyStore2 = "test2.pfx";
         
-        InputStream input =
-            TestPublicKeyEncryption.class.getResourceAsStream("test.pdf");
-        try 
-        {
-            document = PDDocument.load(input);
-        } 
-        finally 
-        {
-            input.close();
-        }
+        document = PDDocument.load(new File(this.getClass().getResource("test.pdf").toURI()));
     }
 
     /**
@@ -260,9 +251,9 @@ public class TestPublicKeyEncryption extends TestCase
     private PDDocument reload(PDDocument doc, String decryptionPassword, InputStream keyStore)
             throws IOException, NoSuchAlgorithmException
     {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        doc.save(buffer);
-        return PDDocument.load(new ByteArrayInputStream(buffer.toByteArray()), decryptionPassword,
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        doc.save(baos);
+        return PDDocument.load(baos.toByteArray(), decryptionPassword,
                 keyStore, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
 
