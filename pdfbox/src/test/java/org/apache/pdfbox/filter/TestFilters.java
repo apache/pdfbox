@@ -19,7 +19,6 @@ package org.apache.pdfbox.filter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -27,6 +26,7 @@ import junit.framework.TestCase;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * This will test all of the filters in the PDFBox system.
@@ -126,16 +126,8 @@ public class TestFilters extends TestCase
     public void testPDFBOX1777() throws IOException
     {
         Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        InputStream is = this.getClass().getResourceAsStream("PDFBOX-1777.bin");
-        int by;
-        while ((by = is.read()) != -1)
-        {
-            baos.write(by);
-        }
-        is.close();
-        
-        checkEncodeDecode(lzwFilter, baos.toByteArray());
+        byte[] byteArray = IOUtils.toByteArray(this.getClass().getResourceAsStream("PDFBOX-1777.bin"));
+        checkEncodeDecode(lzwFilter, byteArray);
     }
 
     private void checkEncodeDecode(Filter filter, byte[] original) throws IOException
