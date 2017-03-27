@@ -18,7 +18,6 @@ package org.apache.pdfbox.encryption;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -160,11 +159,9 @@ public class TestSymmetricKeyEncryption extends TestCase
     private void checkPerms(byte[] inputFileAsByteArray, String password,
             AccessPermission expectedPermissions) throws IOException
     {
-        PDDocument doc = PDDocument.load(
-                    new ByteArrayInputStream(inputFileAsByteArray),
-                    password);
+        PDDocument doc = PDDocument.load(inputFileAsByteArray, password);
 
-            AccessPermission currentAccessPermission = doc.getCurrentAccessPermission();
+        AccessPermission currentAccessPermission = doc.getCurrentAccessPermission();
 
         // check permissions
         assertEquals(expectedPermissions.isOwnerPermission(), currentAccessPermission.isOwnerPermission());
@@ -243,7 +240,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             String userpassword, String ownerpassword,
             AccessPermission permission) throws IOException
     {
-        PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileAsByteArray));
+        PDDocument document = PDDocument.load(inputFileAsByteArray);
         String prefix = "Simple-";
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -361,7 +358,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             File embeddedFilePriorToEncryption,
             String userpassword, String ownerpassword) throws IOException
     {
-        PDDocument document = PDDocument.load(new ByteArrayInputStream(inputFileWithEmbeddedFileAsByteArray));
+        PDDocument document = PDDocument.load(inputFileWithEmbeddedFileAsByteArray);
         PDDocument encryptedDoc = encrypt(keyLength, preferAES, sizePriorToEncr, document, "ContainsEmbedded-", permission, userpassword, ownerpassword);
 
         File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
@@ -380,22 +377,13 @@ public class TestSymmetricKeyEncryption extends TestCase
         encryptedDoc.close();
     }
 
-    private byte[] getStreamAsByteArray(InputStream is) throws IOException
-    {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        IOUtils.copy(is, baos);
-        is.close();
-        return baos.toByteArray();
-    }
-
     private byte[] getFileResourceAsByteArray(String testFileName) throws IOException
     {
-        return getStreamAsByteArray(TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName));
+        return IOUtils.toByteArray(TestSymmetricKeyEncryption.class.getResourceAsStream(testFileName));
     }
 
     private byte[] getFileAsByteArray(File f) throws IOException
     {
-        return getStreamAsByteArray(new FileInputStream(f));
+        return IOUtils.toByteArray(new FileInputStream(f));
     }
-
 }
