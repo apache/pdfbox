@@ -352,7 +352,21 @@ public class PDDocument implements Closeable
             prepareNonVisibleSignature(signatureField);
             return;
         }
-        
+
+        if (acroForm.getNeedAppearances())
+        {
+            // PDFBOX-3738 NeedAppearances true results in signature becoming invisible with Adobe Reader
+            if (acroFormFields.size() == 1)
+            {
+                // we can safely delete it if there are no fields
+                acroForm.getCOSObject().removeItem(COSName.NEED_APPEARANCES);
+            }
+            else
+            {
+                LOG.warn("/NeedAppearances is set, signature may be ignored in Adobe Reader");
+            }
+        }
+
         prepareVisibleSignature(signatureField, acroForm, visualSignature);
 
         // Create Annotation / Field for signature
