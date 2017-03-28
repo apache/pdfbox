@@ -121,7 +121,7 @@ public class PDDocument implements Closeable
     private AccessPermission accessPermission;
     
     // fonts to subset before saving
-    private final Set<PDFont> fontsToSubset = new HashSet<PDFont>();
+    private final Set<PDFont> fontsToSubset = new HashSet<>();
     
     // Signature interface
     private SignatureInterface signInterface;
@@ -830,7 +830,7 @@ public class PDDocument implements Closeable
      */
     public List<PDSignatureField> getSignatureFields() throws IOException
     {
-        List<PDSignatureField> fields = new ArrayList<PDSignatureField>();
+        List<PDSignatureField> fields = new ArrayList<>();
         PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
         if (acroForm != null)
         {
@@ -853,7 +853,7 @@ public class PDDocument implements Closeable
      */
     public List<PDSignature> getSignatureDictionaries() throws IOException
     {
-        List<PDSignature> signatures = new ArrayList<PDSignature>();
+        List<PDSignature> signatures = new ArrayList<>();
         for (PDSignatureField field : getSignatureFields())
         {
             COSBase value = field.getCOSObject().getDictionaryObject(COSName.V);
@@ -1244,15 +1244,10 @@ public class PDDocument implements Closeable
         }
         fontsToSubset.clear();
         
-        // save PDF
-        COSWriter writer = new COSWriter(output);
-        try
+         // save PDF
+        try (COSWriter writer = new COSWriter(output))
         {
             writer.write(this);
-        }
-        finally
-        {
-            writer.close();
         }
     }
 
