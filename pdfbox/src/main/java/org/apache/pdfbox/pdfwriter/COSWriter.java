@@ -183,18 +183,18 @@ public class COSWriter implements ICOSVisitor, Closeable
     // these are used for indirect references in other objects
     //A hashtable is used on purpose over a hashmap
     //so that null entries will not get added.
-    private final Map<COSBase,COSObjectKey> objectKeys = new Hashtable<COSBase,COSObjectKey>();
-    private final Map<COSObjectKey,COSBase> keyObject = new Hashtable<COSObjectKey,COSBase>();
+    private final Map<COSBase,COSObjectKey> objectKeys = new Hashtable<>();
+    private final Map<COSObjectKey,COSBase> keyObject = new Hashtable<>();
 
     // the list of x ref entries to be made so far
-    private final List<COSWriterXRefEntry> xRefEntries = new ArrayList<COSWriterXRefEntry>();
-    private final Set<COSBase> objectsToWriteSet = new HashSet<COSBase>();
+    private final List<COSWriterXRefEntry> xRefEntries = new ArrayList<>();
+    private final Set<COSBase> objectsToWriteSet = new HashSet<>();
 
     //A list of objects to write.
-    private final Deque<COSBase> objectsToWrite = new LinkedList<COSBase>();
+    private final Deque<COSBase> objectsToWrite = new LinkedList<>();
 
     //a list of objects already written
-    private final Set<COSBase> writtenObjects = new HashSet<COSBase>();
+    private final Set<COSBase> writtenObjects = new HashSet<>();
 
     //An 'actual' is any COSBase that is not a COSObject.
     //need to keep a list of the actuals that are added
@@ -202,7 +202,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     //when adding a COSObject and then later adding
     //the actual for that object, so we will track
     //actuals separately.
-    private final Set<COSBase> actualsAdded = new HashSet<COSBase>();
+    private final Set<COSBase> actualsAdded = new HashSet<>();
 
     private COSObjectKey currentObjectKey = null;
     private PDDocument pdDocument = null;
@@ -849,7 +849,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         long last = -2;
         long count = 1;
 
-        List<Long> list = new ArrayList<Long>();
+        List<Long> list = new ArrayList<>();
         for( Object object : xRefEntriesList )
         {
             long nr = (int) ((COSWriterXRefEntry) object).getKey().getNumber();
