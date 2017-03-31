@@ -184,6 +184,10 @@ public final class ImageIOUtil
                     writer.dispose();
                 }
                 writer = writers.next();
+                if (writer == null)
+                {
+                    continue;
+                }
                 param = writer.getDefaultWriteParam();
                 metadata = writer.getDefaultImageMetadata(new ImageTypeSpecifier(image), param);
                 if (metadata != null
