@@ -118,7 +118,7 @@ public abstract class Filter
         while (readers.hasNext())
         {
             reader = readers.next();
-            if (reader.canReadRaster())
+            if (reader != null && reader.canReadRaster())
             {
                 break;
             }

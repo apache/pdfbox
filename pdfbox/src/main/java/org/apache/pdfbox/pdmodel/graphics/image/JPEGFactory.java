@@ -253,6 +253,10 @@ public final class JPEGFactory
                 writer.dispose();
             }
             writer = writers.next();
+            if (writer == null)
+            {
+                continue;
+            }
             // PDFBOX-3566: avoid CLibJPEGImageWriter, which is not a JPEGImageWriteParam
             if (writer.getDefaultWriteParam() instanceof JPEGImageWriteParam)
             {
