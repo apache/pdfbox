@@ -369,7 +369,11 @@ public class PDJpeg extends PDXObjectImage
             {
                 throw new RuntimeException("No ImageReaders found");
             }
-            reader = (ImageReader) readers.next();
+            reader = readers.next();
+            if (reader == null)
+            {
+                throw new RuntimeException("ImageReader is null");
+            }
             reader.setInput(input);
             IIOMetadata meta = reader.getImageMetadata(0);
             if (meta != null)
@@ -433,7 +437,11 @@ public class PDJpeg extends PDXObjectImage
         }
         // read the raster information only
         // avoid to access the meta information
-        ImageReader reader = (ImageReader) readers.next();
+        ImageReader reader = readers.next();
+        if (reader == null)
+        {
+            throw new RuntimeException("ImageReader is null");
+        }
         reader.setInput(input);
         Raster raster = reader.readRaster(0, reader.getDefaultReadParam());
         input.close();

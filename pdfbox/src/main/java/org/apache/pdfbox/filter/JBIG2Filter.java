@@ -71,6 +71,11 @@ public class JBIG2Filter implements Filter
             return;
         }
         ImageReader reader = readers.next();
+        if (reader == null)
+        {
+            LOG.error( "ImageIO plugin to decode the JBIG2 encoded datastream is null.");
+            return;
+        }
         COSBase decodeP = options.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
         COSDictionary decodeParms = null;
         if (decodeP instanceof COSDictionary)
