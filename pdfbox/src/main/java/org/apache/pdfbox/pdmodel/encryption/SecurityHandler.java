@@ -275,23 +275,8 @@ public abstract class SecurityHandler
             }
             output.write(decryptCipher.doFinal());
         }
-        catch (InvalidKeyException e)
-        {
-            throw new IOException(e);
-        }
-        catch (InvalidAlgorithmParameterException e)
-        {
-            throw new IOException(e);
-        }
-        catch (NoSuchPaddingException e)
-        {
-            throw new IOException(e);
-        }
-        catch (IllegalBlockSizeException e)
-        {
-            throw new IOException(e);
-        }
-        catch (BadPaddingException e)
+        catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | 
+                IllegalBlockSizeException | BadPaddingException e)
         {
             throw new IOException(e);
         }
@@ -328,8 +313,7 @@ public abstract class SecurityHandler
             throw new IOException(e);
         }
 
-        CipherInputStream cis = new CipherInputStream(data, cipher);
-        try
+        try (CipherInputStream cis = new CipherInputStream(data, cipher))
         {
             IOUtils.copy(cis, output);
         }
@@ -342,10 +326,6 @@ public abstract class SecurityHandler
                 throw exception;
             }
             LOG.debug("A GeneralSecurityException occured when decrypting some stream data", exception);
-        }
-        finally
-        {
-            cis.close();
         }
     }
 
@@ -433,11 +413,13 @@ public abstract class SecurityHandler
         }
         if (COSName.METADATA.equals(type))
         {
+            byte[] buf;
             // PDFBOX-3229 check case where metadata is not encrypted despite /EncryptMetadata missing
-            InputStream is = stream.createRawInputStream();
-            byte buf[] = new byte[10];
-            is.read(buf);
-            is.close();
+            try (InputStream is = stream.createRawInputStream())
+            {
+                buf = new byte[10];
+                is.read(buf);
+            }
             if (Arrays.equals(buf, "<?xpacket ".getBytes(Charsets.ISO_8859_1)))
             {
                 LOG.warn("Metadata is not encrypted, but was expected to be");
@@ -448,14 +430,9 @@ public abstract class SecurityHandler
         decryptDictionary(stream, objNum, genNum);
         byte[] encrypted = IOUtils.toByteArray(stream.createRawInputStream());
         ByteArrayInputStream encryptedStream = new ByteArrayInputStream(encrypted);
-        OutputStream output = stream.createRawOutputStream();
-        try
+        try (OutputStream output = stream.createRawOutputStream())
         {
-           encryptData(objNum, genNum, encryptedStream, output, true /* decrypt */);
-        }
-        finally
-        {
-            output.close();
+            encryptData(objNum, genNum, encryptedStream, output, true /* decrypt */);
         }
     }
 
@@ -474,14 +451,9 @@ public abstract class SecurityHandler
     {
         byte[] rawData = IOUtils.toByteArray(stream.createRawInputStream());
         ByteArrayInputStream encryptedStream = new ByteArrayInputStream(rawData);
-        OutputStream output = stream.createRawOutputStream();
-        try
+        try (OutputStream output = stream.createRawOutputStream())
         {
             encryptData(objNum, genNum, encryptedStream, output, false /* encrypt */);
-        }
-        finally
-        {
-            output.close();
         }
     }
 

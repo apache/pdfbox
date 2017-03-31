@@ -49,15 +49,7 @@ public class SecurityProvider
                         .forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
                 provider = providerClass.newInstance();
             }
-            catch (ClassNotFoundException ex)
-            {
-                throw new IOException(ex);
-            }
-            catch (InstantiationException ex)
-            {
-                throw new IOException(ex);
-            }
-            catch (IllegalAccessException ex)
+            catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex)
             {
                 throw new IOException(ex);
             }

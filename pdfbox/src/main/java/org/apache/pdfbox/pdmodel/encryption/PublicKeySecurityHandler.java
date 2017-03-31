@@ -231,15 +231,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             encryptionKey = new byte[this.keyLength / 8];
             System.arraycopy(mdResult, 0, encryptionKey, 0, this.keyLength / 8);
         }
-        catch (CMSException e)
-        {
-            throw new IOException(e);
-        }
-        catch (KeyStoreException e)
-        {
-            throw new IOException(e);
-        }
-        catch (CertificateEncodingException e)
+        catch (CMSException | KeyStoreException | CertificateEncodingException e)
         {
             throw new IOException(e);
         }
@@ -431,9 +423,11 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 
         AlgorithmParameters parameters = apg.generateParameters();
 
-        ASN1InputStream input = new ASN1InputStream(parameters.getEncoded("ASN.1"));
-        ASN1Primitive object = input.readObject();
-        input.close();
+        ASN1Primitive object;
+        try (ASN1InputStream input = new ASN1InputStream(parameters.getEncoded("ASN.1")))
+        {
+            object = input.readObject();
+        }
 
         keygen.init(128);
         SecretKey secretkey = keygen.generateKey();
@@ -457,9 +451,11 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         throws IOException, CertificateEncodingException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException
     {
-        ASN1InputStream input = new ASN1InputStream(x509certificate.getTBSCertificate());
-        TBSCertificateStructure certificate = TBSCertificateStructure.getInstance(input.readObject());
-        input.close();
+        TBSCertificateStructure certificate;
+        try (ASN1InputStream input = new ASN1InputStream(x509certificate.getTBSCertificate()))
+        {
+            certificate = TBSCertificateStructure.getInstance(input.readObject());
+        }
 
         AlgorithmIdentifier algorithmId = certificate.getSubjectPublicKeyInfo().getAlgorithm();
 
@@ -473,12 +469,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             cipher = Cipher.getInstance(algorithmId.getAlgorithm().getId(),
                     SecurityProvider.getProvider());
         }
-        catch (NoSuchAlgorithmException e)
-        {
-            // should never happen, if this happens throw IOException instead
-            throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
-        }
-        catch (NoSuchPaddingException e)
+        catch (NoSuchAlgorithmException | NoSuchPaddingException e)
         {
             // should never happen, if this happens throw IOException instead
             throw new RuntimeException("Could not find a suitable javax.crypto provider", e);
