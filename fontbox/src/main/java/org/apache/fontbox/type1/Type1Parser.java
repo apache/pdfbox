@@ -101,14 +101,17 @@ final class Type1Parser
         // font dict
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
-        readMaybe(Token.NAME, "dup"); // found in some TeX fonts
+        // found in some TeX fonts
+        readMaybe(Token.NAME, "dup");
+        // if present, the "currentdict" is not required
         read(Token.NAME, "begin");
 
         for (int i = 0; i < length; i++)
         {
             // premature end
-            if (lexer.peekToken().getKind() == Token.NAME &&
-                lexer.peekToken().getText().equals("currentdict"))
+            Token token = lexer.peekToken();
+            if (token.getKind() == Token.NAME &&
+                (token.getText().equals("currentdict") || token.getText().equals("end")))
             {
                 break;
             }
@@ -133,7 +136,7 @@ final class Type1Parser
             }
         }
 
-        read(Token.NAME, "currentdict");
+        readMaybe(Token.NAME, "currentdict");
         read(Token.NAME, "end");
 
         read(Token.NAME, "currentfile");
@@ -474,6 +477,9 @@ final class Type1Parser
         Token peekToken = lexer.peekToken();
         while (peekToken != null && !peekToken.getText().equals("Private"))
         {
+            // for a more thorough validation, the presence of "begin" before Private
+            // determines how code before and following charstrings should look
+            // it is not currently checked anyway
             lexer.nextToken();
             peekToken = lexer.peekToken();
         }
@@ -486,6 +492,8 @@ final class Type1Parser
         read(Token.LITERAL, "Private");
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
+        // actually could also be "/Private 10 dict def Private begin"
+        // instead of the "dup"
         readMaybe(Token.NAME, "dup");
         read(Token.NAME, "begin");
 
@@ -517,19 +525,20 @@ final class Type1Parser
             else if ("ND".equals(key))
             {
                 read(Token.START_PROC);
-                read(Token.NAME, "noaccess");
+                // the access restrictions are not mandatory
+                readMaybe(Token.NAME, "noaccess");
                 read(Token.NAME, "def");
                 read(Token.END_PROC);
-                read(Token.NAME, "executeonly");
+                readMaybe(Token.NAME, "executeonly");
                 read(Token.NAME, "def");
             }
             else if ("NP".equals(key))
             {
                 read(Token.START_PROC);
-                read(Token.NAME, "noaccess");
+                readMaybe(Token.NAME, "noaccess");
                 read(Token.NAME);
                 read(Token.END_PROC);
-                read(Token.NAME, "executeonly");
+                readMaybe(Token.NAME, "executeonly");
                 read(Token.NAME, "def");
             }
             else if ("RD".equals(key))
@@ -687,6 +696,8 @@ final class Type1Parser
     {
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
+        // could actually be a sequence ending in "CharStrings begin", too
+        // instead of the "dup begin"
         read(Token.NAME, "dup");
         read(Token.NAME, "begin");
 
@@ -710,6 +721,9 @@ final class Type1Parser
 
         // some fonts have one "end", others two
         read(Token.NAME, "end");
+        // since checking ends here, this does not matter ....
+        // more thorough checking would see whether there is "begin" before /Private
+        // and expect a "def" somewhere, otherwise a "put"
     }
 
     /**
