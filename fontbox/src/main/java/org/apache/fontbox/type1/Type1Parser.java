@@ -115,21 +115,20 @@ final class Type1Parser
 
             // key/value
             String key = read(Token.LITERAL).getText();
-            if (key.equals("FontInfo"))
+            switch (key)
             {
-                readFontInfo(readSimpleDict());
-            }
-            else if (key.equals("Metrics"))
-            {
-                readSimpleDict();
-            }
-            else if (key.equals("Encoding"))
-            {
-                readEncoding();
-            }
-            else
-            {
-                readSimpleValue(key);
+                case "FontInfo":
+                    readFontInfo(readSimpleDict());
+                    break;
+                case "Metrics":
+                    readSimpleDict();
+                    break;
+                case "Encoding":
+                    readEncoding();
+                    break;
+                default:
+                    readSimpleValue(key);
+                    break;
             }
         }
 
@@ -144,37 +143,34 @@ final class Type1Parser
     {
         List<Token> value = readDictValue();
         
-        if (key.equals("FontName"))
+        switch (key)
         {
-            font.fontName = value.get(0).getText();
-        }
-        else if (key.equals("PaintType"))
-        {
-            font.paintType = value.get(0).intValue();
-        }
-        else if (key.equals("FontType"))
-        {
-            font.fontType = value.get(0).intValue();
-        }
-        else if (key.equals("FontMatrix"))
-        {
-            font.fontMatrix = arrayToNumbers(value);
-        }
-        else if (key.equals("FontBBox"))
-        {
-            font.fontBBox = arrayToNumbers(value);
-        }
-        else if (key.equals("UniqueID"))
-        {
-            font.uniqueID = value.get(0).intValue();
-        }
-        else if (key.equals("StrokeWidth"))
-        {
-            font.strokeWidth = value.get(0).floatValue();
-        }
-        else if (key.equals("FID"))
-        {
-            font.fontID = value.get(0).getText();
+            case "FontName":
+                font.fontName = value.get(0).getText();
+                break;
+            case "PaintType":
+                font.paintType = value.get(0).intValue();
+                break;
+            case "FontType":
+                font.fontType = value.get(0).intValue();
+                break;
+            case "FontMatrix":
+                font.fontMatrix = arrayToNumbers(value);
+                break;
+            case "FontBBox":
+                font.fontBBox = arrayToNumbers(value);
+                break;
+            case "UniqueID":
+                font.uniqueID = value.get(0).intValue();
+                break;
+            case "StrokeWidth":
+                font.strokeWidth = value.get(0).floatValue();
+                break;
+            case "FID":
+                font.fontID = value.get(0).getText();
+                break;
+            default:
+                break;
         }
     }
 
@@ -211,7 +207,7 @@ final class Type1Parser
                 lexer.nextToken();
             }
             
-            Map<Integer, String> codeToName = new HashMap<Integer, String>();
+            Map<Integer, String> codeToName = new HashMap<>();
             while (lexer.peekToken().getKind() == Token.NAME &&
                     lexer.peekToken().getText().equals("dup"))
             {
@@ -232,7 +228,7 @@ final class Type1Parser
      */
     private List<Number> arrayToNumbers(List<Token> value) throws IOException
     {
-        List<Number> numbers = new ArrayList<Number>();
+        List<Number> numbers = new ArrayList<>();
         for (int i = 1, size = value.size() - 1; i < size; i++)
         {
             Token token = value.get(i);
@@ -262,41 +258,37 @@ final class Type1Parser
             String key = entry.getKey();
             List<Token> value = entry.getValue();
 
-            if (key.equals("version"))
+            switch (key)
             {
-                font.version = value.get(0).getText();
-            }
-            else if (key.equals("Notice"))
-            {
-                font.notice = value.get(0).getText();
-            }
-            else if (key.equals("FullName"))
-            {
-                font.fullName = value.get(0).getText();
-            }
-            else if (key.equals("FamilyName"))
-            {
-                font.familyName = value.get(0).getText();
-            }
-            else if (key.equals("Weight"))
-            {
-                font.weight = value.get(0).getText();
-            }
-            else if (key.equals("ItalicAngle"))
-            {
-                font.italicAngle = value.get(0).floatValue();
-            }
-            else if (key.equals("isFixedPitch"))
-            {
-                font.isFixedPitch = value.get(0).booleanValue();
-            }
-            else if (key.equals("UnderlinePosition"))
-            {
-                font.underlinePosition = value.get(0).floatValue();
-            }
-            else if (key.equals("UnderlineThickness"))
-            {
-                font.underlineThickness = value.get(0).floatValue();
+                case "version":
+                    font.version = value.get(0).getText();
+                    break;
+                case "Notice":
+                    font.notice = value.get(0).getText();
+                    break;
+                case "FullName":
+                    font.fullName = value.get(0).getText();
+                    break;
+                case "FamilyName":
+                    font.familyName = value.get(0).getText();
+                    break;
+                case "Weight":
+                    font.weight = value.get(0).getText();
+                    break;
+                case "ItalicAngle":
+                    font.italicAngle = value.get(0).floatValue();
+                    break;
+                case "isFixedPitch":
+                    font.isFixedPitch = value.get(0).booleanValue();
+                    break;
+                case "UnderlinePosition":
+                    font.underlinePosition = value.get(0).floatValue();
+                    break;
+                case "UnderlineThickness":
+                    font.underlineThickness = value.get(0).floatValue();
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -307,7 +299,7 @@ final class Type1Parser
      */
     private Map<String, List<Token>> readSimpleDict() throws IOException
     {
-        Map<String, List<Token>> dict = new HashMap<String, List<Token>>();
+        Map<String, List<Token>> dict = new HashMap<>();
 
         int length = read(Token.INTEGER).intValue();
         read(Token.NAME, "dict");
@@ -358,7 +350,7 @@ final class Type1Parser
      */
     private List<Token> readValue() throws IOException
     {
-        List<Token> value = new ArrayList<Token>();
+        List<Token> value = new ArrayList<>();
         Token token = lexer.nextToken();
         value.add(token);
 
@@ -422,7 +414,7 @@ final class Type1Parser
      */
     private List<Token> readProc() throws IOException
     {
-        List<Token> value = new ArrayList<Token>();
+        List<Token> value = new ArrayList<>();
 
         int openProc = 1;
         while (true)
@@ -502,48 +494,44 @@ final class Type1Parser
             // key/value
             String key = read(Token.LITERAL).getText();
 
-            if ("Subrs".equals(key))
+            switch (key)
             {
-                readSubrs(lenIV);
-            }
-            else if ("OtherSubrs".equals(key))
-            {
-                readOtherSubrs();
-            }
-            else if ("lenIV".equals(key))
-            {
-                lenIV = readDictValue().get(0).intValue();
-            }
-            else if ("ND".equals(key))
-            {
-                read(Token.START_PROC);
-                read(Token.NAME, "noaccess");
-                read(Token.NAME, "def");
-                read(Token.END_PROC);
-                read(Token.NAME, "executeonly");
-                read(Token.NAME, "def");
-            }
-            else if ("NP".equals(key))
-            {
-                read(Token.START_PROC);
-                read(Token.NAME, "noaccess");
-                read(Token.NAME);
-                read(Token.END_PROC);
-                read(Token.NAME, "executeonly");
-                read(Token.NAME, "def");
-            }
-            else if ("RD".equals(key))
-            {
-                // /RD {string currentfile exch readstring pop} bind executeonly def
-                read(Token.START_PROC);
-                readProc();
-                readMaybe(Token.NAME, "bind");                
-                readMaybe(Token.NAME, "executeonly");                
-                read(Token.NAME, "def");
-            }
-            else
-            {
-                readPrivate(key, readDictValue());
+                case "Subrs":
+                    readSubrs(lenIV);
+                    break;
+                case "OtherSubrs":
+                    readOtherSubrs();
+                    break;
+                case "lenIV":
+                    lenIV = readDictValue().get(0).intValue();
+                    break;
+                case "ND":
+                    read(Token.START_PROC);
+                    read(Token.NAME, "noaccess");
+                    read(Token.NAME, "def");
+                    read(Token.END_PROC);
+                    read(Token.NAME, "executeonly");
+                    read(Token.NAME, "def");
+                    break;
+                case "NP":
+                    read(Token.START_PROC);
+                    read(Token.NAME, "noaccess");
+                    read(Token.NAME);
+                    read(Token.END_PROC);
+                    read(Token.NAME, "executeonly");
+                    read(Token.NAME, "def");
+                    break;
+                case "RD":
+                    // /RD {string currentfile exch readstring pop} bind executeonly def
+                    read(Token.START_PROC);
+                    readProc();
+                    readMaybe(Token.NAME, "bind");
+                    readMaybe(Token.NAME, "executeonly");
+                    read(Token.NAME, "def");
+                    break;
+                default:
+                    readPrivate(key, readDictValue());
+                    break;
             }
         }
 
@@ -566,57 +554,49 @@ final class Type1Parser
      */
     private void readPrivate(String key, List<Token> value) throws IOException
     {
-        if (key.equals("BlueValues"))
+        switch (key)
         {
-            font.blueValues = arrayToNumbers(value);
-        }
-        else if (key.equals("OtherBlues"))
-        {
-            font.otherBlues = arrayToNumbers(value);
-        }
-        else if (key.equals("FamilyBlues"))
-        {
-            font.familyBlues = arrayToNumbers(value);
-        }
-        else if (key.equals("FamilyOtherBlues"))
-        {
-            font.familyOtherBlues = arrayToNumbers(value);
-        }
-        else if (key.equals("BlueScale"))
-        {
-            font.blueScale = value.get(0).floatValue();
-        }
-        else if (key.equals("BlueShift"))
-        {
-            font.blueShift = value.get(0).intValue();
-        }
-        else if (key.equals("BlueFuzz"))
-        {
-            font.blueFuzz = value.get(0).intValue();
-        }
-        else if (key.equals("StdHW"))
-        {
-            font.stdHW = arrayToNumbers(value);
-        }
-        else if (key.equals("StdVW"))
-        {
-            font.stdVW = arrayToNumbers(value);
-        }
-        else if (key.equals("StemSnapH"))
-        {
-            font.stemSnapH = arrayToNumbers(value);
-        }
-        else if (key.equals("StemSnapV"))
-        {
-            font.stemSnapV = arrayToNumbers(value);
-        }
-        else if (key.equals("ForceBold"))
-        {
-            font.forceBold = value.get(0).booleanValue();
-        }
-        else if (key.equals("LanguageGroup"))
-        {
-            font.languageGroup = value.get(0).intValue();
+            case "BlueValues":
+                font.blueValues = arrayToNumbers(value);
+                break;
+            case "OtherBlues":
+                font.otherBlues = arrayToNumbers(value);
+                break;
+            case "FamilyBlues":
+                font.familyBlues = arrayToNumbers(value);
+                break;
+            case "FamilyOtherBlues":
+                font.familyOtherBlues = arrayToNumbers(value);
+                break;
+            case "BlueScale":
+                font.blueScale = value.get(0).floatValue();
+                break;
+            case "BlueShift":
+                font.blueShift = value.get(0).intValue();
+                break;
+            case "BlueFuzz":
+                font.blueFuzz = value.get(0).intValue();
+                break;
+            case "StdHW":
+                font.stdHW = arrayToNumbers(value);
+                break;
+            case "StdVW":
+                font.stdVW = arrayToNumbers(value);
+                break;
+            case "StemSnapH":
+                font.stemSnapH = arrayToNumbers(value);
+                break;
+            case "StemSnapV":
+                font.stemSnapV = arrayToNumbers(value);
+                break;
+            case "ForceBold":
+                font.forceBold = value.get(0).booleanValue();
+                break;
+            case "LanguageGroup":
+                font.languageGroup = value.get(0).intValue();
+                break;
+            default:
+                break;
         }
     }
 
@@ -721,13 +701,14 @@ final class Type1Parser
         readMaybe(Token.NAME, "noaccess"); // allows "noaccess ND" (not in the Type 1 spec)
 
         Token token = read(Token.NAME);
-        if (token.getText().equals("ND") || token.getText().equals("|-"))
+        switch (token.getText())
         {
-            return;
-        }
-        else if (token.getText().equals("noaccess"))
-        {
-            token = read(Token.NAME);
+            case "ND":
+            case "|-":
+                return;
+            case "noaccess":
+                token = read(Token.NAME);
+                break;
         }
 
         if (token.getText().equals("def"))
@@ -745,13 +726,14 @@ final class Type1Parser
         readMaybe(Token.NAME, "readonly");
 
         Token token = read(Token.NAME);
-        if (token.getText().equals("NP") || token.getText().equals("|"))
+        switch (token.getText())
         {
-            return;
-        }
-        else if (token.getText().equals("noaccess")) 
-        {
-            token = read(Token.NAME);
+            case "NP":
+            case "|":
+                return;
+            case "noaccess":
+                token = read(Token.NAME);
+                break;
         }
 
         if (token.getText().equals("put")) 
