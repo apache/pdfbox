@@ -111,7 +111,7 @@ final class Type1Parser
             // premature end
             Token token = lexer.peekToken();
             if (token.getKind() == Token.NAME &&
-                (token.getText().equals("currentdict") || token.getText().equals("end")))
+                ("currentdict".equals(token.getText()) || "end".equals(token.getText())))
             {
                 break;
             }
@@ -723,6 +723,8 @@ final class Type1Parser
             case "noaccess":
                 token = read(Token.NAME);
                 break;
+            default:
+                break;
         }
 
         if (token.getText().equals("def"))
@@ -747,6 +749,8 @@ final class Type1Parser
                 return;
             case "noaccess":
                 token = read(Token.NAME);
+                break;
+            default:
                 break;
         }
 
