@@ -483,6 +483,18 @@ public class PDFStreamParser extends BaseParser
                     endOpIdx = bIdx;
                 }
             }
+
+            // PDFBOX-3742: just assuming that 1-3 non blanks is a PDF operator isn't enough
+            if (endOpIdx != -1 && startOpIdx != -1)
+            {
+                // usually, the operator here is Q, sometimes EMC (PDFBOX-2376).
+                String s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
+                if (!"Q".equals(s) && !"EMC".equals(s))
+                {
+                    noBinData = false;
+                }
+            }
+
             if (readBytes == maxBinCharTestLength) // only if not close to eof
             {
                 // a PDF operator is 1-3 bytes long
