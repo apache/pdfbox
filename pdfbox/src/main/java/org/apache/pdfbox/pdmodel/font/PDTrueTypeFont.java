@@ -220,7 +220,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     @Override
     protected Encoding readEncodingFromFont() throws IOException
     {
-        if (getStandard14AFM() != null)
+        if (!isEmbedded() && getStandard14AFM() != null)
         {
             // read from AFM
             return new Type1Encoding(getStandard14AFM());
