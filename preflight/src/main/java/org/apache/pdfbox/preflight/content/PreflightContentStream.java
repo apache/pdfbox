@@ -154,6 +154,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         validateRenderingIntent(operator, operands);
         checkSetColorSpaceOperators(operator, operands);
         validateNumberOfGraphicStates(operator);
+        validateDefaultColorSpace(operator);
     }
 
     @Override
