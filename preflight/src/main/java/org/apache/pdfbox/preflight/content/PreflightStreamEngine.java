@@ -91,6 +91,8 @@ import org.apache.pdfbox.contentstream.operator.text.SetTextRenderingMode;
 import org.apache.pdfbox.contentstream.operator.text.SetTextRise;
 import org.apache.pdfbox.contentstream.operator.text.SetWordSpacing;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 
 /**
  * This class inherits from org.apache.pdfbox.util.PDFStreamEngine to allow the validation of specific rules in
@@ -400,6 +402,58 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
                 && !validColorSpace(cs, ColorSpaceType.ALL))
         {
             registerError("The operator \"" + operation + "\" can't be used without Color Profile",
+                    ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
+        }
+    }
+
+    /**
+     * In some cases, the colorspace isn't checked because defaults (/DeviceGray) is used. Thus we
+     * need to check all text output, stroke and fill for /DeviceGray.
+     *
+     * @param operator an operator.
+     * @throws ContentStreamException
+     */
+    void validateDefaultColorSpace(Operator operator) throws ContentStreamException
+    {
+        boolean v = false;
+        String op = operator.getName();
+        if ("Tj".equals(op) || "TJ".equals(op) || "'".equals(op) || "\"".equals(op))
+        {
+            RenderingMode rm = getGraphicsState().getTextState().getRenderingMode();
+            if (rm.isFill() && 
+                    getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDDeviceGray)
+            {
+                v = true;
+            }
+            if (rm.isStroke() && 
+                    getGraphicsState().getStrokingColor().getColorSpace() instanceof PDDeviceGray)
+            {
+                v = true;
+            }
+        }
+        // fills
+        if ("f".equals(op) || "F".equals(op) || "f*".equals(op) || 
+            "B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op))
+        {
+            if (getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDDeviceGray)
+            {
+                v = true;
+            }
+        }
+        // strokes
+        if ("B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op) || 
+            "s".equals(op) || "S".equals(op))
+        {
+            if (getGraphicsState().getStrokingColor().getColorSpace() instanceof PDDeviceGray)
+            {
+                v = true;
+            }
+        }
+        if (v)
+        {
+            if (!validColorSpaceDestOutputProfile(PreflightStreamEngine.ColorSpaceType.ALL))
+                        registerError("/DeviceGray default for operator \"" + op + 
+                                "\" can't be used without Color Profile",
                     ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
         }
     }
