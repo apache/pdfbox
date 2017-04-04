@@ -482,32 +482,28 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     private boolean validColorSpaceDestOutputProfile(ColorSpaceType expectedType)
             throws ContentStreamException
     {
-        boolean result = false;
-        ICCProfileWrapper profileWrapper;
         try
         {
-            profileWrapper = ICCProfileWrapper.getOrSearchICCProfile(context);
-            if (profileWrapper != null)
+            ICCProfileWrapper profileWrapper = ICCProfileWrapper.getOrSearchICCProfile(context);
+            if (profileWrapper == null)
             {
-                switch (expectedType)
-                {
-                case RGB:
-                    result = profileWrapper.isRGBColorSpace();
-                    break;
-                case CMYK:
-                    result = profileWrapper.isCMYKColorSpace();
-                    break;
-                default:
-                    result = true;
-                    break;
-                }
+                return false;
             }
+            switch (expectedType)
+            {
+                case RGB:
+                    return profileWrapper.isRGBColorSpace();
+                case CMYK:
+                    return profileWrapper.isCMYKColorSpace();
+                default:
+                    return true;
+            }
+
         }
         catch (ValidationException e)
         {
             throw new ContentStreamException(e);
         }
-        return result;
     }
 
     /*
