@@ -432,28 +432,23 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             }
         }
         // fills
-        if ("f".equals(op) || "F".equals(op) || "f*".equals(op) || 
-            "B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op))
+        if (("f".equals(op) || "F".equals(op) || "f*".equals(op) || 
+            "B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op)) &&
+                getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDDeviceGray)
         {
-            if (getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDDeviceGray)
-            {
-                v = true;
-            }
+            v = true;
         }
         // strokes
-        if ("B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op) || 
-            "s".equals(op) || "S".equals(op))
+        if (("B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op) || 
+            "s".equals(op) || "S".equals(op)) &&
+                getGraphicsState().getStrokingColor().getColorSpace() instanceof PDDeviceGray)
         {
-            if (getGraphicsState().getStrokingColor().getColorSpace() instanceof PDDeviceGray)
-            {
-                v = true;
-            }
+            v = true;
         }
-        if (v)
+        if (v && !validColorSpaceDestOutputProfile(PreflightStreamEngine.ColorSpaceType.ALL))
         {
-            if (!validColorSpaceDestOutputProfile(PreflightStreamEngine.ColorSpaceType.ALL))
-                        registerError("/DeviceGray default for operator \"" + op + 
-                                "\" can't be used without Color Profile",
+            registerError("/DeviceGray default for operator \"" + op
+                    + "\" can't be used without Color Profile",
                     ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING);
         }
     }
