@@ -248,8 +248,11 @@ public class CreateVisibleSignature extends CreateSignatureBase
         }
         doc.close();
         
-        // do not close options before saving, because some COSStream objects within options 
+        // Do not close signatureOptions before saving, because some COSStream objects within
         // are transferred to the signed document.
+        // Do not allow signatureOptions get out of scope before saving, because then the COSDocument
+        // in signature options might by closed by gc, which would close COSStream objects prematurely.
+        // See https://issues.apache.org/jira/browse/PDFBOX-3743
         IOUtils.closeQuietly(signatureOptions);
     }
 
