@@ -801,7 +801,7 @@ change limit = change buffer ; /∗ this value is used if the change file ends �
 long as they don’t begin with @y, @z, or @i (which would probably mean that the change file is fouled up).
 〈Skip over comment lines in the change file; return if end of file 13 〉 ≡
 while (1) {
-change line++;
+change line ++;
 if (¬input ln (change file )) return;
 if (limit < buffer + 2) continue;
 if (buffer [0] 6= ’@’) continue;
@@ -816,7 +816,7 @@ This code is used in section 12.
 14. Here we are looking at lines following the @x.
 〈Skip to the next nonblank line; return if end of file 14 〉 ≡
 do {
-change line++;
+change line ++;
 if (¬input ln (change file )) {
 err print ("! Change file ended after @x");
 return;
