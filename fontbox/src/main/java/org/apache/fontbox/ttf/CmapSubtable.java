@@ -19,6 +19,7 @@ package org.apache.fontbox.ttf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -652,16 +653,22 @@ public class CmapSubtable
         {
             return null;
         }
+        List<Integer> codes = null;
         if (code == Integer.MIN_VALUE)
         {
             List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
             if (mappedValues != null)
             {
-                return new ArrayList<Integer>(mappedValues);
+                codes = new ArrayList<Integer>(mappedValues);
+                // sort the list to provide a reliable order
+                Collections.sort(codes);
             }
         }
-        List<Integer> codes = new ArrayList<Integer>(1);
-        codes.add(code);
+        else
+        {
+            codes = new ArrayList<Integer>(1);
+            codes.add(code);
+        }
         return codes;
     }
 
