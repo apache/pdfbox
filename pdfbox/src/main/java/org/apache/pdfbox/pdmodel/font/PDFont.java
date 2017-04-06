@@ -258,7 +258,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             }
 
             PDFontDescriptor fd = getFontDescriptor();
-            if (fd != null && fd.hasMissingWidth())
+            if (fd != null)
             {
                 // get entry from /MissingWidth entry
                 width = fd.getMissingWidth();
@@ -528,6 +528,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 else
                 {
                     fontWidthOfSpace = getWidth(32);
+                }
+                
+                // try to get it from the font itself
+                if (fontWidthOfSpace <= 0)
+                {
+                    fontWidthOfSpace = getWidthFromFont(32);
                 }
                 // use the average font width as fall back
                 if (fontWidthOfSpace <= 0)
