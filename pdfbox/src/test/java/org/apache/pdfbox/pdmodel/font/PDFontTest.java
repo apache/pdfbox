@@ -20,9 +20,10 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import junit.framework.TestCase;
+import java.net.URISyntaxException;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -30,33 +31,32 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * 
  * @author adam
  */
-public class PDFontTest extends TestCase
+public class PDFontTest
 {
 
     /**
-     * Test of the error reported in PDFBox-988
+     * Test of the error reported in PDFBOX-988
+     *
+     * @throws IOException
+     * @throws URISyntaxException
      */
-    public void testPDFBox988() throws Exception
+    @Test
+    public void testPDFBox988() throws IOException, URISyntaxException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = 
+                PDDocument.load(new File(PDFontTest.class.getResource("F001u_3_7j.pdf").toURI())))
         {
-            doc = PDDocument.load(PDFontTest.class.getResourceAsStream("F001u_3_7j.pdf"));
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
             // the allegation is that renderImage() will crash the JVM or hang
-        }
-        finally
-        {
-            if (doc != null)
-            {
-                doc.close();
-            }
         }
     }
 
@@ -64,8 +64,9 @@ public class PDFontTest extends TestCase
      * PDFBOX-3337: Test ability to reuse a TrueTypeFont for several PDFs to avoid parsing it over
      * and over again.
      *
-     * @throws java.io.IOException
+     * @throws IOException
      */
+    @Test
     public void testPDFBox3337() throws IOException
     {
         InputStream ttfStream = PDFontTest.class.getClassLoader().getResourceAsStream(
@@ -74,20 +75,61 @@ public class PDFontTest extends TestCase
 
         for (int i = 0; i < 2; ++i)
         {
-            PDDocument doc = new PDDocument();
+            try (PDDocument doc = new PDDocument())
+            {
+                final PDPage page = new PDPage(PDRectangle.A4);
+                doc.addPage(page);
 
-            final PDPage page = new PDPage(PDRectangle.A4);
+                try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+                {
+                    PDFont font = PDType0Font.load(doc, ttf, true);
+                    cs.setFont(font, 10);
+                    cs.beginText();
+                    cs.showText("PDFBOX");
+                    cs.endText();
+                }
+                doc.save(new ByteArrayOutputStream());
+            }
+        }
+    }
+
+    /**
+     * PDFBOX-3747: Test that using "-" with Calibri in Windows 7 has "-" in text extraction and not
+     * \u2010, which was because of a wrong ToUnicode mapping because prior to the bugfix,
+     * CmapSubtable#getCharCodes provided values in random order.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3747() throws IOException
+    {
+        File file = new File("c:/windows/fonts", "calibri.ttf");
+        if (!file.exists())
+        {
+            System.out.println("testPDFBox3747 skipped");
+            return;
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
             doc.addPage(page);
+            PDFont font = PDType0Font.load(doc, file);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                cs.beginText();
+                cs.setFont(font, 10);
+                cs.showText("PDFBOX-3747");
+                cs.endText();
+            }
+            doc.save(baos);
+        }
 
-            PDPageContentStream cs = new PDPageContentStream(doc, page);
-            PDFont font = PDType0Font.load(doc, ttf, true);
-            cs.setFont(font, 10);
-            cs.beginText();
-            cs.showText("PDFBOX");
-            cs.endText();
-            cs.close();
-            doc.save(new ByteArrayOutputStream());
-            doc.close();
+        try (PDDocument doc = PDDocument.load(baos.toByteArray()))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String text = stripper.getText(doc);
+            Assert.assertEquals("PDFBOX-3747", text.trim());
         }
     }
 }
