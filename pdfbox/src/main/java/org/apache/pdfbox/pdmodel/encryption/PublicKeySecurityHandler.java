@@ -31,6 +31,7 @@ import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.crypto.BadPaddingException;
@@ -138,6 +139,13 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         {
             boolean foundRecipient = false;
 
+            X509Certificate certificate = material.getCertificate();
+            X509CertificateHolder materialCert = null;
+            if (certificate != null)
+            {
+                materialCert = new X509CertificateHolder(certificate.getEncoded());
+            }
+
             // the decrypted content of the enveloped data that match
             // the certificate in the decryption material provided
             byte[] envelopedData = null;
@@ -153,21 +161,15 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                 COSString recipientFieldString = encryption.getRecipientStringAt(i);
                 byte[] recipientBytes = recipientFieldString.getBytes();
                 CMSEnvelopedData data = new CMSEnvelopedData(recipientBytes);
-                Iterator<?> recipCertificatesIt = data.getRecipientInfos().getRecipients().iterator();
+                Collection<RecipientInformation> recipCertificatesIt = data.getRecipientInfos()
+                        .getRecipients();
                 int j = 0;
-                while (recipCertificatesIt.hasNext())
+                for (RecipientInformation ri : recipCertificatesIt)
                 {
-                    RecipientInformation ri = (RecipientInformation) recipCertificatesIt.next();
                     // Impl: if a matching certificate was previously found it is an error,
                     // here we just don't care about it
-                    X509Certificate certificate = material.getCertificate();
-                    X509CertificateHolder materialCert = null;
-                    if (null != certificate)
-                    {
-                        materialCert = new X509CertificateHolder(certificate.getEncoded());
-                    }
                     RecipientId rid = ri.getRID();
-                    if (rid.match(materialCert) && !foundRecipient)
+                    if (!foundRecipient && rid.match(materialCert))
                     {
                         foundRecipient = true;
                         PrivateKey privateKey = (PrivateKey) material.getPrivateKey();
