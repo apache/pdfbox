@@ -345,143 +345,166 @@ public class AFMParser
         fontMetrics.setAFMVersion( readFloat() );
         String nextCommand;
         boolean charMetricsRead = false;
-        while (!END_FONT_METRICS.equals(nextCommand = readString()))
+        while( !END_FONT_METRICS.equals( (nextCommand = readString() ) ) )
         {
-            switch (nextCommand)
+            if( FONT_NAME.equals( nextCommand ) )
             {
-            case FONT_NAME:
                 fontMetrics.setFontName( readLine() );
-                break;
-            case FULL_NAME:
+            }
+            else if( FULL_NAME.equals( nextCommand ) )
+            {
                 fontMetrics.setFullName( readLine() );
-                break;
-            case FAMILY_NAME:
+            }
+            else if( FAMILY_NAME.equals( nextCommand ) )
+            {
                 fontMetrics.setFamilyName( readLine() );
-                break;
-            case WEIGHT:
+            }
+            else if( WEIGHT.equals( nextCommand ) )
+            {
                 fontMetrics.setWeight( readLine() );
-                break;
-            case FONT_BBOX:
+            }
+            else if( FONT_BBOX.equals( nextCommand ) )
+            {
                 BoundingBox bBox = new BoundingBox();
                 bBox.setLowerLeftX( readFloat() );
                 bBox.setLowerLeftY( readFloat() );
                 bBox.setUpperRightX( readFloat() );
                 bBox.setUpperRightY( readFloat() );
                 fontMetrics.setFontBBox( bBox );
-                break;
-            case VERSION:
+            }
+            else if( VERSION.equals( nextCommand ) )
+            {
                 fontMetrics.setFontVersion( readLine() );
-                break;
-            case NOTICE:
+            }
+            else if( NOTICE.equals( nextCommand ) )
+            {
                 fontMetrics.setNotice( readLine() );
-                break;
-            case ENCODING_SCHEME:
+            }
+            else if( ENCODING_SCHEME.equals( nextCommand ) )
+            {
                 fontMetrics.setEncodingScheme( readLine() );
-                break;
-            case MAPPING_SCHEME:
+            }
+            else if( MAPPING_SCHEME.equals( nextCommand ) )
+            {
                 fontMetrics.setMappingScheme( readInt() );
-                break;
-            case ESC_CHAR:
+            }
+            else if( ESC_CHAR.equals( nextCommand ) )
+            {
                 fontMetrics.setEscChar( readInt() );
-                break;
-            case CHARACTER_SET:
+            }
+            else if( CHARACTER_SET.equals( nextCommand ) )
+            {
                 fontMetrics.setCharacterSet( readLine() );
-                break;
-            case CHARACTERS:
+            }
+            else if( CHARACTERS.equals( nextCommand ) )
+            {
                 fontMetrics.setCharacters( readInt() );
-                break;
-            case IS_BASE_FONT:
+            }
+            else if( IS_BASE_FONT.equals( nextCommand ) )
+            {
                 fontMetrics.setIsBaseFont( readBoolean() );
-                break;
-            case V_VECTOR:
+            }
+            else if( V_VECTOR.equals( nextCommand ) )
+            {
                 float[] vector = new float[2];
                 vector[0] = readFloat();
                 vector[1] = readFloat();
                 fontMetrics.setVVector( vector );
-                break;
-            case IS_FIXED_V:
+            }
+            else if( IS_FIXED_V.equals( nextCommand ) )
+            {
                 fontMetrics.setIsFixedV( readBoolean() );
-                break;
-            case CAP_HEIGHT:
+            }
+            else if( CAP_HEIGHT.equals( nextCommand ) )
+            {
                 fontMetrics.setCapHeight( readFloat() );
-                break;
-            case X_HEIGHT:
+            }
+            else if( X_HEIGHT.equals( nextCommand ) )
+            {
                 fontMetrics.setXHeight( readFloat() );
-                break;
-            case ASCENDER:
+            }
+            else if( ASCENDER.equals( nextCommand ) )
+            {
                 fontMetrics.setAscender( readFloat() );
-                break;
-            case DESCENDER:
+            }
+            else if( DESCENDER.equals( nextCommand ) )
+            {
                 fontMetrics.setDescender( readFloat() );
-                break;
-            case STD_HW:
+            }
+            else if( STD_HW.equals( nextCommand ) )
+            {
                 fontMetrics.setStandardHorizontalWidth( readFloat() );
-                break;
-            case STD_VW:
+            }
+            else if( STD_VW.equals( nextCommand ) )
+            {
                 fontMetrics.setStandardVerticalWidth( readFloat() );
-                break;
-            case COMMENT:
+            }
+            else if( COMMENT.equals( nextCommand ) )
+            {
                 fontMetrics.addComment( readLine() );
-                break;
-            case UNDERLINE_POSITION:
+            }
+            else if( UNDERLINE_POSITION.equals( nextCommand ) )
+            {
                 fontMetrics.setUnderlinePosition( readFloat() );
-                break;
-            case UNDERLINE_THICKNESS:
+            }
+            else if( UNDERLINE_THICKNESS.equals( nextCommand ) )
+            {
                 fontMetrics.setUnderlineThickness( readFloat() );
-                break;
-            case ITALIC_ANGLE:
+            }
+            else if( ITALIC_ANGLE.equals( nextCommand ) )
+            {
                 fontMetrics.setItalicAngle( readFloat() );
-                break;
-            case CHAR_WIDTH:
+            }
+            else if( CHAR_WIDTH.equals( nextCommand ) )
+            {
                 float[] widths = new float[2];
                 widths[0] = readFloat();
                 widths[1] = readFloat();
                 fontMetrics.setCharWidth( widths );
-                break;
-            case IS_FIXED_PITCH:
+            }
+            else if( IS_FIXED_PITCH.equals( nextCommand ) )
+            {
                 fontMetrics.setFixedPitch( readBoolean() );
-                break;
-            case START_CHAR_METRICS:
-                int countMetrics = readInt();
-                List<CharMetric> charMetrics = new ArrayList<CharMetric>(countMetrics);
-                for (int i = 0; i < countMetrics; i++)
+            }
+            else if( START_CHAR_METRICS.equals( nextCommand ) )
+            {
+                int count = readInt();
+                List<CharMetric> charMetrics = new ArrayList<CharMetric>(count);
+                for( int i=0; i<count; i++ )
                 {
                     CharMetric charMetric = parseCharMetric();
                     charMetrics.add( charMetric );
                 }
-                String endCharMetrics = readString();
-                if (!endCharMetrics.equals(END_CHAR_METRICS))
+                String end = readString();
+                if( !end.equals( END_CHAR_METRICS ) )
                 {
                     throw new IOException( "Error: Expected '" + END_CHAR_METRICS + "' actual '" +
-                            endCharMetrics + "'");
+                                                end + "'" );
                 }
                 charMetricsRead = true;
                 fontMetrics.setCharMetrics(charMetrics);
-                break;
-            case START_COMPOSITES:
-                if( !reducedDataset)
+            }
+            else if( !reducedDataset && START_COMPOSITES.equals( nextCommand ) )
+            {
+                int count = readInt();
+                for( int i=0; i<count; i++ )
                 {
-                    int countComposites = readInt();
-                    for (int i = 0; i < countComposites; i++)
-                    {
-                        Composite part = parseComposite();
-                        fontMetrics.addComposite( part );
-                    }
-                    String endComposites = readString();
-                    if (!endComposites.equals(END_COMPOSITES))
-                    {
-                        throw new IOException( "Error: Expected '" + END_COMPOSITES + "' actual '" +
-                                endComposites + "'");
-                    }
+                    Composite part = parseComposite();
+                    fontMetrics.addComposite( part );
                 }
-                break;
-            case START_KERN_DATA:
-                if( !reducedDataset)
+                String end = readString();
+                if( !end.equals( END_COMPOSITES ) )
                 {
-                    parseKernData( fontMetrics );
+                    throw new IOException( "Error: Expected '" + END_COMPOSITES + "' actual '" +
+                                                end + "'" );
                 }
-                break;
-            default:
+            }
+            else if( !reducedDataset && START_KERN_DATA.equals( nextCommand ) )
+            {
+                parseKernData( fontMetrics );
+            }
+            else
+            {
                 if (reducedDataset && charMetricsRead)
                 {
                     break;
@@ -504,11 +527,10 @@ public class AFMParser
         String nextCommand;
         while( !(nextCommand = readString()).equals( END_KERN_DATA ) )
         {
-            switch(nextCommand)
+            if( START_TRACK_KERN.equals( nextCommand ) )
             {
-            case START_TRACK_KERN:
-                int countTrackKern = readInt();
-                for (int i = 0; i < countTrackKern; i++)
+                int count = readInt();
+                for( int i=0; i<count; i++ )
                 {
                     TrackKern kern = new TrackKern();
                     kern.setDegree( readInt() );
@@ -518,56 +540,60 @@ public class AFMParser
                     kern.setMaxKern( readFloat() );
                     fontMetrics.addTrackKern( kern );
                 }
-                String endTrackKern = readString();
-                if (!endTrackKern.equals(END_TRACK_KERN))
+                String end = readString();
+                if( !end.equals( END_TRACK_KERN ) )
                 {
                     throw new IOException( "Error: Expected '" + END_TRACK_KERN + "' actual '" +
-                            endTrackKern + "'");
+                                                end + "'" );
                 }
-                break;
-            case START_KERN_PAIRS:
-                int countKernPairs = readInt();
-                for (int i = 0; i < countKernPairs; i++)
+            }
+            else if( START_KERN_PAIRS.equals( nextCommand ) )
+            {
+                int count = readInt();
+                for( int i=0; i<count; i++ )
                 {
                     KernPair pair = parseKernPair();
                     fontMetrics.addKernPair( pair );
                 }
-                String endKernPairs = readString();
-                if (!endKernPairs.equals(END_KERN_PAIRS))
+                String end = readString();
+                if( !end.equals( END_KERN_PAIRS ) )
                 {
                     throw new IOException( "Error: Expected '" + END_KERN_PAIRS + "' actual '" +
-                            endKernPairs + "'");
+                                                end + "'" );
                 }
-                break;
-            case START_KERN_PAIRS0:
-                int countKernPairs0 = readInt();
-                for (int i = 0; i < countKernPairs0; i++)
+            }
+            else if( START_KERN_PAIRS0.equals( nextCommand ) )
+            {
+                int count = readInt();
+                for( int i=0; i<count; i++ )
                 {
                     KernPair pair = parseKernPair();
                     fontMetrics.addKernPair0( pair );
                 }
-                String endKernPairs0 = readString();
-                if (!endKernPairs0.equals(END_KERN_PAIRS))
+                String end = readString();
+                if( !end.equals( END_KERN_PAIRS ) )
                 {
                     throw new IOException( "Error: Expected '" + END_KERN_PAIRS + "' actual '" +
-                            endKernPairs0 + "'");
+                                                end + "'" );
                 }
-                break;
-            case START_KERN_PAIRS1:
-                int countKernPairs1 = readInt();
-                for (int i = 0; i < countKernPairs1; i++)
+            }
+            else if( START_KERN_PAIRS1.equals( nextCommand ) )
+            {
+                int count = readInt();
+                for( int i=0; i<count; i++ )
                 {
                     KernPair pair = parseKernPair();
                     fontMetrics.addKernPair1( pair );
                 }
-                String endKernPairs1 = readString();
-                if (!endKernPairs1.equals(END_KERN_PAIRS))
+                String end = readString();
+                if( !end.equals( END_KERN_PAIRS ) )
                 {
                     throw new IOException( "Error: Expected '" + END_KERN_PAIRS + "' actual '" +
-                            endKernPairs1 + "'");
+                                                end + "'" );
                 }
-                break;
-            default:
+            }
+            else
+            {
                 throw new IOException( "Unknown kerning data type '" + nextCommand + "'" );
             }
         }
@@ -584,33 +610,50 @@ public class AFMParser
     {
         KernPair kernPair = new KernPair();
         String cmd = readString();
-        switch(cmd)
+        if( KERN_PAIR_KP.equals( cmd ) )
         {
-        case KERN_PAIR_KP:
-            kernPair.setFirstKernCharacter(readString());
-            kernPair.setSecondKernCharacter(readString());
-            kernPair.setX(readFloat());
-            kernPair.setY(readFloat());
-            break;
-        case KERN_PAIR_KPH:
-            kernPair.setFirstKernCharacter(hexToString(readString()));
-            kernPair.setSecondKernCharacter(hexToString(readString()));
-            kernPair.setX(readFloat());
-            kernPair.setY(readFloat());
-            break;
-        case KERN_PAIR_KPX:
-            kernPair.setFirstKernCharacter(readString());
-            kernPair.setSecondKernCharacter(readString());
-            kernPair.setX(readFloat());
+            String first = readString();
+            String second = readString();
+            float x = readFloat();
+            float y = readFloat();
+            kernPair.setFirstKernCharacter( first );
+            kernPair.setSecondKernCharacter( second );
+            kernPair.setX( x );
+            kernPair.setY( y );
+        }
+        else if( KERN_PAIR_KPH.equals( cmd ) )
+        {
+            String first = hexToString( readString() );
+            String second = hexToString( readString() );
+            float x = readFloat();
+            float y = readFloat();
+            kernPair.setFirstKernCharacter( first );
+            kernPair.setSecondKernCharacter( second );
+            kernPair.setX( x );
+            kernPair.setY( y );
+        }
+        else if( KERN_PAIR_KPX.equals( cmd ) )
+        {
+            String first = readString();
+            String second = readString();
+            float x = readFloat();
+            kernPair.setFirstKernCharacter( first );
+            kernPair.setSecondKernCharacter( second );
+            kernPair.setX( x );
             kernPair.setY( 0 );
-            break;
-        case KERN_PAIR_KPY:
-            kernPair.setFirstKernCharacter(readString());
-            kernPair.setSecondKernCharacter(readString());
+        }
+        else if( KERN_PAIR_KPY.equals( cmd ) )
+        {
+            String first = readString();
+            String second = readString();
+            float y = readFloat();
+            kernPair.setFirstKernCharacter( first );
+            kernPair.setSecondKernCharacter( second );
             kernPair.setX( 0 );
-            kernPair.setY(readFloat());
-            break;
-        default:
+            kernPair.setY( y );
+        }
+        else
+        {
             throw new IOException( "Error expected kern pair command actual='" + cmd + "'" );
         }
         return kernPair;
@@ -728,93 +771,128 @@ public class AFMParser
             while( metricsTokenizer.hasMoreTokens() )
             {
                 String nextCommand = metricsTokenizer.nextToken();
-                switch(nextCommand)
+                if( nextCommand.equals( CHARMETRICS_C ) )
                 {
-                case CHARMETRICS_C:
-                    String charCodeC = metricsTokenizer.nextToken();
-                    charMetric.setCharacterCode(Integer.parseInt(charCodeC));
+                    String charCode = metricsTokenizer.nextToken();
+                    charMetric.setCharacterCode( Integer.parseInt( charCode ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_CH:
+                }
+                else if( nextCommand.equals( CHARMETRICS_CH ) )
+                {
                     //Is the hex string <FF> or FF, the spec is a little
                     //unclear, wait and see if it breaks anything.
-                    String charCodeCH = metricsTokenizer.nextToken();
-                    charMetric.setCharacterCode(Integer.parseInt(charCodeCH, BITS_IN_HEX));
+                    String charCode = metricsTokenizer.nextToken();
+                    charMetric.setCharacterCode( Integer.parseInt( charCode, BITS_IN_HEX ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_WX:
-                    charMetric.setWx(Float.parseFloat(metricsTokenizer.nextToken()));
+                }
+                else if( nextCommand.equals( CHARMETRICS_WX ) )
+                {
+                    String wx = metricsTokenizer.nextToken();
+                    charMetric.setWx( Float.parseFloat( wx ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_W0X:
-                    charMetric.setW0x(Float.parseFloat(metricsTokenizer.nextToken()));
+                }
+                else if( nextCommand.equals( CHARMETRICS_W0X ) )
+                {
+                    String w0x = metricsTokenizer.nextToken();
+                    charMetric.setW0x( Float.parseFloat( w0x ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_W1X:
-                    charMetric.setW1x(Float.parseFloat(metricsTokenizer.nextToken()));
+                }
+                else if( nextCommand.equals( CHARMETRICS_W1X ) )
+                {
+                    String w1x = metricsTokenizer.nextToken();
+                    charMetric.setW0x( Float.parseFloat( w1x ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_WY:
-                    charMetric.setWy(Float.parseFloat(metricsTokenizer.nextToken()));
+                }
+                else if( nextCommand.equals( CHARMETRICS_WY ) )
+                {
+                    String wy = metricsTokenizer.nextToken();
+                    charMetric.setWy( Float.parseFloat( wy ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_W0Y:
-                    charMetric.setW0y(Float.parseFloat(metricsTokenizer.nextToken()));
+                }
+                else if( nextCommand.equals( CHARMETRICS_W0Y ) )
+                {
+                    String w0y = metricsTokenizer.nextToken();
+                    charMetric.setW0y( Float.parseFloat( w0y ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_W1Y:
-                    charMetric.setW1y(Float.parseFloat(metricsTokenizer.nextToken()));
+                }
+                else if( nextCommand.equals( CHARMETRICS_W1Y ) )
+                {
+                    String w1y = metricsTokenizer.nextToken();
+                    charMetric.setW0y( Float.parseFloat( w1y ) );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_W:
+                }
+                else if( nextCommand.equals( CHARMETRICS_W ) )
+                {
+                    String w0 = metricsTokenizer.nextToken();
+                    String w1 = metricsTokenizer.nextToken();
                     float[] w = new float[2];
-                    w[0] = Float.parseFloat(metricsTokenizer.nextToken());
-                    w[1] = Float.parseFloat(metricsTokenizer.nextToken());
+                    w[0] = Float.parseFloat( w0 );
+                    w[1] = Float.parseFloat( w1 );
                     charMetric.setW( w );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_W0:
+                }
+                else if( nextCommand.equals( CHARMETRICS_W0 ) )
+                {
+                    String w00 = metricsTokenizer.nextToken();
+                    String w01 = metricsTokenizer.nextToken();
                     float[] w0 = new float[2];
-                    w0[0] = Float.parseFloat(metricsTokenizer.nextToken());
-                    w0[1] = Float.parseFloat(metricsTokenizer.nextToken());
+                    w0[0] = Float.parseFloat( w00 );
+                    w0[1] = Float.parseFloat( w01 );
                     charMetric.setW0( w0 );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_W1:
+                }
+                else if( nextCommand.equals( CHARMETRICS_W1 ) )
+                {
+                    String w10 = metricsTokenizer.nextToken();
+                    String w11 = metricsTokenizer.nextToken();
                     float[] w1 = new float[2];
-                    w1[0] = Float.parseFloat(metricsTokenizer.nextToken());
-                    w1[1] = Float.parseFloat(metricsTokenizer.nextToken());
+                    w1[0] = Float.parseFloat( w10 );
+                    w1[1] = Float.parseFloat( w11 );
                     charMetric.setW1( w1 );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_VV:
+                }
+                else if( nextCommand.equals( CHARMETRICS_VV ) )
+                {
+                    String vv0 = metricsTokenizer.nextToken();
+                    String vv1 = metricsTokenizer.nextToken();
                     float[] vv = new float[2];
-                    vv[0] = Float.parseFloat(metricsTokenizer.nextToken());
-                    vv[1] = Float.parseFloat(metricsTokenizer.nextToken());
+                    vv[0] = Float.parseFloat( vv0 );
+                    vv[1] = Float.parseFloat( vv1 );
                     charMetric.setVv( vv );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_N:
-                    charMetric.setName(metricsTokenizer.nextToken());
+                }
+                else if( nextCommand.equals( CHARMETRICS_N ) )
+                {
+                    String name = metricsTokenizer.nextToken();
+                    charMetric.setName( name );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_B:
+                }
+                else if( nextCommand.equals( CHARMETRICS_B ) )
+                {
+                    String llx = metricsTokenizer.nextToken();
+                    String lly = metricsTokenizer.nextToken();
+                    String urx = metricsTokenizer.nextToken();
+                    String ury = metricsTokenizer.nextToken();
                     BoundingBox box = new BoundingBox();
-                    box.setLowerLeftX(Float.parseFloat(metricsTokenizer.nextToken()));
-                    box.setLowerLeftY(Float.parseFloat(metricsTokenizer.nextToken()));
-                    box.setUpperRightX(Float.parseFloat(metricsTokenizer.nextToken()));
-                    box.setUpperRightY(Float.parseFloat(metricsTokenizer.nextToken()));
+                    box.setLowerLeftX( Float.parseFloat( llx ) );
+                    box.setLowerLeftY( Float.parseFloat( lly ) );
+                    box.setUpperRightX( Float.parseFloat( urx ) );
+                    box.setUpperRightY( Float.parseFloat( ury ) );
                     charMetric.setBoundingBox( box );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                case CHARMETRICS_L:
+                }
+                else if( nextCommand.equals( CHARMETRICS_L ) )
+                {
+                    String successor = metricsTokenizer.nextToken();
+                    String ligature = metricsTokenizer.nextToken();
                     Ligature lig = new Ligature();
-                    lig.setSuccessor(metricsTokenizer.nextToken());
-                    lig.setLigature(metricsTokenizer.nextToken());
+                    lig.setSuccessor( successor );
+                    lig.setLigature( ligature );
                     charMetric.addLigature( lig );
                     verifySemicolon( metricsTokenizer );
-                    break;
-                default:
+                }
+                else
+                {
                     throw new IOException( "Unknown CharMetrics command '" + nextCommand + "'" );
                 }
             }
