@@ -77,7 +77,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         toUnicodeCMap = null;
         fontDescriptor = null;
         afmStandard14 = null;
-        codeToWidthMap = new HashMap<Integer, Float>();
+        codeToWidthMap = new HashMap<>();
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         }
         fontDescriptor = PDType1FontEmbedder.buildFontDescriptor(afmStandard14);
         // standard 14 fonts may be accessed concurrently, as they are singletons
-        codeToWidthMap = new ConcurrentHashMap<Integer, Float>();
+        codeToWidthMap = new ConcurrentHashMap<>();
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     protected PDFont(COSDictionary fontDictionary) throws IOException
     {
         dict = fontDictionary;
-        codeToWidthMap = new HashMap<Integer, Float>();
+        codeToWidthMap = new HashMap<>();
 
         // standard 14 fonts use an AFM
         afmStandard14 = Standard14Fonts.getAFM(getName()); // may be null (it usually is)
@@ -159,6 +159,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     /**
      * Sets the font descriptor when embedding a font.
+     *
+     * @param fontDescriptor
      */
     protected final void setFontDescriptor(PDFontDescriptor fontDescriptor)
     {
@@ -166,11 +168,10 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     }
 
     /**
-
-    /**
      * Reads a CMap given a COS Stream or Name. May return null if a predefined CMap does not exist.
      *
      * @param base COSName or COSStream
+     * @throws IOException
      */
     protected final CMap readCMap(COSBase base) throws IOException
     {
@@ -218,6 +219,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      *
      * @param code character code
      * @return displacement vector
+     * @throws IOException
      */
     public Vector getDisplacement(int code) throws IOException
     {
@@ -426,6 +428,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      *
      * @param code character code
      * @return Unicode character(s)
+     * @throws IOException
      */
     public String toUnicode(int code) throws IOException
     {
