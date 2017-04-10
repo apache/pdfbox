@@ -166,8 +166,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     }
 
     /**
-
-    /**
      * Reads a CMap given a COS Stream or Name. May return null if a predefined CMap does not exist.
      *
      * @param base COSName or COSStream
