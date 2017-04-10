@@ -46,7 +46,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private static final Log LOG = LogFactory.getLog(PDType0Font.class);
 
     private final PDCIDFont descendantFont;
-    private final Set<Integer> noUnicode = new HashSet<Integer>(); 
+    private final Set<Integer> noUnicode = new HashSet<>(); 
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
     private boolean isDescendantCJK;
@@ -261,34 +261,6 @@ public class PDType0Font extends PDFont implements PDVectorFont
         }
     }
 
-    /**
-     * Returns the name of CJK CMap represented by the given CIDSystemInfo, if any. 
-     */
-    private String getCJKCMap(PDCIDSystemInfo ros)
-    {
-        // CJK can fallback to using CIDSystemInfo
-        if (ros.getOrdering().equals("GB1"))
-        {
-            return "Adobe-GB1-0";
-        }
-        else if (ros.getOrdering().equals("CNS1"))
-        {
-            return "Adobe-CNS1-0";
-        }
-        else if (ros.getOrdering().equals("Japan1"))
-        {
-            return "Adobe-Japan1-1";
-        }
-        else if (ros.getOrdering().equals("Korea1"))
-        {
-            return "Adobe-Korea1-0";
-        }
-        else
-        {
-            throw new IllegalStateException();
-        }
-    }
-    
     /**
      * Returns the PostScript name of the font.
      */
