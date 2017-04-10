@@ -612,45 +612,31 @@ public class AFMParser
         String cmd = readString();
         if( KERN_PAIR_KP.equals( cmd ) )
         {
-            String first = readString();
-            String second = readString();
-            float x = readFloat();
-            float y = readFloat();
-            kernPair.setFirstKernCharacter( first );
-            kernPair.setSecondKernCharacter( second );
-            kernPair.setX( x );
-            kernPair.setY( y );
+            kernPair.setFirstKernCharacter(readString());
+            kernPair.setSecondKernCharacter(readString());
+            kernPair.setX(readFloat());
+            kernPair.setY(readFloat());
         }
         else if( KERN_PAIR_KPH.equals( cmd ) )
         {
-            String first = hexToString( readString() );
-            String second = hexToString( readString() );
-            float x = readFloat();
-            float y = readFloat();
-            kernPair.setFirstKernCharacter( first );
-            kernPair.setSecondKernCharacter( second );
-            kernPair.setX( x );
-            kernPair.setY( y );
+            kernPair.setFirstKernCharacter(hexToString(readString()));
+            kernPair.setSecondKernCharacter(hexToString(readString()));
+            kernPair.setX(readFloat());
+            kernPair.setY(readFloat());
         }
         else if( KERN_PAIR_KPX.equals( cmd ) )
         {
-            String first = readString();
-            String second = readString();
-            float x = readFloat();
-            kernPair.setFirstKernCharacter( first );
-            kernPair.setSecondKernCharacter( second );
-            kernPair.setX( x );
+            kernPair.setFirstKernCharacter(readString());
+            kernPair.setSecondKernCharacter(readString());
+            kernPair.setX(readFloat());
             kernPair.setY( 0 );
         }
         else if( KERN_PAIR_KPY.equals( cmd ) )
         {
-            String first = readString();
-            String second = readString();
-            float y = readFloat();
-            kernPair.setFirstKernCharacter( first );
-            kernPair.setSecondKernCharacter( second );
+            kernPair.setFirstKernCharacter(readString());
+            kernPair.setSecondKernCharacter(readString());
             kernPair.setX( 0 );
-            kernPair.setY( y );
+            kernPair.setY(readFloat());
         }
         else
         {
@@ -787,107 +773,86 @@ public class AFMParser
                 }
                 else if( nextCommand.equals( CHARMETRICS_WX ) )
                 {
-                    String wx = metricsTokenizer.nextToken();
-                    charMetric.setWx( Float.parseFloat( wx ) );
+                    charMetric.setWx(Float.parseFloat(metricsTokenizer.nextToken()));
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W0X ) )
                 {
-                    String w0x = metricsTokenizer.nextToken();
-                    charMetric.setW0x( Float.parseFloat( w0x ) );
+                    charMetric.setW0x(Float.parseFloat(metricsTokenizer.nextToken()));
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W1X ) )
                 {
-                    String w1x = metricsTokenizer.nextToken();
-                    charMetric.setW0x( Float.parseFloat( w1x ) );
+                    charMetric.setW1x(Float.parseFloat(metricsTokenizer.nextToken()));
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_WY ) )
                 {
-                    String wy = metricsTokenizer.nextToken();
-                    charMetric.setWy( Float.parseFloat( wy ) );
+                    charMetric.setWy(Float.parseFloat(metricsTokenizer.nextToken()));
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W0Y ) )
                 {
-                    String w0y = metricsTokenizer.nextToken();
-                    charMetric.setW0y( Float.parseFloat( w0y ) );
+                    charMetric.setW0y(Float.parseFloat(metricsTokenizer.nextToken()));
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W1Y ) )
                 {
-                    String w1y = metricsTokenizer.nextToken();
-                    charMetric.setW0y( Float.parseFloat( w1y ) );
+                    charMetric.setW1y(Float.parseFloat(metricsTokenizer.nextToken()));
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W ) )
                 {
-                    String w0 = metricsTokenizer.nextToken();
-                    String w1 = metricsTokenizer.nextToken();
                     float[] w = new float[2];
-                    w[0] = Float.parseFloat( w0 );
-                    w[1] = Float.parseFloat( w1 );
+                    w[0] = Float.parseFloat(metricsTokenizer.nextToken());
+                    w[1] = Float.parseFloat(metricsTokenizer.nextToken());
                     charMetric.setW( w );
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W0 ) )
                 {
-                    String w00 = metricsTokenizer.nextToken();
-                    String w01 = metricsTokenizer.nextToken();
                     float[] w0 = new float[2];
-                    w0[0] = Float.parseFloat( w00 );
-                    w0[1] = Float.parseFloat( w01 );
+                    w0[0] = Float.parseFloat(metricsTokenizer.nextToken());
+                    w0[1] = Float.parseFloat(metricsTokenizer.nextToken());
                     charMetric.setW0( w0 );
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_W1 ) )
                 {
-                    String w10 = metricsTokenizer.nextToken();
-                    String w11 = metricsTokenizer.nextToken();
                     float[] w1 = new float[2];
-                    w1[0] = Float.parseFloat( w10 );
-                    w1[1] = Float.parseFloat( w11 );
+                    w1[0] = Float.parseFloat(metricsTokenizer.nextToken());
+                    w1[1] = Float.parseFloat(metricsTokenizer.nextToken());
                     charMetric.setW1( w1 );
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_VV ) )
                 {
-                    String vv0 = metricsTokenizer.nextToken();
-                    String vv1 = metricsTokenizer.nextToken();
                     float[] vv = new float[2];
-                    vv[0] = Float.parseFloat( vv0 );
-                    vv[1] = Float.parseFloat( vv1 );
+                    vv[0] = Float.parseFloat(metricsTokenizer.nextToken());
+                    vv[1] = Float.parseFloat(metricsTokenizer.nextToken());
                     charMetric.setVv( vv );
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_N ) )
                 {
-                    String name = metricsTokenizer.nextToken();
-                    charMetric.setName( name );
+                    charMetric.setName(metricsTokenizer.nextToken());
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_B ) )
                 {
-                    String llx = metricsTokenizer.nextToken();
-                    String lly = metricsTokenizer.nextToken();
-                    String urx = metricsTokenizer.nextToken();
-                    String ury = metricsTokenizer.nextToken();
                     BoundingBox box = new BoundingBox();
-                    box.setLowerLeftX( Float.parseFloat( llx ) );
-                    box.setLowerLeftY( Float.parseFloat( lly ) );
-                    box.setUpperRightX( Float.parseFloat( urx ) );
-                    box.setUpperRightY( Float.parseFloat( ury ) );
+                    box.setLowerLeftX(Float.parseFloat(metricsTokenizer.nextToken()));
+                    box.setLowerLeftY(Float.parseFloat(metricsTokenizer.nextToken()));
+                    box.setUpperRightX(Float.parseFloat(metricsTokenizer.nextToken()));
+                    box.setUpperRightY(Float.parseFloat(metricsTokenizer.nextToken()));
                     charMetric.setBoundingBox( box );
                     verifySemicolon( metricsTokenizer );
                 }
                 else if( nextCommand.equals( CHARMETRICS_L ) )
                 {
-                    String successor = metricsTokenizer.nextToken();
-                    String ligature = metricsTokenizer.nextToken();
                     Ligature lig = new Ligature();
-                    lig.setSuccessor( successor );
-                    lig.setLigature( ligature );
+                    lig.setSuccessor(metricsTokenizer.nextToken());
+                    lig.setLigature(metricsTokenizer.nextToken());
                     charMetric.addLigature( lig );
                     verifySemicolon( metricsTokenizer );
                 }
