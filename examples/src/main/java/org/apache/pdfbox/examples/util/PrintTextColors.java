@@ -87,11 +87,8 @@ public class PrintTextColors extends PDFTextStripper
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load(new File(args[0]));
-
                 PDFTextStripper stripper = new PrintTextColors();
                 stripper.setSortByPosition(true);
                 stripper.setStartPage(0);
@@ -99,13 +96,6 @@ public class PrintTextColors extends PDFTextStripper
 
                 Writer dummy = new OutputStreamWriter(new ByteArrayOutputStream());
                 stripper.writeText(document, dummy);
-            }
-            finally
-            {
-                if (document != null)
-                {
-                    document.close();
-                }
             }
         }
     }

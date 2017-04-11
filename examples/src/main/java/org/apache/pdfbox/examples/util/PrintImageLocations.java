@@ -75,10 +75,8 @@ public class PrintImageLocations extends PDFStreamEngine
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
                 PrintImageLocations printer = new PrintImageLocations();
                 int pageNum = 0;
                 for( PDPage page : document.getPages() )
@@ -86,13 +84,6 @@ public class PrintImageLocations extends PDFStreamEngine
                     pageNum++;
                     System.out.println( "Processing page: " + pageNum );
                     printer.processPage(page);
-                }
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
                 }
             }
         }
