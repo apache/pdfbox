@@ -65,7 +65,7 @@ public class XrefTrailerResolver
 
         private XRefType xrefType;
 
-        private final Map<COSObjectKey, Long> xrefTable = new HashMap<COSObjectKey, Long>();
+        private final Map<COSObjectKey, Long> xrefTable = new HashMap<>();
         
         /**
          *  Default constructor.
@@ -96,7 +96,7 @@ public class XrefTrailerResolver
         STREAM
     }
     
-    private final Map<Long, XrefTrailerObj> bytePosToXrefMap = new HashMap<Long, XrefTrailerObj>();
+    private final Map<Long, XrefTrailerObj> bytePosToXrefMap = new HashMap<>();
     private XrefTrailerObj curXrefTrailerObj   = null;
     private XrefTrailerObj resolvedXrefTrailer = null;
 
@@ -115,7 +115,7 @@ public class XrefTrailerResolver
             return null;
         }
         Set<Long> offsets = bytePosToXrefMap.keySet();
-        SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+        SortedSet<Long> sortedOffset = new TreeSet<>(offsets);
         return bytePosToXrefMap.get(sortedOffset.first()).trailer;
     }
     
@@ -131,7 +131,7 @@ public class XrefTrailerResolver
             return null;
         }
         Set<Long> offsets = bytePosToXrefMap.keySet();
-        SortedSet<Long> sortedOffset = new TreeSet<Long>(offsets);
+        SortedSet<Long> sortedOffset = new TreeSet<>(offsets);
         return bytePosToXrefMap.get(sortedOffset.last()).trailer;
     }
 
@@ -241,7 +241,7 @@ public class XrefTrailerResolver
         resolvedXrefTrailer.trailer = new COSDictionary();
 
         XrefTrailerObj curObj = bytePosToXrefMap.get( startxrefBytePosValue );
-        List<Long>  xrefSeqBytePos = new ArrayList<Long>();
+        List<Long>  xrefSeqBytePos = new ArrayList<>();
 
         if ( curObj == null )
         {
@@ -339,7 +339,7 @@ public class XrefTrailerResolver
         {
             return null;
         }
-        final Set<Long> refObjNrs = new HashSet<Long>();
+        final Set<Long> refObjNrs = new HashSet<>();
         final long cmpVal = - objstmObjNr;
         
         for ( Entry<COSObjectKey,Long> xrefEntry : resolvedXrefTrailer.xrefTable.entrySet() ) 
