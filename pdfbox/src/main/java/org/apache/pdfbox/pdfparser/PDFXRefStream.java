@@ -61,8 +61,8 @@ public class PDFXRefStream implements PDFXRef
     public PDFXRefStream()
     {
         this.stream = new COSStream();
-        streamData = new TreeMap<Long, Object>();
-        objectNumbers = new TreeSet<Long>();
+        streamData = new TreeMap<>();
+        objectNumbers = new TreeSet<>();
     }
 
     /**
@@ -95,10 +95,11 @@ public class PDFXRefStream implements PDFXRef
         }
         stream.setItem(COSName.W, wAsArray);
         
-        OutputStream outputStream = this.stream.createOutputStream(COSName.FLATE_DECODE);
-        writeStreamData(outputStream, wEntry);
-        outputStream.flush();
-        outputStream.close();
+        try (OutputStream outputStream = this.stream.createOutputStream(COSName.FLATE_DECODE))
+        {
+            writeStreamData(outputStream, wEntry);
+            outputStream.flush();
+        }
     
         Set<COSName> keySet = this.stream.keySet();
         for ( COSName cosName : keySet )
@@ -228,10 +229,10 @@ public class PDFXRefStream implements PDFXRef
 
     private List<Long> getIndexEntry()
     {
-        LinkedList<Long> linkedList = new LinkedList<Long>();
+        LinkedList<Long> linkedList = new LinkedList<>();
         Long first = null;
         Long length = null;
-        Set<Long> objNumbers = new TreeSet<Long>();
+        Set<Long> objNumbers = new TreeSet<>();
         // add object number 0 to the set
         objNumbers.add(0L);
         objNumbers.addAll(objectNumbers);
