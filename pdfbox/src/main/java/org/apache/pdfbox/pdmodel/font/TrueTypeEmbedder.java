@@ -57,7 +57,7 @@ abstract class TrueTypeEmbedder implements Subsetter
     protected TrueTypeFont ttf;
     protected PDFontDescriptor fontDescriptor;
     protected final CmapSubtable cmap;
-    private final Set<Integer> subsetCodePoints = new HashSet<Integer>();
+    private final Set<Integer> subsetCodePoints = new HashSet<>();
     private final boolean embedSubset;
 
     /**
@@ -285,7 +285,7 @@ abstract class TrueTypeEmbedder implements Subsetter
         }
 
         // PDF spec required tables (if present), all others will be removed
-        List<String> tables = new ArrayList<String>();
+        List<String> tables = new ArrayList<>();
         tables.add("head");
         tables.add("hhea");
         tables.add("loca");

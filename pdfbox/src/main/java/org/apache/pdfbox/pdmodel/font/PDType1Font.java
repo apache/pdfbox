@@ -76,7 +76,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     public static final PDType1Font ZAPF_DINGBATS = new PDType1Font("ZapfDingbats");
 
     // alternative names for glyphs which are commonly encountered
-    private static final Map<String, String> ALT_NAMES = new HashMap<String, String>();
+    private static final Map<String, String> ALT_NAMES = new HashMap<>();
     private static final int PFB_START_MARKER = 0x80;
 
     static
@@ -123,22 +123,22 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         
         dict.setItem(COSName.SUBTYPE, COSName.TYPE1);
         dict.setName(COSName.BASE_FONT, baseFont);
-        if ("ZapfDingbats".equals(baseFont))
+        switch (baseFont)
         {
-            encoding = ZapfDingbatsEncoding.INSTANCE;
-        }
-        else if ("Symbol".equals(baseFont))
-        {
-            encoding = SymbolEncoding.INSTANCE;
-        }
-        else
-        {
-            encoding = WinAnsiEncoding.INSTANCE;
-            dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
+            case "ZapfDingbats":
+                encoding = ZapfDingbatsEncoding.INSTANCE;
+                break;
+            case "Symbol":
+                encoding = SymbolEncoding.INSTANCE;
+                break;
+            default:
+                encoding = WinAnsiEncoding.INSTANCE;
+                dict.setItem(COSName.ENCODING, COSName.WIN_ANSI_ENCODING);
+                break;
         }
 
         // standard 14 fonts may be accessed concurrently, as they are singletons
-        codeToBytesMap = new ConcurrentHashMap<Integer,byte[]>();
+        codeToBytesMap = new ConcurrentHashMap<>();
 
         // todo: could load the PFB font here if we wanted to support Standard 14 embedding
         type1font = null;
@@ -182,7 +182,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         isEmbedded = true;
         isDamaged = false;
         fontMatrixTransform = new AffineTransform();
-        codeToBytesMap = new HashMap<Integer,byte[]>();
+        codeToBytesMap = new HashMap<>();
     }
 
     /**
@@ -203,7 +203,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         isEmbedded = true;
         isDamaged = false;
         fontMatrixTransform = new AffineTransform();
-        codeToBytesMap = new HashMap<Integer,byte[]>();
+        codeToBytesMap = new HashMap<>();
     }
 
     /**
@@ -216,7 +216,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
     public PDType1Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
-        codeToBytesMap = new HashMap<Integer,byte[]>();
+        codeToBytesMap = new HashMap<>();
 
         PDFontDescriptor fd = getFontDescriptor();
         Type1Font t1 = null;
