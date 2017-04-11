@@ -56,7 +56,7 @@ final class FileSystemFontProvider extends FontProvider
 {
     private static final Log LOG = LogFactory.getLog(FileSystemFontProvider.class);
     
-    private final List<FSFontInfo> fontInfoList = new ArrayList<FSFontInfo>();
+    private final List<FSFontInfo> fontInfoList = new ArrayList<>();
     private final FontCache cache;
 
     private static class FSFontInfo extends FontInfo
@@ -200,7 +200,7 @@ final class FileSystemFontProvider extends FontProvider
             }
 
             // scan the local system for font files
-            List<File> files = new ArrayList<File>();
+            List<File> files = new ArrayList<>();
             FontFileFinder fontFileFinder = new FontFileFinder();
             List<URI> fonts = fontFileFinder.find();
             for (URI font : fonts)
@@ -361,13 +361,13 @@ final class FileSystemFontProvider extends FontProvider
      */
     private List<FSFontInfo> loadDiskCache(List<File> files)
     {
-        Set<String> pending = new HashSet<String>();
+        Set<String> pending = new HashSet<>();
         for (File file : files)
         {
             pending.add(file.getAbsolutePath());
         }
         
-        List<FSFontInfo> results = new ArrayList<FSFontInfo>();
+        List<FSFontInfo> results = new ArrayList<>();
         File file = getDiskCacheFile();
         boolean fileExists = false;
         try
@@ -470,10 +470,8 @@ final class FileSystemFontProvider extends FontProvider
      */
     private void addTrueTypeCollection(final File ttcFile) throws IOException
     {
-        TrueTypeCollection ttc = null;
-        try
+        try (TrueTypeCollection ttc = new TrueTypeCollection(ttcFile))
         {
-            ttc = new TrueTypeCollection(ttcFile);
             ttc.processAllFonts(new TrueTypeFontProcessor()
             {
                 @Override
@@ -483,20 +481,10 @@ final class FileSystemFontProvider extends FontProvider
                 }
             });
         }
-        catch (NullPointerException e) // TTF parser is buggy
+        catch (NullPointerException | IOException e)
         {
+            // TTF parser is buggy
             LOG.error("Could not load font file: " + ttcFile, e);
-        }
-        catch (IOException e)
-        {
-            LOG.error("Could not load font file: " + ttcFile, e);
-        }
-        finally
-        {
-            if (ttc != null)
-            {
-                ttc.close();
-            }
         }
     }
 
@@ -520,12 +508,9 @@ final class FileSystemFontProvider extends FontProvider
                 addTrueTypeFontImpl(ttf, ttfFile);
             }
         }
-        catch (NullPointerException e) // TTF parser is buggy
+        catch (NullPointerException | IOException e)
         {
-            LOG.error("Could not load font file: " + ttfFile, e);
-        }
-        catch (IOException e)
-        {
+            // TTF parser is buggy
             LOG.error("Could not load font file: " + ttfFile, e);
         }
     }
@@ -640,8 +625,7 @@ final class FileSystemFontProvider extends FontProvider
      */
     private void addType1Font(File pfbFile) throws IOException
     {
-        InputStream input = new FileInputStream(pfbFile);
-        try
+        try (InputStream input = new FileInputStream(pfbFile))
         {
             Type1Font type1 = Type1Font.createWithPFB(input);
             if (type1.getName() != null && type1.getName().contains("|"))
@@ -663,10 +647,6 @@ final class FileSystemFontProvider extends FontProvider
         {
             LOG.error("Could not load font file: " + pfbFile, e);
         }
-        finally
-        {
-            input.close();
-        }
     }
 
     private TrueTypeFont getTrueTypeFont(String postScriptName, File file)
@@ -681,12 +661,9 @@ final class FileSystemFontProvider extends FontProvider
             }
             return ttf;
         }
-        catch (NullPointerException e) // TTF parser is buggy
+        catch (NullPointerException | IOException e)
         {
-            LOG.error("Could not load font file: " + file, e);
-        }
-        catch (IOException e)
-        {
+            // TTF parser is buggy
             LOG.error("Could not load font file: " + file, e);
         }
         return null;

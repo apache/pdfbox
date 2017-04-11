@@ -48,7 +48,7 @@ final class FontMapperImpl implements FontMapper
     private final TrueTypeFont lastResortFont;
 
     /** Map of PostScript name substitutes, in priority order. */
-    private final Map<String, List<String>> substitutes = new HashMap<String, List<String>>();
+    private final Map<String, List<String>> substitutes = new HashMap<>();
 
     FontMapperImpl()
     {
@@ -162,7 +162,7 @@ final class FontMapperImpl implements FontMapper
     
     private Map<String, FontInfo> createFontInfoByName(List<? extends FontInfo> fontInfoList)
     {
-        Map<String, FontInfo> map = new LinkedHashMap<String, FontInfo>();
+        Map<String, FontInfo> map = new LinkedHashMap<>();
         for (FontInfo info : fontInfoList)
         {
             for (String name : getPostScriptNames(info.getPostScriptName()))
@@ -178,7 +178,7 @@ final class FontMapperImpl implements FontMapper
      */
     private Set<String> getPostScriptNames(String postScriptName)
     {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
     
         // built-in PostScript name
         names.add(postScriptName);
@@ -194,7 +194,7 @@ final class FontMapperImpl implements FontMapper
      */
     private List<String> copySubstitutes(String postScriptName)
     {
-        return new ArrayList<String>(substitutes.get(postScriptName));
+        return new ArrayList<>(substitutes.get(postScriptName));
     }
 
     /**
@@ -321,7 +321,7 @@ final class FontMapperImpl implements FontMapper
         TrueTypeFont ttf = (TrueTypeFont)findFont(FontFormat.TTF, baseFont);
         if (ttf != null)
         {
-            return new FontMapping<TrueTypeFont>(ttf, false);
+            return new FontMapping<>(ttf, false);
         }
         else
         {
@@ -333,7 +333,7 @@ final class FontMapperImpl implements FontMapper
                 // we have to return something here as TTFs aren't strictly required on the system
                 ttf = lastResortFont;
             }
-            return new FontMapping<TrueTypeFont>(ttf, true);
+            return new FontMapping<>(ttf, true);
         }
     }
 
@@ -350,7 +350,7 @@ final class FontMapperImpl implements FontMapper
         FontBoxFont font = findFontBoxFont(baseFont);
         if (font != null)
         {
-            return new FontMapping<FontBoxFont>(font, false);
+            return new FontMapping<>(font, false);
         }
         else
         {
@@ -362,7 +362,7 @@ final class FontMapperImpl implements FontMapper
                 // we have to return something here as TTFs aren't strictly required on the system
                 font = lastResortFont;
             }
-            return new FontMapping<FontBoxFont>(font, true);
+            return new FontMapping<>(font, true);
         }
     }
 
@@ -542,7 +542,7 @@ final class FontMapperImpl implements FontMapper
     private PriorityQueue<FontMatch> getFontMatches(PDFontDescriptor fontDescriptor,
                                                            PDCIDSystemInfo cidSystemInfo)
     {
-        PriorityQueue<FontMatch> queue = new PriorityQueue<FontMatch>(20);
+        PriorityQueue<FontMatch> queue = new PriorityQueue<>(20);
         
         for (FontInfo info : fontInfoByName.values())
         {
