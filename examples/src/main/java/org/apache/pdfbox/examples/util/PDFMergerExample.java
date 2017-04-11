@@ -91,11 +91,7 @@ public class PDFMergerExample
 
             return new ByteArrayInputStream(mergedPDFOutputStream.toByteArray());
         }
-        catch (BadFieldValueException e)
-        {
-            throw new IOException("PDF merge problem", e);
-        }
-        catch (TransformerException e)
+        catch (BadFieldValueException | TransformerException e)
         {
             throw new IOException("PDF merge problem", e);
         }
