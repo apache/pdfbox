@@ -142,6 +142,34 @@ class Type1Lexer
                 {
                     return new Token(readRegular(), Token.LITERAL);
                 }
+                else if (c == '<')
+                {
+                    char c2 = getChar();
+                    if (c2 == c)
+                    {
+                        return new Token("<<", Token.START_DICT);
+                    }
+                    else
+                    {
+                        // code may have to be changed in something better, maybe new token type
+                        buffer.position(buffer.position() - 1);
+                        return new Token(c, Token.NAME);
+                    }
+                }
+                else if (c == '>')
+                {
+                    char c2 = getChar();
+                    if (c2 == c)
+                    {
+                        return new Token(">>", Token.END_DICT);
+                    }
+                    else
+                    {
+                        // code may have to be changed in something better, maybe new token type
+                        buffer.position(buffer.position() - 1);
+                        return new Token(c, Token.NAME);
+                    }
+                }
                 else if (Character.isWhitespace(c))
                 {
                     skip = true;
@@ -191,7 +219,8 @@ class Type1Lexer
                     }
                 }
             }
-        } while (skip);
+        }
+        while (skip);
         return null;
     }
 

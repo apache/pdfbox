@@ -392,6 +392,12 @@ final class Type1Parser
         {
             value.addAll(readProc());
         }
+        else if (token.getKind() == Token.START_DICT)
+        {
+            // skip "/GlyphNames2HostCode << >> def"
+            read(Token.END_DICT);
+            return value;
+        }
 
         // postscript wrapper (not in the Type 1 spec)
         if (lexer.peekToken().getText().equals("systemdict"))
