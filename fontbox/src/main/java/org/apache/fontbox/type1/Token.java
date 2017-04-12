@@ -33,8 +33,10 @@ class Token
     enum Kind
     {
         NONE, STRING, NAME, LITERAL, REAL, INTEGER,
-        START_ARRAY,  END_ARRAY, START_PROC,
-        END_PROC, CHARSTRING
+        START_ARRAY, END_ARRAY, 
+        START_PROC, END_PROC, 
+        START_DICT, END_DICT, 
+        CHARSTRING
     }
 
     // exposed statically for convenience
@@ -48,6 +50,8 @@ class Token
     static final Kind START_PROC = Kind.START_PROC;
     static final Kind END_PROC = Kind.END_PROC;
     static final Kind CHARSTRING = Kind.CHARSTRING;
+    static final Kind START_DICT = Kind.START_DICT;
+    static final Kind END_DICT = Kind.END_DICT;
 
     private String text;
     private byte[] data;
