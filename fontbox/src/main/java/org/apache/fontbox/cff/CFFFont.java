@@ -34,7 +34,7 @@ import org.apache.fontbox.util.BoundingBox;
 public abstract class CFFFont implements FontBoxFont
 {
     protected String fontName;
-    protected final Map<String, Object> topDict = new LinkedHashMap<String, Object>();
+    protected final Map<String, Object> topDict = new LinkedHashMap<>();
     protected CFFCharset charset;
     protected byte[][] charStrings;
     protected byte[][] globalSubrIndex;

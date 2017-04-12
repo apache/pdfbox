@@ -82,8 +82,8 @@ public final class TTFSubsetter
         this.ttf = ttf;
         this.keepTables = tables;
 
-        uniToGID = new TreeMap<Integer, Integer>();
-        glyphIds = new TreeSet<Integer>();
+        uniToGID = new TreeMap<>();
+        glyphIds = new TreeSet<>();
 
         // find the best Unicode cmap
         this.unicodeCmap = ttf.getUnicodeCmap();
@@ -135,7 +135,7 @@ public final class TTFSubsetter
     {
         addCompoundReferences();
 
-        Map<Integer, Integer> newToOld = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> newToOld = new HashMap<>();
         int newGID = 0;
         for (int oldGID : glyphIds)
         {
@@ -507,7 +507,7 @@ public final class TTFSubsetter
                             {
                                 if (glyphIdsToAdd == null)
                                 {
-                                    glyphIdsToAdd = new TreeSet<Integer>();
+                                    glyphIdsToAdd = new TreeSet<>();
                                 }
                                 glyphIdsToAdd.add(ogid);
                             }
@@ -829,7 +829,7 @@ public final class TTFSubsetter
         writeUint16(out, glyphIds.size());
 
         // glyphNameIndex[numGlyphs]
-        Map<String, Integer> names = new TreeMap<String, Integer>();
+        Map<String, Integer> names = new TreeMap<>();
         for (int gid : glyphIds)
         {
             String name = post.getName(gid);
@@ -974,7 +974,7 @@ public final class TTFSubsetter
             byte[] post = buildPostTable();
 
             // save to TTF in optimized order
-            Map<String, byte[]> tables = new TreeMap<String, byte[]>();
+            Map<String, byte[]> tables = new TreeMap<>();
             if (os2 != null)
             {
                 tables.put("OS/2", os2);

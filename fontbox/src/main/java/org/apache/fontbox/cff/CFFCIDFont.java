@@ -37,12 +37,12 @@ public class CFFCIDFont extends CFFFont
     private String ordering;
     private int supplement;
 
-    private List<Map<String, Object>> fontDictionaries = new LinkedList<Map<String,Object>>();
-    private List<Map<String, Object>> privateDictionaries = new LinkedList<Map<String,Object>>();
+    private List<Map<String, Object>> fontDictionaries = new LinkedList<>();
+    private List<Map<String, Object>> privateDictionaries = new LinkedList<>();
     private FDSelect fdSelect;
 
     private final Map<Integer, CIDKeyedType2CharString> charStringCache =
-            new ConcurrentHashMap<Integer, CIDKeyedType2CharString>();
+            new ConcurrentHashMap<>();
 
     private final PrivateType1CharStringReader reader = new PrivateType1CharStringReader();
 

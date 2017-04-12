@@ -90,8 +90,8 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     Encoding encoding = null;
     int paintType;
     int fontType;
-    List<Number> fontMatrix = new ArrayList<Number>();
-    List<Number> fontBBox = new ArrayList<Number>();
+    List<Number> fontMatrix = new ArrayList<>();
+    List<Number> fontBBox = new ArrayList<>();
     int uniqueID;
     float strokeWidth;
     String fontID = "";
@@ -108,26 +108,26 @@ public final class Type1Font implements Type1CharStringReader, EncodedFont, Font
     float underlineThickness;
 
     // Private dictionary
-    List<Number> blueValues = new ArrayList<Number>();
-    List<Number> otherBlues = new ArrayList<Number>();
-    List<Number> familyBlues = new ArrayList<Number>();
-    List<Number> familyOtherBlues = new ArrayList<Number>();
+    List<Number> blueValues = new ArrayList<>();
+    List<Number> otherBlues = new ArrayList<>();
+    List<Number> familyBlues = new ArrayList<>();
+    List<Number> familyOtherBlues = new ArrayList<>();
     float blueScale;
     int blueShift, blueFuzz;
-    List<Number> stdHW = new ArrayList<Number>();
-    List<Number> stdVW = new ArrayList<Number>();
-    List<Number> stemSnapH = new ArrayList<Number>();
-    List<Number> stemSnapV = new ArrayList<Number>();
+    List<Number> stdHW = new ArrayList<>();
+    List<Number> stdVW = new ArrayList<>();
+    List<Number> stemSnapH = new ArrayList<>();
+    List<Number> stemSnapV = new ArrayList<>();
     boolean forceBold;
     int languageGroup;
 
     // Subrs array, and CharStrings dictionary
-    final List<byte[]> subrs = new ArrayList<byte[]>();
-    final Map<String, byte[]> charstrings = new LinkedHashMap<String, byte[]>();
+    final List<byte[]> subrs = new ArrayList<>();
+    final Map<String, byte[]> charstrings = new LinkedHashMap<>();
 
     // private caches
     private final Map<String, Type1CharString> charStringCache =
-            new ConcurrentHashMap<String, Type1CharString>();
+            new ConcurrentHashMap<>();
     
     // raw data
     private final byte[] segment1, segment2;

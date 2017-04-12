@@ -38,7 +38,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     private float version;
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
-    protected Map<String,TTFTable> tables = new HashMap<String,TTFTable>();
+    protected Map<String,TTFTable> tables = new HashMap<>();
     private final TTFDataStream data;
     private volatile Map<String, Integer> postScriptNames;
     
@@ -461,7 +461,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
                     String[] names = post != null ? post.getGlyphNames() : null;
                     if (names != null)
                     {
-                        psnames = new HashMap<String, Integer>(names.length);
+                        psnames = new HashMap<>(names.length);
                         for (int i = 0; i < names.length; i++)
                         {
                             psnames.put(names[i], i);
@@ -469,7 +469,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
                     }
                     else
                     {
-                        psnames = new HashMap<String, Integer>();
+                        psnames = new HashMap<>();
                     }
                     postScriptNames = psnames;
                 }

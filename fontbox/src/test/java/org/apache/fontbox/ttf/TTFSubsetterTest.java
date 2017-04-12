@@ -70,7 +70,7 @@ public class TTFSubsetterTest
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TrueTypeFont x = new TTFParser().parse(testFile);
         // List copied from TrueTypeEmbedder.java
-        List<String> tables = new ArrayList<String>();
+        List<String> tables = new ArrayList<>();
         tables.add("head");
         tables.add("hhea");
         tables.add("loca");
@@ -150,7 +150,7 @@ public class TTFSubsetterTest
 
         // List copied from TrueTypeEmbedder.java
         // Without it, the test would fail because of missing post table in source font
-        List<String> tables = new ArrayList<String>();
+        List<String> tables = new ArrayList<>();
         tables.add("head");
         tables.add("hhea");
         tables.add("loca");

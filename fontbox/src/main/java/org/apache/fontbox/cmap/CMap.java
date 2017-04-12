@@ -43,14 +43,14 @@ public class CMap
     private int maxCodeLength;
 
     // code lengths
-    private final List<CodespaceRange> codespaceRanges = new ArrayList<CodespaceRange>();
+    private final List<CodespaceRange> codespaceRanges = new ArrayList<>();
 
     // Unicode mappings
-    private final Map<Integer,String> charToUnicode = new HashMap<Integer,String>();
+    private final Map<Integer,String> charToUnicode = new HashMap<>();
 
     // CID mappings
-    private final Map<Integer,Integer> codeToCid = new HashMap<Integer,Integer>();
-    private final List<CIDRange> codeToCidRanges = new ArrayList<CIDRange>();
+    private final Map<Integer,Integer> codeToCid = new HashMap<>();
+    private final List<CIDRange> codeToCidRanges = new ArrayList<>();
 
     private static final String SPACE = " ";
     private int spaceMapping = -1;

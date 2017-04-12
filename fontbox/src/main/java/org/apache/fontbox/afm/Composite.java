@@ -27,7 +27,7 @@ import java.util.List;
 public class Composite
 {
     private String name;
-    private List<CompositePart> parts = new ArrayList<CompositePart>();
+    private List<CompositePart> parts = new ArrayList<>();
 
     /** Getter for property name.
      * @return Value of property name.

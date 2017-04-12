@@ -69,7 +69,7 @@ public class Type1CharStringParser
      */
     public List<Object> parse(byte[] bytes, List<byte[]> subrs) throws IOException
     {
-        return parse(bytes, subrs, new ArrayList<Object>());
+        return parse(bytes, subrs, new ArrayList<>());
     }
 
     private List<Object> parse(byte[] bytes, List<byte[]> subrs, List<Object> sequence) throws IOException
@@ -122,7 +122,7 @@ public class Type1CharStringParser
                 Integer numArgs = (Integer)sequence.remove(sequence.size()-1);
 
                 // othersubrs 0-3 have their own semantics
-                Stack<Integer> results = new Stack<Integer>();
+                Stack<Integer> results = new Stack<>();
                 switch (othersubrNum)
                 {
                     case 0:

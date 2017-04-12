@@ -476,7 +476,7 @@ public class CMapParser
         }
         case '[':
         {
-            List<Object> list = new ArrayList<Object>();
+            List<Object> list = new ArrayList<>();
 
             Object nextToken = parseNextToken(is);
             while (nextToken != null && !MARK_END_OF_ARRAY.equals(nextToken))
@@ -492,7 +492,7 @@ public class CMapParser
             int theNextByte = is.read();
             if (theNextByte == '<')
             {
-                Map<String, Object> result = new HashMap<String, Object>();
+                Map<String, Object> result = new HashMap<>();
                 // we are reading a dictionary
                 Object key = parseNextToken(is);
                 while (key instanceof LiteralName && !MARK_END_OF_DICTIONARY.equals(key))

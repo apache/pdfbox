@@ -35,7 +35,7 @@ public abstract class NativeFontDirFinder implements FontDirFinder
     @Override
     public List<File> find()
     {
-        List<File> fontDirList = new java.util.ArrayList<File>();
+        List<File> fontDirList = new java.util.ArrayList<>();
         String[] searchableDirectories = getSearchableDirectories();
         if (searchableDirectories != null)
         {

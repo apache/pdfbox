@@ -42,8 +42,8 @@ public class GlyfCompositeDescript extends GlyfDescript
      */
     private static final Log LOG = LogFactory.getLog(GlyfCompositeDescript.class);
 
-    private final List<GlyfCompositeComp> components = new ArrayList<GlyfCompositeComp>();
-    private final Map<Integer,GlyphDescription> descriptions = new HashMap<Integer,GlyphDescription>();
+    private final List<GlyfCompositeComp> components = new ArrayList<>();
+    private final Map<Integer,GlyphDescription> descriptions = new HashMap<>();
     private GlyphTable glyphTable = null;
     private boolean beingResolved = false;
     private boolean resolved = false;

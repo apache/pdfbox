@@ -44,7 +44,7 @@ public class CmapSubtable
     private int platformEncodingId;
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
-    private Map<Integer, List<Integer>> glyphIdToCharacterCodeMultiple = new HashMap<Integer, List<Integer>>();
+    private Map<Integer, List<Integer>> glyphIdToCharacterCodeMultiple = new HashMap<>();
     private Map<Integer, Integer> characterCodeToGlyphId;
 
     /**
@@ -141,7 +141,7 @@ public class CmapSubtable
         }
 
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
+        characterCodeToGlyphId = new HashMap<>(numGlyphs);
         // -- Read all sub header
         for (long i = 0; i < nbGroups; ++i)
         {
@@ -230,7 +230,7 @@ public class CmapSubtable
     {
         long nbGroups = data.readUnsignedInt();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
+        characterCodeToGlyphId = new HashMap<>(numGlyphs);
         for (long i = 0; i < nbGroups; ++i)
         {
             long firstCode = data.readUnsignedInt();
@@ -280,7 +280,7 @@ public class CmapSubtable
     protected void processSubtype13(TTFDataStream data, int numGlyphs) throws IOException
     {
         long nbGroups = data.readUnsignedInt();
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
+        characterCodeToGlyphId = new HashMap<>(numGlyphs);
         for (long i = 0; i < nbGroups; ++i)
         {
             long firstCode = data.readUnsignedInt();
@@ -352,7 +352,7 @@ public class CmapSubtable
         {
             return;
         }
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
+        characterCodeToGlyphId = new HashMap<>(numGlyphs);
         int[] glyphIdArray = data.readUnsignedShortArray(entryCount);
         int maxGlyphId = 0;
         for (int i = 0; i < entryCount; i++)
@@ -384,7 +384,7 @@ public class CmapSubtable
         long idRangeOffsetPosition = data.getCurrentPosition();
         int[] idRangeOffset = data.readUnsignedShortArray(segCount);
 
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
+        characterCodeToGlyphId = new HashMap<>(numGlyphs);
         int maxGlyphId = 0;
 
         for (int i = 0; i < segCount; i++)
@@ -448,7 +448,7 @@ public class CmapSubtable
                 List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(entry.getValue());
                 if (mappedValues == null)
                 {
-                    mappedValues = new ArrayList<Integer>();
+                    mappedValues = new ArrayList<>();
                     glyphIdToCharacterCodeMultiple.put(entry.getValue(), mappedValues);
                     mappedValues.add(glyphIdToCharacterCode[entry.getValue()]);
                     // mark value as multiple mapping
@@ -489,7 +489,7 @@ public class CmapSubtable
         }
         long startGlyphIndexOffset = data.getCurrentPosition();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
+        characterCodeToGlyphId = new HashMap<>(numGlyphs);
         for (int i = 0; i <= maxSubHeaderIndex; ++i)
         {
             SubHeader sh = subHeaders[i];
@@ -537,7 +537,7 @@ public class CmapSubtable
     {
         byte[] glyphMapping = data.read(256);
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(256);
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(glyphMapping.length);
+        characterCodeToGlyphId = new HashMap<>(glyphMapping.length);
         for (int i = 0; i < glyphMapping.length; i++)
         {
             int glyphIndex = (glyphMapping[i] + 256) % 256;
@@ -659,14 +659,14 @@ public class CmapSubtable
             List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(gid);
             if (mappedValues != null)
             {
-                codes = new ArrayList<Integer>(mappedValues);
+                codes = new ArrayList<>(mappedValues);
                 // sort the list to provide a reliable order
                 Collections.sort(codes);
             }
         }
         else
         {
-            codes = new ArrayList<Integer>(1);
+            codes = new ArrayList<>(1);
             codes.add(code);
         }
         return codes;

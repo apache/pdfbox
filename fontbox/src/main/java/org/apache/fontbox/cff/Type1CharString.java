@@ -47,7 +47,7 @@ public class Type1CharString
     private Point2D.Float leftSideBearing = null;
     private Point2D.Float current = null;
     private boolean isFlex = false;
-    private final List<Point.Float> flexPoints = new ArrayList<Point2D.Float>();
+    private final List<Point.Float> flexPoints = new ArrayList<>();
     protected List<Object> type1Sequence;
     protected int commandCount;
 
@@ -306,7 +306,7 @@ public class Type1CharString
 
             float result = a / b;
 
-            List<Number> list = new ArrayList<Number>(numbers);
+            List<Number> list = new ArrayList<>(numbers);
             list.remove(list.size() - 1);
             list.remove(list.size() - 1);
             list.add(result);
