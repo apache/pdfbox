@@ -72,7 +72,7 @@ public class FontFileFinder
             fontDirFinder = determineDirFinder();
         }
         List<File> fontDirs = fontDirFinder.find();
-        List<URI> results = new java.util.ArrayList<URI>();
+        List<URI> results = new java.util.ArrayList<>();
         for (File dir : fontDirs)
         {
             walk(dir, results);
@@ -88,7 +88,7 @@ public class FontFileFinder
      */
     public List<URI> find(String dir)
     {
-        List<URI> results = new java.util.ArrayList<URI>();
+        List<URI> results = new java.util.ArrayList<>();
         File directory = new File(dir);
         if (directory.isDirectory())
         {

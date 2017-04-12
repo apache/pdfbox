@@ -443,7 +443,7 @@ public class AFMParser
                 break;
             case START_CHAR_METRICS:
                 int countMetrics = readInt();
-                List<CharMetric> charMetrics = new ArrayList<CharMetric>(countMetrics);
+                List<CharMetric> charMetrics = new ArrayList<>(countMetrics);
                 for (int i = 0; i < countMetrics; i++)
                 {
                     CharMetric charMetric = parseCharMetric();

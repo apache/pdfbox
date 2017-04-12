@@ -64,7 +64,7 @@ public class VerticalOriginTable extends TTFTable
         version = data.read32Fixed();
         defaultVertOriginY = data.readSignedShort();
         int numVertOriginYMetrics = data.readUnsignedShort();
-        origins = new ConcurrentHashMap<Integer, Integer>(numVertOriginYMetrics);
+        origins = new ConcurrentHashMap<>(numVertOriginYMetrics);
         for (int i = 0; i < numVertOriginYMetrics; ++i) 
         {
             int g = data.readUnsignedShort();

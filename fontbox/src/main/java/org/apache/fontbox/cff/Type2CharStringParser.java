@@ -76,7 +76,7 @@ public class Type2CharStringParser
         {
             hstemCount = 0;
             vstemCount = 0;
-            sequence = new ArrayList<Object>();
+            sequence = new ArrayList<>();
         }
         DataInput input = new DataInput(bytes);
         boolean localSubroutineIndexProvided = localSubrIndex != null && localSubrIndex.length > 0;
@@ -257,7 +257,7 @@ public class Type2CharStringParser
 
     private List<Number> peekNumbers()
     {
-        List<Number> numbers = new ArrayList<Number>();
+        List<Number> numbers = new ArrayList<>();
         for (int i = sequence.size() - 1; i > -1; i--)
         {
             Object object = sequence.get(i);

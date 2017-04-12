@@ -37,7 +37,7 @@ public abstract class CharStringHandler
      */
     public List<Number> handleSequence(List<Object> sequence)
     {
-        Stack<Number> stack = new Stack<Number>();
+        Stack<Number> stack = new Stack<>();
         for (Object obj : sequence)
         {
             if (obj instanceof CharStringCommand)

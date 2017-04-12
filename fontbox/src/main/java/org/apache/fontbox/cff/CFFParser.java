@@ -135,7 +135,7 @@ public class CFFParser
         stringIndex = readStringIndexData(input);
         byte[][] globalSubrIndex = readIndexData(input);
 
-        List<CFFFont> fonts = new ArrayList<CFFFont>();
+        List<CFFFont> fonts = new ArrayList<>();
         for (int i = 0; i < nameIndex.length; i++)
         {
             CFFFont font = parseFont(input, nameIndex[i], topDictIndex[i]);
@@ -587,8 +587,8 @@ public class CFFParser
         input.setPosition(fontDictOffset);
         byte[][] fdIndex = readIndexData(input);
 
-        List<Map<String, Object>> privateDictionaries = new LinkedList<Map<String, Object>>();
-        List<Map<String, Object>> fontDictionaries = new LinkedList<Map<String, Object>>();
+        List<Map<String, Object>> privateDictionaries = new LinkedList<>();
+        List<Map<String, Object>> fontDictionaries = new LinkedList<>();
 
         for (byte[] bytes : fdIndex)
         {
@@ -603,7 +603,7 @@ public class CFFParser
             }
 
             // font dict
-            Map<String, Object> fontDictMap = new LinkedHashMap<String, Object>(4);
+            Map<String, Object> fontDictMap = new LinkedHashMap<>(4);
             fontDictMap.put("FontName", getString(fontDict, "FontName"));
             fontDictMap.put("FontType", fontDict.getNumber("FontType", 0));
             fontDictMap.put("FontBBox", fontDict.getArray("FontBBox", null));
@@ -646,7 +646,7 @@ public class CFFParser
 
     private Map<String, Object> readPrivateDict(DictData privateDict)
     {
-        Map<String, Object> privDict = new LinkedHashMap<String, Object>(17);
+        Map<String, Object> privDict = new LinkedHashMap<>(17);
         privDict.put("BlueValues", privateDict.getArray("BlueValues", null));
         privDict.put("OtherBlues", privateDict.getArray("OtherBlues", null));
         privDict.put("FamilyBlues", privateDict.getArray("FamilyBlues", null));
@@ -1058,7 +1058,7 @@ public class CFFParser
         if (isCIDFont)
         {
             charset.addCID(0, 0);
-            charset.rangesCID2GID = new ArrayList<RangeMapping>();
+            charset.rangesCID2GID = new ArrayList<>();
         }
         else
         {
@@ -1094,7 +1094,7 @@ public class CFFParser
         if (isCIDFont)
         {
             charset.addCID(0, 0);
-            charset.rangesCID2GID = new ArrayList<RangeMapping>();
+            charset.rangesCID2GID = new ArrayList<>();
         }
         else
         {
@@ -1145,7 +1145,7 @@ public class CFFParser
      */
     private static class DictData
     {
-        private final Map<String, Entry> entries = new HashMap<String, Entry>();
+        private final Map<String, Entry> entries = new HashMap<>();
 
         public void add(Entry entry)
         {
@@ -1192,7 +1192,7 @@ public class CFFParser
          */
         private static class Entry
         {
-            private List<Number> operands = new ArrayList<Number>();
+            private List<Number> operands = new ArrayList<>();
             private CFFOperator operator = null;
 
             public Number getNumber(int index)

@@ -63,7 +63,7 @@ public class NamingTable extends TTFTable
         int formatSelector = data.readUnsignedShort();
         int numberOfNameRecords = data.readUnsignedShort();
         int offsetToStartOfStringStorage = data.readUnsignedShort();
-        nameRecords = new ArrayList<NameRecord>(numberOfNameRecords);
+        nameRecords = new ArrayList<>(numberOfNameRecords);
         for (int i=0; i< numberOfNameRecords; i++)
         {
             NameRecord nr = new NameRecord();
@@ -113,28 +113,28 @@ public class NamingTable extends TTFTable
         }
 
         // build multi-dimensional lookup table
-        lookupTable = new HashMap<Integer, Map<Integer, Map<Integer, Map<Integer, String>>>>(nameRecords.size());
+        lookupTable = new HashMap<>(nameRecords.size());
         for (NameRecord nr : nameRecords)
         {
             // name id
             Map<Integer, Map<Integer, Map<Integer, String>>> platformLookup = lookupTable.get(nr.getNameId());
             if (platformLookup == null)
             {
-                platformLookup = new HashMap<Integer, Map<Integer, Map<Integer, String>>>(); 
+                platformLookup = new HashMap<>(); 
                 lookupTable.put(nr.getNameId(), platformLookup);
             }
             // platform id
             Map<Integer, Map<Integer, String>> encodingLookup = platformLookup.get(nr.getPlatformId());
             if (encodingLookup == null)
             {
-                encodingLookup = new HashMap<Integer, Map<Integer, String>>();
+                encodingLookup = new HashMap<>();
                 platformLookup.put(nr.getPlatformId(), encodingLookup);
             }
             // encoding id
             Map<Integer, String> languageLookup = encodingLookup.get(nr.getPlatformEncodingId());
             if (languageLookup == null)
             {
-                languageLookup = new HashMap<Integer, String>();
+                languageLookup = new HashMap<>();
                 encodingLookup.put(nr.getPlatformEncodingId(), languageLookup);
             }
             // language id / string

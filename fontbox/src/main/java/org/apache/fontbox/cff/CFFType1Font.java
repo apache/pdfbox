@@ -33,11 +33,11 @@ import org.apache.fontbox.type1.Type1CharStringReader;
  */
 public class CFFType1Font extends CFFFont implements EncodedFont
 {
-    private final Map<String, Object> privateDict = new LinkedHashMap<String, Object>();
+    private final Map<String, Object> privateDict = new LinkedHashMap<>();
     private CFFEncoding encoding;
 
     private final Map<Integer, Type2CharString> charStringCache =
-            new ConcurrentHashMap<Integer, Type2CharString>();
+            new ConcurrentHashMap<>();
 
     private final PrivateType1CharStringReader reader = new PrivateType1CharStringReader();
 

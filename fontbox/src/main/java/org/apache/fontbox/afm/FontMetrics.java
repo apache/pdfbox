@@ -55,7 +55,7 @@ public class FontMetrics
     private float xHeight;
     private float ascender;
     private float descender;
-    private final List<String> comments = new ArrayList<String>();
+    private final List<String> comments = new ArrayList<>();
 
     private float underlinePosition;
     private float underlineThickness;
@@ -65,13 +65,13 @@ public class FontMetrics
     private float standardHorizontalWidth;
     private float standardVerticalWidth;
 
-    private List<CharMetric> charMetrics = new ArrayList<CharMetric>();
-    private Map<String,CharMetric> charMetricsMap = new HashMap<String,CharMetric>();
-    private List<TrackKern> trackKern = new ArrayList<TrackKern>();
-    private List<Composite> composites = new ArrayList<Composite>();
-    private List<KernPair> kernPairs = new ArrayList<KernPair>();
-    private List<KernPair> kernPairs0 = new ArrayList<KernPair>();
-    private List<KernPair> kernPairs1 = new ArrayList<KernPair>();
+    private List<CharMetric> charMetrics = new ArrayList<>();
+    private Map<String,CharMetric> charMetricsMap = new HashMap<>();
+    private List<TrackKern> trackKern = new ArrayList<>();
+    private List<Composite> composites = new ArrayList<>();
+    private List<KernPair> kernPairs = new ArrayList<>();
+    private List<KernPair> kernPairs0 = new ArrayList<>();
+    private List<KernPair> kernPairs1 = new ArrayList<>();
 
     /**
      * Constructor.
@@ -705,7 +705,7 @@ public class FontMetrics
     public void setCharMetrics(List<CharMetric> charMetricsValue)
     {
         charMetrics = charMetricsValue;
-        charMetricsMap = new HashMap<String, CharMetric>(charMetrics.size());
+        charMetricsMap = new HashMap<>(charMetrics.size());
         for (CharMetric metric : charMetricsValue)
         {
             charMetricsMap.put( metric.getName(), metric );

@@ -45,7 +45,7 @@ public class CharMetric
 
     private String name;
     private BoundingBox boundingBox;
-    private List<Ligature> ligatures = new ArrayList<Ligature>();
+    private List<Ligature> ligatures = new ArrayList<>();
 
     /** Getter for property boundingBox.
      * @return Value of property boundingBox.
