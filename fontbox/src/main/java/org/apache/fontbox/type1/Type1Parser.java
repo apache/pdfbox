@@ -349,7 +349,7 @@ final class Type1Parser
     /**
      * Reads a simple value. This is either a number, a string,
      * a name, a literal name, an array, a procedure, or a charstring.
-     * This method does not support reading nested dictionaries.
+     * This method does not support reading nested dictionaries unless they're empty.
      */
     private List<Token> readValue() throws IOException
     {
@@ -383,6 +383,12 @@ final class Type1Parser
         else if (token.getKind() == Token.START_PROC)
         {
             value.addAll(readProc());
+        }
+        else if (token.getKind() == Token.START_DICT)
+        {
+            // skip "/GlyphNames2HostCode << >> def"
+            read(Token.END_DICT);
+            return value;
         }
 
         // postscript wrapper (not in the Type 1 spec)
