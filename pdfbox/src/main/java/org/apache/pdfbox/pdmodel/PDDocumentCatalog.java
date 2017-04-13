@@ -181,12 +181,12 @@ public class PDDocumentCatalog implements COSObjectable
             array = new COSArray();
             root.setItem(COSName.THREADS, array);
         }
-        List<PDThread> pdObjects = new ArrayList<PDThread>();
+        List<PDThread> pdObjects = new ArrayList<>();
         for (int i = 0; i < array.size(); i++)
         {
             pdObjects.add(new PDThread((COSDictionary)array.getObject(i)));
         }
-        return new COSArrayList<PDThread>(pdObjects, array);
+        return new COSArrayList<>(pdObjects, array);
     }
 
     /**
@@ -379,7 +379,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public List<PDOutputIntent> getOutputIntents()
     {
-        List<PDOutputIntent> retval = new ArrayList<PDOutputIntent>();
+        List<PDOutputIntent> retval = new ArrayList<>();
         COSArray array = (COSArray)root.getDictionaryObject(COSName.OUTPUT_INTENTS);
         if (array != null)
         {

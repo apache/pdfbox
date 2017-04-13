@@ -39,7 +39,7 @@ class ByteTrie<T>
      */
     static class ByteTrieNode<T>
     {
-        private final Map<Byte, ByteTrieNode<T>> children = new HashMap<Byte, ByteTrieNode<T>>();
+        private final Map<Byte, ByteTrieNode<T>> children = new HashMap<>();
         private T value = null;
 
         public void setValue(T value)
@@ -57,7 +57,7 @@ class ByteTrie<T>
         }
     }
 
-    private final ByteTrieNode<T> root = new ByteTrieNode<T>();
+    private final ByteTrieNode<T> root = new ByteTrieNode<>();
     private int maxDepth;
 
     /**
@@ -103,7 +103,7 @@ class ByteTrie<T>
                 ByteTrieNode<T> child = node.children.get(b);
                 if (child == null)
                 {
-                    child = new ByteTrieNode<T>();
+                    child = new ByteTrieNode<>();
                     node.children.put(b, child);
                 }
                 node = child;

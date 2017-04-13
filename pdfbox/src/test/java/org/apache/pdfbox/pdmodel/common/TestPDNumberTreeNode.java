@@ -94,7 +94,7 @@ public class TestPDNumberTreeNode extends TestCase
     protected void setUp() throws Exception
     {
         this.node5 = new PDNumberTreeNode(PDTest.class);
-        Map<Integer,PDTest> Numbers = new TreeMap<Integer, PDTest>();
+        Map<Integer,PDTest> Numbers = new TreeMap<>();
         Numbers.put( 1, new PDTest( 89 ) );
         Numbers.put( 2, new PDTest( 13 ) );
         Numbers.put( 3, new PDTest( 95 ) );
@@ -105,7 +105,7 @@ public class TestPDNumberTreeNode extends TestCase
         this.node5.setNumbers( Numbers );
 
         this.node24 = new PDNumberTreeNode( PDTest.class );
-        Numbers = new TreeMap<Integer, PDTest>();
+        Numbers = new TreeMap<>();
         Numbers.put( 8, new PDTest( 54 ) );
         Numbers.put( 9, new PDTest( 70 ) );
         Numbers.put( 10, new PDTest( 39 ) );
@@ -117,7 +117,7 @@ public class TestPDNumberTreeNode extends TestCase
         List<PDNumberTreeNode> kids = this.node2.getKids();
         if ( kids == null)
         {
-            kids = new COSArrayList<PDNumberTreeNode>();
+            kids = new COSArrayList<>();
         }
         kids.add( this.node5 );
         this.node2.setKids( kids );
@@ -126,7 +126,7 @@ public class TestPDNumberTreeNode extends TestCase
         kids = this.node4.getKids();
         if ( kids == null)
         {
-            kids = new COSArrayList<PDNumberTreeNode>();
+            kids = new COSArrayList<>();
         }
         kids.add( this.node24 );
         this.node4.setKids( kids );
@@ -135,7 +135,7 @@ public class TestPDNumberTreeNode extends TestCase
         kids = this.node1.getKids();
         if ( kids == null)
         {
-            kids = new COSArrayList<PDNumberTreeNode>();
+            kids = new COSArrayList<>();
         }
         kids.add( this.node2 );
         kids.add( this.node4 );

@@ -40,9 +40,9 @@ import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSe
 public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
 {
     private final boolean suppressDuplicateOverlappingText = true;
-    private final List<PDMarkedContent> markedContents = new ArrayList<PDMarkedContent>();
-    private final Stack<PDMarkedContent> currentMarkedContents = new Stack<PDMarkedContent>();
-    private final Map<String, List<TextPosition>> characterListMapping = new HashMap<String, List<TextPosition>>();
+    private final List<PDMarkedContent> markedContents = new ArrayList<>();
+    private final Stack<PDMarkedContent> currentMarkedContents = new Stack<>();
+    private final Map<String, List<TextPosition>> characterListMapping = new HashMap<>();
 
     /**
      * Instantiate a new PDFTextStripper object.
@@ -134,7 +134,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
             List<TextPosition> sameTextCharacters = this.characterListMapping.get( textCharacter );
             if( sameTextCharacters == null )
             {
-                sameTextCharacters = new ArrayList<TextPosition>();
+                sameTextCharacters = new ArrayList<>();
                 this.characterListMapping.put( textCharacter, sameTextCharacters );
             }
 
@@ -178,7 +178,7 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
 
         if( showCharacter )
         {
-            List<TextPosition> textList = new ArrayList<TextPosition>();
+            List<TextPosition> textList = new ArrayList<>();
 
             /* In the wild, some PDF encoded documents put diacritics (accents on
              * top of characters) into a separate Tj element.  When displaying them

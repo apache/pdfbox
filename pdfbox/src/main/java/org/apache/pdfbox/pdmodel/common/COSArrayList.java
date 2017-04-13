@@ -52,7 +52,7 @@ public class COSArrayList<E> implements List<E>
     public COSArrayList()
     {
         array = new COSArray();
-        actual = new ArrayList<E>();
+        actual = new ArrayList<>();
     }
 
     /**
@@ -78,7 +78,7 @@ public class COSArrayList<E> implements List<E>
     public COSArrayList(COSDictionary dictionary, COSName dictionaryKey)
     {
         array = new COSArray();
-        actual = new ArrayList<E>();
+        actual = new ArrayList<>();
         parentDict = dictionary;
         dictKey = dictionaryKey;
     }
@@ -102,7 +102,7 @@ public class COSArrayList<E> implements List<E>
     {
         array = new COSArray();
         array.add( item );
-        actual = new ArrayList<E>();
+        actual = new ArrayList<>();
         actual.add( actualObject );
 
         parentDict = dictionary;
@@ -275,7 +275,7 @@ public class COSArrayList<E> implements List<E>
         List<Integer> retval = null;
         if (intArray != null)
         {
-            List<Integer> numbers = new ArrayList<Integer>();
+            List<Integer> numbers = new ArrayList<>();
             for (int i = 0; i < intArray.size(); i++)
             {
                 COSNumber num;
@@ -289,7 +289,7 @@ public class COSArrayList<E> implements List<E>
                 }
                 numbers.add(num.intValue());
             }
-            retval = new COSArrayList<Integer>(numbers, intArray);
+            retval = new COSArrayList<>(numbers, intArray);
         }
         return retval;
     }
@@ -307,7 +307,7 @@ public class COSArrayList<E> implements List<E>
         List<Float> retval = null;
         if( floatArray != null )
         {
-            List<Float> numbers = new ArrayList<Float>(floatArray.size());
+            List<Float> numbers = new ArrayList<>(floatArray.size());
             for( int i=0; i<floatArray.size(); i++ )
             {
                 COSBase base = floatArray.getObject(i);
@@ -320,7 +320,7 @@ public class COSArrayList<E> implements List<E>
                     numbers.add(null);
                 }
             }
-            retval = new COSArrayList<Float>( numbers, floatArray );
+            retval = new COSArrayList<>( numbers, floatArray );
         }
         return retval;
     }
@@ -338,12 +338,12 @@ public class COSArrayList<E> implements List<E>
         List<String> retval = null;
         if( nameArray != null )
         {
-            List<String>names = new ArrayList<String>();
+            List<String>names = new ArrayList<>();
             for( int i=0; i<nameArray.size(); i++ )
             {
                 names.add( ((COSName)nameArray.getObject( i )).getName() );
             }
-            retval = new COSArrayList<String>( names, nameArray );
+            retval = new COSArrayList<>( names, nameArray );
         }
         return retval;
     }
@@ -361,12 +361,12 @@ public class COSArrayList<E> implements List<E>
         List<String> retval = null;
         if( stringArray != null )
         {
-            List<String> string = new ArrayList<String>();
+            List<String> string = new ArrayList<>();
             for( int i=0; i<stringArray.size(); i++ )
             {
                 string.add( ((COSString)stringArray.getObject( i )).getString() );
             }
-            retval = new COSArrayList<String>( string, stringArray );
+            retval = new COSArrayList<>( string, stringArray );
         }
         return retval;
     }
@@ -465,7 +465,7 @@ public class COSArrayList<E> implements List<E>
 
     private List<COSBase> toCOSObjectList( Collection<?> list )
     {
-        List<COSBase> cosObjects = new ArrayList<COSBase>();
+        List<COSBase> cosObjects = new ArrayList<>();
         for (Object next : list)
         {
             if( next instanceof String )

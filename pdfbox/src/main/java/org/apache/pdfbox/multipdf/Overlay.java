@@ -60,8 +60,8 @@ public class Overlay
     private LayoutPage oddPageOverlayPage;
     private LayoutPage evenPageOverlayPage;
 
-    private final Map<Integer, PDDocument> specificPageOverlay = new HashMap<Integer, PDDocument>();
-    private Map<Integer, LayoutPage> specificPageOverlayPage = new HashMap<Integer, LayoutPage>();
+    private final Map<Integer, PDDocument> specificPageOverlay = new HashMap<>();
+    private Map<Integer, LayoutPage> specificPageOverlayPage = new HashMap<>();
 
     private Position position = Position.BACKGROUND;
 
@@ -258,7 +258,7 @@ public class Overlay
     private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
     {
         int numberOfPages = doc.getNumberOfPages();
-        Map<Integer,LayoutPage> layoutPages = new HashMap<Integer, Overlay.LayoutPage>(numberOfPages);
+        Map<Integer,LayoutPage> layoutPages = new HashMap<>(numberOfPages);
         for (int i=0;i<numberOfPages;i++)
         {
             PDPage page = doc.getPage(i);
@@ -297,7 +297,7 @@ public class Overlay
 
     private List<COSStream> createContentStreamList(COSBase contents) throws IOException
     {
-        List<COSStream> contentStreams = new ArrayList<COSStream>();
+        List<COSStream> contentStreams = new ArrayList<>();
         if (contents instanceof COSStream)
         {
             contentStreams.add((COSStream) contents);

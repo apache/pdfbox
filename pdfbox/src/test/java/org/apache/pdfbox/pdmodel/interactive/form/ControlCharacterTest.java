@@ -179,7 +179,7 @@ public class ControlCharacterTest {
     	
     	Object token = parser.parseNextToken();
     	
-    	List<String> stringValues = new ArrayList<String>();
+    	List<String> stringValues = new ArrayList<>();
     	
     	while (token != null)
     	{

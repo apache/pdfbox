@@ -173,7 +173,7 @@ public class PDOptionalContentProperties implements COSObjectable
      */
     public Collection<PDOptionalContentGroup> getOptionalContentGroups()
     {
-        Collection<PDOptionalContentGroup> coll = new java.util.ArrayList<PDOptionalContentGroup>();
+        Collection<PDOptionalContentGroup> coll = new java.util.ArrayList<>();
         COSArray ocgs = getOCGs();
         for (COSBase base : ocgs)
         {

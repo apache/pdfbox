@@ -75,7 +75,7 @@ public class PDSignatureField extends PDTerminalField
     private String generatePartialName()
     {
         String fieldName = "Signature";
-        Set<String> sigNames = new HashSet<String>();
+        Set<String> sigNames = new HashSet<>();
         // fixme: this ignores non-terminal fields, so will miss any descendant signatures
         for (PDField field : getAcroForm().getFields())
         {

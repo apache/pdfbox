@@ -91,10 +91,10 @@ public abstract class PDAbstractContentStream implements Closeable
     private PDResources resources;
 
     private boolean inTextMode = false;
-    private final Stack<PDFont> fontStack = new Stack<PDFont>();
+    private final Stack<PDFont> fontStack = new Stack<>();
 
-    private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
-    private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<PDColorSpace>();
+    private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<>();
+    private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
 
     // number format
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);

@@ -238,7 +238,7 @@ public class PDCIDFontType2 extends PDCIDFont
         {
             return null;
         }
-        Map<Integer, Integer> inverse = new HashMap<Integer, Integer>(cid2gid.length);
+        Map<Integer, Integer> inverse = new HashMap<>(cid2gid.length);
         for (int i = 0; i < cid2gid.length; i++)
         {
             inverse.put(cid2gid[i], i);

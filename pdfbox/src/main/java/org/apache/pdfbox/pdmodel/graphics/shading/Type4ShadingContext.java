@@ -76,7 +76,7 @@ class Type4ShadingContext extends GouraudShadingContext
         {
             colRange[i] = freeTriangleShadingType.getDecodeForParameter(2 + i);
         }
-        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
+        List<ShadedTriangle> list = new ArrayList<>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream stream = (COSStream) dict;

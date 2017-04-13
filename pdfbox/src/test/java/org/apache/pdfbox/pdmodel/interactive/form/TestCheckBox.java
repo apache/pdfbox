@@ -85,7 +85,7 @@ public class TestCheckBox extends TestCase
             assertNotNull(checkBox.getValue());
             
             // Test setting/getting option values - the dictionaries Opt entry
-            List<String> options = new ArrayList<String>();
+            List<String> options = new ArrayList<>();
             options.add("Value01");
             options.add("Value02");
             checkBox.setExportValues(options);

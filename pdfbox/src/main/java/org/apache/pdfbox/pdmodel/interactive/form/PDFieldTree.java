@@ -58,7 +58,7 @@ public class PDFieldTree implements Iterable<PDField>
      */
     private static final class FieldIterator implements Iterator<PDField>
     {
-        private final Queue<PDField> queue = new ArrayDeque<PDField>();
+        private final Queue<PDField> queue = new ArrayDeque<>();
         
         private FieldIterator(PDAcroForm form)
         {

@@ -52,7 +52,7 @@ class PlainText
     PlainText(String textValue)
     {
         List<String> parts = Arrays.asList(textValue.replaceAll("\t", " ").split("\\r\\n|\\n|\\r|\\u2028|\\u2029"));
-        paragraphs = new ArrayList<Paragraph>();
+        paragraphs = new ArrayList<>();
         for (String part : parts)
         {
         	// Acrobat prints a space for an empty paragraph
@@ -74,7 +74,7 @@ class PlainText
      */
     PlainText(List<String> listValue)
     {
-        paragraphs = new ArrayList<Paragraph>();
+        paragraphs = new ArrayList<>();
         for (String part : listValue)
         {
             paragraphs.add(new Paragraph(part));
@@ -165,7 +165,7 @@ class PlainText
             int end = iterator.next();
             float lineWidth = 0;
             
-            List<Line> textLines = new ArrayList<Line>();
+            List<Line> textLines = new ArrayList<>();
             Line textLine = new Line();
 
             while (end != BreakIterator.DONE)
@@ -209,7 +209,7 @@ class PlainText
      */
     static class Line
     {
-        private final List<Word> words = new ArrayList<Word>();
+        private final List<Word> words = new ArrayList<>();
         private float lineWidth;
 
         float getWidth()

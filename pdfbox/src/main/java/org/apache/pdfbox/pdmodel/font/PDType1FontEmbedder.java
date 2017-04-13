@@ -87,7 +87,7 @@ class PDType1FontEmbedder
         dict.setName(COSName.BASE_FONT, type1.getName());
 
         // widths
-        List<Integer> widths = new ArrayList<Integer>(256);
+        List<Integer> widths = new ArrayList<>(256);
         for (int code = 0; code <= 255; code++)
         {
             String name = fontEncoding.getName(code);

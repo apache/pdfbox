@@ -401,7 +401,7 @@ public class TestTextStripper extends TestCase
     // Helper method for get the file content
     private static List<String> fileToLines(File file)
     {
-        List<String> lines = new LinkedList<String>();
+        List<String> lines = new LinkedList<>();
         String line = "";
         try
         {

@@ -138,7 +138,7 @@ public class FDFJavaScript implements COSObjectable
      */
     public Map<String, PDActionJavaScript> getDoc()
     {
-        Map<String, PDActionJavaScript> map = new LinkedHashMap<String, PDActionJavaScript>();
+        Map<String, PDActionJavaScript> map = new LinkedHashMap<>();
         COSArray array = (COSArray) dictionary.getDictionaryObject(COSName.DOC);
         if (array == null)
         {

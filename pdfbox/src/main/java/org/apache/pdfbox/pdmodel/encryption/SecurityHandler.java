@@ -83,7 +83,7 @@ public abstract class SecurityHandler
     /** indicates if the Metadata have to be decrypted of not. */
     private boolean decryptMetadata;
 
-    private final Set<COSBase> objects = new HashSet<COSBase>();
+    private final Set<COSBase> objects = new HashSet<>();
 
     private boolean useAES;
 

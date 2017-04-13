@@ -65,7 +65,7 @@ public class PDMarkedContent
     {
         this.tag = tag == null ? null : tag.getName();
         this.properties = properties;
-        this.contents = new ArrayList<Object>();
+        this.contents = new ArrayList<>();
     }
 
 

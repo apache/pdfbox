@@ -182,7 +182,7 @@ public class PDStream implements COSObjectable
             }
             else
             {
-                filters = new ArrayList<COSName>();
+                filters = new ArrayList<>();
                 filters.add(COSName.FLATE_DECODE);
                 setFilters(filters);
             }
@@ -308,7 +308,7 @@ public class PDStream implements COSObjectable
         if (filters instanceof COSName)
         {
             COSName name = (COSName) filters;
-            retval = new COSArrayList<COSName>(name, name, stream, COSName.FILTER);
+            retval = new COSArrayList<>(name, name, stream, COSName.FILTER);
         } 
         else if (filters instanceof COSArray)
         {
@@ -356,14 +356,14 @@ public class PDStream implements COSObjectable
         else if (dp instanceof COSArray)
         {
             COSArray array = (COSArray) dp;
-            List<Object> actuals = new ArrayList<Object>();
+            List<Object> actuals = new ArrayList<>();
             for (int i = 0; i < array.size(); i++)
             {
                 actuals.add(COSDictionaryMap
                         .convertBasicTypesToMap((COSDictionary) array
                                 .getObject(i)));
             }
-            retval = new COSArrayList<Object>(actuals, array);
+            retval = new COSArrayList<>(actuals, array);
         }
 
         return retval;
@@ -416,7 +416,7 @@ public class PDStream implements COSObjectable
         if (filters instanceof COSName)
         {
             COSName name = (COSName) filters;
-            retval = new COSArrayList<String>(name.getName(), name, stream,
+            retval = new COSArrayList<>(name.getName(), name, stream,
                     COSName.F_FILTER);
         } 
         else if (filters instanceof COSArray)
@@ -460,14 +460,14 @@ public class PDStream implements COSObjectable
         else if (dp instanceof COSArray)
         {
             COSArray array = (COSArray) dp;
-            List<Object> actuals = new ArrayList<Object>();
+            List<Object> actuals = new ArrayList<>();
             for (int i = 0; i < array.size(); i++)
             {
                 actuals.add(COSDictionaryMap
                         .convertBasicTypesToMap((COSDictionary) array
                                 .getObject(i)));
             }
-            retval = new COSArrayList<Object>(actuals, array);
+            retval = new COSArrayList<>(actuals, array);
         }
 
         return retval;

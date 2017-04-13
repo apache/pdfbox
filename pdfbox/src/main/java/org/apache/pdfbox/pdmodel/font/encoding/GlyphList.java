@@ -96,7 +96,7 @@ public final class GlyphList
     private final Map<String, String> unicodeToName;
     
     // additional read/write cache for uniXXXX names
-    private final Map<String, String> uniNameToUnicodeCache = new HashMap<String, String>();
+    private final Map<String, String> uniNameToUnicodeCache = new HashMap<>();
 
     /**
      * Creates a new GlyphList from a glyph list file.
@@ -107,8 +107,8 @@ public final class GlyphList
      */
     public GlyphList(InputStream input, int numberOfEntries) throws IOException
     {
-        nameToUnicode = new HashMap<String, String>(numberOfEntries);
-        unicodeToName = new HashMap<String, String>(numberOfEntries);
+        nameToUnicode = new HashMap<>(numberOfEntries);
+        unicodeToName = new HashMap<>(numberOfEntries);
         loadList(input);
     }
 
@@ -121,8 +121,8 @@ public final class GlyphList
      */
     public GlyphList(GlyphList glyphList, InputStream input) throws IOException
     {
-        nameToUnicode = new HashMap<String, String>(glyphList.nameToUnicode);
-        unicodeToName = new HashMap<String, String>(glyphList.unicodeToName);
+        nameToUnicode = new HashMap<>(glyphList.nameToUnicode);
+        unicodeToName = new HashMap<>(glyphList.unicodeToName);
         loadList(input);
     }
 

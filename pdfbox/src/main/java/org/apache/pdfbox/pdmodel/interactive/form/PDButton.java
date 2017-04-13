@@ -228,7 +228,7 @@ public abstract class PDButton extends PDTerminalField
         
         if (value instanceof COSString)
         {
-            List<String> array = new ArrayList<String>();
+            List<String> array = new ArrayList<>();
             array.add(((COSString) value).getString());
             return array;
         }
@@ -299,7 +299,7 @@ public abstract class PDButton extends PDTerminalField
     public Set<String> getOnValues()
     {
         // we need a set as the field can appear multiple times
-        Set<String> onValues = new LinkedHashSet<String>();
+        Set<String> onValues = new LinkedHashSet<>();
         
         if (getExportValues().size() > 0)
         {

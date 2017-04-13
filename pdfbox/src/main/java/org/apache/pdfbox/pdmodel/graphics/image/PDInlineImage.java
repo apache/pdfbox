@@ -246,7 +246,7 @@ public final class PDInlineImage implements PDImage
         if (filters instanceof COSName)
         {
             COSName name = (COSName) filters;
-            names = new COSArrayList<String>(name.getName(), name, parameters, COSName.FILTER);
+            names = new COSArrayList<>(name.getName(), name, parameters, COSName.FILTER);
         }
         else if (filters instanceof COSArray)
         {

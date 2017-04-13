@@ -120,7 +120,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private Area textClippingArea;
 
     // glyph caches
-    private final Map<PDFont, GlyphCache> glyphCaches = new HashMap<PDFont, GlyphCache>();
+    private final Map<PDFont, GlyphCache> glyphCaches = new HashMap<>();
 
     private final TilingPaintFactory tilingPaintFactory = new TilingPaintFactory(this);
 

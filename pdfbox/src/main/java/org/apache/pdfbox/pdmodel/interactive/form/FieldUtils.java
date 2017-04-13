@@ -115,7 +115,7 @@ public final class FieldUtils
      */
     static List<KeyValue> toKeyValueList(List<String> key, List<String> value)
     {
-        List<KeyValue> list = new ArrayList<KeyValue>();
+        List<KeyValue> list = new ArrayList<>();
         for(int i =0; i<key.size(); i++)
         {
             list.add(new FieldUtils.KeyValue(key.get(i),value.get(i)));
@@ -169,7 +169,7 @@ public final class FieldUtils
         
         if (items instanceof COSString)
         {
-            List<String> array = new ArrayList<String>();
+            List<String> array = new ArrayList<>();
             array.add(((COSString) items).getString());
             return array;
         }
@@ -198,7 +198,7 @@ public final class FieldUtils
      */
     private static List<String> getItemsFromPair(COSBase items, int pairIdx)
     {
-        List<String> exportValues = new ArrayList<String>();
+        List<String> exportValues = new ArrayList<>();
         int numItems = ((COSArray) items).size();
         for (int i=0;i<numItems;i++)
         {

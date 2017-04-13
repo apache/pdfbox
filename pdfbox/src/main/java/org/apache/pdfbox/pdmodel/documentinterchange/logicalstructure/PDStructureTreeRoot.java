@@ -202,7 +202,7 @@ public class PDStructureTreeRoot extends PDStructureNode
                 LOG.error(e,e);
             }
         }
-        return new Hashtable<String, Object>();
+        return new Hashtable<>();
     }
 
     /**

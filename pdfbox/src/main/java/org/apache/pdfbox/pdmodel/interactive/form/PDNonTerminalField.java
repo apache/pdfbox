@@ -110,7 +110,7 @@ public class PDNonTerminalField extends PDField
         fdfField.setValue(getValue());
 
         List<PDField> children = getChildren();
-        List<FDFField> fdfChildren = new ArrayList<FDFField>();
+        List<FDFField> fdfChildren = new ArrayList<>();
         for (PDField child : children)
         {
             fdfChildren.add(child.exportFDF());
@@ -131,7 +131,7 @@ public class PDNonTerminalField extends PDField
     {
         //TODO: why not return a COSArrayList like in PDPage.getAnnotations() ?
  
-        List<PDField> children = new ArrayList<PDField>();
+        List<PDField> children = new ArrayList<>();
         COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
         for (int i = 0; i < kids.size(); i++)
         {

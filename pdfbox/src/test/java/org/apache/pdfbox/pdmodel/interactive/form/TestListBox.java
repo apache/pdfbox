@@ -85,14 +85,14 @@ public class TestListBox extends TestCase
          */
 
         // export values
-        List<String> exportValues = new ArrayList<String>();
+        List<String> exportValues = new ArrayList<>();
         exportValues.add("export01");
         exportValues.add("export02");
         exportValues.add("export03");
 
         // display values, not sorted on purpose as this
         // will be used to test the sort option of the list box
-        List<String> displayValues = new ArrayList<String>();
+        List<String> displayValues = new ArrayList<>();
         displayValues.add("display02");
         displayValues.add("display01");
         displayValues.add("display03");

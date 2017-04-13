@@ -244,8 +244,8 @@ public class TestSymmetricKeyEncryption extends TestCase
         String prefix = "Simple-";
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        List<BufferedImage> srcImgTab = new ArrayList<BufferedImage>();
-        List<byte[]> srcContentStreamTab = new ArrayList<byte[]>();
+        List<BufferedImage> srcImgTab = new ArrayList<>();
+        List<byte[]> srcContentStreamTab = new ArrayList<>();
         for (int i = 0; i < numSrcPages; ++i)
         {
             srcImgTab.add(pdfRenderer.renderImage(i));

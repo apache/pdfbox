@@ -98,7 +98,7 @@ public class PDAppearanceEntry implements COSObjectable
         }
 
         COSDictionary dict = (COSDictionary) entry;
-        Map<COSName, PDAppearanceStream> map = new HashMap<COSName, PDAppearanceStream>();
+        Map<COSName, PDAppearanceStream> map = new HashMap<>();
 
         for (COSName name : dict.keySet())
         {
@@ -111,6 +111,6 @@ public class PDAppearanceEntry implements COSObjectable
             }
         }
 
-        return new COSDictionaryMap<COSName, PDAppearanceStream>(map, dict);
+        return new COSDictionaryMap<>(map, dict);
     }
 }

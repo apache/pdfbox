@@ -49,7 +49,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * The name-value pairs of this dictionary. The pairs are kept in the order they were added to the dictionary.
      */
 //    protected Map<COSName, COSBase> items = new LinkedHashMap<COSName, COSBase>();
-    protected Map<COSName, COSBase> items = new SmallMap<COSName, COSBase>();
+    protected Map<COSName, COSBase> items = new SmallMap<>();
 
     /**
      * Constructor.
@@ -94,7 +94,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         {
             synchronized (DICT_INSTANCES)
             {
-                DICT_INSTANCES.add(new WeakReference<COSDictionary>(this));
+                DICT_INSTANCES.add(new WeakReference<>(this));
                 // print statistics at each 10,000th instance
                 if (DICT_INSTANCES.size() % 10000 == 0)
                 {

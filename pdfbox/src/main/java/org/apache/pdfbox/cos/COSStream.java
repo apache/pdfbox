@@ -281,7 +281,7 @@ public class COSStream extends COSDictionary implements Closeable
      */
     private List<Filter> getFilterList() throws IOException
     {
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         COSBase filters = getFilters();
         if (filters instanceof COSName)
         {

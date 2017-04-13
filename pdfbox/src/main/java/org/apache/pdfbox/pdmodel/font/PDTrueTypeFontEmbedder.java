@@ -82,7 +82,7 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
         int firstChar = Collections.min(codeToName.keySet());
         int lastChar = Collections.max(codeToName.keySet());
 
-        List<Integer> widths = new ArrayList<Integer>(lastChar - firstChar + 1);
+        List<Integer> widths = new ArrayList<>(lastChar - firstChar + 1);
         for (int i = 0; i < lastChar - firstChar + 1; i++)
         {
             widths.add(0);

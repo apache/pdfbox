@@ -33,7 +33,7 @@ public final class Operator
     private COSDictionary imageParameters;
 
     /** map for singleton operator objects; use {@link ConcurrentHashMap} for better scalability with multiple threads */
-    private static final ConcurrentMap<String,Operator> operators = new ConcurrentHashMap<String, Operator>();
+    private static final ConcurrentMap<String,Operator> operators = new ConcurrentHashMap<>();
 
     /**
      * Constructor.

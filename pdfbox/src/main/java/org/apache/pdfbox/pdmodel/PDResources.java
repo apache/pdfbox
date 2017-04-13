@@ -55,7 +55,7 @@ public final class PDResources implements COSObjectable
     // PDFBOX-3442 cache fonts that are not indirect objects, as these aren't cached in ResourceCache
     // and this would result in huge memory footprint in text extraction
     private final Map <COSName,SoftReference<PDFont>> directFontCache = 
-            new HashMap<COSName, SoftReference<PDFont>>();
+            new HashMap<>();
 
     /**
      * Constructor for embedding.
@@ -149,7 +149,7 @@ public final class PDResources implements COSObjectable
         }
         else if (indirect == null)
         {
-            directFontCache.put(name, new SoftReference<PDFont>(font));
+            directFontCache.put(name, new SoftReference<>(font));
         }
         return font;
     }

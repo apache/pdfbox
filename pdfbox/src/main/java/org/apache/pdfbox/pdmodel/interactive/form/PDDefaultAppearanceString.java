@@ -93,7 +93,7 @@ class PDDefaultAppearanceString
      */
     private void processAppearanceStringOperators(byte[] content) throws IOException
     {
-        List<COSBase> arguments = new ArrayList<COSBase>();
+        List<COSBase> arguments = new ArrayList<>();
         PDFStreamParser parser = new PDFStreamParser(content);
         Object token = parser.parseNextToken();
         while (token != null)
@@ -105,7 +105,7 @@ class PDDefaultAppearanceString
             else if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = new ArrayList<COSBase>();
+                arguments = new ArrayList<>();
             }
             else
             {

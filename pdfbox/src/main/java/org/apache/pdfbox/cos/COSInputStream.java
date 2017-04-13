@@ -51,7 +51,7 @@ public final class COSInputStream extends FilterInputStream
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
                                  ScratchFile scratchFile) throws IOException
     {
-        List<DecodeResult> results = new ArrayList<DecodeResult>();
+        List<DecodeResult> results = new ArrayList<>();
         InputStream input = in;
         if (filters.isEmpty())
         {

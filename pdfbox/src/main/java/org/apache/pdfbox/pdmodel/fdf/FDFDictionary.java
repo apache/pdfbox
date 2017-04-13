@@ -115,7 +115,7 @@ public class FDFDictionary implements COSObjectable
                 else if (child.getTagName().equals("fields"))
                 {
                     NodeList fields = child.getChildNodes();
-                    List<FDFField> fieldList = new ArrayList<FDFField>();
+                    List<FDFField> fieldList = new ArrayList<>();
                     for (int f = 0; f < fields.getLength(); f++)
                     {
                         Node currentNode = fields.item(f);
@@ -138,7 +138,7 @@ public class FDFDictionary implements COSObjectable
                 else if (child.getTagName().equals("annots"))
                 {
                     NodeList annots = child.getChildNodes();
-                    List<FDFAnnotation> annotList = new ArrayList<FDFAnnotation>();
+                    List<FDFAnnotation> annotList = new ArrayList<>();
                     for (int j = 0; j < annots.getLength(); j++)
                     {
                         Node annotNode = annots.item(j);
@@ -337,12 +337,12 @@ public class FDFDictionary implements COSObjectable
         COSArray fieldArray = (COSArray) fdf.getDictionaryObject(COSName.FIELDS);
         if (fieldArray != null)
         {
-            List<FDFField> fields = new ArrayList<FDFField>();
+            List<FDFField> fields = new ArrayList<>();
             for (int i = 0; i < fieldArray.size(); i++)
             {
                 fields.add(new FDFField((COSDictionary) fieldArray.getObject(i)));
             }
-            retval = new COSArrayList<FDFField>(fields, fieldArray);
+            retval = new COSArrayList<>(fields, fieldArray);
         }
         return retval;
     }
@@ -388,12 +388,12 @@ public class FDFDictionary implements COSObjectable
         COSArray pageArray = (COSArray) fdf.getDictionaryObject(COSName.PAGES);
         if (pageArray != null)
         {
-            List<FDFPage> pages = new ArrayList<FDFPage>();
+            List<FDFPage> pages = new ArrayList<>();
             for (int i = 0; i < pageArray.size(); i++)
             {
                 pages.add(new FDFPage((COSDictionary) pageArray.get(i)));
             }
-            retval = new COSArrayList<FDFPage>(pages, pageArray);
+            retval = new COSArrayList<>(pages, pageArray);
         }
         return retval;
     }
@@ -449,12 +449,12 @@ public class FDFDictionary implements COSObjectable
         COSArray annotArray = (COSArray) fdf.getDictionaryObject(COSName.ANNOTS);
         if (annotArray != null)
         {
-            List<FDFAnnotation> annots = new ArrayList<FDFAnnotation>();
+            List<FDFAnnotation> annots = new ArrayList<>();
             for (int i = 0; i < annotArray.size(); i++)
             {
                 annots.add(FDFAnnotation.create((COSDictionary) annotArray.getObject(i)));
             }
-            retval = new COSArrayList<FDFAnnotation>(annots, annotArray);
+            retval = new COSArrayList<>(annots, annotArray);
         }
         return retval;
     }
@@ -524,12 +524,12 @@ public class FDFDictionary implements COSObjectable
         COSArray embeddedArray = (COSArray) fdf.getDictionaryObject(COSName.EMBEDDED_FDFS);
         if (embeddedArray != null)
         {
-            List<PDFileSpecification> embedded = new ArrayList<PDFileSpecification>();
+            List<PDFileSpecification> embedded = new ArrayList<>();
             for (int i = 0; i < embeddedArray.size(); i++)
             {
                 embedded.add(PDFileSpecification.createFS(embeddedArray.get(i)));
             }
-            retval = new COSArrayList<PDFileSpecification>(embedded, embeddedArray);
+            retval = new COSArrayList<>(embedded, embeddedArray);
         }
         return retval;
     }

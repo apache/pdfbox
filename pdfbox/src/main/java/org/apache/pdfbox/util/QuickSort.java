@@ -71,7 +71,7 @@ public final class QuickSort
 
     private static <T> void quicksort(List<T> list, Comparator<T> cmp)
     {
-        Deque<Integer> stack = new ArrayDeque<Integer>();
+        Deque<Integer> stack = new ArrayDeque<>();
         stack.push(0);
         stack.push(list.size());
         while (!stack.isEmpty())

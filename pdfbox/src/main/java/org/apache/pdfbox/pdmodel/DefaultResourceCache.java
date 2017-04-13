@@ -39,25 +39,25 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 public class DefaultResourceCache implements ResourceCache
 {
     private final Map<COSObject, SoftReference<PDFont>> fonts =
-            new HashMap<COSObject, SoftReference<PDFont>>();
+            new HashMap<>();
     
     private final Map<COSObject, SoftReference<PDColorSpace>> colorSpaces =
-            new HashMap<COSObject, SoftReference<PDColorSpace>>();
+            new HashMap<>();
 
     private final Map<COSObject, SoftReference<PDXObject>> xobjects =
-            new HashMap<COSObject, SoftReference<PDXObject>>();
+            new HashMap<>();
 
     private final Map<COSObject, SoftReference<PDExtendedGraphicsState>> extGStates =
-            new HashMap<COSObject, SoftReference<PDExtendedGraphicsState>>();
+            new HashMap<>();
 
     private final Map<COSObject, SoftReference<PDShading>> shadings =
-            new HashMap<COSObject, SoftReference<PDShading>>();
+            new HashMap<>();
 
     private final Map<COSObject, SoftReference<PDAbstractPattern>> patterns =
-            new HashMap<COSObject, SoftReference<PDAbstractPattern>>();
+            new HashMap<>();
 
     private final Map<COSObject, SoftReference<PDPropertyList>> properties =
-            new HashMap<COSObject, SoftReference<PDPropertyList>>();
+            new HashMap<>();
 
     @Override
     public PDFont getFont(COSObject indirect) throws IOException
@@ -73,7 +73,7 @@ public class DefaultResourceCache implements ResourceCache
     @Override
     public void put(COSObject indirect, PDFont font) throws IOException
     {
-        fonts.put(indirect, new SoftReference<PDFont>(font));
+        fonts.put(indirect, new SoftReference<>(font));
     }
 
     @Override
@@ -90,7 +90,7 @@ public class DefaultResourceCache implements ResourceCache
     @Override
     public void put(COSObject indirect, PDColorSpace colorSpace) throws IOException
     {
-        colorSpaces.put(indirect, new SoftReference<PDColorSpace>(colorSpace));
+        colorSpaces.put(indirect, new SoftReference<>(colorSpace));
     }
 
     @Override
@@ -107,7 +107,7 @@ public class DefaultResourceCache implements ResourceCache
     @Override
     public void put(COSObject indirect, PDExtendedGraphicsState extGState)
     {
-        extGStates.put(indirect, new SoftReference<PDExtendedGraphicsState>(extGState));
+        extGStates.put(indirect, new SoftReference<>(extGState));
     }
 
     @Override
@@ -124,7 +124,7 @@ public class DefaultResourceCache implements ResourceCache
     @Override
     public void put(COSObject indirect, PDShading shading) throws IOException
     {
-        shadings.put(indirect, new SoftReference<PDShading>(shading));
+        shadings.put(indirect, new SoftReference<>(shading));
     }
 
     @Override
@@ -141,7 +141,7 @@ public class DefaultResourceCache implements ResourceCache
     @Override
     public void put(COSObject indirect, PDAbstractPattern pattern) throws IOException
     {
-        patterns.put(indirect, new SoftReference<PDAbstractPattern>(pattern));
+        patterns.put(indirect, new SoftReference<>(pattern));
     }
     
     @Override
@@ -158,7 +158,7 @@ public class DefaultResourceCache implements ResourceCache
     @Override
     public void put(COSObject indirect, PDPropertyList propertyList)
     {
-        properties.put(indirect, new SoftReference<PDPropertyList>(propertyList));
+        properties.put(indirect, new SoftReference<>(propertyList));
     }
 
     @Override
@@ -175,6 +175,6 @@ public class DefaultResourceCache implements ResourceCache
     @Override
     public void put(COSObject indirect, PDXObject xobject) throws IOException
     {
-        xobjects.put(indirect, new SoftReference<PDXObject>(xobject));
+        xobjects.put(indirect, new SoftReference<>(xobject));
     }
 }

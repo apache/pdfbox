@@ -121,7 +121,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public Iterator<PDStream> getContentStreams()
     {
-        List<PDStream> streams = new ArrayList<PDStream>();
+        List<PDStream> streams = new ArrayList<>();
         COSBase base = page.getDictionaryObject(COSName.CONTENTS);
         if (base instanceof COSStream)
         {
@@ -151,7 +151,7 @@ public class PDPage implements COSObjectable, PDContentStream
         {
             COSArray streams = (COSArray)base;
             byte[] delimiter = new byte[] { '\n' };
-            List<InputStream> inputStreams = new ArrayList<InputStream>();
+            List<InputStream> inputStreams = new ArrayList<>();
             for (int i = 0; i < streams.size(); i++)
             {
                 COSBase strm = streams.getObject(i);
@@ -531,7 +531,7 @@ public class PDPage implements COSObjectable, PDContentStream
         {
             beads = new COSArray();
         }
-        List<PDThreadBead> pdObjects = new ArrayList<PDThreadBead>();
+        List<PDThreadBead> pdObjects = new ArrayList<>();
         for (int i = 0; i < beads.size(); i++)
         {
             COSDictionary beadDic = (COSDictionary) beads.getObject(i);
@@ -543,7 +543,7 @@ public class PDPage implements COSObjectable, PDContentStream
             }
             pdObjects.add(bead);
         }
-        return new COSArrayList<PDThreadBead>(pdObjects, beads);
+        return new COSArrayList<>(pdObjects, beads);
     }
 
     /**
@@ -653,11 +653,11 @@ public class PDPage implements COSObjectable, PDContentStream
         COSArray annots = (COSArray) page.getDictionaryObject(COSName.ANNOTS);
         if (annots == null)
         {
-            return new COSArrayList<PDAnnotation>(page, COSName.ANNOTS);
+            return new COSArrayList<>(page, COSName.ANNOTS);
         }
         else
         {
-            List<PDAnnotation> actuals = new ArrayList<PDAnnotation>();
+            List<PDAnnotation> actuals = new ArrayList<>();
             for (int i = 0; i < annots.size(); i++)
             {
                 COSBase item = annots.getObject(i);
@@ -667,7 +667,7 @@ public class PDPage implements COSObjectable, PDContentStream
                 }
                 actuals.add(PDAnnotation.createAnnotation(item));
             }
-            retval = new COSArrayList<PDAnnotation>(actuals, annots);
+            retval = new COSArrayList<>(actuals, annots);
         }
         return retval;
     }
