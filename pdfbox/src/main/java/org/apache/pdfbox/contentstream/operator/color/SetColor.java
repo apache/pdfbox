@@ -26,6 +26,7 @@ import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 
 /**
@@ -39,10 +40,16 @@ public abstract class SetColor extends OperatorProcessor
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         PDColorSpace colorSpace = getColorSpace();
-        if (!(colorSpace instanceof PDPattern) &&
-            arguments.size() < colorSpace.getNumberOfComponents())
+        if (!(colorSpace instanceof PDPattern))
         {
-            throw new MissingOperandException(operator, arguments);
+            if (arguments.size() < colorSpace.getNumberOfComponents())
+            {
+                throw new MissingOperandException(operator, arguments);
+            }
+            if (!checkArrayTypesClass(arguments, COSNumber.class))
+            {
+                return;
+            }
         }
         COSArray array = new COSArray();
         array.addAll(arguments);
