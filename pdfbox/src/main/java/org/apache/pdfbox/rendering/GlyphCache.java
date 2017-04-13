@@ -36,7 +36,7 @@ final class GlyphCache
     private static final Log LOG = LogFactory.getLog(GlyphCache.class);
     
     private final PDVectorFont font;
-    private final Map<Integer, GeneralPath> cache = new HashMap<Integer, GeneralPath>();
+    private final Map<Integer, GeneralPath> cache = new HashMap<>();
 
     GlyphCache(PDVectorFont font)
     {

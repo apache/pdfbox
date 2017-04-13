@@ -529,12 +529,12 @@ public class COSParser extends BaseParser
     protected void parseDictObjects(COSDictionary dict, COSName... excludeObjects) throws IOException
     {
         // ---- create queue for objects waiting for further parsing
-        final Queue<COSBase> toBeParsedList = new LinkedList<COSBase>();
+        final Queue<COSBase> toBeParsedList = new LinkedList<>();
         // offset ordered object map
-        final TreeMap<Long, List<COSObject>> objToBeParsed = new TreeMap<Long, List<COSObject>>();
+        final TreeMap<Long, List<COSObject>> objToBeParsed = new TreeMap<>();
         // in case of compressed objects offset points to stmObj
-        final Set<Long> parsedObjects = new HashSet<Long>();
-        final Set<Long> addedObjects = new HashSet<Long>();
+        final Set<Long> parsedObjects = new HashSet<>();
+        final Set<Long> addedObjects = new HashSet<>();
 
         addExcludedToList(excludeObjects, dict, parsedObjects);
         addNewToList(toBeParsedList, dict.getValues(), addedObjects);
@@ -592,7 +592,7 @@ public class COSParser extends BaseParser
                                 List<COSObject> stmObjects = objToBeParsed.get(fileOffset);
                                 if (stmObjects == null)
                                 {
-                                    stmObjects = new ArrayList<COSObject>();
+                                    stmObjects = new ArrayList<>();
                                     objToBeParsed.put(fileOffset, stmObjects);
                                 }
                                 stmObjects.add(obj);
@@ -1288,7 +1288,7 @@ public class COSParser extends BaseParser
                 bfSearchForObjects();
                 if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
                 {
-                    List<COSObjectKey> objStreams = new ArrayList<COSObjectKey>();
+                    List<COSObjectKey> objStreams = new ArrayList<>();
                     // find all object streams
                     for (COSObjectKey key : xrefOffset.keySet())
                     {
@@ -1404,7 +1404,7 @@ public class COSParser extends BaseParser
         if (bfSearchCOSObjectKeyOffsets == null)
         {
             bfSearchForLastEOFMarker();
-            bfSearchCOSObjectKeyOffsets = new HashMap<COSObjectKey, Long>();
+            bfSearchCOSObjectKeyOffsets = new HashMap<>();
             long originOffset = source.getPosition();
             long currentOffset = MINIMUM_SEARCH_OFFSET;
             String objString = " obj";
@@ -1588,7 +1588,7 @@ public class COSParser extends BaseParser
         if (bfSearchXRefTablesOffsets == null)
         {
             // a pdf may contain more than one xref entry
-            bfSearchXRefTablesOffsets = new Vector<Long>();
+            bfSearchXRefTablesOffsets = new Vector<>();
             long originOffset = source.getPosition();
             source.seek(MINIMUM_SEARCH_OFFSET);
             // search for xref tables
@@ -1621,7 +1621,7 @@ public class COSParser extends BaseParser
         if (bfSearchXRefStreamsOffsets == null)
         {
             // a pdf may contain more than one /XRef entry
-            bfSearchXRefStreamsOffsets = new Vector<Long>();
+            bfSearchXRefStreamsOffsets = new Vector<>();
             long originOffset = source.getPosition();
             source.seek(MINIMUM_SEARCH_OFFSET);
             // search for XRef streams

@@ -69,8 +69,8 @@ public class PDFObjectStreamParser extends BaseParser
         {
             //need to first parse the header.
             int numberOfObjects = stream.getInt( "N" );
-            List<Long> objectNumbers = new ArrayList<Long>( numberOfObjects );
-            streamObjects = new ArrayList<COSObject>( numberOfObjects );
+            List<Long> objectNumbers = new ArrayList<>( numberOfObjects );
+            streamObjects = new ArrayList<>( numberOfObjects );
             for( int i=0; i<numberOfObjects; i++ )
             {
                 long objectNumber = readObjectNumber();

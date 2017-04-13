@@ -297,7 +297,7 @@ public class StandardStructureTypes
     /**
      * All standard structure types.
      */
-    public static List<String> types = new ArrayList<String>();
+    public static List<String> types = new ArrayList<>();
 
     static
     {

@@ -59,7 +59,7 @@ public class PDPageLabels implements COSObjectable
      */
     public PDPageLabels(PDDocument document)
     {
-        labels = new TreeMap<Integer, PDPageLabelRange>();
+        labels = new TreeMap<>();
         this.doc = document;
         PDPageLabelRange defaultRange = new PDPageLabelRange();
         defaultRange.setStyle(PDPageLabelRange.STYLE_DECIMAL);
@@ -203,7 +203,7 @@ public class PDPageLabels implements COSObjectable
     public Map<String, Integer> getPageIndicesByLabels()
     {
         final Map<String, Integer> labelMap = 
-            new HashMap<String, Integer>(doc.getNumberOfPages());
+            new HashMap<>(doc.getNumberOfPages());
         computeLabels(new LabelHandler()
         {
             @Override

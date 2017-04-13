@@ -133,7 +133,7 @@ public class PDSeparation extends PDSpecialColorSpace
         int height = raster.getHeight();
         float[] samples = new float[1];
 
-        Map<Integer, int[]> calculatedValues = new HashMap<Integer, int[]>();
+        Map<Integer, int[]> calculatedValues = new HashMap<>();
         Integer hash;
         for (int y = 0; y < height; y++)
         {
@@ -164,7 +164,7 @@ public class PDSeparation extends PDSpecialColorSpace
         WritableRaster rgbRaster = rgbImage.getRaster();
         float[] samples = new float[1];
 
-        Map<Integer, int[]> calculatedValues = new HashMap<Integer, int[]>();
+        Map<Integer, int[]> calculatedValues = new HashMap<>();
         Integer hash;
         for (int y = 0; y < height; y++)
         {

@@ -35,7 +35,7 @@ import org.apache.pdfbox.util.Hex;
  */
 final class ToUnicodeWriter
 {
-    private final Map<Integer, String> cidToUnicode = new TreeMap<Integer, String>();
+    private final Map<Integer, String> cidToUnicode = new TreeMap<>();
     private int wMode;
 
     /**
@@ -111,9 +111,9 @@ final class ToUnicodeWriter
         writeLine(writer, "endcodespacerange\n");
 
         // CID -> Unicode mappings, we use ranges to generate a smaller CMap
-        List<Integer> srcFrom = new ArrayList<Integer>();
-        List<Integer> srcTo = new ArrayList<Integer>();
-        List<String> dstString = new ArrayList<String>();
+        List<Integer> srcFrom = new ArrayList<>();
+        List<Integer> srcTo = new ArrayList<>();
+        List<String> dstString = new ArrayList<>();
 
         int srcPrev = -1;
         String dstPrev = null;

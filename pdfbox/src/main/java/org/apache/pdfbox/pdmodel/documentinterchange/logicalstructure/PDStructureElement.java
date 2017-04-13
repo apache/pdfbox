@@ -164,7 +164,7 @@ public class PDStructureElement extends PDStructureNode
     public Revisions<PDAttributeObject> getAttributes()
     {
         Revisions<PDAttributeObject> attributes =
-            new Revisions<PDAttributeObject>();
+            new Revisions<>();
         COSBase a = this.getCOSObject().getDictionaryObject(COSName.A);
         if (a instanceof COSArray)
         {
@@ -331,7 +331,7 @@ public class PDStructureElement extends PDStructureNode
     public Revisions<String> getClassNames()
     {
         COSName key = COSName.C;
-        Revisions<String> classNames = new Revisions<String>();
+        Revisions<String> classNames = new Revisions<>();
         COSBase c = this.getCOSObject().getDictionaryObject(key);
         if (c instanceof COSName)
         {

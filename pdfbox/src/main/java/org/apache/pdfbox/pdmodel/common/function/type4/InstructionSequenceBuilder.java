@@ -28,7 +28,7 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
 {
 
     private final InstructionSequence mainSequence = new InstructionSequence();
-    private final Stack<InstructionSequence> seqStack = new Stack<InstructionSequence>();
+    private final Stack<InstructionSequence> seqStack = new Stack<>();
 
     private InstructionSequenceBuilder()
     {

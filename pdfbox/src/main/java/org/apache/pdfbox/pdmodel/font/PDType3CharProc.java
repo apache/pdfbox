@@ -93,7 +93,7 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
      */
     public PDRectangle getGlyphBBox() throws IOException
     {
-        List<COSBase> arguments = new ArrayList<COSBase>();
+        List<COSBase> arguments = new ArrayList<>();
         PDFStreamParser parser = new PDFStreamParser(this);
         Object token = parser.parseNextToken();
         while (token != null)
@@ -148,7 +148,7 @@ public final class PDType3CharProc implements COSObjectable, PDContentStream
      */
     public float getWidth() throws IOException
     {
-        List<COSBase> arguments = new ArrayList<COSBase>();
+        List<COSBase> arguments = new ArrayList<>();
         PDFStreamParser parser = new PDFStreamParser(this);
         Object token = parser.parseNextToken();
         while (token != null)

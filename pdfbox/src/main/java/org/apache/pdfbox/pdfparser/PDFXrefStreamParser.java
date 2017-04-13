@@ -83,7 +83,7 @@ public class PDFXrefStreamParser extends BaseParser
             indexArray.add(stream.getDictionaryObject(COSName.SIZE));
         }
 
-        List<Long> objNums = new ArrayList<Long>();
+        List<Long> objNums = new ArrayList<>();
 
         /*
          * Populates objNums with all object numbers available

@@ -145,7 +145,7 @@ public final class PDAcroForm implements COSObjectable
         FDFDictionary fdfDict = new FDFDictionary();
         catalog.setFDF(fdfDict);
 
-        List<FDFField> fdfFields = new ArrayList<FDFField>();
+        List<FDFField> fdfFields = new ArrayList<>();
         List<PDField> fields = getFields();
         for (PDField field : fields)
         {
@@ -184,7 +184,7 @@ public final class PDAcroForm implements COSObjectable
     		return;
     	}
     	
-    	List<PDField> fields = new ArrayList<PDField>();
+    	List<PDField> fields = new ArrayList<>();
     	for (PDField field: getFieldTree())
     	{
     		fields.add(field);
@@ -234,7 +234,7 @@ public final class PDAcroForm implements COSObjectable
         {
             isContentStreamWrapped = false;
             
-            List<PDAnnotation> annotations = new ArrayList<PDAnnotation>();
+            List<PDAnnotation> annotations = new ArrayList<>();
             
             for (PDAnnotation annotation: page.getAnnotations())
             {
@@ -370,7 +370,7 @@ public final class PDAcroForm implements COSObjectable
         {
             return Collections.emptyList();
         }
-        List<PDField> pdFields = new ArrayList<PDField>();
+        List<PDField> pdFields = new ArrayList<>();
         for (int i = 0; i < cosFields.size(); i++)
         {
             COSDictionary element = (COSDictionary) cosFields.getObject(i);
@@ -383,7 +383,7 @@ public final class PDAcroForm implements COSObjectable
                 }
             }
         }
-        return new COSArrayList<PDField>(pdFields, cosFields);
+        return new COSArrayList<>(pdFields, cosFields);
     }
 
     /**
@@ -424,7 +424,7 @@ public final class PDAcroForm implements COSObjectable
     {
         if (cache)
         {
-            fieldCache = new HashMap<String, PDField>();
+            fieldCache = new HashMap<>();
 
             for (PDField field : getFieldTree())
             {

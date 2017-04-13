@@ -261,7 +261,7 @@ public class PDDocumentInformation implements COSObjectable
      */
     public Set<String> getMetadataKeys()
     {
-        Set<String> keys = new TreeSet<String>();
+        Set<String> keys = new TreeSet<>();
         for (COSName key : info.keySet())
         {
             keys.add(key.getName());

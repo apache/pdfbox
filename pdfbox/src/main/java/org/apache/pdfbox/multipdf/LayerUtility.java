@@ -134,7 +134,7 @@ public class LayerUtility
         return importPageAsForm(sourceDoc, page);
     }
 
-    private static final Set<String> PAGE_TO_FORM_FILTER = new java.util.HashSet<String>(
+    private static final Set<String> PAGE_TO_FORM_FILTER = new java.util.HashSet<>(
             Arrays.asList(new String[] {"Group", "LastModified", "Metadata"}));
 
     /**

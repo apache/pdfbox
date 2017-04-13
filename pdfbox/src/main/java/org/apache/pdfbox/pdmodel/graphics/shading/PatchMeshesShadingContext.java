@@ -48,7 +48,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     /**
      * patch list
      */
-    private List<Patch> patchList = new ArrayList<Patch>();
+    private List<Patch> patchList = new ArrayList<>();
     
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -93,7 +93,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         {
             colRange[i] = shadingType.getDecodeForParameter(2 + i);
         }
-        List<Patch> list = new ArrayList<Patch>();
+        List<Patch> list = new ArrayList<>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) dict;
@@ -260,7 +260,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
     @Override
     protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds)  throws IOException
     {
-        Map<Point, Integer> map = new HashMap<Point, Integer>();
+        Map<Point, Integer> map = new HashMap<>();
         for (Patch it : patchList)
         {
             super.calcPixelTable(it.listOfTriangles, map, deviceBounds);

@@ -275,7 +275,7 @@ public class PDSeedValue implements COSObjectable
 
         if (fields != null)
         {
-            List<String> actuals = new ArrayList<String>();
+            List<String> actuals = new ArrayList<>();
             for ( int i = 0; i < fields.size(); i++ )
             {
                 String element = fields.getName(i);
@@ -284,7 +284,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList<String>(actuals, fields);
+            retval = new COSArrayList<>(actuals, fields);
         }
         return retval;
     }
@@ -315,7 +315,7 @@ public class PDSeedValue implements COSObjectable
 
         if (fields != null)
         {
-            List<String> actuals = new ArrayList<String>();
+            List<String> actuals = new ArrayList<>();
             for ( int i = 0; i < fields.size(); i++ )
             {
                 String element = fields.getName(i);
@@ -324,7 +324,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList<String>(actuals, fields);
+            retval = new COSArrayList<>(actuals, fields);
         }
         return retval;
     }
@@ -404,7 +404,7 @@ public class PDSeedValue implements COSObjectable
 
         if (fields != null)
         {
-            List<String> actuals = new ArrayList<String>();
+            List<String> actuals = new ArrayList<>();
             for ( int i = 0; i < fields.size(); i++ )
             {
                 String element = fields.getString(i);
@@ -413,7 +413,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList<String>(actuals, fields);
+            retval = new COSArrayList<>(actuals, fields);
         }
         return retval;
     }
@@ -521,7 +521,7 @@ public class PDSeedValue implements COSObjectable
 
         if (fields != null)
         {
-            List<String> actuals = new ArrayList<String>();
+            List<String> actuals = new ArrayList<>();
             for ( int i = 0; i < fields.size(); i++ )
             {
                 String element = fields.getString(i);
@@ -530,7 +530,7 @@ public class PDSeedValue implements COSObjectable
                     actuals.add(element);
                 }
             }
-            retval = new COSArrayList<String>(actuals, fields);
+            retval = new COSArrayList<>(actuals, fields);
         }
         return retval;
     }

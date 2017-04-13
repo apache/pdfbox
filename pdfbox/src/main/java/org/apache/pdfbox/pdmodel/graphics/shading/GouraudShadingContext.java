@@ -45,7 +45,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     /**
      * triangle list.
      */
-    private List<ShadedTriangle> triangleList = new ArrayList<ShadedTriangle>();
+    private List<ShadedTriangle> triangleList = new ArrayList<>();
 
     /**
      * Constructor creates an instance to be used for fill operations.
@@ -117,7 +117,7 @@ abstract class GouraudShadingContext extends TriangleBasedShadingContext
     @Override
     protected Map<Point, Integer> calcPixelTable(Rectangle deviceBounds) throws IOException
     {
-        Map<Point, Integer> map = new HashMap<Point, Integer>();
+        Map<Point, Integer> map = new HashMap<>();
         super.calcPixelTable(triangleList, map, deviceBounds);
         return map;
     }

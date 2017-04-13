@@ -192,9 +192,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      *
      * Most PDFs won't have any beads, so charactersByArticle will contain a single entry.
      */
-    protected ArrayList<List<TextPosition>> charactersByArticle = new ArrayList<List<TextPosition>>();
+    protected ArrayList<List<TextPosition>> charactersByArticle = new ArrayList<>();
 
-    private Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping = new HashMap<String, TreeMap<Float, TreeSet<Float>>>();
+    private Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping = new HashMap<>();
 
     protected PDDocument document;
     protected Writer output;
@@ -396,7 +396,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     private void fillBeadRectangles(PDPage page)
     {
-        beadRectangles = new ArrayList<PDRectangle>();
+        beadRectangles = new ArrayList<>();
         for (PDThreadBead bead : page.getThreadBeads())
         {
             if (bead == null)
@@ -545,7 +545,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             // Now cycle through to print the text.
             // We queue up a line at a time before we print so that we can convert
             // the line from presentation form to logical form (if needed).
-            List<LineItem> line = new ArrayList<LineItem>();
+            List<LineItem> line = new ArrayList<>();
 
             Iterator<TextPosition> textIter = textList.iterator();
             // PDF files don't always store spaces. We will need to guess where we should add
@@ -820,7 +820,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     .get(textCharacter);
             if (sameTextCharacters == null)
             {
-                sameTextCharacters = new TreeMap<Float, TreeSet<Float>>();
+                sameTextCharacters = new TreeMap<>();
                 characterListMapping.put(textCharacter, sameTextCharacters);
             }
             // RDD - Here we compute the value that represents the end of the rendered
@@ -852,7 +852,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 TreeSet<Float> ySet = sameTextCharacters.get(textX);
                 if (ySet == null)
                 {
-                    ySet = new TreeSet<Float>();
+                    ySet = new TreeSet<>();
                     sameTextCharacters.put(textX, ySet);
                 }
                 ySet.add(textY);
@@ -1686,7 +1686,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     {
         if (listOfPatterns == null)
         {
-            listOfPatterns = new ArrayList<Pattern>();
+            listOfPatterns = new ArrayList<>();
             for (String expression : LIST_ITEM_EXPRESSIONS)
             {
                 Pattern p = Pattern.compile(expression);
@@ -1749,9 +1749,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     private List<WordWithTextPositions> normalize(List<LineItem> line)
     {
-        List<WordWithTextPositions> normalized = new LinkedList<WordWithTextPositions>();
+        List<WordWithTextPositions> normalized = new LinkedList<>();
         StringBuilder lineBuilder = new StringBuilder();
-        List<TextPosition> wordPositions = new ArrayList<TextPosition>();
+        List<TextPosition> wordPositions = new ArrayList<>();
 
         for (LineItem item : line)
         {
@@ -1842,7 +1842,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         return result.toString();
     }
 
-    private static Map<Character, Character> MIRRORING_CHAR_MAP = new HashMap<Character, Character>();
+    private static Map<Character, Character> MIRRORING_CHAR_MAP = new HashMap<>();
 
     static
     {
@@ -1991,7 +1991,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         if (item.isWordSeparator())
         {
             normalized.add(
-                    createWord(lineBuilder.toString(), new ArrayList<TextPosition>(wordPositions)));
+                    createWord(lineBuilder.toString(), new ArrayList<>(wordPositions)));
             lineBuilder = new StringBuilder();
             wordPositions.clear();
         }

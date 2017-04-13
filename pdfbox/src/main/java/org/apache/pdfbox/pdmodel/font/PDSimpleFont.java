@@ -46,7 +46,7 @@ public abstract class PDSimpleFont extends PDFont
     protected Encoding encoding;
     protected GlyphList glyphList;
     private Boolean isSymbolic;
-    private final Set<Integer> noUnicode = new HashSet<Integer>(); // for logging
+    private final Set<Integer> noUnicode = new HashSet<>(); // for logging
 
     /**
      * Constructor for embedding.

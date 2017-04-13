@@ -54,7 +54,7 @@ public class PDCIDFontType0 extends PDCIDFont
     private final CFFCIDFont cidFont;  // Top DICT that uses CIDFont operators
     private final FontBoxFont t1Font; // Top DICT that does not use CIDFont operators
     
-    private final Map<Integer, Float> glyphHeights = new HashMap<Integer, Float>();
+    private final Map<Integer, Float> glyphHeights = new HashMap<>();
     private final boolean isEmbedded;
     private final boolean isDamaged;
     private final AffineTransform fontMatrixTransform;

@@ -130,7 +130,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     private List<COSDictionary> getKids(COSDictionary node)
     {
-        List<COSDictionary> result = new ArrayList<COSDictionary>();
+        List<COSDictionary> result = new ArrayList<>();
 
         COSArray kids = (COSArray)node.getDictionaryObject(COSName.KIDS);
         if (kids == null)
@@ -152,7 +152,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      */
     private final class PageIterator implements Iterator<PDPage>
     {
-        private final Queue<COSDictionary> queue = new ArrayDeque<COSDictionary>();
+        private final Queue<COSDictionary> queue = new ArrayDeque<>();
 
         private PageIterator(COSDictionary node)
         {

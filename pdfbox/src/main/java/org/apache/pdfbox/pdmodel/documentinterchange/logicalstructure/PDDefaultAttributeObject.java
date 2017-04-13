@@ -58,7 +58,7 @@ public class PDDefaultAttributeObject extends PDAttributeObject
      */
     public List<String> getAttributeNames()
     {
-        List<String> attrNames = new ArrayList<String>();
+        List<String> attrNames = new ArrayList<>();
         for (Entry<COSName, COSBase> entry : this.getCOSObject().entrySet())
         {
             COSName key = entry.getKey();

@@ -46,8 +46,8 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     private float defaultWidth;
     private float averageWidth;
 
-    private final Map<Integer, Float> verticalDisplacementY = new HashMap<Integer, Float>(); // w1y
-    private final Map<Integer, Vector> positionVectors = new HashMap<Integer, Vector>();     // v
+    private final Map<Integer, Float> verticalDisplacementY = new HashMap<>(); // w1y
+    private final Map<Integer, Vector> positionVectors = new HashMap<>();     // v
     private float[] dw2;
 
     protected final COSDictionary dict;
@@ -68,7 +68,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
 
     private void readWidths()
     {
-        widths = new HashMap<Integer, Float>();
+        widths = new HashMap<>();
         COSArray widths = (COSArray) dict.getDictionaryObject(COSName.W);
         if (widths != null)
         {

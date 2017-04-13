@@ -74,12 +74,12 @@ public class FDFPage implements COSObjectable
         COSArray array = (COSArray) page.getDictionaryObject(COSName.TEMPLATES);
         if (array != null)
         {
-            List<FDFTemplate> objects = new ArrayList<FDFTemplate>();
+            List<FDFTemplate> objects = new ArrayList<>();
             for (int i = 0; i < array.size(); i++)
             {
                 objects.add(new FDFTemplate((COSDictionary) array.getObject(i)));
             }
-            retval = new COSArrayList<FDFTemplate>(objects, array);
+            retval = new COSArrayList<>(objects, array);
         }
         return retval;
     }

@@ -454,7 +454,7 @@ public abstract class PDChoice extends PDVariableText
         COSBase value = getCOSObject().getDictionaryObject(name);
         if (value instanceof COSString)
         {
-            List<String> array = new ArrayList<String>();
+            List<String> array = new ArrayList<>();
             array.add(((COSString) value).getString());
             return array;
         }
@@ -477,7 +477,7 @@ public abstract class PDChoice extends PDVariableText
     private void updateSelectedOptionsIndex(List<String> values)
     {
         List<String> options = getOptions();
-        List<Integer> indices = new ArrayList<Integer>();
+        List<Integer> indices = new ArrayList<>();
 
         for (String value : values)
         {

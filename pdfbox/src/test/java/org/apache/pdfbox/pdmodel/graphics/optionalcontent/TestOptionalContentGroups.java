@@ -172,7 +172,7 @@ public class TestOptionalContentGroups extends TestCase
 
             PDOptionalContentProperties ocgs = catalog.getOCProperties();
             assertEquals(BaseState.ON, ocgs.getBaseState());
-            Set<String> names = new java.util.HashSet<String>(Arrays.asList(ocgs.getGroupNames()));
+            Set<String> names = new java.util.HashSet<>(Arrays.asList(ocgs.getGroupNames()));
             assertEquals(3, names.size());
             assertTrue(names.contains("background"));
 

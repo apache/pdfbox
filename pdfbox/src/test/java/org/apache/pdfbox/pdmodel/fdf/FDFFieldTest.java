@@ -80,7 +80,7 @@ public class FDFFieldTest
     @Test
     public void testCOSArrayValue() throws IOException
     {
-        List<String> testList = new ArrayList<String>();
+        List<String> testList = new ArrayList<>();
         testList.add("A");
         testList.add("B");
         

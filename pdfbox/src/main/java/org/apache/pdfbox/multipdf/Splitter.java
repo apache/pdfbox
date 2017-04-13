@@ -58,7 +58,7 @@ public class Splitter
      */
     public List<PDDocument> split(PDDocument document) throws IOException
     {
-        destinationDocuments = new ArrayList<PDDocument>();
+        destinationDocuments = new ArrayList<>();
         sourceDocument = document;
         processPages();
         return destinationDocuments;

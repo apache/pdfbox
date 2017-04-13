@@ -80,8 +80,8 @@ public class PDFMergerUtility
      */
     public PDFMergerUtility()
     {
-        sources = new ArrayList<InputStream>();
-        fileInputStreams = new ArrayList<FileInputStream>();
+        sources = new ArrayList<>();
+        fileInputStreams = new ArrayList<>();
     }
 
     /**
@@ -243,7 +243,7 @@ public class PDFMergerUtility
         PDDocument source;
         if (sources != null && sources.size() > 0)
         {
-            List<PDDocument> tobeclosed = new ArrayList<PDDocument>();
+            List<PDDocument> tobeclosed = new ArrayList<>();
 
             try
             {
@@ -555,7 +555,7 @@ public class PDFMergerUtility
             }
         }
 
-        Map<COSDictionary, COSDictionary> objMapping = new HashMap<COSDictionary, COSDictionary>();
+        Map<COSDictionary, COSDictionary> objMapping = new HashMap<>();
         for (PDPage page : srcCatalog.getPages())
         {
             PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
@@ -801,7 +801,7 @@ public class PDFMergerUtility
     {
         page.setStructParents(page.getStructParents() + structParentOffset);
         List<PDAnnotation> annots = page.getAnnotations();
-        List<PDAnnotation> newannots = new ArrayList<PDAnnotation>();
+        List<PDAnnotation> newannots = new ArrayList<>();
         for (PDAnnotation annot : annots)
         {
             annot.setStructParent(annot.getStructParent() + structParentOffset);

@@ -42,7 +42,7 @@ public class PDStreamTest
         InputStream is = new ByteArrayInputStream(new byte[] { 12, 34, 56, 78 });
         PDStream pdStream = new PDStream(doc, is, (COSArray) null);
         Assert.assertNull(pdStream.getFilters());
-        List<String> stopFilters = new ArrayList<String>();
+        List<String> stopFilters = new ArrayList<>();
         stopFilters.add(COSName.DCT_DECODE.toString());
         stopFilters.add(COSName.DCT_DECODE_ABBREVIATION.toString());
         
@@ -66,7 +66,7 @@ public class PDStreamTest
         InputStream is = new ByteArrayInputStream(new byte[] { 12, 34, 56, 78 });
         PDStream pdStream = new PDStream(doc, is, new COSArray());
         Assert.assertEquals(0,pdStream.getFilters().size());
-        List<String> stopFilters = new ArrayList<String>();
+        List<String> stopFilters = new ArrayList<>();
         stopFilters.add(COSName.DCT_DECODE.toString());
         stopFilters.add(COSName.DCT_DECODE_ABBREVIATION.toString());
         

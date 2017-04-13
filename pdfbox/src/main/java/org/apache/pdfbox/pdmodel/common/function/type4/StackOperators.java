@@ -39,7 +39,7 @@ class StackOperators
             {
                 int size = stack.size();
                 //Need to copy to a new list to avoid ConcurrentModificationException
-                List<Object> copy = new java.util.ArrayList<Object>(
+                List<Object> copy = new java.util.ArrayList<>(
                         stack.subList(size - n, size));
                 stack.addAll(copy);
             }
@@ -122,8 +122,8 @@ class StackOperators
                 throw new IllegalArgumentException("rangecheck: " + n);
             }
 
-            LinkedList<Object> rolled = new LinkedList<Object>();
-            LinkedList<Object> moved = new LinkedList<Object>();
+            LinkedList<Object> rolled = new LinkedList<>();
+            LinkedList<Object> moved = new LinkedList<>();
             if (j < 0)
             {
                 //negative roll

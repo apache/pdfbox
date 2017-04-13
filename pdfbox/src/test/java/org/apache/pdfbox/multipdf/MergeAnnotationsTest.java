@@ -103,7 +103,7 @@ public class MergeAnnotationsTest
      */
     private boolean testAnnotationsMatch(List<PDAnnotation> sourceAnnots, List<PDAnnotation> targetAnnots)
     {
-        Map<String, PDAnnotation> targetAnnotsByName = new HashMap<String, PDAnnotation>();
+        Map<String, PDAnnotation> targetAnnotsByName = new HashMap<>();
         COSName destinationName;
         
         // fill the map with the annotations destination name

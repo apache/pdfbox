@@ -73,12 +73,12 @@ public abstract class PDFStreamEngine
 {
     private static final Log LOG = LogFactory.getLog(PDFStreamEngine.class);
 
-    private final Map<String, OperatorProcessor> operators = new HashMap<String, OperatorProcessor>(80);
+    private final Map<String, OperatorProcessor> operators = new HashMap<>(80);
 
     private Matrix textMatrix;
     private Matrix textLineMatrix;
 
-    private Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
+    private Stack<PDGraphicsState> graphicsStack = new Stack<>();
 
     private PDResources resources;
     private PDPage currentPage;
@@ -481,7 +481,7 @@ public abstract class PDFStreamEngine
      */
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
-        List<COSBase> arguments = new ArrayList<COSBase>();
+        List<COSBase> arguments = new ArrayList<>();
         PDFStreamParser parser = new PDFStreamParser(contentStream);
         Object token = parser.parseNextToken();
         while (token != null)
@@ -493,7 +493,7 @@ public abstract class PDFStreamEngine
             else if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = new ArrayList<COSBase>();
+                arguments = new ArrayList<>();
             }
             else
             {
@@ -912,7 +912,7 @@ public abstract class PDFStreamEngine
     protected final Stack<PDGraphicsState> saveGraphicsStack()
     {
         Stack<PDGraphicsState> savedStack = graphicsStack;
-        graphicsStack = new Stack<PDGraphicsState>();
+        graphicsStack = new Stack<>();
         graphicsStack.add(savedStack.peek().clone());
         return savedStack;
     }

@@ -164,7 +164,7 @@ public abstract class PDTerminalField extends PDField
     @Override
     public List<PDAnnotationWidget> getWidgets()
     {
-        List<PDAnnotationWidget> widgets = new ArrayList<PDAnnotationWidget>();
+        List<PDAnnotationWidget> widgets = new ArrayList<>();
         COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
         if (kids == null)
         {

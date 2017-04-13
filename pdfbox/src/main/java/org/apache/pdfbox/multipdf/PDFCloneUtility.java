@@ -40,7 +40,7 @@ public class PDFCloneUtility
 {
 
     private final PDDocument destination;
-    private final Map<Object,COSBase> clonedVersion = new HashMap<Object,COSBase>();
+    private final Map<Object,COSBase> clonedVersion = new HashMap<>();
 
     /**
      * Creates a new instance for the given target document.

@@ -55,7 +55,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
 {
     private static final Log LOG = LogFactory.getLog(PDType1CFont.class);
 
-    private final Map<String, Float> glyphHeights = new HashMap<String, Float>();
+    private final Map<String, Float> glyphHeights = new HashMap<>();
     private final AffineTransform fontMatrixTransform;
     private final CFFType1Font cffFont; // embedded font
     private final FontBoxFont genericFont; // embedded or system font for rendering

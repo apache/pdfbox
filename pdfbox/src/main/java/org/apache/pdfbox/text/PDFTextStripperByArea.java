@@ -32,11 +32,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
  */
 public class PDFTextStripperByArea extends PDFTextStripper
 {
-    private final List<String> regions = new ArrayList<String>();
-    private final Map<String, Rectangle2D> regionArea = new HashMap<String, Rectangle2D>();
+    private final List<String> regions = new ArrayList<>();
+    private final Map<String, Rectangle2D> regionArea = new HashMap<>();
     private final Map<String, ArrayList<List<TextPosition>>> regionCharacterList
-            = new HashMap<String, ArrayList<List<TextPosition>>>();
-    private final Map<String, StringWriter> regionText = new HashMap<String, StringWriter>();
+            = new HashMap<>();
+    private final Map<String, StringWriter> regionText = new HashMap<>();
 
     /**
      * Constructor.
@@ -119,7 +119,7 @@ public class PDFTextStripperByArea extends PDFTextStripper
             //reset the stored text for the region so this class
             //can be reused.
             String regionName = region;
-            ArrayList<List<TextPosition>> regionCharactersByArticle = new ArrayList<List<TextPosition>>();
+            ArrayList<List<TextPosition>> regionCharactersByArticle = new ArrayList<>();
             regionCharactersByArticle.add( new ArrayList<TextPosition>() );
             regionCharacterList.put( regionName, regionCharactersByArticle );
             regionText.put( regionName, new StringWriter() );

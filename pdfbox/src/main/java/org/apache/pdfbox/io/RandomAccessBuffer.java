@@ -60,7 +60,7 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
     private RandomAccessBuffer(int definedChunkSize)
     {
         // starting with one chunk
-        bufferList = new ArrayList<byte[]>();
+        bufferList = new ArrayList<>();
         chunkSize = definedChunkSize;
         currentBuffer = new byte[chunkSize];
         bufferList.add(currentBuffer);
@@ -80,7 +80,7 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
     {
         // this is a special case. The given byte array is used as the one
         // and only chunk.
-        bufferList = new ArrayList<byte[]>(1);
+        bufferList = new ArrayList<>(1);
         chunkSize = input.length;
         currentBuffer = input;
         bufferList.add(currentBuffer);
@@ -114,7 +114,7 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
     {
         RandomAccessBuffer copy = new RandomAccessBuffer(chunkSize);
 
-        copy.bufferList = new ArrayList<byte[]>(bufferList.size());
+        copy.bufferList = new ArrayList<>(bufferList.size());
         for (byte [] buffer : bufferList)
         {
             byte [] newBuffer = new byte [buffer.length];

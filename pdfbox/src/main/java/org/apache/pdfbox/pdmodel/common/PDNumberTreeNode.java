@@ -91,12 +91,12 @@ public class PDNumberTreeNode implements COSObjectable
         COSArray kids = (COSArray)node.getDictionaryObject( COSName.KIDS );
         if( kids != null )
         {
-            List<PDNumberTreeNode> pdObjects = new ArrayList<PDNumberTreeNode>();
+            List<PDNumberTreeNode> pdObjects = new ArrayList<>();
             for( int i=0; i<kids.size(); i++ )
             {
                 pdObjects.add( createChildNode( (COSDictionary)kids.getObject(i) ) );
             }
-            retval = new COSArrayList<PDNumberTreeNode>(pdObjects,kids);
+            retval = new COSArrayList<>(pdObjects,kids);
         }
 
         return retval;
@@ -178,7 +178,7 @@ public class PDNumberTreeNode implements COSObjectable
         COSArray namesArray = (COSArray)node.getDictionaryObject( COSName.NUMS );
         if( namesArray != null )
         {
-            indices = new HashMap<Integer,COSObjectable>();
+            indices = new HashMap<>();
             for( int i=0; i<namesArray.size(); i+=2 )
             {
                 COSInteger key = (COSInteger)namesArray.getObject(i);
@@ -242,7 +242,7 @@ public class PDNumberTreeNode implements COSObjectable
         }
         else
         {
-            List<Integer> keys = new ArrayList<Integer>( numbers.keySet() );
+            List<Integer> keys = new ArrayList<>( numbers.keySet() );
             Collections.sort( keys );
             COSArray array = new COSArray();
             for (Integer key : keys)

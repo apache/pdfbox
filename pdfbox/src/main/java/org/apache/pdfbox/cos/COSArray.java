@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInfo
 {
-    private final List<COSBase> objects = new ArrayList<COSBase>();
+    private final List<COSBase> objects = new ArrayList<>();
     private boolean needToBeUpdated;
 
     /**
@@ -563,7 +563,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public List<? extends COSBase> toList()
     {
-        List<COSBase> retList = new ArrayList<COSBase>(size());
+        List<COSBase> retList = new ArrayList<>(size());
         for (int i = 0; i < size(); i++)
         {
             retList.add(get(i));

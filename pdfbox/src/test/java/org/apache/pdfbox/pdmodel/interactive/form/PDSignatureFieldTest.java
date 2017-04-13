@@ -59,7 +59,7 @@ public class PDSignatureFieldTest
         assertEquals(PDAnnotationWidget.SUB_TYPE, sigField.getCOSObject().getNameAsString(COSName.SUBTYPE));
 
         // Add the field to the acroform
-        List<PDField> fields = new ArrayList<PDField>();
+        List<PDField> fields = new ArrayList<>();
         fields.add(sigField);
         this.acroForm.setFields(fields);
 

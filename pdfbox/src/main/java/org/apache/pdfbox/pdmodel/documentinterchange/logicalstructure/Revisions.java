@@ -34,7 +34,7 @@ public class Revisions<T>
     {
         if (this.objects == null)
         {
-            this.objects = new ArrayList<T>();
+            this.objects = new ArrayList<>();
         }
         return this.objects;
     }
@@ -43,7 +43,7 @@ public class Revisions<T>
     {
         if (this.revisionNumbers == null)
         {
-            this.revisionNumbers = new ArrayList<Integer>();
+            this.revisionNumbers = new ArrayList<>();
         }
         return this.revisionNumbers;
     }

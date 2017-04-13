@@ -50,7 +50,7 @@ public class MoveTextSetLeading extends OperatorProcessor
         }
         COSNumber y = (COSNumber) base1;
         
-        List<COSBase> args = new ArrayList<COSBase>();
+        List<COSBase> args = new ArrayList<>();
         args.add(new COSFloat(-1 * y.floatValue()));
         context.processOperator("TL", args);
         context.processOperator("Td", arguments);

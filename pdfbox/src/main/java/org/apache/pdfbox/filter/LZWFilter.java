@@ -103,7 +103,7 @@ public class LZWFilter extends Filter
 
     private void doLZWDecode(InputStream encoded, OutputStream decoded, int earlyChange) throws IOException
     {
-        List<byte[]> codeTable = new ArrayList<byte[]>();
+        List<byte[]> codeTable = new ArrayList<>();
         int chunk = 9;
         final MemoryCacheImageInputStream in = new MemoryCacheImageInputStream(encoded);
         long nextCommand;
@@ -292,7 +292,7 @@ public class LZWFilter extends Filter
      */
     private List<byte[]> createCodeTable()
     {
-        List<byte[]> codeTable = new ArrayList<byte[]>(4096);
+        List<byte[]> codeTable = new ArrayList<>(4096);
         for (int i = 0; i < 256; ++i)
         {
             codeTable.add(new byte[] { (byte) (i & 0xFF) });

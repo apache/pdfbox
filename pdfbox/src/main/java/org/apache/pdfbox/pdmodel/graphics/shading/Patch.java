@@ -174,7 +174,7 @@ abstract class Patch
      */
     protected List<ShadedTriangle> getShadedTriangles(CoordinateColorPair[][] patchCC)
     {
-        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
+        List<ShadedTriangle> list = new ArrayList<>();
         int szV = patchCC.length;
         int szU = patchCC[0].length;
         for (int i = 1; i < szV; i++)

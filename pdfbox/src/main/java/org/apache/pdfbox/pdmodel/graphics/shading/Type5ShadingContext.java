@@ -75,7 +75,7 @@ class Type5ShadingContext extends GouraudShadingContext
         {
             colRange[i] = latticeTriangleShadingType.getDecodeForParameter(2 + i);
         }
-        List<Vertex> vlist = new ArrayList<Vertex>();
+        List<Vertex> vlist = new ArrayList<>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) cosDictionary;
@@ -104,7 +104,7 @@ class Type5ShadingContext extends GouraudShadingContext
         }
         int sz = vlist.size(), rowNum = sz / numPerRow;
         Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
-        List<ShadedTriangle> list = new ArrayList<ShadedTriangle>();
+        List<ShadedTriangle> list = new ArrayList<>();
         if (rowNum < 2)
         {
             // must have at least two rows; if not, return empty list

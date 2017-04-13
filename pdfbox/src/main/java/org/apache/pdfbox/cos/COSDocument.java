@@ -50,18 +50,18 @@ public class COSDocument extends COSBase implements Closeable
      * are also stored in COSDictionary objects that map a name to a specific object.
      */
     private final Map<COSObjectKey, COSObject> objectPool =
-        new HashMap<COSObjectKey, COSObject>();
+        new HashMap<>();
 
     /**
      * Maps object and generation id to object byte offsets.
      */
     private final Map<COSObjectKey, Long> xrefTable =
-        new HashMap<COSObjectKey, Long>();
+        new HashMap<>();
 
     /**
      * List containing all streams which are created when creating a new pdf. 
      */
-    private final List<COSStream> streams = new ArrayList<COSStream>();
+    private final List<COSStream> streams = new ArrayList<>();
     
     /**
      * Document trailer dictionary.
@@ -199,7 +199,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public List<COSObject> getObjectsByType( COSName type ) throws IOException
     {
-        List<COSObject> retval = new ArrayList<COSObject>();
+        List<COSObject> retval = new ArrayList<>();
         for( COSObject object : objectPool.values() )
         {
             COSBase realObject = object.getObject();
@@ -382,7 +382,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public List<COSObject> getObjects()
     {
-        return new ArrayList<COSObject>(objectPool.values());
+        return new ArrayList<>(objectPool.values());
     }
 
     /**

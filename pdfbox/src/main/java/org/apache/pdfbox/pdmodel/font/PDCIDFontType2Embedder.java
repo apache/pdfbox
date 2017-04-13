@@ -93,7 +93,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             throws IOException
     {
         // build CID2GIDMap, because the content stream has been written with the old GIDs
-        Map<Integer, Integer> cidToGid = new HashMap<Integer, Integer>(gidToCid.size());
+        Map<Integer, Integer> cidToGid = new HashMap<>(gidToCid.size());
         for (Map.Entry<Integer, Integer> entry : gidToCid.entrySet())
         {
             int newGID = entry.getKey();
@@ -267,7 +267,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         COSArray ws = new COSArray();
         int prev = Integer.MIN_VALUE;
         // Use a sorted list to get an optimal width array  
-        Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
+        Set<Integer> keys = new TreeSet<>(cidToGid.keySet());
         for (int cid : keys)
         {
             int gid = cidToGid.get(cid);

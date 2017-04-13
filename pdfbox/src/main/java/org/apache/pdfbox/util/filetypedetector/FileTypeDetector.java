@@ -38,7 +38,7 @@ public final class FileTypeDetector
 
     static
     {
-        root = new ByteTrie<FileType>();
+        root = new ByteTrie<>();
         root.setDefaultValue(FileType.UNKNOWN);
 
         // https://en.wikipedia.org/wiki/List_of_file_signatures

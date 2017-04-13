@@ -106,7 +106,7 @@ public abstract class PDStructureNode implements COSObjectable
      */
     public List<Object> getKids()
     {
-        List<Object> kidObjects = new ArrayList<Object>();
+        List<Object> kidObjects = new ArrayList<>();
         COSBase k = this.getCOSObject().getDictionaryObject(COSName.K);
         if (k instanceof COSArray)
         {

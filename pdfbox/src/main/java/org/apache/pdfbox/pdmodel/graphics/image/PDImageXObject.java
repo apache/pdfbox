@@ -418,7 +418,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             }
         }
 
-        cachedImage = new SoftReference<BufferedImage>(image);
+        cachedImage = new SoftReference<>(image);
         return image;
     }
 

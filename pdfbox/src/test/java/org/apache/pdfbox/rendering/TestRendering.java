@@ -55,7 +55,7 @@ public class TestRendering
             }
         });
 
-        List<Object[]> params = new ArrayList<Object[]>();
+        List<Object[]> params = new ArrayList<>();
         for (File file : testFiles)
         {
             params.add(new Object[] { file.getName() });

@@ -63,7 +63,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private static final int START_RANGE_F100 = 0xF100;
     private static final int START_RANGE_F200 = 0xF200;
 
-    private static final Map<String, Integer> INVERTED_MACOS_ROMAN = new HashMap<String, Integer>(250);
+    private static final Map<String, Integer> INVERTED_MACOS_ROMAN = new HashMap<>(250);
     static
     {
         Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
@@ -263,7 +263,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             
             // synthesize an encoding, so that getEncoding() is always usable
             PostScriptTable post = ttf.getPostScript();
-            Map<Integer, String> codeToName = new HashMap<Integer, String>();
+            Map<Integer, String> codeToName = new HashMap<>();
             for (int code = 0; code <= 256; code++)
             {
                 int gid = codeToGID(code);
@@ -422,7 +422,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             return gidToCode;
         }
 
-        gidToCode = new HashMap<Integer, Integer>();
+        gidToCode = new HashMap<>();
         for (int code = 0; code <= 255; code++)
         {
             int gid = codeToGID(code);

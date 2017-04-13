@@ -281,7 +281,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        Set<K> keys = new LinkedHashSet<K>();
+        Set<K> keys = new LinkedHashSet<>();
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
             keys.add((K)mapArr[kIdx]);
@@ -305,7 +305,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        List<V> values = new ArrayList<V>(mapArr.length >> 1);
+        List<V> values = new ArrayList<>(mapArr.length >> 1);
         for (int vIdx = 1; vIdx < mapArr.length; vIdx+=2)
         {
             values.add((V)mapArr[vIdx]);
@@ -377,7 +377,7 @@ public class SmallMap<K, V> implements Map<K, V>
             return Collections.emptySet();
         }
         
-        Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<java.util.Map.Entry<K, V>>();
+        Set<java.util.Map.Entry<K, V>> entries = new LinkedHashSet<>();
         for (int kIdx = 0; kIdx < mapArr.length; kIdx+=2)
         {
             entries.add(new SmallMapEntry(kIdx));

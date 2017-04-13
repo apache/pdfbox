@@ -33,7 +33,7 @@ public class PageLayoutTest
     public void testValues()
     {
         Set<PageLayout> pageLayoutSet = EnumSet.noneOf(PageLayout.class);
-        Set<String> stringSet = new HashSet<String>();
+        Set<String> stringSet = new HashSet<>();
         for (PageLayout pl : PageLayout.values())
         {
             String s = pl.stringValue();

@@ -76,7 +76,7 @@ public class FDFField implements COSObjectable
         this();
         this.setPartialFieldName(fieldXML.getAttribute("name"));
         NodeList nodeList = fieldXML.getChildNodes();
-        List<FDFField> kids = new ArrayList<FDFField>();
+        List<FDFField> kids = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++)
         {
             Node node = nodeList.item(i);
@@ -165,12 +165,12 @@ public class FDFField implements COSObjectable
         List<FDFField> retval = null;
         if (kids != null)
         {
-            List<FDFField> actuals = new ArrayList<FDFField>();
+            List<FDFField> actuals = new ArrayList<>();
             for (int i = 0; i < kids.size(); i++)
             {
                 actuals.add(new FDFField((COSDictionary) kids.getObject(i)));
             }
-            retval = new COSArrayList<FDFField>(actuals, kids);
+            retval = new COSArrayList<>(actuals, kids);
         }
         return retval;
     }
@@ -655,7 +655,7 @@ public class FDFField implements COSObjectable
         COSArray array = (COSArray) field.getDictionaryObject(COSName.OPT);
         if (array != null)
         {
-            List<Object> objects = new ArrayList<Object>();
+            List<Object> objects = new ArrayList<>();
             for (int i = 0; i < array.size(); i++)
             {
                 COSBase next = array.getObject(i);
@@ -669,7 +669,7 @@ public class FDFField implements COSObjectable
                     objects.add(new FDFOptionElement(value));
                 }
             }
-            retval = new COSArrayList<Object>(objects, array);
+            retval = new COSArrayList<>(objects, array);
         }
         return retval;
     }

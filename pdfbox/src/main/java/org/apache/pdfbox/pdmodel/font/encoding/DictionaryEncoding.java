@@ -34,7 +34,7 @@ public class DictionaryEncoding extends Encoding
 {
     private final COSDictionary encoding;
     private final Encoding baseEncoding;
-    private final Map<Integer, String> differences = new HashMap<Integer, String>();
+    private final Map<Integer, String> differences = new HashMap<>();
 
     /**
      * Creates a new DictionaryEncoding for embedding.

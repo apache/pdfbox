@@ -26,7 +26,7 @@ public class ExecutionContext
 {
 
     private final Operators operators;
-    private final Stack<Object> stack = new Stack<Object>();
+    private final Stack<Object> stack = new Stack<>();
 
     /**
      * Creates a new execution context.

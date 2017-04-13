@@ -35,7 +35,7 @@ final class PDFDocEncoding
     static
     {
         CODE_TO_UNI = new int[256];
-        UNI_TO_CODE = new HashMap<Character, Integer>(256);
+        UNI_TO_CODE = new HashMap<>(256);
 
         // initialize with basically ISO-8859-1
         for (int i = 0; i < 256; i++)

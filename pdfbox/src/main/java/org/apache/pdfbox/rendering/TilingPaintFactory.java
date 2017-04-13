@@ -34,7 +34,7 @@ class TilingPaintFactory
 {
     private final PageDrawer drawer;
     private final Map<TilingPaintParameter, TilingPaint> weakCache
-            = new WeakHashMap<TilingPaintParameter, TilingPaint>();
+            = new WeakHashMap<>();
 
     TilingPaintFactory(PageDrawer drawer)
     {

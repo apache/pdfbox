@@ -39,7 +39,7 @@ public class FDFAnnotationTest
     {
         FDFDocument fdfDoc = null;
         InputStream stream = null;
-        List<FDFAnnotation> fdfAnnots = new ArrayList<FDFAnnotation>();
+        List<FDFAnnotation> fdfAnnots = new ArrayList<>();
         try
         {
             stream = FDFAnnotationTest.class
