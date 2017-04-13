@@ -131,11 +131,20 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
         if (toUnicode != null)
         {
-            toUnicodeCMap = readCMap(toUnicode);
-            if (toUnicodeCMap != null && !toUnicodeCMap.hasUnicodeMappings())
+            CMap cmap = null;
+            try
             {
-                LOG.warn("Invalid ToUnicode CMap in font " + getName());
+                cmap = readCMap(toUnicode);
+                if (cmap != null && !cmap.hasUnicodeMappings())
+                {
+                    LOG.warn("Invalid ToUnicode CMap in font " + getName());
+                }
             }
+            catch (IOException ex)
+            {
+                LOG.error("Could not read ToUnicode CMap in font " + getName(), ex);
+            }
+            toUnicodeCMap = cmap;
         }
         else
         {
