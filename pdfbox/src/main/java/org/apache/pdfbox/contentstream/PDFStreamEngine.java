@@ -493,7 +493,7 @@ public abstract class PDFStreamEngine
             else if (token instanceof Operator)
             {
                 processOperator((Operator) token, arguments);
-                arguments = new ArrayList<COSBase>();
+                arguments.clear();
             }
             else
             {
