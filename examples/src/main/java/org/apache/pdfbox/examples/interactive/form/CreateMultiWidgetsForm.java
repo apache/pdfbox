@@ -122,7 +122,7 @@ public final class CreateMultiWidgetsForm
         fieldAppearance2.setBackground(new PDColor(new float[]{0,1,0}, PDDeviceRGB.INSTANCE));
         widget2.setAppearanceCharacteristics(fieldAppearance2);
 
-        List <PDAnnotationWidget> widgets = new ArrayList<PDAnnotationWidget>();
+        List <PDAnnotationWidget> widgets = new ArrayList<>();
         widgets.add(widget1);
         widgets.add(widget2);
         textBox.setWidgets(widgets);

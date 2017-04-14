@@ -98,7 +98,7 @@ public class EmbeddedFiles
             PDEmbeddedFilesNameTreeNode treeNode = new PDEmbeddedFilesNameTreeNode();
             treeNode.setNames( Collections.singletonMap( "My first attachment",  fs ) );
             // add the new node as kid to the root node
-            List<PDEmbeddedFilesNameTreeNode> kids = new ArrayList<PDEmbeddedFilesNameTreeNode>();
+            List<PDEmbeddedFilesNameTreeNode> kids = new ArrayList<>();
             kids.add(treeNode);
             efTree.setKids(kids);
             // add the tree to the document catalog

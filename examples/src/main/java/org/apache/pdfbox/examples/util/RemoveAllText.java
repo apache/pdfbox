@@ -107,7 +107,7 @@ public final class RemoveAllText
         PDFStreamParser parser = new PDFStreamParser(page);
         parser.parse();
         List<Object> tokens = parser.getTokens();
-        List<Object> newTokens = new ArrayList<Object>();
+        List<Object> newTokens = new ArrayList<>();
         for (Object token : tokens)
         {
             if (token instanceof Operator)
@@ -137,7 +137,7 @@ public final class RemoveAllText
         PDFStreamParser parser = new PDFStreamParser(xobject);
         parser.parse();
         List<Object> tokens = parser.getTokens();
-        List<Object> newTokens = new ArrayList<Object>();
+        List<Object> newTokens = new ArrayList<>();
         for (Object token : tokens)
         {
             if (token instanceof Operator)

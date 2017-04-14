@@ -146,7 +146,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
             throws IOException, TSPException
     {
         SignerInformationStore signerStore = signedData.getSignerInfos();
-        List<SignerInformation> newSigners = new ArrayList<SignerInformation>();
+        List<SignerInformation> newSigners = new ArrayList<>();
 
         for (SignerInformation signer : signerStore.getSigners())
         {
@@ -209,7 +209,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
         //TODO this method should be private
         try
         {
-            List<Certificate> certList = new ArrayList<Certificate>();
+            List<Certificate> certList = new ArrayList<>();
             certList.add(certificate);
             Store certs = new JcaCertStore(certList);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
