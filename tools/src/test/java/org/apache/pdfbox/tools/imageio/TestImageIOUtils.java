@@ -222,7 +222,7 @@ public class TestImageIOUtils extends TestCase
     private void checkNotBlank(String filename, BufferedImage newImage)
     {
         // http://stackoverflow.com/a/5253698/535646
-        Set<Integer> colors = new HashSet<Integer>();
+        Set<Integer> colors = new HashSet<>();
         int w = newImage.getWidth();
         int h = newImage.getHeight();
         for (int x = 0; x < w; x++)

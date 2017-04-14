@@ -65,7 +65,7 @@ public final class PrintPDF
         boolean silentPrint = false;
         String printerName = null;
         Orientation orientation = Orientation.AUTO;
-        Map <String,Orientation> orientationMap = new HashMap<String,Orientation>();
+        Map <String,Orientation> orientationMap = new HashMap<>();
         orientationMap.put("auto", Orientation.AUTO);
         orientationMap.put("landscape", Orientation.LANDSCAPE);
         orientationMap.put("portrait", Orientation.PORTRAIT);

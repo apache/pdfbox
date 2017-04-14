@@ -63,7 +63,7 @@ public final class OverlayPDF
 
         String outputFilename = null;
         Overlay overlayer = new Overlay();
-        Map<Integer, String> specificPageOverlayFile = new HashMap<Integer, String>();
+        Map<Integer, String> specificPageOverlayFile = new HashMap<>();
         // input arguments
         for (int i = 0; i < args.length; i++) 
         {
