@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -442,9 +443,9 @@ public class TestTextStripper extends TestCase
      *
      * @throws IOException
      */
-    public void testStripByOutlineItems() throws IOException
+    public void testStripByOutlineItems() throws IOException, URISyntaxException
     {
-        PDDocument doc = PDDocument.load(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
+        PDDocument doc = PDDocument.load(new File(TestPDPageTree.class.getResource("with_outline.pdf").toURI()));
         PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
         Iterable<PDOutlineItem> children = outline.children();
         Iterator<PDOutlineItem> it = children.iterator();
