@@ -143,7 +143,7 @@ public class XmlResultParser
 
     private Map<ValidationError,Integer> cleanErrorList(List<ValidationError> errors)
     {
-        Map<ValidationError,Integer> cleaned = new HashMap<ValidationError, Integer>(errors.size());
+        Map<ValidationError,Integer> cleaned = new HashMap<>(errors.size());
         for (ValidationError ve: errors)
         {
             Integer found = cleaned.get(ve);

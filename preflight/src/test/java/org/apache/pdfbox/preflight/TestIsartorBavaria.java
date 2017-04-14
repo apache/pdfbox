@@ -71,7 +71,7 @@ public class TestIsartorBavaria
         IOUtils.closeQuietly(expected);
 
         // prepare config
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
 
         File isartor = new File("target/pdfs/Isartor testsuite/PDFA-1b");
         if (isartor.isDirectory())
@@ -85,7 +85,7 @@ public class TestIsartorBavaria
                     String path = props.getProperty(fn);
                     String error = new StringTokenizer(path, "//").nextToken().trim();
                     String[] errTab = error.split(",");
-                    Set<String> errorSet = new HashSet<String>(Arrays.asList(errTab));
+                    Set<String> errorSet = new HashSet<>(Arrays.asList(errTab));
                     data.add(new Object[] { pdfFile, errorSet } );
                 }
             }
@@ -107,7 +107,7 @@ public class TestIsartorBavaria
                     if (filter == null || fn.contains(filter))
                     {
                         String path = props.getProperty(fn);
-                        Set<String> errorSet = new HashSet<String>();
+                        Set<String> errorSet = new HashSet<>();
                         if (!path.isEmpty())
                         {
                             String error = new StringTokenizer(path, "//").nextToken().trim();
@@ -198,7 +198,7 @@ public class TestIsartorBavaria
             
             if (this.expectedErrorSet.isEmpty())
             {
-                Set<String> errorSet = new HashSet<String>();
+                Set<String> errorSet = new HashSet<>();
                 for (ValidationError error : result.getErrorsList())
                 {
                     errorSet.add(error.getErrorCode());
@@ -257,7 +257,7 @@ public class TestIsartorBavaria
                 }
                 if (!allFound)
                 {
-                    Set<String> errorSet = new HashSet<String>();
+                    Set<String> errorSet = new HashSet<>();
                     for (ValidationError error : result.getErrorsList())
                     {
                         errorSet.add(error.getErrorCode());

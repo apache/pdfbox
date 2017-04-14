@@ -40,7 +40,7 @@ public class ValidationResult
     /**
      * Errors to know why the PDF isn't valid. If the PDF is valid, this list is empty.
      */
-    private List<ValidationError> lErrors = new ArrayList<ValidationError>();
+    private List<ValidationError> lErrors = new ArrayList<>();
 
     /**
      * Object representation of the XMPMetaData contained by the pdf file This attribute can be null if the Validation

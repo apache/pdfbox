@@ -69,7 +69,7 @@ public class TestValidFiles
     protected static Collection<Object[]> stopIfExpected() throws Exception
     {
         // throw new Exception("Test badly configured");
-        List<Object[]> ret = new ArrayList<Object[]>();
+        List<Object[]> ret = new ArrayList<>();
         ret.add(new Object[] { null });
         return ret;
     }
@@ -87,7 +87,7 @@ public class TestValidFiles
         File root = new File(isartor);
         // load expected errors
         // prepare config
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
         for (Object object : files)

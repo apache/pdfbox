@@ -39,14 +39,14 @@ public abstract class FontContainer<T extends PDFontLike>
      * List of validation errors that occur during the font validation. If the font is used by an object in the PDF, all
      * these errors will be appended to the Error list of the PreflightContext.
      */
-    protected List<ValidationError> errorBuffer = new ArrayList<ValidationError>();
+    protected List<ValidationError> errorBuffer = new ArrayList<>();
 
     /**
      * Boolean used to known if the font is embedded.
      */
     protected boolean embeddedFont = true;
 
-    private final Map<Integer, GlyphDetail> codeToDetail = new HashMap<Integer, GlyphDetail>();
+    private final Map<Integer, GlyphDetail> codeToDetail = new HashMap<>();
     private boolean errorsAlreadyMerged = false;
 
     /**

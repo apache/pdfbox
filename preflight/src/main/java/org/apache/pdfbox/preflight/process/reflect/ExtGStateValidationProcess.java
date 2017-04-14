@@ -104,7 +104,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
     public List<COSDictionary> extractExtGStateDictionaries(PreflightContext context, COSDictionary egsEntry)
             throws ValidationException
     {
-        List<COSDictionary> listOfExtGState = new ArrayList<COSDictionary>(0);
+        List<COSDictionary> listOfExtGState = new ArrayList<>(0);
         COSDocument cosDocument = context.getDocument().getDocument();
         COSDictionary extGStates = COSUtils.getAsDictionary(egsEntry, cosDocument);
 

@@ -57,7 +57,7 @@ public class TestInvalidFiles extends AbstractInvalidFileTester
 
     protected static Collection<Object[]> stopIfExpected() throws Exception
     {
-        List<Object[]> ret = new ArrayList<Object[]>();
+        List<Object[]> ret = new ArrayList<>();
         ret.add(new Object[] { null, null });
         return ret;
     }
@@ -94,7 +94,7 @@ public class TestInvalidFiles extends AbstractInvalidFileTester
             IOUtils.closeQuietly(expected);
         }
         // prepare config
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
         for (Object object : files)

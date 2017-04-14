@@ -51,7 +51,7 @@ public class Benchmark
         Integer loop = Integer.parseInt(args[0]);
         FileWriter resFile = new FileWriter(new File(args[1]));
 
-        List<File> lfd = new ArrayList<File>();
+        List<File> lfd = new ArrayList<>();
         for (int i = 2; i < args.length; ++i)
         {
             File fi = new File(args[i]);

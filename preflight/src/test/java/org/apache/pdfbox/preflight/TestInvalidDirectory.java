@@ -102,12 +102,12 @@ public class TestInvalidDirectory
         // create list
         if (directory == null)
         {
-            return new ArrayList<Object[]>(0);
+            return new ArrayList<>(0);
         }
         else
         {
             File[] files = directory.listFiles();
-            List<Object[]> data = new ArrayList<Object[]>(files.length);
+            List<Object[]> data = new ArrayList<>(files.length);
             for (File file : files)
             {
                 if (file.isFile())

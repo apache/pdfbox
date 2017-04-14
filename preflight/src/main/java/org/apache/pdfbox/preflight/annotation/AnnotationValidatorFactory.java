@@ -38,7 +38,7 @@ public abstract class AnnotationValidatorFactory
 {
     protected ActionManagerFactory actionFact = null;
 
-    protected Map<String, Class<? extends AnnotationValidator>> validatorClasses = new HashMap<String, Class<? extends AnnotationValidator>>();
+    protected Map<String, Class<? extends AnnotationValidator>> validatorClasses = new HashMap<>();
 
     public AnnotationValidatorFactory()
     {

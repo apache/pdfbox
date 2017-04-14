@@ -210,7 +210,7 @@ public class Validator_A1b
 
     private static List<File> listFiles(String path) throws IOException
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         File f = new File(path);
         if (f.isFile())
         {

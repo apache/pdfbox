@@ -47,7 +47,7 @@ public class FontMetaDataValidation
     public List<ValidationError> validatePDFAIdentifer(XMPMetadata metadata, PDFontDescriptor fontDesc)
             throws ValidationException
     {
-        List<ValidationError> ve = new ArrayList<ValidationError>();
+        List<ValidationError> ve = new ArrayList<>();
 
         analyseFontName(metadata, fontDesc, ve);
         analyseRights(metadata, fontDesc, ve);
