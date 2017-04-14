@@ -103,11 +103,10 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
             throw new IOException("Error loading resource: " + name);
         }
 
-        InputStream input = url.openStream();
-        ICC_Profile iccProfile = ICC_Profile.getInstance(input);
-        input.close();
-
-        return iccProfile;
+        try (InputStream input = url.openStream())
+        {
+            return ICC_Profile.getInstance(input);
+        }
     }
 
     @Override
