@@ -53,7 +53,7 @@ public class TestResourceEventType extends AbstractStructuredTypeTester
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        Collection<Object[]> result = new ArrayList<>();
 
         result.add(new Object[] { ResourceEventType.class, "action", Types.Choice });
         result.add(new Object[] { ResourceEventType.class, "changed", Types.Text });

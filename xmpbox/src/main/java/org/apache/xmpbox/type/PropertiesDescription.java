@@ -45,7 +45,7 @@ public class PropertiesDescription
      */
     public PropertiesDescription()
     {
-        types = new HashMap<String, PropertyType>();
+        types = new HashMap<>();
     }
 
     /**
@@ -55,7 +55,7 @@ public class PropertiesDescription
      */
     public List<String> getPropertiesName()
     {
-        return new ArrayList<String>(types.keySet());
+        return new ArrayList<>(types.keySet());
     }
 
     /**

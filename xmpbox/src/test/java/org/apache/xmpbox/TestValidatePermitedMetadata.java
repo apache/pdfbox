@@ -48,7 +48,7 @@ public class TestValidatePermitedMetadata
     @Parameters(name="{0} {1} {2}")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        List<Object[]> params = new ArrayList<Object[]>();
+        List<Object[]> params = new ArrayList<>();
         InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, "ISO-8859-1"));
         String line = reader.readLine();

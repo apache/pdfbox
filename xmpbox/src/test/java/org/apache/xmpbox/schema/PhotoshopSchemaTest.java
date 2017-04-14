@@ -55,7 +55,7 @@ public class PhotoshopSchemaTest extends AbstractSchemaTester
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        Collection<Object[]> result = new ArrayList<>();
 
         result.add(new Object[] { "AncestorID", Types.URI, Cardinality.Simple });
         result.add(new Object[] { "AuthorsPosition", Types.Text, Cardinality.Simple });

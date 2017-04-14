@@ -51,7 +51,7 @@ public class AdobePDFTest extends AbstractXMPSchemaTest
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         data.add(wrapProperty("Keywords", Types.Text, "kw1 kw2 kw3"));
         data.add(wrapProperty("PDFVersion", Types.Text, "1.4"));
         data.add(wrapProperty("Producer", Types.Text, "testcase"));

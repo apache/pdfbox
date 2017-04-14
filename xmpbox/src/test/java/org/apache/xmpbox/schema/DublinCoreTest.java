@@ -53,7 +53,7 @@ public class DublinCoreTest extends AbstractSchemaTester
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        Collection<Object[]> result = new ArrayList<>();
 
         result.add(new Object[] { "contributor", Types.ProperName, Cardinality.Bag });
         result.add(new Object[] { "coverage", Types.Text, Cardinality.Simple });

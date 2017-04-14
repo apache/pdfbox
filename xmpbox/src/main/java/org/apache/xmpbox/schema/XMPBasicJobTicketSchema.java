@@ -95,7 +95,7 @@ public class XMPBasicJobTicketSchema extends XMPSchema
         List<AbstractField> tmp = getUnqualifiedArrayList(JOB_REF);
         if (tmp != null)
         {
-            List<JobType> layers = new ArrayList<JobType>();
+            List<JobType> layers = new ArrayList<>();
             for (AbstractField abstractField : tmp)
             {
                 if (abstractField instanceof JobType)

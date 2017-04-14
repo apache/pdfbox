@@ -182,7 +182,7 @@ public class DomXmpParser
         // Now, parse the content of root
         Element rdfRdf = findDescriptionsParent(root);
         List<Element> descriptions = DomHelper.getElementChildren(rdfRdf);
-        List<Element> dataDescriptions = new ArrayList<Element>(descriptions.size());
+        List<Element> dataDescriptions = new ArrayList<>(descriptions.size());
         for (Element description : descriptions)
         {
             Element first = DomHelper.getFirstChildElement(description);
@@ -791,7 +791,7 @@ public class DomXmpParser
     private void removeComments(Node root)
     {
     	// will hold the nodes which are to be deleted
-    	List<Node> forDeletion = new ArrayList<Node>();
+    	List<Node> forDeletion = new ArrayList<>();
     	
     	NodeList nl = root.getChildNodes();
     	
@@ -885,12 +885,12 @@ public class DomXmpParser
     protected static class NamespaceFinder
     {
 
-        private final Stack<Map<String, String>> stack = new Stack<Map<String, String>>();
+        private final Stack<Map<String, String>> stack = new Stack<>();
 
         protected void push(Element description)
         {
             NamedNodeMap nnm = description.getAttributes();
-            Map<String, String> map = new HashMap<String, String>(nnm.getLength());
+            Map<String, String> map = new HashMap<>(nnm.getLength());
             for (int j = 0; j < nnm.getLength(); j++)
             {
                 Attr no = (Attr) nnm.item(j);

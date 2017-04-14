@@ -38,7 +38,7 @@ public abstract class AbstractComplexProperty extends AbstractField
     {
         super(metadata, propertyName);
         container = new ComplexPropertyContainer();
-        this.namespaceToPrefix = new HashMap<String, String>();
+        this.namespaceToPrefix = new HashMap<>();
     }
 
     public void addNamespace(String namespace, String prefix)

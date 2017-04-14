@@ -48,7 +48,7 @@ public class PDFAIdentificationTest extends AbstractXMPSchemaTest
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         data.add(wrapProperty("part", Types.Integer, 1));
         data.add(wrapProperty("amd", Types.Text, "2005"));
         data.add(wrapProperty("conformance", Types.Text, "B"));

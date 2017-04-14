@@ -126,7 +126,7 @@ public abstract class AbstractTypeTester
     public List<Field> getXmpFields(Class<?> clz)
     {
         Field[] fields = clz.getFields();
-        List<Field> result = new ArrayList<Field>(fields.length);
+        List<Field> result = new ArrayList<>(fields.length);
         for (Field field : fields)
         {
             if (field.getAnnotation(PropertyType.class) != null)
