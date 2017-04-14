@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -244,9 +245,8 @@ public class TestTextStripper extends TestCase
         }
 
         //System.out.println("  " + inFile + (bSort ? " (sorted)" : ""));
-        PDDocument document = PDDocument.load(inFile);
-        try
-        {            
+        try (PDDocument document = PDDocument.load(inFile))
+        {
             File outFile;
             File diffFile;
             File expectedFile;
@@ -267,29 +267,19 @@ public class TestTextStripper extends TestCase
             // delete possible leftover
             diffFile.delete();
 
-            OutputStream os = new FileOutputStream(outFile);
-            try
+            try (OutputStream os = new FileOutputStream(outFile))
             {
                 os.write (0xEF);
                 os.write (0xBB);
                 os.write (0xBF);
 
-                Writer writer = new BufferedWriter(new OutputStreamWriter(os, ENCODING));
-                try
+                try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, ENCODING)))
                 {
                     //Allows for sorted tests 
                     stripper.setSortByPosition(bSort);
                     stripper.writeText(document, writer);
-                }
-                finally
-                {
                     // close the written file before reading it again
-                    writer.close();
                 }
-            }
-            finally
-            {
-                os.close();
             }
 
             if (bLogResult)
@@ -308,45 +298,44 @@ public class TestTextStripper extends TestCase
             
             boolean localFail = false;
 
-            LineNumberReader expectedReader =
-                new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), ENCODING));
-            LineNumberReader actualReader =
-                new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), ENCODING));
-
-            while (true)
-            {
-                String expectedLine = expectedReader.readLine();
-                while( expectedLine != null && expectedLine.trim().length() == 0 )
+            try (LineNumberReader expectedReader = 
+                    new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), ENCODING));
+                 LineNumberReader actualReader = 
+                    new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), ENCODING)))
+            {    
+                while (true)
                 {
-                    expectedLine = expectedReader.readLine();
-                }
-                String actualLine = actualReader.readLine();
-                while( actualLine != null && actualLine.trim().length() == 0 )
-                {
-                    actualLine = actualReader.readLine();
-                }
-                if (!stringsEqual(expectedLine, actualLine))
-                {
-                    this.bFail = true;
-                    localFail = true;
-                    log.error("FAILURE: Line mismatch for file " + inFile.getName() +
-                            " (sort = "+bSort+")" +
-                            " at expected line: " + expectedReader.getLineNumber() +
-                            " at actual line: " + actualReader.getLineNumber() +
-                            "\nexpected line was: \"" + expectedLine + "\"" +
-                            "\nactual line was:   \"" + actualLine + "\"" + "\n");
-
-                    //lets report all lines, even though this might produce some verbose logging
-                    //break;
-                }
-
-                if( expectedLine == null || actualLine==null)
-                {
-                    break;
+                    String expectedLine = expectedReader.readLine();
+                    while( expectedLine != null && expectedLine.trim().length() == 0 )
+                    {
+                        expectedLine = expectedReader.readLine();
+                    }
+                    String actualLine = actualReader.readLine();
+                    while( actualLine != null && actualLine.trim().length() == 0 )
+                    {
+                        actualLine = actualReader.readLine();
+                    }
+                    if (!stringsEqual(expectedLine, actualLine))
+                    {
+                        this.bFail = true;
+                        localFail = true;
+                        log.error("FAILURE: Line mismatch for file " + inFile.getName() +
+                                " (sort = "+bSort+")" +
+                                " at expected line: " + expectedReader.getLineNumber() +
+                                " at actual line: " + actualReader.getLineNumber() +
+                                "\nexpected line was: \"" + expectedLine + "\"" +
+                                "\nactual line was:   \"" + actualLine + "\"" + "\n");
+                        
+                        //lets report all lines, even though this might produce some verbose logging
+                        //break;
+                    }
+                    
+                    if( expectedLine == null || actualLine==null)
+                    {
+                        break;
+                    }
                 }
             }
-            expectedReader.close();
-            actualReader.close();
             if (!localFail)
             {
                 outFile.delete();
@@ -360,41 +349,38 @@ public class TestTextStripper extends TestCase
                 // Compute diff. Get the Patch object. Patch is the container for computed deltas.
                 Patch patch = DiffUtils.diff(original, revised);
 
-                PrintStream diffPS = new PrintStream(diffFile, ENCODING);
-                for (Object delta : patch.getDeltas())
+                try (PrintStream diffPS = new PrintStream(diffFile, ENCODING))
                 {
-                    if (delta instanceof ChangeDelta)
+                    for (Object delta : patch.getDeltas())
                     {
-                        ChangeDelta cdelta = (ChangeDelta) delta;
-                        diffPS.println("Org: " + cdelta.getOriginal());
-                        diffPS.println("New: " + cdelta.getRevised());
-                        diffPS.println();
-                    }
-                    else if (delta instanceof DeleteDelta)
-                    {
-                        DeleteDelta ddelta = (DeleteDelta) delta;
-                        diffPS.println("Org: " + ddelta.getOriginal());
-                        diffPS.println("New: " + ddelta.getRevised());
-                        diffPS.println();
-                    }
-                    else if (delta instanceof InsertDelta)
-                    {
-                        InsertDelta idelta = (InsertDelta) delta;
-                        diffPS.println("Org: " + idelta.getOriginal());
-                        diffPS.println("New: " + idelta.getRevised());
-                        diffPS.println();
-                    }
-                    else
-                    {
-                        diffPS.println(delta);
+                        if (delta instanceof ChangeDelta)
+                        {
+                            ChangeDelta cdelta = (ChangeDelta) delta;
+                            diffPS.println("Org: " + cdelta.getOriginal());
+                            diffPS.println("New: " + cdelta.getRevised());
+                            diffPS.println();
+                        }
+                        else if (delta instanceof DeleteDelta)
+                        {
+                            DeleteDelta ddelta = (DeleteDelta) delta;
+                            diffPS.println("Org: " + ddelta.getOriginal());
+                            diffPS.println("New: " + ddelta.getRevised());
+                            diffPS.println();
+                        }
+                        else if (delta instanceof InsertDelta)
+                        {
+                            InsertDelta idelta = (InsertDelta) delta;
+                            diffPS.println("Org: " + idelta.getOriginal());
+                            diffPS.println("New: " + idelta.getRevised());
+                            diffPS.println();
+                        }
+                        else
+                        {
+                            diffPS.println(delta);
+                        }
                     }
                 }
-                diffPS.close();
             }
-        }
-        finally
-        {
-            document.close();
         }
     }
     
@@ -402,15 +388,16 @@ public class TestTextStripper extends TestCase
     private static List<String> fileToLines(File file)
     {
         List<String> lines = new LinkedList<>();
-        String line = "";
+        String line;
         try
         {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), ENCODING));
-            while ((line = in.readLine()) != null)
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), ENCODING)))
             {
-                lines.add(line);
+                while ((line = in.readLine()) != null)
+                {
+                    lines.add(line);
+                }
             }
-            in.close();
         }
         catch (IOException e)
         {
@@ -441,10 +428,11 @@ public class TestTextStripper extends TestCase
      * must be empty.
      *
      * @throws IOException
+     * @throws URISyntaxException
      */
-    public void testStripByOutlineItems() throws IOException
+    public void testStripByOutlineItems() throws IOException, URISyntaxException
     {
-        PDDocument doc = PDDocument.load(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
+        PDDocument doc = PDDocument.load(new File(TestPDPageTree.class.getResource("with_outline.pdf").toURI()));
         PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
         Iterable<PDOutlineItem> children = outline.children();
         Iterator<PDOutlineItem> it = children.iterator();
