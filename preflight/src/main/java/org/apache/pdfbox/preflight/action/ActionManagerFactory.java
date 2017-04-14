@@ -79,8 +79,8 @@ public class ActionManagerFactory
     public final List<AbstractActionManager> getActionManagers(PreflightContext ctx, COSDictionary dictionary)
             throws ValidationException
     {
-        List<AbstractActionManager> result = new ArrayList<AbstractActionManager>(0);
-        Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<COSObjectKey, Boolean>();
+        List<AbstractActionManager> result = new ArrayList<>(0);
+        Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<>();
 
         COSBase aDict = dictionary.getDictionaryObject(COSName.A);
         if (aDict != null)
@@ -190,8 +190,8 @@ public class ActionManagerFactory
     public final List<AbstractActionManager> getNextActions(PreflightContext ctx, COSDictionary actionDictionary)
             throws ValidationException
     {
-        List<AbstractActionManager> result = new ArrayList<AbstractActionManager>(0);
-        Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<COSObjectKey, Boolean>();
+        List<AbstractActionManager> result = new ArrayList<>(0);
+        Map<COSObjectKey, Boolean> alreadyCreated = new HashMap<>();
 
         COSBase nextDict = actionDictionary.getDictionaryObject(ACTION_DICTIONARY_KEY_NEXT);
         if (nextDict != null)

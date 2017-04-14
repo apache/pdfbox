@@ -41,7 +41,7 @@ public class PreflightContext implements Closeable
     /**
      * Contains the list of font name embedded in the PDF document.
      */
-    private final Map<COSBase, FontContainer<?>> fontContainers = new HashMap<COSBase, FontContainer<?>>();
+    private final Map<COSBase, FontContainer<?>> fontContainers = new HashMap<>();
 
     /**
      * The PDFbox object representation of the PDF source.

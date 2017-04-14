@@ -130,7 +130,7 @@ public class BookmarkValidationProcess extends AbstractProcess
     {
         PDOutlineItem currentItem = inputItem;
         COSObject currentObj = firstObj;
-        Set<COSObject> levelObjects = new HashSet<COSObject>();
+        Set<COSObject> levelObjects = new HashSet<>();
         levelObjects.add(firstObj);
         boolean result = true;
 

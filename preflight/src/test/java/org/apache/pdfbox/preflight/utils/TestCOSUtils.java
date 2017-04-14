@@ -204,7 +204,7 @@ public class TestCOSUtils
 
     protected void addToXref(COSDocument doc, COSObjectKey key, long value)
     {
-        Map<COSObjectKey, Long> xrefTable = new HashMap<COSObjectKey, Long>(1);
+        Map<COSObjectKey, Long> xrefTable = new HashMap<>(1);
         xrefTable.put(key, value);
         doc.addXRefTable(xrefTable);
     }

@@ -105,7 +105,7 @@ public class ResourcesValidationProcess extends AbstractProcess
      */
     private Map<String, PDFont> getFonts(COSDictionary resources, PreflightContext context)
     {
-        Map<String, PDFont> fonts = new HashMap<String, PDFont>();
+        Map<String, PDFont> fonts = new HashMap<>();
         COSDictionary fontsDictionary = (COSDictionary) resources.getDictionaryObject(COSName.FONT);
         if (fontsDictionary == null)
         {

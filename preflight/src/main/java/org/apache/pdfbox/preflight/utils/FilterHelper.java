@@ -48,7 +48,7 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 public final class FilterHelper
 {
     
-    private static final Set<String> ALLOWED_FILTERS = new HashSet<String>();
+    private static final Set<String> ALLOWED_FILTERS = new HashSet<>();
     
     static
     {

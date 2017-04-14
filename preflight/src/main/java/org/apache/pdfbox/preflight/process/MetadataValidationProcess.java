@@ -292,7 +292,7 @@ public class MetadataValidationProcess extends AbstractProcess
      */
     protected List<ValidationError> checkStreamFilterUsage(PDDocument doc)
     {
-        List<ValidationError> ve = new ArrayList<ValidationError>();
+        List<ValidationError> ve = new ArrayList<>();
         List<?> filters = doc.getDocumentCatalog().getMetadata().getFilters();
         if (filters != null && !filters.isEmpty())
         {

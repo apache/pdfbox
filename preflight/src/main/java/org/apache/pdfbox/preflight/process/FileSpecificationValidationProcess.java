@@ -77,7 +77,7 @@ public class FileSpecificationValidationProcess extends AbstractProcess
      */
     public List<ValidationError> validateFileSpecification(PreflightContext ctx, COSDictionary fileSpec)
     {
-        List<ValidationError> result = new ArrayList<ValidationError>(0);
+        List<ValidationError> result = new ArrayList<>(0);
 
         // ---- Check dictionary entries
         // ---- Only the EF entry is forbidden

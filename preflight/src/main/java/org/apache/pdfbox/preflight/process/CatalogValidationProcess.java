@@ -61,7 +61,7 @@ public class CatalogValidationProcess extends AbstractProcess
 
     protected PDDocumentCatalog catalog;
 
-    protected List<String> listICC = new ArrayList<String>();
+    protected List<String> listICC = new ArrayList<>();
 
     public CatalogValidationProcess()
     {
@@ -243,7 +243,7 @@ public class CatalogValidationProcess extends AbstractProcess
         COSBase cBase = catalog.getCOSObject().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
         COSArray outputIntents = COSUtils.getAsArray(cBase, cosDocument);
 
-        Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<COSObjectKey, Boolean>();
+        Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
         for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
         {
             COSDictionary outputIntentDict = COSUtils.getAsDictionary(outputIntents.get(i), cosDocument);

@@ -77,7 +77,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
     
     static 
     {
-        MANDATORYFIELDS = new HashSet<String>();
+        MANDATORYFIELDS = new HashSet<>();
         MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_FLAGS);
         MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_ITALICANGLE);
         MANDATORYFIELDS.add(FONT_DICTIONARY_KEY_CAPHEIGHT);
@@ -242,7 +242,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
                     XMPMetadata xmpMeta = xmpBuilder.parse(mdAsBytes);
 
                     FontMetaDataValidation fontMDval = new FontMetaDataValidation();
-                    List<ValidationError> ve = new ArrayList<ValidationError>();
+                    List<ValidationError> ve = new ArrayList<>();
                     fontMDval.analyseFontName(xmpMeta, fontDescriptor, ve);
                     fontMDval.analyseRights(xmpMeta, fontDescriptor, ve);
                     this.fContainer.push(ve);

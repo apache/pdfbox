@@ -424,7 +424,7 @@ public class SynchronizedMetaDataValidation
     public List<ValidationError> validateMetadataSynchronization(PDDocument document, XMPMetadata metadata)
             throws ValidationException
     {
-        List<ValidationError> ve = new ArrayList<ValidationError>();
+        List<ValidationError> ve = new ArrayList<>();
 
         if (document == null)
         {
