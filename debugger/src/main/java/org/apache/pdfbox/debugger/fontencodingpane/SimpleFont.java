@@ -45,7 +45,7 @@ class SimpleFont extends FontPane
         
         double[] yBounds = getYBounds(tableData, 3);
 
-        Map<String, String> attributes = new LinkedHashMap<String, String>();
+        Map<String, String> attributes = new LinkedHashMap<>();
         attributes.put("Font", font.getName());
         attributes.put("Encoding", getEncodingName(font));
         attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));

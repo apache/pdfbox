@@ -37,14 +37,14 @@ class HexModel implements HexChangeListener
      */
     HexModel(byte[] bytes)
     {
-        data = new ArrayList<Byte>(bytes.length);
+        data = new ArrayList<>(bytes.length);
 
         for (byte b: bytes)
         {
             data.add(b);
         }
 
-        modelChangeListeners = new ArrayList<HexModelChangeListener>();
+        modelChangeListeners = new ArrayList<>();
     }
 
     /**

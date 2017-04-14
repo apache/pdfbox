@@ -151,7 +151,7 @@ public final class TreeStatus
      */
     private List<String> parsePathString(String path)
     {
-        List<String> nodes = new ArrayList<String>();
+        List<String> nodes = new ArrayList<>();
         for (String node : path.split("/"))
         {
             node = node.trim();

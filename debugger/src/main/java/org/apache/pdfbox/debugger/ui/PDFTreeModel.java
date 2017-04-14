@@ -116,7 +116,7 @@ public class PDFTreeModel implements TreeModel
         else if( parent instanceof COSDictionary )
         {
             COSDictionary dict = (COSDictionary)parent;
-            List<COSName> keys = new ArrayList<COSName>(dict.keySet());
+            List<COSName> keys = new ArrayList<>(dict.keySet());
             Collections.sort( keys );
             COSName key = keys.get( index );
             COSBase value = dict.getDictionaryObject(key);
@@ -238,7 +238,7 @@ public class PDFTreeModel implements TreeModel
             {
                 MapEntry entry = (MapEntry)child;
                 COSDictionary dict = (COSDictionary)parent;
-                List<COSName> keys = new ArrayList<COSName>(dict.keySet());
+                List<COSName> keys = new ArrayList<>(dict.keySet());
                 Collections.sort( keys );
                 for( int i=0; retval == -1 && i<keys.size(); i++ )
                 {

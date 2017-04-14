@@ -54,7 +54,7 @@ class SearchEngine
      */
     public List<Highlighter.Highlight> search(String searchKey, boolean isCaseSensitive)
     {
-        List<Highlighter.Highlight> highlights = new ArrayList<Highlighter.Highlight>();
+        List<Highlighter.Highlight> highlights = new ArrayList<>();
 
         if (searchKey != null)
         {

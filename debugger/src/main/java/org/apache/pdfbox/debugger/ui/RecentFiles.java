@@ -52,7 +52,7 @@ public class RecentFiles
         filePaths = readHistoryFromPref();
         if (filePaths == null)
         {
-            filePaths = new ArrayDeque<String>();
+            filePaths = new ArrayDeque<>();
         }
     }
 
@@ -112,7 +112,7 @@ public class RecentFiles
     {
         if (!isEmpty())
         {
-            List<String> files = new ArrayList<String>();
+            List<String> files = new ArrayList<>();
             for (String path : filePaths)
             {
                 File file = new File(path);
@@ -144,7 +144,7 @@ public class RecentFiles
     private String[] breakString(String fullPath)
     {
         int allowedStringLength = Preferences.MAX_VALUE_LENGTH;
-        List<String> pieces = new ArrayList<String>();
+        List<String> pieces = new ArrayList<>();
         int beginIndex = 0;
         int remainingLength = fullPath.length();
         int endIndex = 0;
@@ -187,7 +187,7 @@ public class RecentFiles
         {
             return null;
         }
-        Queue<String> history = new ArrayDeque<String>();
+        Queue<String> history = new ArrayDeque<>();
 
         for (int i = 1; i <= historyLength; i++)
         {
