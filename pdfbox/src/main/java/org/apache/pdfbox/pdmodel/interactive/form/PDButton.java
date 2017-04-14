@@ -369,7 +369,7 @@ public abstract class PDButton extends PDTerminalField
         }
     }
 
-    private void updateByValue(String value) throws IOException
+    private void updateByValue(String value)
     {
         getCOSObject().setName(COSName.V, value);
         // update the appearance state (AS)
@@ -387,7 +387,7 @@ public abstract class PDButton extends PDTerminalField
         }
     }
 
-    private void updateByOption(String value) throws IOException
+    private void updateByOption(String value)
     {
         List<PDAnnotationWidget> widgets = getWidgets();
         List<String> options = getExportValues();
