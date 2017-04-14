@@ -64,7 +64,7 @@ public class TextToPDF
     private boolean landscape = false;
     private PDFont font = DEFAULT_FONT;
 
-    private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<String, PDType1Font>();
+    private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<>();
     static
     {
         STANDARD_14.put(PDType1Font.TIMES_ROMAN.getBaseFont(), PDType1Font.TIMES_ROMAN);

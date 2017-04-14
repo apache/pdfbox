@@ -61,7 +61,7 @@ public final class ExtractImages
     private boolean directJPEG;
     private String prefix;
 
-    private final Set<COSStream> seen = new HashSet<COSStream>();
+    private final Set<COSStream> seen = new HashSet<>();
     private int imageCounter = 1;
 
     private ExtractImages()

@@ -266,8 +266,8 @@ public class PDFText2HTML extends PDFTextStripper
      */
     private static class FontState
     {
-        private final List<String> stateList = new ArrayList<String>();
-        private final Set<String> stateSet = new HashSet<String>();
+        private final List<String> stateList = new ArrayList<>();
+        private final Set<String> stateSet = new HashSet<>();
 
         /**
          * Pushes new {@link TextPosition TextPositions} into the font state. The state is only
