@@ -162,11 +162,8 @@ final class SampledImageReader
         byte[] output = ((DataBufferByte) raster.getDataBuffer()).getData();
 
         // read bit stream
-        InputStream iis = null;
-        try
+        try (InputStream iis = pdImage.createInputStream())
         {
-            // create stream
-            iis = pdImage.createInputStream();
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
             int rowLen = width / 8;
@@ -218,16 +215,7 @@ final class SampledImageReader
             }
 
             // use the color space to convert the image to RGB
-            BufferedImage rgbImage = colorSpace.toRGBImage(raster);
-
-            return rgbImage;
-        }
-        finally
-        {
-            if (iis != null)
-            {
-                iis.close();
-            }
+            return colorSpace.toRGBImage(raster);
         }
     }
 
@@ -235,8 +223,7 @@ final class SampledImageReader
     private static BufferedImage from8bit(PDImage pdImage, WritableRaster raster)
             throws IOException
     {
-        InputStream input = pdImage.createInputStream();
-        try
+        try (InputStream input = pdImage.createInputStream())
         {
             // get the raster's underlying byte buffer
             byte[][] banks = ((DataBufferByte) raster.getDataBuffer()).getBankData();
@@ -256,11 +243,7 @@ final class SampledImageReader
             // use the color space to convert the image to RGB
             return pdImage.getColorSpace().toRGBImage(raster);
         }
-        finally
-        {
-            IOUtils.closeQuietly(input);
-        }
-    }    
+    }
     
     // slower, general-purpose image conversion from any image format
     private static BufferedImage fromAny(PDImage pdImage, WritableRaster raster, COSArray colorKey)
@@ -274,12 +257,9 @@ final class SampledImageReader
         final float[] decode = getDecodeArray(pdImage);
 
         // read bit stream
-        ImageInputStream iis = null;
-        try
+        try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream()))
         {
-            // create stream
-            iis = new MemoryCacheImageInputStream(pdImage.createInputStream());
-            final float sampleMax = (float)Math.pow(2, bitsPerComponent) - 1f;
+            final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
             // init color key mask
@@ -365,13 +345,6 @@ final class SampledImageReader
             else
             {
                 return rgbImage;
-            }
-        }
-        finally
-        {
-            if (iis != null)
-            {
-                iis.close();
             }
         }
     }
