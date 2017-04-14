@@ -155,7 +155,7 @@ public class LogDialog extends JDialog
     
     private void updateStatusBar()
     {
-        List<String> infos = new ArrayList<String>();
+        List<String> infos = new ArrayList<>();
 
         if (exceptionCount > 0)
         {

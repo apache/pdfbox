@@ -51,8 +51,8 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
     private byte state = NORMAL;
     private int selectedChar = 0;
 
-    private final List<HexChangeListener> hexChangeListeners = new ArrayList<HexChangeListener>();
-    private final List<SelectionChangeListener> selectionChangeListeners = new ArrayList<SelectionChangeListener>();
+    private final List<HexChangeListener> hexChangeListeners = new ArrayList<>();
+    private final List<SelectionChangeListener> selectionChangeListeners = new ArrayList<>();
 
     /**
      * Constructor.

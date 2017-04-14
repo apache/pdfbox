@@ -364,7 +364,7 @@ public class Tree extends JTree
      */
     private List<JMenuItem> getPartiallyDecodedStreamSaveMenu(final COSStream cosStream)
     {
-        List<JMenuItem> menuItems = new ArrayList<JMenuItem>();
+        List<JMenuItem> menuItems = new ArrayList<>();
         PDStream stream = new PDStream(cosStream);
 
         List<COSName> filters = stream.getFilters();
@@ -380,7 +380,7 @@ public class Tree extends JTree
     {
         List<COSName> filters = stream.getFilters();
 
-        final List<String> stopFilters = new ArrayList<String>(1);
+        final List<String> stopFilters = new ArrayList<>(1);
         stopFilters.add(filters.get(indexOfStopFilter).getName());
 
         StringBuilder nameListBuilder = new StringBuilder();

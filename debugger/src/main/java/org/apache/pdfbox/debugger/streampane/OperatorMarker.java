@@ -62,7 +62,7 @@ final class OperatorMarker
         Style imageData = styleContext.addStyle("ID", common);
         StyleConstants.setForeground(imageData, new Color(255, 165, 0));
 
-        Map<String, Style> styleMap = new HashMap<String, Style>();
+        Map<String, Style> styleMap = new HashMap<>();
 
         styleMap.put(BEGIN_TEXT_OBJECT, textObjectStyle);
         styleMap.put(END_TEXT_OBJECT, textObjectStyle);

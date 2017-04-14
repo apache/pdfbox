@@ -338,7 +338,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             super(base.getImage());
             this.base = base;
-            this.overlays = new ArrayList<ImageIcon>();
+            this.overlays = new ArrayList<>();
         }
 
         void add(ImageIcon overlay)

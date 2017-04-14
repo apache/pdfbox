@@ -61,7 +61,7 @@ public class ToolTipController
 
     static List<String> getWords(String str)
     {
-        List<String> words = new ArrayList<String>();
+        List<String> words = new ArrayList<>();
         for (String string : str.trim().split(" "))
         {
             string = string.trim();

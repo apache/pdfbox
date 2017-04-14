@@ -118,10 +118,10 @@ import org.apache.pdfbox.printing.PDFPageable;
 public class PDFDebugger extends JFrame
 {
     private static final Set<COSName> SPECIALCOLORSPACES =
-            new HashSet<COSName>(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
+            new HashSet<>(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
     private static final Set<COSName> OTHERCOLORSPACES =
-            new HashSet<COSName>(Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY,
+            new HashSet<>(Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY,
                                  COSName.CALRGB, COSName.LAB));
 
     private static final String PASSWORD = "-password";

@@ -93,7 +93,7 @@ public class Stream
      */
     public List<String> getFilterList()
     {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : filters.entrySet())
         {
             list.add(entry.getKey());
@@ -187,7 +187,7 @@ public class Stream
 
     private Map<String, List<String>> createFilterList(COSStream stream)
     {
-        Map<String, List<String>> filterList = new LinkedHashMap<String, List<String>>();
+        Map<String, List<String>> filterList = new LinkedHashMap<>();
 
         if (isImage)
         {
@@ -228,7 +228,7 @@ public class Stream
     {
         List<COSName> avaiablrFilters = new PDStream(stream).getFilters();
 
-        final List<String> stopFilters = new ArrayList<String>(1);
+        final List<String> stopFilters = new ArrayList<>(1);
         stopFilters.add(avaiablrFilters.get(stopFilterIndex).getName());
 
         return stopFilters;

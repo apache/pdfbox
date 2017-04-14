@@ -47,7 +47,7 @@ public class HexView
     static final int ADDRESS_PANE_WIDTH = 120;
     static final int ASCII_PANE_WIDTH = 270;
     static final int TOTAL_WIDTH = HEX_PANE_WIDTH + ADDRESS_PANE_WIDTH +ASCII_PANE_WIDTH;
-    static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<RenderingHints.Key, Object>();
+    static final Map<RenderingHints.Key, Object> RENDERING_HINTS = new HashMap<>();
     static
     {
         RENDERING_HINTS.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
