@@ -55,7 +55,7 @@ public class DoubleSameTypeSchemaTest
         DublinCoreSchema dc2 = new DublinCoreSchema(metadata, ownPrefix);
         metadata.addSchema(dc2);
 
-        List<String> creators = new ArrayList<String>();
+        List<String> creators = new ArrayList<>();
         creators.add("creator1");
         creators.add("creator2");
 

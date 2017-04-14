@@ -73,7 +73,7 @@ public class ArrayProperty extends AbstractComplexProperty
     public List<String> getElementsAsString()
     {
         List<String> retval;
-        retval = new ArrayList<String>();
+        retval = new ArrayList<>();
         Iterator<AbstractField> it = getContainer().getAllProperties().iterator();
         AbstractSimpleProperty tmp;
         while (it.hasNext())

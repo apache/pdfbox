@@ -53,7 +53,7 @@ public class TestThumbnailType extends AbstractStructuredTypeTester
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        Collection<Object[]> result = new ArrayList<>();
 
         result.add(new Object[] { ThumbnailType.class, "format", Types.Choice });
         result.add(new Object[] { ThumbnailType.class, "height", Types.Integer });

@@ -78,8 +78,8 @@ public final class TypeMapping
     private void initialize()
     {
         // structured types
-        structuredMappings = new EnumMap<Types, PropertiesDescription>(Types.class);
-        structuredNamespaces = new HashMap<String, Types>();
+        structuredMappings = new EnumMap<>(Types.class);
+        structuredNamespaces = new HashMap<>();
         for (Types type : Types.values())
         {
             if (type.isStructured())
@@ -95,11 +95,11 @@ public final class TypeMapping
         }
 
         // define structured types
-        definedStructuredNamespaces = new HashMap<String, String>();
-        definedStructuredMappings = new HashMap<String, PropertiesDescription>();
+        definedStructuredNamespaces = new HashMap<>();
+        definedStructuredMappings = new HashMap<>();
 
         // schema
-        schemaMap = new HashMap<String, XMPSchemaFactory>();
+        schemaMap = new HashMap<>();
         addNameSpace(XMPBasicSchema.class);
         addNameSpace(DublinCoreSchema.class);
         addNameSpace(PDFAExtensionSchema.class);

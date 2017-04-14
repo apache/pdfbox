@@ -55,7 +55,7 @@ public class XMPBasicTest extends AbstractXMPSchemaTest
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
 
         data.add(wrapProperty("Advisory", Types.XPath, Cardinality.Bag, new String[] { "xpath1", "xpath2" }));
         data.add(wrapProperty("BaseURL", Types.URL, "URL"));

@@ -53,7 +53,7 @@ public class TestLayerType extends AbstractStructuredTypeTester
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        Collection<Object[]> result = new ArrayList<>();
 
         result.add(new Object[] { LayerType.class, "LayerName", Types.Text });
         result.add(new Object[] { LayerType.class, "LayerText", Types.Text });

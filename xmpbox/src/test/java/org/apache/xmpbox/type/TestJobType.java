@@ -53,7 +53,7 @@ public class TestJobType extends AbstractStructuredTypeTester
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        Collection<Object[]> result = new ArrayList<>();
 
         result.add(new Object[] { JobType.class, "id", Types.Text });
         result.add(new Object[] { JobType.class, "name", Types.Text });

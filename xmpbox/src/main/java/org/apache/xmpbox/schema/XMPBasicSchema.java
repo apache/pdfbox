@@ -616,7 +616,7 @@ public class XMPBasicSchema extends XMPSchema
         List<AbstractField> tmp = getUnqualifiedArrayList(THUMBNAILS);
         if (tmp != null)
         {
-            List<ThumbnailType> thumbs = new ArrayList<ThumbnailType>();
+            List<ThumbnailType> thumbs = new ArrayList<>();
             for (AbstractField abstractField : tmp)
             {
                 if (abstractField instanceof ThumbnailType)

@@ -39,7 +39,7 @@ public class TestXMPWithDefinedSchemas
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         data.add(new Object[] { "/validxmp/override_ns.rdf" });
         data.add(new Object[] { "/validxmp/ghost2.xmp" });
         data.add(new Object[] { "/validxmp/history2.rdf" });

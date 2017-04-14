@@ -84,7 +84,7 @@ public final class DomHelper
     public static List<Element> getElementChildren(Element description) throws XmpParsingException
     {
         NodeList nl = description.getChildNodes();
-        List<Element> ret = new ArrayList<Element>(nl.getLength());
+        List<Element> ret = new ArrayList<>(nl.getLength());
         for (int i = 0; i < nl.getLength(); i++)
         {
             if (nl.item(i) instanceof Element)

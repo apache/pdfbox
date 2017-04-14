@@ -34,13 +34,13 @@ public class DefinedStructuredType extends AbstractStructuredType
     public DefinedStructuredType(XMPMetadata metadata, String namespaceURI, String fieldPrefix, String propertyName)
     {
         super(metadata, namespaceURI, fieldPrefix, propertyName);
-        this.definedProperties = new HashMap<String, PropertyType>();
+        this.definedProperties = new HashMap<>();
     }
 
     public DefinedStructuredType(XMPMetadata metadata)
     {
         super(metadata);
-        this.definedProperties = new HashMap<String, PropertyType>();
+        this.definedProperties = new HashMap<>();
     }
 
     public void addProperty(String name, PropertyType type)

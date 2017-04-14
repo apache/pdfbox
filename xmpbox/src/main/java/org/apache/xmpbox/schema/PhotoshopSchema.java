@@ -501,7 +501,7 @@ public class PhotoshopSchema extends XMPSchema
         List<AbstractField> tmp = getUnqualifiedArrayList(TEXT_LAYERS);
         if (tmp != null)
         {
-            List<LayerType> layers = new ArrayList<LayerType>();
+            List<LayerType> layers = new ArrayList<>();
             for (AbstractField abstractField : tmp)
             {
                 if (abstractField instanceof LayerType)

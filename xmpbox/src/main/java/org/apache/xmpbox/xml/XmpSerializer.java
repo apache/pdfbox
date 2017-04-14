@@ -222,7 +222,7 @@ public class XmpSerializer
         List<Attribute> attributes = property.getAllAttributes();
         
 
-        List<Attribute> toSerialize = new ArrayList<Attribute>();
+        List<Attribute> toSerialize = new ArrayList<>();
         List<AbstractField> fields = property.getAllProperties();
                 
         for (Attribute attribute : attributes)

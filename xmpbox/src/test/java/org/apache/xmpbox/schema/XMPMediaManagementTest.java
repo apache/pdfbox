@@ -49,7 +49,7 @@ public class XMPMediaManagementTest extends AbstractXMPSchemaTest
     @Parameters(name = "{0} {1} '{2}'")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        List<Object[]> data = new ArrayList<Object[]>();
+        List<Object[]> data = new ArrayList<>();
         data.add(wrapProperty("DocumentID", Types.URI, "uuid:FB031973-5E75-11B2-8F06-E7F5C101C07A"));
         data.add(wrapProperty("Manager", Types.AgentName, "Raoul"));
         data.add(wrapProperty("ManageTo", Types.URI, "uuid:36"));

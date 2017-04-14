@@ -43,7 +43,7 @@ public class ComplexPropertyContainer
      */
     public ComplexPropertyContainer()
     {
-        properties = new ArrayList<AbstractField>();
+        properties = new ArrayList<>();
     }
 
     /**
@@ -108,7 +108,7 @@ public class ComplexPropertyContainer
         List<AbstractField> absFields = getAllProperties();
         if (absFields != null)
         {
-            List<AbstractField> list = new ArrayList<AbstractField>();
+            List<AbstractField> list = new ArrayList<>();
             for (AbstractField abstractField : absFields)
             {
                 if (abstractField.getPropertyName().equals(localName))

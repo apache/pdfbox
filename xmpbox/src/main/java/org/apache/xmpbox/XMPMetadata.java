@@ -85,7 +85,7 @@ public class XMPMetadata
      */
     protected XMPMetadata(String xpacketBegin, String xpacketId, String xpacketBytes, String xpacketEncoding)
     {
-        this.schemas = new ArrayList<XMPSchema>();
+        this.schemas = new ArrayList<>();
         this.typeMapping = new TypeMapping(this);
 
         this.xpacketBegin = xpacketBegin;
@@ -175,7 +175,7 @@ public class XMPMetadata
      */
     public List<XMPSchema> getAllSchemas()
     {
-        List<XMPSchema> schem = new ArrayList<XMPSchema>();
+        List<XMPSchema> schem = new ArrayList<>();
         for (XMPSchema schema : schemas)
         {
             schem.add(schema);

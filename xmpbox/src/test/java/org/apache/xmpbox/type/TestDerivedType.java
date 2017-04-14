@@ -60,7 +60,7 @@ public class TestDerivedType
     @Parameters
     public static Collection<Object[]> initializeParameters() throws Exception
     {
-        Collection<Object[]> result = new ArrayList<Object[]>();
+        Collection<Object[]> result = new ArrayList<>();
 
         result.add(new Object[] { AgentNameType.class, "AgentName" });
         result.add(new Object[] { ChoiceType.class, "Choice" });
