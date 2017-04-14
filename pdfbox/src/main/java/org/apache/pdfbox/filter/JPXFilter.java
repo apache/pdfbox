@@ -66,11 +66,8 @@ public final class JPXFilter extends Filter
 
             case DataBuffer.TYPE_USHORT:
                 DataBufferUShort wordBuffer = (DataBufferUShort) raster.getDataBuffer();
-                int size = wordBuffer.getSize();
-                short[] data = wordBuffer.getData();
-                for (int i = 0; i < size; ++i)
+                for (short w : wordBuffer.getData())
                 {
-                    short w = data[i];
                     decoded.write(w >> 8);
                     decoded.write(w);
                 }
@@ -85,10 +82,8 @@ public final class JPXFilter extends Filter
     private BufferedImage readJPX(InputStream input, DecodeResult result) throws IOException
     {
         ImageReader reader = findImageReader("JPEG2000", "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
-        ImageInputStream iis = null;
-        try
+        try (ImageInputStream iis = ImageIO.createImageInputStream(input))
         {
-            iis = ImageIO.createImageInputStream(input);
             reader.setInput(iis, true, true);
 
             BufferedImage image;
@@ -131,10 +126,6 @@ public final class JPXFilter extends Filter
         }
         finally
         {
-            if (iis != null)
-            {
-                iis.close();
-            }
             reader.dispose();
         }
     }
