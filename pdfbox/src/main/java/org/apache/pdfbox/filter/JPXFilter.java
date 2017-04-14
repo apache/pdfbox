@@ -66,11 +66,8 @@ public final class JPXFilter extends Filter
 
             case DataBuffer.TYPE_USHORT:
                 DataBufferUShort wordBuffer = (DataBufferUShort) raster.getDataBuffer();
-                int size = wordBuffer.getSize();
-                short[] data = wordBuffer.getData();
-                for (int i = 0; i < size; ++i)
+                for (short w : wordBuffer.getData())
                 {
-                    short w = data[i];
                     decoded.write(w >> 8);
                     decoded.write(w);
                 }
