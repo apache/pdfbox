@@ -95,6 +95,8 @@ public final class TTFSubsetter
 
     /**
      * Sets the prefix to add to the font's PostScript name.
+     *
+     * @param prefix
      */
     public void setPrefix(String prefix)
     {
@@ -562,8 +564,7 @@ public final class TTFSubsetter
 
         GlyphTable g = ttf.getGlyph();
         long[] offsets = ttf.getIndexToLocation().getOffsets();
-        InputStream is = ttf.getOriginalData();
-        try
+        try (InputStream is = ttf.getOriginalData())
         {
             is.skip(g.getOffset());
 
@@ -671,10 +672,6 @@ public final class TTFSubsetter
                 prevEnd = offset + length;
             }
             newOffsets[newGid++] = newOffset;
-        }
-        finally
-        {
-            is.close();
         }
 
         return bos.toByteArray();
@@ -957,8 +954,7 @@ public final class TTFSubsetter
         
         addCompoundReferences();
 
-        DataOutputStream out = new DataOutputStream(os);
-        try 
+        try (DataOutputStream out = new DataOutputStream(os))
         {
             long[] newLoca = new long[glyphIds.size() + 1];
 
@@ -1036,10 +1032,6 @@ public final class TTFSubsetter
             {
                 writeTableBody(out, bytes);
             }
-        }
-        finally 
-        {
-            out.close();
         }
     }
 
