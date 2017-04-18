@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -829,7 +830,7 @@ public final class TTFSubsetter
         writeUint16(out, glyphIds.size());
 
         // glyphNameIndex[numGlyphs]
-        Map<String, Integer> names = new TreeMap<String, Integer>();
+        Map<String, Integer> names = new LinkedHashMap<String, Integer>();
         for (int gid : glyphIds)
         {
             String name = post.getName(gid);

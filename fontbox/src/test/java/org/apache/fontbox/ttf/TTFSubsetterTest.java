@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
@@ -230,6 +232,45 @@ public class TTFSubsetterTest
             assertEquals(full.getHorizontalMetrics().getLeftSideBearing(full.nameToGID(name)), 
                        subset.getHorizontalMetrics().getLeftSideBearing(subset.nameToGID(name)));
         }        
+        subset.close();
+    }
+
+    /**
+     * Test of PDFBOX-3757: check that postcript names that are not part of WGL4Names don't get
+     * shuffled in buildPostTable().
+     *
+     * @throws java.io.IOException
+     */
+    @Test
+    public void testPDFBox3757() throws IOException
+    {
+        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
+        TrueTypeFont ttf = new TTFParser().parse(testFile);
+        TTFSubsetter ttfSubsetter = new TTFSubsetter(ttf);
+        ttfSubsetter.add('Ö');
+        ttfSubsetter.add('\u200A');
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ttfSubsetter.writeToStream(baos);
+        TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray()));
+
+        assertEquals(5, subset.getNumberOfGlyphs());
+
+        assertEquals(0, subset.nameToGID(".notdef"));
+        assertEquals(1, subset.nameToGID("O"));
+        assertEquals(2, subset.nameToGID("Odieresis"));
+        assertEquals(3, subset.nameToGID("uni200A"));
+        assertEquals(4, subset.nameToGID("dieresis.uc"));
+
+        PostScriptTable pst = subset.getPostScript();
+        assertEquals(pst.getName(0), ".notdef");
+        assertEquals(pst.getName(1), "O");
+        assertEquals(pst.getName(2), "Odieresis");
+        assertEquals(pst.getName(3), "uni200A");
+        assertEquals(pst.getName(4), "dieresis.uc");
+
+        assertTrue("Hair space path should be empty", subset.getPath("uni200A").getBounds2D().isEmpty());
+        assertFalse("UC dieresis path should not be empty", subset.getPath("dieresis.uc").getBounds2D().isEmpty());
+
         subset.close();
     }
 }
