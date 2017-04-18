@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
@@ -55,11 +54,12 @@ public class TTFSubsetterTest
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray()));
-        assertEquals(1, subset.getNumberOfGlyphs());
-        assertEquals(0, subset.nameToGID(".notdef"));
-        assertNotNull(subset.getGlyph().getGlyph(0));
-        subset.close();
+        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        {
+            assertEquals(1, subset.getNumberOfGlyphs());
+            assertEquals(0, subset.nameToGID(".notdef"));
+            assertNotNull(subset.getGlyph().getGlyph(0));
+        }
     }
 
     /**
@@ -88,11 +88,12 @@ public class TTFSubsetterTest
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray()));
-        assertEquals(1, subset.getNumberOfGlyphs());
-        assertEquals(0, subset.nameToGID(".notdef"));
-        assertNotNull(subset.getGlyph().getGlyph(0));
-        subset.close();
+        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        {
+            assertEquals(1, subset.getNumberOfGlyphs());
+            assertEquals(0, subset.nameToGID(".notdef"));
+            assertNotNull(subset.getGlyph().getGlyph(0));
+        }
     }
 
     /**
@@ -109,18 +110,19 @@ public class TTFSubsetterTest
         ttfSubsetter.add('a');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray()));
-        assertEquals(2, subset.getNumberOfGlyphs());
-        assertEquals(0, subset.nameToGID(".notdef"));
-        assertEquals(1, subset.nameToGID("a"));
-        assertNotNull(subset.getGlyph().getGlyph(0));
-        assertNotNull(subset.getGlyph().getGlyph(1));
-        assertNull(subset.getGlyph().getGlyph(2));
-        assertEquals(full.getAdvanceWidth(full.nameToGID("a")), 
-                   subset.getAdvanceWidth(subset.nameToGID("a")));
-        assertEquals(full.getHorizontalMetrics().getLeftSideBearing(full.nameToGID("a")), 
-                   subset.getHorizontalMetrics().getLeftSideBearing(subset.nameToGID("a")));
-        subset.close();
+        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
+        {
+            assertEquals(2, subset.getNumberOfGlyphs());
+            assertEquals(0, subset.nameToGID(".notdef"));
+            assertEquals(1, subset.nameToGID("a"));
+            assertNotNull(subset.getGlyph().getGlyph(0));
+            assertNotNull(subset.getGlyph().getGlyph(1));
+            assertNull(subset.getGlyph().getGlyph(2));
+            assertEquals(full.getAdvanceWidth(full.nameToGID("a")),
+                    subset.getAdvanceWidth(subset.nameToGID("a")));
+            assertEquals(full.getHorizontalMetrics().getLeftSideBearing(full.nameToGID("a")),
+                    subset.getHorizontalMetrics().getLeftSideBearing(subset.nameToGID("a")));
+        }
     }
 
     /**
@@ -177,18 +179,19 @@ public class TTFSubsetterTest
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray()));
-        assertEquals(6, subset.getNumberOfGlyphs());
-
-        for (Entry<Integer, Integer> entry : ttfSubsetter.getGIDMap().entrySet())
+        try (TrueTypeFont subset = new TTFParser(true).parse(new ByteArrayInputStream(baos.toByteArray())))
         {
-            Integer newGID = entry.getKey();
-            Integer oldGID = entry.getValue();
-            assertEquals(full.getAdvanceWidth(oldGID), subset.getAdvanceWidth(newGID));
-            assertEquals(full.getHorizontalMetrics().getLeftSideBearing(oldGID), 
-                       subset.getHorizontalMetrics().getLeftSideBearing(newGID));
+            assertEquals(6, subset.getNumberOfGlyphs());
+
+            for (Entry<Integer, Integer> entry : ttfSubsetter.getGIDMap().entrySet())
+            {
+                Integer newGID = entry.getKey();
+                Integer oldGID = entry.getValue();
+                assertEquals(full.getAdvanceWidth(oldGID), subset.getAdvanceWidth(newGID));
+                assertEquals(full.getHorizontalMetrics().getLeftSideBearing(oldGID),
+                        subset.getHorizontalMetrics().getLeftSideBearing(newGID));
+            }
         }
-        subset.close();
     }
 
     /**
@@ -219,21 +222,22 @@ public class TTFSubsetterTest
         ttfSubsetter.add('B');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
-        TrueTypeFont subset = new TTFParser().parse(new ByteArrayInputStream(baos.toByteArray()));
-        assertEquals(4, subset.getNumberOfGlyphs());
-        assertEquals(0, subset.nameToGID(".notdef"));
-        assertEquals(1, subset.nameToGID("space"));
-        assertEquals(2, subset.nameToGID("A"));
-        assertEquals(3, subset.nameToGID("B"));
-        String [] names = new String[]{"A","B","space"};
-        for (String name : names)
+        try (TrueTypeFont subset = new TTFParser().parse(new ByteArrayInputStream(baos.toByteArray())))
         {
-            assertEquals(full.getAdvanceWidth(full.nameToGID(name)), 
-                       subset.getAdvanceWidth(subset.nameToGID(name)));
-            assertEquals(full.getHorizontalMetrics().getLeftSideBearing(full.nameToGID(name)), 
-                       subset.getHorizontalMetrics().getLeftSideBearing(subset.nameToGID(name)));
-        }        
-        subset.close();
+            assertEquals(4, subset.getNumberOfGlyphs());
+            assertEquals(0, subset.nameToGID(".notdef"));
+            assertEquals(1, subset.nameToGID("space"));
+            assertEquals(2, subset.nameToGID("A"));
+            assertEquals(3, subset.nameToGID("B"));
+            String [] names = new String[]{"A","B","space"};
+            for (String name : names)
+            {
+                assertEquals(full.getAdvanceWidth(full.nameToGID(name)),
+                        subset.getAdvanceWidth(subset.nameToGID(name)));
+                assertEquals(full.getHorizontalMetrics().getLeftSideBearing(full.nameToGID(name)),
+                        subset.getHorizontalMetrics().getLeftSideBearing(subset.nameToGID(name)));
+            }
+        }
     }
     
     /**
