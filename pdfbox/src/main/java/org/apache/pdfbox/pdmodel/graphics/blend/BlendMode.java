@@ -48,7 +48,7 @@ public abstract class BlendMode
             COSArray cosBlendModeArray = (COSArray) cosBlendMode;
             for (int i = 0; i < cosBlendModeArray.size(); i++)
             {
-                result = BLEND_MODES.get(cosBlendModeArray.get(i));
+                result = BLEND_MODES.get(cosBlendModeArray.getObject(i));
                 if (result != null)
                 {
                     break;
@@ -204,6 +204,7 @@ public abstract class BlendMode
         map.put(COSName.DIFFERENCE, BlendMode.DIFFERENCE);
         map.put(COSName.EXCLUSION, BlendMode.EXCLUSION);
         // TODO - non-separable blending modes
+        // hue saturation color luminosity
         return map;
     }
 
