@@ -944,7 +944,7 @@ public final class TTFSubsetter
     /**
      * Write the subfont to the given output stream.
      *
-     * @param os the stream used for writing
+     * @param os the stream used for writing. It will be closed by this method.
      * @throws IOException if something went wrong.
      * @throws IllegalStateException if the subset is empty.
      */
