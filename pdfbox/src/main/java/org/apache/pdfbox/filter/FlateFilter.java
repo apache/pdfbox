@@ -142,18 +142,19 @@ final class FlateFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        DeflaterOutputStream out = new DeflaterOutputStream(encoded);
-        int amountRead;
-        int mayRead = input.available();
-        if (mayRead > 0)
+        try (DeflaterOutputStream out = new DeflaterOutputStream(encoded))
         {
-            byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
-            while ((amountRead = input.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+            int amountRead;
+            int mayRead = input.available();
+            if (mayRead > 0)
             {
-                out.write(buffer, 0, amountRead);
+                byte[] buffer = new byte[Math.min(mayRead,BUFFER_SIZE)];
+                while ((amountRead = input.read(buffer, 0, Math.min(mayRead,BUFFER_SIZE))) != -1)
+                {
+                    out.write(buffer, 0, amountRead);
+                }
             }
         }
-        out.close();
         encoded.flush();
     }
 }
