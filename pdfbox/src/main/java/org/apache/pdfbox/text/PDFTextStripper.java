@@ -62,7 +62,6 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 {
     private static float defaultIndentThreshold = 2.0f;
     private static float defaultDropThreshold = 2.5f;
-    private static final boolean useCustomQuickSort;
 
     private static final Log LOG = LogFactory.getLog(PDFTextStripper.class);
 
@@ -108,36 +107,6 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // ignore and use default
             }
         }
-    }
-    
-    static
-    {
-        // check if we need to use the custom quicksort algorithm as a
-        // workaround to the PDFBOX-1512 transitivity issue of TextPositionComparator:
-        boolean is16orLess = false;
-        try
-        {
-            String version = System.getProperty("java.specification.version");
-            StringTokenizer st = new StringTokenizer(version, ".");
-            int majorVersion = Integer.parseInt(st.nextToken());
-            int minorVersion = 0;
-            if (st.hasMoreTokens())
-            {
-                minorVersion = Integer.parseInt(st.nextToken());
-            }
-            is16orLess = majorVersion == 1 && minorVersion <= 6;
-        }
-        catch (SecurityException x)
-        {
-            // when run in an applet ignore and use default
-            // assume 1.7 or higher so that quicksort is used
-        }
-        catch (NumberFormatException nfe)
-        {
-            // should never happen, but if it does,
-            // assume 1.7 or higher so that quicksort is used
-        }
-        useCustomQuickSort = !is16orLess;
     }
 
     /**
@@ -529,14 +498,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // because the TextPositionComparator is not transitive, but
                 // JDK7+ enforces transitivity on comparators, we need to use
                 // a custom quicksort implementation (which is slower, unfortunately).
-                if (useCustomQuickSort)
-                {
-                    QuickSort.sort(textList, comparator);
-                }
-                else
-                {
-                    Collections.sort(textList, comparator);
-                }
+                QuickSort.sort(textList, comparator);
             }
 
             startArticle();
