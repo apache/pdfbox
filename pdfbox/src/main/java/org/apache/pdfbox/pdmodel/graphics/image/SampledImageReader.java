@@ -57,12 +57,11 @@ final class SampledImageReader
      */
     public static BufferedImage getStencilImage(PDImage pdImage, Paint paint) throws IOException
     {
-        // get mask (this image)
-        BufferedImage mask = getRGBImage(pdImage, null);
+        int width = pdImage.getWidth();
+        int height = pdImage.getHeight();
 
         // compose to ARGB
-        BufferedImage masked = new BufferedImage(mask.getWidth(), mask.getHeight(),
-                BufferedImage.TYPE_INT_ARGB);
+        BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = masked.createGraphics();
 
         // draw the mask
@@ -71,26 +70,47 @@ final class SampledImageReader
         // fill with paint using src-in
         //g.setComposite(AlphaComposite.SrcIn);
         g.setPaint(paint);
-        g.fillRect(0, 0, mask.getWidth(), mask.getHeight());
+        g.fillRect(0, 0, width, height);
         g.dispose();
 
         // set the alpha
-        int width = masked.getWidth();
-        int height = masked.getHeight();
         WritableRaster raster = masked.getRaster();
-        WritableRaster alpha = mask.getRaster();
 
         final int[] transparent = new int[4];
-        int[] alphaPixel = null;
-        for (int y = 0; y < height; y++)
+
+        // avoid getting a BufferedImage for the mask to lessen memory footprint.
+        // Such masks are always bpc=1 and have no colorspace, but have a decode.
+        // (see 8.9.6.2 Stencil Masking)
+        try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream()))
         {
-            for (int x = 0; x < width; x++)
+            final float[] decode = getDecodeArray(pdImage);
+            int value;
+            if (decode[0] < decode[1])
             {
-                alphaPixel = alpha.getPixel(x, y, alphaPixel);
-                if (alphaPixel[0] == 255)
+                value = 1;
+            }
+            else
+            {
+                value = 0;
+            }
+
+            // calculate row padding
+            int padding = 0;
+            if (width % 8 > 0)
+            {
+                padding = 8 - (width % 8);
+            }
+
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
                 {
-                    raster.setPixel(x, y, transparent);
+                    if (iis.readBit() == value)
+                    {
+                        raster.setPixel(x, y, transparent);
+                    }
                 }
+                iis.readBits(padding);
             }
         }
 
