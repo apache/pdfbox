@@ -135,12 +135,7 @@ final class DCTFilter extends Filter
                                 throw new IOException("Unexpected color space: " + colorSpaceCode);
                         }
                     }
-                    catch (NoSuchFieldException e1)
-                    {
-                        // error from non-Sun JPEG decoder
-                        throw e;
-                    }
-                    catch (IllegalAccessException e1)
+                    catch (NoSuchFieldException | IllegalAccessException e1)
                     {
                         // error from non-Sun JPEG decoder
                         throw e;
