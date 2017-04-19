@@ -1538,10 +1538,11 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             sb.append("}");
             if (base instanceof COSStream)
             {
-                InputStream stream = ((COSStream) base).createRawInputStream();
-                byte[] b = IOUtils.toByteArray(stream);
-                sb.append("COSStream{").append(Arrays.hashCode(b)).append("}");
-                stream.close();
+                try (InputStream stream = ((COSStream) base).createRawInputStream())
+                {
+                    byte[] b = IOUtils.toByteArray(stream);
+                    sb.append("COSStream{").append(Arrays.hashCode(b)).append("}");
+                }
             }
             return sb.toString();
         }
