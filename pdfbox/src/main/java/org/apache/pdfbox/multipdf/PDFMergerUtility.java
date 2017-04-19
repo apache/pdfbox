@@ -420,7 +420,7 @@ public class PDFMergerUtility
         PDDocumentOutline srcOutline = srcCatalog.getDocumentOutline();
         if (srcOutline != null)
         {
-            if (destOutline == null)
+            if (destOutline == null || destOutline.getFirstChild() == null)
             {
                 PDDocumentOutline cloned = new PDDocumentOutline((COSDictionary) cloner.cloneForNewDocument(srcOutline));
                 destCatalog.setDocumentOutline(cloned);
