@@ -57,18 +57,9 @@ public class CMapParser
      */
     public CMap parse(File file) throws IOException
     {
-        FileInputStream input = null;
-        try
+        try (FileInputStream input = new FileInputStream(file))
         {
-            input = new FileInputStream(file);
             return parse(input);
-        }
-        finally
-        {
-            if (input != null)
-            {
-                input.close();
-            }
         }
     }
 
@@ -81,18 +72,9 @@ public class CMapParser
      */
     public CMap parsePredefined(String name) throws IOException
     {
-        InputStream input = null;
-        try
+        try (InputStream input = getExternalCMap(name))
         {
-            input = getExternalCMap(name);
             return parse(input);
-        }
-        finally
-        {
-            if (input != null)
-            {
-                input.close();
-            }
         }
     }
 
