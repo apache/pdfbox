@@ -81,8 +81,7 @@ class Type4ShadingContext extends GouraudShadingContext
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream stream = (COSStream) dict;
 
-        ImageInputStream mciis = new MemoryCacheImageInputStream(stream.createInputStream());
-        try
+        try (ImageInputStream mciis = new MemoryCacheImageInputStream(stream.createInputStream()))
         {
             byte flag = (byte) 0;
             try
@@ -159,10 +158,6 @@ class Type4ShadingContext extends GouraudShadingContext
                     eof = true;
                 }
             }
-        }
-        finally
-        {
-            mciis.close();
         }
         return list;
     }
