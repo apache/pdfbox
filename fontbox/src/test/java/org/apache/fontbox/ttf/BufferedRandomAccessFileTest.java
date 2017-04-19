@@ -40,11 +40,12 @@ public class BufferedRandomAccessFileTest
     {
         final File file = File.createTempFile("apache-pdfbox", ".dat");
 
-        final OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
-        final String content = "1234567890";
-        outputStream.write(content.getBytes("UTF-8"));
-        outputStream.flush();
-        outputStream.close();
+        try (OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file)))
+        {
+            final String content = "1234567890";
+            outputStream.write(content.getBytes("UTF-8"));
+            outputStream.flush();
+        }
 
         final byte[] readBuffer = new byte[2];
         final BufferedRandomAccessFile buffer = new BufferedRandomAccessFile(file, "r", 4);
