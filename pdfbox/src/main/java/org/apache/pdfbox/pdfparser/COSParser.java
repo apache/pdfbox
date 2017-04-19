@@ -332,9 +332,10 @@ public class COSParser extends BaseParser
         readExpectedString(OBJ_MARKER, true);
 
         COSDictionary dict = parseCOSDictionary();
-        COSStream xrefStream = parseCOSStream(dict);
-        parseXrefStream(xrefStream, objByteOffset, isStandalone);
-        xrefStream.close();
+        try (COSStream xrefStream = parseCOSStream(dict))
+        {
+            parseXrefStream(xrefStream, objByteOffset, isStandalone);
+        }
 
         return dict.getLong(COSName.PREV);
     }
@@ -949,8 +950,7 @@ public class COSParser extends BaseParser
         }
 
         // get output stream to copy data to
-        OutputStream out = stream.createRawOutputStream();
-        try
+        try (OutputStream out = stream.createRawOutputStream())
         {
             if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
             {
@@ -960,10 +960,6 @@ public class COSParser extends BaseParser
             {
                 readUntilEndStream(new EndstreamOutputStream(out));
             }
-        }
-        finally
-        {
-            out.close();
         }
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
