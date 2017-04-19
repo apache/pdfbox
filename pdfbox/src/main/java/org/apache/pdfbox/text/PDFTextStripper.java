@@ -25,7 +25,6 @@ import java.io.Writer;
 import java.text.Bidi;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1804,7 +1803,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         return result.toString();
     }
 
-    private static Map<Character, Character> MIRRORING_CHAR_MAP = new HashMap<>();
+    private static final Map<Character, Character> MIRRORING_CHAR_MAP = new HashMap<>();
 
     static
     {
@@ -1874,8 +1873,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // initialize the MIRRORING_CHAR_MAP
                 MIRRORING_CHAR_MAP.put(fields[0], fields[1]);
             }
-
-        } while (true);
+        }
+        while (true);
     }
 
     /**
