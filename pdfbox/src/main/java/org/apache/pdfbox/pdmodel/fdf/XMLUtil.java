@@ -71,11 +71,7 @@ final class XMLUtil
         {
             throw new IOException(e.getMessage(), e);
         }
-        catch (ParserConfigurationException e)
-        {
-            throw new IOException(e.getMessage(), e);
-        }
-        catch (SAXException e)
+        catch (ParserConfigurationException | SAXException e)
         {
             throw new IOException(e.getMessage(), e);
         }
