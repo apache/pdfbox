@@ -80,8 +80,7 @@ class Type5ShadingContext extends GouraudShadingContext
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) cosDictionary;
 
-        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream());
-        try
+        try (ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream()))
         {
             boolean eof = false;
             while (!eof)
@@ -97,10 +96,6 @@ class Type5ShadingContext extends GouraudShadingContext
                     eof = true;
                 }
             }
-        }
-        finally
-        {
-            mciis.close();
         }
         int sz = vlist.size(), rowNum = sz / numPerRow;
         Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
