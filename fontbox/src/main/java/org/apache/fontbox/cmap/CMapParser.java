@@ -96,34 +96,34 @@ public class CMapParser
             if (token instanceof Operator)
             {
                 Operator op = (Operator) token;
-                if (op.op.equals("usecmap"))
-                {
-                    parseUsecmap(previousToken, result);
-                }
-                else if (op.op.equals("endcmap"))
+                if (op.op.equals("endcmap"))
                 {
                     // end of CMap reached, stop reading as there isn't any interesting info anymore
                     break;
                 }
-                else if (op.op.equals("begincodespacerange"))
+
+                switch (op.op)
                 {
-                    parseBegincodespacerange(previousToken, cmapStream, result);
-                }
-                else if (op.op.equals("beginbfchar"))
-                {
-                    parseBeginbfchar(previousToken, cmapStream, result);
-                }
-                else if (op.op.equals("beginbfrange"))
-                {
-                    parseBeginbfrange(previousToken, cmapStream, result);
-                }
-                else if (op.op.equals("begincidchar"))
-                {
-                    parseBegincidchar(previousToken, cmapStream, result);
-                }
-                else if (op.op.equals("begincidrange"))
-                {
-                    parseBegincidrange(previousToken, cmapStream, result);
+                    case "usecmap":
+                        parseUsecmap(previousToken, result);
+                        break;
+                    case "begincodespacerange":
+                        parseBegincodespacerange(previousToken, cmapStream, result);
+                        break;
+                    case "beginbfchar":
+                        parseBeginbfchar(previousToken, cmapStream, result);
+                        break;
+                    case "beginbfrange":
+                        parseBeginbfrange(previousToken, cmapStream, result);
+                        break;
+                    case "begincidchar":
+                        parseBegincidchar(previousToken, cmapStream, result);
+                        break;
+                    case "begincidrange":
+                        parseBegincidrange(previousToken, cmapStream, result);
+                        break;
+                    default:
+                        break;
                 }
             }
             else if (token instanceof LiteralName)
@@ -146,65 +146,77 @@ public class CMapParser
     private void parseLiteralName(Object token, PushbackInputStream cmapStream, CMap result) throws IOException
     {
         LiteralName literal = (LiteralName) token;
-        if ("WMode".equals(literal.name))
+        switch (literal.name)
         {
-            Object next = parseNextToken(cmapStream);
-            if (next instanceof Integer)
+            case "WMode":
             {
-                result.setWMode((Integer) next);
+                Object next = parseNextToken(cmapStream);
+                if (next instanceof Integer)
+                {
+                    result.setWMode((Integer) next);
+                }
+                break;
             }
-        }
-        else if ("CMapName".equals(literal.name))
-        {
-            Object next = parseNextToken(cmapStream);
-            if (next instanceof LiteralName)
+            case "CMapName":
             {
-                result.setName(((LiteralName) next).name);
+                Object next = parseNextToken(cmapStream);
+                if (next instanceof LiteralName)
+                {
+                    result.setName(((LiteralName) next).name);
+                }
+                break;
             }
-        }
-        else if ("CMapVersion".equals(literal.name))
-        {
-            Object next = parseNextToken(cmapStream);
-            if (next instanceof Number)
+            case "CMapVersion":
             {
-                result.setVersion(next.toString());
+                Object next = parseNextToken(cmapStream);
+                if (next instanceof Number)
+                {
+                    result.setVersion(next.toString());
+                }
+                else if (next instanceof String)
+                {
+                    result.setVersion((String) next);
+                }
+                break;
             }
-            else if (next instanceof String)
+            case "CMapType":
             {
-                result.setVersion((String) next);
+                Object next = parseNextToken(cmapStream);
+                if (next instanceof Integer)
+                {
+                    result.setType((Integer) next);
+                }
+                break;
             }
-        }
-        else if ("CMapType".equals(literal.name))
-        {
-            Object next = parseNextToken(cmapStream);
-            if (next instanceof Integer)
+            case "Registry":
             {
-                result.setType((Integer) next);
+                Object next = parseNextToken(cmapStream);
+                if (next instanceof String)
+                {
+                    result.setRegistry((String) next);
+                }
+                break;
             }
-        }
-        else if ("Registry".equals(literal.name))
-        {
-            Object next = parseNextToken(cmapStream);
-            if (next instanceof String)
+            case "Ordering":
             {
-                result.setRegistry((String) next);
+                Object next = parseNextToken(cmapStream);
+                if (next instanceof String)
+                {
+                    result.setOrdering((String) next);
+                }
+                break;
             }
-        }
-        else if ("Ordering".equals(literal.name))
-        {
-            Object next = parseNextToken(cmapStream);
-            if (next instanceof String)
+            case "Supplement":
             {
-                result.setOrdering((String) next);
+                Object next = parseNextToken(cmapStream);
+                if (next instanceof Integer)
+                {
+                    result.setSupplement((Integer) next);
+                }
+                break;
             }
-        }
-        else if ("Supplement".equals(literal.name))
-        {
-            Object next = parseNextToken(cmapStream);
-            if (next instanceof Integer)
-            {
-                result.setSupplement((Integer) next);
-            }
+            default:
+                break;
         }
     }
 
