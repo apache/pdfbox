@@ -103,7 +103,7 @@ public class CodespaceRange
         for (int i = 0; i < dataLen; ++i)
         {
             code <<= 8;
-            code |= (data[i] + 256) % 256;
+            code |= (data[i] & 0xFF);
         }
         return code;
     }
