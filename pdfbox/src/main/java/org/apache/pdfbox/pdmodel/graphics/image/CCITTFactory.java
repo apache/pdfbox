@@ -127,14 +127,9 @@ public final class CCITTFactory
     public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, int number)
             throws IOException
     {
-        RandomAccess raf = new RandomAccessBuffer(byteArray);
-        try
+        try (RandomAccess raf = new RandomAccessBuffer(byteArray))
         {
             return createFromRandomAccessImpl(document, raf, number);
-        }
-        finally
-        {
-            raf.close();
         }
     }
 
@@ -231,14 +226,9 @@ public final class CCITTFactory
     public static PDImageXObject createFromFile(PDDocument document, File file, int number)
             throws IOException
     {
-        RandomAccessFile raf = new RandomAccessFile(file, "r");
-        try
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r"))
         {
             return createFromRandomAccessImpl(document, raf, number);
-        }
-        finally
-        {
-            raf.close();
         }
     }
     

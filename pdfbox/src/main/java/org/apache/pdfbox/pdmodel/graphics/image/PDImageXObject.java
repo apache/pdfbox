@@ -153,18 +153,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
             throws IOException
     {
         COSStream stream = document.getDocument().createCOSStream();
-        OutputStream output = null;
-        try
+        try (OutputStream output = stream.createRawOutputStream())
         {
-            output = stream.createRawOutputStream();
             IOUtils.copy(rawInput, output);
-        }
-        finally
-        {
-            if (output != null)
-            {
-                output.close();
-            }
         }
         return stream;
     }
@@ -210,10 +201,10 @@ public final class PDImageXObject extends PDXObject implements PDImage
         String ext = name.substring(dot + 1).toLowerCase();
         if ("jpg".equals(ext) || "jpeg".equals(ext))
         {
-            FileInputStream fis = new FileInputStream(file);
-            PDImageXObject imageXObject = JPEGFactory.createFromStream(doc, fis);
-            fis.close();
-            return imageXObject;
+            try (FileInputStream fis = new FileInputStream(file))
+            {
+                return JPEGFactory.createFromStream(doc, fis);
+            }
         }
         if ("tif".equals(ext) || "tiff".equals(ext))
         {
