@@ -128,21 +128,14 @@ public final class JPEGFactory
                     "a suitable JAI I/O image filter is not installed");
         }
 
-        ImageInputStream iis = null;
-        try
+        try (ImageInputStream iis = ImageIO.createImageInputStream(stream))
         {
-            iis = ImageIO.createImageInputStream(stream);
             reader.setInput(iis);
-
             ImageIO.setUseCache(false);
             return reader.read(0);
         }
         finally
         {
-            if (iis != null)
-            {
-                iis.close();
-            }
             reader.dispose();
         }
     }

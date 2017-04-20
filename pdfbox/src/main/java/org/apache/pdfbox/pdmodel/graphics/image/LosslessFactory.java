@@ -70,23 +70,23 @@ public final class LosslessFactory
             deviceColorSpace = PDDeviceGray.INSTANCE;
             
             ByteArrayOutputStream bos = new ByteArrayOutputStream((width*bpc/8)+(width*bpc%8 != 0 ? 1:0)*height);
-            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
-            
-            for (int y = 0; y < height; ++y)
+            try (MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos))
             {
-                for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
+                for (int y = 0; y < height; ++y)
                 {
-                    mcios.writeBits(pixel & 0xFF, bpc);
+                    for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
+                    {
+                        mcios.writeBits(pixel & 0xFF, bpc);
+                    }
+                    
+                    int bitOffset = mcios.getBitOffset();
+                    if (bitOffset != 0)
+                    {
+                        mcios.writeBits(0, 8-bitOffset);
+                    }
                 }
-                
-                int bitOffset = mcios.getBitOffset();
-                if (bitOffset != 0)
-                {
-                    mcios.writeBits(0, 8-bitOffset);
-                }
+                mcios.flush();
             }
-            mcios.flush();
-            mcios.close();
             
             imageData = bos.toByteArray();
         }
@@ -162,23 +162,24 @@ public final class LosslessFactory
         if (image.getTransparency() == Transparency.BITMASK)
         {
             bpc = 1;
-            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
-            int width = alphaRaster.getWidth();
-            int p = 0;
-            for (int pixel : pixels)
+            try (MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos))
             {
-                mcios.writeBit(pixel);
-                ++p;
-                if (p % width == 0)
+                int width = alphaRaster.getWidth();
+                int p = 0;
+                for (int pixel : pixels)
                 {
-                    while (mcios.getBitOffset() != 0)
+                    mcios.writeBit(pixel);
+                    ++p;
+                    if (p % width == 0)
                     {
-                        mcios.writeBit(0);
+                        while (mcios.getBitOffset() != 0)
+                        {
+                            mcios.writeBit(0);
+                        }
                     }
                 }
+                mcios.flush();
             }
-            mcios.flush();
-            mcios.close();
         }
         else
         {
@@ -204,21 +205,22 @@ public final class LosslessFactory
         if (bi.getTransparency() == Transparency.BITMASK)
         {
             bpc = 1;
-            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
-            for (int y = 0, h = bi.getHeight(); y < h; ++y)
+            try (MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos))
             {
-                for (int x = 0, w = bi.getWidth(); x < w; ++x)
+                for (int y = 0, h = bi.getHeight(); y < h; ++y)
                 {
-                    int alpha = bi.getRGB(x, y) >>> 24;
-                    mcios.writeBit(alpha);
+                    for (int x = 0, w = bi.getWidth(); x < w; ++x)
+                    {
+                        int alpha = bi.getRGB(x, y) >>> 24;
+                        mcios.writeBit(alpha);
+                    }
+                    while (mcios.getBitOffset() != 0)
+                    {
+                        mcios.writeBit(0);
+                    }
                 }
-                while (mcios.getBitOffset() != 0)
-                {
-                    mcios.writeBit(0);
-                }
+                mcios.flush();
             }
-            mcios.flush();
-            mcios.close();
         }
         else
         {
