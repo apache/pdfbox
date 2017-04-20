@@ -209,12 +209,13 @@ public class StreamPane implements ActionListener
             }
             view.showStreamImage(image);
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "jpg", baos);
-            baos.flush();
-            byte[] bytes = baos.toByteArray();
-            baos.close();
-            hexView.changeData(bytes);
+           
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
+            {
+                ImageIO.write(image, "jpg", baos);
+                baos.flush();
+                hexView.changeData(baos.toByteArray());
+            }            
         }
     }
 
@@ -278,11 +279,7 @@ public class StreamPane implements ActionListener
             {
                 view.showStreamText(get(), tTController);
             }
-            catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
-            catch (ExecutionException e)
+            catch (InterruptedException | ExecutionException e)
             {
                 e.printStackTrace();
             }

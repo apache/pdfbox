@@ -98,8 +98,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
         COSStream cosStream = (COSStream) dict;
 
-        ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream());
-        try
+        try (ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream()))
         {
             Point2D[] implicitEdge = new Point2D[4];
             float[][] implicitCornerColor = new float[2][numberOfColorComponents];
@@ -154,10 +153,6 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
                     eof = true;
                 }
             }
-        }
-        finally
-        {
-            mciis.close();
         }
         return list;
     }
