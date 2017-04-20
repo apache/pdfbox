@@ -124,17 +124,18 @@ public class PDFunctionType0 extends PDFunction
                 // PDF spec 1.7 p.171:
                 // Each sample value is represented as a sequence of BitsPerSample bits. 
                 // Successive values are adjacent in the bit stream; there is no padding at byte boundaries.
-                ImageInputStream mciis = new MemoryCacheImageInputStream(getPDStream().createInputStream());
-                for (int i = 0; i < arraySize; i++)
+                try (ImageInputStream mciis = new MemoryCacheImageInputStream(getPDStream().createInputStream()))
                 {
-                    for (int k = 0; k < numberOfOutputValues; k++)
+                    for (int i = 0; i < arraySize; i++)
                     {
-                        // TODO will this cast work properly for 32 bitsPerSample or should we use long[]?
-                        samples[index][k] = (int) mciis.readBits(bitsPerSample); 
+                        for (int k = 0; k < numberOfOutputValues; k++)
+                        { 
+                            // TODO will this cast work properly for 32 bitsPerSample or should we use long[]?
+                            samples[index][k] = (int) mciis.readBits(bitsPerSample);
+                        }
+                        index++;
                     }
-                    index++;
                 }
-                mciis.close();
             }
             catch (IOException exception)
             {
