@@ -685,7 +685,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
         byte[] bytes = getName().getBytes(Charsets.US_ASCII);
         for (byte b : bytes)
         {
-            int current = (b + 256) % 256;
+            int current = b & 0xFF;
 
             // be more restrictive than the PDF spec, "Name Objects", see PDFBOX-2073
             if (current >= 'A' && current <= 'Z' ||
