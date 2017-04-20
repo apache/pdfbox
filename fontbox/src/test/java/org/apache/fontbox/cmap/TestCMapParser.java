@@ -83,7 +83,7 @@ public class TestCMapParser extends TestCase
     }
 
     /**
-     * Tets the parser against a valid, but poorly formated CMap file.
+     * Test the parser against a valid, but poorly formatted CMap file.
      * @throws IOException If something went wrong
      */
     public void testParserWithPoorWhitespace() throws IOException 
