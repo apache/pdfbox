@@ -96,4 +96,47 @@ public class TestPDPageContentStream extends TestCase
         List<Object> tokens = parser.getTokens();
         assertEquals(0, tokens.size());
     }
+    
+    /***
+     * Tests writing ascii bytes directly to the page
+     * @throws IOException
+     */
+    public void testWriteAscii() throws IOException
+    {
+        String textFile = "src/main/javadoc/overview.html";
+
+        assertTrue("Expected " + textFile + " for unit testing", new File(textFile).exists());
+
+        String pdfOutput = textFile + ".pdf";
+
+        Path path = Paths.get(textFile);
+        byte[] bytes = Files.readAllBytes(path);
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage(PDRectangle.A4);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+        float pageHeight = page.getMediaBox().getHeight();
+        float ty = pageHeight - 10;
+        float tx = 10;
+
+        contentStream.beginText();
+        contentStream.setFont(PDType1Font.COURIER, 8);
+
+        contentStream.newLineAtOffset(tx, ty);
+        contentStream.setLeading(10);
+
+        contentStream.writeAscii(bytes);
+
+        contentStream.endText();
+        contentStream.close();
+
+        document.addPage(page);
+        document.save(pdfOutput);
+
+        File outputFile = new File(pdfOutput);
+        assertTrue("File exists", outputFile.isFile());
+        assertNotNull("Document loads", PDDocument.load(outputFile));
+
+        outputFile.delete();
+    }
 }
