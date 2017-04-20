@@ -321,12 +321,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 label.setIcon(new HighResolutionImageIcon(image, label.getWidth(), label.getHeight()));
                 label.setText(null);
             }
-            catch (InterruptedException e)
-            {
-                label.setText(e.getMessage());
-                throw new RuntimeException(e);
-            }
-            catch (ExecutionException e)
+            catch (InterruptedException | ExecutionException e)
             {
                 label.setText(e.getMessage());
                 throw new RuntimeException(e);
