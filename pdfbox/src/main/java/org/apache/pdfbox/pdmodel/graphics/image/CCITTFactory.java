@@ -69,22 +69,22 @@ public final class CCITTFactory
         int width = image.getWidth();
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos);
-
-        for (int y = 0; y < height; ++y)
+        try (MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(bos))
         {
-            for (int x = 0; x < width; ++x)
+            for (int y = 0; y < height; ++y)
             {
-                // flip bit to avoid having to set /BlackIs1
-                mcios.writeBits(~(image.getRGB(x, y) & 1), 1);
+                for (int x = 0; x < width; ++x)
+                {
+                    // flip bit to avoid having to set /BlackIs1
+                    mcios.writeBits(~(image.getRGB(x, y) & 1), 1);
+                }
+                if (mcios.getBitOffset() != 0)
+                {
+                    mcios.writeBits(0, 8 - mcios.getBitOffset());
+                }
             }
-            if (mcios.getBitOffset() != 0)
-            {
-                mcios.writeBits(0, 8 - mcios.getBitOffset());
-            }
+            mcios.flush();
         }
-        mcios.flush();
-        mcios.close();
 
         return prepareImageXObject(document, bos.toByteArray(), width, height, PDDeviceGray.INSTANCE);
     }
