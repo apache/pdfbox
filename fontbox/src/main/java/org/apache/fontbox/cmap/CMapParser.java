@@ -405,6 +405,10 @@ public class CMapParser
 
     /**
      * Returns an input stream containing the given "use" CMap.
+     *
+     * @param name Name of the given "use" CMap resource.
+     * @throws IOException if the CMap resource doesn't exist or if there is an error opening its
+     * stream.
      */
     protected InputStream getExternalCMap(String name) throws IOException
     {
@@ -673,7 +677,7 @@ public class CMapParser
 
     private void increment(byte[] data, int position)
     {
-        if (position > 0 && (data[position] + 256) % 256 == 255)
+        if (position > 0 && (data[position] & 0xFF) == 255)
         {
             data[position] = 0;
             increment(data, position - 1);
@@ -686,51 +690,39 @@ public class CMapParser
 
     private int createIntFromBytes(byte[] bytes)
     {
-        int intValue = (bytes[0] + 256) % 256;
+        int intValue = bytes[0] & 0xFF;
         if (bytes.length == 2)
         {
             intValue <<= 8;
-            intValue += (bytes[1] + 256) % 256;
+            intValue += bytes[1] & 0xFF;
         }
         return intValue;
     }
 
     private String createStringFromBytes(byte[] bytes) throws IOException
     {
-        String retval;
-        if (bytes.length == 1)
-        {
-            retval = new String(bytes, Charsets.ISO_8859_1);
-        }
-        else
-        {
-            retval = new String(bytes, Charsets.UTF_16BE);
-        }
-        return retval;
+        return new String(bytes, bytes.length == 1 ? Charsets.ISO_8859_1 : Charsets.UTF_16BE);
     }
 
     private int compare(byte[] first, byte[] second)
     {
-        int retval = 1;
-        int firstLength = first.length;
-        for (int i = 0; i < firstLength; i++)
+        for (int i = 0; i < first.length; i++)
         {
             if (first[i] == second[i])
             {
                 continue;
             }
-            else if (((first[i] + 256) % 256) < ((second[i] + 256) % 256))
+
+            if ((first[i] & 0xFF) < (second[i] & 0xFF))
             {
-                retval = -1;
-                break;
+                return -1;
             }
             else
             {
-                retval = 1;
-                break;
+                return 1;
             }
         }
-        return retval;
+        return 0;
     }
 
     /**
