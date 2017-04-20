@@ -53,10 +53,8 @@ final class DCTFilter extends Filter
                                          COSDictionary parameters, int index) throws IOException
     {
         ImageReader reader = findImageReader("JPEG", "a suitable JAI I/O image filter is not installed");
-        ImageInputStream iis = null;
-        try
+        try (ImageInputStream iis = ImageIO.createImageInputStream(encoded))
         {
-            iis = ImageIO.createImageInputStream(encoded);
 
             // skip one LF if there
             if (iis.read() != 0x0A)
@@ -171,10 +169,6 @@ final class DCTFilter extends Filter
         }
         finally
         {
-            if (iis != null)
-            {
-                iis.close();
-            }
             reader.dispose();
         }
         return new DecodeResult(parameters);
