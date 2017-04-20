@@ -364,7 +364,64 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         writeOperator("Tj");
     }
+    
+    /***
+     * Writes ascii from bytes array directly to the page, including line feeds.
+     * Note that it writes 'as-is' and can overflow the page.
+     * @param bytes
+     * @throws IOException
+     */
+    public void writeAscii(byte[] bytes) throws IOException
+    {
+        if (!isInTextMode())
+        {
+            throw new IllegalStateException("Must call beginText() before showText()");
+        }
 
+        if (fontStack.isEmpty())
+        {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+
+        ByteArrayOutputStream line = new ByteArrayOutputStream();
+
+        for (int i = 0; i < bytes.length; i++)
+        {
+            byte b = bytes[i];
+            int x = (int)b;
+
+            //interpret feeds as line break
+            if (x == 10 // Line Feed  \n
+                    || x == 12 // Form Feed \f
+                    || x == 13 // Carriage Return \r
+                    )
+            {
+                COSWriter.writeString(line.toByteArray(), getOutput());
+                super.write(" ");
+                super.writeOperator("Tj");
+
+                newLine();
+
+                line.reset();
+            }
+            else if(x >= 32 && x <= 127)
+            {
+                //Include: ASCII characters in range 32-127
+                //Ignore: ASCII control characters (character code 0-31)
+
+                //byte[] d = font.encode(c); //TODO: necessary?
+                line.write(b);
+            }
+        }
+
+        if (line.size() > 0)
+        {
+            COSWriter.writeString(line.toByteArray(), getOutput());
+            super.write(" ");
+            super.writeOperator("Tj");
+        }
+    }
+    
     /**
      * The Td operator.
      * A current text matrix will be replaced with a new one (1 0 0 1 x y).
