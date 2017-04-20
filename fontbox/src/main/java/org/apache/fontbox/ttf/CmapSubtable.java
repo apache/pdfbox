@@ -540,7 +540,7 @@ public class CmapSubtable
         characterCodeToGlyphId = new HashMap<Integer, Integer>(glyphMapping.length);
         for (int i = 0; i < glyphMapping.length; i++)
         {
-            int glyphIndex = (glyphMapping[i] + 256) % 256;
+            int glyphIndex = glyphMapping[i] & 0xFF;
             glyphIdToCharacterCode[glyphIndex] = i;
             characterCodeToGlyphId.put(i, glyphIndex);
         }

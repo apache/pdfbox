@@ -77,7 +77,7 @@ public class TestCMapParser extends TestCase
         for (byte b : data)
         {
             code <<= 8;
-            code |= (b + 256) % 256;
+            code |= (b & 0xFF);
         }
         return code;
     }
