@@ -202,6 +202,8 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * This method is for internal use only.
      *
      * Use your favorite cryptographic library to implement PKCS #7 signature creation.
+     *
+     * @throws IOException
      */
     @Override
     public byte[] sign(InputStream content) throws IOException
@@ -225,19 +227,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
             }
             return signedData.getEncoded();
         }
-        catch (GeneralSecurityException e)
-        {
-            throw new IOException(e);
-        }
-        catch (CMSException e)
-        {
-            throw new IOException(e);
-        }
-        catch (TSPException e)
-        {
-            throw new IOException(e);
-        }
-        catch (OperatorCreationException e)
+        catch (GeneralSecurityException | CMSException | TSPException | OperatorCreationException e)
         {
             throw new IOException(e);
         }
