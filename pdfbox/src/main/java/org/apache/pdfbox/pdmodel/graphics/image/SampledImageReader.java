@@ -85,36 +85,44 @@ final class SampledImageReader
         ImageInputStream iis = null;
         try
         {
-            iis = new MemoryCacheImageInputStream(pdImage.createInputStream());
-
             final float[] decode = getDecodeArray(pdImage);
-            int value;
-            if (decode[0] < decode[1])
-            {
-                value = 1;
-            }
-            else
-            {
-                value = 0;
-            }
-
-            // calculate row padding
-            int padding = 0;
+            int value = decode[0] < decode[1] ? 1 : 0;
+            int rowLen = width / 8;
             if (width % 8 > 0)
             {
-                padding = 8 - (width % 8);
+                rowLen++;
             }
-            
-            for (int y = 0; y < height; ++y)
+            byte[] buff = new byte[rowLen];
+            for (int y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; ++x)
+                int x = 0;
+                int readLen = iis.read(buff);
+                for (int r = 0; r < rowLen && r < readLen; r++)
                 {
-                    if (iis.readBit() == value)
+                    int byteValue = buff[r];
+                    int mask = 128;
+                    int shift = 7;
+                    for (int i = 0; i < 8; i++)
                     {
-                        raster.setPixel(x, y, transparent);
+                        int bit = (byteValue & mask) >> shift;
+                        mask >>= 1;
+                        --shift;
+                        if (bit == value)
+                        {
+                            raster.setPixel(x, y, transparent);
+                        }
+                        x++;
+                        if (x == width)
+                        {
+                            break;
+                        }
                     }
                 }
-                iis.readBits(padding);
+                if (readLen != rowLen)
+                {
+                    LOG.warn("premature EOF, image will be incomplete");
+                    break;
+                }
             }
         }
         finally
