@@ -67,11 +67,7 @@ final class XMLUtil
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             return builder.parse(is);
         }
-        catch (FactoryConfigurationError e)
-        {
-            throw new IOException(e.getMessage(), e);
-        }
-        catch (ParserConfigurationException | SAXException e)
+        catch (FactoryConfigurationError | ParserConfigurationException | SAXException e)
         {
             throw new IOException(e.getMessage(), e);
         }

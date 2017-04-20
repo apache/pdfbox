@@ -56,8 +56,8 @@ import org.bouncycastle.util.StoreException;
  */
 public final class ShowSignature
 {
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-    
+    private final SimpleDateFormat SDF = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
     private ShowSignature()
     {
     }
@@ -94,10 +94,8 @@ public final class ShowSignature
         {
             String password = args[0];
             String infile = args[1];
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(infile), password))
             {
-                document = PDDocument.load(new File(infile), password);
                 for (PDSignature sig : document.getSignatureDictionaries())
                 {
                     COSDictionary sigDict = sig.getCOSObject();
@@ -117,48 +115,50 @@ public final class ShowSignature
 
                     System.out.println("Signature found");
                     System.out.println("Name:     " + sig.getName());
-                    System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
+                    System.out.println("Modified: " + SDF.format(sig.getSignDate().getTime()));
                     String subFilter = sig.getSubFilter();
                     if (subFilter != null)
                     {
-                        if (subFilter.equals("adbe.pkcs7.detached"))
+                        switch (subFilter)
                         {
-                            verifyPKCS7(buf, contents, sig);
-                            
-                            //TODO check certificate chain, revocation lists, timestamp...
-                        }
-                        else if (subFilter.equals("adbe.pkcs7.sha1"))
-                        {
-                            // example: PDFBOX-1452.pdf
-                            COSString certString = (COSString) sigDict.getDictionaryObject(
-                                    COSName.CONTENTS);
-                            byte[] certData = certString.getBytes();
-                            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                            ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
-                            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
-                            System.out.println("certs=" + certs);
+                            case "adbe.pkcs7.detached":
+                                verifyPKCS7(buf, contents, sig);
 
-                            byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
-                            verifyPKCS7(hash, contents, sig);
-                            
-                            //TODO check certificate chain, revocation lists, timestamp...
-                        }
-                        else if (subFilter.equals("adbe.x509.rsa_sha1"))
-                        {
-                            // example: PDFBOX-2693.pdf
-                            COSString certString = (COSString) sigDict.getDictionaryObject(
-                                    COSName.getPDFName("Cert"));
-                            byte[] certData = certString.getBytes();
-                            CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                            ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
-                            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
-                            System.out.println("certs=" + certs);
-                            
-                            //TODO verify signature
-                        }
-                        else
-                        {
-                            System.err.println("Unknown certificate type: " + subFilter);
+                                //TODO check certificate chain, revocation lists, timestamp...
+                                break;
+                            case "adbe.pkcs7.sha1":
+                            {
+                                // example: PDFBOX-1452.pdf
+                                COSString certString = (COSString) sigDict.getDictionaryObject(
+                                        COSName.CONTENTS);
+                                byte[] certData = certString.getBytes();
+                                CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                                ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                                Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                                System.out.println("certs=" + certs);
+                                byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
+                                verifyPKCS7(hash, contents, sig);
+
+                                //TODO check certificate chain, revocation lists, timestamp...
+                                break;
+                            }
+                            case "adbe.x509.rsa_sha1":
+                            {
+                                // example: PDFBOX-2693.pdf
+                                COSString certString = (COSString) sigDict.getDictionaryObject(
+                                        COSName.getPDFName("Cert"));
+                                byte[] certData = certString.getBytes();
+                                CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                                ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                                Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                                System.out.println("certs=" + certs);
+
+                                //TODO verify signature
+                                break;
+                            }
+                            default:
+                                System.err.println("Unknown certificate type: " + subFilter);
+                                break;
                         }
                     }
                     else
@@ -167,20 +167,9 @@ public final class ShowSignature
                     }
                 }
             }
-            catch (CMSException ex)
+            catch (CMSException | OperatorCreationException ex)
             {
                 throw new IOException(ex);
-            }
-            catch (OperatorCreationException ex)
-            {
-                throw new IOException(ex);
-            }
-            finally
-            {
-                if (document != null)
-                {
-                    document.close();
-                }
             }
         }
     }

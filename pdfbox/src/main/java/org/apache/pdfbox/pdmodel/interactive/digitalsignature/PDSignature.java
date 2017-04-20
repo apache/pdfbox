@@ -379,19 +379,9 @@ public class PDSignature implements COSObjectable
      */
     public byte[] getSignedContent(InputStream pdfFile) throws IOException
     {
-        COSFilterInputStream fis=null;
-
-        try
+        try (COSFilterInputStream fis = new COSFilterInputStream(pdfFile, getByteRange()))
         {
-            fis = new COSFilterInputStream(pdfFile,getByteRange());
             return fis.toByteArray();
-        }
-        finally
-        {
-            if (fis != null)
-            {
-                fis.close();
-            }
         }
     }
 
@@ -404,18 +394,9 @@ public class PDSignature implements COSObjectable
      */
     public byte[] getSignedContent(byte[] pdfFile) throws IOException
     {
-        COSFilterInputStream fis=null;
-        try
+        try (COSFilterInputStream fis = new COSFilterInputStream(pdfFile, getByteRange()))
         {
-            fis = new COSFilterInputStream(pdfFile,getByteRange());
             return fis.toByteArray();
-        }
-        finally
-        {
-            if (fis != null)
-            {
-                fis.close();
-            }
         }
     }
 
