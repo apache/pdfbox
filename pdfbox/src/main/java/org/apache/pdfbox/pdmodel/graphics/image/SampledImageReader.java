@@ -181,17 +181,6 @@ final class SampledImageReader
         }
     }
     
-    /*
-    tried (before the change in getStencilImage PDFBOX-3763
-    - BufferedInputStream (not faster)
-    - create BufferedImage bitonal locally (=> black)
-    - create BufferedImage color locally (not faster)
-    - create BufferedImage bitonal locally and altering getStencilImage to check for != 0
-       1GB more used
-    TODO:
-    - try again with a large b/w scan PDF
-    */
-    
     private static BufferedImage from1Bit(PDImage pdImage, WritableRaster raster)
             throws IOException
     {
