@@ -85,6 +85,7 @@ final class SampledImageReader
         ImageInputStream iis = null;
         try
         {
+            iis = new MemoryCacheImageInputStream(pdImage.createInputStream());
             final float[] decode = getDecodeArray(pdImage);
             int value = decode[0] < decode[1] ? 1 : 0;
             int rowLen = width / 8;
