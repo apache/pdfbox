@@ -81,37 +81,47 @@ final class SampledImageReader
         // avoid getting a BufferedImage for the mask to lessen memory footprint.
         // Such masks are always bpc=1 and have no colorspace, but have a decode.
         // (see 8.9.6.2 Stencil Masking)
-        try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream()))
+        try (InputStream iis = pdImage.createInputStream())
         {
             final float[] decode = getDecodeArray(pdImage);
-            int value;
-            if (decode[0] < decode[1])
-            {
-                value = 1;
-            }
-            else
-            {
-                value = 0;
-            }
-
-            // calculate row padding
-            int padding = 0;
+            int value = decode[0] < decode[1] ? 1 : 0;
+            int rowLen = width / 8;
             if (width % 8 > 0)
             {
-                padding = 8 - (width % 8);
+                rowLen++;
             }
-
-            for (int y = 0; y < height; ++y)
+            byte[] buff = new byte[rowLen];
+            for (int y = 0; y < height; y++)
             {
-                for (int x = 0; x < width; ++x)
+                int x = 0;
+                int readLen = iis.read(buff);
+                for (int r = 0; r < rowLen && r < readLen; r++)
                 {
-                    if (iis.readBit() == value)
+                    int byteValue = buff[r];
+                    int mask = 128;
+                    int shift = 7;
+                    for (int i = 0; i < 8; i++)
                     {
-                        raster.setPixel(x, y, transparent);
+                        int bit = (byteValue & mask) >> shift;
+                        mask >>= 1;
+                        --shift;
+                        if (bit == value)
+                        {
+                            raster.setPixel(x, y, transparent);
+                        }
+                        x++;
+                        if (x == width)
+                        {
+                            break;
+                        }
                     }
                 }
-                iis.readBits(padding);
-            }
+                if (readLen != rowLen)
+                {
+                    LOG.warn("premature EOF, image will be incomplete");
+                    break;
+                }
+            }            
         }
 
         return masked;
@@ -170,6 +180,17 @@ final class SampledImageReader
             return fromAny(pdImage, raster, colorKey);
         }
     }
+    
+    /*
+    tried (before the change in getStencilImage PDFBOX-3763
+    - BufferedInputStream (not faster)
+    - create BufferedImage bitonal locally (=> black)
+    - create BufferedImage color locally (not faster)
+    - create BufferedImage bitonal locally and altering getStencilImage to check for != 0
+       1GB more used
+    TODO:
+    - try again with a large b/w scan PDF
+    */
     
     private static BufferedImage from1Bit(PDImage pdImage, WritableRaster raster)
             throws IOException
