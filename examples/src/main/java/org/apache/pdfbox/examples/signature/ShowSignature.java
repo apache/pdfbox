@@ -56,7 +56,7 @@ import org.bouncycastle.util.StoreException;
  */
 public final class ShowSignature
 {
-    private SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     
     private ShowSignature()
     {
