@@ -139,27 +139,8 @@ public final class TypeMapping
             tmp.setPropertyName(propertyName);
             return tmp;
         }
-        catch (InvocationTargetException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (InstantiationException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (SecurityException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (NoSuchMethodException e)
+        catch (InvocationTargetException | IllegalArgumentException | InstantiationException |
+               IllegalAccessException | SecurityException | NoSuchMethodException e)
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }
@@ -183,31 +164,9 @@ public final class TypeMapping
             Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(SIMPLEPROPERTYCONSTPARAMS);
             return cons.newInstance(params);
         }
-        catch (NoSuchMethodError e)
-        {
-            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
-        }
-        catch (IllegalArgumentException e)
-        {
-            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
-        }
-        catch (InstantiationException e)
-        {
-            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
-        }
-        catch (InvocationTargetException e)
-        {
-            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
-        }
-        catch (SecurityException e)
-        {
-            throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
-        }
-        catch (NoSuchMethodException e)
+        catch (NoSuchMethodError | IllegalArgumentException | InstantiationException |
+               IllegalAccessException | InvocationTargetException | SecurityException |
+               NoSuchMethodException e)
         {
             throw new IllegalArgumentException("Failed to instanciate " + clz.getSimpleName() + " property with value " + value, e);
         }
