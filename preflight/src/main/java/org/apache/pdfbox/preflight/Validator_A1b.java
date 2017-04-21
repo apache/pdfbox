@@ -188,7 +188,7 @@ public class Validator_A1b
         }
         else
         {
-            System.out.println("The file " + file.getName() + " is not valid, error(s) :");
+            System.out.println("The file " + file.getName() + " is not a valid PDF/A-1b file, error(s) :");
             for (ValidationError error : result.getErrorsList())
             {
                 System.out.print(error.getErrorCode() + " : " + error.getDetails());
