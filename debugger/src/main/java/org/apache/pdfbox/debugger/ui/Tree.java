@@ -222,23 +222,30 @@ public class Tree extends JTree
         final String extension = getFileExtensionForStream(cosStream, nodePath);
         final FileFilter fileFilter;
 
-        switch (extension)
+        if (extension != null)
         {
-            case "pdb":
-                fileFilter = new FileNameExtensionFilter("Type 1 Font (*.pfb)", "pfb");
-                break;
-            case "ttf":
-                fileFilter = new FileNameExtensionFilter("TrueType Font (*.ttf)", "ttf");
-                break;
-            case "cff":
-                fileFilter = new FileNameExtensionFilter("Compact Font Format (*.cff)", "cff");
-                break;
-            case "otf":
-                fileFilter = new FileNameExtensionFilter("OpenType Font (*.otf)", "otf");
-                break;
-            default:
-                fileFilter = null;
-                break;
+            switch (extension)
+            {
+                case "pdb":
+                    fileFilter = new FileNameExtensionFilter("Type 1 Font (*.pfb)", "pfb");
+                    break;
+                case "ttf":
+                    fileFilter = new FileNameExtensionFilter("TrueType Font (*.ttf)", "ttf");
+                    break;
+                case "cff":
+                    fileFilter = new FileNameExtensionFilter("Compact Font Format (*.cff)", "cff");
+                    break;
+                case "otf":
+                    fileFilter = new FileNameExtensionFilter("OpenType Font (*.otf)", "otf");
+                    break;
+                default:
+                    fileFilter = null;
+                    break;
+            }
+        }
+        else
+        {
+            fileFilter = null;
         }
 
         String format;
