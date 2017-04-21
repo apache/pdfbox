@@ -222,32 +222,23 @@ public class Tree extends JTree
         final String extension = getFileExtensionForStream(cosStream, nodePath);
         final FileFilter fileFilter;
 
-        if (extension != null)
+        switch (extension)
         {
-            if (extension.equals("pdb"))
-            {
+            case "pdb":
                 fileFilter = new FileNameExtensionFilter("Type 1 Font (*.pfb)", "pfb");
-            }
-            else if (extension.equals("ttf"))
-            {
+                break;
+            case "ttf":
                 fileFilter = new FileNameExtensionFilter("TrueType Font (*.ttf)", "ttf");
-            }
-            else if (extension.equals("cff"))
-            {
+                break;
+            case "cff":
                 fileFilter = new FileNameExtensionFilter("Compact Font Format (*.cff)", "cff");
-            }
-            else if (extension.equals("otf"))
-            {
+                break;
+            case "otf":
                 fileFilter = new FileNameExtensionFilter("OpenType Font (*.otf)", "otf");
-            }
-            else
-            {
+                break;
+            default:
                 fileFilter = null;
-            }
-        }
-        else
-        {
-            fileFilter = null;
+                break;
         }
 
         String format;
@@ -286,26 +277,17 @@ public class Tree extends JTree
     private String getFileExtensionForStream(final COSStream cosStream, final TreePath nodePath)
     {
         String name = nodePath.getLastPathComponent().toString();
-        if (name.equals("FontFile"))
+        switch (name)
         {
-            return "pfb";
+            case "FontFile":
+                return "pfb";
+            case "FontFile2":
+                return "ttf";
+            case "FontFile3":
+                return cosStream.getCOSName(COSName.SUBTYPE) == COSName.OPEN_TYPE ? "otf" : "cff";
+            default:
+                return null;
         }
-        else if (name.equals("FontFile2"))
-        {
-            return "ttf";
-        }
-        else if (name.equals("FontFile3"))
-        {
-            if (cosStream.getCOSName(COSName.SUBTYPE) == COSName.OPEN_TYPE)
-            {
-                return "otf";
-            }
-            else
-            {
-                return "cff";
-            }
-        }
-        return null;
     }
 
     /**
@@ -332,20 +314,11 @@ public class Tree extends JTree
                     File temp = File.createTempFile("pdfbox", "." + extension);
                     temp.deleteOnExit();
 
-                    FileOutputStream outputStream = null;
-                    try
+                    try (FileOutputStream outputStream = new FileOutputStream(temp))
                     {
-                        outputStream = new FileOutputStream(temp);
                         outputStream.write(bytes);
 
                         Desktop.getDesktop().open(temp);
-                    }
-                    finally
-                    {
-                        if (outputStream != null)
-                        {
-                            outputStream.close();
-                        }
                     }
                 }
                 catch (IOException e)

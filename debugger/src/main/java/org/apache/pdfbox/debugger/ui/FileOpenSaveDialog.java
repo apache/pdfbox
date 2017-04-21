@@ -71,6 +71,7 @@ public class FileOpenSaveDialog
      * Saves data into a file after the user is prompted to choose the destination.
      *
      * @param bytes byte array to be saved in a file.
+     * @param extension file extension.
      * @return true if the file is saved successfully or false if failed.
      * @throws IOException if there is an error in creation of the file.
      */
@@ -85,18 +86,9 @@ public class FileOpenSaveDialog
                 filename += "." + extension;
             }
 
-            FileOutputStream outputStream = null;
-            try
+            try (FileOutputStream outputStream = new FileOutputStream(filename))
             {
-                outputStream = new FileOutputStream(filename);
                 outputStream.write(bytes);
-            }
-            finally
-            {
-                if (outputStream != null)
-                {
-                    outputStream.close();
-                }
             }
             return true;
         }
