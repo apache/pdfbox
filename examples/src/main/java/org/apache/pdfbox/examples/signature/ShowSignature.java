@@ -56,7 +56,7 @@ import org.bouncycastle.util.StoreException;
  */
 public final class ShowSignature
 {
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     private ShowSignature()
     {
@@ -115,7 +115,7 @@ public final class ShowSignature
 
                     System.out.println("Signature found");
                     System.out.println("Name:     " + sig.getName());
-                    System.out.println("Modified: " + SDF.format(sig.getSignDate().getTime()));
+                    System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
                     String subFilter = sig.getSubFilter();
                     if (subFilter != null)
                     {
