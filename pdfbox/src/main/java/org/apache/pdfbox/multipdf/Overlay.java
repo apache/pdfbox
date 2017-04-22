@@ -279,19 +279,20 @@ public class Overlay
         List<COSStream> contentStreams = createContentStreamList(contents);
         // concatenate streams
         COSStream concatStream = new COSStream();
-        OutputStream out = concatStream.createOutputStream(COSName.FLATE_DECODE);
-        for (COSStream contentStream : contentStreams)
+        try (OutputStream out = concatStream.createOutputStream(COSName.FLATE_DECODE))
         {
-            InputStream in = contentStream.createInputStream();
-            byte[] buf = new byte[2048];
-            int n;
-            while ((n = in.read(buf)) > 0)
+            for (COSStream contentStream : contentStreams)
             {
-                out.write(buf, 0, n);
+                InputStream in = contentStream.createInputStream();
+                byte[] buf = new byte[2048];
+                int n;
+                while ((n = in.read(buf)) > 0)
+                {
+                    out.write(buf, 0, n);
+                }
+                out.flush();
             }
-            out.flush();
         }
-        out.close();
         return concatStream;
     }
 
@@ -464,9 +465,10 @@ public class Overlay
     private COSStream createStream(String content) throws IOException
     {
         COSStream stream = new COSStream();
-        OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE);
-        out.write(content.getBytes("ISO-8859-1"));
-        out.close();
+        try (OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE))
+        {
+            out.write(content.getBytes("ISO-8859-1"));
+        }
         return stream;
     }
 
