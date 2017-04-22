@@ -114,11 +114,11 @@ public class PDFCloneUtility
           {
               COSStream originalStream = (COSStream)base;
               COSStream stream = destination.getDocument().createCOSStream();
-              OutputStream output = stream.createRawOutputStream();
-              InputStream input = originalStream.createRawInputStream();
-              IOUtils.copy(input, output );
-              input.close();
-              output.close();
+              try (OutputStream output = stream.createRawOutputStream();
+                   InputStream input = originalStream.createRawInputStream())
+              {
+                  IOUtils.copy(input, output);
+              }
               clonedVersion.put( base, stream );
               for( Map.Entry<COSName, COSBase> entry :  originalStream.entrySet() )
               {
@@ -198,15 +198,14 @@ public class PDFCloneUtility
             // does that make sense???
               COSStream originalStream = (COSStream)base;
               COSStream stream = destination.getDocument().createCOSStream();
-              OutputStream output = stream.createOutputStream(originalStream.getFilters());
-              IOUtils.copy( originalStream.createInputStream(), output );
-              output.close();
+              try (OutputStream output = stream.createOutputStream(originalStream.getFilters()))
+              {
+                  IOUtils.copy(originalStream.createInputStream(), output);
+              }
               clonedVersion.put( base, stream );
               for( Map.Entry<COSName, COSBase> entry : originalStream.entrySet() )
               {
-                  stream.setItem(
-                          entry.getKey(),
-                          cloneForNewDocument(entry.getValue()));
+                  stream.setItem(entry.getKey(), cloneForNewDocument(entry.getValue()));
               }
               retval = stream;
           }

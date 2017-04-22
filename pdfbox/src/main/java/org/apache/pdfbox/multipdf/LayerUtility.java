@@ -83,14 +83,16 @@ public class LayerUtility
     public void wrapInSaveRestore(PDPage page) throws IOException
     {
         COSStream saveGraphicsStateStream = getDocument().getDocument().createCOSStream();
-        OutputStream saveStream = saveGraphicsStateStream.createOutputStream();
-        saveStream.write("q\n".getBytes("ISO-8859-1"));
-        saveStream.close();
+        try (OutputStream saveStream = saveGraphicsStateStream.createOutputStream())
+        {
+            saveStream.write("q\n".getBytes("ISO-8859-1"));
+        }
 
         COSStream restoreGraphicsStateStream = getDocument().getDocument().createCOSStream();
-        OutputStream restoreStream = restoreGraphicsStateStream.createOutputStream();
-        restoreStream.write("Q\n".getBytes("ISO-8859-1"));
-        restoreStream.close();
+        try (OutputStream restoreStream = restoreGraphicsStateStream.createOutputStream())
+        {
+            restoreStream.write("Q\n".getBytes("ISO-8859-1"));
+        }
 
         //Wrap the existing page's content in a save/restore pair (q/Q) to have a controlled
         //environment to add additional content.
@@ -239,15 +241,16 @@ public class LayerUtility
         PDOptionalContentGroup layer = new PDOptionalContentGroup(layerName);
         ocprops.addGroup(layer);
 
-        PDPageContentStream contentStream = new PDPageContentStream(
-                targetDoc, targetPage, AppendMode.APPEND, !DEBUG);
-        contentStream.beginMarkedContent(COSName.OC, layer);
-        contentStream.saveGraphicsState();
-        contentStream.transform(new Matrix(transform));
-        contentStream.drawForm(form);
-        contentStream.restoreGraphicsState();
-        contentStream.endMarkedContent();
-        contentStream.close();
+        try (PDPageContentStream contentStream = new PDPageContentStream(
+                targetDoc, targetPage, AppendMode.APPEND, !DEBUG))
+        {
+            contentStream.beginMarkedContent(COSName.OC, layer);
+            contentStream.saveGraphicsState();
+            contentStream.transform(new Matrix(transform));
+            contentStream.drawForm(form);
+            contentStream.restoreGraphicsState();
+            contentStream.endMarkedContent();
+        }
 
         return layer;
     }

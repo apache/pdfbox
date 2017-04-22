@@ -336,31 +336,26 @@ public class PDPageLabels implements COSObjectable
 
         private String getNumber(int pageIndex, String style)
         {
-            if (PDPageLabelRange.STYLE_DECIMAL.equals(style))
+            if (style != null)
             {
-                return Integer.toString(pageIndex);
+                switch (style)
+                {
+                    case PDPageLabelRange.STYLE_DECIMAL:
+                        return Integer.toString(pageIndex);
+                    case PDPageLabelRange.STYLE_LETTERS_LOWER:
+                        return makeLetterLabel(pageIndex);
+                    case PDPageLabelRange.STYLE_LETTERS_UPPER:
+                        return makeLetterLabel(pageIndex).toUpperCase();
+                    case PDPageLabelRange.STYLE_ROMAN_LOWER:
+                        return makeRomanLabel(pageIndex);
+                    case PDPageLabelRange.STYLE_ROMAN_UPPER:
+                        return makeRomanLabel(pageIndex).toUpperCase();
+                    default:
+                        break;
+                }
             }
-            else if (PDPageLabelRange.STYLE_LETTERS_LOWER.equals(style))
-            {
-                return makeLetterLabel(pageIndex);
-            }
-            else if (PDPageLabelRange.STYLE_LETTERS_UPPER.equals(style))
-            {
-                return makeLetterLabel(pageIndex).toUpperCase();
-            }
-            else if (PDPageLabelRange.STYLE_ROMAN_LOWER.equals(style))
-            {
-                return makeRomanLabel(pageIndex);
-            }
-            else if (PDPageLabelRange.STYLE_ROMAN_UPPER.equals(style))
-            {
-                return makeRomanLabel(pageIndex).toUpperCase();
-            }
-            else
-            {
-                // Fall back to decimals.
-                return Integer.toString(pageIndex);
-            }
+            // Fall back to decimals.
+            return Integer.toString(pageIndex);
         }
 
         /**

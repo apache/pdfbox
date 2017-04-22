@@ -46,21 +46,16 @@ public enum RenderingIntent
 
     public static RenderingIntent fromString(String value)
     {
-        if (value.equals("AbsoluteColorimetric"))
+        switch (value)
         {
-            return ABSOLUTE_COLORIMETRIC;
-        }
-        else if (value.equals("RelativeColorimetric"))
-        {
-          return RELATIVE_COLORIMETRIC;
-        }
-        else if (value.equals("Saturation"))
-        {
-          return SATURATION;
-        }
-        else if (value.equals("Perceptual"))
-        {
-          return PERCEPTUAL;
+            case "AbsoluteColorimetric":
+                return ABSOLUTE_COLORIMETRIC;
+            case "RelativeColorimetric":
+                return RELATIVE_COLORIMETRIC;
+            case "Saturation":
+                return SATURATION;
+            case "Perceptual":
+                return PERCEPTUAL;
         }
         // "If a conforming reader does not recognize the specified name, 
         // it shall use the RelativeColorimetric intent by default."
