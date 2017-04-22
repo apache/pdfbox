@@ -23,6 +23,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -338,7 +339,7 @@ public class Type1CharString
             LOG.warn("Unknown charstring command: " + command.getKey() + " in glyph " + glyphName +
                      " of font " + fontName);
         }
-        return null;
+        return Collections.emptyList();
     }
 
     /**

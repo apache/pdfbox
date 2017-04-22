@@ -101,7 +101,7 @@ public class Type2CharString extends Type1CharString
         if (name == null)
         {
             addCommand(numbers, command);
-            return null;
+            return Collections.emptyList();
         }
         switch (name)
         {
@@ -246,7 +246,7 @@ public class Type2CharString extends Type1CharString
                 addCommand(numbers, command);
                 break;
         }
-        return null;
+        return Collections.emptyList();
     }
 
     private List<Number> clearStack(List<Number> numbers, boolean flag)
