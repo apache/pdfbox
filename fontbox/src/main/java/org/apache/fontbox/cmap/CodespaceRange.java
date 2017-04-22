@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.cmap;
 
+import static org.apache.fontbox.cmap.CMap.toInt;
 
 /**
  * This represents a single entry in the codespace range.
@@ -94,19 +95,6 @@ public class CodespaceRange
         return isFullMatch(code, code.length);
     }
 
-    /**
-     * Returns an int for the given byte array
-     */
-    private int toInt(byte[] data, int dataLen)
-    {
-        int code = 0;
-        for (int i = 0; i < dataLen; ++i)
-        {
-            code <<= 8;
-            code |= (data[i] & 0xFF);
-        }
-        return code;
-    }
     /**
      * Returns true if the given code bytes match this codespace range.
      */

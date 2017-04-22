@@ -126,7 +126,7 @@ public class CMap
     /**
      * Returns an int for the given byte array
      */
-    private int toInt(byte[] data, int dataLen)
+    static int toInt(byte[] data, int dataLen)
     {
         int code = 0;
         for (int i = 0; i < dataLen; ++i)
