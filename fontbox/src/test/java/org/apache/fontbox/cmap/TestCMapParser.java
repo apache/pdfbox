@@ -79,10 +79,7 @@ public class TestCMapParser extends TestCase
      */
     public void testParserWithPoorWhitespace() throws IOException 
     {
-        File inDir = new File("src/test/resources/cmap");
-
-        CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse( new FileInputStream(new File(inDir,"CMapNoWhitespace")));
+        CMap cMap = new CMapParser().parse(new File("src/test/resources/cmap", "CMapNoWhitespace"));
 
         assertNotNull("Failed to parse nasty CMap file", cMap);
     }
