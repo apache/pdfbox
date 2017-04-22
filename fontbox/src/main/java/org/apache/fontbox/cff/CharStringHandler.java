@@ -44,10 +44,7 @@ public abstract class CharStringHandler
             {
                 List<Number> results = handleCommand(stack, (CharStringCommand)obj);
                 stack.clear();  // this is basically returning the new stack
-                if (results != null)
-                {
-                    stack.addAll(results);
-                }
+                stack.addAll(results);
             }
             else
             {
@@ -62,6 +59,7 @@ public abstract class CharStringHandler
      *
      * @param numbers a list of numbers
      * @param command the CharStringCommand
+     * @return a list of commands. This can be empty but never be null.
      */
     public abstract List<Number> handleCommand(List<Number> numbers, CharStringCommand command);
 }
