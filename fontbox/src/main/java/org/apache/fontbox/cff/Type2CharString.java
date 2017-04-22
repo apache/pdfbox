@@ -100,6 +100,7 @@ public class Type2CharString extends Type1CharString
 
         if (name == null)
         {
+            addCommand(numbers, command);
             return null;
         }
         switch (name)
