@@ -73,17 +73,6 @@ public class TestCMapParser extends TestCase
         assertEquals("CID 520 from cidchar <0208> 520", strCID3, cMap.toCID(cid3));
     }
 
-    private int toInt(byte[] data)
-    {
-        int code = 0;
-        for (byte b : data)
-        {
-            code <<= 8;
-            code |= (b & 0xFF);
-        }
-        return code;
-    }
-
     /**
      * Test the parser against a valid, but poorly formatted CMap file.
      * @throws IOException If something went wrong
