@@ -54,35 +54,31 @@ public abstract class PDDestination implements PDDestinationOrAction
                 && ((COSArray) base).size() > 1 
                 && ((COSArray) base).getObject(1) instanceof COSName)
         {
-            COSArray array = (COSArray)base;
+            COSArray array = (COSArray) base;
             COSName type = (COSName) array.getObject(1);
             String typeString = type.getName();
-            if( typeString.equals( PDPageFitDestination.TYPE ) ||
-                typeString.equals( PDPageFitDestination.TYPE_BOUNDED ))
+            switch (typeString)
             {
-                retval = new PDPageFitDestination( array );
-            }
-            else if( typeString.equals( PDPageFitHeightDestination.TYPE ) ||
-                     typeString.equals( PDPageFitHeightDestination.TYPE_BOUNDED ))
-            {
-                retval = new PDPageFitHeightDestination( array );
-            }
-            else if( typeString.equals( PDPageFitRectangleDestination.TYPE ) )
-            {
-                retval = new PDPageFitRectangleDestination( array );
-            }
-            else if( typeString.equals( PDPageFitWidthDestination.TYPE ) ||
-                     typeString.equals( PDPageFitWidthDestination.TYPE_BOUNDED ))
-            {
-                retval = new PDPageFitWidthDestination( array );
-            }
-            else if( typeString.equals( PDPageXYZDestination.TYPE ) )
-            {
-                retval = new PDPageXYZDestination( array );
-            }
-            else
-            {
-                throw new IOException( "Unknown destination type: " + type.getName() );
+                case PDPageFitDestination.TYPE:
+                case PDPageFitDestination.TYPE_BOUNDED:
+                    retval = new PDPageFitDestination(array);
+                    break;
+                case PDPageFitHeightDestination.TYPE:
+                case PDPageFitHeightDestination.TYPE_BOUNDED:
+                    retval = new PDPageFitHeightDestination(array);
+                    break;
+                case PDPageFitRectangleDestination.TYPE:
+                    retval = new PDPageFitRectangleDestination(array);
+                    break;
+                case PDPageFitWidthDestination.TYPE:
+                case PDPageFitWidthDestination.TYPE_BOUNDED:
+                    retval = new PDPageFitWidthDestination(array);
+                    break;
+                case PDPageXYZDestination.TYPE:
+                    retval = new PDPageXYZDestination(array);
+                    break;
+                default:
+                    throw new IOException("Unknown destination type: " + type.getName());
             }
         }
         else if( base instanceof COSString )
