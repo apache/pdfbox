@@ -116,7 +116,7 @@ public class CMapParser
                 Operator op = (Operator) token;
                 if (op.op.equals("usecmap"))
                 {
-                    parseUsecmap(previousToken, result);
+                    parseUsecmap((LiteralName) previousToken, result);
                 }
                 else if (op.op.equals("endcmap"))
                 {
@@ -125,45 +125,43 @@ public class CMapParser
                 }
                 else if (op.op.equals("begincodespacerange"))
                 {
-                    parseBegincodespacerange(previousToken, cmapStream, result);
+                    parseBegincodespacerange((Number) previousToken, cmapStream, result);
                 }
                 else if (op.op.equals("beginbfchar"))
                 {
-                    parseBeginbfchar(previousToken, cmapStream, result);
+                    parseBeginbfchar((Number) previousToken, cmapStream, result);
                 }
                 else if (op.op.equals("beginbfrange"))
                 {
-                    parseBeginbfrange(previousToken, cmapStream, result);
+                    parseBeginbfrange((Number) previousToken, cmapStream, result);
                 }
                 else if (op.op.equals("begincidchar"))
                 {
-                    parseBegincidchar(previousToken, cmapStream, result);
+                    parseBegincidchar((Number) previousToken, cmapStream, result);
                 }
                 else if (op.op.equals("begincidrange"))
                 {
-                    parseBegincidrange(previousToken, cmapStream, result);
+                    parseBegincidrange((Integer) previousToken, cmapStream, result);
                 }
             }
             else if (token instanceof LiteralName)
             {
-                parseLiteralName(token, cmapStream, result);
+                parseLiteralName((LiteralName) token, cmapStream, result);
             }
             previousToken = token;
         }
         return result;
     }
 
-    private void parseUsecmap(Object previousToken, CMap result) throws IOException
+    private void parseUsecmap(LiteralName useCmapName, CMap result) throws IOException
     {
-        LiteralName useCmapName = (LiteralName) previousToken;
         InputStream useStream = getExternalCMap(useCmapName.name);
         CMap useCMap = parse(useStream);
         result.useCmap(useCMap);
     }
 
-    private void parseLiteralName(Object token, PushbackInputStream cmapStream, CMap result) throws IOException
+    private void parseLiteralName(LiteralName literal, PushbackInputStream cmapStream, CMap result) throws IOException
     {
-        LiteralName literal = (LiteralName) token;
         if ("WMode".equals(literal.name))
         {
             Object next = parseNextToken(cmapStream);
@@ -226,9 +224,8 @@ public class CMapParser
         }
     }
 
-    private void parseBegincodespacerange(Object previousToken, PushbackInputStream cmapStream, CMap result) throws IOException
+    private void parseBegincodespacerange(Number cosCount, PushbackInputStream cmapStream, CMap result) throws IOException
     {
-        Number cosCount = (Number) previousToken;
         for (int j = 0; j < cosCount.intValue(); j++)
         {
             Object nextToken = parseNextToken(cmapStream);
@@ -250,9 +247,8 @@ public class CMapParser
         }
     }
 
-    private void parseBeginbfchar(Object previousToken, PushbackInputStream cmapStream, CMap result) throws IOException
+    private void parseBeginbfchar(Number cosCount, PushbackInputStream cmapStream, CMap result) throws IOException
     {
-        Number cosCount = (Number) previousToken;
         for (int j = 0; j < cosCount.intValue(); j++)
         {
             Object nextToken = parseNextToken(cmapStream);
@@ -285,9 +281,8 @@ public class CMapParser
         }
     }
 
-    private void parseBegincidrange(Object previousToken, PushbackInputStream cmapStream, CMap result) throws IOException
+    private void parseBegincidrange(int numberOfLines, PushbackInputStream cmapStream, CMap result) throws IOException
     {
-        int numberOfLines = (Integer) previousToken;
         for (int n = 0; n < numberOfLines; n++)
         {
             Object nextToken = parseNextToken(cmapStream);
@@ -323,9 +318,8 @@ public class CMapParser
         }
     }
 
-    private void parseBegincidchar(Object previousToken, PushbackInputStream cmapStream, CMap result) throws IOException
+    private void parseBegincidchar(Number cosCount, PushbackInputStream cmapStream, CMap result) throws IOException
     {
-        Number cosCount = (Number) previousToken;
         for (int j = 0; j < cosCount.intValue(); j++)
         {
             Object nextToken = parseNextToken(cmapStream);
@@ -345,10 +339,8 @@ public class CMapParser
         }
     }
 
-    private void parseBeginbfrange(Object previousToken, PushbackInputStream cmapStream, CMap result) throws IOException
+    private void parseBeginbfrange(Number cosCount, PushbackInputStream cmapStream, CMap result) throws IOException
     {
-        Number cosCount = (Number) previousToken;
-
         for (int j = 0; j < cosCount.intValue(); j++)
         {
             Object nextToken = parseNextToken(cmapStream);
