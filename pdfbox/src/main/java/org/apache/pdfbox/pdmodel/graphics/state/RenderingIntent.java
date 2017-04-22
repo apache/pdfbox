@@ -56,10 +56,11 @@ public enum RenderingIntent
                 return SATURATION;
             case "Perceptual":
                 return PERCEPTUAL;
+            default:
+                // "If a conforming reader does not recognize the specified name, 
+                // it shall use the RelativeColorimetric intent by default."
+                return RELATIVE_COLORIMETRIC;
         }
-        // "If a conforming reader does not recognize the specified name, 
-        // it shall use the RelativeColorimetric intent by default."
-        return RELATIVE_COLORIMETRIC;
     }
 
     private final String value;
