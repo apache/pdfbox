@@ -221,6 +221,7 @@ public class Tree extends JTree
         // set file extension based on stream type
         final String extension = getFileExtensionForStream(cosStream, nodePath);
         final FileFilter fileFilter;
+        final String format;
 
         if (extension != null)
         {
@@ -242,19 +243,11 @@ public class Tree extends JTree
                     fileFilter = null;
                     break;
             }
-        }
-        else
-        {
-            fileFilter = null;
-        }
-
-        String format;
-        if (extension != null)
-        {
             format = " " + extension.toUpperCase();
         }
         else
         {
+            fileFilter = null;
             format = "";
         }
 
