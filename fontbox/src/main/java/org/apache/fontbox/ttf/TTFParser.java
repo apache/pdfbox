@@ -241,69 +241,56 @@ public class TTFParser
     {
         TTFTable table = null;
         String tag = raf.readString(4);
-        if (tag.equals(CmapTable.TAG))
+        switch (tag)
         {
-            table = new CmapTable(font);
-        }
-        else if (tag.equals(GlyphTable.TAG))
-        {
-            table = new GlyphTable(font);
-        }
-        else if (tag.equals(HeaderTable.TAG))
-        {
-            table = new HeaderTable(font);
-        }
-        else if (tag.equals(HorizontalHeaderTable.TAG))
-        {
-            table = new HorizontalHeaderTable(font);
-        }
-        else if (tag.equals(HorizontalMetricsTable.TAG))
-        {
-            table = new HorizontalMetricsTable(font);
-        }
-        else if (tag.equals(IndexToLocationTable.TAG))
-        {
-            table = new IndexToLocationTable(font);
-        }
-        else if (tag.equals(MaximumProfileTable.TAG))
-        {
-            table = new MaximumProfileTable(font);
-        }
-        else if (tag.equals(NamingTable.TAG))
-        {
-            table = new NamingTable(font);
-        }
-        else if (tag.equals(OS2WindowsMetricsTable.TAG))
-        {
-            table = new OS2WindowsMetricsTable(font);
-        }
-        else if (tag.equals(PostScriptTable.TAG))
-        {
-            table = new PostScriptTable(font);
-        }
-        else if (tag.equals(DigitalSignatureTable.TAG))
-        {
-            table = new DigitalSignatureTable(font);
-        }
-        else if (tag.equals(KerningTable.TAG))
-        {
-            table = new KerningTable(font);
-        }
-        else if (tag.equals(VerticalHeaderTable.TAG))
-        {
-            table = new VerticalHeaderTable(font);
-        }
-        else if (tag.equals(VerticalMetricsTable.TAG))
-        {
-            table = new VerticalMetricsTable(font);
-        }
-        else if (tag.equals(VerticalOriginTable.TAG))
-        {
-            table = new VerticalOriginTable(font);
-        }
-        else
-        {
-            table = readTable(font, tag);
+            case CmapTable.TAG:
+                table = new CmapTable(font);
+                break;
+            case GlyphTable.TAG:
+                table = new GlyphTable(font);
+                break;
+            case HeaderTable.TAG:
+                table = new HeaderTable(font);
+                break;
+            case HorizontalHeaderTable.TAG:
+                table = new HorizontalHeaderTable(font);
+                break;
+            case HorizontalMetricsTable.TAG:
+                table = new HorizontalMetricsTable(font);
+                break;
+            case IndexToLocationTable.TAG:
+                table = new IndexToLocationTable(font);
+                break;
+            case MaximumProfileTable.TAG:
+                table = new MaximumProfileTable(font);
+                break;
+            case NamingTable.TAG:
+                table = new NamingTable(font);
+                break;
+            case OS2WindowsMetricsTable.TAG:
+                table = new OS2WindowsMetricsTable(font);
+                break;
+            case PostScriptTable.TAG:
+                table = new PostScriptTable(font);
+                break;
+            case DigitalSignatureTable.TAG:
+                table = new DigitalSignatureTable(font);
+                break;
+            case KerningTable.TAG:
+                table = new KerningTable(font);
+                break;
+            case VerticalHeaderTable.TAG:
+                table = new VerticalHeaderTable(font);
+                break;
+            case VerticalMetricsTable.TAG:
+                table = new VerticalMetricsTable(font);
+                break;
+            case VerticalOriginTable.TAG:
+                table = new VerticalOriginTable(font);
+                break;
+            default:
+                table = readTable(font, tag);
+                break;
         }
         table.setTag(tag);
         table.setCheckSum(raf.readUnsignedInt());

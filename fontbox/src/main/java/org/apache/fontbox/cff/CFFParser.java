@@ -81,51 +81,44 @@ public class CFFParser
 
         String firstTag = readTagName(input);
         // try to determine which kind of font we have
-        if (TAG_OTTO.equals(firstTag))
+        switch (firstTag)
         {
-            // this is OpenType font containing CFF data
-            // so find CFF tag
-            short numTables = input.readShort();
-            @SuppressWarnings("unused")
-            short searchRange = input.readShort();
-            @SuppressWarnings("unused")
-            short entrySelector = input.readShort();
-            @SuppressWarnings("unused")
-            short rangeShift = input.readShort();
-
-            boolean cffFound = false;
-            for (int q = 0; q < numTables; q++)
-            {
-                String tagName = readTagName(input);
-                @SuppressWarnings("unused")
-                long checksum = readLong(input);
-                long offset = readLong(input);
-                long length = readLong(input);
-                if (tagName.equals("CFF "))
+            case TAG_OTTO:
+                // this is OpenType font containing CFF data
+                // so find CFF tag
+                short numTables = input.readShort();
+                @SuppressWarnings("unused") short searchRange = input.readShort();
+                @SuppressWarnings("unused") short entrySelector = input.readShort();
+                @SuppressWarnings("unused") short rangeShift = input.readShort();
+                boolean cffFound = false;
+                for (int q = 0; q < numTables; q++)
                 {
-                    cffFound = true;
-                    byte[] bytes2 = new byte[(int) length];
-                    System.arraycopy(bytes, (int) offset, bytes2, 0, bytes2.length);
-                    input = new CFFDataInput(bytes2);
-                    break;
+                    String tagName = readTagName(input);
+                    @SuppressWarnings("unused")
+                    long checksum = readLong(input);
+                    long offset = readLong(input);
+                    long length = readLong(input);
+                    if (tagName.equals("CFF "))
+                    {
+                        cffFound = true;
+                        byte[] bytes2 = new byte[(int) length];
+                        System.arraycopy(bytes, (int) offset, bytes2, 0, bytes2.length);
+                        input = new CFFDataInput(bytes2);
+                        break;
+                    }
                 }
-            }
-            if (!cffFound)
-            {
-                throw new IOException("CFF tag not found in this OpenType font.");
-            }
-        }
-        else if (TAG_TTCF.equals(firstTag))
-        {
-            throw new IOException("True Type Collection fonts are not supported.");
-        }
-        else if (TAG_TTFONLY.equals(firstTag))
-        {
-            throw new IOException("OpenType fonts containing a true type font are not supported.");
-        }
-        else
-        {
-            input.setPosition(0);
+                if (!cffFound)
+                {
+                    throw new IOException("CFF tag not found in this OpenType font.");
+                }
+                break;
+            case TAG_TTCF:
+                throw new IOException("True Type Collection fonts are not supported.");
+            case TAG_TTFONLY:
+                throw new IOException("OpenType fonts containing a true type font are not supported.");
+            default:
+                input.setPosition(0);
+                break;
         }
 
         @SuppressWarnings("unused")
