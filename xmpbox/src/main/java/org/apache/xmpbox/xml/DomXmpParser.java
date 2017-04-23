@@ -120,11 +120,7 @@ public class DomXmpParser
             dBuilder.setErrorHandler(null);
             document = dBuilder.parse(input);
         }
-        catch (SAXException e)
-        {
-            throw new XmpParsingException(ErrorType.Undefined, "Failed to parse", e);
-        }
-        catch (IOException e)
+        catch (SAXException | IOException e)
         {
             throw new XmpParsingException(ErrorType.Undefined, "Failed to parse", e);
         }
@@ -680,26 +676,23 @@ public class DomXmpParser
                         + "' in '" + data + "'");
             }
             String value = token.substring(pos + 2, token.length() - 1);
-            if ("id".equals(name))
+            switch (name)
             {
-                id = value;
-            }
-            else if ("begin".equals(name))
-            {
-                begin = value;
-            }
-            else if ("bytes".equals(name))
-            {
-                bytes = value;
-            }
-            else if ("encoding".equals(name))
-            {
-                encoding = value;
-            }
-            else
-            {
-                throw new XmpParsingException(ErrorType.XpacketBadStart, "Unknown attribute in xpacket PI : '" + token
-                        + "'");
+                case "id":
+                    id = value;
+                    break;
+                case "begin":
+                    begin = value;
+                    break;
+                case "bytes":
+                    bytes = value;
+                    break;
+                case "encoding":
+                    encoding = value;
+                    break;
+                default:
+                    throw new XmpParsingException(ErrorType.XpacketBadStart,
+                            "Unknown attribute in xpacket PI : '" + token + "'");
             }
         }
         return XMPMetadata.createXMPMetadata(begin, id, bytes, encoding);
