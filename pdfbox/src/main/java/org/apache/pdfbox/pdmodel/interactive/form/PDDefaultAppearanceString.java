@@ -127,21 +127,22 @@ class PDDefaultAppearanceString
     {
         String name = operator.getName();
         
-        if ("Tf".equals(name))
+        switch (name)
         {
-            processSetFont(operands);
-        }
-        else if ("g".equals(name))
-        {
-            processSetFontColor(operands);
-        }
-        else if ("rg".equals(name))
-        {
-            processSetFontColor(operands);
-        }
-        else if ("k".equals(name))
-        {
-            processSetFontColor(operands);
+            case "Tf":
+                processSetFont(operands);
+                break;
+            case "g":
+                processSetFontColor(operands);
+                break;
+            case "rg":
+                processSetFontColor(operands);
+                break;
+            case "k":
+                processSetFontColor(operands);
+                break;
+            default:
+                break;
         }
 
     }
