@@ -67,11 +67,7 @@ public final class MetaUtil
             transformer.transform(domSource, streamResult);
             LOG.debug("\n" + xmlStringWriter);
         }
-        catch (IllegalArgumentException ex)
-        {
-            LOG.error(ex, ex);
-        }
-        catch (TransformerException ex)
+        catch (IllegalArgumentException | TransformerException ex)
         {
             LOG.error(ex, ex);
         }
