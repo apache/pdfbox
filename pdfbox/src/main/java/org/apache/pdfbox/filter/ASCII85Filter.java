@@ -56,14 +56,15 @@ final class ASCII85Filter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
         throws IOException
     {
-        ASCII85OutputStream os = new ASCII85OutputStream(encoded);
-        byte[] buffer = new byte[1024];
-        int amountRead;
-        while((amountRead = input.read(buffer, 0, 1024))!= -1)
+        try (ASCII85OutputStream os = new ASCII85OutputStream(encoded))
         {
-            os.write(buffer, 0, amountRead);
+            byte[] buffer = new byte[1024];
+            int amountRead;
+            while ((amountRead = input.read(buffer, 0, 1024)) != -1)
+            {
+                os.write(buffer, 0, amountRead);
+            }
         }
-        os.close();
         encoded.flush();
     }
 }
