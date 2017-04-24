@@ -34,6 +34,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -120,7 +121,7 @@ public class LucenePDFDocument
 
     static
     {
-        TYPE_STORED_NOT_INDEXED.setIndexed(false);
+        TYPE_STORED_NOT_INDEXED.setIndexOptions(IndexOptions.NONE);
         TYPE_STORED_NOT_INDEXED.setStored(true);
         TYPE_STORED_NOT_INDEXED.setTokenized(true);
         TYPE_STORED_NOT_INDEXED.freeze();
@@ -248,18 +249,9 @@ public class LucenePDFDocument
         // tokenized prior to indexing.
         addUnstoredKeywordField(document, "uid", uid);
 
-        FileInputStream input = null;
-        try
+        try (FileInputStream input = new FileInputStream(file))
         {
-            input = new FileInputStream(file);
             addContent(document, input, file.getPath());
-        }
-        finally
-        {
-            if (input != null)
-            {
-                input.close();
-            }
         }
 
         // return the document
@@ -295,18 +287,9 @@ public class LucenePDFDocument
         // tokenized prior to indexing.
         addUnstoredKeywordField(document, "uid", uid);
 
-        InputStream input = null;
-        try
+        try (InputStream input = connection.getInputStream())
         {
-            input = connection.getInputStream();
             addContent(document, input, url.toExternalForm());
-        }
-        finally
-        {
-            if (input != null)
-            {
-                input.close();
-            }
         }
 
         // return the document
@@ -369,11 +352,8 @@ public class LucenePDFDocument
      */
     private void addContent(Document document, InputStream is, String documentLocation) throws IOException
     {
-        PDDocument pdfDocument = null;
-        try
+        try (PDDocument pdfDocument = PDDocument.load(is))
         {
-            pdfDocument = PDDocument.load(is);
-
             // create a writer where to append the text content.
             StringWriter writer = new StringWriter();
             if (stripper == null)
@@ -417,13 +397,6 @@ public class LucenePDFDocument
         {
             // they didn't suppply a password and the default of "" was wrong.
             throw new IOException("Error: The document(" + documentLocation + ") is encrypted and will not be indexed.", e);
-        }
-        finally
-        {
-            if (pdfDocument != null)
-            {
-                pdfDocument.close();
-            }
         }
     }
 
