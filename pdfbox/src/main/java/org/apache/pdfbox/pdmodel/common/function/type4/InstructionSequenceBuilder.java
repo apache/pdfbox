@@ -114,8 +114,7 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
      */
     public static int parseInt(String token)
     {
-        //TODO Beginning with JDK7 Integer.parseInt accepts leading +'s
-        return Integer.parseInt(token.startsWith("+") ? token.substring(1) : token);
+        return Integer.parseInt(token);
     }
 
     /**
