@@ -79,6 +79,8 @@ public final class IndexPDFFiles
                 case "-update":
                     create = false;
                     break;
+                default:
+                    break;
             }
         }
 
