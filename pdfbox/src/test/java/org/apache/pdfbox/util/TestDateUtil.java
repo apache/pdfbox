@@ -387,8 +387,7 @@ public class TestDateUtil extends TestCase
         checkParseTZ(-(3*HRS+0*MINS), "GMT-0300");
         checkParseTZ(+(11*HRS+0*MINS), "GMT+11:00");
         checkParseTZ(-(6*HRS+0*MINS), "America/Chicago");
-// disable this while hoping for correct JDK6, see PDFBOX-2460        
-//        checkParseTZ(+(4*HRS+0*MINS), "Europe/Moscow");
+        checkParseTZ(+(3*HRS+0*MINS), "Europe/Moscow");
         checkParseTZ(+(9*HRS+30*MINS), "Australia/Adelaide");
         checkParseTZ((5*HRS+0*MINS), "0500");
         checkParseTZ((5*HRS+0*MINS), "+0500");
