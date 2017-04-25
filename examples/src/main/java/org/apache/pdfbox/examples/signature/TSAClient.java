@@ -165,37 +165,24 @@ public class TSAClient
     // returns the ASN.1 OID of the given hash algorithm
     private ASN1ObjectIdentifier getHashObjectIdentifier(String algorithm)
     {
-        if (algorithm.equals("MD2"))
+        switch (algorithm)
         {
-            return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md2.getId());
-        }
-        else if (algorithm.equals("MD5"))
-        {
-            return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md5.getId());
-        }
-        else if (algorithm.equals("SHA-1"))
-        {
-            return new ASN1ObjectIdentifier(OIWObjectIdentifiers.idSHA1.getId());
-        }
-        else if (algorithm.equals("SHA-224"))
-        {
-            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha224.getId());
-        }
-        else if (algorithm.equals("SHA-256"))
-        {
-            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha256.getId());
-        }
-        else if (algorithm.equals("SHA-384"))
-        {
-            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha384.getId());
-        }
-        else if (algorithm.equals("SHA-512"))
-        {
-            return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha512.getId());
-        }
-        else
-        {
-            return new ASN1ObjectIdentifier(algorithm);
+            case "MD2":
+                return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md2.getId());
+            case "MD5":
+                return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md5.getId());
+            case "SHA-1":
+                return new ASN1ObjectIdentifier(OIWObjectIdentifiers.idSHA1.getId());
+            case "SHA-224":
+                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha224.getId());
+            case "SHA-256":
+                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha256.getId());
+            case "SHA-384":
+                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha384.getId());
+            case "SHA-512":
+                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha512.getId());
+            default:
+                return new ASN1ObjectIdentifier(algorithm);
         }
     }
 }
