@@ -49,19 +49,10 @@ public class PrintDocumentMetaData
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]));
                 PrintDocumentMetaData meta = new PrintDocumentMetaData();
                 meta.printMetadata( document );
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
-                }
             }
         }
     }

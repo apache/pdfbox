@@ -59,23 +59,21 @@ public class EmbeddedFiles
      */
     public void doIt( String file) throws IOException
     {
-        // the document
-        PDDocument doc = null;
-        try
+        try ( // the document
+                PDDocument doc = new PDDocument())
         {
-            doc = new PDDocument();
-
             PDPage page = new PDPage();
             doc.addPage( page );
             PDFont font = PDType1Font.HELVETICA_BOLD;
 
-            PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-            contentStream.beginText();
-            contentStream.setFont( font, 12 );
-            contentStream.newLineAtOffset(100, 700);
-            contentStream.showText("Go to Document->File Attachments to View Embedded Files");
-            contentStream.endText();
-            contentStream.close();
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont( font, 12 );
+                contentStream.newLineAtOffset(100, 700);
+                contentStream.showText("Go to Document->File Attachments to View Embedded Files");
+                contentStream.endText();
+            }
 
             //embedded files are stored in a named tree
             PDEmbeddedFilesNameTreeNode efTree = new PDEmbeddedFilesNameTreeNode();
@@ -108,13 +106,6 @@ public class EmbeddedFiles
 
 
             doc.save( file );
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
         }
     }
 

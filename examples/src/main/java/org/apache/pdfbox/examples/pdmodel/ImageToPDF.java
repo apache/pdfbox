@@ -50,8 +50,7 @@ public final class ImageToPDF
             System.exit(1);
         }
 
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
             PDPage page = new PDPage();
             doc.addPage(page);
@@ -71,10 +70,6 @@ public final class ImageToPDF
             
             contents.close();
             doc.save(pdfPath);
-        }
-        finally
-        {
-            doc.close();
         }
     }
 }

@@ -117,22 +117,13 @@ public final class ExtractTTFFonts
                 {
                     prefix = pdfFile.substring(0, pdfFile.length() - 4);
                 }
-                PDDocument document = null;
-                try
+                try (PDDocument document = PDDocument.load(new File(pdfFile), password))
                 {
-                    document = PDDocument.load(new File(pdfFile), password);
                     for (PDPage page : document.getPages())
                     {
                         PDResources resources = page.getResources();
                         // extract all fonts which are part of the page resources
                         processResources(resources, prefix, addKey);
-                    }
-                }
-                finally
-                {
-                    if (document != null)
-                    {
-                        document.close();
                     }
                 }
             }

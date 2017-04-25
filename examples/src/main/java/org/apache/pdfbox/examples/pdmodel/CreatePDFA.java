@@ -56,8 +56,7 @@ public final class CreatePDFA
         String message = args[1];
         String fontfile = args[2];
 
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
             PDPage page = new PDPage();
             doc.addPage(page);
@@ -81,14 +80,15 @@ public final class CreatePDFA
             }
             
             // create a page with the message
-            PDPageContentStream contents = new PDPageContentStream(doc, page);
-            contents.beginText();
-            contents.setFont(font, 12);
-            contents.newLineAtOffset(100, 700);
-            contents.showText(message);
-            contents.endText();
-            contents.saveGraphicsState();
-            contents.close();
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+            {
+                contents.beginText();
+                contents.setFont(font, 12);
+                contents.newLineAtOffset(100, 700);
+                contents.showText(message);
+                contents.endText();
+                contents.saveGraphicsState();
+            }
 
             // add XMP metadata
             XMPMetadata xmp = XMPMetadata.createXMPMetadata();
@@ -127,10 +127,6 @@ public final class CreatePDFA
             doc.getDocumentCatalog().addOutputIntent(intent);
 
             doc.save(file);
-        }
-        finally
-        {
-            doc.close();
         }
     }
 }

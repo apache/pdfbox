@@ -47,11 +47,12 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
                              "custom-render-demo.pdf");
 
-        PDDocument doc = PDDocument.load(file);
-        PDPage page = doc.getPage(0);
-        CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
-        engine.run();
-        doc.close();
+        try (PDDocument doc = PDDocument.load(file))
+        {
+            PDPage page = doc.getPage(0);
+            CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);
+            engine.run();
+        }
     }
     
     /**

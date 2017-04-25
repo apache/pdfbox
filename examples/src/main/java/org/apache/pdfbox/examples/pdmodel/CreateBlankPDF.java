@@ -39,18 +39,13 @@ public final class CreateBlankPDF
         }
 
         String filename = args[0];
-        
-        PDDocument doc = new PDDocument();
-        try
+
+        try (PDDocument doc = new PDDocument())
         {
             // a valid PDF document requires at least one page
             PDPage blankPage = new PDPage();
             doc.addPage(blankPage);
             doc.save(filename);
-        }
-        finally
-        {
-            doc.close();
         }
     }
 }

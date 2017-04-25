@@ -52,10 +52,8 @@ public final class GoToSecondBookmarkOnOpen
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     System.err.println( "Error: Cannot add bookmark destination to encrypted documents." );
@@ -78,13 +76,6 @@ public final class GoToSecondBookmarkOnOpen
                 document.getDocumentCatalog().setOpenAction(action);
 
                 document.save( args[1] );
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
-                }
             }
         }
     }

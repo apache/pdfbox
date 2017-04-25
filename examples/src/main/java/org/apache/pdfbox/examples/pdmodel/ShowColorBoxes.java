@@ -42,8 +42,7 @@ public final class ShowColorBoxes
         
         String filename = args[0];
 
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
             PDPage page = new PDPage();
             doc.addPage(page);
@@ -62,10 +61,6 @@ public final class ShowColorBoxes
 
             contents.close();
             doc.save(filename);
-        }
-        finally
-        {
-            doc.close();
         }
     }
 }

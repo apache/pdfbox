@@ -56,8 +56,7 @@ public final class AddAnnotations
             System.exit(1);
         }
 
-        PDDocument document = new PDDocument();
-        try
+        try (PDDocument document = new PDDocument())
         {
             PDPage page1 = new PDPage();
             PDPage page2 = new PDPage();
@@ -88,17 +87,18 @@ public final class AddAnnotations
             
             // First add some text, two lines we'll add some annotations to this later
             PDFont font = PDType1Font.HELVETICA_BOLD;
-            PDPageContentStream contents = new PDPageContentStream(document, page1);
-            contents.beginText();
-            contents.setFont(font, 18);
-            contents.newLineAtOffset(INCH, ph - INCH - 18);
-            contents.showText("PDFBox");
-            contents.newLineAtOffset(0, -(INCH / 2));
-            contents.showText("External URL");
-            contents.newLineAtOffset(0, -(INCH / 2));
-            contents.showText("Jump to page three");
-            contents.endText();
-            contents.close();
+            try (PDPageContentStream contents = new PDPageContentStream(document, page1))
+            {
+                contents.beginText();
+                contents.setFont(font, 18);
+                contents.newLineAtOffset(INCH, ph - INCH - 18);
+                contents.showText("PDFBox");
+                contents.newLineAtOffset(0, -(INCH / 2));
+                contents.showText("External URL");
+                contents.newLineAtOffset(0, -(INCH / 2));
+                contents.showText("Jump to page three");
+                contents.endText();
+            }
 
             // Now add the markup annotation, a highlight to PDFBox text
             PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(
@@ -245,10 +245,6 @@ public final class AddAnnotations
             // save the PDF
             document.save(args[0]);
         }
-        finally
-        {
-            document.close();
-        }
     }
 
     private static void showPageNo(PDDocument document, PDPage page, String pageText)
@@ -256,17 +252,18 @@ public final class AddAnnotations
     {
         int fontSize = 10;
 
-        PDPageContentStream contents = 
-                new PDPageContentStream(document, page, PDPageContentStream.AppendMode.PREPEND, true);
-        float pageWidth = page.getMediaBox().getWidth();
-        float pageHeight = page.getMediaBox().getHeight();
-        PDFont font = PDType1Font.HELVETICA;
-        contents.setFont(font, fontSize);
-        float textWidth = font.getStringWidth(pageText) / 1000 * fontSize;
-        contents.beginText();
-        contents.newLineAtOffset(pageWidth / 2 - textWidth / 2, pageHeight - INCH / 2);
-        contents.showText(pageText);
-        contents.endText();
-        contents.close();
+        try (PDPageContentStream contents =
+                new PDPageContentStream(document, page, PDPageContentStream.AppendMode.PREPEND, true))
+        {
+            float pageWidth = page.getMediaBox().getWidth();
+            float pageHeight = page.getMediaBox().getHeight();
+            PDFont font = PDType1Font.HELVETICA;
+            contents.setFont(font, fontSize);
+            float textWidth = font.getStringWidth(pageText) / 1000 * fontSize;
+            contents.beginText();
+            contents.newLineAtOffset(pageWidth / 2 - textWidth / 2, pageHeight - INCH / 2);
+            contents.showText(pageText);
+            contents.endText();
+        }
     }
 }

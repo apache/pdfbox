@@ -56,11 +56,12 @@ public class CustomPageDrawer
         File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
                              "custom-render-demo.pdf");
         
-        PDDocument doc = PDDocument.load(file);
-        PDFRenderer renderer = new MyPDFRenderer(doc);
-        BufferedImage image = renderer.renderImage(0);
-        ImageIO.write(image, "PNG", new File("custom-render.png"));
-        doc.close();
+        try (PDDocument doc = PDDocument.load(file))
+        {
+            PDFRenderer renderer = new MyPDFRenderer(doc);
+            BufferedImage image = renderer.renderImage(0);
+            ImageIO.write(image, "PNG", new File("custom-render.png"));
+        }
     }
 
     /**

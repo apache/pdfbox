@@ -137,10 +137,12 @@ public class TestCreateSignature
     public void testDetachedSHA256WithTSA()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
+        byte[] content;
         // mock TSA response content
-        InputStream input = new FileInputStream(inDir + "tsa_response.asn1");
-        byte[] content = IOUtils.toByteArray(input);
-        input.close();
+        try (InputStream input = new FileInputStream(inDir + "tsa_response.asn1"))
+        {
+            content = IOUtils.toByteArray(input);
+        }
 
         // mock TSA server (RFC 3161)
         MockHttpServer mockServer = new MockHttpServer(15371);
@@ -196,15 +198,16 @@ public class TestCreateSignature
 
         // sign PDF
         String inPath = inDir + "sign_me.pdf";
-        FileInputStream fis = new FileInputStream(jpegPath);
-        CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
-        signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
-        signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
-        signing.setExternalSigning(externallySign);
-
-        File destFile = new File(outDir + getOutputFileName("signed{0}_visible.pdf"));
-        signing.signPDF(new File(inPath), destFile, null);
-        fis.close();
+        File destFile;
+        try (FileInputStream fis = new FileInputStream(jpegPath))
+        {
+            CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
+            signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
+            signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
+            signing.setExternalSigning(externallySign);
+            destFile = new File(outDir + getOutputFileName("signed{0}_visible.pdf"));
+            signing.signPDF(new File(inPath), destFile, null);
+        }
 
         checkSignature(destFile);
     }
@@ -218,40 +221,39 @@ public class TestCreateSignature
     private void checkSignature(File file)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
-        PDDocument document = PDDocument.load(file);
-        List<PDSignature> signatureDictionaries = document.getSignatureDictionaries();
-        if (signatureDictionaries.isEmpty())
+        try (PDDocument document = PDDocument.load(file))
         {
-            Assert.fail("no signature found");
-        }
-        for (PDSignature sig : document.getSignatureDictionaries())
-        {
-            COSString contents = (COSString) sig.getCOSObject().getDictionaryObject(COSName.CONTENTS);
-            
-            FileInputStream fis = new FileInputStream(file);
-            byte[] buf = sig.getSignedContent(fis);
-            fis.close();
-
-            // inspiration:
-            // http://stackoverflow.com/a/26702631/535646
-            // http://stackoverflow.com/a/9261365/535646
-            CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(buf), contents.getBytes());
-            Store certificatesStore = signedData.getCertificates();
-            Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
-            SignerInformation signerInformation = signers.iterator().next();
-            Collection matches = certificatesStore.getMatches(signerInformation.getSID());
-            X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
-            X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
-
-            Assert.assertEquals(certificate, certFromSignedData);
-
-            // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
-            if (!signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
+            List<PDSignature> signatureDictionaries = document.getSignatureDictionaries();
+            if (signatureDictionaries.isEmpty())
             {
-                Assert.fail("Signature verification failed");
+                Assert.fail("no signature found");
             }
-            break;
+            for (PDSignature sig : document.getSignatureDictionaries())
+            {
+                COSString contents = (COSString) sig.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+                byte[] buf;
+                try (FileInputStream fis = new FileInputStream(file))
+                {
+                    buf = sig.getSignedContent(fis);
+                }
+                // inspiration:
+                // http://stackoverflow.com/a/26702631/535646
+                // http://stackoverflow.com/a/9261365/535646
+                CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(buf), contents.getBytes());
+                Store certificatesStore = signedData.getCertificates();
+                Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
+                SignerInformation signerInformation = signers.iterator().next();
+                Collection matches = certificatesStore.getMatches(signerInformation.getSID());
+                X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
+                X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
+                Assert.assertEquals(certificate, certFromSignedData);
+                // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
+                if (!signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
+                {
+                    Assert.fail("Signature verification failed");
+                }
+                break;
+            }
         }
-        document.close();
     }
 }

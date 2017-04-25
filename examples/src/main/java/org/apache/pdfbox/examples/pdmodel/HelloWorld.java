@@ -48,27 +48,23 @@ public final class HelloWorld
         String filename = args[0];
         String message = args[1];
         
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
             PDPage page = new PDPage();
             doc.addPage(page);
             
             PDFont font = PDType1Font.HELVETICA_BOLD;
 
-            PDPageContentStream contents = new PDPageContentStream(doc, page);
-            contents.beginText();
-            contents.setFont(font, 12);
-            contents.newLineAtOffset(100, 700);
-            contents.showText(message);
-            contents.endText();
-            contents.close();
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+            {
+                contents.beginText();
+                contents.setFont(font, 12);
+                contents.newLineAtOffset(100, 700);
+                contents.showText(message);
+                contents.endText();
+            }
             
             doc.save(filename);
-        }
-        finally
-        {
-            doc.close();
         }
     }
 }

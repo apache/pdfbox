@@ -62,10 +62,8 @@ public class RubberStampWithImage
         }
         else 
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
@@ -106,9 +104,10 @@ public class RubberStampWithImage
                     form.setFormType(1);
 
                     // adjust the image to the target rectangle and add it to the stream
-                    OutputStream os = form.getStream().createOutputStream();
-                    drawXObject(ximage, form.getResources(), os, lowerLeftX, lowerLeftY, imgWidth, imgHeight);
-                    os.close();
+                    try (OutputStream os = form.getStream().createOutputStream())
+                    {
+                        drawXObject(ximage, form.getResources(), os, lowerLeftX, lowerLeftY, imgWidth, imgHeight);
+                    }
 
                     PDAppearanceStream myDic = new PDAppearanceStream(form.getCOSObject());
                     PDAppearanceDictionary appearance = new PDAppearanceDictionary(new COSDictionary());
@@ -121,13 +120,6 @@ public class RubberStampWithImage
                 
                 }
                 document.save( args[1] );
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
-                }
             }
         }
     }

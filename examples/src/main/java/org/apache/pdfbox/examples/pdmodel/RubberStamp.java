@@ -53,10 +53,8 @@ public final class RubberStamp
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
                 if( document.isEncrypted() )
                 {
                     throw new IOException( "Encrypted documents are not supported for this example" );
@@ -74,13 +72,6 @@ public final class RubberStamp
                 }
 
                 document.save( args[1] );
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
-                }
             }
         }
     }

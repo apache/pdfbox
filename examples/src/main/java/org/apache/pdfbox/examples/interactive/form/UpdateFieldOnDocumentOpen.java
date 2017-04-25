@@ -40,23 +40,23 @@ public final class UpdateFieldOnDocumentOpen
     public static void main(String[] args) throws IOException
     {
         // Load the PDF document created by SimpleForm.java
-        PDDocument document = PDDocument.load(new File("target/SimpleForm.pdf"));
-        
-        // Note that the JavaScript will depend on the reader application.
-        // The classes and methods available to Adobe Reader and Adobe Acrobat
-        // are documented in the Acrobat SDK.
-        String javaScript = "var now = util.printd('yyyy-mm-dd', new Date());"
-                + "var oField = this.getField('SampleField');"
-                + "oField.value = now;";
-        
-        // Create an action as JavaScript action
-        PDActionJavaScript jsAction = new PDActionJavaScript();
-        jsAction.setAction(javaScript);
-        
-        // Set the action to be executed when the document is opened
-        document.getDocumentCatalog().setOpenAction(jsAction);
-        
-        document.save("target/UpdateFieldOnDocumentOpen.pdf");
-        document.close();
+        try (PDDocument document = PDDocument.load(new File("target/SimpleForm.pdf")))
+        {
+            // Note that the JavaScript will depend on the reader application.
+            // The classes and methods available to Adobe Reader and Adobe Acrobat
+            // are documented in the Acrobat SDK.
+            String javaScript = "var now = util.printd('yyyy-mm-dd', new Date());"
+                    + "var oField = this.getField('SampleField');"
+                    + "oField.value = now;";
+            
+            // Create an action as JavaScript action
+            PDActionJavaScript jsAction = new PDActionJavaScript();
+            jsAction.setAction(javaScript);
+            
+            // Set the action to be executed when the document is opened
+            document.getDocumentCatalog().setOpenAction(jsAction);
+            
+            document.save("target/UpdateFieldOnDocumentOpen.pdf");
+        }
     }
 }

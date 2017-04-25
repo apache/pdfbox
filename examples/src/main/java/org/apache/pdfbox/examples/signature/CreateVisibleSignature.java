@@ -141,112 +141,112 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // creating output document and prepare the IO streams.
         FileOutputStream fos = new FileOutputStream(signedFile);
 
-        // load document
-        PDDocument doc = PDDocument.load(inputFile);
-
-        int accessPermissions = getMDPPermission(doc);
-        if (accessPermissions == 1)
+        try (PDDocument doc = PDDocument.load(inputFile))
         {
-            throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
-        }
-        // Note that PDFBox has a bug that visual signing on certified files with permission 2
-        // doesn't work properly, see PDFBOX-3699. As long as this issue is open, you may want to 
-        // be careful with such files.        
-
-        PDSignature signature;
-
-        // sign a PDF with an existing empty signature, as created by the CreateEmptySignatureForm example. 
-        signature = findExistingSignature(doc, signatureFieldName);
-
-        if (signature == null)
-        {
-            // create signature dictionary
-            signature = new PDSignature();
-        }
-
-        // Optional: certify 
-        if (accessPermissions == 0)
-        {
-            setMDPPermission(doc, signature, 2);
-        }      
-
-        // default filter
-        signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
-        
-        // subfilter for basic and PAdES Part 2 signatures
-        signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
-        
-        if (visibleSignatureProperties != null)
-        {
-            // this builds the signature structures in a separate document
-            visibleSignatureProperties.buildSignature();
-
-            signature.setName(visibleSignatureProperties.getSignerName());
-            signature.setLocation(visibleSignatureProperties.getSignerLocation());
-            signature.setReason(visibleSignatureProperties.getSignatureReason());
-        }
-
-        // the signing date, needed for valid signature
-        signature.setSignDate(Calendar.getInstance());
-
-        // do not set SignatureInterface instance, if external signing used
-        SignatureInterface signatureInterface = isExternalSigning() ? null : this;
-
-        // register signature dictionary and sign interface
-        if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
-        {
-            signatureOptions = new SignatureOptions();
-            signatureOptions.setVisualSignature(visibleSignatureProperties.getVisibleSignature());
-            signatureOptions.setPage(visibleSignatureProperties.getPage() - 1);
-            doc.addSignature(signature, signatureInterface, signatureOptions);
-        }
-        else
-        {
-            doc.addSignature(signature, signatureInterface);
-        }
-
-        if (isExternalSigning())
-        {
-            System.out.println("Signing externally " + signedFile.getName());
-            ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
-            // invoke external signature service
-            byte[] cmsSignature = sign(externalSigning.getContent());
-
-            // Explanation of late external signing (off by default):
-            // If you want to add the signature in a separate step, then set an empty byte array
-            // and call signature.getByteRange() and remember the offset signature.getByteRange()[1]+1.
-            // you can write the ascii hex signature at a later time even if you don't have this
-            // PDDocument object anymore, with classic java file random access methods.
-            // If you can't remember the offset value from ByteRange because your context has changed, 
-            // then open the file with PDFBox, find the field with findExistingSignature() or
-            // PODDocument.getLastSignatureDictionary() and get the ByteRange from there.
-            // Close the file and then write the signature as explained earlier in this comment.
-            if (isLateExternalSigning())
+            int accessPermissions = getMDPPermission(doc);
+            if (accessPermissions == 1)
             {
-                // this saves the file with a 0 signature
-                externalSigning.setSignature(new byte[0]);
-                
-                // remember the offset (add 1 because of "<")
-                int offset = signature.getByteRange()[1] + 1;
+                throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
+            }
+            // Note that PDFBox has a bug that visual signing on certified files with permission 2
+            // doesn't work properly, see PDFBOX-3699. As long as this issue is open, you may want to
+            // be careful with such files.
 
-                // now write the signature at the correct offset without any PDFBox methods
-                RandomAccessFile raf = new RandomAccessFile(signedFile, "rw");
-                raf.seek(offset);
-                raf.write(Hex.getBytes(cmsSignature));
-                raf.close();
+            PDSignature signature;
+
+            // sign a PDF with an existing empty signature, as created by the CreateEmptySignatureForm example.
+            signature = findExistingSignature(doc, signatureFieldName);
+
+            if (signature == null)
+            {
+                // create signature dictionary
+                signature = new PDSignature();
+            }
+
+            // Optional: certify
+            if (accessPermissions == 0)
+            {
+                setMDPPermission(doc, signature, 2);
+            }
+
+            // default filter
+            signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
+
+            // subfilter for basic and PAdES Part 2 signatures
+            signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
+
+            if (visibleSignatureProperties != null)
+            {
+                // this builds the signature structures in a separate document
+                visibleSignatureProperties.buildSignature();
+
+                signature.setName(visibleSignatureProperties.getSignerName());
+                signature.setLocation(visibleSignatureProperties.getSignerLocation());
+                signature.setReason(visibleSignatureProperties.getSignatureReason());
+            }
+            
+            // the signing date, needed for valid signature
+            signature.setSignDate(Calendar.getInstance());
+
+            // do not set SignatureInterface instance, if external signing used
+            SignatureInterface signatureInterface = isExternalSigning() ? null : this;
+
+            // register signature dictionary and sign interface
+            if (visibleSignatureProperties != null && visibleSignatureProperties.isVisualSignEnabled())
+            {
+                signatureOptions = new SignatureOptions();
+                signatureOptions.setVisualSignature(visibleSignatureProperties.getVisibleSignature());
+                signatureOptions.setPage(visibleSignatureProperties.getPage() - 1);
+                doc.addSignature(signature, signatureInterface, signatureOptions);
             }
             else
             {
-                // set signature bytes received from the service and save the file
-                externalSigning.setSignature(cmsSignature);
+                doc.addSignature(signature, signatureInterface);
+            }
+
+            if (isExternalSigning())
+            {
+                System.out.println("Signing externally " + signedFile.getName());
+                ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
+                // invoke external signature service
+                byte[] cmsSignature = sign(externalSigning.getContent());
+
+                // Explanation of late external signing (off by default):
+                // If you want to add the signature in a separate step, then set an empty byte array
+                // and call signature.getByteRange() and remember the offset signature.getByteRange()[1]+1.
+                // you can write the ascii hex signature at a later time even if you don't have this
+                // PDDocument object anymore, with classic java file random access methods.
+                // If you can't remember the offset value from ByteRange because your context has changed,
+                // then open the file with PDFBox, find the field with findExistingSignature() or
+                // PODDocument.getLastSignatureDictionary() and get the ByteRange from there.
+                // Close the file and then write the signature as explained earlier in this comment.
+                if (isLateExternalSigning())
+                {
+                    // this saves the file with a 0 signature
+                    externalSigning.setSignature(new byte[0]);
+
+                    // remember the offset (add 1 because of "<")
+                    int offset = signature.getByteRange()[1] + 1;
+
+                    // now write the signature at the correct offset without any PDFBox methods
+                    try (RandomAccessFile raf = new RandomAccessFile(signedFile, "rw"))
+                    {
+                        raf.seek(offset);
+                        raf.write(Hex.getBytes(cmsSignature));
+                    }
+                }
+                else
+                {
+                    // set signature bytes received from the service and save the file
+                    externalSigning.setSignature(cmsSignature);
+                }
+            }
+            else
+            {
+                // write incremental (only for signing purpose)
+                doc.saveIncremental(fos);
             }
         }
-        else
-        {
-            // write incremental (only for signing purpose)
-            doc.saveIncremental(fos);
-        }
-        doc.close();
         
         // Do not close signatureOptions before saving, because some COSStream objects within
         // are transferred to the signed document.
@@ -350,16 +350,17 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
         CreateVisibleSignature signing = new CreateVisibleSignature(keystore, pin.clone());
 
-        FileInputStream imageStream = new FileInputStream(args[3]);
-
-        String name = documentFile.getName();
-        String substring = name.substring(0, name.lastIndexOf('.'));
-        File signedDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
-
-        // page is 1-based here
-        int page = 1;
-        signing.setVisibleSignDesigner(args[2], 0, 0, -50, imageStream, page);
-        imageStream.close();
+        File signedDocumentFile;
+        int page;
+        try (FileInputStream imageStream = new FileInputStream(args[3]))
+        {
+            String name = documentFile.getName();
+            String substring = name.substring(0, name.lastIndexOf('.'));
+            signedDocumentFile = new File(documentFile.getParent(), substring + "_signed.pdf");
+            // page is 1-based here
+            page = 1;
+            signing.setVisibleSignDesigner(args[2], 0, 0, -50, imageStream, page);
+        }
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, page, true);
         signing.setExternalSigning(externalSig);
         signing.signPDF(documentFile, signedDocumentFile, tsaClient);

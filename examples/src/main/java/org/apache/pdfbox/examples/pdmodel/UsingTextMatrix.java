@@ -51,11 +51,8 @@ public class UsingTextMatrix
     public void doIt( String message, String  outfile ) throws IOException
     {
         // the document
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = new PDDocument())
         {
-            doc = new PDDocument();
-
             // Page 1
             PDFont font = PDType1Font.HELVETICA;
             PDPage page = new PDPage(PDRectangle.A4);
@@ -133,13 +130,6 @@ public class UsingTextMatrix
             contentStream.close();
 
             doc.save( outfile );
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
         }
     }
 

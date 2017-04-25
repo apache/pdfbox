@@ -54,11 +54,9 @@ public final class CreateBookmarks
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
-                if( document.isEncrypted() )
+                if (document.isEncrypted())
                 {
                     System.err.println( "Error: Cannot add bookmarks to encrypted document." );
                     System.exit( 1 );
@@ -86,13 +84,6 @@ public final class CreateBookmarks
                 outline.openNode();
 
                 document.save( args[1] );
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
-                }
             }
         }
     }

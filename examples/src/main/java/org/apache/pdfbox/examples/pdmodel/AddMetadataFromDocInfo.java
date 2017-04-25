@@ -61,12 +61,9 @@ public final class AddMetadataFromDocInfo
         }
         else
         {
-            PDDocument document = null;
-
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
-                if( document.isEncrypted() )
+                if (document.isEncrypted())
                 {
                     System.err.println( "Error: Cannot add metadata to encrypted document." );
                     System.exit( 1 );
@@ -100,13 +97,6 @@ public final class AddMetadataFromDocInfo
                 metadataStream.importXMPMetadata( baos.toByteArray() );
 
                 document.save( args[1] );
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
-                }
             }
         }
     }

@@ -109,10 +109,11 @@ public class CreateGradientShadingPDF
 
             // invoke shading from content stream
             // compress parameter is set to false so that you can see the stream in a text editor
-            PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
-            contentStream.shadingFill(axialShading);
-            contentStream.shadingFill(radialShading);
-            contentStream.close();
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+            {
+                contentStream.shadingFill(axialShading);
+                contentStream.shadingFill(radialShading);
+            }
             
             document.save(file);
             document.close();

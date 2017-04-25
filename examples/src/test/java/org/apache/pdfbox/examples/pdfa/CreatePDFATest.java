@@ -59,15 +59,16 @@ public class CreatePDFATest extends TestCase
         
         PreflightParser preflightParser = new PreflightParser(new File(pdfaFilename));
         preflightParser.parse();
-        PreflightDocument preflightDocument = preflightParser.getPreflightDocument();
-        preflightDocument.validate();
-        ValidationResult result = preflightDocument.getResult();
-        for (ValidationError ve : result.getErrorsList())
+        try (PreflightDocument preflightDocument = preflightParser.getPreflightDocument())
         {
-            System.err.println(ve.getErrorCode() + ": " + ve.getDetails());
+            preflightDocument.validate();
+            ValidationResult result = preflightDocument.getResult();
+            for (ValidationError ve : result.getErrorsList())
+            {
+                System.err.println(ve.getErrorCode() + ": " + ve.getDetails());
+            }
+            assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
         }
-        assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
-        preflightDocument.close();
         
         // check the XMP metadata
         PDDocument document = PDDocument.load(new File(pdfaFilename));
