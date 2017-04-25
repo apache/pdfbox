@@ -78,34 +78,33 @@ public final class ExtractTTFFonts
             boolean addKey = false;
             for (int i = 0; i < args.length; i++)
             {
-                if (args[i].equals(PASSWORD))
+                switch (args[i])
                 {
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                }
-                else if (args[i].equals(PREFIX))
-                {
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    prefix = args[i];
-                }
-                else if (args[i].equals(ADDKEY))
-                {
-                    addKey = true;
-                }
-                else
-                {
-                    if (pdfFile == null)
-                    {
-                        pdfFile = args[i];
-                    }
+                    case PASSWORD:
+                        i++;
+                        if (i >= args.length)
+                        {
+                            usage();
+                        }
+                        password = args[i];
+                        break;
+                    case PREFIX:
+                        i++;
+                        if (i >= args.length)
+                        {
+                            usage();
+                        }
+                        prefix = args[i];
+                        break;
+                    case ADDKEY:
+                        addKey = true;
+                        break;
+                    default:
+                        if (pdfFile == null)
+                        {
+                            pdfFile = args[i];
+                        }
+                        break;
                 }
             }
             if (pdfFile == null)
