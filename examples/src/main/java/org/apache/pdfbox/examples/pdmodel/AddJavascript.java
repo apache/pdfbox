@@ -49,10 +49,8 @@ public final class AddJavascript
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
                 PDActionJavaScript javascript = new PDActionJavaScript(
                     "app.alert( {cMsg: 'PDFBox rocks!', nIcon: 3, nType: 0, cTitle: 'PDFBox Javascript example' } );");
                 document.getDocumentCatalog().setOpenAction( javascript );
@@ -61,13 +59,6 @@ public final class AddJavascript
                     throw new IOException( "Encrypted documents are not supported for this example" );
                 }
                 document.save( args[1] );
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
-                }
             }
         }
     }

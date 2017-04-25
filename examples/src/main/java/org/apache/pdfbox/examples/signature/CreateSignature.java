@@ -105,9 +105,10 @@ public class CreateSignature extends CreateSignatureBase
         FileOutputStream fos = new FileOutputStream(outFile);
 
         // sign
-        PDDocument doc = PDDocument.load(inFile);
-        signDetached(doc, fos, tsaClient);
-        doc.close();
+        try (PDDocument doc = PDDocument.load(inFile))
+        {
+            signDetached(doc, fos, tsaClient);
+        }
     }
 
     public void signDetached(PDDocument document, OutputStream output, TSAClient tsaClient)

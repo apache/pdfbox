@@ -48,13 +48,10 @@ public final class SuperimposePage
         String sourcePath = args[0];
         String destPath = args[1];
         
-        PDDocument sourceDoc = null;
-        try
+        try (PDDocument sourceDoc = PDDocument.load(new File(sourcePath)))
         {
-            // load the source PDF
-            sourceDoc = PDDocument.load(new File(sourcePath));
             int sourcePage = 1;
-            
+
             // create a new PDF and add a blank page
             PDDocument doc = new PDDocument();
             PDPage page = new PDPage();
@@ -92,13 +89,6 @@ public final class SuperimposePage
             contents.close();
             doc.save(destPath);
             doc.close();
-        }
-        finally
-        {
-            if (sourceDoc != null)
-            {
-                sourceDoc.close();
-            }
         }
     }
 }

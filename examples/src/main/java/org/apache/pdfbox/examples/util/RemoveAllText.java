@@ -63,10 +63,8 @@ public final class RemoveAllText
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load(new File(args[0]));
                 if (document.isEncrypted())
                 {
                     System.err.println(
@@ -78,13 +76,6 @@ public final class RemoveAllText
                     removeAllTextTokens(page, document);
                 }
                 document.save(args[1]);
-            }
-            finally
-            {
-                if (document != null)
-                {
-                    document.close();
-                }
             }
         }
     }
@@ -123,10 +114,11 @@ public final class RemoveAllText
             newTokens.add(token);
         }
         PDStream newContents = new PDStream(document);
-        OutputStream out = newContents.createOutputStream(COSName.FLATE_DECODE);
-        ContentStreamWriter writer = new ContentStreamWriter(out);
-        writer.writeTokens(newTokens);
-        out.close();
+        try (OutputStream out = newContents.createOutputStream(COSName.FLATE_DECODE))
+        {
+            ContentStreamWriter writer = new ContentStreamWriter(out);
+            writer.writeTokens(newTokens);
+        }
         page.setContents(newContents);
         processResources(page.getResources());
     }
@@ -153,10 +145,11 @@ public final class RemoveAllText
             }
             newTokens.add(token);
         }
-        OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE);
-        ContentStreamWriter writer = new ContentStreamWriter(out);
-        writer.writeTokens(newTokens);
-        out.close();
+        try (OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE))
+        {
+            ContentStreamWriter writer = new ContentStreamWriter(out);
+            writer.writeTokens(newTokens);
+        }
         processResources(xobject.getResources());
     }
 

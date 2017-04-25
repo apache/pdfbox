@@ -47,28 +47,24 @@ public final class HelloWorldTTF
         String message = args[1];
         String ttfPath = args[2];
         
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
             PDPage page = new PDPage();
             doc.addPage(page);
             
             PDFont font = PDType0Font.load(doc, new File(ttfPath));
 
-            PDPageContentStream contents = new PDPageContentStream(doc, page);
-            contents.beginText();
-            contents.setFont(font, 12);
-            contents.newLineAtOffset(100, 700);
-            contents.showText(message);
-            contents.endText();
-            contents.close();
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+            {
+                contents.beginText();
+                contents.setFont(font, 12);
+                contents.newLineAtOffset(100, 700);
+                contents.showText(message);
+                contents.endText();
+            }
             
             doc.save(pdfPath);
             System.out.println(pdfPath + " created!");
-        }
-        finally
-        {
-            doc.close();
         }
     }
 }

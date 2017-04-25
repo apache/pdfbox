@@ -48,8 +48,7 @@ public final class HelloWorldType1
         String message = args[1];
         String pfbPath = args[2];
         
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
             PDPage page = new PDPage();
             doc.addPage(page);
@@ -66,10 +65,6 @@ public final class HelloWorldType1
 
             doc.save(file);
             System.out.println(file + " created!");    
-        }
-        finally
-        {
-            doc.close();
         }
     }
 }

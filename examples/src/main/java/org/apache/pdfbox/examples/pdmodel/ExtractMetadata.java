@@ -62,10 +62,8 @@ public final class ExtractMetadata
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load(new File(args[0]));
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDMetadata meta = catalog.getMetadata();
                 if (meta != null)
@@ -116,14 +114,6 @@ public final class ExtractMetadata
                     {
                         showDocumentInformation(information);
                     }
-                }
-
-            }
-            finally
-            {
-                if (document != null)
-                {
-                    document.close();
                 }
             }
         }

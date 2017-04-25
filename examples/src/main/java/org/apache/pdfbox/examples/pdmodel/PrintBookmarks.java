@@ -47,10 +47,8 @@ public class PrintBookmarks
         }
         else
         {
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(args[0])))
             {
-                document = PDDocument.load( new File(args[0]) );
                 PrintBookmarks meta = new PrintBookmarks();
                 PDDocumentOutline outline =  document.getDocumentCatalog().getDocumentOutline();
                 if( outline != null )
@@ -60,13 +58,6 @@ public class PrintBookmarks
                 else
                 {
                     System.out.println( "This document does not contain any bookmarks" );
-                }
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
                 }
             }
         }
