@@ -47,9 +47,9 @@ public class SecurityProvider
             {
                 Class<Provider> providerClass = (Class<Provider>) Class
                         .forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
-                provider = providerClass.newInstance();
+                provider = providerClass.getDeclaredConstructor().newInstance();
             }
-            catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex)
+            catch (ReflectiveOperationException ex)
             {
                 throw new IOException(ex);
             }
