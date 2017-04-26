@@ -1268,6 +1268,30 @@ public class COSParser extends BaseParser
         return 0;
     }
 
+    private boolean validateXrefOffsets(Map<COSObjectKey, Long> xrefOffset) throws IOException
+    {
+        boolean valid = true;
+        if (xrefOffset != null)
+        {
+            for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
+            {
+                COSObjectKey objectKey = objectEntry.getKey();
+                Long objectOffset = objectEntry.getValue();
+                // a negative offset number represents a object number itself
+                // see type 2 entry in xref stream
+                if (objectOffset != null && objectOffset >= 0
+                        && !checkObjectKeys(objectKey, objectOffset))
+                {
+                    LOG.debug(
+                            "Stop checking xref offsets as at least one couldn't be dereferenced");
+                    valid = false;
+                    break;
+                }
+            }
+        }
+        return valid;
+    }
+
     /**
      * Check the XRef table by dereferencing all objects and fixing the offset if necessary.
      * 
@@ -1281,78 +1305,60 @@ public class COSParser extends BaseParser
             return;
         }
         Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
-        if (xrefOffset != null)
+        if (!validateXrefOffsets(xrefOffset))
         {
-            boolean bruteForceSearch = false;
-            for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
+            bfSearchForObjects();
+            if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
             {
-                COSObjectKey objectKey = objectEntry.getKey();
-                Long objectOffset = objectEntry.getValue();
-                // a negative offset number represents a object number itself
-                // see type 2 entry in xref stream
-                if (objectOffset != null && objectOffset >= 0
-                        && !checkObjectKeys(objectKey, objectOffset))
+                List<COSObjectKey> objStreams = new ArrayList<COSObjectKey>();
+                // find all object streams
+                for (COSObjectKey key : xrefOffset.keySet())
                 {
-                    LOG.debug("Stop checking xref offsets as at least one couldn't be dereferenced");
-                    bruteForceSearch = true;
-                    break;
-                }
-            }
-            if (bruteForceSearch)
-            {
-                bfSearchForObjects();
-                if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
-                {
-                    List<COSObjectKey> objStreams = new ArrayList<COSObjectKey>();
-                    // find all object streams
-                    for (COSObjectKey key : xrefOffset.keySet())
+                    Long offset = xrefOffset.get(key);
+                    if (offset != null && offset < 0)
                     {
-                        Long offset = xrefOffset.get(key);
-                        if (offset != null && offset < 0 )
+                        COSObjectKey objStream = new COSObjectKey(-offset, 0);
+                        if (!objStreams.contains(objStream))
                         {
-                            COSObjectKey objStream = new COSObjectKey(-offset, 0);
-                            if (!objStreams.contains(objStream))
-                            {
-                                objStreams.add(new COSObjectKey(-offset, 0));
-                            }
+                            objStreams.add(new COSObjectKey(-offset, 0));
                         }
                     }
-                    // remove all found object streams
-                    if (!objStreams.isEmpty())
+                }
+                // remove all found object streams
+                if (!objStreams.isEmpty())
+                {
+                    for (COSObjectKey key : objStreams)
                     {
-                        for (COSObjectKey key : objStreams)
+                        if (bfSearchCOSObjectKeyOffsets.containsKey(key))
                         {
-                            if (bfSearchCOSObjectKeyOffsets.containsKey(key))
+                            // remove all parsed objects which are part of an object stream
+                            Set<Long> objects = xrefTrailerResolver
+                                    .getContainedObjectNumbers((int) (key.getNumber()));
+                            for (Long objNr : objects)
                             {
-                                // remove all parsed objects which are part of an object stream
-                                Set<Long> objects = xrefTrailerResolver
-                                        .getContainedObjectNumbers((int) (key.getNumber()));
-                                for (Long objNr : objects)
+                                COSObjectKey streamObjectKey = new COSObjectKey(objNr, 0);
+                                Long streamObjectOffset = bfSearchCOSObjectKeyOffsets
+                                        .get(streamObjectKey);
+                                if (streamObjectOffset != null && streamObjectOffset > 0)
                                 {
-                                    COSObjectKey streamObjectKey = new COSObjectKey(objNr, 0);
-                                    Long streamObjectOffset = bfSearchCOSObjectKeyOffsets
-                                            .get(streamObjectKey);
-                                    if (streamObjectOffset != null && streamObjectOffset > 0)
-                                    {
-                                        bfSearchCOSObjectKeyOffsets.remove(streamObjectKey);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // remove all objects which are part of an object stream which wasn't found
-                                Set<Long> objects = xrefTrailerResolver
-                                        .getContainedObjectNumbers((int) (key.getNumber()));
-                                for (Long objNr : objects)
-                                {
-                                    xrefOffset.remove(new COSObjectKey(objNr, 0));
+                                    bfSearchCOSObjectKeyOffsets.remove(streamObjectKey);
                                 }
                             }
                         }
+                        else
+                        {
+                            // remove all objects which are part of an object stream which wasn't found
+                            Set<Long> objects = xrefTrailerResolver
+                                    .getContainedObjectNumbers((int) (key.getNumber()));
+                            for (Long objNr : objects)
+                            {
+                                xrefOffset.remove(new COSObjectKey(objNr, 0));
+                            }
+                        }
                     }
-                    LOG.debug("Replaced read xref table with the results of a brute force search");
-                    xrefOffset.putAll(bfSearchCOSObjectKeyOffsets);
                 }
+                LOG.debug("Replaced read xref table with the results of a brute force search");
+                xrefOffset.putAll(bfSearchCOSObjectKeyOffsets);
             }
         }
     }
@@ -1723,17 +1729,26 @@ public class COSParser extends BaseParser
         bfSearchForObjects();
         if (bfSearchCOSObjectKeyOffsets != null)
         {
+            // reset trailer resolver
             xrefTrailerResolver.reset();
-            xrefTrailerResolver.nextXrefObj( 0, XRefType.TABLE );
-            for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
+            // search for an Xref stream
+            trailer = searchForXrefStream();
+            if (trailer == null)
             {
-                xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
+                // no xref stream found -> use the found objects to rebuild the trailer resolver
+                xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
+                for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
+                {
+                    xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
+                }
+                xrefTrailerResolver.setStartxref(0);
+                trailer = xrefTrailerResolver.getTrailer();
             }
-            xrefTrailerResolver.setStartxref(0);
-            trailer = xrefTrailerResolver.getTrailer();
             getDocument().setTrailer(trailer);
-            // search for the different parts of the trailer dictionary 
-            for(Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
+            // search for the different parts of the trailer dictionary
+            boolean catalogFound = false;
+            boolean infoFound = false;
+            for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
                 Long offset = entry.getValue();
                 source.seek(offset);
@@ -1749,6 +1764,7 @@ public class COSParser extends BaseParser
                         if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
                         {
                             trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
+                            catalogFound = true;
                         }
                         // info dictionary
                         else if (dictionary.containsKey(COSName.MOD_DATE) && 
@@ -1761,8 +1777,14 @@ public class COSParser extends BaseParser
                                 || dictionary.containsKey(COSName.CREATION_DATE)))
                         {
                             trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
+                            infoFound = true;
                         }
                         // TODO encryption dictionary
+                    }
+                    if (catalogFound && infoFound)
+                    {
+                        // all objects found, stop searching
+                        break;
                     }
                 }
                 catch(IOException exception)
@@ -1774,6 +1796,39 @@ public class COSParser extends BaseParser
         return trailer;
     }
     
+    private COSDictionary searchForXrefStream() throws IOException
+    {
+        COSDictionary trailer = null;
+        for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
+        {
+            Long offset = entry.getValue();
+            source.seek(offset);
+            readObjectNumber();
+            readGenerationNumber();
+            readExpectedString(OBJ_MARKER, true);
+            try
+            {
+                COSDictionary dictionary = parseCOSDictionary();
+                if (dictionary != null && COSName.XREF.equals(dictionary.getCOSName(COSName.TYPE)))
+                {
+                    COSStream xrefStream = parseCOSStream(dictionary);
+                    parseXrefStream(xrefStream, offset, true);
+                    xrefStream.close();
+                    xrefTrailerResolver.setStartxref(offset);
+                    break;
+                }
+            }
+            catch (IOException exception)
+            {
+                LOG.debug("Skipped object " + entry.getKey()
+                        + ", either it's corrupt or not a dictionary");
+            }
+        }
+        if (validateXrefOffsets(xrefTrailerResolver.getXrefTable()))
+            trailer = xrefTrailerResolver.getTrailer();
+        return trailer;
+    }
+
     /**
      * This will parse the startxref section from the stream.
      * The startxref value is ignored.
