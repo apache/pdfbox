@@ -178,17 +178,12 @@ public class PreflightConfiguration
 
         try
         {
-            return clazz.newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         }
-        catch (InstantiationException e)
+        catch (ReflectiveOperationException e)
         {
             throw new ValidationException(processName + " can't be created", e);
         }
-        catch (IllegalAccessException e)
-        {
-            throw new ValidationException(processName + " can't be created", e);
-        }
-
     }
 
     public void replaceProcess(String processName, Class<? extends ValidationProcess> process)
