@@ -21,7 +21,6 @@
 
 package org.apache.xmpbox.schema;
 
-import java.lang.reflect.Constructor;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.PropertiesDescription;
@@ -116,20 +115,18 @@ public class XMPSchemaFactory
             schemaArgs = new Object[] { metadata };
         }
 
-        Constructor<? extends XMPSchema> schemaConstructor;
         try
         {
-            schemaConstructor = schemaClass.getConstructor(argsClass);
-            schema = schemaConstructor.newInstance(schemaArgs);
+            schema = schemaClass.getDeclaredConstructor(argsClass).newInstance(schemaArgs);
             if (schema != null)
             {
                 metadata.addSchema(schema);
             }
             return schema;
         }
-        catch (Exception e)
+        catch (ReflectiveOperationException e)
         {
-            throw new XmpSchemaException("Cannot instanciate specified object schema", e);
+            throw new XmpSchemaException("Cannot Instanciate specified Object Schema", e);
         }
     }
 
