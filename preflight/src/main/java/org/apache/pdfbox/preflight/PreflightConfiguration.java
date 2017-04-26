@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -189,6 +190,22 @@ public class PreflightConfiguration
             throw new ValidationException(processName + " can't be created", e);
         }
         catch (IllegalAccessException e)
+        {
+            throw new ValidationException(processName + " can't be created", e);
+        }
+        catch (NoSuchMethodException e)
+        {
+            throw new ValidationException(processName + " can't be created", e);
+        }
+        catch (SecurityException e)
+        {
+            throw new ValidationException(processName + " can't be created", e);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new ValidationException(processName + " can't be created", e);
+        }
+        catch (InvocationTargetException e)
         {
             throw new ValidationException(processName + " can't be created", e);
         }
