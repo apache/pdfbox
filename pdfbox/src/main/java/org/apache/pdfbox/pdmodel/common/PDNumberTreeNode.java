@@ -215,18 +215,14 @@ public class PDNumberTreeNode implements COSObjectable
      */
     protected COSObjectable convertCOSToPD( COSBase base ) throws IOException
     {
-        COSObjectable retval = null;
         try
         {
-            Constructor<? extends COSObjectable> ctor = valueType.getConstructor( new Class[] { base.getClass() } );
-            retval = ctor.newInstance( new Object[] { base } );
+            return valueType.getDeclaredConstructor( new Class[] { base.getClass() } ).newInstance( new Object[] { base } );
         }
-        catch( Throwable t )
+        catch( ReflectiveOperationException t )
         {
             throw new IOException( "Error while trying to create value in number tree:" + t.getMessage());
-
         }
-        return retval;
     }
 
     /**
