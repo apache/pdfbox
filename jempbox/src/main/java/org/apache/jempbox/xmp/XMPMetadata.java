@@ -621,7 +621,7 @@ public class XMPMetadata
                     try
                     {
                         Constructor<?> ctor = schemaClass
-                                .getConstructor(new Class[] { Element.class,
+                                .getDeclaredConstructor(new Class[] { Element.class,
                                         String.class });
                         retval.add((XMPSchema)ctor.newInstance(new Object[] { schema,
                                 name.substring(6) }));

@@ -128,32 +128,16 @@ public final class TypeMapping
             Class<? extends AbstractStructuredType> propertyTypeClass = type.getImplementingClass().asSubclass(
                     AbstractStructuredType.class);
             Constructor<? extends AbstractStructuredType> construct = propertyTypeClass
-                    .getConstructor(new Class<?>[] { XMPMetadata.class });
+                    .getDeclaredConstructor(new Class<?>[] { XMPMetadata.class });
             AbstractStructuredType tmp = construct.newInstance(metadata);
             tmp.setPropertyName(propertyName);
             return tmp;
         }
-        catch (InvocationTargetException e)
+        catch (ReflectiveOperationException e)
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }
         catch (IllegalArgumentException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (InstantiationException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (SecurityException e)
-        {
-            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
-        }
-        catch (NoSuchMethodException e)
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }
@@ -174,7 +158,7 @@ public final class TypeMapping
         {
             Class<? extends AbstractSimpleProperty> clz = type.getImplementingClass().asSubclass(
                     AbstractSimpleProperty.class);
-            Constructor<? extends AbstractSimpleProperty> cons = clz.getConstructor(simplePropertyConstParams);
+            Constructor<? extends AbstractSimpleProperty> cons = clz.getDeclaredConstructor(simplePropertyConstParams);
             return cons.newInstance(params);
         }
         catch (NoSuchMethodError e)
