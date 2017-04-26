@@ -90,7 +90,7 @@ public abstract class AnnotationValidatorFactory
                 result = constructor.newInstance(ctx, annotDic);
                 result.setFactory(this);
             }
-            catch (ReflectiveOperationException e)
+            catch (Exception e)
             {
                 throw new ValidationException(e.getMessage(), e);
             }
