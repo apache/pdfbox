@@ -35,6 +35,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 /**
@@ -166,39 +167,50 @@ final class SampledImageReader
             throw new IOException("image width and height must be positive");
         }
 
+        if (bitsPerComponent == 1 && colorKey == null && numComponents == 1)
+        {
+            return from1Bit(pdImage);
+        }
+
         //
         // An AWT raster must use 8/16/32 bits per component. Images with < 8bpc
         // will be unpacked into a byte-backed raster. Images with 16bpc will be reduced
         // in depth to 8bpc as they will be drawn to TYPE_INT_RGB images anyway. All code
-        // in PDColorSpace#toRGBImage expects and 8-bit range, i.e. 0-255.
+        // in PDColorSpace#toRGBImage expects an 8-bit range, i.e. 0-255.
         //
         WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height,
                 numComponents, new Point(0, 0));
-
-        // convert image, faster path for non-decoded, non-colormasked 8-bit images
         final float[] defaultDecode = pdImage.getColorSpace().getDefaultDecode(8);
         if (bitsPerComponent == 8 && Arrays.equals(decode, defaultDecode) && colorKey == null)
         {
+            // convert image, faster path for non-decoded, non-colormasked 8-bit images
             return from8bit(pdImage, raster);
         }
-        else if (bitsPerComponent == 1 && colorKey == null && numComponents == 1)
-        {
-            return from1Bit(pdImage, raster);
-        }
-        else
-        {
-            return fromAny(pdImage, raster, colorKey);
-        }
+        return fromAny(pdImage, raster, colorKey);
     }
-    
-    private static BufferedImage from1Bit(PDImage pdImage, WritableRaster raster)
-            throws IOException
+
+    private static BufferedImage from1Bit(PDImage pdImage) throws IOException
     {
         final PDColorSpace colorSpace = pdImage.getColorSpace();
         final int width = pdImage.getWidth();
         final int height = pdImage.getHeight();
         final float[] decode = getDecodeArray(pdImage);
-        byte[] output = ((DataBufferByte) raster.getDataBuffer()).getData();
+        BufferedImage bim = null;
+        WritableRaster raster;
+        byte[] output;
+        if (colorSpace instanceof PDDeviceGray)
+        {
+            // TYPE_BYTE_GRAY and not TYPE_BYTE_BINARY because this one is handled
+            // without conversion to RGB by Graphics.drawImage
+            // this reduces the memory footprint, only one byte per pixel instead of three.
+            bim = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+            raster = bim.getRaster();
+        }
+        else
+        {
+            raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height, 1, new Point(0, 0));
+        }
+        output = ((DataBufferByte) raster.getDataBuffer()).getData();
 
         // read bit stream
         InputStream iis = null;
@@ -256,10 +268,13 @@ final class SampledImageReader
                 }
             }
 
-            // use the color space to convert the image to RGB
-            BufferedImage rgbImage = colorSpace.toRGBImage(raster);
+            if (bim != null)
+            {
+                return bim;
+            }
 
-            return rgbImage;
+            // use the color space to convert the image to RGB
+            return colorSpace.toRGBImage(raster);
         }
         finally
         {
