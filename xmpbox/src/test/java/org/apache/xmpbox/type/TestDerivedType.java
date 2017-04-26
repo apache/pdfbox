@@ -82,7 +82,7 @@ public class TestDerivedType
     public void before() throws Exception
     {
         xmp = XMPMetadata.createXMPMetadata();
-        constructor = clz.getConstructor(XMPMetadata.class, String.class, String.class, String.class,
+        constructor = clz.getDeclaredConstructor(XMPMetadata.class, String.class, String.class, String.class,
                 Object.class);
     }
 
