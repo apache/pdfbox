@@ -88,7 +88,7 @@ public class PDEncryptionManager
             {
                 try
                 {
-                    Constructor ctor = handlerClass.getConstructor( new Class[] {
+                    Constructor ctor = handlerClass.getDeclaredConstructor( new Class[] {
                         COSDictionary.class
                     } );
                     retval = ctor.newInstance( new Object[] {
