@@ -85,12 +85,12 @@ public abstract class AnnotationValidatorFactory
         {
             try
             {
-                Constructor<? extends AnnotationValidator> constructor = clazz.getConstructor(PreflightContext.class,
-                        COSDictionary.class);
+                Constructor<? extends AnnotationValidator> constructor =
+                        clazz.getDeclaredConstructor(PreflightContext.class, COSDictionary.class);
                 result = constructor.newInstance(ctx, annotDic);
                 result.setFactory(this);
             }
-            catch (Exception e)
+            catch (ReflectiveOperationException e)
             {
                 throw new ValidationException(e.getMessage(), e);
             }
