@@ -184,7 +184,11 @@ public class PreflightConfiguration
         {
             return clazz.getDeclaredConstructor().newInstance();
         }
-        catch (ReflectiveOperationException e)
+        catch (InstantiationException e)
+        {
+            throw new ValidationException(processName + " can't be created", e);
+        }
+        catch (IllegalAccessException e)
         {
             throw new ValidationException(processName + " can't be created", e);
         }

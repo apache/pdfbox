@@ -157,7 +157,7 @@ public class OSXAdapter implements InvocationHandler
         try {
             Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
             if (macOSXApplication == null) {
-                macOSXApplication = applicationClass.getConstructor((Class[])null).newInstance((Object[])null);
+                macOSXApplication = applicationClass.getDeclaredConstructor((Class[])null).newInstance((Object[])null);
             }
             Class<?> applicationListenerClass = Class.forName("com.apple.eawt.ApplicationListener");
             Method addListenerMethod = applicationClass.getDeclaredMethod("addApplicationListener", applicationListenerClass);

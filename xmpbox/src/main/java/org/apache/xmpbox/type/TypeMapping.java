@@ -139,7 +139,7 @@ public final class TypeMapping
             tmp.setPropertyName(propertyName);
             return tmp;
         }
-        catch (ReflectiveOperationException e)
+        catch (InvocationTargetException e)
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }
@@ -147,7 +147,19 @@ public final class TypeMapping
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }
+        catch (InstantiationException e)
+        {
+            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
+        }
         catch (SecurityException e)
+        {
+            throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
+        }
+        catch (NoSuchMethodException e)
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }
