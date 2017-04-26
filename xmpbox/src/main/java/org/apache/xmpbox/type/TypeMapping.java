@@ -139,7 +139,8 @@ public final class TypeMapping
             tmp.setPropertyName(propertyName);
             return tmp;
         }
-        catch (ReflectiveOperationException | IllegalArgumentException | SecurityException e)
+        catch (InvocationTargetException | IllegalArgumentException | InstantiationException |
+               IllegalAccessException | SecurityException | NoSuchMethodException e)
         {
             throw new BadFieldValueException("Failed to instanciate structured type : " + type, e);
         }

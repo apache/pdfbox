@@ -17,7 +17,10 @@
 package org.apache.pdfbox.pdmodel.encryption;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Provider;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Singleton which provides a security provider.
@@ -49,7 +52,9 @@ public class SecurityProvider
                         .forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
                 provider = providerClass.getDeclaredConstructor().newInstance();
             }
-            catch (ReflectiveOperationException ex)
+            catch (ClassNotFoundException | InstantiationException | IllegalAccessException | 
+                   NoSuchMethodException | SecurityException | IllegalArgumentException | 
+                   InvocationTargetException ex)
             {
                 throw new IOException(ex);
             }
