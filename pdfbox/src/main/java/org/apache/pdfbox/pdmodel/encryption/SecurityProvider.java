@@ -19,8 +19,6 @@ package org.apache.pdfbox.pdmodel.encryption;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.Provider;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Singleton which provides a security provider.

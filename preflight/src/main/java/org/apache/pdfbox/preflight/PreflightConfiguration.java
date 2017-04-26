@@ -25,8 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
 import org.apache.pdfbox.preflight.annotation.AnnotationValidatorFactory;
