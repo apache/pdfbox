@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.common;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
