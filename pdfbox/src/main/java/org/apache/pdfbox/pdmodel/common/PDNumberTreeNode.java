@@ -219,7 +219,7 @@ public class PDNumberTreeNode implements COSObjectable
         {
             return valueType.getDeclaredConstructor( new Class[] { base.getClass() } ).newInstance( new Object[] { base } );
         }
-        catch( ReflectiveOperationException t )
+        catch( Throwable t )
         {
             throw new IOException( "Error while trying to create value in number tree:" + t.getMessage());
         }
