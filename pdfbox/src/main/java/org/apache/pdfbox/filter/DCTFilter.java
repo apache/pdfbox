@@ -189,7 +189,7 @@ final class DCTFilter extends Filter
                 int len = iis.readUnsignedShort();
                 if (len >= POS_TRANSFORM + 1)
                 {
-                    byte app14[] = new byte[Math.max(len, POS_TRANSFORM + 1)];
+                    byte[] app14 = new byte[Math.max(len, POS_TRANSFORM + 1)];
                     if (iis.read(app14) >= POS_TRANSFORM + 1)
                     {
                         return app14[POS_TRANSFORM];
