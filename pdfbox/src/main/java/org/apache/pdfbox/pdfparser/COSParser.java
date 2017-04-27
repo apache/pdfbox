@@ -1746,8 +1746,6 @@ public class COSParser extends BaseParser
             }
             getDocument().setTrailer(trailer);
             // search for the different parts of the trailer dictionary
-            boolean catalogFound = false;
-            boolean infoFound = false;
             for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
                 Long offset = entry.getValue();
@@ -1764,7 +1762,6 @@ public class COSParser extends BaseParser
                         if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
                         {
                             trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
-                            catalogFound = true;
                         }
                         // info dictionary
                         else if (dictionary.containsKey(COSName.MOD_DATE) && 
@@ -1777,14 +1774,8 @@ public class COSParser extends BaseParser
                                 || dictionary.containsKey(COSName.CREATION_DATE)))
                         {
                             trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
-                            infoFound = true;
                         }
                         // TODO encryption dictionary
-                    }
-                    if (catalogFound && infoFound)
-                    {
-                        // all objects found, stop searching
-                        break;
                     }
                 }
                 catch(IOException exception)
