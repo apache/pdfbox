@@ -23,7 +23,6 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
@@ -47,6 +46,9 @@ import org.w3c.dom.NodeList;
 final class DCTFilter extends Filter
 {
     private static final Log LOG = LogFactory.getLog(DCTFilter.class);
+
+    private static final int POS_TRANSFORM = 11;
+    private static final String ADOBE = "Adobe";
 
     @Override
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
@@ -104,40 +106,10 @@ final class DCTFilter extends Filter
                 {
                     transform = getAdobeTransform(reader.getImageMetadata(0));
                 }
-                catch (IIOException e)
+                catch (IIOException | NegativeArraySizeException e)
                 {
-                    // catches the error "Inconsistent metadata read from stream"
-                    // if we're using the Sun decoder then can be caused by either a YCCK
-                    // image or by a CMYK image which the decoder has problems reading
-                    try
-                    {
-                        // if this is Sun's decoder, use reflection to determine if the 
-                        // color space is CMYK or YCCK
-                        Field field = reader.getClass().getDeclaredField("colorSpaceCode");
-                        field.setAccessible(true);
-                        int colorSpaceCode = field.getInt(reader);
-                        switch (colorSpaceCode)
-                        {
-                            case 7:
-                            case 8:
-                            case 9:
-                            case 11:
-                                // YCCK
-                                transform = 2;
-                                break;
-                            case 4:
-                                // CMYK
-                                transform = 0;
-                                break;
-                            default:
-                                throw new IOException("Unexpected color space: " + colorSpaceCode);
-                        }
-                    }
-                    catch (NoSuchFieldException | IllegalAccessException e1)
-                    {
-                        // error from non-Sun JPEG decoder
-                        throw e;
-                    }
+                    // we really tried asking nicely, now we're using brute force.
+                    transform = getAdobeTransformByBruteForce(iis);
                 }
                 int colorTransform = transform != null ? transform : 0;
 
@@ -184,6 +156,50 @@ final class DCTFilter extends Filter
         {
             Element adobe = (Element) app14AdobeNodeList.item(0);
             return Integer.parseInt(adobe.getAttribute("transform"));
+        }
+        return 0;
+    }
+        
+    // See in https://github.com/haraldk/TwelveMonkeys
+    // com.twelvemonkeys.imageio.plugins.jpeg.AdobeDCT class for structure of APP14 segment
+    private int getAdobeTransformByBruteForce(ImageInputStream iis) throws IOException
+    {
+        int a = 0;
+        iis.seek(0);
+        int by;
+        while ((by = iis.read()) != -1)
+        {
+            if (ADOBE.charAt(a) == by)
+            {
+                ++a;
+                if (a != ADOBE.length())
+                {
+                    continue;
+                }
+                // match
+                a = 0;
+                long afterAdobePos = iis.getStreamPosition();
+                iis.seek(iis.getStreamPosition() - 9);
+                int tag = iis.readUnsignedShort();
+                if (tag != 0xFFEE)
+                {
+                    iis.seek(afterAdobePos);
+                    continue;
+                }
+                int len = iis.readUnsignedShort();
+                if (len >= POS_TRANSFORM + 1)
+                {
+                    byte app14[] = new byte[Math.max(len, POS_TRANSFORM + 1)];
+                    if (iis.read(app14) >= POS_TRANSFORM + 1)
+                    {
+                        return app14[POS_TRANSFORM];
+                    }
+                }
+            }
+            else
+            {
+                a = 0;
+            }
         }
         return 0;
     }
@@ -271,7 +287,7 @@ final class DCTFilter extends Filter
             }
             return numChannelsItem.getAttribute("value");
         }
-        catch (IOException e)
+        catch (IOException | NegativeArraySizeException e)
         {
             return "";
         }
