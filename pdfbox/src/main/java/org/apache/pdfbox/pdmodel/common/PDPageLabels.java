@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -245,7 +246,7 @@ public class PDPageLabels implements COSObjectable
      *
      * @return set of page indices.
      */
-    public TreeSet<Integer> getPageIndices()
+    public SortedSet<Integer> getPageIndices()
     {
         return new TreeSet(labels.keySet());
     }
