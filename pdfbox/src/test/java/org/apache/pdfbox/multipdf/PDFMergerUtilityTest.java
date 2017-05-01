@@ -15,15 +15,18 @@
  */
 package org.apache.pdfbox.multipdf;
 
+import junit.framework.TestCase;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.rendering.PDFRenderer;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
-import junit.framework.TestCase;
-
-import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Test suite for PDFMergerUtility.
@@ -109,6 +112,41 @@ public class PDFMergerUtilityTest extends TestCase
                 "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
                 "GlobalResourceMergeTestResult2.pdf",
                 MemoryUsageSetting.setupTempFileOnly());
+    }
+
+    // see PDFBOX-3218
+    public void testMergeAcroForm() throws IOException
+    {
+
+        PDDocument previous = PDDocument.load(getClass().getClassLoader().getResourceAsStream("input/merge/merge_forms_previous.pdf"));
+        int expectedFieldsSize = previous.getDocumentCatalog().getAcroForm().getFields().size();
+
+        PDDocument srcDoc1 = PDDocument.load(getClass().getClassLoader().getResourceAsStream("input/merge/merge_forms_doc1.pdf"));
+        expectedFieldsSize += srcDoc1.getDocumentCatalog().getAcroForm().getFields().size();
+
+        final PDDocument srcDoc2 = PDDocument.load(getClass().getClassLoader().getResourceAsStream("input/merge/merge_forms_doc2.pdf"));
+        expectedFieldsSize += srcDoc2.getDocumentCatalog().getAcroForm().getFields().size();
+
+        final PDDocument destination = new PDDocument(MemoryUsageSetting.setupMainMemoryOnly());
+        PDFMergerUtility mergerUtility = new PDFMergerUtility();
+
+        mergerUtility.appendDocument(destination, previous);
+        mergerUtility.appendDocument(destination, srcDoc1);
+        mergerUtility.appendDocument(destination, srcDoc2);
+
+        // assert fields not added multiple times
+        assertEquals(expectedFieldsSize, destination.getDocumentCatalog().getAcroForm().getFields().size());
+
+        final Set<String> fullyQualifiedFieldNames = new HashSet<String>();
+
+        destination.getDocumentCatalog().getAcroForm().getFields().forEach(new Consumer<PDField>() {
+            @Override
+            public void accept(PDField pdField) {
+                fullyQualifiedFieldNames.add(pdField.getFullyQualifiedName());
+            }
+        });
+
+        assertEquals(expectedFieldsSize, fullyQualifiedFieldNames.size());
     }
 
     // checks that the result file of a merge has the same rendering as the two
