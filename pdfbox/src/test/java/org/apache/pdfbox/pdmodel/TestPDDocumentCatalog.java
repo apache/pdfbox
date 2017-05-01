@@ -193,7 +193,7 @@ public class TestPDDocumentCatalog
     }
 
     @Test
-    public void testBooleaninOpenAction() throws IOException
+    public void handleBooleanInOpenAction() throws IOException
     {
         //PDFBOX-3772 -- allow for COSBoolean
         PDDocument doc = new PDDocument();
