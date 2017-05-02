@@ -449,7 +449,14 @@ public class PDDocumentCatalog implements COSObjectable
         String mode = root.getNameAsString(COSName.PAGE_MODE);
         if (mode != null)
         {
-            return PageMode.fromString(mode);
+            try
+            {
+                return PageMode.fromString(mode);
+            }
+            catch (IllegalArgumentException e)
+            {
+                return PageMode.USE_NONE;
+            }
         }
         else
         {
