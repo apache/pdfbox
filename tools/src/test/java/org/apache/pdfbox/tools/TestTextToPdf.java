@@ -48,9 +48,11 @@ public class TestTextToPdf extends TestCase
     public void testCreateEmptyPdf() throws Exception
     {
         TextToPDF pdfCreator = new TextToPDF();
-        StringReader reader = new StringReader("");
-        PDDocument pdfDoc = pdfCreator.createPDFFromText(reader);
-        reader.close();
+        PDDocument pdfDoc;
+        try (StringReader reader = new StringReader(""))
+        {
+            pdfDoc = pdfCreator.createPDFFromText(reader);
+        }
 
         // In order for the PDF document to be openable by Adobe Reader, it needs
         // to have some pages in it. So we'll check that.

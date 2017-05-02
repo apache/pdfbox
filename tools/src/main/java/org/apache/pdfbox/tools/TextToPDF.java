@@ -102,6 +102,7 @@ public class TextToPDF
     /**
      * Create a PDF document with some text.
      *
+     * @param doc The document.
      * @param text The stream of text data.
      *
      * @throws IOException If there is an error writing the data.
@@ -122,7 +123,7 @@ public class TextToPDF
             //calculate font height and increase by a factor.
             height = height*fontSize*LINE_HEIGHT_FACTOR;
             BufferedReader data = new BufferedReader( text );
-            String nextLine = null;
+            String nextLine;
             PDPage page = new PDPage(mediaBox);
             PDPageContentStream contentStream = null;
             float y = -1;
@@ -284,10 +285,9 @@ public class TextToPDF
 
         TextToPDF app = new TextToPDF();
                 
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
-            if( args.length < 2 )
+            if (args.length < 2)
             {
                 app.usage();
             }
@@ -295,39 +295,32 @@ public class TextToPDF
             {
                 for( int i=0; i<args.length-2; i++ )
                 {
-                    if( args[i].equals( "-standardFont" ))
+                    switch (args[i])
                     {
-                        i++;
-                        app.setFont( getStandardFont( args[i] ));
-                    }
-                    else if( args[i].equals( "-ttf" ))
-                    {
-                        i++;
-                        PDFont font = PDType0Font.load( doc, new File( args[i]) );
-                        app.setFont( font );
-                    }
-                    else if( args[i].equals( "-fontSize" ))
-                    {
-                        i++;
-                        app.setFontSize( Integer.parseInt( args[i] ) );
-                    }
-                    else if( args[i].equals( "-landscape" ))
-                    {
-                        app.setLandscape(true);
-                    }                    
-                    else
-                    {
-                        throw new IOException( "Unknown argument:" + args[i] );
+                        case "-standardFont":
+                            i++;
+                            app.setFont(getStandardFont(args[i]));
+                            break;
+                        case "-ttf":
+                            i++;
+                            PDFont font = PDType0Font.load(doc, new File(args[i]));
+                            app.setFont(font);
+                            break;
+                        case "-fontSize":
+                            i++;
+                            app.setFontSize(Integer.parseInt(args[i]));
+                            break;
+                        case "-landscape":
+                            app.setLandscape(true);
+                            break;
+                        default:
+                            throw new IOException("Unknown argument:" + args[i]);
                     }
                 }
                 
                 app.createPDFFromText( doc, new FileReader( args[args.length-1] ) );
                 doc.save( args[args.length-2] );
             }
-        }
-        finally
-        {
-            doc.close();
         }
     }
 
@@ -348,7 +341,7 @@ public class TextToPDF
             message.append("                         ").append(std14String).append("\n");
         }
         message.append("  -ttf <ttf file>      : The TTF font to use.\n");
-        message.append("  -fontSize <fontSize> : default: " + DEFAULT_FONT_SIZE );
+        message.append("  -fontSize <fontSize> : default: ").append(DEFAULT_FONT_SIZE);
         message.append("  -landscape           : sets orientation to landscape" );
         
         System.err.println(message.toString());

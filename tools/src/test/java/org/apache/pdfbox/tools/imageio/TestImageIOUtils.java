@@ -312,30 +312,30 @@ public class TestImageIOUtils extends TestCase
         Iterator readers = ImageIO.getImageReadersBySuffix(suffix);
         assertTrue("No image reader found for suffix " + suffix, readers.hasNext());
         ImageReader reader = (ImageReader) readers.next();
-        ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
-        assertNotNull("No ImageInputStream created for file " + filename, iis);
-        reader.setInput(iis);
-        IIOMetadata imageMetadata = reader.getImageMetadata(0);
-        Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
-        NodeList dimensionNodes = root.getElementsByTagName("Dimension");
-        assertTrue("No resolution found in image file " + filename, dimensionNodes.getLength() > 0);
-        Element dimensionElement = (Element) dimensionNodes.item(0);
+        try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
+        {
+            assertNotNull("No ImageInputStream created for file " + filename, iis);
+            reader.setInput(iis);
+            IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
+            NodeList dimensionNodes = root.getElementsByTagName("Dimension");
+            assertTrue("No resolution found in image file " + filename, dimensionNodes.getLength() > 0);
+            Element dimensionElement = (Element) dimensionNodes.item(0);
 
-        NodeList pixelSizeNodes = dimensionElement.getElementsByTagName("HorizontalPixelSize");
-        assertTrue("No X resolution found in image file " + filename, pixelSizeNodes.getLength() > 0);
-        Node pixelSizeNode = pixelSizeNodes.item(0);
-        String val = pixelSizeNode.getAttributes().getNamedItem("value").getNodeValue();
-        int actualResolution = (int) Math.round(25.4 / Double.parseDouble(val));
-        assertEquals("X resolution doesn't match in image file " + filename, expectedResolution, actualResolution);
+            NodeList pixelSizeNodes = dimensionElement.getElementsByTagName("HorizontalPixelSize");
+            assertTrue("No X resolution found in image file " + filename, pixelSizeNodes.getLength() > 0);
+            Node pixelSizeNode = pixelSizeNodes.item(0);
+            String val = pixelSizeNode.getAttributes().getNamedItem("value").getNodeValue();
+            int actualResolution = (int) Math.round(25.4 / Double.parseDouble(val));
+            assertEquals("X resolution doesn't match in image file " + filename, expectedResolution, actualResolution);
 
-        pixelSizeNodes = dimensionElement.getElementsByTagName("VerticalPixelSize");
-        assertTrue("No Y resolution found in image file " + filename, pixelSizeNodes.getLength() > 0);
-        pixelSizeNode = pixelSizeNodes.item(0);
-        val = pixelSizeNode.getAttributes().getNamedItem("value").getNodeValue();
-        actualResolution = (int) Math.round(25.4 / Double.parseDouble(val));
-        assertEquals("Y resolution doesn't match", expectedResolution, actualResolution);
-
-        iis.close();
+            pixelSizeNodes = dimensionElement.getElementsByTagName("VerticalPixelSize");
+            assertTrue("No Y resolution found in image file " + filename, pixelSizeNodes.getLength() > 0);
+            pixelSizeNode = pixelSizeNodes.item(0);
+            val = pixelSizeNode.getAttributes().getNamedItem("value").getNodeValue();
+            actualResolution = (int) Math.round(25.4 / Double.parseDouble(val));
+            assertEquals("Y resolution doesn't match", expectedResolution, actualResolution);
+        }
         reader.dispose();
     }
 
@@ -353,18 +353,19 @@ public class TestImageIOUtils extends TestCase
         // BMP format explained here:
         // http://www.javaworld.com/article/2077561/learn-java/java-tip-60--saving-bitmap-files-in-java.html
         // we skip 38 bytes and then read two 4 byte-integers and reverse the bytes
-        DataInputStream dis = new DataInputStream(new FileInputStream(new File(filename)));
-        int skipped = dis.skipBytes(38);
-        assertEquals("Can't skip 38 bytes in image file " + filename, 38, skipped);
-        int pixelsPerMeter = Integer.reverseBytes(dis.readInt());
-        int actualResolution = (int) Math.round(pixelsPerMeter / 100.0 * 2.54);
-        assertEquals("X resolution doesn't match in image file " + filename,
-                expectedResolution, actualResolution);
-        pixelsPerMeter = Integer.reverseBytes(dis.readInt());
-        actualResolution = (int) Math.round(pixelsPerMeter / 100.0 * 2.54);
-        assertEquals("Y resolution doesn't match in image file " + filename,
-                expectedResolution, actualResolution);
-        dis.close();
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(new File(filename))))
+        {
+            int skipped = dis.skipBytes(38);
+            assertEquals("Can't skip 38 bytes in image file " + filename, 38, skipped);
+            int pixelsPerMeter = Integer.reverseBytes(dis.readInt());
+            int actualResolution = (int) Math.round(pixelsPerMeter / 100.0 * 2.54);
+            assertEquals("X resolution doesn't match in image file " + filename,
+                    expectedResolution, actualResolution);
+            pixelsPerMeter = Integer.reverseBytes(dis.readInt());
+            actualResolution = (int) Math.round(pixelsPerMeter / 100.0 * 2.54);
+            assertEquals("Y resolution doesn't match in image file " + filename,
+                    expectedResolution, actualResolution);
+        }
     }
 
     /**
@@ -379,15 +380,16 @@ public class TestImageIOUtils extends TestCase
     {
         Iterator readers = ImageIO.getImageReadersBySuffix("tiff");
         ImageReader reader = (ImageReader) readers.next();
-        ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
-        reader.setInput(iis);
-        IIOMetadata imageMetadata = reader.getImageMetadata(0);
-        Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
-        Element comprElement = (Element) root.getElementsByTagName("Compression").item(0);
-        Node comprTypeNode = comprElement.getElementsByTagName("CompressionTypeName").item(0);
-        String actualCompression = comprTypeNode.getAttributes().getNamedItem("value").getNodeValue();
-        assertEquals("Incorrect TIFF compression in file " + filename, expectedCompression, actualCompression);
-        iis.close();
+        try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
+        {
+            reader.setInput(iis);
+            IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            Element root = (Element) imageMetadata.getAsTree(STANDARD_METADATA_FORMAT);
+            Element comprElement = (Element) root.getElementsByTagName("Compression").item(0);
+            Node comprTypeNode = comprElement.getElementsByTagName("CompressionTypeName").item(0);
+            String actualCompression = comprTypeNode.getAttributes().getNamedItem("value").getNodeValue();
+            assertEquals("Incorrect TIFF compression in file " + filename, expectedCompression, actualCompression);
+        }
         reader.dispose();
     }
 

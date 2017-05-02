@@ -95,84 +95,79 @@ public final class PDFToImage
         }
         for( int i = 0; i < args.length; i++ )
         {
-            if( args[i].equals( PASSWORD ) )
+            switch (args[i])
             {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                password = args[i];
-            }
-            else if( args[i].equals( START_PAGE ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                startPage = Integer.parseInt( args[i] );
-            }
-            else if( args[i].equals( END_PAGE ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                endPage = Integer.parseInt( args[i] );
-            }
-            else if( args[i].equals( PAGE ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                startPage = Integer.parseInt( args[i] );
-                endPage = Integer.parseInt( args[i] );
-            }
-            else if( args[i].equals(IMAGE_TYPE) || args[i].equals(FORMAT) )
-            {
-                i++;
-                imageFormat = args[i];
-            }
-            else if( args[i].equals( OUTPUT_PREFIX ) || args[i].equals( PREFIX ) )
-            {
-                i++;
-                outputPrefix = args[i];
-            }
-            else if( args[i].equals( COLOR ) )
-            {
-                i++;
-                color = args[i];
-            }
-            else if( args[i].equals( RESOLUTION ) || args[i].equals( DPI ) )
-            {
-                i++;
-                dpi = Integer.parseInt(args[i]);
-            }
-            else if( args[i].equals( CROPBOX ) )
-            {
-                i++;
-                cropBoxLowerLeftX = Float.valueOf(args[i]);
-                i++;
-                cropBoxLowerLeftY = Float.valueOf(args[i]);
-                i++;
-                cropBoxUpperRightX = Float.valueOf(args[i]);
-                i++;
-                cropBoxUpperRightY = Float.valueOf(args[i]);
-            }
-            else if( args[i].equals( TIME ) )
-            {
-                showTime = true;
-            }
-            else
-            {
-                if( pdfFile == null )
-                {
-                    pdfFile = args[i];
-                }
+                case PASSWORD:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    password = args[i];
+                    break;
+                case START_PAGE:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    startPage = Integer.parseInt(args[i]);
+                    break;
+                case END_PAGE:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    endPage = Integer.parseInt(args[i]);
+                    break;
+                case PAGE:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    startPage = Integer.parseInt(args[i]);
+                    endPage = Integer.parseInt(args[i]);
+                    break;
+                case IMAGE_TYPE:
+                case FORMAT:
+                    i++;
+                    imageFormat = args[i];
+                    break;
+                case OUTPUT_PREFIX:
+                case PREFIX:
+                    i++;
+                    outputPrefix = args[i];
+                    break;
+                case COLOR:
+                    i++;
+                    color = args[i];
+                    break;
+                case RESOLUTION:
+                case DPI:
+                    i++;
+                    dpi = Integer.parseInt(args[i]);
+                    break;
+                case CROPBOX:
+                    i++;
+                    cropBoxLowerLeftX = Float.valueOf(args[i]);
+                    i++;
+                    cropBoxLowerLeftY = Float.valueOf(args[i]);
+                    i++;
+                    cropBoxUpperRightX = Float.valueOf(args[i]);
+                    i++;
+                    cropBoxUpperRightY = Float.valueOf(args[i]);
+                    break;
+                case TIME:
+                    showTime = true;
+                    break;
+                default:
+                    if (pdfFile == null)
+                    {
+                        pdfFile = args[i];
+                    }
+                    break;
             }
         }
         if( pdfFile == null )
@@ -186,11 +181,8 @@ public final class PDFToImage
                 outputPrefix = pdfFile.substring( 0, pdfFile.lastIndexOf( '.' ));
             }
 
-            PDDocument document = null;
-            try
+            try (PDDocument document = PDDocument.load(new File(pdfFile), password))
             {
-                document = PDDocument.load(new File(pdfFile), password);
-
                 ImageType imageType = null;
                 if ("bilevel".equalsIgnoreCase(color))
                 {
@@ -253,13 +245,6 @@ public final class PDFToImage
                     System.err.println( "Error: no writer found for image format '"
                             + imageFormat + "'" );
                     System.exit(1);
-                }
-            }
-            finally
-            {
-                if( document != null )
-                {
-                    document.close();
                 }
             }
         }
