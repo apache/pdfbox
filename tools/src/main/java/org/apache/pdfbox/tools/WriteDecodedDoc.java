@@ -58,10 +58,8 @@ public class WriteDecodedDoc
     public void doIt(String in, String out, String password, boolean skipImages)
             throws IOException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = PDDocument.load(new File(in), password))
         {
-            doc = PDDocument.load(new File(in), password);
             doc.setAllSecurityToBeRemoved(true);
             for (COSObject cosObject : doc.getDocument().getObjects())
             {
@@ -89,20 +87,14 @@ public class WriteDecodedDoc
                         continue;
                     }
                     stream.removeItem(COSName.FILTER);
-                    OutputStream streamOut = stream.createOutputStream();
-                    streamOut.write(bytes);
-                    streamOut.close();
+                    try (OutputStream streamOut = stream.createOutputStream())
+                    {
+                        streamOut.write(bytes);
+                    }
                 }
             }
             doc.getDocumentCatalog();
             doc.save( out );
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
         }
     }
 
@@ -126,29 +118,29 @@ public class WriteDecodedDoc
         boolean skipImages = false;
         for( int i=0; i<args.length; i++ )
         {
-            if( args[i].equals( PASSWORD ) )
+            switch (args[i])
             {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                password = args[i];
-            }
-            else if (args[i].equals( SKIPIMAGES ))
-            {
-                skipImages = true;
-            }
-            else
-            {
-                if( pdfFile == null )
-                {
-                    pdfFile = args[i];
-                }
-                else
-                {
-                    outputFile = args[i];
-                }
+                case PASSWORD:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    password = args[i];
+                    break;
+                case SKIPIMAGES:
+                    skipImages = true;
+                    break;
+                default:
+                    if (pdfFile == null)
+                    {
+                        pdfFile = args[i];
+                    }
+                    else
+                    {
+                        outputFile = args[i];
+                    }
+                    break;
             }
         }
         if( pdfFile == null )

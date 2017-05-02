@@ -71,44 +71,42 @@ public final class PrintPDF
         orientationMap.put("portrait", Orientation.PORTRAIT);
         for (int i = 0; i < args.length; i++)
         {
-            if (args[i].equals(PASSWORD))
+            switch (args[i])
             {
-                i++;
-                if (i >= args.length)
-                {
-                    usage();
-                }
-                password = args[i];
-            }
-            else if (args[i].equals(PRINTER_NAME))
-            {
-                i++;
-                if (i >= args.length)
-                {
-                    usage();
-                }
-                printerName = args[i];
-            }
-            else if (args[i].equals(SILENT))
-            {
-                silentPrint = true;
-            }
-            else if (args[i].equals(ORIENTATION))
-            {
-                i++;
-                if (i >= args.length)
-                {
-                    usage();
-                }
-                orientation = orientationMap.get(args[i]);
-                if (orientation == null)
-                {
-                    usage();
-                }
-            }
-            else
-            {
-                pdfFile = args[i];
+                case PASSWORD:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    password = args[i];
+                    break;
+                case PRINTER_NAME:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    printerName = args[i];
+                    break;
+                case SILENT:
+                    silentPrint = true;
+                    break;
+                case ORIENTATION:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    orientation = orientationMap.get(args[i]);
+                    if (orientation == null)
+                    {
+                        usage();
+                    }
+                    break;
+                default:
+                    pdfFile = args[i];
+                    break;
             }
         }
 
@@ -117,11 +115,8 @@ public final class PrintPDF
             usage();
         }
 
-        PDDocument document = null;
-        try
+        try (PDDocument document = PDDocument.load(new File(pdfFile), password))
         {
-            document = PDDocument.load(new File(pdfFile), password);
-
             PrinterJob printJob = PrinterJob.getPrinterJob();
             printJob.setJobName(new File(pdfFile).getName());
 
@@ -143,13 +138,6 @@ public final class PrintPDF
             if (silentPrint || printJob.printDialog())
             {
                 printJob.print();
-            }
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
             }
         }
     }

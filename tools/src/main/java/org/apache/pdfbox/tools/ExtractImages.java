@@ -95,34 +95,33 @@ public final class ExtractImages
             String password = "";
             for(int i = 0; i < args.length; i++)
             {
-                if (args[i].equals(PASSWORD))
+                switch (args[i])
                 {
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                }
-                else if (args[i].equals(PREFIX))
-                {
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    prefix = args[i];
-                }
-                else if (args[i].equals(DIRECTJPEG))
-                {
-                    directJPEG = true;
-                }
-                else
-                {
-                    if (pdfFile == null)
-                    {
-                        pdfFile = args[i];
-                    }
+                    case PASSWORD:
+                        i++;
+                        if (i >= args.length)
+                        {
+                            usage();
+                        }
+                        password = args[i];
+                        break;
+                    case PREFIX:
+                        i++;
+                        if (i >= args.length)
+                        {
+                            usage();
+                        }
+                        prefix = args[i];
+                        break;
+                    case DIRECTJPEG:
+                        directJPEG = true;
+                        break;
+                    default:
+                        if (pdfFile == null)
+                        {
+                            pdfFile = args[i];
+                        }
+                        break;
                 }
             }
             if (pdfFile == null)
@@ -160,12 +159,10 @@ public final class ExtractImages
 
     private void extract(String pdfFile, String password) throws IOException
     {
-        PDDocument document = null;
-        try
+        try (PDDocument document = PDDocument.load(new File(pdfFile), password))
         {
-            document = PDDocument.load(new File(pdfFile), password);
             AccessPermission ap = document.getCurrentAccessPermission();
-            if (! ap.canExtractContent())
+            if (!ap.canExtractContent())
             {
                 throw new IOException("You do not have permission to extract images");
             }
@@ -175,13 +172,6 @@ public final class ExtractImages
                 PDPage page = document.getPage(i);
                 ImageGraphicsEngine extractor = new ImageGraphicsEngine(page);
                 extractor.run();
-            }
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
             }
         }
     }
@@ -335,10 +325,8 @@ public final class ExtractImages
             suffix = "png";
         }
 
-        FileOutputStream out = null;
-        try
+        try (FileOutputStream out = new FileOutputStream(filename + "." + suffix))
         {
-            out = new FileOutputStream(filename + "." + suffix);
             BufferedImage image = pdImage.getImage();
             if (image != null)
             {
@@ -367,13 +355,6 @@ public final class ExtractImages
                 }
             }
             out.flush();
-        }
-        finally
-        {
-            if (out != null)
-            {
-                out.close();
-            }
         }
     }
 }

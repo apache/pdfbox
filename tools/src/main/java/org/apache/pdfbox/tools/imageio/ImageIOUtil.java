@@ -66,15 +66,10 @@ public final class ImageIOUtil
             int dpi) throws IOException
     {
         File file = new File(filename);
-        FileOutputStream output = new FileOutputStream(file);
         try
-        {
+        (FileOutputStream output = new FileOutputStream(file)) {
             String formatName = filename.substring(filename.lastIndexOf('.') + 1);
             return writeImage(image, formatName, output, dpi);
-        }
-        finally
-        {
-            output.close();
         }
     }
 
@@ -100,14 +95,9 @@ public final class ImageIOUtil
             int dpi) throws IOException
     {
         File file = new File(filename + "." + formatName);
-        FileOutputStream output = new FileOutputStream(file);
         try
-        {
+        (FileOutputStream output = new FileOutputStream(file)) {
             return writeImage(image, formatName, output, dpi);
-        }
-        finally
-        {
-            output.close();
         }
     }
 

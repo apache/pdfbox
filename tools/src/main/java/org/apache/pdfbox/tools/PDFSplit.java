@@ -70,53 +70,50 @@ public final class PDFSplit
         String outputPrefix = null;
         for( int i=0; i<args.length; i++ )
         {
-            if( args[i].equals( PASSWORD ) )
+            switch (args[i])
             {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                password = args[i];
-            }
-            else if( args[i].equals( SPLIT ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                split = args[i];
-            }
-            else if( args[i].equals( START_PAGE ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                startPage = args[i];
-            }
-            else if( args[i].equals( END_PAGE ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                endPage = args[i];
-            }
-            else if( args[i].equals( OUTPUT_PREFIX ) )
-            {
-                i++;
-                outputPrefix = args[i];
-            }
-            else
-            {
-                if( pdfFile == null )
-                {
-                    pdfFile = args[i];
-                }
+                case PASSWORD:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    password = args[i];
+                    break;
+                case SPLIT:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    split = args[i];
+                    break;
+                case START_PAGE:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    startPage = args[i];
+                    break;
+                case END_PAGE:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    endPage = args[i];
+                    break;
+                case OUTPUT_PREFIX:
+                    i++;
+                    outputPrefix = args[i];
+                    break;
+                default:
+                    if (pdfFile == null)
+                    {
+                        pdfFile = args[i];
+                    }
+                    break;
             }
         }
 
@@ -171,10 +168,11 @@ public final class PDFSplit
                 documents = splitter.split( document );
                 for( int i=0; i<documents.size(); i++ )
                 {
-                    PDDocument doc = documents.get( i );
-                    String fileName = outputPrefix + "-" + (i + 1) + ".pdf";
-                    writeDocument( doc, fileName );
-                    doc.close();
+                    try (PDDocument doc = documents.get(i))
+                    {
+                        String fileName = outputPrefix + "-" + (i + 1) + ".pdf";
+                        writeDocument(doc, fileName);
+                    }
                 }
 
             }

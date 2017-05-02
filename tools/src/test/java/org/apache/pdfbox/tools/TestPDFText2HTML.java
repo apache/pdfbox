@@ -38,13 +38,14 @@ public class TestPDFText2HTML extends TestCase
         doc.getDocumentInformation().setTitle(title);
         PDPage page = new PDPage();
         doc.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-        contentStream.beginText();
-        contentStream.setFont(font, 12);
-        contentStream.newLineAtOffset(100, 700);
-        contentStream.showText(text);
-        contentStream.endText();
-        contentStream.close();
+        try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
+        {
+            contentStream.beginText();
+            contentStream.setFont(font, 12);
+            contentStream.newLineAtOffset(100, 700);
+            contentStream.showText(text);
+            contentStream.endText();
+        }
         return doc;
     }
 
