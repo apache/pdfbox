@@ -232,7 +232,8 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <!-- version 3.3.0 cause build to fail on travis, see https://github.com/travis-ci/travis-ci/issues/7517 -->
+                    <version>3.2.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
