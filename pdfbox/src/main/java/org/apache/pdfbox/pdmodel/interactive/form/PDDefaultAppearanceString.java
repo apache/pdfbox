@@ -34,7 +34,8 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
@@ -130,7 +131,15 @@ class PDDefaultAppearanceString
         {
             processSetFont(operands);
         }
+        else if ("g".equals(name))
+        {
+            processSetFontColor(operands);
+        }
         else if ("rg".equals(name))
+        {
+            processSetFontColor(operands);
+        }
+        else if ("k".equals(name))
         {
             processSetFontColor(operands);
         }
@@ -184,9 +193,21 @@ class PDDefaultAppearanceString
      */
     private void processSetFontColor(List<COSBase> operands) throws IOException
     {
-        PDColorSpace colorSpace = PDDeviceRGB.INSTANCE;
-        if (colorSpace instanceof PDDeviceColorSpace &&
-            operands.size() < colorSpace.getNumberOfComponents())
+    	PDColorSpace colorSpace = null;
+        
+        if (operands.size() == 1)
+        {
+            colorSpace = PDDeviceGray.INSTANCE;
+        }
+        else if (operands.size() == 3)
+        {
+            colorSpace = PDDeviceRGB.INSTANCE;
+        }
+        else if (operands.size() == 4)
+        {
+            colorSpace = PDDeviceCMYK.INSTANCE;
+        }
+        else 
         {
             throw new IOException("Missing operands for set non stroking color operator " + Arrays.toString(operands.toArray()));
         }

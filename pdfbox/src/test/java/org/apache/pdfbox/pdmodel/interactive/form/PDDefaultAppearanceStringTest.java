@@ -46,7 +46,7 @@ public class PDDefaultAppearanceStringTest
     @Test
     public void testParseDAString() throws IOException
     {
-        COSString sampleString = new COSString("/" + fontResourceName.getName() + " 12 Tf 0.019 0.305 0.627 rg 0g");
+        COSString sampleString = new COSString("/" + fontResourceName.getName() + " 12 Tf 0.019 0.305 0.627 rg");
 
         PDDefaultAppearanceString defaultAppearanceString = new PDDefaultAppearanceString(sampleString, resources);
 
@@ -61,14 +61,14 @@ public class PDDefaultAppearanceStringTest
     @Test(expected=IOException.class)
     public void testFontResourceUnavailable() throws IOException
     {
-        COSString sampleString = new COSString("/Helvetica 12 Tf 0.019 0.305 0.627 rg 0g");
+        COSString sampleString = new COSString("/Helvetica 12 Tf 0.019 0.305 0.627 rg");
         new PDDefaultAppearanceString(sampleString, resources);
     }
     
     @Test(expected=IOException.class)
     public void testWrongNumberOfColorArguments() throws IOException
     {
-        COSString sampleString = new COSString("/Helvetica 12 Tf 0.305 0.627 rg 0g");
+        COSString sampleString = new COSString("/Helvetica 12 Tf 0.305 0.627 rg");
         new PDDefaultAppearanceString(sampleString, resources);
     } 
 }
