@@ -141,7 +141,7 @@ public class CreateGradientShadingPDF
             gouraudShading.setColorSpace(PDDeviceRGB.INSTANCE);
             
             // Function is not required for type 4 shadings and not really useful, 
-            // because if a function would be used, each edge "color" of a triangle would be one value, 
+            // because if a function would be used, each corner "color" of a triangle would be one value, 
             // which would then transformed into n color components by the function so it is 
             // difficult to get 3 "extremes".
 
