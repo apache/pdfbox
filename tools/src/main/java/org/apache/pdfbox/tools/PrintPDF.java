@@ -39,6 +39,8 @@ public final class PrintPDF
     private static final String SILENT = "-silentPrint";
     private static final String PRINTER_NAME = "-printerName";
     private static final String ORIENTATION = "-orientation";
+    private static final String BORDER = "-border";
+    private static final String DPI = "-dpi";
 
     /**
      * private constructor.
@@ -65,6 +67,8 @@ public final class PrintPDF
         boolean silentPrint = false;
         String printerName = null;
         Orientation orientation = Orientation.AUTO;
+        boolean showPageBorder = false;
+        int dpi = 0;
         Map <String,Orientation> orientationMap = new HashMap<>();
         orientationMap.put("auto", Orientation.AUTO);
         orientationMap.put("landscape", Orientation.LANDSCAPE);
@@ -104,6 +108,17 @@ public final class PrintPDF
                         usage();
                     }
                     break;
+                case BORDER:
+                    showPageBorder = true;
+                    break;
+                case DPI:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    dpi = Integer.parseInt(args[i]);
+                    break;
                 default:
                     pdfFile = args[i];
                     break;
@@ -133,7 +148,7 @@ public final class PrintPDF
                     }
                 }
             }
-            printJob.setPageable(new PDFPageable(document, orientation));
+            printJob.setPageable(new PDFPageable(document, orientation, showPageBorder, dpi));
             
             if (silentPrint || printJob.printDialog())
             {
@@ -151,7 +166,11 @@ public final class PrintPDF
                 + "\nOptions:\n"
                 + "  -password  <password>                : Password to decrypt document\n"
                 + "  -printerName <name>                  : Print to specific printer\n"
-                + "  -orientation auto|portrait|landscape : Print using orientation (default: auto)\n"
+                + "  -orientation auto|portrait|landscape : Print using orientation\n"
+                + "                                           (default: auto)\n"
+                + "  -border                              : Print with border\n"
+                + "  -dpi                                 : Render into intermediate image with\n"
+                + "                                           specific dpi and then print\n"
                 + "  -silentPrint                         : Print without printer dialog box\n";
         
         System.err.println(message);
