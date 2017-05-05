@@ -18,6 +18,9 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
 import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -779,10 +782,38 @@ public abstract class BaseParser
         {
             seqSource.unread(c);
         }
-        String string = new String(buffer.toByteArray(), Charsets.UTF_8);
+        
+        byte[] bytes = buffer.toByteArray();
+        String string;
+        if (isValidUTF8(bytes))
+        {
+            string = new String(buffer.toByteArray(), Charsets.UTF_8);
+        }
+        else
+        {
+            // some malformed PDFs don't use UTF-8 see PDFBOX-3347
+            string = new String(buffer.toByteArray(), Charsets.ISO_8859_1);
+        }
         return COSName.getPDFName(string);
     }
 
+    /**
+     * Returns true if a byte sequence is valid UTF-8.
+     */
+    private boolean isValidUTF8(byte[] input)
+    {
+        CharsetDecoder cs = Charsets.UTF_8.newDecoder();
+        try
+        {
+            cs.decode(ByteBuffer.wrap(input));
+            return true;
+        }
+        catch (CharacterCodingException e)
+        {
+            return false;
+        }
+    }
+    
     /**
      * This will parse a boolean object from the stream.
      *
