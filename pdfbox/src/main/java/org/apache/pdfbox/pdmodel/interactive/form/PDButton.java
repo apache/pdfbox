@@ -310,25 +310,48 @@ public abstract class PDButton extends PDTerminalField
         List<PDAnnotationWidget> widgets = this.getWidgets();
         for (PDAnnotationWidget widget : widgets)
         {
-            PDAppearanceDictionary apDictionary = widget.getAppearance();
-            if (apDictionary != null) 
-            {
-                PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
-                if (normalAppearance != null)
-                {
-                    Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
-                    for (COSName entry : entries)
-                    {
-                        if (COSName.Off.compareTo(entry) != 0)
-                        {
-                            onValues.add(entry.getName());
-                        }
-                    }
-                }
-            }
+        	onValues.add(getOnValueForWidget(widget));
         }        
         return onValues;
     }
+    
+    /*
+     * Get the on value for an individual widget by it's index.
+     */
+    private String getOnValue(int index)
+    {
+        List<PDAnnotationWidget> widgets = this.getWidgets();
+        if (index < widgets.size())
+        {
+            return getOnValueForWidget(widgets.get(index));
+        }
+        return "";
+    }
+ 
+    /*
+     * Get the on value for an individual widget.
+     */
+    private String getOnValueForWidget(PDAnnotationWidget widget)
+    {
+        PDAppearanceDictionary apDictionary = widget.getAppearance();
+        if (apDictionary != null) 
+        {
+            PDAppearanceEntry normalAppearance = apDictionary.getNormalAppearance();
+            if (normalAppearance != null)
+            {
+                Set<COSName> entries = normalAppearance.getSubDictionary().keySet();
+                for (COSName entry : entries)
+                {
+                    if (COSName.Off.compareTo(entry) != 0)
+                    {
+                        return entry.getName();
+                    }
+                }
+            }
+        }
+        return "";
+    }    
+    
     
     /**
      * Checks value.
@@ -389,8 +412,7 @@ public abstract class PDButton extends PDTerminalField
             // see PDFBOX-3682
             if (optionsIndex != -1)
             {
-                String[] onValues = getOnValues().toArray(new String[getOnValues().size()]);
-                updateByValue(onValues[optionsIndex]);
+                updateByValue(getOnValue(optionsIndex));
             }
         }
     }
