@@ -792,7 +792,7 @@ public abstract class BaseParser
         else
         {
             // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            string = new String(buffer.toByteArray(), Charsets.ISO_8859_1);
+            string = new String(buffer.toByteArray(), Charsets.WINDOWS_1252);
         }
         return COSName.getPDFName(string);
     }
