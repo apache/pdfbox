@@ -667,26 +667,25 @@ public class PDFMergerUtility
     private void mergeAcroForm(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {
-
-    	List<PDField> srcFields = srcAcroForm.getFields();
+        List<PDField> srcFields = srcAcroForm.getFields();
 
         if (srcFields != null)
         {
-        	// if a form is merged multiple times using PDFBox the newly generated
-        	// fields starting with dummyFieldName may already exist. We need to determine the last unique 
-        	// number used and increment that.
-        	final String prefix = "dummyFieldName";
-        	final int prefixLength = prefix.length();
+            // if a form is merged multiple times using PDFBox the newly generated
+            // fields starting with dummyFieldName may already exist. We need to determine the last unique 
+            // number used and increment that.
+            final String prefix = "dummyFieldName";
+            final int prefixLength = prefix.length();
 
             for (PDField destField : destAcroForm.getFieldTree())
             {
-            	String fieldName = destField.getPartialName();
-            	if (fieldName.startsWith(prefix))
-            	{
-            		nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(fieldName.substring(prefixLength, fieldName.length()))+1);
-            	}
+                String fieldName = destField.getPartialName();
+                if (fieldName.startsWith(prefix))
+                {
+                    nextFieldNum = Math.max(nextFieldNum, Integer.parseInt(fieldName.substring(prefixLength, fieldName.length())) + 1);
+                }
             }
-        	
+
             COSArray destFields = (COSArray) destAcroForm.getCOSObject().getItem(COSName.FIELDS);
             for (PDField srcField : srcAcroForm.getFieldTree())
             {
