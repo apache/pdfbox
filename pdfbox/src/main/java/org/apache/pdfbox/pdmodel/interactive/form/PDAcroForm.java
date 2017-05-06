@@ -39,7 +39,6 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.fdf.FDFCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
@@ -517,17 +516,17 @@ public final class PDAcroForm implements COSObjectable
     }
     
     /**
-     * This will get the default resources for the acro form.
+     * This will get the default resources for the AcroForm.
      *
-     * @return The default resources.
+     * @return The default resources or null if their is none.
      */
     public PDResources getDefaultResources()
     {
         PDResources retval = null;
-        COSDictionary dr = (COSDictionary) dictionary.getDictionaryObject(COSName.DR);
-        if (dr != null)
+        COSBase base = dictionary.getDictionaryObject(COSName.DR);
+        if (base instanceof COSDictionary)
         {
-            retval = new PDResources(dr, document.getResourceCache());
+            retval = new PDResources((COSDictionary) base, document.getResourceCache());
         }
         return retval;
     }
