@@ -515,16 +515,32 @@ public class PDDocument implements Closeable
         signatureField.getWidgets().get(0).setAppearance(ap);
     }
 
-    private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary dict)
+    private void assignAcroFormDefaultResource(PDAcroForm acroForm, COSDictionary newDict)
     {
-        // read and set AcroForm default resource dictionary /DR if available
-        COSBase base = dict.getDictionaryObject(COSName.DR);
-        if (base instanceof COSDictionary)
+        // read and set/update AcroForm default resource dictionary /DR if available
+        COSBase newBase = newDict.getDictionaryObject(COSName.DR);
+        if (newBase instanceof COSDictionary)
         {
-            COSDictionary dr = (COSDictionary) base;
-            dr.setDirect(true);
-            dr.setNeedToBeUpdated(true);
-            acroForm.getCOSObject().setItem(COSName.DR, dr);
+            COSDictionary newDR = (COSDictionary) newBase;
+            PDResources defaultResources = acroForm.getDefaultResources();
+            if (defaultResources == null)
+            {
+                acroForm.getCOSObject().setItem(COSName.DR, newDR);
+                newDR.setDirect(true);
+                newDR.setNeedToBeUpdated(true);            
+            }
+            else
+            {
+                COSDictionary oldDR = defaultResources.getCOSObject();
+                COSBase newXObjectBase = newDR.getItem(COSName.XOBJECT);
+                COSBase oldXObjectBase = oldDR.getItem(COSName.XOBJECT);
+                if (newXObjectBase instanceof COSDictionary &&
+                    oldXObjectBase instanceof COSDictionary)
+                {
+                    ((COSDictionary) oldXObjectBase).addAll((COSDictionary) newXObjectBase);
+                    oldDR.setNeedToBeUpdated(true);
+                }
+            }
         }
     }
 
