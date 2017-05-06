@@ -169,6 +169,26 @@ public class CreateVisibleSignature extends CreateSignatureBase
                 setMDPPermission(doc, signature, 2);
             }
 
+            PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
+            if (acroForm != null && acroForm.getNeedAppearances())
+            {
+                // PDFBOX-3738 NeedAppearances true results in visible signature becoming invisible 
+                // with Adobe Reader
+                if (acroForm.getFields().isEmpty())
+                {
+                    // we can safely delete it if there are no fields
+                    acroForm.getCOSObject().removeItem(COSName.NEED_APPEARANCES);
+                    // note that if you've set MDP permissions, the removal of this item
+                    // may result in Adobe Reader claiming that the document has been changed.
+                    // and/or that field content won't be displayed properly.
+                    // ==> decide what you prefer and adjust your code accordingly.
+                }
+                else
+                {
+                    System.out.println("/NeedAppearances is set, signature may be ignored by Adobe Reader");
+                }
+            }
+
             // default filter
             signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
 
