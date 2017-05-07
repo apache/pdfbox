@@ -1906,7 +1906,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             // extended Latin to the value in the Greek script. We normalize
             // the Unicode Alphabetic and Arabic A&B Presentation forms.
             char c = word.charAt(q);
-            if (0xFB00 <= c && c <= 0xFDFF || 0xFE70 <= c && c <= 0xFEFF)
+            if ((0xFB00 <= c && c <= 0xFDFF) || (0xFE70 <= c && c <= 0xFEFF))
             {
                 if (builder == null)
                 {
