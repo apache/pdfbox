@@ -400,8 +400,8 @@ public class COSParser extends BaseParser
         {
             if (isLenient) 
             {
-                LOG.debug("Can't find offset for startxref");
-                return -1;
+                LOG.debug("Performing brute force search for last startxref entry");
+                return bfSearchForLastStartxrefEntry();
             }
             else
             {
@@ -1633,6 +1633,30 @@ public class COSParser extends BaseParser
     }
 
     /**
+     * Brute force search for the last startxref entry.
+     * 
+     * @throws IOException if something went wrong
+     */
+    private long bfSearchForLastStartxrefEntry() throws IOException
+    {
+        long originOffset = source.getPosition();
+        long lastStartxref = -1;
+        source.seek(MINIMUM_SEARCH_OFFSET);
+        // search for startxref
+        while (!source.isEOF())
+        {
+            if (isString(STARTXREF))
+            {
+                lastStartxref = source.getPosition();
+                source.seek(lastStartxref + 9);
+            }
+            source.read();
+        }
+        source.seek(originOffset);
+        return lastStartxref;
+    }
+
+    /**
      * Brute force search for all /XRef entries (streams).
      * 
      * @throws IOException if something went wrong
@@ -1731,19 +1755,14 @@ public class COSParser extends BaseParser
         {
             // reset trailer resolver
             xrefTrailerResolver.reset();
-            // search for an Xref stream
-            trailer = searchForXrefStream();
-            if (trailer == null)
+            // no xref stream found -> use the found objects to rebuild the trailer resolver
+            xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
+            for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
-                // no xref stream found -> use the found objects to rebuild the trailer resolver
-                xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
-                for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
-                {
-                    xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
-                }
-                xrefTrailerResolver.setStartxref(0);
-                trailer = xrefTrailerResolver.getTrailer();
+                xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
             }
+            xrefTrailerResolver.setStartxref(0);
+            trailer = xrefTrailerResolver.getTrailer();
             getDocument().setTrailer(trailer);
             // search for the different parts of the trailer dictionary
             for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
@@ -1787,39 +1806,6 @@ public class COSParser extends BaseParser
         return trailer;
     }
     
-    private COSDictionary searchForXrefStream() throws IOException
-    {
-        COSDictionary trailer = null;
-        for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
-        {
-            Long offset = entry.getValue();
-            source.seek(offset);
-            readObjectNumber();
-            readGenerationNumber();
-            readExpectedString(OBJ_MARKER, true);
-            try
-            {
-                COSDictionary dictionary = parseCOSDictionary();
-                if (dictionary != null && COSName.XREF.equals(dictionary.getCOSName(COSName.TYPE)))
-                {
-                    COSStream xrefStream = parseCOSStream(dictionary);
-                    parseXrefStream(xrefStream, offset, true);
-                    xrefStream.close();
-                    xrefTrailerResolver.setStartxref(offset);
-                    break;
-                }
-            }
-            catch (IOException exception)
-            {
-                LOG.debug("Skipped object " + entry.getKey()
-                        + ", either it's corrupt or not a dictionary");
-            }
-        }
-        if (validateXrefOffsets(xrefTrailerResolver.getXrefTable()))
-            trailer = xrefTrailerResolver.getTrailer();
-        return trailer;
-    }
-
     /**
      * This will parse the startxref section from the stream.
      * The startxref value is ignored.
