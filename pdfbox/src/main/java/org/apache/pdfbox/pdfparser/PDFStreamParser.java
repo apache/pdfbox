@@ -403,9 +403,9 @@ public class PDFStreamParser extends BaseParser
             // PDFBOX-3742: just assuming that 1-3 non blanks is a PDF operator isn't enough
             if (endOpIdx != -1 && startOpIdx != -1)
             {
-                // usually, the operator here is Q, sometimes EMC (PDFBOX-2376).
+                // usually, the operator here is Q, sometimes EMC (PDFBOX-2376), S (PDFBOX-3784).
                 String s = new String(binCharTestArr, startOpIdx, endOpIdx - startOpIdx);
-                if (!"Q".equals(s) && !"EMC".equals(s))
+                if (!"Q".equals(s) && !"EMC".equals(s) && !"S".equals(s))
                 {
                     noBinData = false;
                 }
