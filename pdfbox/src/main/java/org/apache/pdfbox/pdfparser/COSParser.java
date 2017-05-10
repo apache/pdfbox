@@ -1255,26 +1255,25 @@ public class COSParser extends BaseParser
 
     private boolean validateXrefOffsets(Map<COSObjectKey, Long> xrefOffset) throws IOException
     {
-        boolean valid = true;
-        if (xrefOffset != null)
+        if (xrefOffset == null)
         {
-            for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
+            return true;
+        }
+        for (Entry<COSObjectKey, Long> objectEntry : xrefOffset.entrySet())
+        {
+            COSObjectKey objectKey = objectEntry.getKey();
+            Long objectOffset = objectEntry.getValue();
+            // a negative offset number represents a object number itself
+            // see type 2 entry in xref stream
+            if (objectOffset != null && objectOffset >= 0
+                    && !checkObjectKeys(objectKey, objectOffset))
             {
-                COSObjectKey objectKey = objectEntry.getKey();
-                Long objectOffset = objectEntry.getValue();
-                // a negative offset number represents a object number itself
-                // see type 2 entry in xref stream
-                if (objectOffset != null && objectOffset >= 0
-                        && !checkObjectKeys(objectKey, objectOffset))
-                {
-                    LOG.debug(
-                            "Stop checking xref offsets as at least one couldn't be dereferenced");
-                    valid = false;
-                    break;
-                }
+                LOG.debug("Stop checking xref offsets as at least one (" + objectKey
+                        + ") couldn't be dereferenced");
+                return false;
             }
         }
-        return valid;
+        return true;
     }
 
     /**
