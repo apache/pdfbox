@@ -1668,7 +1668,7 @@ public class COSParser extends BaseParser
         {
             // reset trailer resolver
             xrefTrailerResolver.reset();
-            // no xref stream found -> use the found objects to rebuild the trailer resolver
+            // use the found objects to rebuild the trailer resolver
             xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
             for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
