@@ -402,7 +402,12 @@ public class COSParser extends BaseParser
             if (isLenient) 
             {
                 LOG.debug("Performing brute force search for last startxref entry");
-                return bfSearchForLastStartxrefEntry();
+                long bfOffset = bfSearchForLastStartxrefEntry();
+                source.seek(bfOffset);
+                long bfXref = parseStartXref();
+                source.seek(0);
+                // use the new offset only if it is a valid pointer to a xref table
+                return checkXRefOffset(bfXref) == bfXref ? bfOffset : -1;
             }
             else
             {
@@ -1619,7 +1624,6 @@ public class COSParser extends BaseParser
      */
     private long bfSearchForLastStartxrefEntry() throws IOException
     {
-        long originOffset = source.getPosition();
         long lastStartxref = -1;
         source.seek(MINIMUM_SEARCH_OFFSET);
         // search for startxref
@@ -1632,7 +1636,6 @@ public class COSParser extends BaseParser
             }
             source.read();
         }
-        source.seek(originOffset);
         return lastStartxref;
     }
 
