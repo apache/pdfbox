@@ -59,7 +59,7 @@ public class PDFTemplateCreator
     /**
      * Returns the PDFTemplateStructure object.
      * 
-     * @return
+     * @return the PDFTemplateStructure object.
      */
     public PDFTemplateStructure getPdfStructure()
     {
