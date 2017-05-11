@@ -21,11 +21,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.After;
@@ -130,11 +136,109 @@ public class PDAcroFormTest
         }
     }
     
+    /*
+     * Test that we do not modify an AcroForm with missing resource information
+     * when loading the document only.
+     * (PDFBOX-3752)
+     */
+    @Test
+    public void testDontAddMissingInformationOnDocumentLoad()
+    {
+        try
+        {
+            byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
+            PDDocument pdfDocument = PDDocument.load(pdfBytes);
+            
+            // do a low level access to the AcroForm to avoid the generation of missing entries
+            PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
+            COSDictionary catalogDictionary = documentCatalog.getCOSObject();
+            COSDictionary acroFormDictionary = (COSDictionary) catalogDictionary.getDictionaryObject(COSName.ACRO_FORM);
+
+            // ensure that the missing information has not been generated
+            assertNull(acroFormDictionary.getDictionaryObject(COSName.DA));
+            assertNull(acroFormDictionary.getDictionaryObject(COSName.RESOURCES));
+            
+            pdfDocument.close();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Couldn't create test document, test skipped");
+            return;
+        }
+    } 
+    
+    /*
+     * Test that we add missing ressouce information to an AcroForm 
+     * when accessing the AcroForm on the PD level
+     * (PDFBOX-3752)
+     */
+    @Test
+    public void testAddMissingInformationOnAcroFormAccess()
+    {
+        try
+        {
+            byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
+            PDDocument pdfDocument = PDDocument.load(pdfBytes);
+            PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
+            
+            // this call shall trigger the generation of missing information
+            PDAcroForm theAcroForm = documentCatalog.getAcroForm();
+            
+            // ensure that the missing information has been generated
+            // DA entry
+            assertEquals("/Helv 0 Tf 0 g ", theAcroForm.getDefaultAppearance());
+            assertNotNull(theAcroForm.getDefaultResources());
+            
+            // DR entry
+            PDResources acroFormResources = theAcroForm.getDefaultResources();
+            assertNotNull(acroFormResources.getFont(COSName.getPDFName("Helv")));
+            assertEquals("Helvetica", acroFormResources.getFont(COSName.getPDFName("Helv")).getName());
+            assertNotNull(acroFormResources.getFont(COSName.getPDFName("ZaDb")));
+            assertEquals("ZapfDingbats", acroFormResources.getFont(COSName.getPDFName("ZaDb")).getName());
+
+            pdfDocument.close();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Couldn't create test document, test skipped");
+            return;
+        }
+    }
+    
     @After
     public void tearDown() throws IOException
     {
         document.close();
     }
 
+    private byte[] createAcroFormWithMissingResourceInformation() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+
+        PDAcroForm newAcroForm = new PDAcroForm(document);
+        document.getDocumentCatalog().setAcroForm(newAcroForm);
+
+        PDTextField textBox = new PDTextField(newAcroForm);
+        textBox.setPartialName("SampleField");
+        newAcroForm.getFields().add(textBox);
+
+        PDAnnotationWidget widget = textBox.getWidgets().get(0);
+        PDRectangle rect = new PDRectangle(50, 750, 200, 20);
+        widget.setRectangle(rect);
+        widget.setPage(page);
+
+        page.getAnnotations().add(widget);
+
+        // acroForm.setNeedAppearances(true);
+        // acroForm.getField("SampleField").getCOSObject().setString(COSName.V, "content");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        document.save(baos); // this is a working PDF
+        document.close();
+        return baos.toByteArray();
+    }
+    
 }
 
