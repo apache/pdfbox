@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -56,7 +57,8 @@ class AppearanceGeneratorHelper
     private static final Operator EMC = Operator.getOperator("EMC");
  
     private final PDVariableText field;
-    private final PDDefaultAppearanceString defaultAppearance;
+    
+    private PDDefaultAppearanceString defaultAppearance;
     private String value;
     
     /**
@@ -149,7 +151,15 @@ class AppearanceGeneratorHelper
 
         for (PDAnnotationWidget widget : field.getWidgets())
         {
-        	
+            // some fields have the /Da at the widget level if the 
+            // widgets differ in layout.
+            PDDefaultAppearanceString acroFormAppearance = defaultAppearance;
+            
+            if (widget.getCOSObject().getDictionaryObject(COSName.DA) != null)
+            {
+                defaultAppearance = getWidgetDefaultAppearanceString(widget);
+            }
+            
         	PDRectangle rect = widget.getRectangle();
             if (rect == null)
             {
@@ -215,7 +225,17 @@ class AppearanceGeneratorHelper
                 
                 setAppearanceContent(widget, appearanceStream);
             }
+            
+            // restore the field level appearance;
+            defaultAppearance =  acroFormAppearance;
         }
+    }
+    
+    private PDDefaultAppearanceString getWidgetDefaultAppearanceString(PDAnnotationWidget widget) throws IOException
+    {
+        COSString da = (COSString) widget.getCOSObject().getDictionaryObject(COSName.DA);
+        PDResources dr = field.getAcroForm().getDefaultResources();
+        return new PDDefaultAppearanceString(da, dr);
     }
     
     private int resolveRotation(PDAnnotationWidget widget)
@@ -376,10 +396,15 @@ class AppearanceGeneratorHelper
         contents.clip();
         
         // get the font
-        PDFont font = field.getDefaultAppearanceString().getFont();
+        PDFont font = defaultAppearance.getFont();
         
         // calculate the fontSize (because 0 = autosize)
-        float fontSize = calculateFontSize(font, contentRect);
+        float fontSize = defaultAppearance.getFontSize();
+        
+        if (fontSize == 0)
+        {
+            fontSize = calculateFontSize(font, contentRect);            
+        }
         
         // for a listbox generate the highlight rectangle for the selected
         // options
@@ -392,7 +417,7 @@ class AppearanceGeneratorHelper
         contents.beginText();
 
         // write the /DA string
-        field.getDefaultAppearanceString().writeTo(contents, fontSize);
+        defaultAppearance.writeTo(contents, fontSize);
        
         // calculate the y-position of the baseline
         float y;

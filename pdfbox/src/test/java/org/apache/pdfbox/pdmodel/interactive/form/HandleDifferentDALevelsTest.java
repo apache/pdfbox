@@ -87,7 +87,7 @@ public class HandleDifferentDALevelsTest
     }
     
     // TODO: enable the test after issue 3687 has been fixed
-    // @Test
+    @Test
     public void checkDifferentLayout() throws IOException
     {
         PDTextField field = (PDTextField) acroForm.getField("MultipleAnnotations-DifferentLayout");
