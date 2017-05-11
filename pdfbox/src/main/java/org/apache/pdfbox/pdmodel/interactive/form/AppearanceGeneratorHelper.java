@@ -92,8 +92,50 @@ class AppearanceGeneratorHelper
     AppearanceGeneratorHelper(PDVariableText field) throws IOException
     {
         this.field = field;
+        validateAndEnsureAcroFormResources();
+        
         this.defaultAppearance = field.getDefaultAppearanceString();
     }
+    
+    /*
+     * Adobe Reader/Acrobat are adding resources which are at the field/widget level
+     * to the AcroForm level. 
+     */
+    private void validateAndEnsureAcroFormResources() {
+        // add font resources which might be available at the field 
+        // level but are not at the AcroForm level to the AcroForm
+        // to match Adobe Reader/Acrobat behavior        
+        if (field.getAcroForm().getDefaultResources() == null)
+        {
+            return;
+        }
+        
+        PDResources acroFormResources = field.getAcroForm().getDefaultResources();
+        
+        for (PDAnnotationWidget widget : field.getWidgets())
+        {
+            if (widget.getNormalAppearanceStream() != null && widget.getNormalAppearanceStream().getResources() != null)
+            {
+                PDResources widgetResources = widget.getNormalAppearanceStream().getResources();
+                for (COSName fontResourceName : widgetResources.getFontNames())
+                {
+                    try
+                    {
+                        if (acroFormResources.getFont(fontResourceName) == null)
+                        {
+                            LOG.debug("Adding font resource " + fontResourceName + " from widget to AcroForm");
+                            acroFormResources.put(fontResourceName, widgetResources.getFont(fontResourceName));
+                        }
+                    }
+                    catch (IOException e)
+                    {
+                        LOG.warn("Unable to match field level font with AcroForm font");
+                    }
+                }
+            }
+        }
+    }
+    
     
     /**
      * This is the public method for setting the appearance stream.
