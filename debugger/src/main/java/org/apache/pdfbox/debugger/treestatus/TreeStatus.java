@@ -173,7 +173,7 @@ public final class TreeStatus
      * An object is searched in the tree structure using the identifiers parsed earlier step.
      * @param obj
      * @param searchStr
-     * @return
+     * @return the Object found or null
      */
     private Object searchNode(Object obj, String searchStr)
     {

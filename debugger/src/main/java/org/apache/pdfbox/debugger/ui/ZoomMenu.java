@@ -82,7 +82,7 @@ public final class ZoomMenu extends MenuBase
     /**
      * Set the zoom selection.
      *
-     * @param zoomValue, e.g. 1, 0.25, 4.
+     * @param zoomValue e.g. 1, 0.25, 4.
      * @throws IllegalArgumentException if the parameter doesn't belong to a zoom menu item.
      */
     public void changeZoomSelection(float zoomValue)

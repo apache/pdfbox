@@ -67,7 +67,7 @@ public class CSIndexed
     /**
      * Parses the colorant data from the array and return.
      *
-     * @return
+     * @return the colorant data
      */
     private IndexedColorant[] getColorantData()
     {
