@@ -402,11 +402,19 @@ public class COSParser extends BaseParser
             {
                 LOG.debug("Performing brute force search for last startxref entry");
                 long bfOffset = bfSearchForLastStartxrefEntry();
-                source.seek(bfOffset);
-                long bfXref = parseStartXref();
+                boolean offsetIsValid = false;
+                if (bfOffset > -1)
+                {
+                    source.seek(bfOffset);
+                    long bfXref = parseStartXref();
+                    if (bfXref > -1)
+                    {
+                        offsetIsValid = checkXRefOffset(bfXref) == bfXref;
+                    }
+                }
                 source.seek(0);
                 // use the new offset only if it is a valid pointer to a xref table
-                return checkXRefOffset(bfXref) == bfXref ? bfOffset : -1;
+                return offsetIsValid ? bfOffset : -1;
             }
             else
             {
