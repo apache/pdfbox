@@ -411,7 +411,7 @@ public class TextToPDF
     /**
      * Tells the paper orientation.
      *
-     * @return
+     * @return true for landscape orientation
      */
     public boolean isLandscape()
     {
