@@ -297,14 +297,21 @@ final class SampledImageReader
             final int width = pdImage.getWidth();
             final int height = pdImage.getHeight();
             final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
-            int max = width * height;
-            byte[] tempBytes = new byte[numComponents];
-            for (int i = 0; i < max; i++)
+            byte[] tempBytes = new byte[numComponents * width];
+            // compromise between memory and time usage:
+            // reading the whole image consumes too much memory
+            // reading one pixel at a time makes it slow in our buffering infrastructure 
+            int i = 0;
+            for (int y = 0; y < height; ++y)
             {
                 input.read(tempBytes);
-                for (int c = 0; c < numComponents; c++)
+                for (int x = 0; x < width; ++x)
                 {
-                    banks[c][i] = tempBytes[0+c];
+                    for (int c = 0; c < numComponents; c++)
+                    {
+                        banks[c][i] = tempBytes[x * numComponents + c];
+                    }
+                    ++i;
                 }
             }
             // use the color space to convert the image to RGB
@@ -314,8 +321,8 @@ final class SampledImageReader
         {
             IOUtils.closeQuietly(input);
         }
-    }    
-    
+    }
+
     // slower, general-purpose image conversion from any image format
     private static BufferedImage fromAny(PDImage pdImage, WritableRaster raster, COSArray colorKey)
             throws IOException
