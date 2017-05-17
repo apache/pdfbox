@@ -154,24 +154,20 @@ public class PDVisibleSignDesigner
 
     private void calculatePageSizeFromFile(String filename, int page) throws IOException
     {
-        // create PD document
-        PDDocument document = PDDocument.load(new File(filename));
-
-        // calculate height and width of document page
-        calculatePageSize(document, page);
-
-        document.close();
+        try (PDDocument document = PDDocument.load(new File(filename)))
+        {
+            // calculate height and width of document page
+            calculatePageSize(document, page);
+        }
     }
 
     private void calculatePageSizeFromStream(InputStream documentStream, int page) throws IOException
     {
-        // create PD document
-        PDDocument document = PDDocument.load(documentStream);
-
-        // calculate height and width of document page
-        calculatePageSize(document, page);
-
-        document.close();
+        try (PDDocument document = PDDocument.load(documentStream))
+        {
+            // calculate height and width of document page
+            calculatePageSize(document, page);
+        }
     }
 
     /**
