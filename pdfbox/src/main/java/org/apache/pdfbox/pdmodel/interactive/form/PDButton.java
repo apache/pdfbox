@@ -104,7 +104,7 @@ public abstract class PDButton extends PDTerminalField
     /**
      * Determines if radio button bit is set.
      * 
-     * @return true if type of button field is a push button.
+     * @return true if type of button field is a radio button.
      */
     public boolean isRadioButton()
     {
