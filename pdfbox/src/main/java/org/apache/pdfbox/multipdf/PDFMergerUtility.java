@@ -492,6 +492,7 @@ public class PDFMergerUtility
         {
             PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);
             newStream.getCOSObject().mergeInto(srcMetadata);
+            newStream.getCOSObject().removeItem(COSName.FILTER);
             destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
         }
 
