@@ -278,13 +278,4 @@ final class UnmodifiableCOSDictionary extends COSDictionary
     {
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void mergeInto(COSDictionary dic)
-    {
-        throw new UnsupportedOperationException();
-    }
 }

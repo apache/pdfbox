@@ -1444,23 +1444,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This will add all of the dictionarys keys/values to this dictionary, but only if they don't already exist. If a
-     * key already exists in this dictionary then nothing is changed.
-     *
-     * @param dic The dic to get the keys from.
-     */
-    public void mergeInto(COSDictionary dic)
-    {
-        for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
-        {
-            if (getItem(entry.getKey()) == null)
-            {
-                setItem(entry.getKey(), entry.getValue());
-            }
-        }
-    }
-
-    /**
      * Nice method, gives you every object you want Arrays works properly too. Try "P/Annots/[k]/Rect" where k means the
      * index of the Annotsarray.
      *
