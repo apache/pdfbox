@@ -23,10 +23,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -328,9 +332,7 @@ public class PDFMergerUtility
         
         PDDocumentInformation destInfo = destination.getDocumentInformation();
         PDDocumentInformation srcInfo = source.getDocumentInformation();
-        destInfo.getCOSObject().mergeInto(srcInfo.getCOSObject());
-
-
+        mergeInto(srcInfo.getCOSObject(), destInfo.getCOSObject(), Collections.<COSName>emptySet());
 
         // use the highest version number for the resulting pdf
         float destVersion = destination.getVersion();
@@ -490,9 +492,9 @@ public class PDFMergerUtility
         COSStream srcMetadata = (COSStream) srcCatalog.getCOSObject().getDictionaryObject(COSName.METADATA);
         if (destMetadata == null && srcMetadata != null)
         {
-            PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);
-            newStream.getCOSObject().mergeInto(srcMetadata);
-            newStream.getCOSObject().removeItem(COSName.FILTER);
+            PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);           
+            mergeInto(srcMetadata, newStream.getCOSObject(), 
+                    new HashSet<COSName>(Arrays.asList(COSName.FILTER, COSName.LENGTH)));           
             destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
         }
 
@@ -819,5 +821,25 @@ public class PDFMergerUtility
     private boolean isDynamicXfa(PDAcroForm acroForm)
     {
         return acroForm != null && acroForm.xfaIsDynamic();
+    }
+
+    /**
+     * This will add all of the dictionarys keys/values to this dictionary, but only if they are not
+     * in an exclusion list and if they don't already exist. If a key already exists in this
+     * dictionary then nothing is changed.
+     *
+     * @param src The source dictionary to get the keys/values from.
+     * @param dst The destination dictionary to merge the keys/values into.
+     * @param exclude Names of keys that shall be skipped.
+     */
+    private void mergeInto(COSDictionary src, COSDictionary dst, Set<COSName> exclude)
+    {
+        for (Map.Entry<COSName, COSBase> entry : src.entrySet())
+        {
+            if (!exclude.contains(entry.getKey()) && !dst.containsKey(entry.getKey()))
+            {
+                dst.setItem(entry.getKey(), entry.getValue());
+            }
+        }
     }
 }
