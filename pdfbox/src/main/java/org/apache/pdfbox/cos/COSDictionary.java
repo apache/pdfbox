@@ -1386,7 +1386,11 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * key already exists in this dictionary then nothing is changed.
      *
      * @param dic The dic to get the keys from.
+     * 
+     * @deprecated This method should no longer be used and will be removed in 3.0 because it could
+     * also merge attributes that should not be merged (filter and length in a COSStream.
      */
+    @Deprecated
     public void mergeInto(COSDictionary dic)
     {
         for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
