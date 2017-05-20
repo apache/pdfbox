@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
+import sun.swing.SwingUtilities2;
 
 /**
  * This class represents a dictionary where name/value pairs reside.
@@ -1503,7 +1504,11 @@ public class COSDictionary extends COSBase
      *
      * @param dic
      *            The dic to get the keys from.
+     * 
+     * @deprecated This method should no longer be used and will be removed in 3.0 because it could
+     * also merge attributes that should not be merged (filter and length in a COSStream.
      */
+    @Deprecated
     public void mergeInto(COSDictionary dic)
     {
         for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
