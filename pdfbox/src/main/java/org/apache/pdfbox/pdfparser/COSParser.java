@@ -1440,6 +1440,9 @@ public class COSParser extends BaseParser
             bfSearchCOSObjectKeyOffsets = new HashMap<COSObjectKey, Long>();
             long originOffset = source.getPosition();
             long currentOffset = MINIMUM_SEARCH_OFFSET;
+            long lastObjectId = Long.MIN_VALUE;
+            int lastGenID = Integer.MIN_VALUE;
+            long lastObjOffset = Long.MIN_VALUE;
             String objString = " obj";
             char[] string = objString.toCharArray();
             do
@@ -1471,9 +1474,17 @@ public class COSParser extends BaseParser
                             if (objectIDFound)
                             {
                                 source.read();
-                                long objectID = readObjectNumber();
-                                bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(objectID, genID),
-                                        tempOffset + 1);
+                                long objectId = readObjectNumber();
+                                if (lastObjOffset > 0)
+                                {
+                                    // add the former object ID only if there was a subsequent object ID
+                                    bfSearchCOSObjectKeyOffsets
+                                            .put(new COSObjectKey(lastObjectId, lastGenID),
+                                                    lastObjOffset);
+                                }
+                                lastObjectId = objectId;
+                                lastGenID = genID;
+                                lastObjOffset = tempOffset + 1;
                             }
                         }
                     }
@@ -1481,6 +1492,13 @@ public class COSParser extends BaseParser
                 currentOffset++;
             }
             while (currentOffset < lastEOFMarker && !source.isEOF());
+            if (lastEOFMarker < Long.MAX_VALUE && lastObjOffset > 0)
+            {
+                // if the pdf wasn't cut off in the middle the last object id has to added here
+                // so that it can't get lost as there isn't any subsequent object id
+                bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
+                        lastObjOffset);
+            }
             // reestablish origin position
             source.seek(originOffset);
         }
