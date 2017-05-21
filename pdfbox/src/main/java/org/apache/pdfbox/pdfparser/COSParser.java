@@ -1783,6 +1783,10 @@ public class COSParser extends BaseParser
                 readExpectedString(OBJ_MARKER, true);
                 try
                 {
+                    if (source.peek() != '<')
+                    {
+                        continue;
+                    }
                     COSDictionary dictionary = parseCOSDictionary();
                     if (dictionary != null)
                     {
