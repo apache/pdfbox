@@ -861,8 +861,6 @@ public final class TextPosition
         result = 31 * result + (font != null ? font.hashCode() : 0);
         result = 31 * result + Float.floatToIntBits(fontSize);
         result = 31 * result + fontSizePt;
-        result = 31 * result + Arrays.hashCode(widths);
-        result = 31 * result + (unicode != null ? unicode.hashCode() : 0);
         return result;
     }
 }
