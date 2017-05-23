@@ -428,7 +428,8 @@ public class PDFStreamParser extends BaseParser
         }
         if (!noBinData)
         {
-            LOG.warn("ignoring 'EI' assumed to be in the middle of inline image");
+            LOG.warn("ignoring 'EI' assumed to be in the middle of inline image at stream offset " + 
+                    pdfSource.getPosition());
         }
         return noBinData;
     }
