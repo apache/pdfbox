@@ -361,9 +361,10 @@ public class CMapParser
             {
                 tokenBytes = (byte[]) nextToken;
             }
-            if (tokenBytes.length == 0)
+            if (tokenBytes == null || tokenBytes.length == 0)
             {
                 // PDFBOX-3450: ignore <>
+                // PDFBOX-3807: ignore null
                 continue;
             }
             boolean done = false;
