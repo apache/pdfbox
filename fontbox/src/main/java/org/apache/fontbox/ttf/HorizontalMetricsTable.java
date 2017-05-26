@@ -63,17 +63,20 @@ public class HorizontalMetricsTable extends TTFTable
             bytesRead += 4;
         }
 
+        int numberNonHorizontal = numGlyphs - numHMetrics;
+
+        // handle bad fonts with too many hmetrics
+        if (numberNonHorizontal < 0)
+        {
+            numberNonHorizontal = numGlyphs;
+        }
+
+        // make sure that table is never null and correct size, even with bad fonts that have no
+        // "leftSideBearing" table although they should
+        nonHorizontalLeftSideBearing = new short[numberNonHorizontal];
+
         if (bytesRead < getLength())
         {
-            int numberNonHorizontal = numGlyphs - numHMetrics;
-
-            // handle bad fonts with too many hmetrics
-            if (numberNonHorizontal < 0)
-            {
-                numberNonHorizontal = numGlyphs;
-            }
-
-            nonHorizontalLeftSideBearing = new short[ numberNonHorizontal ];
             for( int i=0; i<numberNonHorizontal; i++ )
             {
                 if (bytesRead < getLength())
