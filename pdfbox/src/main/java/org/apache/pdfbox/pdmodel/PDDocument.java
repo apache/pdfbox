@@ -83,7 +83,7 @@ public class PDDocument implements Closeable
      * length of the PDF is known. You'll need to assign this yourself (with {@link PDSignature#setByteRange(int[])} ) only if you call 
      * {@link #saveIncrementalForExternalSigning(java.io.OutputStream) saveIncrementalForExternalSigning()} twice.
      */
-    public static final int[] RESERVE_BYTE_RANGE = new int[] { 0, 1000000000, 1000000000, 1000000000 };
+    protected static final int[] RESERVE_BYTE_RANGE = new int[] { 0, 1000000000, 1000000000, 1000000000 };
         
     private static final Log LOG = LogFactory.getLog(PDDocument.class);
 
