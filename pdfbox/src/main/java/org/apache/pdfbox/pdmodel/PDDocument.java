@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -77,6 +78,13 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
  */
 public class PDDocument implements Closeable
 {
+    /**
+     * For signing: large reserve byte range used as placeholder in the saved PDF until actual the
+     * length of the PDF is known. You'll need to assign this yourself (with {@link PDSignature#setByteRange(int[])} ) only if you call 
+     * {@link #saveIncrementalForExternalSigning(java.io.OutputStream) saveIncrementalForExternalSigning()} twice.
+     */
+    public static final int[] RESERVE_BYTE_RANGE = new int[] { 0, 1000000000, 1000000000, 1000000000 };
+        
     private static final Log LOG = LogFactory.getLog(PDDocument.class);
 
     /**
@@ -263,8 +271,8 @@ public class PDDocument implements Closeable
             sigObject.setContents(new byte[SignatureOptions.DEFAULT_SIGNATURE_SIZE]);
         }
 
-        // Reserve ByteRange
-        sigObject.setByteRange(new int[] { 0, 1000000000, 1000000000, 1000000000 });
+        // Reserve ByteRange, will be overwritten in COSWriter
+        sigObject.setByteRange(RESERVE_BYTE_RANGE);
 
         signInterface = signatureInterface;
 
@@ -1343,6 +1351,12 @@ public class PDDocument implements Closeable
         if (pdfSource == null)
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
+        }
+        int[] byteRange = getLastSignatureDictionary().getByteRange();
+        if (!Arrays.equals(byteRange, RESERVE_BYTE_RANGE))
+        {
+            throw new IllegalStateException("signature reserve byte range has been changed "
+                    + "after addSignature(), please call setByteRange(RESERVE_BYTE_RANGE)");
         }
         COSWriter writer = new COSWriter(output, pdfSource);
         writer.write(this);
