@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,20 +25,24 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.examples.signature.TSAClient;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.wink.client.MockHttpServer;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -255,5 +260,59 @@ public class TestCreateSignature
                 break;
             }
         }
+    }
+
+    private String calculateDigestString(InputStream inputStream) throws NoSuchAlgorithmException, IOException
+    {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        return DatatypeConverter.printHexBinary(md.digest(IOUtils.toByteArray(inputStream)));
+    }
+
+    /**
+     * PDFBOX-3811: make sure that calling saveIncrementalForExternalSigning() more than once
+     * brings the same result.
+     * 
+     * @throws IOException
+     * @throws NoSuchAlgorithmException 
+     */
+    @Test
+    public void testPDFBox3811() throws IOException, NoSuchAlgorithmException
+    {
+        if (!externallySign)
+        {
+            return;
+        }
+        
+        // create simple PDF
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+        new PDPageContentStream(document, page).close();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        document.save(baos);
+        document.close();
+        
+        document = PDDocument.load(baos.toByteArray());
+        // for stable digest
+        document.setDocumentId(12345L);
+        
+        PDSignature signature = new PDSignature();
+        signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
+        signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
+        document.addSignature(signature);
+
+        String digestString = calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent());
+        boolean caught = false;
+        try
+        {
+            document.saveIncrementalForExternalSigning(new ByteArrayOutputStream());
+        }
+        catch (IllegalStateException ex)
+        {
+            caught = true;
+        }
+        Assert.assertTrue("IllegalStateException should have been thrown", caught);
+        document.getLastSignatureDictionary().setByteRange(PDDocument.RESERVE_BYTE_RANGE);
+        Assert.assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent()));
     }
 }
