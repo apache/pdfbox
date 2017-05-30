@@ -79,12 +79,15 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 public class PDDocument implements Closeable
 {
     /**
-     * For signing: large reserve byte range used as placeholder in the saved PDF until actual the
-     * length of the PDF is known. You'll need to assign this yourself (with {@link PDSignature#setByteRange(int[])} ) only if you call 
-     * {@link #saveIncrementalForExternalSigning(java.io.OutputStream) saveIncrementalForExternalSigning()} twice.
+     * For signing: large reserve byte range used as placeholder in the saved PDF until the actual
+     * length of the PDF is known. You'll need to fetch (with
+     * {@link PDSignature#getByteRange()} ) and reassign this yourself (with
+     * {@link PDSignature#setByteRange(int[])} ) only if you call
+     * {@link #saveIncrementalForExternalSigning(java.io.OutputStream) saveIncrementalForExternalSigning()}
+     * twice.
      */
-    public static final int[] RESERVE_BYTE_RANGE = new int[] { 0, 1000000000, 1000000000, 1000000000 };
-        
+    private static final int[] RESERVE_BYTE_RANGE = new int[] { 0, 1000000000, 1000000000, 1000000000 };
+
     private static final Log LOG = LogFactory.getLog(PDDocument.class);
 
     /**
@@ -1348,7 +1351,7 @@ public class PDDocument implements Closeable
         if (!Arrays.equals(byteRange, RESERVE_BYTE_RANGE))
         {
             throw new IllegalStateException("signature reserve byte range has been changed "
-                    + "after addSignature(), please call setByteRange(RESERVE_BYTE_RANGE)");
+                    + "after addSignature(), please set the byte range that existed after addSignature()");
         }
         COSWriter writer = new COSWriter(output, pdfSource);
         writer.write(this);
