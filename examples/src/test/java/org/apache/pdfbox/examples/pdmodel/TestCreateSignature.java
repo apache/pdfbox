@@ -300,6 +300,7 @@ public class TestCreateSignature
         signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
         signature.setSubFilter(PDSignature.SUBFILTER_ADBE_PKCS7_DETACHED);
         document.addSignature(signature);
+        int[] reserveByteRange = signature.getByteRange();
 
         String digestString = calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent());
         boolean caught = false;
@@ -312,7 +313,7 @@ public class TestCreateSignature
             caught = true;
         }
         Assert.assertTrue("IllegalStateException should have been thrown", caught);
-        document.getLastSignatureDictionary().setByteRange(PDDocument.RESERVE_BYTE_RANGE);
+        document.getLastSignatureDictionary().setByteRange(reserveByteRange);
         Assert.assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent()));
     }
 }
