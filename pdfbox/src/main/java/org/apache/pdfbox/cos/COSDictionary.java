@@ -28,7 +28,6 @@ import java.util.Set;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
-import sun.swing.SwingUtilities2;
 
 /**
  * This class represents a dictionary where name/value pairs reside.
