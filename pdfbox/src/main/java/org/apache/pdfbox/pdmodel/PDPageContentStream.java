@@ -388,6 +388,13 @@ public final class PDPageContentStream implements Closeable
      */
     public void showText(String text) throws IOException
     {
+        showTextInternal(text);
+        write(" ");
+
+        writeOperator("Tj");
+    }
+
+    private void showTextInternal(String text) throws IOException {
         if (!inTextMode)
         {
             throw new IllegalStateException("Must call beginText() before showText()");
@@ -412,9 +419,29 @@ public final class PDPageContentStream implements Closeable
         }
 
         COSWriter.writeString(font.encode(text), output);
-        write(" ");
+    }
 
-        writeOperator("Tj");
+    public void showTextWithPositioning(Object[] array) throws IOException {
+
+        write("[");
+
+        boolean lastWasNumber = false;
+        for (Object obj : array) {
+            if (obj instanceof String) {
+                showTextInternal((String) obj);
+                lastWasNumber = false;
+            } else {
+                if (lastWasNumber) {
+                    write(" ");
+                } else {
+                    lastWasNumber = true;
+                }
+
+                appendRawCommands((Float) obj);
+            }
+        }
+        write("]TJ");
+        writeLine();
     }
 
     /**
