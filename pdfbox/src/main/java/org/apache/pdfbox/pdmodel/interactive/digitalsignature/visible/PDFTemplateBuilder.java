@@ -240,14 +240,14 @@ public interface PDFTemplateBuilder
      * @param holderFormStream
      * @param innerFormStream
      * @param imageFormStream
-     * @param imageObjectName
+     * @param imageFormName
      * @param imageName
      * @param innerFormName
      * @param properties
      * @throws IOException
      */
     void injectAppearanceStreams(PDStream holderFormStream, PDStream innerFormStream,
-            PDStream imageFormStream, COSName imageObjectName, COSName imageName,
+            PDStream imageFormStream, COSName imageFormName, COSName imageName,
             COSName innerFormName, PDVisibleSignDesigner properties) throws IOException;
 
     /**

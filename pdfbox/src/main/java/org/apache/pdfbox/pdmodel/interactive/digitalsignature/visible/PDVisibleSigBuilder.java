@@ -353,7 +353,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
     @Override
     public void injectAppearanceStreams(PDStream holderFormStream, PDStream innerFormStream,
-                                        PDStream imageFormStream, COSName imageObjectName,
+                                        PDStream imageFormStream, COSName imageFormName,
                                         COSName imageName, COSName innerFormName,
                                         PDVisibleSignDesigner properties) throws IOException
     {
@@ -363,7 +363,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         // imageName + " Do Q\n" + builder.toString();
         String imgFormContent    = "q " + 100 + " 0 0 50 0 0 cm /" + imageName.getName() + " Do Q\n";
         String holderFormContent = "q 1 0 0 1 0 0 cm /" + innerFormName.getName() + " Do Q\n";
-        String innerFormContent  = "q 1 0 0 1 0 0 cm /" + imageObjectName.getName() + " Do Q\n";
+        String innerFormContent  = "q 1 0 0 1 0 0 cm /" + imageFormName.getName() + " Do Q\n";
 
         appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(), holderFormContent);
         appendRawCommands(pdfStructure.getInnerFormStream().createOutputStream(), innerFormContent);
