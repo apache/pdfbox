@@ -329,7 +329,8 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
         imageFormResources.getCOSObject().setDirect(true);
 
-        COSName imageFormName = innerFormResource.add(imageForm, "n");
+        COSName imageFormName = COSName.getPDFName("n2");
+        innerFormResource.put(imageFormName, imageForm);
         COSName imageName = imageFormResources.add(img, "img");
         pdfStructure.setImageForm(imageForm);
         pdfStructure.setImageFormName(imageFormName);
