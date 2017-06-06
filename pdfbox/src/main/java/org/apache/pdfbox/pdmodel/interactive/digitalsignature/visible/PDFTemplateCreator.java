@@ -144,6 +144,8 @@ public class PDFTemplateCreator
         PDResources imageFormResources = pdfStructure.getImageFormResources();
         pdfBuilder.createImageForm(imageFormResources, innerFormResource, imageFormStream, formatter,
                 transform, pdfStructure.getImage());
+        
+        pdfBuilder.createBackgroundLayerForm(innerFormResource, formatter);
        
         // now inject procSetArray
         pdfBuilder.injectProcSetArray(innerForm, page, innerFormResource, imageFormResources,
