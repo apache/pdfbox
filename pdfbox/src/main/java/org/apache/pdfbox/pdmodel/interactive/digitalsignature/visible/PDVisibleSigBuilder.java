@@ -339,6 +339,19 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
+    public void createBackgroundLayerForm(PDResources innerFormResource, PDRectangle formatter)
+             throws IOException
+    {
+        // create blank n0 background layer form
+        PDFormXObject n0Form = new PDFormXObject(new COSStream());
+        n0Form.setBBox(formatter);
+        n0Form.setResources(new PDResources());
+        n0Form.setFormType(1);
+        innerFormResource.put(COSName.getPDFName("n0"), n0Form);
+        LOG.info("Created background layer form");
+    }
+
+    @Override
     public void injectProcSetArray(PDFormXObject innerForm, PDPage page,
                                    PDResources innerFormResources,  PDResources imageFormResources,
                                    PDResources holderFormResources, COSArray procSet)
@@ -363,7 +376,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         // imageName + " Do Q\n" + builder.toString();
         String imgFormContent    = "q " + 100 + " 0 0 50 0 0 cm /" + imageName.getName() + " Do Q\n";
         String holderFormContent = "q 1 0 0 1 0 0 cm /" + innerFormName.getName() + " Do Q\n";
-        String innerFormContent  = "q 1 0 0 1 0 0 cm /" + imageFormName.getName() + " Do Q\n";
+        String innerFormContent  = "q 1 0 0 1 0 0 cm /n0 Do Q q 1 0 0 1 0 0 cm /" + imageFormName.getName() + " Do Q\n";
 
         appendRawCommands(pdfStructure.getHolderFormStream().createOutputStream(), holderFormContent);
         appendRawCommands(pdfStructure.getInnerFormStream().createOutputStream(), innerFormContent);
