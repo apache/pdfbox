@@ -149,13 +149,13 @@ public class PDFTemplateCreator
         pdfBuilder.injectProcSetArray(innerForm, page, innerFormResource, imageFormResources,
                 holderFormResources, pdfStructure.getProcSet());
 
-        COSName imgFormName = pdfStructure.getImageFormName();
-        COSName imgName = pdfStructure.getImageName();
+        COSName imageFormName = pdfStructure.getImageFormName();
+        COSName imageName = pdfStructure.getImageName();
         COSName innerFormName = pdfStructure.getInnerFormName();
 
         // now create Streams of AP
         pdfBuilder.injectAppearanceStreams(holderFormStream, imageFormStream, imageFormStream,
-                imgFormName, imgName, innerFormName, properties);
+                imageFormName, imageName, innerFormName, properties);
         pdfBuilder.createVisualSignature(template);
         pdfBuilder.createWidgetDictionary(pdSignatureField, holderFormResources);
         
