@@ -295,8 +295,8 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     public void insertInnerFormToHolderResources(PDFormXObject innerForm,
                                                 PDResources holderFormResources)
     {
-        COSName innerFormName = holderFormResources.add(innerForm, "FRM");
-        pdfStructure.setInnerFormName(innerFormName);
+        holderFormResources.put(COSName.FRM, innerForm);
+        pdfStructure.setInnerFormName(COSName.FRM);
         LOG.info("Now inserted inner form inside holder form");
     }
 
