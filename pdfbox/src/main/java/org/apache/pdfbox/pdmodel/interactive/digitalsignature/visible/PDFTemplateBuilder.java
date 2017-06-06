@@ -221,6 +221,16 @@ public interface PDFTemplateBuilder
             PDImageXObject img) throws IOException;
 
     /**
+     * Creates the background layer form (n0).
+     *
+     * @param innerFormResource
+     * @param formatter
+     * @throws IOException
+     */
+    void createBackgroundLayerForm(PDResources innerFormResource, PDRectangle formatter)
+            throws IOException;
+
+    /**
      * Inject procSetArray
      * 
      * @param innerForm
