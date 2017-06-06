@@ -172,9 +172,10 @@ public class PDFTemplateCreator
     private InputStream getVisualSignatureAsStream(COSDocument visualSignature) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        COSWriter writer = new COSWriter(baos);
-        writer.write(visualSignature);
-        writer.close();
+        try (COSWriter writer = new COSWriter(baos))
+        {
+            writer.write(visualSignature);
+        }
         return new ByteArrayInputStream(baos.toByteArray());
     }   
 }
