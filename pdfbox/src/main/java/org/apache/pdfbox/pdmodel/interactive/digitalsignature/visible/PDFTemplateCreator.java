@@ -137,7 +137,7 @@ public class PDFTemplateCreator
         // inner form must be in the holder form as we wrote
         pdfBuilder.insertInnerFormToHolderResources(innerForm, holderFormResources);
         
-        //  Image form is in this structure: /AcroForm/DR/FRM0/Resources/XObject/n0
+        //  Image form is in this structure: /AcroForm/DR/FRM/Resources/XObject/n2
         pdfBuilder.createImageFormStream(template);
         PDStream imageFormStream = pdfStructure.getImageFormStream();
         pdfBuilder.createImageFormResources();
