@@ -131,13 +131,9 @@ public class PDCIDFontType2 extends PDCIDFont
                                   " are not implemented in PDFBox and will be ignored");
                     }
                 }
-                catch (NullPointerException e) // TTF parser is buggy
+                catch (NullPointerException | IOException e)
                 {
-                    fontIsDamaged = true;
-                    LOG.warn("Could not read embedded OTF for font " + getBaseFont(), e);
-                }
-                catch (IOException e)
-                {
+                    // NPE due to TTF parser being buggy
                     fontIsDamaged = true;
                     LOG.warn("Could not read embedded OTF for font " + getBaseFont(), e);
                 }
