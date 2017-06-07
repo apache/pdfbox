@@ -226,7 +226,7 @@ class AppearanceGeneratorHelper
                 setAppearanceContent(widget, appearanceStream);
             }
             
-            // restore the field level appearance;
+            // restore the field level appearance
             defaultAppearance =  acroFormAppearance;
         }
     }
