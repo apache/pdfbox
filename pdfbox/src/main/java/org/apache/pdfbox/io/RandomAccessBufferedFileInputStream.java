@@ -118,18 +118,15 @@ extends InputStream implements RandomAccessRead
 
     private File createTmpFile(InputStream input) throws IOException
     {
-        FileOutputStream fos = null;
-        try
+        File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
+        try (FileOutputStream fos = new FileOutputStream(tmpFile))
         {
-            File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
-            fos = new FileOutputStream(tmpFile);
             IOUtils.copy(input, fos);
             return tmpFile;
         }
         finally
         {
             IOUtils.closeQuietly(input);
-            IOUtils.closeQuietly(fos);
         }
     }
 
