@@ -1288,22 +1288,13 @@ public class PDDocument implements Closeable
      */
     public void saveIncremental(OutputStream output) throws IOException
     {
-        COSWriter writer = null;
-        try
+        if (pdfSource == null)
         {
-            if (pdfSource == null)
-            {
-                throw new IllegalStateException("document was not loaded from a file or a stream");
-            }
-            writer = new COSWriter(output, pdfSource);
-            writer.write(this, signInterface);
+            throw new IllegalStateException("document was not loaded from a file or a stream");
         }
-        finally
+        try (COSWriter writer = new COSWriter(output, pdfSource))
         {
-            if (writer != null)
-            {
-                writer.close();
-            }
+            writer.write(this, signInterface);
         }
     }
 
