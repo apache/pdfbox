@@ -24,6 +24,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -93,8 +94,8 @@ public final class ShowSignature
         else
         {
             String password = args[0];
-            String infile = args[1];
-            try (PDDocument document = PDDocument.load(new File(infile), password))
+            File infile = new File(args[1]);
+            try (PDDocument document = PDDocument.load(infile, password))
             {
                 for (PDSignature sig : document.getSignatureDictionaries())
                 {
@@ -102,18 +103,36 @@ public final class ShowSignature
                     COSString contents = (COSString) sigDict.getDictionaryObject(COSName.CONTENTS);
 
                     // download the signed content
-                    FileInputStream fis = new FileInputStream(infile);
-                    byte[] buf = null;
-                    try
+                    byte[] buf;
+                    try (FileInputStream fis = new FileInputStream(infile))
                     {
                         buf = sig.getSignedContent(fis);
                     }
-                    finally
-                    {
-                        fis.close();
-                    }
 
                     System.out.println("Signature found");
+
+                    int[] byteRange = sig.getByteRange();
+                    if (byteRange.length != 4)
+                    {
+                        System.err.println("Signature byteRange must have 4 items");
+                    }
+                    else
+                    {
+                        long fileLen = infile.length();
+                        long rangeMax = byteRange[2] + byteRange[3];
+                        // multiply content length with 2 (because it is in hex in the PDF) and add 2 for < and >
+                        long contentLen = sigDict.getString(COSName.CONTENTS).length() * 2 + 2;
+                        if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
+                        {
+                            // a false result doesn't necessarily mean that the PDF is a fake
+                            System.out.println("Signature does not cover whole document");
+                        }
+                        else
+                        {
+                            System.out.println("Signature covers whole document");
+                        }    
+                    }
+
                     System.out.println("Name:     " + sig.getName());
                     System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
                     String subFilter = sig.getSubFilter();
@@ -186,7 +205,8 @@ public final class ShowSignature
      * @throws OperatorCreationException
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
-            throws CMSException, CertificateException, StoreException, OperatorCreationException
+            throws CMSException, CertificateException, StoreException, OperatorCreationException,
+                   NoSuchAlgorithmException, NoSuchProviderException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
@@ -202,6 +222,16 @@ public final class ShowSignature
         System.out.println("certFromSignedData: " + certFromSignedData);
         certFromSignedData.checkValidity(sig.getSignDate().getTime());
         
+        if (isSelfSigned(certFromSignedData))
+        {
+            System.err.println("Certificate is self-signed, LOL!");
+        }
+        else
+        {
+            System.out.println("Certificate is not self-signed");
+            // todo rest of chain
+        }
+
         if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
         {
             System.out.println("Signature verified");
@@ -209,6 +239,27 @@ public final class ShowSignature
         else
         {
             System.out.println("Signature verification failed");
+        }
+    }
+
+    // https://svn.apache.org/repos/asf/cxf/tags/cxf-2.4.1/distribution/src/main/release/samples/sts_issue_operation/src/main/java/demo/sts/provider/cert/CertificateVerifier.java
+
+    /**
+     * Checks whether given X.509 certificate is self-signed.
+     */
+    private boolean isSelfSigned(X509Certificate cert)
+            throws CertificateException, NoSuchAlgorithmException, NoSuchProviderException
+    {
+        try
+        {
+            // Try to verify certificate signature with its own public key
+            PublicKey key = cert.getPublicKey();
+            cert.verify(key);
+            return true;
+        }
+        catch (SignatureException | InvalidKeyException sigEx)
+        {
+            return false;
         }
     }
 
