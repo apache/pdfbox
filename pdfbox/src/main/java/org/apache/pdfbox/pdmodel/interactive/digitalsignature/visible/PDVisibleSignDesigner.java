@@ -252,15 +252,9 @@ public class PDVisibleSignDesigner
      */
     public PDVisibleSignDesigner signatureImage(String path) throws IOException
     {
-        InputStream in = null;
-        try
+        try (InputStream in = new BufferedInputStream(new FileInputStream(path)))
         {
-            in = new BufferedInputStream(new FileInputStream(path));
             readImageStream(in);
-        }
-        finally
-        {
-            IOUtils.closeQuietly(in);
         }
         return this;
     }
