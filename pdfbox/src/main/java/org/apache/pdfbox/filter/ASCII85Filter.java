@@ -37,12 +37,7 @@ final class ASCII85Filter extends Filter
         try
         {
             is = new ASCII85InputStream(encoded);
-            byte[] buffer = new byte[1024];
-            int amountRead;
-            while((amountRead = is.read(buffer, 0, 1024))!= -1)
-            {
-                decoded.write(buffer, 0, amountRead);
-            }
+            IOUtils.copy(is, decoded);
             decoded.flush();
         }
         finally
@@ -57,12 +52,7 @@ final class ASCII85Filter extends Filter
         throws IOException
     {
         ASCII85OutputStream os = new ASCII85OutputStream(encoded);
-        byte[] buffer = new byte[1024];
-        int amountRead;
-        while((amountRead = input.read(buffer, 0, 1024))!= -1)
-        {
-            os.write(buffer, 0, amountRead);
-        }
+        IOUtils.copy(input, os);
         os.close();
         encoded.flush();
     }
