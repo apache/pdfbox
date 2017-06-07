@@ -379,10 +379,8 @@ final class FileSystemFontProvider extends FontProvider
         }
         if (fileExists)
         {
-            BufferedReader reader = null;
-            try
+            try (BufferedReader reader = new BufferedReader(new FileReader(file)))
             {
-                reader = new BufferedReader(new FileReader(file));
                 String line;
                 while ((line = reader.readLine()) != null)
                 {
@@ -448,10 +446,6 @@ final class FileSystemFontProvider extends FontProvider
             {
                 LOG.error("Error loading font cache, will be re-built", e);
                 return null;
-            }
-            finally
-            {
-                IOUtils.closeQuietly(reader);
             }
         }
         
@@ -712,10 +706,8 @@ final class FileSystemFontProvider extends FontProvider
 
     private Type1Font getType1Font(String postScriptName, File file)
     {
-        InputStream input = null;
-        try
+        try (InputStream input = new FileInputStream(file))
         {
-            input = new FileInputStream(file);
             Type1Font type1 = Type1Font.createWithPFB(input);
 
             if (LOG.isDebugEnabled())
@@ -727,10 +719,6 @@ final class FileSystemFontProvider extends FontProvider
         catch (IOException e)
         {
             LOG.error("Could not load font file: " + file, e);
-        }
-        finally
-        {
-            IOUtils.closeQuietly(input);
         }
         return null;
     }
