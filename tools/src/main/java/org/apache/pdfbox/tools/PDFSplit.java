@@ -193,24 +193,10 @@ public final class PDFSplit
 
     private static void writeDocument( PDDocument doc, String fileName ) throws IOException
     {
-        FileOutputStream output = null;
-        COSWriter writer = null;
-        try
+        try (FileOutputStream output = new FileOutputStream(fileName);
+             COSWriter writer = new COSWriter(output))
         {
-            output = new FileOutputStream( fileName );
-            writer = new COSWriter( output );
-            writer.write( doc );
-        }
-        finally
-        {
-            if( output != null )
-            {
-                output.close();
-            }
-            if( writer != null )
-            {
-                writer.close();
-            }
+            writer.write(doc);
         }
     }
 
