@@ -241,9 +241,9 @@ public class StreamValidationProcess extends AbstractProcess
                     do
                     {
                         int cr;
-                        if (nbBytesToRead > 1024)
+                        if (nbBytesToRead > buffer.length)
                         {
-                            cr = ra.read(buffer, 0, 1024);
+                            cr = ra.read(buffer);
                         }
                         else
                         {
