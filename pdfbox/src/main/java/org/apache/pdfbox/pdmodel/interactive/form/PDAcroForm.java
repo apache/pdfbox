@@ -107,12 +107,12 @@ public final class PDAcroForm implements COSObjectable
         // if there are no entries at all. It might be necessary to enhance that
         // if only parts are missing
         
-        final String AdobeDefaultAppearanceString = "/Helv 0 Tf 0 g ";
+        final String adobeDefaultAppearanceString = "/Helv 0 Tf 0 g ";
 
         // DA entry is required
         if (getDefaultAppearance().length() == 0)
         {
-            setDefaultAppearance(AdobeDefaultAppearanceString);
+            setDefaultAppearance(adobeDefaultAppearanceString);
         }
         
         // DR entry is required
