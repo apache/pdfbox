@@ -17,6 +17,8 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A table in a true type font.
@@ -25,6 +27,7 @@ import java.io.IOException;
  */
 public class PostScriptTable extends TTFTable
 {
+    private static final Log LOG = LogFactory.getLog(PostScriptTable.class);
     private float formatType;
     private float italicAngle;
     private short underlinePosition;
@@ -142,6 +145,7 @@ public class PostScriptTable extends TTFTable
         else if (formatType == 3.0f)
         {
             // no postscript information is provided.
+            LOG.warn("No PostScript name information is provided for the font " + font.getName());
         }
         initialized = true;
     }
