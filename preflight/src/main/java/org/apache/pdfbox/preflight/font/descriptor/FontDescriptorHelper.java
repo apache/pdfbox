@@ -275,27 +275,16 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
 
     protected final byte[] getMetaDataStreamAsBytes(PDMetadata metadata)
     {
-        byte[] result = null;
-        ByteArrayOutputStream bos = null;
-        InputStream metaDataContent = null;
-        try
+        try (InputStream metaDataContent = metadata.createInputStream())
         {
-            bos = new ByteArrayOutputStream();
-            metaDataContent = metadata.createInputStream();
-            IOUtils.copy(metaDataContent, bos);
-            result = bos.toByteArray();
+            return IOUtils.toByteArray(metaDataContent);
         }
         catch (IOException e)
         {
             this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_STREAM,
                     this.font.getName() + ": Unable to read font metadata due to : " + e.getMessage(), e));
+            return null;
         }
-        finally
-        {
-            IOUtils.closeQuietly(metaDataContent);
-            IOUtils.closeQuietly(bos);
-        }
-        return result;
     }
 
     public static boolean isSubSet(String fontName)
