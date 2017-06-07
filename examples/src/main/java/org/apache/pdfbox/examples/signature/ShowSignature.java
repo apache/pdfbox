@@ -126,9 +126,9 @@ public final class ShowSignature
                     else
                     {
                         long fileLen = infile.length();
-                        long rangeMax = byteRange[2] + byteRange[3];
+                        long rangeMax = byteRange[2] + (long) byteRange[3];
                         // multiply content length with 2 (because it is in hex in the PDF) and add 2 for < and >
-                        long contentLen = sigDict.getString(COSName.CONTENTS).length() * 2 + 2;
+                        int contentLen = sigDict.getString(COSName.CONTENTS).length() * 2 + 2;
                         if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
                         {
                             // a false result doesn't necessarily mean that the PDF is a fake
@@ -137,7 +137,7 @@ public final class ShowSignature
                         else
                         {
                             System.out.println("Signature covers whole document");
-                        }    
+                        }
                     }
 
                     System.out.println("Name:     " + sig.getName());
