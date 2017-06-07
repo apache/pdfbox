@@ -193,23 +193,21 @@ class PDDefaultAppearanceString
      */
     private void processSetFontColor(List<COSBase> operands) throws IOException
     {
-    	PDColorSpace colorSpace = null;
-        
-        if (operands.size() == 1)
+        PDColorSpace colorSpace;
+
+        switch (operands.size())
         {
-            colorSpace = PDDeviceGray.INSTANCE;
-        }
-        else if (operands.size() == 3)
-        {
-            colorSpace = PDDeviceRGB.INSTANCE;
-        }
-        else if (operands.size() == 4)
-        {
-            colorSpace = PDDeviceCMYK.INSTANCE;
-        }
-        else 
-        {
-            throw new IOException("Missing operands for set non stroking color operator " + Arrays.toString(operands.toArray()));
+            case 1:
+                colorSpace = PDDeviceGray.INSTANCE;
+                break;
+            case 3:
+                colorSpace = PDDeviceRGB.INSTANCE;
+                break;
+            case 4:
+                colorSpace = PDDeviceCMYK.INSTANCE;
+                break;
+            default:
+                throw new IOException("Missing operands for set non stroking color operator " + Arrays.toString(operands.toArray()));
         }
         COSArray array = new COSArray();
         array.addAll(operands);
