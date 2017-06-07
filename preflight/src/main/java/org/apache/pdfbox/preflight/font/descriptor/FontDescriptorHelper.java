@@ -276,14 +276,11 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
     protected final byte[] getMetaDataStreamAsBytes(PDMetadata metadata)
     {
         byte[] result = null;
-        ByteArrayOutputStream bos = null;
         InputStream metaDataContent = null;
         try
         {
-            bos = new ByteArrayOutputStream();
             metaDataContent = metadata.createInputStream();
-            IOUtils.copy(metaDataContent, bos);
-            result = bos.toByteArray();
+            result = IOUtils.toByteArray(metaDataContent);
         }
         catch (IOException e)
         {
@@ -293,7 +290,6 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         finally
         {
             IOUtils.closeQuietly(metaDataContent);
-            IOUtils.closeQuietly(bos);
         }
         return result;
     }
