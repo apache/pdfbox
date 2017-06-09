@@ -313,11 +313,11 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     }
     
     /**
-     * This permit to get the data of the True Type Font
+     * Get the data of the TrueType Font
      * program representing the stream used to build this 
      * object (normally from the TTFParser object).
      * 
-     * @return COSStream True type font program stream
+     * @return COSStream TrueType font program stream
      * 
      * @throws IOException If there is an error getting the font data.
      */
