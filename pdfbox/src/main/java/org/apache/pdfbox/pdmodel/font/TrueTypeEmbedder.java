@@ -88,9 +88,13 @@ abstract class TrueTypeEmbedder implements Subsetter
         this.ttf = ttf;
         fontDescriptor = createFontDescriptor(ttf);
 
-        PDStream stream = new PDStream(document, ttf.getOriginalData(), COSName.FLATE_DECODE);
-        stream.getCOSObject().setInt(COSName.LENGTH1, stream.toByteArray().length);
-        fontDescriptor.setFontFile2(stream);
+        if (!embedSubset)
+        {
+            // full embedding
+            PDStream stream = new PDStream(document, ttf.getOriginalData(), COSName.FLATE_DECODE);
+            stream.getCOSObject().setInt(COSName.LENGTH1, stream.toByteArray().length);
+            fontDescriptor.setFontFile2(stream);
+        }
 
         dict.setName(COSName.BASE_FONT, ttf.getName());
 
