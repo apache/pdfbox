@@ -207,4 +207,13 @@ class MemoryTTFDataStream extends TTFDataStream
     {
         return new ByteArrayInputStream( data );
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getOriginalDataSize()
+    {
+        return data.length;
+    }
 }

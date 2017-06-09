@@ -325,7 +325,20 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
        return data.getOriginalData(); 
     }
-    
+
+    /**
+     * Get the data size of the TrueType Font program representing the stream used to build this
+     * object (normally from the TTFParser object).
+     *
+     * @return the size.
+     *
+     * @throws IOException If there is an error getting the font data.
+     */
+    public long getOriginalDataSize()
+    {
+        return data.getOriginalDataSize();
+    }
+
     /**
      * Read the given table if necessary. Package-private, used by TTFParser only.
      * 
