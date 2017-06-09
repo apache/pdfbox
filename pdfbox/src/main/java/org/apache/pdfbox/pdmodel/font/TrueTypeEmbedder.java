@@ -71,6 +71,12 @@ abstract class TrueTypeEmbedder implements Subsetter
         this.embedSubset = embedSubset;
 
         buildFontFile2(ttfStream);
+
+        if (!isEmbeddingPermitted(ttf))
+        {
+            throw new IOException("This font does not permit embedding");
+        }
+
         dict.setName(COSName.BASE_FONT, ttf.getName());
 
         // choose a Unicode "cmap"
