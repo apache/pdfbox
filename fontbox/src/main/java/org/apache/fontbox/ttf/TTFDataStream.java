@@ -304,4 +304,11 @@ abstract class TTFDataStream implements Closeable
      */
     public abstract InputStream getOriginalData() throws IOException;
 
+    /**
+     * This will get the original data size that was used for this stream.
+     * 
+     * @return The size of the original data.
+     * @throws IOException If there is an issue reading the data.
+     */
+    public abstract long getOriginalDataSize();
 }
