@@ -175,4 +175,13 @@ class RAFDataStream extends TTFDataStream
     {
         return new FileInputStream( ttfFile );
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getOriginalDataSize()
+    {
+        return ttfFile.length();
+    }
 }
