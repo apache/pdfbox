@@ -44,7 +44,7 @@ class MemoryTTFDataStream extends TTFDataStream
         {
             ByteArrayOutputStream output = new ByteArrayOutputStream( is.available() );
             byte[] buffer = new byte[1024];
-            int amountRead = 0;
+            int amountRead;
             while( (amountRead = is.read( buffer ) ) != -1 )
             {
                 output.write( buffer, 0, amountRead );
@@ -62,6 +62,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * @return An unsigned byte.
      * @throws IOException If there is an error reading the data.
      */
+    @Override
     public long readLong() throws IOException
     {
         return ((long)(readSignedInt()) << 32) + (readSignedInt() & 0xFFFFFFFFL);
@@ -91,6 +92,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * @return An unsigned byte.
      * @throws IOException If there is an error reading the data.
      */
+    @Override
     public int read() throws IOException
     {
         if (currentPosition >= data.length)
@@ -108,6 +110,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * @return An unsigned short.
      * @throws IOException If there is an error reading the data.
      */
+    @Override
     public int readUnsignedShort() throws IOException
     {
         int ch1 = this.read();
@@ -125,6 +128,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * @return An signed short.
      * @throws IOException If there is an error reading the data.
      */
+    @Override
     public short readSignedShort() throws IOException
     {
         int ch1 = this.read();
@@ -141,6 +145,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * 
      * @throws IOException If there is an error closing the resources.
      */
+    @Override
     public void close() throws IOException
     {
     }
@@ -151,6 +156,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * @param pos The position to seek to.
      * @throws IOException If there is an error seeking to that position.
      */
+    @Override
     public void seek(long pos) throws IOException
     {
         currentPosition = (int)pos;
@@ -167,6 +173,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * 
      * @throws IOException If there is an error reading from the stream.
      */
+    @Override
     public int read(byte[] b,
             int off,
             int len)
@@ -190,6 +197,7 @@ class MemoryTTFDataStream extends TTFDataStream
      * @return The current position in the stream.
      * @throws IOException If an error occurs while reading the stream.
      */
+    @Override
     public long getCurrentPosition() throws IOException
     {
         return currentPosition;
@@ -198,8 +206,18 @@ class MemoryTTFDataStream extends TTFDataStream
     /**
      * {@inheritDoc}
      */
+    @Override
     public InputStream getOriginalData() throws IOException
     {
         return new ByteArrayInputStream( data );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getOriginalDataSize()
+    {
+        return data.length;
     }
 }

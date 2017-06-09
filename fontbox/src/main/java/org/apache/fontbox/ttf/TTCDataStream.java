@@ -88,4 +88,10 @@ class TTCDataStream extends TTFDataStream
     {
         return stream.getOriginalData();
     }
+
+    @Override
+    public long getOriginalDataSize()
+    {
+        return stream.getOriginalDataSize();
+    }
 }
