@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 
@@ -64,6 +65,21 @@ public class JPEGFactoryTest extends TestCase
 
         doWritePDF(document, ximage, testResultsDir, "jpegrgbstream.pdf");
         checkJpegStream(testResultsDir, "jpegrgbstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+    }
+
+    /*
+     * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
+     * stream) with CMYK color JPEG file
+     */
+    public void testCreateFromStreamCMYK() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg");
+        PDImageXObject ximage = JPEGFactory.createFromStream(document, stream);
+        validate(ximage, 8, 343, 287, "jpg", PDDeviceCMYK.INSTANCE.getName());
+
+        doWritePDF(document, ximage, testResultsDir, "jpegcmykstream.pdf");
+        checkJpegStream(testResultsDir, "jpegcmykstream.pdf", JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg"));
     }
 
     /**
