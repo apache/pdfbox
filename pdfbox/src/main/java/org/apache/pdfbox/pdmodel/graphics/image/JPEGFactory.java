@@ -21,6 +21,7 @@ import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,6 +39,8 @@ import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.MissingImageReaderException;
 import org.apache.pdfbox.io.IOUtils;
@@ -90,32 +93,55 @@ public final class JPEGFactory
         ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
 
         // read image
-        BufferedImage awtImage = readJPEG(byteStream);
+        Raster raster = readJPEGRaster(byteStream);
         byteStream.reset();
 
-        // create Image XObject from stream
-        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
-                COSName.DCT_DECODE, awtImage.getWidth(), awtImage.getHeight(), 
-                awtImage.getColorModel().getComponentSize(0),
-                getColorSpaceFromAWT(awtImage));
-
-        // no alpha
-        if (awtImage.getColorModel().hasAlpha())
+        PDColorSpace colorSpace;
+        switch (raster.getNumDataElements())
         {
-            throw new UnsupportedOperationException("alpha channel not implemented");
+            case 1:
+                colorSpace = PDDeviceGray.INSTANCE;
+                break;
+            case 3:
+                colorSpace = PDDeviceRGB.INSTANCE;
+                break;
+            case 4:
+                colorSpace = PDDeviceCMYK.INSTANCE;
+                break;
+            default:
+                throw new UnsupportedOperationException("number of data elements not supported: " +
+                        raster.getNumDataElements());
+        }
+
+        // create PDImageXObject from stream
+        PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
+                COSName.DCT_DECODE, raster.getWidth(), raster.getHeight(), 8, colorSpace);
+
+        if (colorSpace instanceof PDDeviceCMYK)
+        {
+            COSArray decode = new COSArray();
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            decode.add(COSInteger.ONE);
+            decode.add(COSInteger.ZERO);
+            pdImage.setDecode(decode);
         }
 
         return pdImage;
     }
 
-    private static BufferedImage readJPEG(InputStream stream) throws IOException
+    private static Raster readJPEGRaster(InputStream stream) throws IOException
     {
         // find suitable image reader
-        Iterator readers = ImageIO.getImageReadersByFormatName("JPEG");
+        Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
         ImageReader reader = null;
         while (readers.hasNext())
         {
-            reader = (ImageReader) readers.next();
+            reader = readers.next();
             if (reader.canReadRaster())
             {
                 break;
@@ -124,15 +150,15 @@ public final class JPEGFactory
 
         if (reader == null)
         {
-            throw new MissingImageReaderException("Cannot read JPEG image: " +
-                    "a suitable JAI I/O image filter is not installed");
+            throw new MissingImageReaderException(
+                    "Cannot read JPEG image: a suitable JAI I/O image filter is not installed");
         }
 
         try (ImageInputStream iis = ImageIO.createImageInputStream(stream))
         {
             reader.setInput(iis);
             ImageIO.setUseCache(false);
-            return reader.read(0);
+            return reader.readRaster(0, null);
         }
         finally
         {
@@ -141,9 +167,14 @@ public final class JPEGFactory
     }
 
     /**
-     * Creates a new JPEG Image XObject from a Buffered Image.
+     * Creates a new JPEG PDImageXObject from a BufferedImage.
+     * <p>
+     * Do not read a JPEG image from a stream/file and call this method; you'll get more speed and
+     * quality by calling {@link #createFromStream(org.apache.pdfbox.pdmodel.PDDocument,
+     * java.io.InputStream) createFromStream()} instead.
+     *
      * @param document the document where the image will be created
-     * @param image the buffered image to embed
+     * @param image the BufferedImage to embed
      * @return a new Image XObject
      * @throws IOException if the JPEG data cannot be written
      */
@@ -154,10 +185,15 @@ public final class JPEGFactory
     }
 
     /**
-     * Creates a new JPEG Image XObject from a Buffered Image and a given quality.
+     * Creates a new JPEG PDImageXObject from a BufferedImage and a given quality.
+     * <p>
+     * Do not read a JPEG image from a stream/file and call this method; you'll get more speed and
+     * quality by calling {@link #createFromStream(org.apache.pdfbox.pdmodel.PDDocument,
+     * java.io.InputStream) createFromStream()} instead.
+     * 
      * The image will be created at 72 DPI.
      * @param document the document where the image will be created
-     * @param image the buffered image to embed
+     * @param image the BufferedImage to embed
      * @param quality the desired JPEG compression quality
      * @return a new Image XObject
      * @throws IOException if the JPEG data cannot be written
@@ -169,9 +205,14 @@ public final class JPEGFactory
     }
 
     /**
-     * Creates a new JPEG Image XObject from a Buffered Image, a given quality and DPI.
+     * Creates a new JPEG Image XObject from a BufferedImage, a given quality and DPI.
+     * <p>
+     * Do not read a JPEG image from a stream/file and call this method; you'll get more speed and
+     * quality by calling {@link #createFromStream(org.apache.pdfbox.pdmodel.PDDocument,
+     * java.io.InputStream) createFromStream()} instead.
+     * 
      * @param document the document where the image will be created
-     * @param image the buffered image to embed
+     * @param image the BufferedImage to embed
      * @param quality the desired JPEG compression quality
      * @param dpi the desired DPI (resolution) of the JPEG
      * @return a new Image XObject
@@ -207,7 +248,7 @@ public final class JPEGFactory
         return alphaImage;
     }
     
-    // Creates an Image XObject from a Buffered Image using JAI Image I/O
+    // Creates an Image XObject from a BufferedImage using JAI Image I/O
     private static PDImageXObject createJPEG(PDDocument document, BufferedImage image,
                                              float quality, int dpi) throws IOException
     {
