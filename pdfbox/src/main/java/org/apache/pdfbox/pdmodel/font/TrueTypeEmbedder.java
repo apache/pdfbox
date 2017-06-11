@@ -62,20 +62,14 @@ abstract class TrueTypeEmbedder implements Subsetter
     private final boolean embedSubset;
 
     /**
-     * Creates a new TrueType font for embedding.
+     * Creates a new TrueType font for full embedding.
      */
-    TrueTypeEmbedder(PDDocument document, COSDictionary dict, InputStream ttfStream,
-                     boolean embedSubset) throws IOException
+    TrueTypeEmbedder(PDDocument document, COSDictionary dict, InputStream ttfStream) throws IOException
     {
         this.document = document;
-        this.embedSubset = embedSubset;
+        this.embedSubset = false;
 
         buildFontFile2(ttfStream);
-
-        if (!isEmbeddingPermitted(ttf))
-        {
-            throw new IOException("This font does not permit embedding");
-        }
 
         dict.setName(COSName.BASE_FONT, ttf.getName());
 
@@ -93,6 +87,11 @@ abstract class TrueTypeEmbedder implements Subsetter
         this.embedSubset = embedSubset;
         this.ttf = ttf;
         fontDescriptor = createFontDescriptor(ttf);
+
+        if (!isEmbeddingPermitted(ttf))
+        {
+            throw new IOException("This font does not permit embedding");
+        }
 
         if (!embedSubset)
         {

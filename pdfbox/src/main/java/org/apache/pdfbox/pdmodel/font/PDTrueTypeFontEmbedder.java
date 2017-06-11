@@ -53,7 +53,7 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
     PDTrueTypeFontEmbedder(PDDocument document, COSDictionary dict, InputStream ttfStream,
                            Encoding encoding) throws IOException
     {
-        super(document, dict, ttfStream, false);
+        super(document, dict, ttfStream);
         dict.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
         
         GlyphList glyphList = GlyphList.getAdobeGlyphList();
