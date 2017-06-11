@@ -37,7 +37,6 @@ import org.apache.fontbox.ttf.TTFSubsetter;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -110,16 +109,13 @@ abstract class TrueTypeEmbedder implements Subsetter
     public final void buildFontFile2(InputStream ttfStream) throws IOException
     {
         PDStream stream = new PDStream(document, ttfStream, COSName.FLATE_DECODE);
-        stream.getCOSObject().setInt(COSName.LENGTH1, stream.toByteArray().length);
 
         // as the stream was closed within the PDStream constructor, we have to recreate it
-        InputStream input = null;
-        try
+        try (InputStream input = stream.createInputStream())
         {
-            input = stream.createInputStream();
             if (ttf != null)
             {
-                // close the replaced true type font
+                // close the replaced TrueType font
                 ttf.close();
             }
             ttf = new TTFParser().parseEmbedded(input);
@@ -132,11 +128,7 @@ abstract class TrueTypeEmbedder implements Subsetter
                 fontDescriptor = createFontDescriptor(ttf);
             }
         }
-        finally
-        {
-            IOUtils.closeQuietly(input);
-        }
-
+        stream.getCOSObject().setLong(COSName.LENGTH1, ttf.getOriginalDataSize());
         fontDescriptor.setFontFile2(stream);
     }
 
