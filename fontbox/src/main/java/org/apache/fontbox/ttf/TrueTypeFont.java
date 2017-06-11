@@ -331,8 +331,6 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      * object (normally from the TTFParser object).
      *
      * @return the size.
-     *
-     * @throws IOException If there is an error getting the font data.
      */
     public long getOriginalDataSize()
     {
