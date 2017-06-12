@@ -21,6 +21,7 @@ import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -602,39 +603,39 @@ class AppearanceGeneratorHelper
         List<String> values = ((PDListBox) field).getValue();
         List<String> options = ((PDListBox) field).getOptionsExportValues();
         
-        // TODO: support highlighting multiple items if multiselect is set
-        
-        int selectedIndex = 0;
-        
         if (!values.isEmpty() && !options.isEmpty())
         {
-            if (!indexEntries.isEmpty())
+            if (indexEntries.isEmpty())
             {
-                selectedIndex = indexEntries.get(0);
-            }
-            else
-            {
-                selectedIndex = options.indexOf(values.get(0));
+                // create indexEntries from options
+                indexEntries = new ArrayList<>();
+                for (String v : values)
+                {
+                    indexEntries.add(options.indexOf(v));
+                }
             }
         }
-        
+
         // The first entry which shall be presented might be adjusted by the optional TI key
         // If this entry is present the first entry to be displayed is the keys value otherwise
         // display starts with the first entry in Opt.
         int topIndex = ((PDListBox) field).getTopIndex();
         
-        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE - 2f;
-        
+        float highlightBoxHeight = font.getBoundingBox().getHeight() * fontSize / FONTSCALE;       
+
         // the padding area 
         PDRectangle paddingEdge = applyPadding(appearanceStream.getBBox(), 1);
-        
-        contents.setNonStrokingColor(HIGHLIGHT_COLOR[0],HIGHLIGHT_COLOR[1],HIGHLIGHT_COLOR[2]);
-        
-        contents.addRect(paddingEdge.getLowerLeftX(), 
-                paddingEdge.getUpperRightY() - highlightBoxHeight * (selectedIndex - topIndex + 1),
-                paddingEdge.getWidth(),
-                highlightBoxHeight);
-        contents.fill();
+
+        for (int selectedIndex : indexEntries)
+        {
+            contents.setNonStrokingColor(HIGHLIGHT_COLOR[0], HIGHLIGHT_COLOR[1], HIGHLIGHT_COLOR[2]);
+
+            contents.addRect(paddingEdge.getLowerLeftX(),
+                    paddingEdge.getUpperRightY() - highlightBoxHeight * (selectedIndex - topIndex + 1) + 2,
+                    paddingEdge.getWidth(),
+                    highlightBoxHeight);
+            contents.fill();
+        }
         contents.setNonStrokingColor(0);
     }
     
