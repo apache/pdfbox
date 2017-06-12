@@ -607,16 +607,13 @@ class AppearanceGeneratorHelper
         List<String> values = ((PDListBox) field).getValue();
         List<String> options = ((PDListBox) field).getOptionsExportValues();
         
-        if (!values.isEmpty() && !options.isEmpty())
+        if (!values.isEmpty() && !options.isEmpty() && indexEntries.isEmpty())
         {
-            if (indexEntries.isEmpty())
+            // create indexEntries from options
+            indexEntries = new ArrayList<Integer>();
+            for (String v : values)
             {
-                // create indexEntries from options
-                indexEntries = new ArrayList<Integer>();
-                for (String v : values)
-                {
-                    indexEntries.add(options.indexOf(v));
-                }
+                indexEntries.add(options.indexOf(v));
             }
         }
 
