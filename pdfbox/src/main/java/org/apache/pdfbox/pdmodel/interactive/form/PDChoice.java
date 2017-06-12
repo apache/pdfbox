@@ -420,6 +420,7 @@ public abstract class PDChoice extends PDVariableText
         else
         {
             getCOSObject().removeItem(COSName.V);
+            getCOSObject().removeItem(COSName.I);
         }
         applyChange();
     }
