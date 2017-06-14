@@ -330,7 +330,7 @@ public final class ExtractImages
     private void write2file(PDImage pdImage, String filename, boolean directJPEG) throws IOException
     {
         String suffix = pdImage.getSuffix();
-        if (suffix == null || suffix.equals("jpx") || suffix.equals("jb2"))
+        if (suffix == null || "jpx".equals(suffix) || "jb2".equals(suffix))
         {
             suffix = "png";
         }
