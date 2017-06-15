@@ -149,9 +149,9 @@ public final class ExtractImages
         String message = "Usage: java " + ExtractImages.class.getName() + " [options] <inputfile>\n"
                 + "\nOptions:\n"
                 + "  -password <password>   : Password to decrypt document\n"
-                + "  -prefix <image-prefix> : Image prefix(default to pdf name)\n"
-                + "  -directJPEG            : Forces the direct extraction of JPEG images "
-                + "regardless of colorspace\n"
+                + "  -prefix <image-prefix> : Image prefix (default to pdf name)\n"
+                + "  -directJPEG            : Forces the direct extraction of JPEG/JPX images "
+                + "                           regardless of colorspace or masking\n"
                 + "  <inputfile>            : The PDF document to use\n";
         
         System.err.println(message);
@@ -324,15 +324,20 @@ public final class ExtractImages
      * The suffix is automatically set depending on the image compression in the PDF.
      * @param pdImage the image.
      * @param prefix the filename prefix.
-     * @param directJPEG if true, force saving JPEG streams as they are in the PDF file. 
+     * @param directJPEG if true, force saving JPEG/JPX streams as they are in the PDF file. 
      * @throws IOException When something is wrong with the corresponding file.
      */
     private void write2file(PDImage pdImage, String filename, boolean directJPEG) throws IOException
     {
         String suffix = pdImage.getSuffix();
-        if (suffix == null || "jpx".equals(suffix) || "jb2".equals(suffix))
+        if (suffix == null || "jb2".equals(suffix))
         {
             suffix = "png";
+        }
+        else if ("jpx".equals(suffix))
+        {
+            // use jp2 suffix for file because jpx not known by windows
+            suffix = "jp2";
         }
 
         FileOutputStream out = null;
@@ -359,6 +364,26 @@ public final class ExtractImages
                     {
                         // for CMYK and other "unusual" colorspaces, the JPEG will be converted
                         ImageIOUtil.writeImage(image, suffix, out);
+                    }
+                }
+                else if ("jp2".equals(suffix))
+                {
+                    String colorSpaceName = pdImage.getColorSpace().getName();
+                    if (directJPEG || 
+                            !hasMasks(pdImage) && 
+                                     (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
+                                      PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
+                    {
+                        // RGB or Gray colorspace: get and write the unmodified JPEG2000 stream
+                        InputStream data = pdImage.createInputStream(
+                                Arrays.asList(COSName.JPX_DECODE.getName()));
+                        IOUtils.copy(data, out);
+                        IOUtils.closeQuietly(data);
+                    }
+                    else
+                    {                        
+                        // for CMYK and other "unusual" colorspaces, the image will be converted
+                        ImageIOUtil.writeImage(image, "jpeg2000", out);
                     }
                 }
                 else 
