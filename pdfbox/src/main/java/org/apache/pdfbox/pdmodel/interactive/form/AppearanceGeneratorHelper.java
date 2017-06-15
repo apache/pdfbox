@@ -160,15 +160,15 @@ class AppearanceGeneratorHelper
             {
                 defaultAppearance = getWidgetDefaultAppearanceString(widget);
             }
-            
-        	PDRectangle rect = widget.getRectangle();
+
+            PDRectangle rect = widget.getRectangle();
             if (rect == null)
             {
-            	widget.getCOSObject().removeItem(COSName.AP);
+                widget.getCOSObject().removeItem(COSName.AP);
                 LOG.warn("widget of field " + field.getFullyQualifiedName() + " has no rectangle, no appearance stream created");
                 continue;
             }
-        	
+
             PDFormFieldAdditionalActions actions = field.getActions();
 
             // in case all tests fail the field will be formatted by acrobat
@@ -461,7 +461,8 @@ class AppearanceGeneratorHelper
             
             // special handling for comb boxes as these are like table cells with individual
             // chars
-            if (shallComb()) {
+            if (shallComb())
+            {
                 insertGeneratedCombAppearance(contents, appearanceStream, font, fontSize);
             }
             else if (field instanceof PDListBox)
@@ -574,16 +575,13 @@ class AppearanceGeneratorHelper
                 (appearanceStream.getBBox().getHeight() - ascentAtFontSize)/2;
         
         float prevCharWidth = 0f;
-        float currCharWidth = 0f;
         
-        float xOffset =  combWidth/2;
+        float xOffset = combWidth / 2;
 
-        String combString = "";
-        
         for (int i = 0; i < numChars; i++) 
         {
-            combString = value.substring(i, i+1);
-            currCharWidth = font.getStringWidth(combString) / FONTSCALE * fontSize/2;
+            String combString = value.substring(i, i+1);
+            float currCharWidth = font.getStringWidth(combString) / FONTSCALE * fontSize/2;
             
             xOffset = xOffset + prevCharWidth/2 - currCharWidth/2;
             
