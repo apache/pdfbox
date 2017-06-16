@@ -89,43 +89,45 @@ public class ToolTipController
         if (word != null)
         {
             ToolTip toolTip;
-            if (word.equals(FONT_OPERATOR))
+            switch (word)
             {
-                toolTip = new FontToolTip(resources, rowText);
-                return toolTip.getToolTipText();
-            }
-            else if (word.equals(STROKING_COLOR))
-            {
-                String colorSpaceName = findColorSpace(offset, STROKING_COLOR_SPACE);
-                if (colorSpaceName != null)
-                {
-                    toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
+                case FONT_OPERATOR:
+                    toolTip = new FontToolTip(resources, rowText);
                     return toolTip.getToolTipText();
-                }
-            }
-            else if (word.equals(NON_STROKING_COLOR))
-            {
-                String colorSpaceName = findColorSpace(offset, NON_STROKING_COLOR_SPACE);
-                if (colorSpaceName != null)
+                case STROKING_COLOR:
                 {
-                    toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
-                    return toolTip.getToolTipText();
+                    String colorSpaceName = findColorSpace(offset, STROKING_COLOR_SPACE);
+                    if (colorSpaceName != null)
+                    {
+                        toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
+                        return toolTip.getToolTipText();
+                    }
+                    break;
                 }
-            }
-            else if (word.equals(RGB_STROKING_COLOR) || word.equals(RGB_NON_STROKING_COLOR))
-            {
-                toolTip = new RGToolTip(rowText);
-                return toolTip.getToolTipText();
-            }
-            else if (word.equals(CMYK_STROKING_COLOR) || word.equals(CMYK_NON_STROKING_COLOR))
-            {
-                toolTip = new KToolTip(rowText);
-                return toolTip.getToolTipText();
-            }
-            else if (word.equals(GRAY_STROKING_COLOR) || word.equals(GRAY_NON_STROKING_COLOR))
-            {
-                toolTip = new GToolTip(rowText);
-                return toolTip.getToolTipText();
+                case NON_STROKING_COLOR:
+                {
+                    String colorSpaceName = findColorSpace(offset, NON_STROKING_COLOR_SPACE);
+                    if (colorSpaceName != null)
+                    {
+                        toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
+                        return toolTip.getToolTipText();
+                    }
+                    break;
+                }
+                case RGB_STROKING_COLOR:
+                case RGB_NON_STROKING_COLOR:
+                    toolTip = new RGToolTip(rowText);
+                    return toolTip.getToolTipText();
+                case CMYK_STROKING_COLOR:
+                case CMYK_NON_STROKING_COLOR:
+                    toolTip = new KToolTip(rowText);
+                    return toolTip.getToolTipText();
+                case GRAY_STROKING_COLOR:
+                case GRAY_NON_STROKING_COLOR:
+                    toolTip = new GToolTip(rowText);
+                    return toolTip.getToolTipText();
+                default:
+                    break;
             }
         }
         return null;

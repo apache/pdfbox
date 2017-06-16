@@ -47,63 +47,52 @@ public final class PDFBox
             String[] arguments = new String[args.length - 1];
             System.arraycopy(args, 1, arguments, 0, arguments.length);
             boolean exitAfterCallingMain = true;
-            if (command.equals("Decrypt"))
+            switch (command)
             {
-                Decrypt.main(arguments);
-            }
-            else if (command.equals("Encrypt"))
-            {
-                Encrypt.main(arguments);
-            }
-            else if (command.equals("ExtractText"))
-            {
-                ExtractText.main(arguments);
-            }
-            else if (command.equals("ExtractImages"))
-            {
-                ExtractImages.main(arguments);
-            }
-            else if (command.equals("OverlayPDF"))
-            {
-                OverlayPDF.main(arguments);
-            }
-            else if (command.equals("PrintPDF"))
-            {
-                PrintPDF.main(arguments);
-            }
-            else if (command.equals("PDFDebugger"))
-            {
-                PDFDebugger.main(arguments);
-                exitAfterCallingMain = false;
-            }
-            else if (command.equals("PDFMerger"))
-            {
-                PDFMerger.main(arguments);
-            }
-            else if (command.equals("PDFReader"))
-            {
-                PDFDebugger.main(arguments);
-                exitAfterCallingMain = false;
-            }
-            else if (command.equals("PDFSplit"))
-            {
-                PDFSplit.main(arguments);
-            }
-            else if (command.equals("PDFToImage"))
-            {
-                PDFToImage.main(arguments);
-            }
-            else if (command.equals("TextToPDF"))
-            {
-                TextToPDF.main(arguments);
-            }
-            else if (command.equals("WriteDecodedDoc"))
-            {
-                WriteDecodedDoc.main(arguments);
-            }
-            else
-            {
-                showMessageAndExit();
+                case "Decrypt":
+                    Decrypt.main(arguments);
+                    break;
+                case "Encrypt":
+                    Encrypt.main(arguments);
+                    break;
+                case "ExtractText":
+                    ExtractText.main(arguments);
+                    break;
+                case "ExtractImages":
+                    ExtractImages.main(arguments);
+                    break;
+                case "OverlayPDF":
+                    OverlayPDF.main(arguments);
+                    break;
+                case "PrintPDF":
+                    PrintPDF.main(arguments);
+                    break;
+                case "PDFDebugger":
+                    PDFDebugger.main(arguments);
+                    exitAfterCallingMain = false;
+                    break;
+                case "PDFMerger":
+                    PDFMerger.main(arguments);
+                    break;
+                case "PDFReader":
+                    PDFDebugger.main(arguments);
+                    exitAfterCallingMain = false;
+                    break;
+                case "PDFSplit":
+                    PDFSplit.main(arguments);
+                    break;
+                case "PDFToImage":
+                    PDFToImage.main(arguments);
+                    break;
+                case "TextToPDF":
+                    TextToPDF.main(arguments);
+                    break;
+                case "WriteDecodedDoc":
+                    WriteDecodedDoc.main(arguments);
+                    break;
+                default:
+                    showMessageAndExit();
+                    break;
             }
             if (exitAfterCallingMain)
             {

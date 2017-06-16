@@ -81,158 +81,142 @@ public class FDFDictionary implements COSObjectable
             if (node instanceof Element)
             {
                 Element child = (Element) node;
-                if (child.getTagName().equals("f"))
+                switch (child.getTagName())
                 {
-                    PDSimpleFileSpecification fs = new PDSimpleFileSpecification();
-                    fs.setFile(child.getAttribute("href"));
-                    setFile(fs);
-                }
-                else if (child.getTagName().equals("ids"))
-                {
-                    COSArray ids = new COSArray();
-                    String original = child.getAttribute("original");
-                    String modified = child.getAttribute("modified");
-                    try
-                    {
-                        ids.add(COSString.parseHex(original));
-                    }
-                    catch (IOException e)
-                    {
-                        LOG.warn("Error parsing ID entry for attribute 'original' [" + original
-                                + "]. ID entry ignored.", e);
-                    }
-                    try
-                    {
-                        ids.add(COSString.parseHex(modified));
-                    }
-                    catch (IOException e)
-                    {
-                        LOG.warn("Error parsing ID entry for attribute 'modified' [" + modified
-                                + "]. ID entry ignored.", e);
-                    }
-                    setID(ids);
-                }
-                else if (child.getTagName().equals("fields"))
-                {
-                    NodeList fields = child.getChildNodes();
-                    List<FDFField> fieldList = new ArrayList<>();
-                    for (int f = 0; f < fields.getLength(); f++)
-                    {
-                        Node currentNode = fields.item(f);
-                        if (currentNode instanceof Element
-                                && ((Element) currentNode).getTagName().equals("field"))
+                    case "f":
+                        PDSimpleFileSpecification fs = new PDSimpleFileSpecification();
+                        fs.setFile(child.getAttribute("href"));
+                        setFile(fs);
+                        break;
+                    case "ids":
+                        COSArray ids = new COSArray();
+                        String original = child.getAttribute("original");
+                        String modified = child.getAttribute("modified");
+                        try
                         {
-                            try
+                            ids.add(COSString.parseHex(original));
+                        }
+                        catch (IOException e)
+                        {
+                            LOG.warn("Error parsing ID entry for attribute 'original' [" + original +
+                                    "]. ID entry ignored.", e);
+                        }
+                        try
+                        {
+                            ids.add(COSString.parseHex(modified));
+                        }
+                        catch (IOException e)
+                        {
+                            LOG.warn("Error parsing ID entry for attribute 'modified' [" + modified +
+                                    "]. ID entry ignored.", e);
+                        }
+                        setID(ids);
+                        break;
+                    case "fields":
+                        NodeList fields = child.getChildNodes();
+                        List<FDFField> fieldList = new ArrayList<>();
+                        for (int f = 0; f < fields.getLength(); f++)
+                        {
+                            Node currentNode = fields.item(f);
+                            if (currentNode instanceof Element
+                                    && ((Element) currentNode).getTagName().equals("field"))
                             {
-                                fieldList.add(new FDFField((Element) fields.item(f)));
-                            }
-                            catch (IOException e)
-                            {
-                                LOG.warn("Error parsing field entry [" + currentNode.getNodeValue()
-                                        + "]. Field ignored.", e);
+                                try
+                                {
+                                    fieldList.add(new FDFField((Element) fields.item(f)));
+                                }
+                                catch (IOException e)
+                                {
+                                    LOG.warn("Error parsing field entry [" + currentNode.getNodeValue() +
+                                            "]. Field ignored.", e);
+                                }
                             }
                         }
-                    }
-                    setFields(fieldList);
-                }
-                else if (child.getTagName().equals("annots"))
-                {
-                    NodeList annots = child.getChildNodes();
-                    List<FDFAnnotation> annotList = new ArrayList<>();
-                    for (int j = 0; j < annots.getLength(); j++)
-                    {
-                        Node annotNode = annots.item(j);
-                        if (annotNode instanceof Element)
+                        setFields(fieldList);
+                        break;
+                    case "annots":
+                        NodeList annots = child.getChildNodes();
+                        List<FDFAnnotation> annotList = new ArrayList<>();
+                        for (int j = 0; j < annots.getLength(); j++)
                         {
-
-                            // the node name defines the annotation type
-                            Element annot = (Element) annotNode;
-                            String annotationName = annot.getNodeName();
-                            try
+                            Node annotNode = annots.item(j);
+                            if (annotNode instanceof Element)
                             {
-                                if (annotationName.equals("text"))
+                                // the node name defines the annotation type
+                                Element annot = (Element) annotNode;
+                                String annotationName = annot.getNodeName();
+                                try
                                 {
-                                    annotList.add(new FDFAnnotationText(annot));
+                                    switch (annotationName)
+                                    {
+                                        case "text":
+                                            annotList.add(new FDFAnnotationText(annot));
+                                            break;
+                                        case "caret":
+                                            annotList.add(new FDFAnnotationCaret(annot));
+                                            break;
+                                        case "freetext":
+                                            annotList.add(new FDFAnnotationFreeText(annot));
+                                            break;
+                                        case "fileattachment":
+                                            annotList.add(new FDFAnnotationFileAttachment(annot));
+                                            break;
+                                        case "highlight":
+                                            annotList.add(new FDFAnnotationHighlight(annot));
+                                            break;
+                                        case "ink":
+                                            annotList.add(new FDFAnnotationInk(annot));
+                                            break;
+                                        case "line":
+                                            annotList.add(new FDFAnnotationLine(annot));
+                                            break;
+                                        case "link":
+                                            annotList.add(new FDFAnnotationLink(annot));
+                                            break;
+                                        case "circle":
+                                            annotList.add(new FDFAnnotationCircle(annot));
+                                            break;
+                                        case "square":
+                                            annotList.add(new FDFAnnotationSquare(annot));
+                                            break;
+                                        case "polygon":
+                                            annotList.add(new FDFAnnotationPolygon(annot));
+                                            break;
+                                        case "polyline":
+                                            annotList.add(new FDFAnnotationPolyline(annot));
+                                            break;
+                                        case "sound":
+                                            annotList.add(new FDFAnnotationSound(annot));
+                                            break;
+                                        case "squiggly":
+                                            annotList.add(new FDFAnnotationSquiggly(annot));
+                                            break;
+                                        case "stamp":
+                                            annotList.add(new FDFAnnotationStamp(annot));
+                                            break;
+                                        case "strikeout":
+                                            annotList.add(new FDFAnnotationStrikeOut(annot));
+                                            break;
+                                        case "underline":
+                                            annotList.add(new FDFAnnotationUnderline(annot));
+                                            break;
+                                        default:
+                                            LOG.warn("Unknown or unsupported annotation type '" +
+                                                    annotationName + "'");
+                                            break;
+                                    }
                                 }
-                                else if (annotationName.equals("caret"))
+                                catch (IOException e)
                                 {
-                                    annotList.add(new FDFAnnotationCaret(annot));
+                                    LOG.warn("Error parsing annotation information [" +
+                                            annot.getNodeValue() + "]. Annotation ignored", e);
                                 }
-                                else if (annotationName.equals("freetext"))
-                                {
-                                    annotList.add(new FDFAnnotationFreeText(annot));
-                                }
-                                else if (annotationName.equals("fileattachment"))
-                                {
-                                    annotList.add(new FDFAnnotationFileAttachment(annot));
-                                }
-                                else if (annotationName.equals("highlight"))
-                                {
-                                    annotList.add(new FDFAnnotationHighlight(annot));
-                                }
-                                else if (annotationName.equals("ink"))
-                                {
-                                    annotList.add(new FDFAnnotationInk(annot));
-                                }
-                                else if (annotationName.equals("line"))
-                                {
-                                    annotList.add(new FDFAnnotationLine(annot));
-                                }
-                                else if (annotationName.equals("link"))
-                                {
-                                    annotList.add(new FDFAnnotationLink(annot));
-                                }
-                                else if (annotationName.equals("circle"))
-                                {
-                                    annotList.add(new FDFAnnotationCircle(annot));
-                                }
-                                else if (annotationName.equals("square"))
-                                {
-                                    annotList.add(new FDFAnnotationSquare(annot));
-                                }
-                                else if (annotationName.equals("polygon"))
-                                {
-                                    annotList.add(new FDFAnnotationPolygon(annot));
-                                }
-                                else if (annotationName.equals("polyline"))
-                                {
-                                    annotList.add(new FDFAnnotationPolyline(annot));
-                                }
-                                else if (annotationName.equals("sound"))
-                                {
-                                    annotList.add(new FDFAnnotationSound(annot));
-                                }
-                                else if (annotationName.equals("squiggly"))
-                                {
-                                    annotList.add(new FDFAnnotationSquiggly(annot));
-                                }
-                                else if (annotationName.equals("stamp"))
-                                {
-                                    annotList.add(new FDFAnnotationStamp(annot));
-                                }
-                                else if (annotationName.equals("strikeout"))
-                                {
-                                    annotList.add(new FDFAnnotationStrikeOut(annot));
-                                }
-                                else if (annotationName.equals("underline"))
-                                {
-                                    annotList.add(new FDFAnnotationUnderline(annot));
-                                }
-                                else
-                                {
-                                    LOG.warn("Unknown or unsupported annotation type '"
-                                            + annotationName + "'");
-                                }
-                            }
-                            catch (IOException e)
-                            {
-                                LOG.warn(
-                                        "Error parsing annotation information ["
-                                                + annot.getNodeValue() + "]. Annotation ignored", e);
                             }
                         }
-                    }
-                    setAnnotations(annotList);
+                        setAnnotations(annotList);
+                        break;
+                    default:
+                        break;
                 }
             }
         }

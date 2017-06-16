@@ -51,7 +51,7 @@ public class LogDialog extends JDialog
 
     private final JLabel logLabel;
     private final JTextPane textPane;
-    private JScrollPane scrollPane;
+    private final JScrollPane scrollPane;
     private int fatalCount = 0;
     private int errorCount = 0;
     private int warnCount = 0;
@@ -76,51 +76,46 @@ public class LogDialog extends JDialog
         
         String levelText;
         SimpleAttributeSet levelStyle = new SimpleAttributeSet();
-        if (level.equals("fatal"))
+        switch (level)
         {
-            levelText = "Fatal";
-            StyleConstants.setForeground(levelStyle, Color.WHITE);
-            StyleConstants.setBackground(levelStyle, Color.BLACK);
-            fatalCount++;
-        } 
-        else if (level.equals("error"))
-        {
-            levelText = "Error";
-            StyleConstants.setForeground(levelStyle, new Color(0xFF291F));
-            StyleConstants.setBackground(levelStyle, new Color(0xFFF0F0));
-            errorCount++;
-        } 
-        else if (level.equals("warn"))
-        {
-            levelText = "Warning";
-            StyleConstants.setForeground(levelStyle, new Color(0x614201));
-            StyleConstants.setBackground(levelStyle, new Color(0xFFFCE5));
-            warnCount++;
-        } 
-        else if (level.equals("info"))
-        {
-            levelText = "Info";
-            StyleConstants.setForeground(levelStyle, new Color(0x203261));
-            StyleConstants.setBackground(levelStyle, new Color(0xE2E8FF));
-            otherCount++;
-        } 
-        else if (level.equals("debug"))
-        {
-            levelText = "Debug";
-            StyleConstants.setForeground(levelStyle, new Color(0x32612E));
-            StyleConstants.setBackground(levelStyle, new Color(0xF4FFEC));
-            otherCount++;
-        } 
-        else if (level.equals("trace"))
-        {
-            levelText = "Trace";
-            StyleConstants.setForeground(levelStyle, new Color(0x64438D));
-            StyleConstants.setBackground(levelStyle, new Color(0xFEF3FF));
-            otherCount++;
-        } 
-        else
-        {
-            throw new Error(level);
+            case "fatal":
+                levelText = "Fatal";
+                StyleConstants.setForeground(levelStyle, Color.WHITE);
+                StyleConstants.setBackground(levelStyle, Color.BLACK);
+                fatalCount++;
+                break;
+            case "error":
+                levelText = "Error";
+                StyleConstants.setForeground(levelStyle, new Color(0xFF291F));
+                StyleConstants.setBackground(levelStyle, new Color(0xFFF0F0));
+                errorCount++;
+                break;
+            case "warn":
+                levelText = "Warning";
+                StyleConstants.setForeground(levelStyle, new Color(0x614201));
+                StyleConstants.setBackground(levelStyle, new Color(0xFFFCE5));
+                warnCount++;
+                break;
+            case "info":
+                levelText = "Info";
+                StyleConstants.setForeground(levelStyle, new Color(0x203261));
+                StyleConstants.setBackground(levelStyle, new Color(0xE2E8FF));
+                otherCount++;
+                break;
+            case "debug":
+                levelText = "Debug";
+                StyleConstants.setForeground(levelStyle, new Color(0x32612E));
+                StyleConstants.setBackground(levelStyle, new Color(0xF4FFEC));
+                otherCount++;
+                break;
+            case "trace":
+                levelText = "Trace";
+                StyleConstants.setForeground(levelStyle, new Color(0x64438D));
+                StyleConstants.setBackground(levelStyle, new Color(0xFEF3FF));
+                otherCount++;
+                break;
+            default:
+                throw new Error(level);
         }
 
         SimpleAttributeSet nameStyle = new SimpleAttributeSet();

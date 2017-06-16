@@ -83,17 +83,19 @@ public class FDFField implements COSObjectable
             if (node instanceof Element)
             {
                 Element child = (Element) node;
-                if (child.getTagName().equals("value"))
+                switch (child.getTagName())
                 {
-                    setValue(XMLUtil.getNodeValue(child));
-                }
-                else if (child.getTagName().equals("value-richtext"))
-                {
-                    setRichText(new COSString(XMLUtil.getNodeValue(child)));
-                }
-                else if (child.getTagName().equals("field"))
-                {
-                    kids.add(new FDFField(child));
+                    case "value":
+                        setValue(XMLUtil.getNodeValue(child));
+                        break;
+                    case "value-richtext":
+                        setRichText(new COSString(XMLUtil.getNodeValue(child)));
+                        break;
+                    case "field":
+                        kids.add(new FDFField(child));
+                        break;
+                    default:
+                        break;
                 }
             }
         }

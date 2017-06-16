@@ -147,41 +147,37 @@ public abstract class FDFAnnotation implements COSObjectable
             String[] flagTokens = flags.split(",");
             for (String flagToken : flagTokens)
             {
-                if (flagToken.equals("invisible"))
+                switch (flagToken)
                 {
-                    setInvisible(true);
-                }
-                else if (flagToken.equals("hidden"))
-                {
-                    setHidden(true);
-                }
-                else if (flagToken.equals("print"))
-                {
-                    setPrinted(true);
-                }
-                else if (flagToken.equals("nozoom"))
-                {
-                    setNoZoom(true);
-                }
-                else if (flagToken.equals("norotate"))
-                {
-                    setNoRotate(true);
-                }
-                else if (flagToken.equals("noview"))
-                {
-                    setNoView(true);
-                }
-                else if (flagToken.equals("readonly"))
-                {
-                    setReadOnly(true);
-                }
-                else if (flagToken.equals("locked"))
-                {
-                    setLocked(true);
-                }
-                else if (flagToken.equals("togglenoview"))
-                {
-                    setToggleNoView(true);
+                    case "invisible":
+                        setInvisible(true);
+                        break;
+                    case "hidden":
+                        setHidden(true);
+                        break;
+                    case "print":
+                        setPrinted(true);
+                        break;
+                    case "nozoom":
+                        setNoZoom(true);
+                        break;
+                    case "norotate":
+                        setNoRotate(true);
+                        break;
+                    case "noview":
+                        setNoView(true);
+                        break;
+                    case "readonly":
+                        setReadOnly(true);
+                        break;
+                    case "locked":
+                        setLocked(true);
+                        break;
+                    case "togglenoview":
+                        setToggleNoView(true);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -264,38 +260,35 @@ public abstract class FDFAnnotation implements COSObjectable
             String style = element.getAttribute("style");
             if (style != null && !style.isEmpty())
             {
-                if (style.equals("dash"))
+                switch (style)
                 {
-                    borderStyle.setStyle("D");
-                }
-                else if (style.equals("bevelled"))
-                {
-                    borderStyle.setStyle("B");
-                }
-                else if (style.equals("inset"))
-                {
-                    borderStyle.setStyle("I");
-                }
-                else if (style.equals("underline"))
-                {
-                    borderStyle.setStyle("U");
-                }
-                else if (style.equals("cloudy"))
-                {
-                    borderStyle.setStyle("S");
-                    PDBorderEffectDictionary borderEffect = new PDBorderEffectDictionary();
-                    borderEffect.setStyle("C");
-                    String intensity = element.getAttribute("intensity");
-                    if (intensity != null && !intensity.isEmpty())
-                    {
-                        borderEffect.setIntensity(Float.parseFloat(element
-                                .getAttribute("intensity")));
-                    }
-                    setBorderEffect(borderEffect);
-                }
-                else
-                {
-                    borderStyle.setStyle("S");
+                    case "dash":
+                        borderStyle.setStyle("D");
+                        break;
+                    case "bevelled":
+                        borderStyle.setStyle("B");
+                        break;
+                    case "inset":
+                        borderStyle.setStyle("I");
+                        break;
+                    case "underline":
+                        borderStyle.setStyle("U");
+                        break;
+                    case "cloudy":
+                        borderStyle.setStyle("S");
+                        PDBorderEffectDictionary borderEffect = new PDBorderEffectDictionary();
+                        borderEffect.setStyle("C");
+                        String intensity = element.getAttribute("intensity");
+                        if (intensity != null && !intensity.isEmpty())
+                        {
+                            borderEffect.setIntensity(Float.parseFloat(element
+                                    .getAttribute("intensity")));
+                        }
+                        setBorderEffect(borderEffect);
+                        break;
+                    default:
+                        borderStyle.setStyle("S");
+                        break;
                 }
             }
             String dashes = element.getAttribute("dashes");
