@@ -147,13 +147,7 @@ public final class PrintURLs
                 }
             }
         }
-        catch (NoSuchMethodException e)
-        {
-        }
-        catch (IllegalAccessException e)
-        {
-        }
-        catch (InvocationTargetException e)
+        catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
         {
         }
         return null;

@@ -111,31 +111,36 @@ public class PDFMergerUtilityTest extends TestCase
                 MemoryUsageSetting.setupTempFileOnly());
     }
 
-    // checks that the result file of a merge has the same rendering as the two
-    // source files
+    // checks that the result file of a merge has the same rendering as the two source files
     private void checkMergeIdentical(String filename1, String filename2, String mergeFilename, 
             MemoryUsageSetting memUsageSetting)
             throws IOException
     {
-        PDDocument srcDoc1 = PDDocument.load(new File(SRCDIR, filename1), (String)null);
-        int src1PageCount = srcDoc1.getNumberOfPages();
-        PDFRenderer src1PdfRenderer = new PDFRenderer(srcDoc1);
-        BufferedImage[] src1ImageTab = new BufferedImage[src1PageCount];
-        for (int page = 0; page < src1PageCount; ++page)
+        int src1PageCount;
+        BufferedImage[] src1ImageTab;
+        try (PDDocument srcDoc1 = PDDocument.load(new File(SRCDIR, filename1), (String) null))
         {
-            src1ImageTab[page] = src1PdfRenderer.renderImageWithDPI(page, DPI);
+            src1PageCount = srcDoc1.getNumberOfPages();
+            PDFRenderer src1PdfRenderer = new PDFRenderer(srcDoc1);
+            src1ImageTab = new BufferedImage[src1PageCount];
+            for (int page = 0; page < src1PageCount; ++page)
+            {
+                src1ImageTab[page] = src1PdfRenderer.renderImageWithDPI(page, DPI);
+            }
         }
-        srcDoc1.close();
 
-        PDDocument srcDoc2 = PDDocument.load(new File(SRCDIR, filename2), (String)null);
-        int src2PageCount = srcDoc2.getNumberOfPages();
-        PDFRenderer src2PdfRenderer = new PDFRenderer(srcDoc2);
-        BufferedImage[] src2ImageTab = new BufferedImage[src2PageCount];
-        for (int page = 0; page < src2PageCount; ++page)
+        int src2PageCount;
+        BufferedImage[] src2ImageTab;
+        try (PDDocument srcDoc2 = PDDocument.load(new File(SRCDIR, filename2), (String) null))
         {
-            src2ImageTab[page] = src2PdfRenderer.renderImageWithDPI(page, DPI);
+            src2PageCount = srcDoc2.getNumberOfPages();
+            PDFRenderer src2PdfRenderer = new PDFRenderer(srcDoc2);
+            src2ImageTab = new BufferedImage[src2PageCount];
+            for (int page = 0; page < src2PageCount; ++page)
+            {
+                src2ImageTab[page] = src2PdfRenderer.renderImageWithDPI(page, DPI);
+            }
         }
-        srcDoc2.close();
 
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         pdfMergerUtility.addSource(new File(SRCDIR, filename1));
@@ -143,23 +148,23 @@ public class PDFMergerUtilityTest extends TestCase
         pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + mergeFilename);
         pdfMergerUtility.mergeDocuments(memUsageSetting);
 
-        PDDocument mergedDoc
-                = PDDocument.load(new File(TARGETTESTDIR, mergeFilename), (String)null);
-        PDFRenderer mergePdfRenderer = new PDFRenderer(mergedDoc);
-        int mergePageCount = mergedDoc.getNumberOfPages();
-        assertEquals(src1PageCount + src2PageCount, mergePageCount);
-        for (int page = 0; page < src1PageCount; ++page)
+        try (PDDocument mergedDoc = PDDocument.load(new File(TARGETTESTDIR, mergeFilename), (String) null))
         {
-            BufferedImage bim = mergePdfRenderer.renderImageWithDPI(page, DPI);
-            checkImagesIdentical(bim, src1ImageTab[page]);
+            PDFRenderer mergePdfRenderer = new PDFRenderer(mergedDoc);
+            int mergePageCount = mergedDoc.getNumberOfPages();
+            assertEquals(src1PageCount + src2PageCount, mergePageCount);
+            for (int page = 0; page < src1PageCount; ++page)
+            {
+                BufferedImage bim = mergePdfRenderer.renderImageWithDPI(page, DPI);
+                checkImagesIdentical(bim, src1ImageTab[page]);
+            }
+            for (int page = 0; page < src2PageCount; ++page)
+            {
+                int mergePage = page + src1PageCount;
+                BufferedImage bim = mergePdfRenderer.renderImageWithDPI(mergePage, DPI);
+                checkImagesIdentical(bim, src2ImageTab[page]);
+            }
         }
-        for (int page = 0; page < src2PageCount; ++page)
-        {
-            int mergePage = page + src1PageCount;
-            BufferedImage bim = mergePdfRenderer.renderImageWithDPI(mergePage, DPI);
-            checkImagesIdentical(bim, src2ImageTab[page]);
-        }
-        mergedDoc.close();
     }
 
     private void checkImagesIdentical(BufferedImage bim1, BufferedImage bim2)
