@@ -60,15 +60,15 @@ public final class ImageToPDF
             // call LosslessFactory.createFromImage() instead
             PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, doc);
             
-            PDPageContentStream contents = new PDPageContentStream(doc, page);
-            
             // draw the image at full size at (x=20, y=20)
-            contents.drawImage(pdImage, 20, 20);
-            
-            // to draw the image at half size at (x=20, y=20) use
-            // contents.drawImage(pdImage, 20, 20, pdImage.getWidth() / 2, pdImage.getHeight() / 2);
-            
-            contents.close();
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+            {
+                // draw the image at full size at (x=20, y=20)
+                contents.drawImage(pdImage, 20, 20);
+                
+                // to draw the image at half size at (x=20, y=20) use
+                // contents.drawImage(pdImage, 20, 20, pdImage.getWidth() / 2, pdImage.getHeight() / 2); 
+            }
             doc.save(pdfPath);
         }
     }
