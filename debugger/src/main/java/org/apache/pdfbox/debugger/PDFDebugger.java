@@ -220,22 +220,22 @@ public class PDFDebugger extends JFrame
         
         for( int i = 0; i < args.length; i++ )
         {
-            if( args[i].equals( PASSWORD ) )
+            switch (args[i])
             {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                password = args[i];
-            }
-            else if( args[i].equals(VIEW_STRUCTURE) )
-            {
-                viewPages = false;
-            }
-            else
-            {
-                filename = args[i];
+                case PASSWORD:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    password = args[i];
+                    break;
+                case VIEW_STRUCTURE:
+                    viewPages = false;
+                    break;
+                default:
+                    filename = args[i];
+                    break;
             }
         }
         final PDFDebugger viewer = new PDFDebugger(viewPages);
@@ -277,9 +277,10 @@ public class PDFDebugger extends JFrame
         {
             try
             {
-                InputStream is = new FileInputStream(file);
-                configuration.load(is);
-                is.close();
+                try (InputStream is = new FileInputStream(file))
+                {
+                    configuration.load(is);
+                }
             }
             catch(IOException e)
             {

@@ -157,22 +157,20 @@ class HexEditor extends JPanel implements SelectionChangeListener
     {
         int index = event.getHexIndex();
 
-        if (event.getNavigation().equals(SelectEvent.NEXT))
+        switch (event.getNavigation())
         {
-            index += 1;
-        }
-        else if (event.getNavigation().equals(SelectEvent.PREVIOUS))
-        {
-            index -= 1;
-        }
-        else if (event.getNavigation().equals(SelectEvent.UP))
-        {
-            index -= 16;
-
-        }
-        else if (event.getNavigation().equals(SelectEvent.DOWN))
-        {
-            index += 16;
+            case SelectEvent.NEXT:
+                index += 1;
+                break;
+            case SelectEvent.PREVIOUS:
+                index -= 1;
+                break;
+            case SelectEvent.UP:
+                index -= 16;
+                break;
+            case SelectEvent.DOWN:
+                index += 16;
+                break;
         }
         if (index >= 0 && index <= model.size() - 1)
         {

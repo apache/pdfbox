@@ -46,60 +46,55 @@ public final class PDActionFactory
     public static PDAction createAction( COSDictionary action )
     {
         PDAction retval = null;
-        if( action != null )
+        if( action != null)
         {
-            String type = action.getNameAsString( COSName.S );
-            if( PDActionJavaScript.SUB_TYPE.equals( type ) )
+            String type = action.getNameAsString(COSName.S);
+            if (type != null)
             {
-                retval = new PDActionJavaScript( action );
-            }
-            else if( PDActionGoTo.SUB_TYPE.equals( type ) )
-            {
-                retval = new PDActionGoTo( action );
-            }
-            else if( PDActionLaunch.SUB_TYPE.equals( type ) )
-            {
-                retval = new PDActionLaunch( action );
-            }
-            else if( PDActionRemoteGoTo.SUB_TYPE.equals( type ) )
-            {
-                retval = new PDActionRemoteGoTo( action );
-            }
-            else if( PDActionURI.SUB_TYPE.equals( type ) )
-            {
-                retval = new PDActionURI( action );
-            }
-            else if (PDActionNamed.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionNamed(action);
-            }
-            else if (PDActionSound.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionSound(action);
-            }
-            else if (PDActionMovie.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionMovie(action);
-            }
-            else if (PDActionImportData.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionImportData(action);
-            }
-            else if (PDActionResetForm.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionResetForm(action);
-            }
-            else if (PDActionHide.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionHide(action);
-            }
-            else if (PDActionSubmitForm.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionSubmitForm(action);
-            }
-            else if (PDActionThread.SUB_TYPE.equals(type))
-            {
-                retval = new PDActionThread(action);
+                switch (type)
+                {
+                    case PDActionJavaScript.SUB_TYPE:
+                        retval = new PDActionJavaScript(action);
+                        break;
+                    case PDActionGoTo.SUB_TYPE:
+                        retval = new PDActionGoTo(action);
+                        break;
+                    case PDActionLaunch.SUB_TYPE:
+                        retval = new PDActionLaunch(action);
+                        break;
+                    case PDActionRemoteGoTo.SUB_TYPE:
+                        retval = new PDActionRemoteGoTo(action);
+                        break;
+                    case PDActionURI.SUB_TYPE:
+                        retval = new PDActionURI(action);
+                        break;
+                    case PDActionNamed.SUB_TYPE:
+                        retval = new PDActionNamed(action);
+                        break;
+                    case PDActionSound.SUB_TYPE:
+                        retval = new PDActionSound(action);
+                        break;
+                    case PDActionMovie.SUB_TYPE:
+                        retval = new PDActionMovie(action);
+                        break;
+                    case PDActionImportData.SUB_TYPE:
+                        retval = new PDActionImportData(action);
+                        break;
+                    case PDActionResetForm.SUB_TYPE:
+                        retval = new PDActionResetForm(action);
+                        break;
+                    case PDActionHide.SUB_TYPE:
+                        retval = new PDActionHide(action);
+                        break;
+                    case PDActionSubmitForm.SUB_TYPE:
+                        retval = new PDActionSubmitForm(action);
+                        break;
+                    case PDActionThread.SUB_TYPE:
+                        retval = new PDActionThread(action);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
         return retval;
