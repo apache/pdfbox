@@ -411,9 +411,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         Cipher cipher;
         try
         {
-            apg = AlgorithmParameterGenerator.getInstance(algorithm);
-            keygen = KeyGenerator.getInstance(algorithm);
-            cipher = Cipher.getInstance(algorithm);
+            apg = AlgorithmParameterGenerator.getInstance(algorithm,
+                    SecurityProvider.getProvider());
+            keygen = KeyGenerator.getInstance(algorithm, SecurityProvider.getProvider());
+            cipher = Cipher.getInstance(algorithm, SecurityProvider.getProvider());
         }
         catch (NoSuchAlgorithmException e)
         {
@@ -468,7 +469,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         Cipher cipher;
         try
         {
-            cipher = Cipher.getInstance(algorithmId.getAlgorithm().getId());
+            cipher = Cipher.getInstance(algorithmId.getAlgorithm().getId(),
+                    SecurityProvider.getProvider());
         }
         catch (NoSuchAlgorithmException e)
         {
