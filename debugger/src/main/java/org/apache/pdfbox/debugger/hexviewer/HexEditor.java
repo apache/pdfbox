@@ -171,6 +171,8 @@ class HexEditor extends JPanel implements SelectionChangeListener
             case SelectEvent.DOWN:
                 index += 16;
                 break;
+            default:
+                break;
         }
         if (index >= 0 && index <= model.size() - 1)
         {
