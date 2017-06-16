@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontLike;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
@@ -56,7 +56,7 @@ final class GlyphCache
         {
             if (!font.hasGlyph(code))
             {
-                String fontName = ((PDFont)font).getName();
+                String fontName = ((PDFontLike) font).getName();
                 if (font instanceof PDType0Font)
                 {
                     int cid = ((PDType0Font) font).codeToCID(code);
@@ -67,7 +67,7 @@ final class GlyphCache
                 {
                     LOG.warn("No glyph for " + code + " in " + font.getClass().getSimpleName()
                             + " " + fontName + " (embedded or system font used: "
-                            + ((PDSimpleFont) font).getFontBoxFont() + ")");
+                            + ((PDSimpleFont) font).getFontBoxFont().getName() + ")");
                 }
                 else
                 {
