@@ -44,35 +44,31 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
     public static PDAttributeObject create(COSDictionary dictionary)
     {
         String owner = dictionary.getNameAsString(COSName.O);
-        if (PDUserAttributeObject.OWNER_USER_PROPERTIES.equals(owner))
+        if (owner != null)
         {
-            return new PDUserAttributeObject(dictionary);
-        }
-        else if (PDListAttributeObject.OWNER_LIST.equals(owner))
-        {
-            return new PDListAttributeObject(dictionary);
-        }
-        else if (PDPrintFieldAttributeObject.OWNER_PRINT_FIELD.equals(owner))
-        {
-            return new PDPrintFieldAttributeObject(dictionary);
-        }
-        else if (PDTableAttributeObject.OWNER_TABLE.equals(owner))
-        {
-            return new PDTableAttributeObject(dictionary);
-        }
-        else if (PDLayoutAttributeObject.OWNER_LAYOUT.equals(owner))
-        {
-            return new PDLayoutAttributeObject(dictionary);
-        }
-        else if (PDExportFormatAttributeObject.OWNER_XML_1_00.equals(owner)
-            || PDExportFormatAttributeObject.OWNER_HTML_3_20.equals(owner)
-            || PDExportFormatAttributeObject.OWNER_HTML_4_01.equals(owner)
-            || PDExportFormatAttributeObject.OWNER_OEB_1_00.equals(owner)
-            || PDExportFormatAttributeObject.OWNER_RTF_1_05.equals(owner)
-            || PDExportFormatAttributeObject.OWNER_CSS_1_00.equals(owner)
-            || PDExportFormatAttributeObject.OWNER_CSS_2_00.equals(owner))
-        {
-            return new PDExportFormatAttributeObject(dictionary);
+            switch (owner)
+            {
+                case PDUserAttributeObject.OWNER_USER_PROPERTIES:
+                    return new PDUserAttributeObject(dictionary);
+                case PDListAttributeObject.OWNER_LIST:
+                    return new PDListAttributeObject(dictionary);
+                case PDPrintFieldAttributeObject.OWNER_PRINT_FIELD:
+                    return new PDPrintFieldAttributeObject(dictionary);
+                case PDTableAttributeObject.OWNER_TABLE:
+                    return new PDTableAttributeObject(dictionary);
+                case PDLayoutAttributeObject.OWNER_LAYOUT:
+                    return new PDLayoutAttributeObject(dictionary);
+                case PDExportFormatAttributeObject.OWNER_XML_1_00:
+                case PDExportFormatAttributeObject.OWNER_HTML_3_20:
+                case PDExportFormatAttributeObject.OWNER_HTML_4_01:
+                case PDExportFormatAttributeObject.OWNER_OEB_1_00:
+                case PDExportFormatAttributeObject.OWNER_RTF_1_05:
+                case PDExportFormatAttributeObject.OWNER_CSS_1_00:
+                case PDExportFormatAttributeObject.OWNER_CSS_2_00:
+                    return new PDExportFormatAttributeObject(dictionary);
+                default:
+                    break;
+            }
         }
         return new PDDefaultAttributeObject(dictionary);
     }

@@ -927,43 +927,44 @@ public final class StandardSecurityHandler extends SecurityHandler
                                   byte[] id, int encRevision, int length, boolean encryptMetadata)
                                   throws IOException
     {
-        if( encRevision == 2 )
+        switch (encRevision)
         {
-            byte[] passwordBytes = computeUserPassword( password, owner, permissions, id, encRevision,
-                                                        length, encryptMetadata );
-            return Arrays.equals(user, passwordBytes);
-        }
-        else if( encRevision == 3 || encRevision == 4 )
-        {
-            byte[] passwordBytes = computeUserPassword( password, owner, permissions, id, encRevision,
-                                                        length, encryptMetadata );
-            // compare first 16 bytes only
-            return Arrays.equals(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
-        }
-        else if (encRevision == 6 || encRevision == 5)
-        {
-            byte[] truncatedPassword = truncate127(password);
-            
-            byte[] uHash = new byte[32];
-            byte[] uValidationSalt = new byte[8];
-            System.arraycopy(user, 0, uHash, 0, 32);
-            System.arraycopy(user, 32, uValidationSalt, 0, 8);
-
-            byte[] hash;
-            if (encRevision == 5)
+            case 2:
             {
-                hash = computeSHA256(truncatedPassword, uValidationSalt, null);
+                byte[] passwordBytes = computeUserPassword(password, owner, permissions, id, encRevision,
+                        length, encryptMetadata);
+                return Arrays.equals(user, passwordBytes);
             }
-            else
+            case 3:
+            case 4:
             {
-                hash = computeHash2A(truncatedPassword, uValidationSalt, null);
+                byte[] passwordBytes = computeUserPassword(password, owner, permissions, id, encRevision,
+                        length, encryptMetadata);
+                // compare first 16 bytes only
+                return Arrays.equals(Arrays.copyOf(user, 16), Arrays.copyOf(passwordBytes, 16));
             }
+            case 5:
+            case 6:
+                byte[] truncatedPassword = truncate127(password);
 
-            return Arrays.equals(hash, uHash);
-        }
-        else
-        {
-            throw new IOException( "Unknown Encryption Revision " + encRevision );
+                byte[] uHash = new byte[32];
+                byte[] uValidationSalt = new byte[8];
+                System.arraycopy(user, 0, uHash, 0, 32);
+                System.arraycopy(user, 32, uValidationSalt, 0, 8);
+
+                byte[] hash;
+                if (encRevision == 5)
+                {
+                    hash = computeSHA256(truncatedPassword, uValidationSalt, null);
+                }
+                else
+                {
+                    hash = computeHash2A(truncatedPassword, uValidationSalt, null);
+                }
+
+                return Arrays.equals(hash, uHash);
+            default:
+                throw new IOException("Unknown Encryption Revision " + encRevision);
         }
     }
 
