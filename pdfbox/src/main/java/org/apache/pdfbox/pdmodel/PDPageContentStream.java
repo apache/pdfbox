@@ -966,17 +966,16 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void fill(int windingRule) throws IOException
     {
-        if (windingRule == PathIterator.WIND_NON_ZERO)
+        switch (windingRule)
         {
-            fill();
-        }
-        else if (windingRule == PathIterator.WIND_EVEN_ODD)
-        {
-            fillEvenOdd();
-        }
-        else
-        {
-            throw new IllegalArgumentException("Error: unknown value for winding rule");
+            case PathIterator.WIND_NON_ZERO:
+                fill();
+                break;
+            case PathIterator.WIND_EVEN_ODD:
+                fillEvenOdd();
+                break;
+            default:
+                throw new IllegalArgumentException("Error: unknown value for winding rule");
         }
     }
 
@@ -1007,17 +1006,16 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         {
             throw new IllegalStateException("Error: clipPath is not allowed within a text block.");
         }
-        if (windingRule == PathIterator.WIND_NON_ZERO)
+        switch (windingRule)
         {
-            writeOperator("W");
-        }
-        else if (windingRule == PathIterator.WIND_EVEN_ODD)
-        {
-            writeOperator("W*");
-        }
-        else
-        {
-            throw new IllegalArgumentException("Error: unknown value for winding rule");
+            case PathIterator.WIND_NON_ZERO:
+                writeOperator("W");
+                break;
+            case PathIterator.WIND_EVEN_ODD:
+                writeOperator("W*");
+                break;
+            default:
+                throw new IllegalArgumentException("Error: unknown value for winding rule");
         }
         writeOperator("n");
     }
