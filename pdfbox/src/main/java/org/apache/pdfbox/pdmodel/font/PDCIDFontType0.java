@@ -130,16 +130,17 @@ public class PDCIDFontType0 extends PDCIDFont
             FontBoxFont font;
             if (mapping.isCIDFont())
             {
-                if (mapping.getFont().getCFF().getFont() instanceof CFFCIDFont)
+                cffFont = mapping.getFont().getCFF().getFont();
+                if (cffFont instanceof CFFCIDFont)
                 {
-                    cidFont = (CFFCIDFont) mapping.getFont().getCFF().getFont();
+                    cidFont = (CFFCIDFont) cffFont;
                     t1Font = null;
                     font = cidFont;
                 }
                 else
                 {
                     // PDFBOX-3515: OpenType fonts are loaded as CFFType1Font
-                    CFFType1Font f = (CFFType1Font) mapping.getFont().getCFF().getFont();
+                    CFFType1Font f = (CFFType1Font) cffFont;
                     cidFont = null;
                     t1Font = f;
                     font = f;
