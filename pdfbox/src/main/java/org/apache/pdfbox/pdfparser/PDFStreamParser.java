@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -424,7 +423,7 @@ public class PDFStreamParser extends BaseParser
                     noBinData = false;
                 }
             }
-            pdfSource.unread(Arrays.copyOfRange(binCharTestArr, 0, readBytes));
+            pdfSource.unread(binCharTestArr, 0, readBytes);
         }
         if (!noBinData)
         {
