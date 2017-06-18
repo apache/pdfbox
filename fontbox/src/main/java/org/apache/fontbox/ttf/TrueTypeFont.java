@@ -485,7 +485,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         {
             if (isStrict)
             {
-                throw new IOException("The TrueType font does not contain a 'cmap' table");
+                throw new IOException("The TrueType font " + getName() + " does not contain a 'cmap' table");
             }
             else
             {
