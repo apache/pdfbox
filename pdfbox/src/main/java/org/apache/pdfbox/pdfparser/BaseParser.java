@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
-import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -341,60 +340,43 @@ public abstract class BaseParser
     }
 
     /**
-     * This is really a bug in the Document creators code, but it caused a crash
-     * in PDFBox, the first bug was in this format:
-     * /Title ( (5)
-     * /Creator which was patched in 1 place.
-     * However it missed the case where the Close Paren was escaped
+     * This is really a bug in the Document creators code, but it caused a crash in PDFBox, the first bug was in this
+     * format: /Title ( (5) /Creator which was patched in 1 place.
      *
-     * The second bug was in this format
-     * /Title (c:\)
-     * /Producer
+     * However it missed the case where the number of opening and closing parenthesis isn't balanced
      *
-     * This patch  moves this code out of the parseCOSString method, so it can be used twice.
+     * The second bug was in this format /Title (c:\) /Producer
      *
+     * This patch moves this code out of the parseCOSString method, so it can be used twice.
      *
      * @param bracesParameter the number of braces currently open.
      *
      * @return the corrected value of the brace counter
      * @throws IOException
      */
-    private int checkForMissingCloseParen(final int bracesParameter) throws IOException
+    private int checkForEndOfString(final int bracesParameter) throws IOException
     {
         int braces = bracesParameter;
         byte[] nextThreeBytes = new byte[3];
         int amountRead = seqSource.read(nextThreeBytes);
 
-        //lets handle the special case seen in Bull  River Rules and Regulations.pdf
-        //The dictionary looks like this
-        //    2 0 obj
-        //    <<
-        //        /Type /Info
-        //        /Creator (PaperPort http://www.scansoft.com)
-        //        /Producer (sspdflib 1.0 http://www.scansoft.com)
-        //        /Title ( (5)
-        //        /Author ()
-        //        /Subject ()
-        //
-        // Notice the /Title, the braces are not even but they should
-        // be.  So lets assume that if we encounter an this scenario
-        //   <end_brace><new_line><opening_slash> then that
-        // means that there is an error in the pdf and assume that
-        // was the end of the document.
-        //
-        if (amountRead == 3 &&
-               (( nextThreeBytes[0] == ASCII_CR  // Look for a carriage return
-               && nextThreeBytes[1] == ASCII_LF  // Look for a new line
-               && nextThreeBytes[2] == 0x2f ) // Look for a slash /
-                                              // Add a second case without a new line
-               || (nextThreeBytes[0] == ASCII_CR  // Look for a carriage return
-                && nextThreeBytes[1] == 0x2f )))  // Look for a slash /
+        // Check the next 3 bytes if available
+        // The following cases are valid indicators for the end of the string
+        // 1. Next line contains another COSObject: CR + LF + '/'
+        // 2. COSDictionary ends in the next line: CR + LF + '>'
+        // 3. Next line contains another COSObject: CR + '/'
+        // 4. COSDictionary ends in the next line: CR + '>'
+        if (amountRead == 3 && nextThreeBytes[0] == ASCII_CR)
+        {
+            if ( (nextThreeBytes[1] == ASCII_LF && (nextThreeBytes[2] == '/') || nextThreeBytes[2] == '>')
+                    || nextThreeBytes[1] == '/' || nextThreeBytes[1] == '>')
             {
                 braces = 0;
             }
+        }
         if (amountRead > 0)
         {
-            seqSource.unread(Arrays.copyOfRange(nextThreeBytes, 0, amountRead));
+            seqSource.unread(nextThreeBytes, 0, amountRead);
         }
         return braces;
     }
@@ -409,18 +391,11 @@ public abstract class BaseParser
     protected COSString parseCOSString() throws IOException
     {
         char nextChar = (char) seqSource.read();
-        char openBrace;
-        char closeBrace;
-        if( nextChar == '(' )
-        {
-            openBrace = '(';
-            closeBrace = ')';
-        }
-        else if( nextChar == '<' )
+        if (nextChar == '<')
         {
             return parseCOSHexString();
         }
-        else
+        else if (nextChar != '(')
         {
             throw new IOException( "parseCOSString string should start with '(' or '<' and not '" +
                     nextChar + "' " + seqSource);
@@ -428,8 +403,7 @@ public abstract class BaseParser
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        //This is the number of braces read
-        //
+        // This is the number of braces read
         int braces = 1;
         int c = seqSource.read();
         while( braces > 0 && c != -1)
@@ -437,17 +411,17 @@ public abstract class BaseParser
             char ch = (char)c;
             int nextc = -2; // not yet read
 
-            if(ch == closeBrace)
+            if (ch == ')')
             {
 
                 braces--;
-                braces = checkForMissingCloseParen(braces);
+                braces = checkForEndOfString(braces);
                 if( braces != 0 )
                 {
                     out.write(ch);
                 }
             }
-            else if( ch == openBrace )
+            else if (ch == '(')
             {
                 braces++;
                 out.write(ch);
@@ -475,7 +449,7 @@ public abstract class BaseParser
                         break;
                     case ')':
                         // PDFBox 276 /Title (c:\)
-                        braces = checkForMissingCloseParen(braces);
+                    braces = checkForEndOfString(braces);
                         if( braces != 0 )
                         {
                             out.write(next);
