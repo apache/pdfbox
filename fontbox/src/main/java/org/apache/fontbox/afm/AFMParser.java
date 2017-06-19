@@ -637,10 +637,10 @@ public class AFMParser
             throw new IOException( "String should be enclosed by angle brackets '" + hexString+ "'" );
         }
         hexString = hexString.substring( 1, hexString.length() -1 );
-        byte[] data = new byte[ (hexString.length() / 2) ];
+        byte[] data = new byte[hexString.length() / 2];
         for( int i=0; i<hexString.length(); i+=2 )
         {
-            String hex = "" + hexString.charAt( i ) + hexString.charAt( i+1 );
+            String hex = Character.toString(hexString.charAt(i)) + hexString.charAt(i + 1);
             try
             {
                 data[ i / 2 ] = (byte)Integer.parseInt( hex, BITS_IN_HEX );
@@ -838,7 +838,7 @@ public class AFMParser
         if( tokenizer.hasMoreTokens() )
         {
             String semicolon = tokenizer.nextToken();
-            if( !semicolon.equals( ";" ) )
+            if (!";".equals(semicolon))
             {
                 throw new IOException( "Error: Expected semicolon in stream actual='" +
                                             semicolon + "'" );
