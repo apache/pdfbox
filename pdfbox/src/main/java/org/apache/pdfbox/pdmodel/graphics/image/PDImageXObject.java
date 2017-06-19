@@ -235,23 +235,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public static PDImageXObject createFromFileByContent(File file, PDDocument doc) throws IOException
     {
-        FileInputStream fileInputStream = null;
-        BufferedInputStream bufferedInputStream = null;
         FileType fileType = null;
-        try
+        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file)))
         {
-            fileInputStream = new FileInputStream(file);
-            bufferedInputStream = new BufferedInputStream(fileInputStream);
             fileType = FileTypeDetector.detectFileType(bufferedInputStream);
         }
         catch (IOException e)
         {
             throw new IOException("Could not determine file type: " + file.getName(), e);
-        }
-        finally
-        {
-            IOUtils.closeQuietly(fileInputStream);
-            IOUtils.closeQuietly(bufferedInputStream);
         }
         if (fileType == null)
         {
