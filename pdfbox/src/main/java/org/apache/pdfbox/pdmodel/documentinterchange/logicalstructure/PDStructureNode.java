@@ -386,22 +386,24 @@ public abstract class PDStructureNode implements COSObjectable
         if (kidDic != null)
         {
             String type = kidDic.getNameAsString(COSName.TYPE);
-            if ((type == null) || PDStructureElement.TYPE.equals(type))
+            if (type == null)
             {
-                // A structure element dictionary denoting another structure
-                // element
+                // A structure element dictionary denoting another structure element
                 return new PDStructureElement(kidDic);
             }
-            else if (PDObjectReference.TYPE.equals(type))
+            switch (type)
             {
-                // An object reference dictionary denoting a PDF object
-                return new PDObjectReference(kidDic);
-            }
-            else if (PDMarkedContentReference.TYPE.equals(type))
-            {
-                // A marked-content reference dictionary denoting a
-                // marked-content sequence
-                return new PDMarkedContentReference(kidDic);
+                case PDStructureElement.TYPE:
+                    // A structure element dictionary denoting another structure element
+                    return new PDStructureElement(kidDic);
+                case PDObjectReference.TYPE:
+                    // An object reference dictionary denoting a PDF object
+                    return new PDObjectReference(kidDic);
+                case PDMarkedContentReference.TYPE:
+                    // A marked-content reference dictionary denoting a marked-content sequence
+                    return new PDMarkedContentReference(kidDic);
+                default:
+                    break;
             }
         }
         else if (kid instanceof COSInteger)
