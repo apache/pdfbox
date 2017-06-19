@@ -747,17 +747,14 @@ public class CFFParser
         int format = dataInput.readCard8();
         int baseFormat = format & 0x7f;
 
-        if (baseFormat == 0)
+        switch (baseFormat)
         {
-            return readFormat0Encoding(dataInput, charset, format);
-        }
-        else if (baseFormat == 1)
-        {
-            return readFormat1Encoding(dataInput, charset, format);
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case 0:
+                return readFormat0Encoding(dataInput, charset, format);
+            case 1:
+                return readFormat1Encoding(dataInput, charset, format);
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
@@ -834,17 +831,14 @@ public class CFFParser
     private static FDSelect readFDSelect(CFFDataInput dataInput, int nGlyphs, CFFCIDFont ros) throws IOException
     {
         int format = dataInput.readCard8();
-        if (format == 0)
+        switch (format)
         {
-            return readFormat0FDSelect(dataInput, format, nGlyphs, ros);
-        }
-        else if (format == 3)
-        {
-            return readFormat3FDSelect(dataInput, format, nGlyphs, ros);
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case 0:
+                return readFormat0FDSelect(dataInput, format, nGlyphs, ros);
+            case 3:
+                return readFormat3FDSelect(dataInput, format, nGlyphs, ros);
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
@@ -1003,21 +997,16 @@ public class CFFParser
             throws IOException
     {
         int format = dataInput.readCard8();
-        if (format == 0)
+        switch (format)
         {
-            return readFormat0Charset(dataInput, format, nGlyphs, isCIDFont);
-        }
-        else if (format == 1)
-        {
-            return readFormat1Charset(dataInput, format, nGlyphs, isCIDFont);
-        }
-        else if (format == 2)
-        {
-            return readFormat2Charset(dataInput, format, nGlyphs, isCIDFont);
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case 0:
+                return readFormat0Charset(dataInput, format, nGlyphs, isCIDFont);
+            case 1:
+                return readFormat1Charset(dataInput, format, nGlyphs, isCIDFont);
+            case 2:
+                return readFormat2Charset(dataInput, format, nGlyphs, isCIDFont);
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
@@ -1322,7 +1311,7 @@ public class CFFParser
         protected EmptyCharset(int numCharStrings)
         {
             super(true);
-            addCID(0 ,0); // .notdef
+            addCID(0, 0); // .notdef
             
             // Adobe Reader treats CID as GID, PDFBOX-2571 p11.
             for (int i = 1; i <= numCharStrings; i++)
