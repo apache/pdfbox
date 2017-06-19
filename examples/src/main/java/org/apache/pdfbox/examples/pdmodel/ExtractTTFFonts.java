@@ -19,6 +19,8 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
@@ -143,7 +145,7 @@ public final class ExtractTTFFonts
             // write the font
             if (font instanceof PDTrueTypeFont)
             {
-                String name = null;
+                String name;
                 if (addKey)
                 {
                     name = getUniqueFileName(prefix + "_" + key, "ttf");
@@ -159,7 +161,7 @@ public final class ExtractTTFFonts
                 PDCIDFont descendantFont = ((PDType0Font) font).getDescendantFont();
                 if (descendantFont instanceof PDCIDFontType2)
                 {
-                    String name = null;
+                    String name;
                     if (addKey)
                     {
                         name = getUniqueFileName(prefix + "_" + key, "ttf");
@@ -193,19 +195,11 @@ public final class ExtractTTFFonts
             PDStream ff2Stream = fd.getFontFile2();
             if (ff2Stream != null)
             {
-                FileOutputStream fos = null;
-                try
+                System.out.println("Writing font: " + name);
+                try (OutputStream os = new FileOutputStream(new File(name + ".ttf"));
+                     InputStream is = ff2Stream.createInputStream())
                 {
-                    System.out.println("Writing font:" + name);
-                    fos = new FileOutputStream(new File(name + ".ttf"));
-                    IOUtils.copy(ff2Stream.createInputStream(), fos);
-                }
-                finally
-                {
-                    if (fos != null)
-                    {
-                        fos.close();
-                    }
+                    IOUtils.copy(is, os);
                 }
             }
         }
