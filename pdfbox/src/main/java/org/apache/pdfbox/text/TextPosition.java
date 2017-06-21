@@ -689,6 +689,14 @@ public final class TextPosition
         {
             return false;
         }
+        if ("ー".equals(text))
+        {
+            // PDFBOX-3833: ー is not a real diacritic like ¨ or ˆ, it just changes the 
+            // pronunciation of the previous sound, and is printed after the previous glyph
+            // http://www.japanesewithanime.com/2017/04/prolonged-sound-mark.html
+            // Ignoring it as diacritic avoids trouble if it slightly overlaps with the next glyph.
+            return false;
+        }
         int type = Character.getType(text.charAt(0));
         return type == Character.NON_SPACING_MARK ||
                type == Character.MODIFIER_SYMBOL ||
