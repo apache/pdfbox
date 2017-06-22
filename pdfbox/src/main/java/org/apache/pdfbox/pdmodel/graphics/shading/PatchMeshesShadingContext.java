@@ -92,6 +92,10 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
             colRange[i] = shadingType.getDecodeForParameter(2 + i);
+            if (colRange[i] == null)
+            {
+                throw new IOException("Range missing in shading /Decode entry");
+            }
         }
         List<Patch> list = new ArrayList<Patch>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
