@@ -879,6 +879,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             linePath.setWindingRule(clipWindingRule);
             getGraphicsState().intersectClippingPath(linePath);
+
+            // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
+            // object, thus setClip() would believe that it is cached.
+            lastClip = null;
+
             clipWindingRule = -1;
         }
         linePath.reset();
