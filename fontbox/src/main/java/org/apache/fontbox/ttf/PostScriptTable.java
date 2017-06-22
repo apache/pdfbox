@@ -315,7 +315,7 @@ public class PostScriptTable extends TTFTable
      */
     public String getName(int gid)
     {
-        if (gid < 0 || glyphNames == null || gid > glyphNames.length)
+        if (gid < 0 || glyphNames == null || gid >= glyphNames.length)
         {
             return null;
         }
