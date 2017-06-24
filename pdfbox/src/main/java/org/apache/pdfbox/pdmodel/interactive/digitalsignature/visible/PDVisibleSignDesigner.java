@@ -151,6 +151,18 @@ public class PDVisibleSignDesigner
         calculatePageSize(document, page);
     }
 
+    /**
+     * Constructor usable for signing existing signature fields.
+     *
+     * @param imageStream image as a stream
+     * @throws IOException
+     */
+    public PDVisibleSignDesigner(InputStream imageStream) throws IOException
+    {
+        // set visible signature image Input stream
+        readImageStream(imageStream);
+    }
+
     private void calculatePageSizeFromFile(String filename, int page) throws IOException
     {
         try (PDDocument document = PDDocument.load(new File(filename)))
