@@ -73,6 +73,17 @@ public class CreateVisibleSignature extends CreateSignatureBase
         this.lateExternalSigning = lateExternalSigning;
     }
 
+    /**
+     * Set visible signature designer for a new signature field.
+     * 
+     * @param filename
+     * @param x position of the signature field
+     * @param y position of the signature field
+     * @param zoomPercent
+     * @param imageStream
+     * @param page the signature should be placed on
+     * @throws IOException
+     */
     public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
             FileInputStream imageStream, int page) 
             throws IOException
@@ -81,12 +92,53 @@ public class CreateVisibleSignature extends CreateSignatureBase
         visibleSignDesigner.xAxis(x).yAxis(y).zoom(zoomPercent).adjustForRotation();
     }
     
+    /**
+     * Set visible signature designer for an existing signature field.
+     * 
+     * @param zoomPercent
+     * @param imageStream
+     * @throws IOException
+     */
+    public void setVisibleSignDesigner(int zoomPercent, FileInputStream imageStream) 
+            throws IOException
+    {
+        visibleSignDesigner = new PDVisibleSignDesigner(imageStream);
+        visibleSignDesigner.zoom(zoomPercent);
+    }
+    
+    /**
+     * Set visible signature properties for new signature fields.
+     * 
+     * @param name
+     * @param location
+     * @param reason
+     * @param preferredSize
+     * @param page
+     * @param visualSignEnabled
+     * @throws IOException
+     */
     public void setVisibleSignatureProperties(String name, String location, String reason, int preferredSize, 
             int page, boolean visualSignEnabled) throws IOException
     {
         visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
                 preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
                 setPdVisibleSignature(visibleSignDesigner);
+    }
+    
+    /**
+     * Set visible signature properties for existing signature fields.
+     * 
+     * @param name
+     * @param location
+     * @param reason
+     * @param visualSignEnabled
+     * @throws IOException
+     */
+    public void setVisibleSignatureProperties(String name, String location, String reason,
+            boolean visualSignEnabled) throws IOException
+    {
+        visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
+                visualSignEnabled(visualSignEnabled).setPdVisibleSignature(visibleSignDesigner);
     }
 
     /**
