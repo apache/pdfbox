@@ -44,7 +44,7 @@ public class CmapSubtable
     private int platformEncodingId;
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
-    private Map<Integer, List<Integer>> glyphIdToCharacterCodeMultiple = new HashMap<Integer, List<Integer>>();
+    private final Map<Integer, List<Integer>> glyphIdToCharacterCodeMultiple = new HashMap<Integer, List<Integer>>();
     private Map<Integer, Integer> characterCodeToGlyphId;
 
     /**
