@@ -94,18 +94,20 @@ public class NamingTable extends TTFTable
             }
             else if (platform == NameRecord.PLATFORM_ISO)
             {
-                if (encoding == 0)
+                switch (encoding)
                 {
-                    charset = Charsets.US_ASCII;
-                }
-                else if (encoding == 1)
-                {
-                    //not sure is this is correct??
-                    charset = Charsets.ISO_10646;
-                }
-                else if (encoding == 2)
-                {
-                    charset = Charsets.ISO_8859_1;
+                    case 0:
+                        charset = Charsets.US_ASCII;
+                        break;
+                    case 1:
+                        //not sure is this is correct??
+                        charset = Charsets.ISO_10646;
+                        break;
+                    case 2:
+                        charset = Charsets.ISO_8859_1;
+                        break;
+                    default:
+                        break;
                 }
             }
             String string = data.readString(nr.getStringLength(), charset);
