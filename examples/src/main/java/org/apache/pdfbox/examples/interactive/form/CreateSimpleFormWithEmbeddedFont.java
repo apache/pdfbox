@@ -39,6 +39,10 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
  */
 public class CreateSimpleFormWithEmbeddedFont
 {
+    private CreateSimpleFormWithEmbeddedFont()
+    {
+    }
+
     public static void main(String[] args) throws IOException
     {
         // Create a new document with an empty page.
