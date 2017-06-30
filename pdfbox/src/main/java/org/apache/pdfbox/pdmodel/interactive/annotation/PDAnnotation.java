@@ -633,7 +633,7 @@ public abstract class PDAnnotation implements COSObjectable
      * optional dash array defining a pattern of dashes and gaps that shall be used in drawing the
      * border. If the array has less than three elements, it will be filled with 0.
      *
-     * @return the border array.
+     * @return the border array, never null.
      */
     public COSArray getBorder()
     {
