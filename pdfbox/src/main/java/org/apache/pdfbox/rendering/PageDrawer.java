@@ -1203,7 +1203,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         COSArray border = annotation.getBorder();
         if (borderStyle == null)
         {
-            if (border.get(2) instanceof COSNumber)
+            if (border.getObject(2) instanceof COSNumber)
             {
                 ab.width = ((COSNumber) border.getObject(2)).floatValue();
             }
