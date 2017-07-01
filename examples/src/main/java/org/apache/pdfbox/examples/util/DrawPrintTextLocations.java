@@ -131,7 +131,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
         }
     }
 
-    // this calculates the real individual glyph bounds
+    // this calculates the real (except for type 3 fonts) individual glyph bounds
     private Shape calculateGlyphBounds(Matrix textRenderingMatrix, PDFont font, int code) throws IOException
     {
         GeneralPath path = null;
@@ -139,13 +139,22 @@ public class DrawPrintTextLocations extends PDFTextStripper
         at.concatenate(font.getFontMatrix().createAffineTransform());
         if (font instanceof PDType3Font)
         {
+            // It is difficult to calculate the real individual glyph bounds for type 3 fonts
+            // because these are not vector fonts, the content stream could contain almost anything
+            // that is found in page content streams.
             PDType3Font t3Font = (PDType3Font) font;
             PDType3CharProc charProc = t3Font.getCharProc(code);
             if (charProc != null)
             {
+                BoundingBox fontBBox = t3Font.getBoundingBox();
                 PDRectangle glyphBBox = charProc.getGlyphBBox();
                 if (glyphBBox != null)
                 {
+                    // PDFBOX-3850: glyph bbox could be larger than the font bbox
+                    glyphBBox.setLowerLeftX(Math.max(fontBBox.getLowerLeftX(), glyphBBox.getLowerLeftX()));
+                    glyphBBox.setLowerLeftY(Math.max(fontBBox.getLowerLeftY(), glyphBBox.getLowerLeftY()));
+                    glyphBBox.setUpperRightX(Math.min(fontBBox.getUpperRightX(), glyphBBox.getUpperRightX()));
+                    glyphBBox.setUpperRightY(Math.min(fontBBox.getUpperRightY(), glyphBBox.getUpperRightY()));
                     path = glyphBBox.toGeneralPath();
                 }
             }
