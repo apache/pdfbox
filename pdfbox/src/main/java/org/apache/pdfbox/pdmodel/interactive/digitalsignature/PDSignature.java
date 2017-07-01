@@ -29,7 +29,10 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * This represents a digital signature that can be attached to a document.
+ * This represents a digital signature that can be attached to a document. To learn more about
+ * digital signatures, read
+ * <a href="https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/Acrobat_DigitalSignatures_in_PDF.pdf">Digital
+ * Signatures in a PDF</a> by Adobe.
  *
  * @author Ben Litchfield
  * @author Thomas Chojecki
@@ -371,7 +374,11 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Will return the signed content of the document.
+     * Return the signed content of the document. This is not a PDF file, nor is it the PDF file
+     * before signing, it is the byte sequence made of the input minus the area where the signature
+     * bytes will be. See "The ByteRange and signature value" in the document
+     * <a href="https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/Acrobat_DigitalSignatures_in_PDF.pdf#page=5">Digital
+     * Signatures in a PDF</a>.
      *
      * @param pdfFile The signed pdf file as InputStream
      * @return a byte array containing only the signed part of the content
@@ -396,7 +403,11 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * Will return the signed content of the document.
+     * Return the signed content of the document. This is not a PDF file, nor is it the PDF file
+     * before signing, it is the byte sequence made of the input minus the area where the signature
+     * bytes will be. See "The ByteRange and signature value" in the document
+     * <a href="https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/Acrobat_DigitalSignatures_in_PDF.pdf#page=5">Digital
+     * Signatures in a PDF</a>.
      *
      * @param pdfFile The signed pdf file as byte array
      * @return a byte array containing only the signed part of the content
