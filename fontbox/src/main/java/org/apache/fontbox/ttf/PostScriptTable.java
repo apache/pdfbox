@@ -145,7 +145,7 @@ public class PostScriptTable extends TTFTable
         else if (formatType == 3.0f)
         {
             // no postscript information is provided.
-            LOG.warn("No PostScript name information is provided for the font " + font.getName());
+            LOG.debug("No PostScript name information is provided for the font " + font.getName());
         }
         initialized = true;
     }
