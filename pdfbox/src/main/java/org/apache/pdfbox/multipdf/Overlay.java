@@ -102,12 +102,20 @@ public class Overlay
     public PDDocument overlay(Map<Integer, String> specificPageOverlayFile)
             throws IOException
     {
+        Map<String, PDDocument> loadedDocuments = new HashMap<String, PDDocument>();
+        Map<PDDocument, LayoutPage> layouts = new HashMap<PDDocument, LayoutPage>();
         loadPDFs();
         for (Map.Entry<Integer, String> e : specificPageOverlayFile.entrySet())
         {
-            PDDocument doc = loadPDF(e.getValue());
+            PDDocument doc = loadedDocuments.get(e.getValue());
+            if (doc == null)
+            {
+                doc = loadPDF(e.getValue());
+                loadedDocuments.put(e.getValue(), doc);
+                layouts.put(doc, getLayoutPage(doc));
+            }
             specificPageOverlay.put(e.getKey(), doc);
-            specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
+            specificPageOverlayPage.put(e.getKey(), layouts.get(doc));
         }
         processPages(inputPDFDocument);
         return inputPDFDocument;
