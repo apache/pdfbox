@@ -286,7 +286,7 @@ public class Overlay
     {
         List<COSStream> contentStreams = createContentStreamList(contents);
         // concatenate streams
-        COSStream concatStream = new COSStream();
+        COSStream concatStream = inputPDFDocument.getDocument().createCOSStream();
         try (OutputStream out = concatStream.createOutputStream(COSName.FLATE_DECODE))
         {
             for (COSStream contentStream : contentStreams)
@@ -472,7 +472,7 @@ public class Overlay
     
     private COSStream createStream(String content) throws IOException
     {
-        COSStream stream = new COSStream();
+        COSStream stream = inputPDFDocument.getDocument().createCOSStream();
         try (OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE))
         {
             out.write(content.getBytes("ISO-8859-1"));
