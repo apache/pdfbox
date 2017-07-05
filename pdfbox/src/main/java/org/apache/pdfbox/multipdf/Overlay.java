@@ -473,7 +473,8 @@ public class Overlay
     private COSStream createStream(String content) throws IOException
     {
         COSStream stream = inputPDFDocument.getDocument().createCOSStream();
-        try (OutputStream out = stream.createOutputStream(COSName.FLATE_DECODE))
+        try (OutputStream out = stream.createOutputStream(
+                content.length() > 20 ? COSName.FLATE_DECODE : null))
         {
             out.write(content.getBytes("ISO-8859-1"));
         }
