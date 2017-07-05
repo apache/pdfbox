@@ -131,6 +131,10 @@ public class CFFParser
         @SuppressWarnings("unused")
         Header header = readHeader(input);
         String[] nameIndex = readStringIndexData(input);
+        if (nameIndex == null)
+        {
+            throw new IOException("Name index missing in CFF font");
+        }
         byte[][] topDictIndex = readIndexData(input);
         stringIndex = readStringIndexData(input);
         byte[][] globalSubrIndex = readIndexData(input);
