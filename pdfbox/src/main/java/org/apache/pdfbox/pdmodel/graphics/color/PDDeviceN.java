@@ -316,9 +316,6 @@ public class PDDeviceN extends PDSpecialColorSpace
                     }
                 }
 
-                int[] intSrc = new int[numSrcComponents];
-                raster.getPixel(x, y, intSrc);
-
                 // scale to 0..1
                 for (int s = 0; s < numSrcComponents; s++)
                 {
