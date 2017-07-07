@@ -206,7 +206,7 @@ public abstract class PDButton extends PDTerminalField
     
     
     /**
-     * This will get the export values.
+     * This will get the (optional) export values.
      * 
      * <p>The export values are defined in the field dictionaries /Opt key.</p>
      * 
@@ -220,7 +220,9 @@ public abstract class PDButton extends PDTerminalField
      *  </li>
      * </ul>
      * 
-     * @return List containing all possible export values. If there is no Opt entry an empty list will be returned.
+     * @return List containing all possible export values. If there is no /Opt entry an empty list will be returned.
+     * 
+     * @see #getOnValues() 
      */
     public List<String> getExportValues()
     {
