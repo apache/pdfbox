@@ -283,7 +283,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     private BufferedImage toRGBWithTintTransform(WritableRaster raster) throws IOException
     {
         // map only in use if one color component
-        Map<Float,int[]> map1 = new HashMap<>();
+        Map<Float,int[]> map1 = new HashMap<Float,int[]>();
         float key = 0;
 
         int width = raster.getWidth();
