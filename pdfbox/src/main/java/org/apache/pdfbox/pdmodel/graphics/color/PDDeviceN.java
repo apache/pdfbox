@@ -311,7 +311,7 @@ public class PDDeviceN extends PDSpecialColorSpace
                     }
                     else
                     {
-                        // need to remember key bevause src is modified
+                        // need to remember key because src is modified
                         key = src[0];
                     }
                 }
