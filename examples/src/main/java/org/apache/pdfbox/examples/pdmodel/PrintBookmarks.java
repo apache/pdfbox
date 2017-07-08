@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -89,12 +90,20 @@ public class PrintBookmarks
             if (current.getDestination() instanceof PDPageDestination)
             {
                 PDPageDestination pd = (PDPageDestination) current.getDestination();
-                System.out.println("Destination page: " + pd.retrievePageNumber());
+                System.out.println("Destination page: " + (pd.retrievePageNumber() + 1));
+            }
+            if (current.getAction() instanceof PDActionGoTo)
+            {
+                PDActionGoTo gta = (PDActionGoTo) current.getAction();
+                if (gta.getDestination() instanceof PDPageDestination)
+                {
+                    PDPageDestination pd = (PDPageDestination) gta.getDestination();
+                    System.out.println("Destination page: " + (pd.retrievePageNumber() + 1));
+                }
             }
             System.out.println( indentation + current.getTitle() );
             printBookmark( document, current, indentation + "    " );
             current = current.getNextSibling();
         }
-
     }
 }
