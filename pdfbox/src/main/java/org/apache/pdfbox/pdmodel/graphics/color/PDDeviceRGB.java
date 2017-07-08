@@ -111,6 +111,28 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         ColorModel colorModel = new ComponentColorModel(awtColorSpace,
                 false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
 
-        return new BufferedImage(colorModel, raster, false, null);
+	BufferedImage image = new BufferedImage(colorModel, raster, false, null);
+
+        //
+        // WARNING: this method is performance sensitive, modify with care!
+        //
+        // Please read PDFBOX-3854 and look at the related commits first.
+        // The current code returns TYPE_INT_RGB images which prevents slowness due to threads
+        // blocking each other when TYPE_CUSTOM images are used. 
+        // ColorConvertOp is not used here because it has a larger memory footprint and no further
+        // performance improvement.
+        // The multiparameter setRGB() call is not used because it brings no improvement.
+
+        BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        for (int x = 0; x < width; ++x)
+        {
+            for (int y = 0; y < height; ++y)
+            {
+                dest.setRGB(x, y, image.getRGB(x, y));
+            }
+        }
+        return dest;
     }
 }
