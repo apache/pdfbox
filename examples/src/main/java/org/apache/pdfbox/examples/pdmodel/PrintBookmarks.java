@@ -90,7 +90,7 @@ public class PrintBookmarks
             if (current.getDestination() instanceof PDPageDestination)
             {
                 PDPageDestination pd = (PDPageDestination) current.getDestination();
-                System.out.println("Destination page: " + (pd.retrievePageNumber() + 1));
+                System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
             }
             if (current.getAction() instanceof PDActionGoTo)
             {
@@ -98,7 +98,7 @@ public class PrintBookmarks
                 if (gta.getDestination() instanceof PDPageDestination)
                 {
                     PDPageDestination pd = (PDPageDestination) gta.getDestination();
-                    System.out.println("Destination page: " + (pd.retrievePageNumber() + 1));
+                    System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
                 }
             }
             System.out.println( indentation + current.getTitle() );
