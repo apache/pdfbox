@@ -131,10 +131,6 @@ class TilingPaint implements Paint
     private BufferedImage getImage(PageDrawer drawer, PDTilingPattern pattern, PDColorSpace colorSpace, 
             PDColor color, AffineTransform xform, Rectangle2D anchorRect) throws IOException
     {
-        ColorSpace outputCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        ColorModel cm = new ComponentColorModel(outputCS, true, false,
-                Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
-
         float width = (float) Math.abs(anchorRect.getWidth());
         float height = (float) Math.abs(anchorRect.getHeight());
 
@@ -148,9 +144,7 @@ class TilingPaint implements Paint
         int rasterWidth = Math.max(1, ceiling(width));
         int rasterHeight = Math.max(1, ceiling(height));
 
-        // create raster
-        WritableRaster raster = cm.createCompatibleWritableRaster(rasterWidth, rasterHeight);
-        BufferedImage image = new BufferedImage(cm, raster, false, null);
+        BufferedImage image = new BufferedImage(rasterWidth, rasterHeight, BufferedImage.TYPE_INT_ARGB);
 
         Graphics2D graphics = image.createGraphics();
 
