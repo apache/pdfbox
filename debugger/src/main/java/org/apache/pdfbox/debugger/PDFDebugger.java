@@ -42,6 +42,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.Sides;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -103,6 +106,7 @@ import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 import org.apache.pdfbox.printing.PDFPageable;
 
 /**
@@ -1089,9 +1093,27 @@ public class PDFDebugger extends JFrame
             {
                 PrinterJob job = PrinterJob.getPrinterJob();
                 job.setPageable(new PDFPageable(document));
-                if (job.printDialog())
+                PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+                PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
+                if (vp != null && vp.getDuplex() != null)
                 {
-                    job.print();
+                    String dp = vp.getDuplex();
+                    if (PDViewerPreferences.DUPLEX.DuplexFlipLongEdge.toString().equals(dp))
+                    {
+                        pras.add(Sides.TWO_SIDED_LONG_EDGE);
+                    }
+                    else if (PDViewerPreferences.DUPLEX.DuplexFlipShortEdge.toString().equals(dp))
+                    {
+                        pras.add(Sides.TWO_SIDED_SHORT_EDGE);
+                    }
+                    else if (PDViewerPreferences.DUPLEX.Simplex.toString().equals(dp))
+                    {
+                        pras.add(Sides.ONE_SIDED);
+                    }                    
+                }
+                if (job.printDialog(pras))
+                {
+                    job.print(pras);
                 }
             }
             catch (PrinterException e)
