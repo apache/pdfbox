@@ -1218,39 +1218,41 @@ public class PDFDebugger extends JFrame
 
     private void printMenuItemActionPerformed(ActionEvent evt)
     {
-        if( document != null )
+        if (document == null)
         {
-            try
+            return;
+        }
+
+        try
+        {
+            PrinterJob job = PrinterJob.getPrinterJob();
+            job.setPageable(new PDFPageable(document));
+            PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
+            PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
+            if (vp != null && vp.getDuplex() != null)
             {
-                PrinterJob job = PrinterJob.getPrinterJob();
-                job.setPageable(new PDFPageable(document));
-                PrintRequestAttributeSet pras = new HashPrintRequestAttributeSet();
-                PDViewerPreferences vp = document.getDocumentCatalog().getViewerPreferences();
-                if (vp != null && vp.getDuplex() != null)
+                String dp = vp.getDuplex();
+                if (PDViewerPreferences.DUPLEX.DuplexFlipLongEdge.toString().equals(dp))
                 {
-                    String dp = vp.getDuplex();
-                    if (PDViewerPreferences.DUPLEX.DuplexFlipLongEdge.toString().equals(dp))
-                    {
-                        pras.add(Sides.TWO_SIDED_LONG_EDGE);
-                    }
-                    else if (PDViewerPreferences.DUPLEX.DuplexFlipShortEdge.toString().equals(dp))
-                    {
-                        pras.add(Sides.TWO_SIDED_SHORT_EDGE);
-                    }
-                    else if (PDViewerPreferences.DUPLEX.Simplex.toString().equals(dp))
-                    {
-                        pras.add(Sides.ONE_SIDED);
-                    }                    
+                    pras.add(Sides.TWO_SIDED_LONG_EDGE);
                 }
-                if (job.printDialog(pras))
+                else if (PDViewerPreferences.DUPLEX.DuplexFlipShortEdge.toString().equals(dp))
                 {
-                    job.print(pras);
+                    pras.add(Sides.TWO_SIDED_SHORT_EDGE);
+                }
+                else if (PDViewerPreferences.DUPLEX.Simplex.toString().equals(dp))
+                {
+                    pras.add(Sides.ONE_SIDED);
                 }
             }
-            catch (PrinterException e)
+            if (job.printDialog(pras))
             {
-                throw new RuntimeException(e);
+                job.print(pras);
             }
+        }
+        catch (PrinterException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
