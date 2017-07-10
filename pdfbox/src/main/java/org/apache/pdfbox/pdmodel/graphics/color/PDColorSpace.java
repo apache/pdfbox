@@ -153,7 +153,16 @@ public abstract class PDColorSpace implements COSObjectable
         else if (colorSpace instanceof COSArray)
         {
             COSArray array = (COSArray)colorSpace;
-            COSName name = (COSName)array.getObject(0);
+            if (array.size() == 0)
+            {
+                throw new IOException("Colorspace array is empty");
+            }
+            COSBase base = array.getObject(0);
+            if (!(base instanceof COSName))
+            {
+                throw new IOException("First element in colorspace array must be a name");
+            }
+            COSName name = (COSName) base;
 
             // TODO cache these returned color spaces?
 
