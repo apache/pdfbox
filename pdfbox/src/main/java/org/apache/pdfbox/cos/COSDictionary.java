@@ -846,8 +846,12 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public Calendar getDate(COSName key)
     {
-        COSString date = (COSString) getDictionaryObject(key);
-        return DateConverter.toCalendar(date);
+        COSBase base = getDictionaryObject(key);
+        if (base instanceof COSString)
+        {
+            return DateConverter.toCalendar((COSString) base);
+        }
+        return null;
     }
 
     /**
