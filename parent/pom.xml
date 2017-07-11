@@ -76,6 +76,7 @@
               <version>2.0.0</version>
               <configuration>
                   <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                  <suppressionFile>suppressions.xml</suppressionFile>
               </configuration>
               <executions>
                   <execution>
