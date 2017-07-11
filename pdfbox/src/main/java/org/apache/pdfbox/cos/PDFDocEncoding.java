@@ -40,6 +40,20 @@ final class PDFDocEncoding
         // initialize with basically ISO-8859-1
         for (int i = 0; i < 256; i++)
         {
+            // skip entries not in Unicode column
+            if (i > 0x17 && i < 0x20)
+            {
+                continue;
+            }
+            if (i > 0x7E && i < 0xA1)
+            {
+                continue;
+            }
+            if (i == 0xAD)
+            {
+                continue;
+            }
+            
             set(i, (char)i);
         }
 
