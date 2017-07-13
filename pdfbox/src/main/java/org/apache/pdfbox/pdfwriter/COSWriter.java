@@ -593,7 +593,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             // with data available here
 
             // create a new XRefStrema object
-            PDFXRefStream pdfxRefStream = new PDFXRefStream();
+            PDFXRefStream pdfxRefStream = new PDFXRefStream(doc);
 
             // add all entries from the incremental update.
             List<COSWriterXRefEntry> xRefEntries2 = getXRefEntries();
