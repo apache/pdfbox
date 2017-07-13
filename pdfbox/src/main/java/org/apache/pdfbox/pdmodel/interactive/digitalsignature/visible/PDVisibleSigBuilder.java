@@ -344,7 +344,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
              throws IOException
     {
         // create blank n0 background layer form
-        PDFormXObject n0Form = new PDFormXObject(new COSStream());
+        PDFormXObject n0Form = new PDFormXObject(pdfStructure.getTemplate().getDocument().createCOSStream());
         n0Form.setBBox(formatter);
         n0Form.setResources(new PDResources());
         n0Form.setFormType(1);
