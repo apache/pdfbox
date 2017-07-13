@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
@@ -46,6 +47,26 @@ public class Splitter
     private List<PDDocument> destinationDocuments;
 
     private int currentPageNumber = 0;
+
+    private MemoryUsageSetting memoryUsageSetting = null;
+
+    /**
+     * @return the current memory setting.
+     */
+    public MemoryUsageSetting getMemoryUsageSetting()
+    {
+        return memoryUsageSetting;
+    }
+
+    /**
+     * Set the memory setting.
+     * 
+     * @param memoryUsageSetting 
+     */
+    public void setMemoryUsageSetting(MemoryUsageSetting memoryUsageSetting)
+    {
+        this.memoryUsageSetting = memoryUsageSetting;
+    }
 
     /**
      * This will take a document and split into several other documents.
@@ -184,7 +205,8 @@ public class Splitter
      */
     protected PDDocument createNewDocument() throws IOException
     {
-        PDDocument document = new PDDocument();
+        PDDocument document = memoryUsageSetting == null ?
+                                new PDDocument() : new PDDocument(memoryUsageSetting);
         document.getDocument().setVersion(getSourceDocument().getVersion());
         document.setDocumentInformation(getSourceDocument().getDocumentInformation());
         document.getDocumentCatalog().setViewerPreferences(
