@@ -114,7 +114,7 @@ public class CreateGradientShadingPDF
             // Gouraud shading
             // See PDF 32000 specification,
             // 8.7.4.5.5 Type 4 Shadings (Free-Form Gouraud-Shaded Triangle Meshes)
-            PDShadingType4 gouraudShading = new PDShadingType4(new COSStream());
+            PDShadingType4 gouraudShading = new PDShadingType4(document.getDocument().createCOSStream());
             gouraudShading.setShadingType(PDShading.SHADING_TYPE4);
             // we use multiple of 8, so that no padding is needed
             gouraudShading.setBitsPerFlag(8);
