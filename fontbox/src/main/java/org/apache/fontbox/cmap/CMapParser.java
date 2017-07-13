@@ -355,6 +355,10 @@ public class CMapParser
             if (nextToken instanceof List<?>)
             {
                 array = (List<byte[]>) nextToken;
+                if (array.isEmpty())
+                {
+                    continue;
+                }
                 tokenBytes = array.get(0);
             }
             else
