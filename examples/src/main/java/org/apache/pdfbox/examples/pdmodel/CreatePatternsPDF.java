@@ -57,7 +57,7 @@ public final class CreatePatternsPDF
                 PDColorSpace patternCS1 = new PDPattern(null, PDDeviceRGB.INSTANCE);
                 
                 // Table 75 spec
-                PDTilingPattern tilingPattern1 = new PDTilingPattern();
+                PDTilingPattern tilingPattern1 = new PDTilingPattern(doc.getDocument().createCOSStream());
                 tilingPattern1.setBBox(new PDRectangle(0, 0, 10, 10));
                 tilingPattern1.setPaintType(PDTilingPattern.PAINT_COLORED);
                 tilingPattern1.setTilingType(PDTilingPattern.TILING_CONSTANT_SPACING);
@@ -82,7 +82,7 @@ public final class CreatePatternsPDF
                 pcs.fill();
                 
                 // Uncolored pattern - the color is passed later
-                PDTilingPattern tilingPattern2 = new PDTilingPattern();
+                PDTilingPattern tilingPattern2 = new PDTilingPattern(doc.getDocument().createCOSStream());
                 tilingPattern2.setBBox(new PDRectangle(0, 0, 10, 10));
                 tilingPattern2.setPaintType(PDTilingPattern.PAINT_UNCOLORED);
                 tilingPattern2.setTilingType(PDTilingPattern.TILING_NO_DISTORTION);
