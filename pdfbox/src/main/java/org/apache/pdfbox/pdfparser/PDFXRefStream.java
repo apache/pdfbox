@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
@@ -57,10 +58,25 @@ public class PDFXRefStream implements PDFXRef
 
     /**
      * Create a fresh XRef stream like for a fresh file or an incremental update.
+     * 
+     * @deprecated use {@link #PDFXRefStream(org.apache.pdfbox.cos.COSDocument)}
      */
+    @Deprecated
     public PDFXRefStream()
     {
         this.stream = new COSStream();
+        streamData = new TreeMap<>();
+        objectNumbers = new TreeSet<>();
+    }
+
+    /**
+     * Create a fresh XRef stream like for a fresh file or an incremental update.
+     * 
+     * @param cosDocument
+     */
+    public PDFXRefStream(COSDocument cosDocument)
+    {
+        stream = cosDocument.createCOSStream();
         streamData = new TreeMap<>();
         objectNumbers = new TreeSet<>();
     }
