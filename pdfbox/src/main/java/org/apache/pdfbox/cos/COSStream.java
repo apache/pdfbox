@@ -49,6 +49,11 @@ public class COSStream extends COSDictionary implements Closeable
     
     /**
      * Creates a new stream with an empty dictionary.
+     * <p>
+     * Try to avoid using this constructor because it creates a new scratch file in memory. Instead,
+     * use {@link COSDocument#createCOSStream() document.getDocument().createCOSStream()} which will
+     * use the existing scratch file (in memory or in temp file) of the document.
+     * </p>
      */
     public COSStream()
     {
