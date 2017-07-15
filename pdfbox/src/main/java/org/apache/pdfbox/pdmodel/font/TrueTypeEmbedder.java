@@ -61,22 +61,6 @@ abstract class TrueTypeEmbedder implements Subsetter
     private final boolean embedSubset;
 
     /**
-     * Creates a new TrueType font for full embedding.
-     */
-    TrueTypeEmbedder(PDDocument document, COSDictionary dict, InputStream ttfStream) throws IOException
-    {
-        this.document = document;
-        this.embedSubset = false;
-
-        buildFontFile2(ttfStream);
-
-        dict.setName(COSName.BASE_FONT, ttf.getName());
-
-        // choose a Unicode "cmap"
-        cmap = ttf.getUnicodeCmap();
-    }
-
-    /**
      * Creates a new TrueType font for embedding.
      */
     TrueTypeEmbedder(PDDocument document, COSDictionary dict, TrueTypeFont ttf,
@@ -264,6 +248,7 @@ abstract class TrueTypeEmbedder implements Subsetter
     /**
      * Returns the FontBox font.
      */
+    @Deprecated
     public TrueTypeFont getTrueTypeFont()
     {
         return ttf;
@@ -311,7 +296,7 @@ abstract class TrueTypeEmbedder implements Subsetter
         tables.add("gasp");
 
         // set the GIDs to subset
-        TTFSubsetter subsetter = new TTFSubsetter(getTrueTypeFont(), tables);
+        TTFSubsetter subsetter = new TTFSubsetter(ttf, tables);
         subsetter.addAll(subsetCodePoints);
 
         // calculate deterministic tag based on the chosen subset

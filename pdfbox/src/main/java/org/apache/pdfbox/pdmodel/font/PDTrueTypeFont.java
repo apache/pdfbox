@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -139,13 +138,13 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     /**
      * Creates a new TrueType font for embedding.
      */
-    private PDTrueTypeFont(PDDocument document, InputStream ttfStream, Encoding encoding)
+    private PDTrueTypeFont(PDDocument document, TrueTypeFont ttf, Encoding encoding)
             throws IOException
     {
-        PDTrueTypeFontEmbedder embedder = new PDTrueTypeFontEmbedder(document, dict, ttfStream,
+        PDTrueTypeFontEmbedder embedder = new PDTrueTypeFontEmbedder(document, dict, ttf,
                                                                      encoding);
         this.encoding = encoding;
-        ttf = embedder.getTrueTypeFont();
+        this.ttf = ttf;
         setFontDescriptor(embedder.getFontDescriptor());
         isEmbedded = true;
         isDamaged = false;
@@ -167,7 +166,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     public static PDTrueTypeFont load(PDDocument doc, File file, Encoding encoding)
             throws IOException
     {
-        return new PDTrueTypeFont(doc, new FileInputStream(file), encoding);
+        return new PDTrueTypeFont(doc, new TTFParser().parse(file), encoding);
     }
 
     /**
@@ -185,7 +184,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     public static PDTrueTypeFont load(PDDocument doc, InputStream input, Encoding encoding)
             throws IOException
     {
-        return new PDTrueTypeFont(doc, input, encoding);
+        return new PDTrueTypeFont(doc, new TTFParser().parse(input), encoding);
     }
 
     /**
@@ -201,7 +200,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     @Deprecated
     public static PDTrueTypeFont loadTTF(PDDocument doc, File file) throws IOException
     {
-        return new PDTrueTypeFont(doc, new FileInputStream(file), WinAnsiEncoding.INSTANCE);
+        return new PDTrueTypeFont(doc, new TTFParser().parse(file), WinAnsiEncoding.INSTANCE);
     }
 
     /**
@@ -217,7 +216,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     @Deprecated
     public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream input) throws IOException
     {
-        return new PDTrueTypeFont(doc, input, WinAnsiEncoding.INSTANCE);
+        return new PDTrueTypeFont(doc, new TTFParser().parse(input), WinAnsiEncoding.INSTANCE);
     }
 
     /**
