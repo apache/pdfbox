@@ -113,11 +113,6 @@ abstract class TrueTypeEmbedder implements Subsetter
         // as the stream was closed within the PDStream constructor, we have to recreate it
         try (InputStream input = stream.createInputStream())
         {
-            if (ttf != null)
-            {
-                // close the replaced TrueType font
-                ttf.close();
-            }
             ttf = new TTFParser().parseEmbedded(input);
             if (!isEmbeddingPermitted(ttf))
             {
