@@ -146,7 +146,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, TrueTypeFont ttf, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, ttf, embedSubset, true);
+        return new PDType0Font(doc, ttf, embedSubset, false);
     }
 
     @Override
