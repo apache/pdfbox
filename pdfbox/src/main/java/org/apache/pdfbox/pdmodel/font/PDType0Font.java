@@ -144,7 +144,15 @@ public class PDType0Font extends PDFont implements PDVectorFont
         fetchCMapUCS2();
         if (closeOnSubset)
         {
-            this.ttf = ttf;
+            if (embedSubset)
+            {
+                this.ttf = ttf;
+            }
+            else
+            {
+                // the TTF is fully loaded and it is save to close the underlying data source
+                ttf.close();
+            }
         }
     }
 
