@@ -51,6 +51,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private boolean isDescendantCJK;
     private PDCIDFontType2Embedder embedder;
     private final Set<Integer> noUnicode = new HashSet<Integer>(); 
+    private TrueTypeFont ttf;
     
     /**
     * Loads a TTF to be embedded into a document as a Type 0 font.
@@ -62,7 +63,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     */
     public static PDType0Font load(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(file), true);
+        return new PDType0Font(doc, new TTFParser().parse(file), true, true);
     }
 
     /**
@@ -75,7 +76,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     */
     public static PDType0Font load(PDDocument doc, InputStream input) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), true);
+        return new PDType0Font(doc, new TTFParser().parse(input), true, true);
     }
 
     /**
@@ -90,7 +91,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset);
+        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true);
     }
 
     /**
@@ -105,7 +106,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, TrueTypeFont ttf, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, ttf, embedSubset);
+        return new PDType0Font(doc, ttf, embedSubset, false);
     }
 
     /**
@@ -133,13 +134,18 @@ public class PDType0Font extends PDFont implements PDVectorFont
     /**
     * Private. Creates a new TrueType font for embedding.
     */
-    private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset)
+    private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
+            boolean closeOnSubset)
             throws IOException
     {
         embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this);
         descendantFont = embedder.getCIDFont();
         readEncoding();
         fetchCMapUCS2();
+        if (closeOnSubset)
+        {
+            this.ttf = ttf;
+        }
     }
 
     @Override
@@ -160,6 +166,11 @@ public class PDType0Font extends PDFont implements PDVectorFont
             throw new IllegalStateException("This font was created with subsetting disabled");
         }
         embedder.subset();
+        if (ttf != null)
+        {
+            ttf.close();
+            ttf = null;
+        }
     }
     
     @Override
