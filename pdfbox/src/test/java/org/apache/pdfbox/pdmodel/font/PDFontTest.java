@@ -154,7 +154,7 @@ public class PDFontTest
         PDFTextStripper stripper = new PDFTextStripper();
         stripper.setLineSeparator("\n");
         String text = stripper.getText(doc);
-        Assert.assertEquals("testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3\n", text);
+        Assert.assertEquals("testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3", text.trim());
 
         doc.close();
     }
