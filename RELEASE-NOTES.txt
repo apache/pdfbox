@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.6
+Release Notes -- Apache PDFBox -- Version 2.0.7
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.5 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.6 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,68 +14,55 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-3313] - Java 9 InaccessibleObjectException
-[PDFBOX-3318] - IllegalArgumentException in PDPageTree constructor: root cannot be null
-[PDFBOX-3347] - COSName parsing doesn't handle ISO-8859-1 encoded bytes
-[PDFBOX-3519] - COSName is not ascii
-[PDFBOX-3545] - COSParser.parseXref failing if startXrefOffset over pdf size
-[PDFBOX-3687] - PDFBox doesn't respect different setting of /DA at PDAnnotationWidget level to /DA at PDField level
-[PDFBOX-3717] - java.io.IOException: Missing root object specification in trailer
-[PDFBOX-3723] - FDFField.getValue() doesn't return the values in line with the Javadoc.
-[PDFBOX-3724] - Wrong size in rendering of some artifacts
-[PDFBOX-3726] - NPE when setting the field value in an AcroForm and the NormalAppearance entry exists but is COSNull
-[PDFBOX-3727] - "premature EOF, image will be incomplete"
-[PDFBOX-3728] - org.apache.pdfbox.cos.COSDictionary cannot be cast to org.apache.pdfbox.cos.COSStream
-[PDFBOX-3731] - IOException: Found Token[kind=NAME, text=bind] but expected ND at offset 91
-[PDFBOX-3732] - IllegalArgumentException when refreshing an appearance and no font resources are defined
-[PDFBOX-3733] - image added to pdf by tool AddImageToPDF is turn-overed
-[PDFBOX-3738] - Signature not visible on Acrobat
-[PDFBOX-3739] - ImageWriterIterator.next() and ImageReaderIterator.next() can return null
-[PDFBOX-3740] - Standard 14 and Encoding
-[PDFBOX-3741] - usage of default colorspace not checked by preflight
-[PDFBOX-3742] - Unknown dir object c='>' cInt=62 peek='>' peekInt=62
-[PDFBOX-3743] - Running GC between signing and saving document closes stream
-[PDFBOX-3745] - Wrong character width
-[PDFBOX-3747] - CmapSubtable#getCharCodes provides values in random order
-[PDFBOX-3748] - java.lang.UnsupportedOperationException: Kerning table version 0 format 2 not yet supported.
-[PDFBOX-3750] - java.util.zip.DataFormatException when parsing a PDF
-[PDFBOX-3751] - Flattening a pdf with refreshAppearances set to true causes a NullPointerException
-[PDFBOX-3752] - PDVariableText text color changes to be the same as the background color after flattening
-[PDFBOX-3753] - setting a RadioButton with export values does not update the appearance
-[PDFBOX-3754] - Skip << >> in type1 font parser
-[PDFBOX-3755] - ClassCastException in PDColor constructor: org.apache.pdfbox.cos.COSNull cannot be cast to org.apache.pdfbox.cos.COSNumber
-[PDFBOX-3757] - TTFSubsetter scrambles PostScript names and unicode codepoints when subset contains diaeresis
-[PDFBOX-3761] - Exception in thread "main" java.lang.NullPointerException
-[PDFBOX-3769] - Cannot read JBIG2 image when JBIG2-Image-Decoder is in path
-[PDFBOX-3775] - Merge documents fails due to IllegalArgumentException
-[PDFBOX-3781] - Existing AcroForm default resources is overwritten by signing code
-[PDFBOX-3783] - java.io.IOException: Expected root dictionary, but got this: COSNull{}
-[PDFBOX-3784] - Inline image incorrectly parsed
-[PDFBOX-3788] - java.lang.RuntimeException: java.io.IOException: Catalog cannot be found
-[PDFBOX-3789] - Some text missing in rendering
-[PDFBOX-3791] - Long rendering time
+[PDFBOX-3515] - Problems with CourierStd font
+[PDFBOX-3536] - IOException "Invalid dictionary, found: 'r' but expected: '/' at offset 1148" on a valid PDF
+[PDFBOX-3794] - Problem in TextPosition implementation
+[PDFBOX-3795] - PDFMergeUtility error invalid stored block lengths
+[PDFBOX-3798] - Truncated file has first page empty
+[PDFBOX-3799] - Problem in TextPosition's hashCode
+[PDFBOX-3806] - Nullpointer exception in getLeftSideBearing
+[PDFBOX-3807] - CMapParser NullPointerException
+[PDFBOX-3811] - Problem with calling "saveIncrementalForExternalSigning" more than once in the same document
+[PDFBOX-3813] - PDF Box crash when using PDFToImage or PDFDebug
+[PDFBOX-3817] - Signature form names not standard
+[PDFBOX-3821] - Newly added MDP functionality breaks PDFs <1.5
+[PDFBOX-3826] - NPE if RAFDataStream.getCurrentPosition() when TrueTypeFont created from file is reused
+[PDFBOX-3827] - Setting empty values on listbox keeps marked item
+[PDFBOX-3829] - ExtractImages fails for JPX images
+[PDFBOX-3831] - v2.0.6 still has hardcoded reference to BouncyCastleProvider
+[PDFBOX-3832] - PDFBox Won't Embed a Font for a Form Field if Field is Empty
+[PDFBOX-3833] - Characters in wrong order
+[PDFBOX-3836] - PDFToImage: Text missing or background box stacks over
+[PDFBOX-3838] - NPE in PatchMeshesShadingContext.readPatch()
+[PDFBOX-3839] - AIOOB in PDResources.getFont()
+[PDFBOX-3845] - Could not find referenced cmap stream H
+[PDFBOX-3847] - code has bug
+[PDFBOX-3850] - DrawPrintTextLocations should limit bbox paint to font bbox when type 3 font has incorrect large glyph bbox
+[PDFBOX-3852] - Overlay a pdf file which is 750 pages ends up in OutOfMemoryError
+[PDFBOX-3855] - NPE in CFFParser.parse()
+[PDFBOX-3857] - Can not extract exported values for PDRadioButton
+[PDFBOX-3858] - Optimize 1 component DeviceN colorspace
+[PDFBOX-3861] - ClassCastException: org.apache.pdfbox.cos.COSStream cannot be cast to org.apache.pdfbox.cos.COSString
+[PDFBOX-3864] - UTF16 encoded string to PDFDocEncoding
+[PDFBOX-3867] - IndexOutOfBoundsException on CMapParser
 
 Improvement
 
-[PDFBOX-2684] - Javadoc for COSBase.setNeedToBeUpdate
 [PDFBOX-2963] - Remove Bouncy Castle Provider Reference
-[PDFBOX-3614] - Directly use the BouncyCastleProvider rather than installing it
-[PDFBOX-3716] - Read images from byte array
-[PDFBOX-3722] - make font cache error message less scary
-[PDFBOX-3730] - Encapsulate outputStream into BufferedOutputStream in PDDocument.save()
-[PDFBOX-3763] - Optimize SampledImageReader.getStencilImage()
-[PDFBOX-3768] - Optimize SampledImageReader.from1Bit()
-[PDFBOX-3770] - provide set of page indexes that have page label ranges
-[PDFBOX-3772] - Add COSBoolean(false) as option in PDDocumentCatalog's getOpenAction
-[PDFBOX-3779] - Add dpi and border parameter to PrintPDF command line utility
+[PDFBOX-3820] - [Patch] Improved signing of existing signature fields II
+[PDFBOX-3824] - Optimize TrueType font embedder
+[PDFBOX-3828] - Generate appearance stream for multiselect listboxes
+[PDFBOX-3854] - PDDeviceRGB.toRGBImage should return a RGB-Typed-Image
+[PDFBOX-3859] - Output destination page in PrintBookmarks example
+[PDFBOX-3860] - TilingPaint.getImage() should return an ARGB-Typed-Image
+[PDFBOX-3863] - Support duplex entry in ViewerPreferences
+[PDFBOX-3868] - Optimize usage of COSStream construction
+[PDFBOX-3869] - Splitter.createNewDocument() should be able to consider different MemoryUsageSetting configurations
 
 Task
 
-[PDFBOX-3778] - Create sample code for creating a PDF with type 4 shading
-
-Sub-task
-
-[PDFBOX-3302] - Explicit support for certification signatures
+[PDFBOX-3823] - Question about forming a PDF document, including CMYK images for printing.
+[PDFBOX-3865] - Add OWASP dependency-check to build
 
 
 Release Contents
