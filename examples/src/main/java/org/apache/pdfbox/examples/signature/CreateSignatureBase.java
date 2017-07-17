@@ -219,7 +219,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
         //TODO this method should be private
         try
         {
-            List<Certificate> certList = new ArrayList<>();
+            List<Certificate> certList = new ArrayList<Certificate>();
             certList.addAll(Arrays.asList(certificateChain));
             certList.add(certificate);
             Store certs = new JcaCertStore(certList);
