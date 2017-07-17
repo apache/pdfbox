@@ -28,6 +28,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
@@ -65,6 +66,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
 {
     private PrivateKey privateKey;
     private Certificate certificate;
+    private Certificate[] certificateChain;
     private TSAClient tsaClient;
     private boolean externalSigning;
 
@@ -98,7 +100,8 @@ public abstract class CreateSignatureBase implements SignatureInterface
             {
                 continue;
             }
-            cert = certChain[0];
+            setCertificateChain(certChain);
+            cert = keystore.getCertificate(alias);
             setCertificate(cert);
             if (cert instanceof X509Certificate)
             {
@@ -124,6 +127,11 @@ public abstract class CreateSignatureBase implements SignatureInterface
         this.certificate = certificate;
     }
 
+    public final void setCertificateChain(final Certificate[] certificateChain)
+    {
+        this.certificateChain = certificateChain;
+    }
+
     public void setTsaClient(TSAClient tsaClient)
     {
         this.tsaClient = tsaClient;
@@ -137,7 +145,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
     /**
      * We just extend CMS signed Data
      *
-     * @param signedData ´Generated CMS signed data
+     * @param signedData Generated CMS signed data
      * @return CMSSignedData Extended CMS signed data
      * @throws IOException
      * @throws org.bouncycastle.tsp.TSPException
@@ -202,6 +210,8 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * This method is for internal use only.
      *
      * Use your favorite cryptographic library to implement PKCS #7 signature creation.
+     *
+     * @throws IOException
      */
     @Override
     public byte[] sign(InputStream content) throws IOException
@@ -209,7 +219,8 @@ public abstract class CreateSignatureBase implements SignatureInterface
         //TODO this method should be private
         try
         {
-            List<Certificate> certList = new ArrayList<Certificate>();
+            List<Certificate> certList = new ArrayList<>();
+            certList.addAll(Arrays.asList(certificateChain));
             certList.add(certificate);
             Store certs = new JcaCertStore(certList);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
