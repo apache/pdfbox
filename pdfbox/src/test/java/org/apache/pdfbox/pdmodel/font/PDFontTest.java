@@ -21,15 +21,17 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
@@ -65,38 +67,6 @@ public class PDFontTest
             {
                 doc.close();
             }
-        }
-    }
-
-    /**
-     * PDFBOX-3337: Test ability to reuse a TrueTypeFont for several PDFs to avoid parsing it over
-     * and over again.
-     *
-     * @throws IOException
-     */
-    @Test
-    public void testPDFBox3337() throws IOException
-    {
-        InputStream ttfStream = PDFontTest.class.getClassLoader().getResourceAsStream(
-                "org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
-        final TrueTypeFont ttf = new TTFParser ().parse (ttfStream);
-
-        for (int i = 0; i < 2; ++i)
-        {
-            PDDocument doc = new PDDocument();
-
-            final PDPage page = new PDPage(PDRectangle.A4);
-            doc.addPage(page);
-
-            PDPageContentStream cs = new PDPageContentStream(doc, page);
-            PDFont font = PDType0Font.load(doc, ttf, true);
-            cs.setFont(font, 10);
-            cs.beginText();
-            cs.showText("PDFBOX");
-            cs.endText();
-            cs.close();
-            doc.save(new ByteArrayOutputStream());
-            doc.close();
         }
     }
 
@@ -137,5 +107,102 @@ public class PDFontTest
         String text = stripper.getText(doc);
         Assert.assertEquals("PDFBOX-3747", text.trim());
         doc.close();
+    }
+
+    /**
+     * PDFBOX-3826: Test ability to reuse a TrueTypeFont created from a file or a stream for several
+     * PDFs to avoid parsing it over and over again. Also check that full or partial embedding is
+     * done, and do render and text extraction.
+     *
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @Test
+    public void testPDFBox3826() throws IOException, URISyntaxException
+    {
+        URL url = PDFontTest.class.getClassLoader().getResource(
+                "org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
+        File fontFile = new File(url.toURI());
+
+        TrueTypeFont ttf1 = new TTFParser().parse(fontFile);
+        testPDFBox3826checkFonts(testPDFBox3826createDoc(ttf1), fontFile);
+        ttf1.close();
+
+        TrueTypeFont ttf2 = new TTFParser().parse(new FileInputStream(fontFile));
+        testPDFBox3826checkFonts(testPDFBox3826createDoc(ttf2), fontFile);
+        ttf2.close();
+    }
+
+    private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
+    {
+        PDDocument doc = PDDocument.load(byteArray);
+
+        PDPage page2 = doc.getPage(0);
+
+        // F1 = type0 subset
+        PDType0Font fontF1 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F1"));
+        Assert.assertTrue(fontF1.getName().contains("+"));
+        Assert.assertTrue(fontFile.length() > fontF1.getFontDescriptor().getFontFile2().toByteArray().length);
+
+        // F2 = type0 full embed
+        PDType0Font fontF2 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F2"));
+        Assert.assertFalse(fontF2.getName().contains("+"));
+        Assert.assertEquals(fontFile.length(), fontF2.getFontDescriptor().getFontFile2().toByteArray().length);
+
+        // F3 = tt full embed
+        PDTrueTypeFont fontF3 = (PDTrueTypeFont) page2.getResources().getFont(COSName.getPDFName("F3"));
+        Assert.assertFalse(fontF2.getName().contains("+"));
+        Assert.assertEquals(fontFile.length(), fontF3.getFontDescriptor().getFontFile2().toByteArray().length);
+
+        new PDFRenderer(doc).renderImage(0);
+
+        PDFTextStripper stripper = new PDFTextStripper();
+        String text = stripper.getText(doc);
+        Assert.assertEquals("testMultipleFontFileReuse1\r\ntestMultipleFontFileReuse2\r\ntestMultipleFontFileReuse3\r\n", text);
+
+        doc.close();
+    }
+
+    private byte[] testPDFBox3826createDoc(TrueTypeFont ttf) throws IOException
+    {
+        PDDocument doc = new PDDocument();
+
+        PDPage page = new PDPage();
+        doc.addPage(page);
+
+        // type 0 subset embedding
+        PDFont font = PDType0Font.load(doc, ttf, true);
+        PDPageContentStream cs = new PDPageContentStream(doc, page);
+
+        cs.beginText();
+        cs.newLineAtOffset(10, 700);
+        cs.setFont(font, 10);
+        cs.showText("testMultipleFontFileReuse1");
+        cs.endText();
+
+        // type 0 full embedding
+        font = PDType0Font.load(doc, ttf, false);
+
+        cs.beginText();
+        cs.newLineAtOffset(10, 650);
+        cs.setFont(font, 10);
+        cs.showText("testMultipleFontFileReuse2");
+        cs.endText();
+
+        // tt full embedding but only WinAnsiEncoding
+        font = PDTrueTypeFont.load(doc, ttf, WinAnsiEncoding.INSTANCE);
+
+        cs.beginText();
+        cs.newLineAtOffset(10, 600);
+        cs.setFont(font, 10);
+        cs.showText("testMultipleFontFileReuse3");
+        cs.endText();
+
+        cs.close();
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        doc.save(baos);
+        doc.close();
+        return baos.toByteArray();
     }
 }
