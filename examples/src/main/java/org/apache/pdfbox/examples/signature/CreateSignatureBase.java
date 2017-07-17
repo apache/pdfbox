@@ -28,6 +28,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
@@ -65,6 +66,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
 {
     private PrivateKey privateKey;
     private Certificate certificate;
+    private Certificate[] certificateChain;
     private TSAClient tsaClient;
     private boolean externalSigning;
 
@@ -98,7 +100,8 @@ public abstract class CreateSignatureBase implements SignatureInterface
             {
                 continue;
             }
-            cert = certChain[0];
+            setCertificateChain(certChain);
+            cert = keystore.getCertificate(alias);
             setCertificate(cert);
             if (cert instanceof X509Certificate)
             {
@@ -122,6 +125,11 @@ public abstract class CreateSignatureBase implements SignatureInterface
     public final void setCertificate(Certificate certificate)
     {
         this.certificate = certificate;
+    }
+
+    public final void setCertificateChain(final Certificate[] certificateChain)
+    {
+        this.certificateChain = certificateChain;
     }
 
     public void setTsaClient(TSAClient tsaClient)
@@ -212,6 +220,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
         try
         {
             List<Certificate> certList = new ArrayList<>();
+            certList.addAll(Arrays.asList(certificateChain));
             certList.add(certificate);
             Store certs = new JcaCertStore(certList);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
