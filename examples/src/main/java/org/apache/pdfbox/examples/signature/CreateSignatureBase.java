@@ -65,7 +65,6 @@ import org.bouncycastle.util.Store;
 public abstract class CreateSignatureBase implements SignatureInterface
 {
     private PrivateKey privateKey;
-    private Certificate certificate;
     private Certificate[] certificateChain;
     private TSAClient tsaClient;
     private boolean externalSigning;
@@ -101,8 +100,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
                 continue;
             }
             setCertificateChain(certChain);
-            cert = keystore.getCertificate(alias);
-            setCertificate(cert);
+            cert = certChain[0];
             if (cert instanceof X509Certificate)
             {
                 // avoid expired certificate
@@ -120,11 +118,6 @@ public abstract class CreateSignatureBase implements SignatureInterface
     public final void setPrivateKey(PrivateKey privateKey)
     {
         this.privateKey = privateKey;
-    }
-
-    public final void setCertificate(Certificate certificate)
-    {
-        this.certificate = certificate;
     }
 
     public final void setCertificateChain(final Certificate[] certificateChain)
@@ -221,10 +214,9 @@ public abstract class CreateSignatureBase implements SignatureInterface
         {
             List<Certificate> certList = new ArrayList<Certificate>();
             certList.addAll(Arrays.asList(certificateChain));
-            certList.add(certificate);
             Store certs = new JcaCertStore(certList);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
-            org.bouncycastle.asn1.x509.Certificate cert = org.bouncycastle.asn1.x509.Certificate.getInstance(certificate.getEncoded());
+            org.bouncycastle.asn1.x509.Certificate cert = org.bouncycastle.asn1.x509.Certificate.getInstance(certificateChain[0].getEncoded());
             ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(privateKey);
             gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(new JcaDigestCalculatorProviderBuilder().build()).build(sha1Signer, new X509CertificateHolder(cert)));
             gen.addCertificates(certs);
