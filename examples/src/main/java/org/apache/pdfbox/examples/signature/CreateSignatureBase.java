@@ -224,7 +224,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
             certList.add(certificate);
             Store certs = new JcaCertStore(certList);
             CMSSignedDataGenerator gen = new CMSSignedDataGenerator();
-            org.bouncycastle.asn1.x509.Certificate cert = org.bouncycastle.asn1.x509.Certificate.getInstance(ASN1Primitive.fromByteArray(certificate.getEncoded()));
+            org.bouncycastle.asn1.x509.Certificate cert = org.bouncycastle.asn1.x509.Certificate.getInstance(certificate.getEncoded());
             ContentSigner sha1Signer = new JcaContentSignerBuilder("SHA256WithRSA").build(privateKey);
             gen.addSignerInfoGenerator(new JcaSignerInfoGeneratorBuilder(new JcaDigestCalculatorProviderBuilder().build()).build(sha1Signer, new X509CertificateHolder(cert)));
             gen.addCertificates(certs);
