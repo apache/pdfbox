@@ -370,10 +370,9 @@ public abstract class PDStructureNode implements COSObjectable
      * The type of object depends on the type of the kid. It can be
      * <ul>
      * <li>a {@link PDStructureElement},</li>
-     * <li>a {@link PDAnnotation},</li>
-     * <li>a {@link PDXObject},</li>
-     * <li>a {@link PDMarkedContentReference}</li>
-     * <li>a {@link Integer}</li>
+     * <li>a {@link PDObjectReference},</li>
+     * <li>a {@link PDMarkedContentReference},</li>
+     * <li>an {@link Integer}</li>
      * </ul>
      * 
      * @param kid the kid
