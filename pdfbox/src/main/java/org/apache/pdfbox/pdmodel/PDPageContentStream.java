@@ -92,7 +92,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
 
     /**
-     * Create a new PDPage content stream.
+     * Create a new PDPage content stream. This constructor overwrites all existing content streams
+     * of this page.
      *
      * @param document The document the page is part of.
      * @param sourcePage The page to write the contents to.
@@ -122,7 +123,10 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Create a new PDPage content stream.
+     * Create a new PDPage content stream. If the appendContent parameter is set to
+     * {@link AppendMode#APPEND}, you may want to use
+     * {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean, boolean)}
+     * instead, with the fifth parameter set to true.
      *
      * @param document The document the page is part of.
      * @param sourcePage The page to write the contents to.
