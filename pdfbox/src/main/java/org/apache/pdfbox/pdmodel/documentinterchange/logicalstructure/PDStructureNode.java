@@ -385,35 +385,38 @@ public abstract class PDStructureNode implements COSObjectable
         }
         if (kidDic != null)
         {
-            String type = kidDic.getNameAsString(COSName.TYPE);
-            if (type == null)
-            {
-                // A structure element dictionary denoting another structure element
-                return new PDStructureElement(kidDic);
-            }
-            switch (type)
-            {
-                case PDStructureElement.TYPE:
-                    // A structure element dictionary denoting another structure element
-                    return new PDStructureElement(kidDic);
-                case PDObjectReference.TYPE:
-                    // An object reference dictionary denoting a PDF object
-                    return new PDObjectReference(kidDic);
-                case PDMarkedContentReference.TYPE:
-                    // A marked-content reference dictionary denoting a marked-content sequence
-                    return new PDMarkedContentReference(kidDic);
-                default:
-                    break;
-            }
+            return createObjectFromDic(kidDic);
         }
         else if (kid instanceof COSInteger)
         {
-            // An integer marked-content identifier denoting a
-            // marked-content sequence
+            // An integer marked-content identifier denoting a marked-content sequence
             COSInteger mcid = (COSInteger) kid;
             return mcid.intValue();
         }
         return null;
     }
 
+    private COSObjectable createObjectFromDic(COSDictionary kidDic)
+    {
+        String type = kidDic.getNameAsString(COSName.TYPE);
+        if (type == null)
+        {
+            // A structure element dictionary denoting another structure element
+            return new PDStructureElement(kidDic);
+        }
+        switch (type)
+        {
+            case PDStructureElement.TYPE:
+                // A structure element dictionary denoting another structure element
+                return new PDStructureElement(kidDic);
+            case PDObjectReference.TYPE:
+                // An object reference dictionary denoting a PDF object
+                return new PDObjectReference(kidDic);
+            case PDMarkedContentReference.TYPE:
+                // A marked-content reference dictionary denoting a marked-content sequence
+                return new PDMarkedContentReference(kidDic);
+            default:
+                return null;
+        }
+    }
 }
