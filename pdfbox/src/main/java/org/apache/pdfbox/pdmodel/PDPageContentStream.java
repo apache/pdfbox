@@ -110,7 +110,8 @@ public final class PDPageContentStream implements Closeable
     private final byte[] formatBuffer = new byte[32];
 
     /**
-     * Create a new PDPage content stream.
+     * Create a new PDPage content stream. This constructor overwrites all existing content streams
+     * of this page.
      *
      * @param document The document the page is part of.
      * @param sourcePage The page to write the contents to.
@@ -140,7 +141,10 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Create a new PDPage content stream.
+     * Create a new PDPage content stream. If the appendContent parameter is set to
+     * {@link AppendMode#APPEND}, you may want to use
+     * {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean, boolean)}
+     * instead, with the fifth parameter set to true.
      *
      * @param document The document the page is part of.
      * @param sourcePage The page to write the contents to.
