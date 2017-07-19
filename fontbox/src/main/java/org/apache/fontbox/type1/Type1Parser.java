@@ -121,6 +121,7 @@ final class Type1Parser
             switch (key)
             {
                 case "FontInfo":
+                case "Fontinfo":
                     readFontInfo(readSimpleDict());
                     break;
                 case "Metrics":
