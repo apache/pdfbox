@@ -118,7 +118,7 @@ final class Type1Parser
 
             // key/value
             String key = read(Token.LITERAL).getText();
-            if (key.equals("FontInfo"))
+            if (key.equals("FontInfo") || key.equals("Fontinfo"))
             {
                 readFontInfo(readSimpleDict());
             }
