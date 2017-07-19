@@ -385,33 +385,35 @@ public abstract class PDStructureNode implements COSObjectable
         }
         if (kidDic != null)
         {
-            String type = kidDic.getNameAsString(COSName.TYPE);
-            if ((type == null) || PDStructureElement.TYPE.equals(type))
-            {
-                // A structure element dictionary denoting another structure
-                // element
-                return new PDStructureElement(kidDic);
-            }
-            else if (PDObjectReference.TYPE.equals(type))
-            {
-                // An object reference dictionary denoting a PDF object
-                return new PDObjectReference(kidDic);
-            }
-            else if (PDMarkedContentReference.TYPE.equals(type))
-            {
-                // A marked-content reference dictionary denoting a
-                // marked-content sequence
-                return new PDMarkedContentReference(kidDic);
-            }
+            return createObjectFromDic(kidDic);
         }
         else if (kid instanceof COSInteger)
         {
-            // An integer marked-content identifier denoting a
-            // marked-content sequence
+            // An integer marked-content identifier denoting a marked-content sequence
             COSInteger mcid = (COSInteger) kid;
             return mcid.intValue();
         }
         return null;
     }
 
+    private COSObjectable createObjectFromDic(COSDictionary kidDic)
+    {
+        String type = kidDic.getNameAsString(COSName.TYPE);
+        if ((type == null) || PDStructureElement.TYPE.equals(type))
+        {
+            // A structure element dictionary denoting another structure element
+            return new PDStructureElement(kidDic);
+        }
+        else if (PDObjectReference.TYPE.equals(type))
+        {
+            // An object reference dictionary denoting a PDF object
+            return new PDObjectReference(kidDic);
+        }
+        else if (PDMarkedContentReference.TYPE.equals(type))
+        {
+            // A marked-content reference dictionary denoting a marked-content sequence
+            return new PDMarkedContentReference(kidDic);
+        }
+        return null;
+    }
 }
