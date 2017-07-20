@@ -24,7 +24,6 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import java.awt.image.BufferedImage;
-import static org.apache.pdfbox.util.MetaUtil.SUN_TIFF_FORMAT;
 import static org.apache.pdfbox.util.MetaUtil.debugLogMetadata;
 
 /**
@@ -34,22 +33,6 @@ import static org.apache.pdfbox.util.MetaUtil.debugLogMetadata;
 class TIFFUtil
 {
     private static final Log LOG = LogFactory.getLog(TIFFUtil.class);
-
-    private static String tagSetClassName = "com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet";
-    
-    static
-    {
-        try
-        {
-            String alternateClassName = "com.github.jaiimageio.plugins.tiff.BaselineTIFFTagSet";
-            Class.forName(alternateClassName);
-            tagSetClassName = alternateClassName;
-        }
-        catch (ClassNotFoundException ex)
-        {
-            // ignore
-        }
-    }
 
     /**
      * Sets the ImageIO parameter compression type based on the given image.
@@ -84,20 +67,20 @@ class TIFFUtil
      */
     public static void updateMetadata(IIOMetadata metadata, BufferedImage image, int dpi)
     {
-        debugLogMetadata(metadata, SUN_TIFF_FORMAT);
-
-        if (!SUN_TIFF_FORMAT.equals(metadata.getNativeMetadataFormatName()))
+        String metaDataFormat = metadata.getNativeMetadataFormatName();
+        if (metaDataFormat == null)
         {
-            LOG.debug("Using unknown TIFF image writer: " + metadata.getNativeMetadataFormatName());
+            LOG.debug("TIFF image writer doesn't support any data format");
             return;
         }
 
-        IIOMetadataNode root = new IIOMetadataNode(SUN_TIFF_FORMAT);
+        debugLogMetadata(metadata, metaDataFormat);
+
+        IIOMetadataNode root = new IIOMetadataNode(metaDataFormat);
         IIOMetadataNode ifd;
         if (root.getElementsByTagName("TIFFIFD").getLength() == 0)
         {
             ifd = new IIOMetadataNode("TIFFIFD");
-            ifd.setAttribute("tagSets", tagSetClassName);
             root.appendChild(ifd);
         }
         else
@@ -123,7 +106,7 @@ class TIFFUtil
         
         try
         {
-            metadata.mergeTree(SUN_TIFF_FORMAT, root);
+            metadata.mergeTree(metaDataFormat, root);
         }
         catch (IIOInvalidTreeException e)
         {
@@ -131,7 +114,7 @@ class TIFFUtil
             throw new RuntimeException(e);
         }
 
-        debugLogMetadata(metadata, SUN_TIFF_FORMAT);
+        debugLogMetadata(metadata, metaDataFormat);
     }
 
     private static IIOMetadataNode createShortField(int tiffTagNumber, String name, int val)
