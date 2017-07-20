@@ -1791,7 +1791,7 @@ public class COSParser extends BaseParser
                     if (dictionary != null)
                     {
                         // document catalog
-                        if (COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE)))
+                        if (isCatalog(dictionary))
                         {
                             trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
                         }
@@ -1818,7 +1818,18 @@ public class COSParser extends BaseParser
         }
         return trailer;
     }
-    
+
+    /**
+     * Tell if the dictionary is a PDF catalog. Override this for an FDF catalog.
+     * 
+     * @param dictionary
+     * @return 
+     */
+    protected boolean isCatalog(COSDictionary dictionary)
+    {
+        return COSName.CATALOG.equals(dictionary.getCOSName(COSName.TYPE));
+    }
+
     /**
      * This will parse the startxref section from the stream.
      * The startxref value is ignored.
