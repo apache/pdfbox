@@ -150,7 +150,7 @@
                         <exclude>src/test/resources/input/*.txt</exclude>
                         <exclude>src/test/resources/output/*</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/pdmodel/sRGB.*</exclude>
-                        <exclude>src/test/resources/org/apache/pdfbox/pdmodel/pdfparser/*.fdf</exclude>
+                        <exclude>src/test/resources/org/apache/pdfbox/pdfparser/*.fdf</exclude>
                         <exclude>release.properties</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.der</exclude>
                         <exclude>src/test/resources/org/apache/pdfbox/encryption/*.pfx</exclude>
