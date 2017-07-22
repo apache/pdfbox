@@ -103,8 +103,8 @@ public class PDFStreamParser extends BaseParser
     }
 
     /**
-     * This will parse the tokens in the stream.  This will close the
-     * stream when it is finished parsing.
+     * This will parse all the tokens in the stream. This will close the stream when it is finished
+     * parsing. You can then access these with {@link #getTokens() getTokens()}.
      *
      * @throws IOException If there is an error while parsing the stream.
      */
@@ -118,7 +118,7 @@ public class PDFStreamParser extends BaseParser
     }
 
     /**
-     * This will get the tokens that were parsed from the stream.
+     * This will get the tokens that were parsed from the stream by the {@link #parse() parse()} method.
      *
      * @return All of the tokens in the stream.
      */
