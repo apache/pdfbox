@@ -185,7 +185,7 @@ public final class COSString extends COSBase
     public String getString()
     {
         // text string - BOM indicates Unicode
-        if (bytes.length > 2)
+        if (bytes.length >= 2)
         {
             if ((bytes[0] & 0xff) == 0xFE && (bytes[1] & 0xff) == 0xFF)
             {
