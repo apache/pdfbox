@@ -353,4 +353,15 @@ public class TestCOSString extends TestCOSBase
         assertFalse(test2.equals(test1));
         assertFalse(test1.getString().equals(test2.getString()));
     }
+
+    /**
+     * PDFBOX-3881: Test that if String has only the BOM, that it be an empty string.
+     * 
+     * @throws IOException 
+     */
+    public void testEmptyStringWithBOM() throws IOException
+    {
+        assertTrue(COSString.parseHex("FEFF").getString().isEmpty());
+        assertTrue(COSString.parseHex("FFFE").getString().isEmpty());
+    }
 }
