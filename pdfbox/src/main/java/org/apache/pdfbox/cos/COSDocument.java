@@ -359,9 +359,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * This will get the document catalog.
      *
-     * Maybe this should move to an object at PDFEdit level
-     *
-     * @return catalog is the root of all document activities
+     * @return @return The catalog is the root of the document; never null.
      *
      * @throws IOException If no catalog can be found.
      */
