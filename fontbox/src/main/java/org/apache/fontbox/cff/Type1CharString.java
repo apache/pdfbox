@@ -482,34 +482,28 @@ public class Type1CharString
     {
         // base character
         String baseName = StandardEncoding.INSTANCE.getName(bchar.intValue());
-        if (baseName != null)
+        try
         {
-            try
-            {
-                Type1CharString base = font.getType1CharString(baseName);
-                path.append(base.getPath().getPathIterator(null), false);
-            }
-            catch (IOException e)
-            {
-                LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName);
-            }
+            Type1CharString base = font.getType1CharString(baseName);
+            path.append(base.getPath().getPathIterator(null), false);
+        }
+        catch (IOException e)
+        {
+            LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName);
         }
         // accent character
         String accentName = StandardEncoding.INSTANCE.getName(achar.intValue());
-        if (accentName != null)
+        try
         {
-            try
-            {
-                Type1CharString accent = font.getType1CharString(accentName);
-                AffineTransform at = AffineTransform.getTranslateInstance(
+            Type1CharString accent = font.getType1CharString(accentName);
+            AffineTransform at = AffineTransform.getTranslateInstance(
                     leftSideBearing.getX() + adx.floatValue(),
                     leftSideBearing.getY() + ady.floatValue());
-                path.append(accent.getPath().getPathIterator(at), false);
-            }
-            catch (IOException e)
-            {
-                LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName);
-            }
+            path.append(accent.getPath().getPathIterator(at), false);
+        }
+        catch (IOException e)
+        {
+            LOG.warn("invalid seac character in glyph " + glyphName + " of font " + fontName);
         }
     }
 
