@@ -80,7 +80,7 @@ public class IntegerType extends AbstractSimpleProperty
         }
         else if (value instanceof String)
         {
-            integerValue = Integer.valueOf((String) value);
+            integerValue = Integer.parseInt((String) value);
             // NumberFormatException is thrown (sub of InvalidArgumentException)
         }
         else
