@@ -1456,6 +1456,7 @@ public class COSParser extends BaseParser
                     // is the next char a digit?
                     if (isDigit(genID))
                     {
+                        genID -= 48;
                         tempOffset--;
                         source.seek(tempOffset);
                         if (isSpace())
@@ -1723,7 +1724,6 @@ public class COSParser extends BaseParser
                                     // is the next char a digit?
                                     if (isDigit(genID))
                                     {
-                                        genID -= 48;
                                         tempOffset--;
                                         source.seek(tempOffset);
                                         if (isSpace())
