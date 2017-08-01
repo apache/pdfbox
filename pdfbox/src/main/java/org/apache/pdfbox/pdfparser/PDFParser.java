@@ -236,7 +236,7 @@ public class PDFParser extends COSParser
             root.setItem(COSName.TYPE, COSName.CATALOG);
         }
         COSObject catalogObj = document.getCatalog();
-        if (catalogObj != null && catalogObj.getObject() instanceof COSDictionary)
+        if (catalogObj.getObject() instanceof COSDictionary)
         {
             parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
             
