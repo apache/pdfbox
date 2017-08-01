@@ -188,7 +188,7 @@ public abstract class BaseParser
     /**
      * This will parse a PDF dictionary.
      *
-     * @return The parsed dictionary.
+     * @return The parsed dictionary, never null.
      *
      * @throws IOException If there is an error reading the stream.
      */
