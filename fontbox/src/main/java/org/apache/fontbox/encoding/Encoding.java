@@ -61,10 +61,11 @@ public abstract class Encoding
     }
 
     /**
-     * This will take a character code and get the name from the code.
+     * This will take a character code and get the name from the code. This method will never return
+     * null.
      *
      * @param code The character code.
-     * @return The name of the character.
+     * @return The name of the character, or ".notdef" if the bame doesn't exist.
      */
     public String getName( int code )
     {
