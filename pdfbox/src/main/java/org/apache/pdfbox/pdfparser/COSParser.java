@@ -1220,7 +1220,7 @@ public class COSParser extends BaseParser
                     // check the dictionary to avoid false positives
                     COSDictionary dict = parseCOSDictionary();
                     source.seek(startXRefOffset);
-                    if (dict != null && "XRef".equals(dict.getNameAsString(COSName.TYPE)))
+                    if ("XRef".equals(dict.getNameAsString(COSName.TYPE)))
                     {
                         return true;
                     }
