@@ -1324,9 +1324,9 @@ public class COSParser extends BaseParser
             {
                 List<COSObjectKey> objStreams = new ArrayList<COSObjectKey>();
                 // find all object streams
-                for (COSObjectKey key : xrefOffset.keySet())
+                for (Entry<COSObjectKey, Long> entry : xrefOffset.entrySet())
                 {
-                    Long offset = xrefOffset.get(key);
+                    Long offset = entry.getValue();
                     if (offset != null && offset < 0)
                     {
                         COSObjectKey objStream = new COSObjectKey(-offset, 0);
@@ -1456,7 +1456,6 @@ public class COSParser extends BaseParser
                     // is the next char a digit?
                     if (isDigit(genID))
                     {
-                        genID -= 48;
                         tempOffset--;
                         source.seek(tempOffset);
                         if (isSpace())
@@ -1807,27 +1806,24 @@ public class COSParser extends BaseParser
                         continue;
                     }
                     COSDictionary dictionary = parseCOSDictionary();
-                    if (dictionary != null)
+                    // document catalog
+                    if (isCatalog(dictionary))
                     {
-                        // document catalog
-                        if (isCatalog(dictionary))
-                        {
-                            trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
-                        }
-                        // info dictionary
-                        else if (dictionary.containsKey(COSName.MOD_DATE) && 
-                                (dictionary.containsKey(COSName.TITLE)
-                                || dictionary.containsKey(COSName.AUTHOR)
-                                || dictionary.containsKey(COSName.SUBJECT)
-                                || dictionary.containsKey(COSName.KEYWORDS)
-                                || dictionary.containsKey(COSName.CREATOR)
-                                || dictionary.containsKey(COSName.PRODUCER)
-                                || dictionary.containsKey(COSName.CREATION_DATE)))
-                        {
-                            trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
-                        }
-                        // TODO encryption dictionary
+                        trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
                     }
+                    // info dictionary
+                    else if (dictionary.containsKey(COSName.MOD_DATE) && 
+                            (dictionary.containsKey(COSName.TITLE)
+                            || dictionary.containsKey(COSName.AUTHOR)
+                            || dictionary.containsKey(COSName.SUBJECT)
+                            || dictionary.containsKey(COSName.KEYWORDS)
+                            || dictionary.containsKey(COSName.CREATOR)
+                            || dictionary.containsKey(COSName.PRODUCER)
+                            || dictionary.containsKey(COSName.CREATION_DATE)))
+                    {
+                        trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
+                    }
+                    // TODO encryption dictionary
                 }
                 catch(IOException exception)
                 {
