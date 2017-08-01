@@ -952,7 +952,7 @@ public abstract class BaseParser
                 //so we are more compatible with POS writers that don't
                 //follow the spec
                 String badString = readString();
-                if( badString == null || badString.length() == 0 )
+                if (badString.isEmpty())
                 {
                     int peek = seqSource.peek();
                     // we can end up in an infinite loop otherwise
@@ -975,7 +975,7 @@ public abstract class BaseParser
     /**
      * This will read the next string from the stream.
      *
-     * @return The string that was read from the stream.
+     * @return The string that was read from the stream, never null.
      *
      * @throws IOException If there is an error reading from the stream.
      */
