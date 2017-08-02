@@ -267,16 +267,9 @@ public class PDType0Font extends PDFont implements PDVectorFont
             // try to find the corresponding Unicode (UC2) CMap
             if (strName != null)
             {
-                CMap cMap = CMapManager.getPredefinedCMap(strName);
-                if (cMap != null)
-                {
-                    String ucs2Name = cMap.getRegistry() + "-" + cMap.getOrdering() + "-UCS2";
-                    CMap ucs2CMap = CMapManager.getPredefinedCMap(ucs2Name);
-                    if (ucs2CMap != null)
-                    {
-                        cMapUCS2 = ucs2CMap;
-                    }
-                }
+                CMap prdCMap = CMapManager.getPredefinedCMap(strName);
+                String ucs2Name = prdCMap.getRegistry() + "-" + prdCMap.getOrdering() + "-UCS2";
+                cMapUCS2 = CMapManager.getPredefinedCMap(ucs2Name);
             }
         }
     }
