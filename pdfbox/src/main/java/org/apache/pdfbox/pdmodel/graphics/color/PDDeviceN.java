@@ -141,33 +141,31 @@ public class PDDeviceN extends PDSpecialColorSpace
 
         // spot colorants
         spotColorSpaces = new PDSeparation[numColorants];
-        if (attributes.getColorants() != null)
+
+        // spot color spaces
+        Map<String, PDSeparation> spotColorants = attributes.getColorants();
+
+        // map each colorant to the corresponding spot color space
+        for (int c = 0; c < numColorants; c++)
         {
-            // spot color spaces
-            Map<String, PDSeparation> spotColorants = attributes.getColorants();
-
-            // map each colorant to the corresponding spot color space
-            for (int c = 0; c < numColorants; c++)
+            String name = colorantNames.get(c);
+            PDSeparation spot = spotColorants.get(name);
+            if (spot != null)
             {
-                String name = colorantNames.get(c);
-                PDSeparation spot = spotColorants.get(name);
-                if (spot != null)
-                {
-                    // spot colorant
-                    spotColorSpaces[c] = spot;
+                // spot colorant
+                spotColorSpaces[c] = spot;
 
-                    // spot colors may replace process colors with same name
-                    // providing that the subtype is not NChannel.
-                    if (!isNChannel())
-                    {
-                        colorantToComponent[c] = -1;
-                    }
-                }
-                else
+                // spot colors may replace process colors with same name
+                // providing that the subtype is not NChannel.
+                if (!isNChannel())
                 {
-                    // process colorant
-                    spotColorSpaces[c] = null;
+                    colorantToComponent[c] = -1;
                 }
+            }
+            else
+            {
+                // process colorant
+                spotColorSpaces[c] = null;
             }
         }
     }
