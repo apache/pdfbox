@@ -282,7 +282,7 @@ public final class ImageIOUtil
     private static IIOMetadataNode getOrCreateChildNode(IIOMetadataNode parentNode, String name)
     {
         NodeList nodeList = parentNode.getElementsByTagName(name);
-        if (nodeList != null && nodeList.getLength() > 0)
+        if (nodeList.getLength() > 0)
         {
             return (IIOMetadataNode) nodeList.item(0);
         }
