@@ -254,6 +254,8 @@ abstract class TrueTypeEmbedder implements Subsetter
 
     /**
      * Returns the FontBox font.
+     * 
+     * @deprecated 
      */
     @Deprecated
     public TrueTypeFont getTrueTypeFont()
