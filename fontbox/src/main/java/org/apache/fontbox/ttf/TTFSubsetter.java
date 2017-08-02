@@ -451,6 +451,7 @@ public final class TTFSubsetter
         return bos.toByteArray();
     }
 
+    // never returns null
     private byte[] buildLocaTable(long[] newOffsets) throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -553,9 +554,11 @@ public final class TTFSubsetter
                 glyphIds.addAll(glyphIdsToAdd);
             }
             hasNested = glyphIdsToAdd != null;
-        } while (hasNested);
+        }
+        while (hasNested);
     }
 
+    // never returns null
     private byte[] buildGlyfTable(long[] newOffsets) throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -984,17 +987,11 @@ public final class TTFSubsetter
             {
                 tables.put("cmap", cmap);
             }
-            if (glyf != null)
-            {
-                tables.put("glyf", glyf); 
-            }
+            tables.put("glyf", glyf); 
             tables.put("head", head);
             tables.put("hhea", hhea);
             tables.put("hmtx", hmtx);
-            if (loca != null)
-            {
-                tables.put("loca", loca);
-            }
+            tables.put("loca", loca);
             tables.put("maxp", maxp);
             if (name != null)
             {
