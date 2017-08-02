@@ -141,6 +141,9 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
             break;
         case 4:
             writeOperator("K");
+            break;
+        default:
+            break;
         }
     }
 
@@ -194,6 +197,9 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
             break;
         case 4:
             writeOperator("k");
+            break;
+        default:
+            break;
         }
     }
 
