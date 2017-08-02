@@ -666,21 +666,9 @@ public class PDDocument implements Closeable
     public PDPage importPage(PDPage page) throws IOException
     {
         PDPage importedPage = new PDPage(new COSDictionary(page.getCOSObject()), resourceCache);
-        InputStream in = null;
-        try
-        {
-            in = page.getContents();
-            if (in != null)
-            {
-                PDStream dest = new PDStream(this, in, COSName.FLATE_DECODE);
-                importedPage.setContents(dest);
-            }
-            addPage(importedPage);
-        }
-        catch (IOException e)
-        {
-            IOUtils.closeQuietly(in);
-        }
+        PDStream dest = new PDStream(this, page.getContents(), COSName.FLATE_DECODE);
+        importedPage.setContents(dest);
+        addPage(importedPage);
         importedPage.setCropBox(page.getCropBox());
         importedPage.setMediaBox(page.getMediaBox());
         importedPage.setRotation(page.getRotation());
