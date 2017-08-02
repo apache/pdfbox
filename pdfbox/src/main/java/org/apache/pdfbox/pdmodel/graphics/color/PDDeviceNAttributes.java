@@ -64,7 +64,7 @@ public final class PDDeviceNAttributes
 
     /**
      * Returns a map of colorants and their associated Separation color space.
-     * @return map of colorants to color spaces
+     * @return map of colorants to color spaces, never null.
      * @throws IOException If there is an error reading a color space
      */
     public Map<String, PDSeparation> getColorants() throws IOException
