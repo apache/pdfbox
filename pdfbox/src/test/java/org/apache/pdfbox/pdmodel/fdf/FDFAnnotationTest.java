@@ -16,11 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.fdf;
 
+import java.io.File;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import org.junit.Test;
@@ -33,31 +33,14 @@ import org.junit.Test;
  */
 public class FDFAnnotationTest
 {
-
     @Test
-    public void loadXFDFAnnotations() throws IOException
+    public void loadXFDFAnnotations() throws IOException, URISyntaxException
     {
-        FDFDocument fdfDoc = null;
-        InputStream stream = null;
-        List<FDFAnnotation> fdfAnnots = new ArrayList<>();
-        try
+        File f = new File(FDFAnnotationTest.class.getResource("xfdf-test-document-annotations.xml").toURI());
+        try (FDFDocument fdfDoc = FDFDocument.loadXFDF(f))
         {
-            stream = FDFAnnotationTest.class
-                    .getResourceAsStream("xfdf-test-document-annotations.xml");
-            fdfDoc = FDFDocument.loadXFDF(stream);
-            fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
+            List<FDFAnnotation> fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
             assertEquals(17, fdfAnnots.size());
-        }
-        finally
-        {
-            if (stream != null)
-            {
-                stream.close();
-            }
-            if (fdfDoc != null)
-            {
-                fdfDoc.close();
-            }
         }
     }
 }
