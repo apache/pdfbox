@@ -77,7 +77,7 @@ public final class PDLineDashPattern implements COSObjectable
 
     /**
      * Returns the dash array.
-     * @return the dash array
+     * @return the dash array, never null.
      */
     public float[] getDashArray()
     {
