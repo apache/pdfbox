@@ -253,15 +253,12 @@ public class Type0FontValidator extends FontValidator<Type0Container>
      */
     private void processCMapAsStream(COSStream aCMap)
     {
-
         COSBase sysinfo = aCMap.getItem(COSName.CIDSYSTEMINFO);
         checkCIDSystemInfo(sysinfo);
 
-        InputStream cmapStream = null;
-        try
+        try (InputStream cmapStream = aCMap.createInputStream())
         {
             // extract information from the CMap stream
-            cmapStream = aCMap.createInputStream();
             CMap fontboxCMap = new CMapParser().parse(cmapStream);
             int wmValue = fontboxCMap.getWMode();
             String cmnValue = fontboxCMap.getName();
@@ -294,10 +291,6 @@ public class Type0FontValidator extends FontValidator<Type0Container>
         catch (IOException e)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_CMAP_DAMAGED, font.getName() + ": The CMap type is damaged", e));
-        }
-        finally
-        {
-            IOUtils.closeQuietly(cmapStream);
         }
 
         COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName
