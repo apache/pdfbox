@@ -71,7 +71,7 @@ public final class PDFBox
             {
                 PrintPDF.main(arguments);
             }
-            else if (command.equals("PDFDebugger"))
+            else if (command.equals("PDFDebugger") || command.equals("PDFReader"))
             {
                 PDFDebugger.main(arguments);
                 exitAfterCallingMain = false;
@@ -79,11 +79,6 @@ public final class PDFBox
             else if (command.equals("PDFMerger"))
             {
                 PDFMerger.main(arguments);
-            }
-            else if (command.equals("PDFReader"))
-            {
-                PDFDebugger.main(arguments);
-                exitAfterCallingMain = false;
             }
             else if (command.equals("PDFSplit"))
             {
