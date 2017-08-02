@@ -76,7 +76,7 @@ public class CMapParser
      * Parses a predefined CMap.
      *
      * @param name CMap name.
-     * @return The parsed predefined CMap as a java object.
+     * @return The parsed predefined CMap as a java object, never null.
      * @throws IOException If the CMap could not be parsed.
      */
     public CMap parsePredefined(String name) throws IOException
@@ -100,7 +100,7 @@ public class CMapParser
      * This will parse the stream and create a cmap object.
      *
      * @param input The CMAP stream to parse.
-     * @return The parsed stream as a java object.
+     * @return The parsed stream as a java object, never null.
      * @throws IOException If there is an error parsing the stream.
      */
     public CMap parse(InputStream input) throws IOException
