@@ -68,15 +68,12 @@ public final class PDFBox
                     PrintPDF.main(arguments);
                     break;
                 case "PDFDebugger":
+                case "PDFReader":
                     PDFDebugger.main(arguments);
                     exitAfterCallingMain = false;
                     break;
                 case "PDFMerger":
                     PDFMerger.main(arguments);
-                    break;
-                case "PDFReader":
-                    PDFDebugger.main(arguments);
-                    exitAfterCallingMain = false;
                     break;
                 case "PDFSplit":
                     PDFSplit.main(arguments);
