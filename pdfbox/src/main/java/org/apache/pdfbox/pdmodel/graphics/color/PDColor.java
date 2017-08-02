@@ -109,7 +109,7 @@ public final class PDColor
 
     /**
      * Returns the components of this color value.
-     * @return the components of this color value
+     * @return the components of this color value, never null.
      */
     public float[] getComponents()
     {
