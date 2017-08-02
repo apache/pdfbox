@@ -58,7 +58,7 @@ class TilingPaintFactory
 
     // class to characterize a TilingPaint object. It is important that TilingPaint does not
     // keep any objects from this class, so that the weak cache works.
-    private class TilingPaintParameter
+    private static class TilingPaintParameter
     {
         private final Matrix matrix;
         private final COSDictionary patternDict;
