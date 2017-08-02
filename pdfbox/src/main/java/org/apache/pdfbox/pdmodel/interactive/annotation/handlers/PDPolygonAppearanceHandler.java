@@ -180,10 +180,11 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         if (bs != null)
         {
             return bs.getWidth();
-        } else
+        }
+        else
         {
             COSArray borderCharacteristics = annotation.getBorder();
-            if (borderCharacteristics != null && borderCharacteristics.size() >= 3)
+            if (borderCharacteristics.size() >= 3)
             {
                 return borderCharacteristics.getInt(3);
             }
