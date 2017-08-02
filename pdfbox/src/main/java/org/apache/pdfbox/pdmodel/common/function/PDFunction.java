@@ -117,16 +117,18 @@ public abstract class PDFunction implements COSObjectable
         {
             return new PDFunctionTypeIdentity(null);
         }
-
-        COSDictionary functionDictionary;
+        
+        COSBase base = function;
         if (function instanceof COSObject)
         {
-            functionDictionary = (COSDictionary) ((COSObject) function).getObject();
+            base = function.getCOSObject();
         }
-        else
+        if (!(base instanceof COSDictionary))
         {
-            functionDictionary = (COSDictionary) function;
+            throw new IOException("Error: Function must be a Dictionary, but is " +
+                    function.getClass().getSimpleName());
         }
+        COSDictionary functionDictionary = (COSDictionary) base;
         int functionType = functionDictionary.getInt(COSName.FUNCTION_TYPE);
         switch (functionType)
         {
