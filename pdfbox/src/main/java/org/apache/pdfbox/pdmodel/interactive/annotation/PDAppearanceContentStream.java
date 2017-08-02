@@ -105,7 +105,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         if (color != null)
         {
             float[] components = color.getComponents();
-            if (components != null && components.length > 0)
+            if (components.length > 0)
             {
                 setStrokingColor(components);
                 return true;
@@ -161,7 +161,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         if (color != null)
         {
             float[] components = color.getComponents();
-            if (components != null && components.length > 0)
+            if (components.length > 0)
             {
                 setNonStrokingColor(components);
                 return true;
