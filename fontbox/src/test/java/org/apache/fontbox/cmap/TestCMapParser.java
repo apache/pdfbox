@@ -17,7 +17,6 @@
 package org.apache.fontbox.cmap;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import junit.framework.TestCase;
@@ -42,7 +41,7 @@ public class TestCMapParser extends TestCase
         File inDir = new File(resourceDir);
 
         CMapParser parser = new CMapParser();
-        CMap cMap = parser.parse(new FileInputStream(new File(inDir, "CMapTest")));
+        CMap cMap = parser.parse(new File(inDir, "CMapTest"));
 
         // char mappings
         byte[] bytes1 = {0, 1};
