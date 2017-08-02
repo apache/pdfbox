@@ -41,6 +41,8 @@ final class CMapManager
      * Fetches the predefined CMap from disk (or cache).
      *
      * @param cMapName CMap name
+     * @return The predefined CMap, never null.
+     * @throws IOException 
      */
     public static CMap getPredefinedCMap(String cMapName) throws IOException
     {
