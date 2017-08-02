@@ -74,6 +74,7 @@ public class TestPDFunctionType4 extends TestCase
         assertEquals(1f, output[0]);
 
         input = new float[] {0.8f, 1.2f}; //input argument outside Dimension
+        output = function.eval(input);
 
         assertEquals(1, output.length);
         assertEquals(1f, output[0]);
