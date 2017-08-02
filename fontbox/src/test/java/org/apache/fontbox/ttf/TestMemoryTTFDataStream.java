@@ -45,10 +45,7 @@ public class TestMemoryTTFDataStream extends TestCase
         }
         finally
         {
-            if (dataStream != null)
-            {
-                dataStream.close();
-            }
+            dataStream.close();
         }
     }
 
