@@ -17,17 +17,14 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import junit.framework.TestCase;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -211,7 +208,7 @@ public class CCITTFactoryTest extends TestCase
         // copy the source file to a temp directory, as we will be deleting it
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(testResultsDir, "ccittg3.tif");
-        copyFile(new File(tiffG3Path), copiedTiffFile);
+        Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile);
         assertTrue(copiedTiffFile.delete());
@@ -226,7 +223,7 @@ public class CCITTFactoryTest extends TestCase
         // copy the source file to a temp directory, as we will be deleting it
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         File copiedTiffFile = new File(testResultsDir, "ccittg3n.tif");
-        copyFile(new File(tiffG3Path), copiedTiffFile);
+        Files.copy(new File(tiffG3Path).toPath(), copiedTiffFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         PDDocument document = new PDDocument();
         CCITTFactory.createFromFile(document, copiedTiffFile, 0);
         assertTrue(copiedTiffFile.delete());
@@ -238,31 +235,15 @@ public class CCITTFactoryTest extends TestCase
      */
     public void testByteShortPaddedWithGarbage() throws IOException
     {
-        PDDocument document = new PDDocument();
-        String basePath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3-garbage-padded-fields";
-        for (String ext : Arrays.asList(".tif", "-bigendian.tif"))
+        try (PDDocument document = new PDDocument())
         {
-            String tiffPath = basePath + ext;
-            PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffPath));
-            validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
-        }
-        document.close();
-    }
-
-    private void copyFile(File source, File dest) throws IOException
-    {
-        InputStream is = null;
-        OutputStream os = null;
-        try
-        {
-            is = new FileInputStream(source);
-            os = new FileOutputStream(dest);
-            IOUtils.copy(is, os);
-        }
-        finally
-        {
-            is.close();
-            os.close();
+            String basePath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3-garbage-padded-fields";
+            for (String ext : Arrays.asList(".tif", "-bigendian.tif"))
+            {
+                String tiffPath = basePath + ext;
+                PDImageXObject ximage3 = CCITTFactory.createFromFile(document, new File(tiffPath));
+                validate(ximage3, 1, 344, 287, "tiff", PDDeviceGray.INSTANCE.getName());
+            }
         }
     }
 }
