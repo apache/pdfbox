@@ -40,10 +40,11 @@ public class TestPDFunctionType4 extends TestCase
         rangeArray.setFloatArray(range);
         stream.setItem("Range", rangeArray);
         
-        OutputStream out = stream.createOutputStream();
-        byte[] data = function.getBytes("US-ASCII");
-        out.write(data, 0, data.length);
-        out.close();
+        try (OutputStream out = stream.createOutputStream())
+        {
+            byte[] data = function.getBytes("US-ASCII");
+            out.write(data, 0, data.length);
+        }
 
         return new PDFunctionType4(stream);
     }
