@@ -124,7 +124,7 @@ class SoftMask implements Paint
         @Override
         public Raster getRaster(int x1, int y1, int w, int h)
         {
-            WritableRaster raster = (WritableRaster)context.getRaster(x1, y1, w, h);
+            Raster raster = context.getRaster(x1, y1, w, h);
             ColorModel rasterCM = context.getColorModel();
             float[] input = null;
             Float[] map = null;
