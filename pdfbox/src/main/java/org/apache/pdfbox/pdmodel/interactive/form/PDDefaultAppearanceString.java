@@ -125,26 +125,19 @@ class PDDefaultAppearanceString
      */
     private void processOperator(Operator operator, List<COSBase> operands) throws IOException
     {
-        String name = operator.getName();
-        
-        switch (name)
+        switch (operator.getName())
         {
             case "Tf":
                 processSetFont(operands);
                 break;
             case "g":
-                processSetFontColor(operands);
-                break;
             case "rg":
-                processSetFontColor(operands);
-                break;
             case "k":
                 processSetFontColor(operands);
                 break;
             default:
                 break;
         }
-
     }
     
     /**
