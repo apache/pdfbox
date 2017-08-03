@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -242,27 +241,19 @@ public class PDFMergerUtility
      */
     public void mergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
-        PDDocument destination = null;
-        InputStream sourceFile;
-        PDDocument source;
-        if (sources != null && sources.size() > 0)
+        if (sources != null && !sources.isEmpty())
         {
             List<PDDocument> tobeclosed = new ArrayList<>();
-
-            try
+            MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
+                    memUsageSetting.getPartitionedCopy(sources.size()+1) :
+                    MemoryUsageSetting.setupMainMemoryOnly();
+            try (PDDocument destination = new PDDocument(partitionedMemSetting))
             {
-                MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
-                        memUsageSetting.getPartitionedCopy(sources.size()+1) :
-                        MemoryUsageSetting.setupMainMemoryOnly();
-                Iterator<InputStream> sit = sources.iterator();
-                destination = new PDDocument(partitionedMemSetting);
-
-                while (sit.hasNext())
+                for (InputStream sourceInputStream : sources)
                 {
-                    sourceFile = sit.next();
-                    source = PDDocument.load(sourceFile, partitionedMemSetting);
-                    tobeclosed.add(source);
-                    appendDocument(destination, source);
+                    PDDocument sourceDoc = PDDocument.load(sourceInputStream, partitionedMemSetting);
+                    tobeclosed.add(sourceDoc);
+                    appendDocument(destination, sourceDoc);
                 }
                 
                 // optionally set meta data
@@ -286,10 +277,6 @@ public class PDFMergerUtility
             }
             finally
             {
-                if (destination != null)
-                {
-                    destination.close();
-                }
                 for (PDDocument doc : tobeclosed)
                 {
                     doc.close();
