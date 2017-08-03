@@ -140,28 +140,18 @@ public class PDFHighlighter extends PDFTextStripper
     public static void main(String[] args) throws IOException
     {
         PDFHighlighter xmlExtractor = new PDFHighlighter();
-        PDDocument doc = null;
-        try
+        if (args.length < 2)
         {
-            if( args.length < 2 )
-            {
-                usage();
-            }
-            String[] highlightStrings = new String[ args.length - 1];
-            System.arraycopy( args, 1, highlightStrings, 0, highlightStrings.length );
-            doc = PDDocument.load( new File(args[0]) );
-
+            usage();
+        }
+        String[] highlightStrings = new String[args.length - 1];
+        System.arraycopy(args, 1, highlightStrings, 0, highlightStrings.length);
+        try (PDDocument doc = PDDocument.load(new File(args[0])))
+        {
             xmlExtractor.generateXMLHighlight(
                 doc,
                 highlightStrings,
                 new OutputStreamWriter( System.out ) );
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
         }
     }
 
