@@ -254,15 +254,13 @@ public class PDFMergerUtility
                 MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
                         memUsageSetting.getPartitionedCopy(sources.size()+1) :
                         MemoryUsageSetting.setupMainMemoryOnly();
-                Iterator<InputStream> sit = sources.iterator();
                 destination = new PDDocument(partitionedMemSetting);
 
-                while (sit.hasNext())
+                for (InputStream sourceInputStream : sources)
                 {
-                    sourceFile = sit.next();
-                    source = PDDocument.load(sourceFile, partitionedMemSetting);
-                    tobeclosed.add(source);
-                    appendDocument(destination, source);
+                    PDDocument sourceDoc = PDDocument.load(sourceInputStream, partitionedMemSetting);
+                    tobeclosed.add(sourceDoc);
+                    appendDocument(destination, sourceDoc);
                 }
                 
                 // optionally set meta data
