@@ -151,20 +151,12 @@ public class PDFMergerExample
         basicSchema.setCreatorTool(creator);
 
         // Create and return XMP data structure in XML format
-        ByteArrayOutputStream xmpOutputStream = null;
-        OutputStream cosXMPStream = null;
-        try
+        try (ByteArrayOutputStream xmpOutputStream = new ByteArrayOutputStream();
+             OutputStream cosXMPStream = cosStream.createOutputStream())
         {
-            xmpOutputStream = new ByteArrayOutputStream();
-            cosXMPStream = cosStream.createOutputStream();
             new XmpSerializer().serialize(xmpMetadata, xmpOutputStream, true);
             cosXMPStream.write(xmpOutputStream.toByteArray());
             return new PDMetadata(cosStream);
-        }
-        finally
-        {
-            IOUtils.closeQuietly(xmpOutputStream);
-            IOUtils.closeQuietly(cosXMPStream);
         }
     }
 }
