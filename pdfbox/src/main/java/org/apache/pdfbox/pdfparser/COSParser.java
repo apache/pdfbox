@@ -840,7 +840,24 @@ public class COSParser extends BaseParser
         if (objstmBaseObj instanceof COSStream)
         {
             // parse object stream
-            PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
+            PDFObjectStreamParser parser;
+            try
+            {
+                parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
+            }
+            catch (IOException ex)
+            {
+                if (isLenient)
+                {
+                    LOG.error("object stream " + objstmObjNr + " could not be parsed due to an exception", ex);
+                    return;
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+
             try
             {
                 parser.parse();
