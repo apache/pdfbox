@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdfparser;
 
+import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -47,9 +50,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
-
-
-import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 
 /**
  * PDF-Parser which first reads startxref and xref tables in order to know valid objects and parse only these objects.
@@ -580,9 +580,19 @@ public class COSParser extends BaseParser
 
                     if (!parsedObjects.contains(objId))
                     {
-                        Long fileOffset = xrefTrailerResolver.getXrefTable().get(objKey);
-                        // it is allowed that object references point to null,
-                        // thus we have to test
+                        Long fileOffset = document.getXrefTable().get(objKey);
+                        if (fileOffset == null && isLenient)
+                        {
+                            Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
+                            fileOffset = bfCOSObjectKeyOffsets.get(objKey);
+                            if (fileOffset != null)
+                            {
+                                LOG.debug("Set missing " + fileOffset + " for object " + objKey);
+                                document.getXrefTable().put(objKey, fileOffset);
+                            }
+                        }
+
+                        // it is allowed that object references point to null, thus we have to test
                         if (fileOffset != null && fileOffset != 0)
                         {
                             if (fileOffset > 0)
@@ -594,7 +604,8 @@ public class COSParser extends BaseParser
                                 // negative offset means we have a compressed
                                 // object within object stream;
                                 // get offset of object stream
-                                fileOffset = xrefTrailerResolver.getXrefTable().get(
+                                fileOffset = document.getXrefTable()
+                                        .get(
                                         new COSObjectKey((int)-fileOffset, 0));
                                 if ((fileOffset == null) || (fileOffset <= 0))
                                 {
@@ -700,7 +711,7 @@ public class COSParser extends BaseParser
         {
             // not previously parsed
             // ---- read offset or object stream object number from xref table
-            Long offsetOrObjstmObNr = xrefTrailerResolver.getXrefTable().get(objKey);
+            Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
             // sanity test to circumvent loops with broken documents
             if (requireExistingNotCompressedObj
@@ -711,24 +722,14 @@ public class COSParser extends BaseParser
             }
 
             // maybe something is wrong with the xref table -> perform brute force search for all objects
-            if (offsetOrObjstmObNr == null && isLenient && bfSearchCOSObjectKeyOffsets == null)
+            if (offsetOrObjstmObNr == null && isLenient)
             {
-                bfSearchForObjects();
-                if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
+                Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
+                offsetOrObjstmObNr = bfCOSObjectKeyOffsets.get(objKey);
+                if (offsetOrObjstmObNr != null)
                 {
-                    LOG.debug("Add all new read objects from brute force search to the xref table");
-                    Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
-                    final Set<Map.Entry<COSObjectKey, Long>> entries = bfSearchCOSObjectKeyOffsets.entrySet();
-                    for (Entry<COSObjectKey, Long> entry : entries)
-                    {
-                        COSObjectKey key = entry.getKey();
-                        // add all missing objects to the xref table
-                        if (!xrefOffset.containsKey(key))
-                        {
-                            xrefOffset.put(key, entry.getValue());
-                        }
-                    }
-                    offsetOrObjstmObNr = xrefOffset.get(objKey);
+                    LOG.debug("Set missing offset " + offsetOrObjstmObNr + " for object " + objKey);
+                    document.getXrefTable().put(objKey, offsetOrObjstmObNr);
                 }
             }
 
@@ -879,7 +880,7 @@ public class COSParser extends BaseParser
             for (COSObject next : parser.getObjects())
             {
                 COSObjectKey stmObjKey = new COSObjectKey(next);
-                Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey); 
+                Long offset = document.getXrefTable().get(stmObjKey);
                 if (offset != null && offset == -objstmObjNr)
                 {
                     COSObject stmObj = document.getObjectFromPool(stmObjKey);
@@ -1317,8 +1318,8 @@ public class COSParser extends BaseParser
         Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
         if (!validateXrefOffsets(xrefOffset))
         {
-            bfSearchForObjects();
-            if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
+            Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
+            if (!bfCOSObjectKeyOffsets.isEmpty())
             {
                 List<COSObjectKey> objStreams = new ArrayList<>();
                 // find all object streams
@@ -1339,7 +1340,7 @@ public class COSParser extends BaseParser
                 {
                     for (COSObjectKey key : objStreams)
                     {
-                        if (bfSearchCOSObjectKeyOffsets.containsKey(key))
+                        if (bfCOSObjectKeyOffsets.containsKey(key))
                         {
                             // remove all parsed objects which are part of an object stream
                             Set<Long> objects = xrefTrailerResolver
@@ -1347,11 +1348,11 @@ public class COSParser extends BaseParser
                             for (Long objNr : objects)
                             {
                                 COSObjectKey streamObjectKey = new COSObjectKey(objNr, 0);
-                                Long streamObjectOffset = bfSearchCOSObjectKeyOffsets
+                                Long streamObjectOffset = bfCOSObjectKeyOffsets
                                         .get(streamObjectKey);
                                 if (streamObjectOffset != null && streamObjectOffset > 0)
                                 {
-                                    bfSearchCOSObjectKeyOffsets.remove(streamObjectKey);
+                                    bfCOSObjectKeyOffsets.remove(streamObjectKey);
                                 }
                             }
                         }
@@ -1368,7 +1369,7 @@ public class COSParser extends BaseParser
                     }
                 }
                 LOG.debug("Replaced read xref table with the results of a brute force search");
-                xrefOffset.putAll(bfSearchCOSObjectKeyOffsets);
+                xrefOffset.putAll(bfCOSObjectKeyOffsets);
             }
         }
     }
@@ -1425,6 +1426,15 @@ public class COSParser extends BaseParser
         return Long.toString(objectID) + " " + Integer.toString(genID) + " obj";
     }
 
+    private Map<COSObjectKey, Long> getBFCOSObjectOffsets() throws IOException
+    {
+        if (bfSearchCOSObjectKeyOffsets == null)
+        {
+            bfSearchForObjects();
+        }
+        return bfSearchCOSObjectKeyOffsets;
+    }
+
     /**
      * Brute force search for every object in the pdf.
      *   
@@ -1432,74 +1442,69 @@ public class COSParser extends BaseParser
      */
     private void bfSearchForObjects() throws IOException
     {
-        if (bfSearchCOSObjectKeyOffsets == null)
+        bfSearchForLastEOFMarker();
+        bfSearchCOSObjectKeyOffsets = new HashMap<>();
+        long originOffset = source.getPosition();
+        long currentOffset = MINIMUM_SEARCH_OFFSET;
+        long lastObjectId = Long.MIN_VALUE;
+        int lastGenID = Integer.MIN_VALUE;
+        long lastObjOffset = Long.MIN_VALUE;
+        String objString = " obj";
+        char[] string = objString.toCharArray();
+        do
         {
-            bfSearchForLastEOFMarker();
-            bfSearchCOSObjectKeyOffsets = new HashMap<>();
-            long originOffset = source.getPosition();
-            long currentOffset = MINIMUM_SEARCH_OFFSET;
-            long lastObjectId = Long.MIN_VALUE;
-            int lastGenID = Integer.MIN_VALUE;
-            long lastObjOffset = Long.MIN_VALUE;
-            String objString = " obj";
-            char[] string = objString.toCharArray();
-            do
+            source.seek(currentOffset);
+            if (isString(string))
             {
-                source.seek(currentOffset);
-                if (isString(string))
+                long tempOffset = currentOffset - 1;
+                source.seek(tempOffset);
+                int genID = source.peek();
+                // is the next char a digit?
+                if (isDigit(genID))
                 {
-                    long tempOffset = currentOffset - 1;
+                    genID -= 48;
+                    tempOffset--;
                     source.seek(tempOffset);
-                    int genID = source.peek();
-                    // is the next char a digit?
-                    if (isDigit(genID))
+                    if (isSpace())
                     {
-                        genID -= 48;
-                        tempOffset--;
-                        source.seek(tempOffset);
-                        if (isSpace())
+                        while (tempOffset > MINIMUM_SEARCH_OFFSET && isSpace())
                         {
-                            while (tempOffset > MINIMUM_SEARCH_OFFSET && isSpace())
+                            source.seek(--tempOffset);
+                        }
+                        boolean objectIDFound = false;
+                        while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
+                        {
+                            source.seek(--tempOffset);
+                            objectIDFound = true;
+                        }
+                        if (objectIDFound)
+                        {
+                            source.read();
+                            long objectId = readObjectNumber();
+                            if (lastObjOffset > 0)
                             {
-                                source.seek(--tempOffset);
+                                // add the former object ID only if there was a subsequent object ID
+                                bfSearchCOSObjectKeyOffsets.put(
+                                        new COSObjectKey(lastObjectId, lastGenID), lastObjOffset);
                             }
-                            boolean objectIDFound = false;
-                            while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
-                            {
-                                source.seek(--tempOffset);
-                                objectIDFound = true;
-                            }
-                            if (objectIDFound)
-                            {
-                                source.read();
-                                long objectId = readObjectNumber();
-                                if (lastObjOffset > 0)
-                                {
-                                    // add the former object ID only if there was a subsequent object ID
-                                    bfSearchCOSObjectKeyOffsets
-                                            .put(new COSObjectKey(lastObjectId, lastGenID),
-                                                    lastObjOffset);
-                                }
-                                lastObjectId = objectId;
-                                lastGenID = genID;
-                                lastObjOffset = tempOffset + 1;
-                            }
+                            lastObjectId = objectId;
+                            lastGenID = genID;
+                            lastObjOffset = tempOffset + 1;
                         }
                     }
                 }
-                currentOffset++;
             }
-            while (currentOffset < lastEOFMarker && !source.isEOF());
-            if (lastEOFMarker < Long.MAX_VALUE && lastObjOffset > 0)
-            {
-                // if the pdf wasn't cut off in the middle the last object id has to added here
-                // so that it can't get lost as there isn't any subsequent object id
-                bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
-                        lastObjOffset);
-            }
-            // reestablish origin position
-            source.seek(originOffset);
+            currentOffset++;
+        } while (currentOffset < lastEOFMarker && !source.isEOF());
+        if (lastEOFMarker < Long.MAX_VALUE && lastObjOffset > 0)
+        {
+            // if the pdf wasn't cut off in the middle the last object id has to added here
+            // so that it can't get lost as there isn't any subsequent object id
+            bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
+                    lastObjOffset);
         }
+        // reestablish origin position
+        source.seek(originOffset);
     }
 
     /**
@@ -1775,58 +1780,56 @@ public class COSParser extends BaseParser
     protected final COSDictionary rebuildTrailer() throws IOException
     {
         COSDictionary trailer = null;
-        bfSearchForObjects();
-        if (bfSearchCOSObjectKeyOffsets != null)
+        Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
+        // reset trailer resolver
+        xrefTrailerResolver.reset();
+        // use the found objects to rebuild the trailer resolver
+        xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
+        for (Entry<COSObjectKey, Long> entry : bfCOSObjectKeyOffsets.entrySet())
         {
-            // reset trailer resolver
-            xrefTrailerResolver.reset();
-            // use the found objects to rebuild the trailer resolver
-            xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
-            for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
+            xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
+        }
+        xrefTrailerResolver.setStartxref(0);
+        trailer = xrefTrailerResolver.getTrailer();
+        getDocument().setTrailer(trailer);
+        // search for the different parts of the trailer dictionary
+        for (Entry<COSObjectKey, Long> entry : bfCOSObjectKeyOffsets.entrySet())
+        {
+            Long offset = entry.getValue();
+            source.seek(offset);
+            readObjectNumber();
+            readGenerationNumber();
+            readExpectedString(OBJ_MARKER, true);
+            try
             {
-                xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
+                if (source.peek() != '<')
+                {
+                    continue;
+                }
+                COSDictionary dictionary = parseCOSDictionary();
+                // document catalog
+                if (isCatalog(dictionary))
+                {
+                    trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
+                }
+                // info dictionary
+                else if (dictionary.containsKey(COSName.MOD_DATE)
+                        && (dictionary.containsKey(COSName.TITLE)
+                                || dictionary.containsKey(COSName.AUTHOR)
+                                || dictionary.containsKey(COSName.SUBJECT)
+                                || dictionary.containsKey(COSName.KEYWORDS)
+                                || dictionary.containsKey(COSName.CREATOR)
+                                || dictionary.containsKey(COSName.PRODUCER)
+                                || dictionary.containsKey(COSName.CREATION_DATE)))
+                {
+                    trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
+                }
+                // TODO encryption dictionary
             }
-            xrefTrailerResolver.setStartxref(0);
-            trailer = xrefTrailerResolver.getTrailer();
-            getDocument().setTrailer(trailer);
-            // search for the different parts of the trailer dictionary
-            for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
+            catch (IOException exception)
             {
-                Long offset = entry.getValue();
-                source.seek(offset);
-                readObjectNumber();
-                readGenerationNumber();
-                readExpectedString(OBJ_MARKER, true);
-                try
-                {
-                    if (source.peek() != '<')
-                    {
-                        continue;
-                    }
-                    COSDictionary dictionary = parseCOSDictionary();
-                    // document catalog
-                    if (isCatalog(dictionary))
-                    {
-                        trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
-                    }
-                    // info dictionary
-                    else if (dictionary.containsKey(COSName.MOD_DATE) && 
-                            (dictionary.containsKey(COSName.TITLE)
-                            || dictionary.containsKey(COSName.AUTHOR)
-                            || dictionary.containsKey(COSName.SUBJECT)
-                            || dictionary.containsKey(COSName.KEYWORDS)
-                            || dictionary.containsKey(COSName.CREATOR)
-                            || dictionary.containsKey(COSName.PRODUCER)
-                            || dictionary.containsKey(COSName.CREATION_DATE)))
-                    {
-                        trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
-                    }
-                    // TODO encryption dictionary
-                }
-                catch(IOException exception)
-                {
-                    LOG.debug("Skipped object " + entry.getKey() + ", either it's corrupt or not a dictionary");
-                }
+                LOG.debug("Skipped object " + entry.getKey()
+                        + ", either it's corrupt or not a dictionary");
             }
         }
         return trailer;

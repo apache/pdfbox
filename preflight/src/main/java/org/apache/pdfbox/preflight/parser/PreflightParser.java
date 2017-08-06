@@ -722,7 +722,7 @@ public class PreflightParser extends PDFParser
         {
             // not previously parsed
             // ---- read offset or object stream object number from xref table
-            Long offsetOrObjstmObNr = xrefTrailerResolver.getXrefTable().get(objKey);
+            Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
             // sanity test to circumvent loops with broken documents
             if (requireExistingNotCompressedObj && ((offsetOrObjstmObNr == null)))
@@ -879,7 +879,7 @@ public class PreflightParser extends PDFParser
                     for (COSObject next : parser.getObjects())
                     {
                         COSObjectKey stmObjKey = new COSObjectKey(next);
-                        Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey); 
+                        Long offset = document.getXrefTable().get(stmObjKey);
                         if (offset != null && offset == -objstmObjNr)
                         {
                             COSObject stmObj = document.getObjectFromPool(stmObjKey);
