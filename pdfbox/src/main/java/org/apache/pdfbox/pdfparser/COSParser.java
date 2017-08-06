@@ -1199,7 +1199,7 @@ public class COSParser extends BaseParser
             }
             else
             {
-                return calculateXRefFixedOffset(startXRefOffset, false);
+                return calculateXRefFixedOffset(startXRefOffset);
             }
         }
         // can't find a valid offset
@@ -1257,12 +1257,11 @@ public class COSParser extends BaseParser
      * Try to find a fixed offset for the given xref table/stream.
      * 
      * @param objectOffset the given offset where to look at
-     * @param streamsOnly search for xref streams only
      * @return the fixed offset
      * 
      * @throws IOException if something went wrong
      */
-    private long calculateXRefFixedOffset(long objectOffset, boolean streamsOnly) throws IOException
+    private long calculateXRefFixedOffset(long objectOffset) throws IOException
     {
         if (objectOffset < 0)
         {
@@ -1270,7 +1269,7 @@ public class COSParser extends BaseParser
             return 0;
         }
         // start a brute force search for all xref tables and try to find the offset we are looking for
-        long newOffset = bfSearchForXRef(objectOffset, streamsOnly);
+        long newOffset = bfSearchForXRef(objectOffset);
         if (newOffset > -1)
         {
             LOG.debug("Fixed reference for xref table/stream " + objectOffset + " -> " + newOffset);
@@ -1510,21 +1509,17 @@ public class COSParser extends BaseParser
     /**
      * Search for the offset of the given xref table/stream among those found by a brute force search.
      * 
-     * @param streamsOnly search for xref streams only
      * @return the offset of the xref entry
      * @throws IOException if something went wrong
      */
-    private long bfSearchForXRef(long xrefOffset, boolean streamsOnly) throws IOException
+    private long bfSearchForXRef(long xrefOffset) throws IOException
     {
         long newOffset = -1;
         long newOffsetTable = -1;
         long newOffsetStream = -1;
-        if (!streamsOnly)
-        {
-            bfSearchForXRefTables();
-        }
+        bfSearchForXRefTables();
         bfSearchForXRefStreams();
-        if (!streamsOnly && bfSearchXRefTablesOffsets != null)
+        if (bfSearchXRefTablesOffsets != null)
         {
             // TODO to be optimized, this won't work in every case
             newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
