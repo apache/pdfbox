@@ -110,6 +110,13 @@
           </excludes>
         </configuration>
       </plugin>
+      <!-- JDK9 -->
+      <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+              <argLine>${addmod}</argLine>
+          </configuration>
+      </plugin>
     </plugins>
   </build>
 
