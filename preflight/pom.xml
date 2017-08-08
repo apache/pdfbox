@@ -56,7 +56,7 @@
 							<excludes>
 								<exclude>**/integration/**</exclude>
 							</excludes>
-                                                        <argLine>-Xmx768m ${addmod}</argLine>
+                                                        <argLine>${addmod}</argLine>
 						</configuration>
 					</execution>
 					<execution>
