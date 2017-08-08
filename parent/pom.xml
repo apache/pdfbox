@@ -119,6 +119,13 @@
     </dependencyManagement>
   
     <profiles>
+        <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
+        <profile>
+            <id>jdk9</id>
+            <properties>
+                <addmod>--add-modules java.activation --add-modules java.xml.bind</addmod>
+            </properties>
+        </profile>
         <profile>
             <id>pedantic</id>
             <build>
