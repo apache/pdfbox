@@ -1554,4 +1554,17 @@ public abstract class PDAbstractContentStream implements Closeable
         writeOperand(spacing);
         writeOperator("Tw");
     }
+
+    /**
+     * Set the horizontal scaling to scale / 100.
+     *
+     * @param scale number specifying the percentage of the normal width. Default value: 100 (normal
+     * width).
+     * @throws IOException If the content stream could not be written.
+     */
+    public void setHorizontalScaling(float scale) throws IOException
+    {
+        writeOperand(scale);
+        writeOperator("Tz");
+    }
 }
