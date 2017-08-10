@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.encryption;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Provider;
 
 /**
@@ -47,7 +48,7 @@ public class SecurityProvider
             {
                 Class<Provider> providerClass = (Class<Provider>) Class
                         .forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
-                provider = providerClass.newInstance();
+                provider = providerClass.getDeclaredConstructor().newInstance();
             }
             catch (ClassNotFoundException ex)
             {
@@ -58,6 +59,14 @@ public class SecurityProvider
                 throw new IOException(ex);
             }
             catch (IllegalAccessException ex)
+            {
+                throw new IOException(ex);
+            }
+            catch (NoSuchMethodException ex)
+            {
+                throw new IOException(ex);
+            }
+            catch (InvocationTargetException ex)
             {
                 throw new IOException(ex);
             }
