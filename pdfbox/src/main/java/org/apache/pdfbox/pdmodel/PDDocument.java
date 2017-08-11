@@ -946,8 +946,11 @@ public class PDDocument implements Pageable, Closeable
     }
 
     /**
-     * This will decrypt a document. This method is provided for compatibility reasons only. User should use
-     * the new security layer instead and the openProtection method especially.
+     * This will decrypt a document. This method is provided for compatibility reasons only. User
+     * should use the new security layer instead and the openProtection method especially.
+     * <p>
+     * Do not call this method if you have opened your document with one of the
+     * {@link #loadNonSeq(java.io.File, org.apache.pdfbox.io.RandomAccess) loadNonSeq} methods.
      *
      * @param password Either the user or owner password.
      *
@@ -1257,7 +1260,7 @@ public class PDDocument implements Pageable, Closeable
 
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses PDF with the new non sequential parser and an empty password.
      *  
      * @param file  file to be loaded
      * @param scratchFile  location to store temp PDFBox data for this document
@@ -1272,7 +1275,7 @@ public class PDDocument implements Pageable, Closeable
     }
     
     /**
-     * Parses PDF with non sequential parser.
+     * Parses PDF with the new non sequential parser and an empty password.
      *  
      * @param file  file to be loaded
      * @param scratchFile  location to store temp PDFBox data for this document
@@ -1290,7 +1293,7 @@ public class PDDocument implements Pageable, Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses PDF with the new non sequential parser.
      *  
      * @param input stream that contains the document.
      * @param scratchFile location to store temp PDFBox data for this document
@@ -1305,7 +1308,7 @@ public class PDDocument implements Pageable, Closeable
     }
 
     /**
-     * Parses PDF with non sequential parser.
+     * Parses PDF with the new non sequential parser.
      *  
      * @param input stream that contains the document.
      * @param scratchFile location to store temp PDFBox data for this document
@@ -1595,6 +1598,10 @@ public class PDDocument implements Pageable, Closeable
 
     /**
      * Tries to decrypt the document in memory using the provided decryption material.
+     * <p>
+     * Do not call this method if you have opened your document with one of the
+     * {@link #loadNonSeq(java.io.File, org.apache.pdfbox.io.RandomAccess) loadNonSeq} methods.
+     *
      *
      *  @see org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial
      *  @see org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial
