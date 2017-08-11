@@ -113,36 +113,7 @@ public class FDFParser extends COSParser
      */
     private void initialParse() throws IOException
     {
-        COSDictionary trailer = null;
-        // parse startxref
-        long startXRefOffset = getStartxrefOffset();
-        boolean rebuildTrailer = false;
-        if (startXRefOffset > 0)
-        {
-            try
-            {
-                trailer = parseXref(startXRefOffset);
-            }
-            catch (IOException exception)
-            {
-                if (isLenient())
-                {
-                    rebuildTrailer = true;
-                }
-                else
-                {
-                    throw exception;
-                }
-            }
-        }
-        else if (isLenient())
-        {
-            rebuildTrailer = true;
-        }
-        if (rebuildTrailer)
-        {
-            trailer = rebuildTrailer();
-        }
+        COSDictionary trailer = retrieveTrailer();
     
         COSBase rootObject = parseTrailerValuesDynamically(trailer);
     

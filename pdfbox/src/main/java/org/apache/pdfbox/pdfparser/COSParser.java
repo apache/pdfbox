@@ -189,13 +189,60 @@ public class COSParser extends BaseParser
     }
 
     /**
+     * Read the trailer information and provide a COSDictionary containing the trailer information.
+     * 
+     * @return a COSDictionary containing the trailer information
+     * @throws IOException if something went wrong
+     */
+    protected COSDictionary retrieveTrailer() throws IOException
+    {
+        COSDictionary trailer = null;
+        boolean rebuildTrailer = false;
+        try
+        {
+            // parse startxref
+            // TODO FDF files don't have a startxref value, so that rebuildTrailer is triggered
+            long startXRefOffset = getStartxrefOffset();
+            if (startXRefOffset > -1)
+            {
+                trailer = parseXref(startXRefOffset);
+            }
+            else
+            {
+                rebuildTrailer = isLenient();
+            }
+        }
+        catch (IOException exception)
+        {
+            if (isLenient())
+            {
+                rebuildTrailer = true;
+            }
+            else
+            {
+                throw exception;
+            }
+        }
+        // check if the trailer contains a Root object
+        if (trailer != null && trailer.getItem(COSName.ROOT) == null)
+        {
+            rebuildTrailer = isLenient();
+        }
+        if (rebuildTrailer)
+        {
+            trailer = rebuildTrailer();
+        }
+        return trailer;
+    }
+
+    /**
      * Parses cross reference tables.
      * 
      * @param startXRefOffset start offset of the first table
      * @return the trailer dictionary
      * @throws IOException if something went wrong
      */
-    protected COSDictionary parseXref(long startXRefOffset) throws IOException
+    private COSDictionary parseXref(long startXRefOffset) throws IOException
     {
         source.seek(startXRefOffset);
         long startXrefOffset = Math.max(0, parseStartXref());
@@ -348,7 +395,7 @@ public class COSParser extends BaseParser
      * @return the offset of StartXref
      * @throws IOException If something went wrong.
      */
-    protected final long getStartxrefOffset() throws IOException
+    private final long getStartxrefOffset() throws IOException
     {
         byte[] buf;
         long skipBytes;
@@ -1772,7 +1819,7 @@ public class COSParser extends BaseParser
      * 
      * @throws IOException if something went wrong
      */
-    protected final COSDictionary rebuildTrailer() throws IOException
+    private final COSDictionary rebuildTrailer() throws IOException
     {
         COSDictionary trailer = null;
         Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
