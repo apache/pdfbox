@@ -100,8 +100,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        init();
-        return awtColorSpace.toRGB(value);
+        return value;
     }
 
     @Override
