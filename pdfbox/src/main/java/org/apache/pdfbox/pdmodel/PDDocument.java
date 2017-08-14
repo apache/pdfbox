@@ -16,7 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import java.awt.image.BufferedImage;
+import java.awt.Point;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -98,7 +101,8 @@ public class PDDocument implements Closeable
     {
     	try
         {
-            PDDeviceRGB.INSTANCE.toRGBImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).getRaster());
+            WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, 1, 1, 3, new Point(0, 0));
+            PDDeviceRGB.INSTANCE.toRGBImage(raster);
         }
         catch (IOException ex)
         {
