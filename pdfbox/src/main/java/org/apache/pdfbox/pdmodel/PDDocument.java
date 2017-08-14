@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -95,7 +96,15 @@ public class PDDocument implements Closeable
      */
     static
     {
-    	PDDeviceRGB.INSTANCE.toRGB(new float[]{1,1,1,1});
+    	try
+        {
+            PDDeviceRGB.INSTANCE.toRGBImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB).getRaster());
+        }
+        catch (IOException ex)
+        {
+            LOG.debug("voodoo error", ex);
+        }
+
         try
         {
             //TODO remove this and deprecated COSNumber statics in 3.0
