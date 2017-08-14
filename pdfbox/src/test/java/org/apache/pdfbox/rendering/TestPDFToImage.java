@@ -179,7 +179,7 @@ public class TestPDFToImage
                 int rgb1 = bim1.getRGB(x, y);
                 int rgb2 = bim2.getRGB(x, y);
                 if (rgb1 != rgb2
-                        // don't bother about differences of 1 color step
+                        // don't bother about small differences
                         && (Math.abs((rgb1 & 0xFF) - (rgb2 & 0xFF)) > 3
                         || Math.abs(((rgb1 >> 8) & 0xFF) - ((rgb2 >> 8) & 0xFF)) > 3
                         || Math.abs(((rgb1 >> 16) & 0xFF) - ((rgb2 >> 16) & 0xFF)) > 3))
