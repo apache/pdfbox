@@ -119,11 +119,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     private void loadICCProfile() throws IOException
     {
-        InputStream input = null;
-        try
+        try (InputStream input = this.stream.createInputStream())
         {
-            input = this.stream.createInputStream();
-
             // if the embedded profile is sRGB then we can use Java's built-in profile, which
             // results in a large performance gain as it's our native color space, see PDFBOX-2587
             ICC_Profile profile;
@@ -179,10 +176,6 @@ public final class PDICCBased extends PDCIEBasedColorSpace
             {
                 throw e;
             }
-        }
-        finally
-        {
-            IOUtils.closeQuietly(input);
         }
     }
 
