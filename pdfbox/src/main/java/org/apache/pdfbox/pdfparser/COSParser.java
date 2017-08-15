@@ -667,6 +667,12 @@ public class COSParser extends BaseParser
                                     stmObjects = new ArrayList<>();
                                     objToBeParsed.put(fileOffset, stmObjects);
                                 }
+                                // java does not have a test for immutable
+                                else if (!(stmObjects instanceof ArrayList))
+                                {
+                                    throw new IOException(obj + " cannot be assigned to offset " +
+                                            fileOffset + ", this belongs to " + stmObjects.get(0));
+                                }
                                 stmObjects.add(obj);
                             }
                         }
