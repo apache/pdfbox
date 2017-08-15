@@ -16,6 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import java.awt.Point;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -95,7 +99,16 @@ public class PDDocument implements Closeable
      */
     static
     {
-    	PDDeviceRGB.INSTANCE.toRGB(new float[]{1,1,1,1});
+    	try
+        {
+            WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, 1, 1, 3, new Point(0, 0));
+            PDDeviceRGB.INSTANCE.toRGBImage(raster);
+        }
+        catch (IOException ex)
+        {
+            LOG.debug("voodoo error", ex);
+        }
+
         try
         {
             //TODO remove this and deprecated COSNumber statics in 3.0
