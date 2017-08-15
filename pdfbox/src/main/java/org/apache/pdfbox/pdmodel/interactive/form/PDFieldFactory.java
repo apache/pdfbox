@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -47,6 +48,27 @@ final class PDFieldFactory
     static PDField createField(PDAcroForm form, COSDictionary field, PDNonTerminalField parent)
     {
         String fieldType = findFieldType(field);
+        
+        // Test if we have a non terminal field first as it might have
+        // properties which do apply to other fields
+        // A non terminal fields has Kids entries which do have
+        // a field name (other than annotations)
+        if (field.containsKey(COSName.KIDS))
+        {
+            COSArray kids = (COSArray) field.getDictionaryObject(COSName.KIDS);
+            if (kids != null && kids.size() > 0)
+            {
+                for (int i = 0; i < kids.size(); i++)
+                {
+                    COSBase kid = kids.getObject(i);
+                    if (kid instanceof COSDictionary && ((COSDictionary) kid).getString(COSName.T) != null)
+                    {
+                        return new PDNonTerminalField(form, field, parent);
+                    }
+                }
+            }
+        } 
+        
         if (FIELD_TYPE_CHOICE.equals(fieldType))
         {
             return createChoiceSubType(form, field, parent);
@@ -62,10 +84,6 @@ final class PDFieldFactory
         else if (FIELD_TYPE_BUTTON.equals(fieldType))
         {
             return createButtonSubType(form, field, parent);
-        }
-        else if (field.containsKey(COSName.KIDS))
-        {
-            return new PDNonTerminalField(form, field, parent);
         }
         else
         {
