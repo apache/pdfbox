@@ -19,6 +19,7 @@ package org.apache.fontbox.cff;
 import org.apache.fontbox.type1.Type1CharStringReader;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A CID-Keyed Type 2 CharString.
@@ -43,7 +44,7 @@ public class CIDKeyedType2CharString extends Type2CharString
     public CIDKeyedType2CharString(Type1CharStringReader font, String fontName, int cid, int gid, List<Object> sequence, int defaultWidthX, int nomWidthX)
     {
         // glyph name is for debugging only
-        super(font, fontName, String.format("%04x", cid), gid, sequence, defaultWidthX, nomWidthX);
+        super(font, fontName, String.format(Locale.US, "%04x", cid), gid, sequence, defaultWidthX, nomWidthX);
         this.cid = cid;
     }
 
