@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.commons.logging.Log;
@@ -1063,7 +1064,9 @@ public final class TTFSubsetter
     private void writeLongDateTime(DataOutputStream out, Calendar calendar) throws IOException
     {
         // inverse operation of TTFDataStream.readInternationalDate()
-        GregorianCalendar cal = new GregorianCalendar( 1904, 0, 1 );
+        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
+        cal.set(1904, 0, 1, 0, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
         long millisFor1904 = cal.getTimeInMillis();
         long secondsSince1904 = (calendar.getTimeInMillis() - millisFor1904) / 1000L;
         out.writeLong(secondsSince1904);
