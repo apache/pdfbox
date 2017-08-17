@@ -162,7 +162,7 @@ class GlyphRenderer
         path.lineTo(point.x, point.y);
         if (LOG.isDebugEnabled())
         {
-            LOG.trace("lineTo: " + String.format("%d,%d", point.x, point.y));
+            LOG.trace("lineTo: " + String.format(Locale.US, "%d,%d", point.x, point.y));
         }
     }
 
