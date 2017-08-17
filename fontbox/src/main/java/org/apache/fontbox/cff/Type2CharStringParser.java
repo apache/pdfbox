@@ -19,6 +19,7 @@ package org.apache.fontbox.cff;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * This class represents a converter for a mapping into a Type2-sequence.
@@ -53,7 +54,7 @@ public class Type2CharStringParser
     public Type2CharStringParser(String fontName, int cid)
     {
         this.fontName = fontName;
-        this.glyphName = String.format("%04x", cid); // for debugging only
+        this.glyphName = String.format(Locale.US, "%04x", cid); // for debugging only
     }
 
     /**
