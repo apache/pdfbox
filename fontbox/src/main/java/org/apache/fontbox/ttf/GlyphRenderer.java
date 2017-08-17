@@ -162,7 +162,7 @@ class GlyphRenderer
         path.lineTo(point.x, point.y);
         if (LOG.isDebugEnabled())
         {
-            LOG.trace("lineTo: " + String.format(Locale.US"%d,%d", point.x, point.y));
+            LOG.trace("lineTo: " + String.format(Locale.US, "%d,%d", point.x, point.y));
         }
     }
 
@@ -171,7 +171,7 @@ class GlyphRenderer
         path.quadTo(ctrlPoint.x, ctrlPoint.y, point.x, point.y);
         if (LOG.isDebugEnabled())
         {
-            LOG.trace("quadTo: " + String.format(Locale.US"%d,%d %d,%d", ctrlPoint.x, ctrlPoint.y,
+            LOG.trace("quadTo: " + String.format(Locale.US, "%d,%d %d,%d", ctrlPoint.x, ctrlPoint.y,
                     point.x, point.y));
         }
     }
