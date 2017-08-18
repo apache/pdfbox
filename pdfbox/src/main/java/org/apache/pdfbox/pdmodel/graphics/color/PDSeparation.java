@@ -54,6 +54,14 @@ public class PDSeparation extends PDSpecialColorSpace
     private PDFunction tintTransform = null;
 
     /**
+     * Map used to speed up {@link #toRGB(float[])}. Note that this class contains three maps (this
+     * and the two in {@link #toRGBImage(java.awt.image.WritableRaster) } and {@link #toRGBImage2(java.awt.image.WritableRaster)
+     * }. The maps use different key intervals. This map here is needed for shading, which produce
+     * more than 256 different float values, which we cast to int so that the map can work.
+     */
+    private Map<Integer, float[]> toRGBMap = null;
+
+    /**
      * Creates a new Separation color space.
      */
     public PDSeparation()
@@ -105,8 +113,20 @@ public class PDSeparation extends PDSpecialColorSpace
     @Override
     public float[] toRGB(float[] value) throws IOException
     {
+        if (toRGBMap == null)
+        {
+            toRGBMap = new HashMap<Integer, float[]>();
+        }
+        int key = (int) (value[0] * 255);
+        float[] retval = toRGBMap.get(key);
+        if (retval != null)
+        {
+            return retval;
+        }
         float[] altColor = tintTransform.eval(value);
-        return alternateColorSpace.toRGB(altColor);
+        retval = alternateColorSpace.toRGB(altColor);
+        toRGBMap.put(key, retval);
+        return retval;
     }
 
     //
