@@ -49,6 +49,8 @@ public class PDFStreamParserTest extends TestCase
         testInlineImage2ops("ID\n12345EI  Q ", "12345", "Q");
         testInlineImage2ops("ID\n12345EI  EMC ", "12345", "EMC");
 
+        testInlineImage2ops("ID\n12345EI \000Q", "12345", "Q");
+
         testInlineImage2ops("ID\n12345EI Q                             ", "12345", "Q");
         testInlineImage2ops("ID\n12345EI EMC                           ", "12345", "EMC");
 
