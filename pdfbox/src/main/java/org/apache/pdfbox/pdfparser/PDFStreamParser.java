@@ -466,19 +466,19 @@ public class PDFStreamParser extends BaseParser
             for (int bIdx = 0; bIdx < readBytes; bIdx++)
             {
                 final byte b = binCharTestArr[bIdx];
-                if (b < 0x09 || b > 0x0a && b < 0x20 && b != 0x0d)
+                if (b != 0 && b < 0x09 || b > 0x0a && b < 0x20 && b != 0x0d)
                 {
                     // control character or > 0x7f -> we have binary data
                     noBinData = false;
                     break;
                 }
                 // find the start of a PDF operator
-                if (startOpIdx == -1 && !(b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
+                if (startOpIdx == -1 && !(b == 0 || b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
                 {
                     startOpIdx = bIdx;
                 }
                 else if (startOpIdx != -1 && endOpIdx == -1 &&
-                         (b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
+                         (b == 0 || b == 9 || b == 0x20 || b == 0x0a || b == 0x0d))
                 {
                     endOpIdx = bIdx;
                 }
