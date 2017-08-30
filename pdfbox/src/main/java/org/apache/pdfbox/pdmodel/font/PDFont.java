@@ -572,7 +572,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public boolean isStandard14()
     {
-        // this logic is based on Acrobat's behaviour, see see PDFBOX-2372
+        // this logic is based on Acrobat's behaviour, see PDFBOX-2372
 
         // embedded fonts never get special treatment
         if (isEmbedded())
