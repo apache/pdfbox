@@ -1376,7 +1376,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Draw a rectangle on the page using the current non stroking color.
+     * Fill a rectangle on the page using the current non stroking color.
      *
      * @param x The lower left x coordinate.
      * @param y The lower left y coordinate.
@@ -1587,7 +1587,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Draw a line on the page using the current non stroking color and the current line width.
+     * Draw a line on the page using the current stroking color and the current line width.
      *
      * @param xStart The start x coordinate.
      * @param yStart The start y coordinate.
@@ -1645,7 +1645,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Draw a polygon on the page using the current non stroking color.
+     * Draw a polygon on the page using the current stroking color.
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
@@ -1664,7 +1664,7 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Draw and fill a polygon on the page using the current non stroking color.
+     * Draw and fill a polygon on the page using the current stroking / non stroking colors.
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
