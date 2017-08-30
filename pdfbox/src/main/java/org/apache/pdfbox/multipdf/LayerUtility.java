@@ -147,6 +147,8 @@ public class LayerUtility
      */
     public PDFormXObject importPageAsForm(PDDocument sourceDoc, PDPage page) throws IOException
     {
+        importOcProperties(sourceDoc);
+
         PDStream newStream = new PDStream(targetDoc, page.getContents(), COSName.FLATE_DECODE);
         PDFormXObject form = new PDFormXObject(newStream);
 
@@ -268,6 +270,36 @@ public class LayerUtility
             }
             targetDict.setItem(key,
                     cloner.cloneForNewDocument(entry.getValue()));
+        }
+    }
+
+    /**
+     * Imports OCProperties from source document to target document so hidden layers can still be
+     * hidden after import.
+     *
+     * @param sourceDoc The source PDF document that contains the /OCProperties to be copied.
+     * @throws IOException If an I/O error occurs.
+     */
+    private void importOcProperties(PDDocument srcDoc) throws IOException
+    {
+        PDDocumentCatalog srcCatalog = srcDoc.getDocumentCatalog();
+        PDOptionalContentProperties srcOCProperties = srcCatalog.getOCProperties();
+        if (srcOCProperties == null)
+        {
+            return;
+        }
+
+        PDDocumentCatalog dstCatalog = targetDoc.getDocumentCatalog();
+        PDOptionalContentProperties dstOCProperties = dstCatalog.getOCProperties();
+
+        if (dstOCProperties == null)
+        {
+            dstCatalog.setOCProperties(new PDOptionalContentProperties(
+                    (COSDictionary) cloner.cloneForNewDocument(srcOCProperties)));
+        }
+        else
+        {
+            cloner.cloneMerge(srcOCProperties, dstOCProperties);
         }
     }
 }
