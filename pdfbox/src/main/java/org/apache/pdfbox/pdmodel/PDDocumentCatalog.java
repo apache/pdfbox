@@ -610,7 +610,8 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
-     * Sets the optional content properties dictionary.
+     * Sets the optional content properties dictionary. The document version is incremented to 1.5
+     * if lower.
      *
      * @param ocProperties the optional properties dictionary
      */
