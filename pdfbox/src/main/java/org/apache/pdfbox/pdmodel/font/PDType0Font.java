@@ -224,11 +224,11 @@ public class PDType0Font extends PDFont implements PDVectorFont
         PDCIDSystemInfo ros = descendantFont.getCIDSystemInfo();
         if (ros != null)
         {
-            isDescendantCJK = ros.getRegistry().equals("Adobe") &&
-                    (ros.getOrdering().equals("GB1") || 
-                     ros.getOrdering().equals("CNS1") ||
-                     ros.getOrdering().equals("Japan1") ||
-                     ros.getOrdering().equals("Korea1"));
+            isDescendantCJK = "Adobe".equals(ros.getRegistry()) &&
+                    ("GB1".equals(ros.getOrdering()) || 
+                     "CNS1".equals(ros.getOrdering()) ||
+                     "Japan1".equals(ros.getOrdering()) ||
+                     "Korea1".equals(ros.getOrdering()));
         }
     }
 
