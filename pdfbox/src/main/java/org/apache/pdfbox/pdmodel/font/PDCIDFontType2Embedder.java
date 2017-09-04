@@ -240,12 +240,14 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     }
 
     /**
-     * Builds the CIDSet entry, required by PDF/A. This lists all CIDs in the font.
+     * Builds the CIDSet entry, required by PDF/A. This lists all CIDs in the font, including those
+     * that don't have a GID.
      */
     private void buildCIDSet(Map<Integer, Integer> cidToGid) throws IOException
     {
-        byte[] bytes = new byte[Collections.max(cidToGid.keySet()) / 8 + 1];
-        for (int cid : cidToGid.keySet())
+        int cidMax = Collections.max(cidToGid.keySet());
+        byte[] bytes = new byte[cidMax / 8 + 1];
+        for (int cid = 0; cid <= cidMax; cid++)
         {
             int mask = 1 << 7 - cid % 8;
             bytes[cid / 8] |= mask;
