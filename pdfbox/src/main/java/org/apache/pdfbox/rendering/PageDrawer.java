@@ -197,9 +197,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.translate(0, pageSize.getHeight());
         graphics.scale(1, -1);
 
-        // TODO use getStroke() to set the initial stroke
-        graphics.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
-
         // adjust for non-(0,0) crop box
         graphics.translate(-pageSize.getLowerLeftX(), -pageSize.getLowerLeftY());
 
