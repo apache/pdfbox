@@ -34,9 +34,9 @@ import org.apache.pdfbox.pdmodel.PDResources;
  */
 public abstract class PDVariableText extends PDTerminalField
 {
-    static final int QUADDING_LEFT = 0;
-    static final int QUADDING_CENTERED = 1;
-    static final int QUADDING_RIGHT = 2;
+    public static final int QUADDING_LEFT = 0;
+    public static final int QUADDING_CENTERED = 1;
+    public static final int QUADDING_RIGHT = 2;
 
     /**
      * @see PDTerminalField#PDTerminalField(PDAcroForm)
