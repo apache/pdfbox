@@ -627,13 +627,15 @@ public final class PDAcroForm implements COSObjectable
     }
     
     /**
-     * This will get the 'quadding' or justification of the text to be displayed.
+     * This will get the document-wide default value for the quadding/justification of variable text
+     * fields. 
+     * <p>
      * 0 - Left(default)<br>
      * 1 - Centered<br>
      * 2 - Right<br>
-     * Please see the QUADDING_CONSTANTS.
+     * See the QUADDING constants of {@link PDVariableText}.
      *
-     * @return The justification of the text strings.
+     * @return The justification of the variable text fields.
      */
     public int getQ()
     {
@@ -647,9 +649,10 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * This will set the quadding/justification of the text.  See QUADDING constants.
+     * This will set the document-wide default value for the quadding/justification of variable text
+     * fields. See the QUADDING constants of {@link PDVariableText}.
      *
-     * @param q The new text justification.
+     * @param q The justification of the variable text fields.
      */
     public void setQ(int q)
     {
