@@ -118,7 +118,7 @@ public class PDBorderStyleDictionary implements COSObjectable
     /**
      * This will retrieve the border width in points, 0 = no border.
      *
-     * @return flaot the width of the border in points
+     * @return The width of the border in points.
      */
     public float getWidth()
     {
