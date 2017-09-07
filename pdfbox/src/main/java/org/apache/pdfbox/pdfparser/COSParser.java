@@ -2120,6 +2120,7 @@ public class COSParser extends BaseParser
      */
     protected boolean parseXrefTable(long startByteOffset) throws IOException
     {
+        long xrefTableStartOffset = source.getPosition();
         if(source.peek() != 'x')
         {
             return false;
@@ -2185,6 +2186,12 @@ public class COSParser extends BaseParser
                     try
                     {
                         long currOffset = Long.parseLong(splitString[0]);
+                        if (currOffset >= xrefTableStartOffset && currOffset <= source.getPosition())
+                        {
+                            // PDFBOX-3923: offset points inside this table - that can't be good
+                            throw new IOException("XRefTable offset " + currOffset + 
+                                    " is within xref table for " + currObjID);
+                        }
                         int currGenID = Integer.parseInt(splitString[1]);
                         COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
                         xrefTrailerResolver.setXRef(objKey, currOffset);
