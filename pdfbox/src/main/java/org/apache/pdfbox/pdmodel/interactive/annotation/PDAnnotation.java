@@ -137,6 +137,7 @@ public abstract class PDAnnotation implements COSObjectable
                     || PDAnnotationTextMarkup.SUB_TYPE_SQUIGGLY.equals(subtype)
                     || PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT.equals(subtype))
             {
+                // see 12.5.6.10 Text Markup Annotations
                 annot = new PDAnnotationTextMarkup(annotDic);
             }
             else if (PDAnnotationLink.SUB_TYPE.equals(subtype))
@@ -267,12 +268,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public COSName getAppearanceState()
     {
-        COSName name = (COSName) getCOSObject().getDictionaryObject(COSName.AS);
-        if (name != null)
-        {
-            return name;
-        }
-        return null;
+        return getCOSObject().getCOSName(COSName.AS);
     }
 
     /**
@@ -282,14 +278,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setAppearanceState(String as)
     {
-        if (as == null)
-        {
-            getCOSObject().removeItem(COSName.AS);
-        }
-        else
-        {
-            getCOSObject().setItem(COSName.AS, COSName.getPDFName(as));
-        }
+        getCOSObject().setName(COSName.AS, as);
     }
 
     /**
@@ -299,10 +288,10 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDAppearanceDictionary getAppearance()
     {
-        COSDictionary apDic = (COSDictionary) dictionary.getDictionaryObject(COSName.AP);
-        if (apDic != null)
+        COSBase base = dictionary.getDictionaryObject(COSName.AP);
+        if (base instanceof COSDictionary)
         {
-            return new PDAppearanceDictionary(apDic);
+            return new PDAppearanceDictionary((COSDictionary) base);
         }
         return null;
     }
@@ -314,12 +303,7 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public void setAppearance(PDAppearanceDictionary appearance)
     {
-        COSDictionary ap = null;
-        if (appearance != null)
-        {
-            ap = appearance.getCOSObject();
-        }
-        dictionary.setItem(COSName.AP, ap);
+        dictionary.setItem(COSName.AP, appearance);
     }
 
     /**
@@ -785,10 +769,10 @@ public abstract class PDAnnotation implements COSObjectable
      */
     public PDPage getPage()
     {
-        COSDictionary p = (COSDictionary) this.getCOSObject().getDictionaryObject(COSName.P);
-        if (p != null)
+        COSBase base = this.getCOSObject().getDictionaryObject(COSName.P);
+        if (base instanceof COSDictionary)
         {
-            return new PDPage(p);
+            return new PDPage((COSDictionary) base);
         }
         return null;
     }
