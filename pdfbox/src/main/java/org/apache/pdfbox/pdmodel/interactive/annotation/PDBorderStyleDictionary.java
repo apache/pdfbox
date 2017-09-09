@@ -94,11 +94,22 @@ public class PDBorderStyleDictionary implements COSObjectable
     /**
      * This will set the border width in points, 0 = no border.
      *
+     * There is a bug in Adobe Reader DC, float values are ignored for text field widgets. As a
+     * workaround, floats that are integers (e.g. 2.0) are written as integer in the PDF.
+     *
      * @param w float the width in points
      */
     public void setWidth(float w)
     {
-        getCOSObject().setFloat("W", w);
+        // PDFBOX-3929 workaround 
+        if (w == (int) w)
+        {
+            getCOSObject().setInt("W", (int) w);
+        }
+        else
+        {
+            getCOSObject().setFloat("W", w);
+        }
     }
 
     /**
