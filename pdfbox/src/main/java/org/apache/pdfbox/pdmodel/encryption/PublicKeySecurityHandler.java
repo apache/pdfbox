@@ -60,7 +60,7 @@ import org.bouncycastle.asn1.cms.RecipientIdentifier;
 import org.bouncycastle.asn1.cms.RecipientInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.TBSCertificateStructure;
+import org.bouncycastle.asn1.x509.TBSCertificate;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSEnvelopedData;
 import org.bouncycastle.cms.CMSException;
@@ -453,10 +453,10 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         throws IOException, CertificateEncodingException, InvalidKeyException,
             BadPaddingException, IllegalBlockSizeException
     {
-        TBSCertificateStructure certificate;
+        TBSCertificate certificate;
         try (ASN1InputStream input = new ASN1InputStream(x509certificate.getTBSCertificate()))
         {
-            certificate = TBSCertificateStructure.getInstance(input.readObject());
+            certificate = TBSCertificate.getInstance(input.readObject());
         }
 
         AlgorithmIdentifier algorithmId = certificate.getSubjectPublicKeyInfo().getAlgorithm();
