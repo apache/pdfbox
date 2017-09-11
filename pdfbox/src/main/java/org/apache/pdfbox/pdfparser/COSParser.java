@@ -1465,12 +1465,13 @@ public class COSParser extends BaseParser
             long lastObjectId = Long.MIN_VALUE;
             int lastGenID = Integer.MIN_VALUE;
             long lastObjOffset = Long.MIN_VALUE;
-            String objString = " obj";
-            char[] string = objString.toCharArray();
+            char[] objString = " obj".toCharArray();
+            char[] endobjString = "endobj".toCharArray();
+            boolean endobjFound = false;
             do
             {
                 source.seek(currentOffset);
-                if (isString(string))
+                if (isString(objString))
                 {
                     long tempOffset = currentOffset - 1;
                     source.seek(tempOffset);
@@ -1507,17 +1508,25 @@ public class COSParser extends BaseParser
                                 lastObjectId = objectId;
                                 lastGenID = genID;
                                 lastObjOffset = tempOffset + 1;
+                                currentOffset += objString.length - 1;
+                                endobjFound = false;
                             }
                         }
                     }
                 }
+                else if (isString(endobjString))
+                {
+                    endobjFound = true;
+                    currentOffset += endobjString.length - 1;
+                }
                 currentOffset++;
             }
             while (currentOffset < lastEOFMarker && !source.isEOF());
-            if (lastEOFMarker < Long.MAX_VALUE && lastObjOffset > 0)
+            if ((lastEOFMarker < Long.MAX_VALUE || endobjFound) && lastObjOffset > 0)
             {
-                // if the pdf wasn't cut off in the middle the last object id has to added here
-                // so that it can't get lost as there isn't any subsequent object id
+                // if the pdf wasn't cut off in the middle or if the last object ends with a "endobj" marker
+                // the last object id has to be added here so that it can't get lost as there isn't any subsequent
+                // object id
                 bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
                         lastObjOffset);
             }
@@ -1911,10 +1920,7 @@ public class COSParser extends BaseParser
                 }
                 numberOfBytes += readMore;
             }
-            if (Arrays.equals(string, bytesRead))
-            {
-                bytesMatching = true;
-            }
+            bytesMatching = Arrays.equals(string, bytesRead);
             source.rewind(numberOfBytes);
         }
         return bytesMatching;
@@ -1936,6 +1942,7 @@ public class COSParser extends BaseParser
             if (source.read() != c)
             {
                 bytesMatching = false;
+                break;
             }
         }
         source.seek(originOffset);
