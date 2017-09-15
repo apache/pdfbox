@@ -82,12 +82,16 @@ public abstract class Filter
     // normalise the DecodeParams entry so that it is always a dictionary
     protected COSDictionary getDecodeParams(COSDictionary dictionary, int index)
     {
+        COSBase filter = dictionary.getDictionaryObject(COSName.FILTER, COSName.F);
         COSBase obj = dictionary.getDictionaryObject(COSName.DECODE_PARMS, COSName.DP);
-        if (obj instanceof COSDictionary)
+        if (filter instanceof COSName && obj instanceof COSDictionary)
         {
+            // PDFBOX-3932: The PDF specification requires "If there is only one filter and that 
+            // filter has parameters, DecodeParms shall be set to the filter’s parameter dictionary" 
+            // but tests show that Adobe means "one filter name object".
             return (COSDictionary)obj;
         }
-        else if (obj instanceof COSArray)
+        else if (filter instanceof COSArray && obj instanceof COSArray)
         {
             COSArray array = (COSArray)obj;
             if (index < array.size())
@@ -95,7 +99,7 @@ public abstract class Filter
                 return (COSDictionary)array.getObject(index);
             }
         }
-        else if (obj != null)
+        else if (obj != null && !(filter instanceof COSArray || obj instanceof COSArray))
         {
             LOG.error("Expected DecodeParams to be an Array or Dictionary but found " +
                       obj.getClass().getName());
