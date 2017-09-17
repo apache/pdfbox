@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.util.Charsets;
 
 /**
  * This represents a URI action that can be executed in a PDF document.
@@ -52,14 +54,14 @@ public class PDActionURI extends PDAction
     }
 
     /**
-     * This will get the uniform resource identifier to resolve, encoded in
-     * 7-bit ASCII.
+     * This will get the uniform resource identifier to resolve. It should be encoded in 7-bit
+     * ASCII, but UTF-8 is supported too.
      *
      * @return The URI entry of the specific URI action dictionary.
      */
     public String getURI()
     {
-        return action.getString(COSName.URI);
+        return new String(((COSString) action.getDictionaryObject(COSName.URI)).getBytes(), Charsets.UTF_8);
     }
 
     /**
