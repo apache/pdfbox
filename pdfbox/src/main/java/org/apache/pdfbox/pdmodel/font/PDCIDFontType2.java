@@ -94,21 +94,23 @@ public class PDCIDFontType2 extends PDCIDFont
             boolean fontIsDamaged = false;
             TrueTypeFont ttfFont = null;
             
-            PDStream stream;
-            if (fd.getFontFile2() != null)
+            PDStream stream = null;
+            if (fd != null)
             {
-                stream = fd.getFontFile2();
+                if (fd.getFontFile2() != null)
+                {
+                    stream = fd.getFontFile2();
+                }
+                else if (fd.getFontFile3() != null)
+                {
+                    stream = fd.getFontFile3();
+                }
+                else
+                {
+                    // Acrobat looks in FontFile too, even though it is not in the spec, see PDFBOX-2599
+                    stream = fd.getFontFile();
+                }
             }
-            else if (fd.getFontFile3() != null)
-            {
-                stream = fd.getFontFile3();
-            }
-            else
-            {
-                // Acrobat looks in FontFile too, even though it is not in the spec, see PDFBOX-2599
-                stream = fd.getFontFile();
-            }
-            
             if (stream != null)
             {
                 try
