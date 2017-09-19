@@ -419,6 +419,9 @@ public abstract class BaseParser
             {
                 throw new IOException("expected='stream' actual='" + streamString + "' at offset " + pdfSource.getOffset());
             }
+            // Flag indicating whether a CR character was encountered after the "stream" keyword, in which case we expect it again before "endstream" 
+            boolean hasCR = false;
+
 
             //PDF Ref 3.2.7 A stream must be followed by either
             //a CRLF or LF but nothing else.
@@ -435,6 +438,7 @@ public abstract class BaseParser
 
             if( whitespace == 0x0D )
             {
+                hasCR = true;
                 whitespace = pdfSource.read();
                 if( whitespace != 0x0A )
                 {
@@ -487,7 +491,7 @@ public abstract class BaseParser
             {
                 // Couldn't determine length from dict: just
                 // scan until we find endstream:
-                readUntilEndStream(new EndstreamOutputStream(out));
+                readUntilEndStream(new EndstreamOutputStream(out, hasCR));
             }
             else
             {
@@ -564,7 +568,7 @@ public abstract class BaseParser
                         IOUtils.closeQuietly(out);
                         out = stream.createFilteredStream( streamLength );
                         // scan until we find endstream:
-                        readUntilEndStream(new EndstreamOutputStream(out));
+                        readUntilEndStream(new EndstreamOutputStream(out, hasCR));
                     }
                 }
             }
@@ -602,7 +606,7 @@ public abstract class BaseParser
                      * If for some reason we get something else here, Read until we find the next
                      * "endstream"
                      */
-                    readUntilEndStream(new EndstreamOutputStream(out));
+                    readUntilEndStream(new EndstreamOutputStream(out, hasCR));
                     endStream = readString();
                     if( !endStream.equals( ENDSTREAM_STRING ) )
                     {

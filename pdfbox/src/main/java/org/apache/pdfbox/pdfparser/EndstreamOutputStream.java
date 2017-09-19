@@ -39,9 +39,13 @@ class EndstreamOutputStream extends BufferedOutputStream
     private int pos = 0;
     private boolean mustFilter = true;
 
-    public EndstreamOutputStream(OutputStream out)
+    // Flag indicating whether we search for CR+LF or for LF only
+    private final boolean searchCR;
+
+    public EndstreamOutputStream(OutputStream out, boolean searchCR)
     {
         super(out);
+        this.searchCR = searchCR;
     }
 
     /**
@@ -96,7 +100,7 @@ class EndstreamOutputStream extends BufferedOutputStream
             // don't write CR, LF, or CR LF if at the end of the buffer
             if (len > 0)
             {
-                if (b[off + len - 1] == '\r')
+                if (searchCR && b[off + len - 1] == '\r')
                 {
                     hasCR = true;
                     --len;
@@ -105,7 +109,7 @@ class EndstreamOutputStream extends BufferedOutputStream
                 {
                     hasLF = true;
                     --len;
-                    if (len > 0 && b[off + len - 1] == '\r')
+                    if (searchCR && len > 0 && b[off + len - 1] == '\r')
                     {
                         hasCR = true;
                         --len;

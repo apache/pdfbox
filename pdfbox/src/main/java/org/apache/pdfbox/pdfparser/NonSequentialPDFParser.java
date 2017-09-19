@@ -1748,8 +1748,11 @@ public class NonSequentialPDFParser extends PDFParser
                 whitespace = pdfSource.read();
             }
 
+            boolean hasCR = false;
+
             if (whitespace == 0x0D)
             {
+                hasCR = true;
                 whitespace = pdfSource.read();
                 if (whitespace != 0x0A)
                 {
@@ -1811,7 +1814,7 @@ public class NonSequentialPDFParser extends PDFParser
             if (useReadUntilEnd)
             {
                 out = stream.createFilteredStream();
-                readUntilEndStream(new EndstreamOutputStream(out));
+                readUntilEndStream(new EndstreamOutputStream(out, hasCR));
             }
             String endStream = readString();
             if (endStream.equals("endobj") && isLenient)

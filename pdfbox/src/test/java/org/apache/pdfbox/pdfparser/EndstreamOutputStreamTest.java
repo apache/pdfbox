@@ -17,8 +17,21 @@
 package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
 import junit.framework.TestCase;
+import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
+import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.junit.Assert;
 
 /**
@@ -30,7 +43,7 @@ public class EndstreamOutputStreamTest extends TestCase
     public void testEndstreamOutputStream() throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        EndstreamOutputStream feos = new EndstreamOutputStream(baos);
+        EndstreamOutputStream feos = new EndstreamOutputStream(baos, true);
         byte tab1[] = {1, 2, 3, 4};
         byte tab2[] = {5, 6, 7, '\r', '\n'};
         byte tab3[] = {8, 9, '\r', '\n'};
@@ -42,7 +55,7 @@ public class EndstreamOutputStreamTest extends TestCase
         Assert.assertArrayEquals(expectedResult1, baos.toByteArray());
 
         baos = new ByteArrayOutputStream();
-        feos = new EndstreamOutputStream(baos);
+        feos = new EndstreamOutputStream(baos, true);
         byte tab4[] = {1, 2, 3, 4};
         byte tab5[] = {5, 6, 7, '\r' };
         byte tab6[] = {8, 9, '\n'};
@@ -54,7 +67,7 @@ public class EndstreamOutputStreamTest extends TestCase
         Assert.assertArrayEquals(expectedResult2, baos.toByteArray());
         
         baos = new ByteArrayOutputStream();
-        feos = new EndstreamOutputStream(baos);
+        feos = new EndstreamOutputStream(baos, true);
         byte tab7[] = {1, 2, 3, 4, '\r'};
         byte tab8[] = {'\n', 5, 6, 7, '\n' };
         byte tab9[] = {8, 9, '\r'}; // final CR is not to be discarded
@@ -66,7 +79,7 @@ public class EndstreamOutputStreamTest extends TestCase
         Assert.assertArrayEquals(expectedResult3, baos.toByteArray());
         
         baos = new ByteArrayOutputStream();
-        feos = new EndstreamOutputStream(baos);
+        feos = new EndstreamOutputStream(baos, true);
         byte tab10[] = {1, 2, 3, 4, '\r'};
         byte tab11[] = {'\n', 5, 6, 7, '\r' };
         byte tab12[] = {8, 9, '\r'};
@@ -80,7 +93,7 @@ public class EndstreamOutputStreamTest extends TestCase
         Assert.assertArrayEquals(expectedResult4, baos.toByteArray());
 
         baos = new ByteArrayOutputStream();
-        feos = new EndstreamOutputStream(baos);
+        feos = new EndstreamOutputStream(baos, true);
         byte tab14[] = {1, 2, 3, 4, '\r'};
         byte tab15[] = {'\n', 5, 6, 7, '\r' };
         byte tab16[] = {8, 9, '\n'};
@@ -92,6 +105,38 @@ public class EndstreamOutputStreamTest extends TestCase
         feos.flush();
         byte expectedResult5[] = { 1, 2, 3, 4, '\r', '\n', 5, 6, 7, '\r', 8, 9, '\n', '\r'};
         Assert.assertArrayEquals(expectedResult5, baos.toByteArray());
+
+        baos = new ByteArrayOutputStream();
+        feos = new EndstreamOutputStream(baos, false);
+        feos.write(tab10, 0, tab14.length);
+        feos.write(tab11, 0, tab15.length);
+        feos.write(tab12, 0, tab16.length);
+        feos.write(tab13, 0, tab17.length);
+        feos.flush();
+        // CR is not to be discarded whean passing false for searchCR in the EndstreamOutputStream constructor 
+        byte expectedResult6[] = {  1, 2, 3, 4, '\r', '\n', 5, 6, 7, '\r', 8, 9, '\r'};
+        Assert.assertArrayEquals(expectedResult6, baos.toByteArray());
     }
-    
+
+    public void testPDFBox2079EmbeddedFile() throws IOException
+    {
+        // there should be 17660 bytes in the zip file.
+        // in PDFBox 1.8.5, windows newline is appended to the byte stream
+        // yielding 17662 bytes, which causes a problem for ZipFile in Java 1.6
+        PDDocument doc = PDDocument.load(new File("src/test/resources/org/apache/pdfbox/pdfparser", "embedded_zip.pdf"));
+        PDDocumentCatalog catalog = doc.getDocumentCatalog();
+        PDDocumentNameDictionary names = catalog.getNames();
+        PDEmbeddedFilesNameTreeNode node = names.getEmbeddedFiles();
+        Map<String, COSObjectable> map = node.getNames();
+        Assert.assertEquals(1, map.size());
+        PDComplexFileSpecification spec = (PDComplexFileSpecification) map.get("My first attachment");
+        PDEmbeddedFile file = spec.getEmbeddedFile();
+        InputStream input = file.createInputStream();
+        File f = new File("target/test-output", spec.getFile());
+        OutputStream os = new FileOutputStream(f);
+        IOUtils.copy(input, os);
+        os.close();
+        Assert.assertEquals(17660, f.length());
+        doc.close();
+    }
 }
