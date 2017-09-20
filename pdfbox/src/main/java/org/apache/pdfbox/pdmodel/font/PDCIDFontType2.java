@@ -142,29 +142,34 @@ public class PDCIDFontType2 extends PDCIDFont
     
             if (ttfFont == null)
             {
-                // find font or substitute
-                CIDFontMapping mapping = FontMappers.instance()
-                                                    .getCIDFont(getBaseFont(), getFontDescriptor(),
-                                                                getCIDSystemInfo());
-    
-                if (mapping.isCIDFont())
-                {
-                    ttfFont = mapping.getFont();
-                }
-                else
-                {
-                    ttfFont = (TrueTypeFont)mapping.getTrueTypeFont();
-                }
-    
-                if (mapping.isFallback())
-                {
-                    LOG.warn("Using fallback font " + ttfFont.getName() + " for CID-keyed TrueType font " + getBaseFont());
-                }
+                ttfFont = findFontOrSubstitute();
             }
             ttf = ttfFont;
         }
         cmap = ttf.getUnicodeCmap(false);
         cid2gid = readCIDToGIDMap();
+    }
+
+    private TrueTypeFont findFontOrSubstitute() throws IOException
+    {
+        TrueTypeFont ttfFont;
+
+        CIDFontMapping mapping = FontMappers.instance()
+                .getCIDFont(getBaseFont(), getFontDescriptor(),
+                        getCIDSystemInfo());
+        if (mapping.isCIDFont())
+        {
+            ttfFont = mapping.getFont();
+        }
+        else
+        {
+            ttfFont = (TrueTypeFont)mapping.getTrueTypeFont();
+        }
+        if (mapping.isFallback())
+        {
+            LOG.warn("Using fallback font " + ttfFont.getName() + " for CID-keyed TrueType font " + getBaseFont());
+        }
+        return ttfFont;
     }
 
     @Override
