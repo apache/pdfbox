@@ -126,8 +126,9 @@ public class EndstreamOutputStreamTest
         PDComplexFileSpecification spec = map.get("My first attachment");
         PDEmbeddedFile file = spec.getEmbeddedFile();
         InputStream input = file.createInputStream();
-        File f = new File("target/test-output", spec.getFile());
-        System.out.println(f.getAbsolutePath());
+        File d = new File("target/test-output");
+        d.mkdirs();
+        File f = new File(d, spec.getFile());
         OutputStream os = new FileOutputStream(f);
         IOUtils.copy(input, os);
         os.close();
