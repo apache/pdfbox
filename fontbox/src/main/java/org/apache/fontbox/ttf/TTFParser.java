@@ -147,7 +147,7 @@ public class TTFParser
         // parse tables if wanted
         if (!parseOnDemandOnly)
         {
-            parseTables(font, raf);
+            parseTables(font);
         }
 
         return font;
@@ -162,10 +162,9 @@ public class TTFParser
      * Parse all tables and check if all needed tables are present.
      *
      * @param font the TrueTypeFont instance holding the parsed data.
-     * @param raf the data stream of the to be parsed ttf font
      * @throws IOException If there is an error parsing the TrueType font.
      */
-    private void parseTables(TrueTypeFont font, TTFDataStream raf) throws IOException
+    private void parseTables(TrueTypeFont font) throws IOException
     {
         for (TTFTable table : font.getTables())
         {
