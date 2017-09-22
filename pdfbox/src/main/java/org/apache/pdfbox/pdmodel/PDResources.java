@@ -408,13 +408,9 @@ public final class PDResources implements COSObjectable
         {
             xobject = PDXObject.createXObject(value, this);
         }
-
-        if (cache != null)
+        if (cache != null && isAllowedCache(xobject))
         {
-            if (isAllowedCache(xobject))
-            {
-                cache.put(indirect, xobject);
-            }
+            cache.put(indirect, xobject);
         }
         return xobject;
     }
