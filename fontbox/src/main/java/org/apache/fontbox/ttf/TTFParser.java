@@ -239,7 +239,7 @@ public class TTFParser
 
     private TTFTable readTableDirectory(TrueTypeFont font, TTFDataStream raf) throws IOException
     {
-        TTFTable table = null;
+        TTFTable table;
         String tag = raf.readString(4);
         switch (tag)
         {
