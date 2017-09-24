@@ -148,6 +148,17 @@ class AppearanceGeneratorHelper
     public void setAppearanceValue(String apValue) throws IOException
     {
         value = apValue;
+        
+        // Treat multiline field values in single lines as single lime values.
+        // This is in line with how Adobe Reader behaves when enetring text
+        // interactively but NOT how it behaves when the field value has been
+        // set programmatically and Reader is forced to generate the appearance
+        // using PDAcroForm.setNeedAppearances
+        // see PDFBOX-3911
+        if (field instanceof PDTextField && !((PDTextField) field).isMultiline())
+        {
+            value = apValue.replaceAll("\\u000D\\u000A|[\\u000A\\u000B\\u000C\\u000D\\u0085\\u2028\\u2029]", " ");
+        }
 
         for (PDAnnotationWidget widget : field.getWidgets())
         {
