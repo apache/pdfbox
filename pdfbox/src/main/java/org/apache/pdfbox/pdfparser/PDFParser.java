@@ -187,30 +187,30 @@ public class PDFParser extends COSParser
     protected void initialParse() throws InvalidPasswordException, IOException
     {
         COSDictionary trailer = null;
-        // parse startxref
-        long startXRefOffset = getStartxrefOffset();
         boolean rebuildTrailer = false;
-        if (startXRefOffset > -1)
+        try
         {
-            try
+            // parse startxref
+            long startXRefOffset = getStartxrefOffset();
+            if (startXRefOffset > -1)
             {
                 trailer = parseXref(startXRefOffset);
             }
-            catch (IOException exception)
+            else if (isLenient())
             {
-                if (isLenient())
-                {
-                    rebuildTrailer = true;
-                }
-                else
-                {
-                    throw exception;
-                }
+                rebuildTrailer = true;
             }
         }
-        else if (isLenient())
+        catch (IOException exception)
         {
-            rebuildTrailer = true;
+            if (isLenient())
+            {
+                rebuildTrailer = true;
+            }
+            else
+            {
+                throw exception;
+            }
         }
         // check if the trailer contains a Root object
         if (isLenient() && trailer != null && trailer.getItem(COSName.ROOT) == null)
