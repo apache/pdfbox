@@ -441,34 +441,14 @@ public class COSParser extends BaseParser
         }
         // find last startxref preceding EOF marker
         bufOff = lastIndexOf(STARTXREF, buf, bufOff);
-        long startXRefOffset = skipBytes + bufOff;
-
         if (bufOff < 0)
         {
-            if (isLenient) 
-            {
-                LOG.debug("Performing brute force search for last startxref entry");
-                long bfOffset = bfSearchForLastStartxrefEntry();
-                boolean offsetIsValid = false;
-                if (bfOffset > -1)
-                {
-                    source.seek(bfOffset);
-                    long bfXref = parseStartXref();
-                    if (bfXref > -1)
-                    {
-                        offsetIsValid = checkXRefOffset(bfXref) == bfXref;
-                    }
-                }
-                source.seek(0);
-                // use the new offset only if it is a valid pointer to a xref table
-                return offsetIsValid ? bfOffset : -1;
-            }
-            else
-            {
-                throw new IOException("Missing 'startxref' marker.");
-            }
+            throw new IOException("Missing 'startxref' marker.");
         }
-        return startXRefOffset;
+        else
+        {
+            return skipBytes + bufOff;
+        }
     }
     
     /**
@@ -1667,8 +1647,11 @@ public class COSParser extends BaseParser
                         // which most likely indicates that the pdf is linearized,
                         // updated or just cut off somewhere in the middle
                         skipSpaces();
-                        readObjectNumber();
-                        readGenerationNumber();
+                        if (!isString(XREF_TABLE))
+                        {
+                            readObjectNumber();
+                            readGenerationNumber();
+                        }
                     }
                     catch (IOException exception)
                     {
@@ -1718,28 +1701,6 @@ public class COSParser extends BaseParser
             }
             source.seek(originOffset);
         }
-    }
-
-    /**
-     * Brute force search for the last startxref entry.
-     * 
-     * @throws IOException if something went wrong
-     */
-    private long bfSearchForLastStartxrefEntry() throws IOException
-    {
-        long lastStartxref = -1;
-        source.seek(MINIMUM_SEARCH_OFFSET);
-        // search for startxref
-        while (!source.isEOF())
-        {
-            if (isString(STARTXREF))
-            {
-                lastStartxref = source.getPosition();
-                source.seek(lastStartxref + 9);
-            }
-            source.read();
-        }
-        return lastStartxref;
     }
 
     /**
