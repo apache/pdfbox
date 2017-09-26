@@ -177,8 +177,7 @@ public class PDOptionalContentProperties implements COSObjectable
         COSArray ocgs = getOCGs();
         for (COSBase base : ocgs)
         {
-            COSObject obj = (COSObject)base; //Children must be indirect references
-            coll.add(new PDOptionalContentGroup((COSDictionary)obj.getObject()));
+            coll.add(new PDOptionalContentGroup(toDictionary(base)));
         }
         return coll;
     }
