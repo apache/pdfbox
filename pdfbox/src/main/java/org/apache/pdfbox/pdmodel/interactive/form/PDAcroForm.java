@@ -58,8 +58,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class PDAcroForm implements COSObjectable
 {
-	private static final Log LOG = LogFactory.getLog(PDAcroForm.class);
-	
+    private static final Log LOG = LogFactory.getLog(PDAcroForm.class);
+    
     private static final int FLAG_SIGNATURES_EXIST = 1;
     private static final int FLAG_APPEND_ONLY = 1 << 1;
 
@@ -219,20 +219,20 @@ public final class PDAcroForm implements COSObjectable
      */
     public void flatten() throws IOException
     {
-    	// for dynamic XFA forms there is no flatten as this would mean to do a rendering
-    	// from the XFA content into a static PDF.
-    	if (xfaIsDynamic())
-    	{
-    		LOG.warn("Flatten for a dynamix XFA form is not supported");
-    		return;
-    	}
-    	
-    	List<PDField> fields = new ArrayList<PDField>();
-    	for (PDField field: getFieldTree())
-    	{
-    		fields.add(field);
-    	}
-    	flatten(fields, false);
+        // for dynamic XFA forms there is no flatten as this would mean to do a rendering
+        // from the XFA content into a static PDF.
+        if (xfaIsDynamic())
+        {
+            LOG.warn("Flatten for a dynamix XFA form is not supported");
+            return;
+        }
+        
+        List<PDField> fields = new ArrayList<PDField>();
+        for (PDField field: getFieldTree())
+        {
+            fields.add(field);
+        }
+        flatten(fields, false);
     }
     
     
@@ -251,20 +251,20 @@ public final class PDAcroForm implements COSObjectable
      */
     public void flatten(List<PDField> fields, boolean refreshAppearances) throws IOException
     {
-    	// for dynamic XFA forms there is no flatten as this would mean to do a rendering
-    	// from the XFA content into a static PDF.
-    	if (xfaIsDynamic())
-    	{
-    		LOG.warn("Flatten for a dynamix XFA form is not supported");
-    		return;
-    	}
-    	
-    	// refresh the appearances if set
-    	if (refreshAppearances)
-    	{
-    		refreshAppearances(fields);
-    	}
-    	
+        // for dynamic XFA forms there is no flatten as this would mean to do a rendering
+        // from the XFA content into a static PDF.
+        if (xfaIsDynamic())
+        {
+            LOG.warn("Flatten for a dynamix XFA form is not supported");
+            return;
+        }
+        
+        // refresh the appearances if set
+        if (refreshAppearances)
+        {
+            refreshAppearances(fields);
+        }
+        
         // indicates if the original content stream
         // has been wrapped in a q...Q pair.
         boolean isContentStreamWrapped;
@@ -367,10 +367,10 @@ public final class PDAcroForm implements COSObjectable
     {
         for (PDField field : getFieldTree())
         {
-        	if (field instanceof PDTerminalField)
-        	{
-        		((PDTerminalField) field).constructAppearances();
-        	}
+            if (field instanceof PDTerminalField)
+            {
+                ((PDTerminalField) field).constructAppearances();
+            }
         }
     }
 
@@ -385,10 +385,10 @@ public final class PDAcroForm implements COSObjectable
     {
         for (PDField field : fields)
         {
-        	if (field instanceof PDTerminalField)
-        	{
-        		((PDTerminalField) field).constructAppearances();
-        	}
+            if (field instanceof PDTerminalField)
+            {
+                ((PDTerminalField) field).constructAppearances();
+            }
         }
     }
     
@@ -507,7 +507,7 @@ public final class PDAcroForm implements COSObjectable
         // get the field from the field tree
         for (PDField field : getFieldTree())
         {
-        	if (field.getFullyQualifiedName().equals(fullyQualifiedName))
+            if (field.getFullyQualifiedName().equals(fullyQualifiedName))
             {
                 return field;
             }
@@ -704,22 +704,22 @@ public final class PDAcroForm implements COSObjectable
     }
     
     private Map<COSDictionary, Integer> buildAnnotationToPageRef() {
-    	Map<COSDictionary, Integer> annotationToPageRef = new HashMap<COSDictionary, Integer>();
-    	
-    	int idx = 0;
-    	for (PDPage page : document.getPages()) {
-    		try {
-				for (PDAnnotation annotation : page.getAnnotations()) {
-					if (annotation instanceof PDAnnotationWidget) {
-						annotationToPageRef.put(annotation.getCOSObject(), idx);
-					}
-				}
-			} catch (IOException e) {
-				LOG.warn("Can't retriev annotations for page " + idx);
-			}
-    		idx++;
-    	}    	
-    	return annotationToPageRef;
+        Map<COSDictionary, Integer> annotationToPageRef = new HashMap<COSDictionary, Integer>();
+        
+        int idx = 0;
+        for (PDPage page : document.getPages()) {
+            try {
+                for (PDAnnotation annotation : page.getAnnotations()) {
+                    if (annotation instanceof PDAnnotationWidget) {
+                        annotationToPageRef.put(annotation.getCOSObject(), idx);
+                    }
+                }
+            } catch (IOException e) {
+                LOG.warn("Can't retriev annotations for page " + idx);
+            }
+            idx++;
+        }        
+        return annotationToPageRef;
     }
     
     /**
@@ -777,7 +777,7 @@ public final class PDAcroForm implements COSObjectable
     private boolean resolveNeedsScaling(PDAppearanceStream appearanceStream)
     {
         // Check if there is a transformation within the XObjects content
-    	PDResources resources = appearanceStream.getResources();
+        PDResources resources = appearanceStream.getResources();
         return resources != null && resources.getXObjectNames().iterator().hasNext();
     }
 }
