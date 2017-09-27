@@ -28,14 +28,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.util.DateConverter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -113,6 +119,82 @@ public class TestPDFParser
     {
         // PDFBOX-3060
         PDDocument.load(new File(TestPDFParser.class.getResource("MissingCatalog.pdf").toURI())).close();        
+    }
+
+    /**
+     * Test whether /Info dictionary is retrieved correctly when rebuilding the trailer of a corrupt
+     * file. An incorrect algorithm would result in an outline dictionary being mistaken for an
+     * /Info.
+     *
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3208() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12784025/PDFBOX-3208-L33MUTT2SVCWGCS6UIYL5TH3PNPXHIS6.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3208 will be skipped");
+            return;
+        }
+
+        PDDocument doc = PDDocument.load(byteArray);
+
+        PDDocumentInformation di = doc.getDocumentInformation();
+        assertEquals("Liquent Enterprise Services", di.getAuthor());
+        assertEquals("Liquent services server", di.getCreator());
+        assertEquals("Amyuni PDF Converter version 4.0.0.9", di.getProducer());
+        assertEquals("", di.getKeywords());
+        assertEquals("", di.getSubject());
+        assertEquals("892B77DE781B4E71A1BEFB81A51A5ABC_20140326022424.docx", di.getTitle());
+        assertEquals(DateConverter.toCalendar("D:20140326142505-02'00'"), di.getCreationDate());
+        assertEquals(DateConverter.toCalendar("20140326172513Z"), di.getModificationDate());
+
+        doc.close();
+    }
+
+    /**
+     * Test whether the /Info is retrieved correctly when rebuilding the trailer of a corrupt file,
+     * despite the /Info dictionary not having a modification date.
+     *
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3940() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12888957/079977.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3940 will be skipped");
+            return;
+        }
+
+        PDDocument doc = PDDocument.load(byteArray);
+
+        PDDocumentInformation di = doc.getDocumentInformation();
+        assertEquals("Unknown", di.getAuthor());
+        assertEquals("C:REGULA~1IREGSFR_EQ_EM.WP", di.getCreator());
+        assertEquals("Acrobat PDFWriter 3.02 for Windows", di.getProducer());
+        assertEquals("", di.getKeywords());
+        assertEquals("", di.getSubject());
+        assertEquals("C:REGULA~1IREGSFR_EQ_EM.PDF", di.getTitle());
+        assertEquals(DateConverter.toCalendar("Tuesday, July 28, 1998 4:00:09 PM"), di.getCreationDate());
+
+        doc.close();
     }
 
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
