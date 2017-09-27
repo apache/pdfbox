@@ -38,6 +38,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
@@ -110,6 +111,11 @@ public class COSParser extends BaseParser
      * obj-marker.
      */
     protected static final char[] OBJ_MARKER = new char[] { 'o', 'b', 'j' };
+
+    /**
+     * ObjStream-marker.
+     */
+    private static final char[] OBJ_STREAM = new char[] { '/', 'O', 'b', 'j', 'S', 't', 'm' };
 
     private long trailerOffset;
     
@@ -1510,6 +1516,7 @@ public class COSParser extends BaseParser
                 bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
                         lastObjOffset);
             }
+            bfSearchForObjStreams();
             // reestablish origin position
             source.seek(originOffset);
         }
@@ -1641,6 +1648,119 @@ public class COSParser extends BaseParser
                 lastEOFMarker = Long.MAX_VALUE;
             }
         }
+    }
+
+    /**
+     * Brute force search for all object streams.
+     * 
+     * @throws IOException if something went wrong
+     */
+    private void bfSearchForObjStreams() throws IOException
+    {
+        HashMap<Long, COSObjectKey> bfSearchObjStreamsOffsets = new HashMap<Long, COSObjectKey>();
+        long originOffset = source.getPosition();
+        source.seek(MINIMUM_SEARCH_OFFSET);
+        char[] string = " obj".toCharArray();
+        while (!source.isEOF())
+        {
+            // search for EOF marker
+            if (isString(OBJ_STREAM))
+            {
+                long currentPosition = source.getPosition();
+                // search backwards for the beginning of the object
+                long newOffset = -1;
+                COSObjectKey streamObjectKey = null;
+                boolean objFound = false;
+                for (int i = 1; i < 40 && !objFound; i++)
+                {
+                    long currentOffset = currentPosition - (i * 10);
+                    if (currentOffset > 0)
+                    {
+                        source.seek(currentOffset);
+                        for (int j = 0; j < 10; j++)
+                        {
+                            if (isString(string))
+                            {
+                                long tempOffset = currentOffset - 1;
+                                source.seek(tempOffset);
+                                int genID = source.peek();
+                                // is the next char a digit?
+                                if (isDigit(genID))
+                                {
+                                    tempOffset--;
+                                    source.seek(tempOffset);
+                                    if (isSpace())
+                                    {
+                                        int length = 0;
+                                        source.seek(--tempOffset);
+                                        while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
+                                        {
+                                            source.seek(--tempOffset);
+                                            length++;
+                                        }
+                                        if (length > 0)
+                                        {
+                                            source.read();
+                                            newOffset = source.getPosition();
+                                            long objNumber = readObjectNumber();
+                                            int genNumber = readGenerationNumber();
+                                            streamObjectKey = new COSObjectKey(objNumber,
+                                                    genNumber);
+                                            bfSearchObjStreamsOffsets.put(newOffset,
+                                                    streamObjectKey);
+                                        }
+                                    }
+                                }
+                                LOG.debug("Dictionary start for object stream -> " + newOffset);
+                                objFound = true;
+                                break;
+                            }
+                            else
+                            {
+                                currentOffset++;
+                                source.read();
+                            }
+                        }
+                    }
+                }
+                source.seek(currentPosition + OBJ_STREAM.length);
+            }
+            source.read();
+        }
+        // add all found compressed objects to the brute force search result
+        for (Long offset : bfSearchObjStreamsOffsets.keySet())
+        {
+            long bfOffset = bfSearchCOSObjectKeyOffsets.get(bfSearchObjStreamsOffsets.get(offset));
+            // check if the object was overwritten
+            if (offset == bfOffset)
+            {
+                source.seek(offset);
+                long stmObjNumber = readObjectNumber();
+                readGenerationNumber();
+                readExpectedString(OBJ_MARKER, true);
+                COSDictionary dict = parseCOSDictionary();
+                int offsetFirstStream = dict.getInt(COSName.FIRST);
+                int nrOfObjects = dict.getInt(COSName.N);
+                COSStream stream = parseCOSStream(dict);
+                COSInputStream is = stream.createInputStream();
+                byte[] numbersStr = new byte[offsetFirstStream];
+                is.read(numbersStr);
+                is.close();
+                stream.close();
+                String[] numbers = new String(numbersStr, "ISO-8859-1").split(" ");
+                for (int i = 0; i < nrOfObjects; i++)
+                {
+                    long objNumber = Long.parseLong(numbers[i * 2]);
+                    COSObjectKey objKey = new COSObjectKey(objNumber, 0);
+                    Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                    if (existingOffset == null || offset > existingOffset)
+                    {
+                        bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
+                    }
+                }
+            }
+        }
+        source.seek(originOffset);
     }
 
     /**
@@ -1787,6 +1907,11 @@ public class COSParser extends BaseParser
             for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
             {
                 Long offset = entry.getValue();
+                // skip compressed objects
+                if (offset < 0)
+                {
+                    continue;
+                }
                 source.seek(offset);
                 readObjectNumber();
                 readGenerationNumber();
