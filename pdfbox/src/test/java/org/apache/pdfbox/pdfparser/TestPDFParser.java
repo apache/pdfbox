@@ -197,6 +197,31 @@ public class TestPDFParser
         }
     }
 
+    /**
+     * Test parsing the "genko_oc_shiryo1.pdf" file, which is susceptible to regression.
+     * 
+     * @throws Exception 
+     */
+    @Test
+    public void testParseGenko() throws Exception
+    {
+        byte[] byteArray;
+        try
+        {
+            try (InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12867433/genko_oc_shiryo1.pdf").openStream())
+            {
+                byteArray = IOUtils.toByteArray(is);
+            }
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testParseGenko will be skipped");
+            return;
+        }
+
+        PDDocument.load(byteArray).close();
+    }
+
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
