@@ -96,7 +96,7 @@ class SoftMask implements Paint
                                       RenderingHints hints)
     {
         PaintContext ctx = paint.createContext(cm, deviceBounds, userBounds, xform, hints);
-        return new SoftPaintContext(cm, deviceBounds, userBounds, xform, hints, ctx);
+        return new SoftPaintContext(ctx);
     }
 
     @Override
@@ -109,8 +109,7 @@ class SoftMask implements Paint
     {
         private final PaintContext context;
 
-        SoftPaintContext(ColorModel cm, Rectangle deviceBounds, Rectangle2D userBounds,
-                         AffineTransform xform, RenderingHints hints, PaintContext context)
+        SoftPaintContext(PaintContext context)
         {
             this.context = context;
         }
