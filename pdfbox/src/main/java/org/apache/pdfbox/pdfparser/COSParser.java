@@ -764,14 +764,6 @@ public class COSParser extends BaseParser
             // ---- read offset or object stream object number from xref table
             Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
-            // sanity test to circumvent loops with broken documents
-            if (requireExistingNotCompressedObj
-                    && ((offsetOrObjstmObNr == null) || (offsetOrObjstmObNr <= 0)))
-            {
-                throw new IOException("Object must be defined and must not be compressed object: "
-                        + objKey.getNumber() + ":" + objKey.getGeneration());
-            }
-
             // maybe something is wrong with the xref table -> perform brute force search for all objects
             if (offsetOrObjstmObNr == null && isLenient)
             {
@@ -782,6 +774,14 @@ public class COSParser extends BaseParser
                     LOG.debug("Set missing offset " + offsetOrObjstmObNr + " for object " + objKey);
                     document.getXrefTable().put(objKey, offsetOrObjstmObNr);
                 }
+            }
+
+            // sanity test to circumvent loops with broken documents
+            if (requireExistingNotCompressedObj
+                    && ((offsetOrObjstmObNr == null) || (offsetOrObjstmObNr <= 0)))
+            {
+                throw new IOException("Object must be defined and must not be compressed object: "
+                        + objKey.getNumber() + ":" + objKey.getGeneration());
             }
 
             if (offsetOrObjstmObNr == null)
@@ -1783,11 +1783,19 @@ public class COSParser extends BaseParser
                 int nrOfObjects = dict.getInt(COSName.N);
                 COSStream stream = parseCOSStream(dict);
                 COSInputStream is = stream.createInputStream();
-                byte[] numbersStr = new byte[offsetFirstStream];
-                is.read(numbersStr);
+                byte[] numbersBytes = new byte[offsetFirstStream];
+                is.read(numbersBytes);
                 is.close();
                 stream.close();
-                String[] numbers = new String(numbersStr, "ISO-8859-1").split(" ");
+                int start = 0;
+                // skip spaces
+                while (numbersBytes[start] == 32)
+                {
+                    start++;
+                }
+                String numbersStr = new String(numbersBytes, start, numbersBytes.length - start,
+                        "ISO-8859-1");
+                String[] numbers = numbersStr.split(" ");
                 for (int i = 0; i < nrOfObjects; i++)
                 {
                     long objNumber = Long.parseLong(numbers[i * 2]);
