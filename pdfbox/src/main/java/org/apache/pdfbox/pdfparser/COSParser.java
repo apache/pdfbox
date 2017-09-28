@@ -1743,11 +1743,19 @@ public class COSParser extends BaseParser
                 int nrOfObjects = dict.getInt(COSName.N);
                 COSStream stream = parseCOSStream(dict);
                 COSInputStream is = stream.createInputStream();
-                byte[] numbersStr = new byte[offsetFirstStream];
-                is.read(numbersStr);
+                byte[] numbersBytes = new byte[offsetFirstStream];
+                is.read(numbersBytes);
                 is.close();
                 stream.close();
-                String[] numbers = new String(numbersStr, "ISO-8859-1").split(" ");
+                int start = 0;
+                // skip spaces
+                while (numbersBytes[start] == 32)
+                {
+                    start++;
+                }
+                String numbersStr = new String(numbersBytes, start, numbersBytes.length - start,
+                        "ISO-8859-1");
+                String[] numbers = numbersStr.split(" ");
                 for (int i = 0; i < nrOfObjects; i++)
                 {
                     long objNumber = Long.parseLong(numbers[i * 2]);
