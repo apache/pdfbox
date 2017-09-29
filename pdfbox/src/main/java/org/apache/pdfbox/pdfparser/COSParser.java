@@ -1987,7 +1987,8 @@ public class COSParser extends BaseParser
                 {
                     trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
                 }
-                // TODO encryption dictionary
+                // encryption dictionary, if existing, is lost
+                // We can't run "Algorithm 2" from PDF specification because of missing ID
             }
             catch (IOException exception)
             {
@@ -2329,12 +2330,18 @@ public class COSParser extends BaseParser
                         if (currOffset >= xrefTableStartOffset && currOffset <= source.getPosition())
                         {
                             // PDFBOX-3923: offset points inside this table - that can't be good
-                            throw new IOException("XRefTable offset " + currOffset + 
-                                    " is within xref table for " + currObjID);
+                            // PDFBOX-3935: don't abort (rebuilding trailer would lose encryption 
+                            //              dictionary), just skip
+                            LOG.warn("XRefTable offset " + currOffset + 
+                                    " is within xref table (start offset: " + xrefTableStartOffset + 
+                                    ") for object " + currObjID);
                         }
-                        int currGenID = Integer.parseInt(splitString[1]);
-                        COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
-                        xrefTrailerResolver.setXRef(objKey, currOffset);
+                        else
+                        {
+                            int currGenID = Integer.parseInt(splitString[1]);
+                            COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
+                            xrefTrailerResolver.setXRef(objKey, currOffset);
+                        }
                     }
                     catch(NumberFormatException e)
                     {
