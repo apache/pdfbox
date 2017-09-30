@@ -20,6 +20,7 @@ import java.awt.Color;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -208,8 +209,15 @@ public class TestOptionalContentGroups extends TestCase
             assertNull(ocgs.getGroup("inexistent"));
 
             Collection<PDOptionalContentGroup> coll = ocgs.getOptionalContentGroups();
-            coll.contains(background);
-
+            assertEquals(3, coll.size());
+            Set<String> nameSet = new HashSet<String>();
+            for (PDOptionalContentGroup ocg2 : coll)
+            {
+                nameSet.add(ocg2.getName());
+            }
+            assertTrue(nameSet.contains("background"));
+            assertTrue(nameSet.contains("enabled"));
+            assertTrue(nameSet.contains("disabled"));
         }
         finally
         {
