@@ -960,7 +960,8 @@ public class COSParser extends BaseParser
         else if (lengthBaseObj instanceof COSObject)
         {
             COSObject lengthObj = (COSObject) lengthBaseObj;
-            if (lengthObj.getObject() == null)
+            COSBase length = lengthObj.getObject();
+            if (length == null)
             {
                 // not read so far, keep current stream position
                 final long curFileOffset = source.getPosition();
@@ -968,17 +969,24 @@ public class COSParser extends BaseParser
                 parseObjectDynamically(lengthObj, isObjectStream);
                 // reset current stream position
                 source.seek(curFileOffset);
-                if (lengthObj.getObject() == null)
-                {
-                    throw new IOException("Length object content was not read.");
-                }
+                length = lengthObj.getObject();
             }
-            if (!(lengthObj.getObject() instanceof COSNumber))
+            if (length == null)
+            {
+                throw new IOException("Length object content was not read.");
+            }
+            if (COSNull.NULL == length)
+            {
+                LOG.warn("Length object (" + lengthObj.getObjectNumber() + " "
+                        + lengthObj.getGenerationNumber() + ") not found");
+                return null;
+            }
+            if (!(length instanceof COSNumber))
             {
                 throw new IOException("Wrong type of referenced length object " + lengthObj
-                        + ": " + lengthObj.getObject().getClass().getSimpleName());
+                        + ": " + length.getClass().getSimpleName());
             }
-            retVal = (COSNumber) lengthObj.getObject();
+            retVal = (COSNumber) length;
         }
         else
         {
