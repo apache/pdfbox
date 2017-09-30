@@ -2332,6 +2332,7 @@ public class COSParser extends BaseParser
                             // PDFBOX-3923: offset points inside this table - that can't be good
                             // PDFBOX-3935: don't abort (rebuilding trailer would lose encryption 
                             //              dictionary), just skip
+                            // alternative fix: in checkXrefOffsets() do clear() before putAll()
                             LOG.warn("XRefTable offset " + currOffset + 
                                     " is within xref table (start offset: " + xrefTableStartOffset + 
                                     ") for object " + currObjID);
