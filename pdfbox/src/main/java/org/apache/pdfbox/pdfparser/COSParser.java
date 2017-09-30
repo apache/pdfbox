@@ -1371,54 +1371,8 @@ public class COSParser extends BaseParser
             Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
             if (!bfCOSObjectKeyOffsets.isEmpty())
             {
-                List<COSObjectKey> objStreams = new ArrayList<>();
-                // find all object streams
-                for (Entry<COSObjectKey, Long> entry : xrefOffset.entrySet())
-                {
-                    Long offset = entry.getValue();
-                    if (offset != null && offset < 0)
-                    {
-                        COSObjectKey objStream = new COSObjectKey(-offset, 0);
-                        if (!objStreams.contains(objStream))
-                        {
-                            objStreams.add(new COSObjectKey(-offset, 0));
-                        }
-                    }
-                }
-                // remove all found object streams
-                if (!objStreams.isEmpty())
-                {
-                    for (COSObjectKey key : objStreams)
-                    {
-                        if (bfCOSObjectKeyOffsets.containsKey(key))
-                        {
-                            // remove all parsed objects which are part of an object stream
-                            Set<Long> objects = xrefTrailerResolver
-                                    .getContainedObjectNumbers((int) (key.getNumber()));
-                            for (Long objNr : objects)
-                            {
-                                COSObjectKey streamObjectKey = new COSObjectKey(objNr, 0);
-                                Long streamObjectOffset = bfCOSObjectKeyOffsets
-                                        .get(streamObjectKey);
-                                if (streamObjectOffset != null && streamObjectOffset > 0)
-                                {
-                                    bfCOSObjectKeyOffsets.remove(streamObjectKey);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // remove all objects which are part of an object stream which wasn't found
-                            Set<Long> objects = xrefTrailerResolver
-                                    .getContainedObjectNumbers((int) (key.getNumber()));
-                            for (Long objNr : objects)
-                            {
-                                xrefOffset.remove(new COSObjectKey(objNr, 0));
-                            }
-                        }
-                    }
-                }
                 LOG.debug("Replaced read xref table with the results of a brute force search");
+                xrefOffset.clear();
                 xrefOffset.putAll(bfCOSObjectKeyOffsets);
             }
         }
