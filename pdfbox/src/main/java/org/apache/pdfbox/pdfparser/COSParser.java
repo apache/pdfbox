@@ -2343,7 +2343,7 @@ public class COSParser extends BaseParser
         {
             throw new IOException("Missing root object specification in trailer.");
         }
-        return parseObjectDynamically(root, false);
+        return root.getObject();
     }
 
 }
