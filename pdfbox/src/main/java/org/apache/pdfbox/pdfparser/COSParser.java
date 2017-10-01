@@ -1414,8 +1414,8 @@ public class COSParser extends BaseParser
             int lastGenID = Integer.MIN_VALUE;
             long lastObjOffset = Long.MIN_VALUE;
             char[] objString = " obj".toCharArray();
-            char[] endobjString = "endobj".toCharArray();
-            boolean endobjFound = false;
+            char[] endobjString = "endo".toCharArray();
+            boolean endOfObjFound = false;
             do
             {
                 source.seek(currentOffset);
@@ -1457,20 +1457,23 @@ public class COSParser extends BaseParser
                                 lastGenID = genID;
                                 lastObjOffset = tempOffset + 1;
                                 currentOffset += objString.length - 1;
-                                endobjFound = false;
+                                endOfObjFound = false;
                             }
                         }
                     }
                 }
+                // check for "endo" as abbreviation for "endobj", as the pdf may be cut off
+                // in the middle of the keyword, see PDFBOX-3936.
+                // We could possibly implement a more intelligent algorithm if necessary
                 else if (isString(endobjString))
                 {
-                    endobjFound = true;
+                    endOfObjFound = true;
                     currentOffset += endobjString.length - 1;
                 }
                 currentOffset++;
             }
             while (currentOffset < lastEOFMarker && !source.isEOF());
-            if ((lastEOFMarker < Long.MAX_VALUE || endobjFound) && lastObjOffset > 0)
+            if ((lastEOFMarker < Long.MAX_VALUE || endOfObjFound) && lastObjOffset > 0)
             {
                 // if the pdf wasn't cut off in the middle or if the last object ends with a "endobj" marker
                 // the last object id has to be added here so that it can't get lost as there isn't any subsequent
