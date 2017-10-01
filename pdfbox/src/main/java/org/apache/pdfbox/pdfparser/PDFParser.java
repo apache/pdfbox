@@ -201,19 +201,16 @@ public class PDFParser extends COSParser
         {
             root.setItem(COSName.TYPE, COSName.CATALOG);
         }
-        COSObject catalogObj = document.getCatalog();
-        if (catalogObj.getObject() instanceof COSDictionary)
+        // parse all objects, starting at the root dictionary
+        parseDictObjects(root, (COSName[]) null);
+        // parse all objects of the info dictionary
+        COSBase infoBase = trailer.getDictionaryObject(COSName.INFO);
+        if (infoBase instanceof COSDictionary)
         {
-            parseDictObjects((COSDictionary) catalogObj.getObject(), (COSName[]) null);
-            
-            COSBase infoBase = trailer.getDictionaryObject(COSName.INFO);
-            if (infoBase instanceof COSDictionary)
-            {
-                parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
-            }
-            
-            document.setDecrypted();
+            parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
         }
+
+        document.setDecrypted();
         initialParseDone = true;
     }
 
