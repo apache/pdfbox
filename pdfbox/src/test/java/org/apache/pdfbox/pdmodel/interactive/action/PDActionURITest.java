@@ -16,6 +16,7 @@
 package org.apache.pdfbox.pdmodel.interactive.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
@@ -31,6 +32,7 @@ public class PDActionURITest
     public void testUTF8URI()
     {
         PDActionURI actionURI = new PDActionURI();
+        assertNull(actionURI.getURI());
         actionURI.setURI("http://çµ„åŒ¶æ›¿ç¶Ž.com/");
         assertEquals("http://経営承継.com/", actionURI.getURI());
     }
