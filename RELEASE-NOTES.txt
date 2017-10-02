@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.7
+Release Notes -- Apache PDFBox -- Version 2.0.8
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.6 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.7 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,55 +14,50 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-3515] - Problems with CourierStd font
-[PDFBOX-3536] - IOException "Invalid dictionary, found: 'r' but expected: '/' at offset 1148" on a valid PDF
-[PDFBOX-3794] - Problem in TextPosition implementation
-[PDFBOX-3795] - PDFMergeUtility error invalid stored block lengths
-[PDFBOX-3798] - Truncated file has first page empty
-[PDFBOX-3799] - Problem in TextPosition's hashCode
-[PDFBOX-3806] - Nullpointer exception in getLeftSideBearing
-[PDFBOX-3807] - CMapParser NullPointerException
-[PDFBOX-3811] - Problem with calling "saveIncrementalForExternalSigning" more than once in the same document
-[PDFBOX-3813] - PDF Box crash when using PDFToImage or PDFDebug
-[PDFBOX-3817] - Signature form names not standard
-[PDFBOX-3821] - Newly added MDP functionality breaks PDFs <1.5
-[PDFBOX-3826] - NPE if RAFDataStream.getCurrentPosition() when TrueTypeFont created from file is reused
-[PDFBOX-3827] - Setting empty values on listbox keeps marked item
-[PDFBOX-3829] - ExtractImages fails for JPX images
-[PDFBOX-3831] - v2.0.6 still has hardcoded reference to BouncyCastleProvider
-[PDFBOX-3832] - PDFBox Won't Embed a Font for a Form Field if Field is Empty
-[PDFBOX-3833] - Characters in wrong order
-[PDFBOX-3836] - PDFToImage: Text missing or background box stacks over
-[PDFBOX-3838] - NPE in PatchMeshesShadingContext.readPatch()
-[PDFBOX-3839] - AIOOB in PDResources.getFont()
-[PDFBOX-3845] - Could not find referenced cmap stream H
-[PDFBOX-3847] - code has bug
-[PDFBOX-3850] - DrawPrintTextLocations should limit bbox paint to font bbox when type 3 font has incorrect large glyph bbox
-[PDFBOX-3852] - Overlay a pdf file which is 750 pages ends up in OutOfMemoryError
-[PDFBOX-3855] - NPE in CFFParser.parse()
-[PDFBOX-3857] - Can not extract exported values for PDRadioButton
-[PDFBOX-3858] - Optimize 1 component DeviceN colorspace
-[PDFBOX-3861] - ClassCastException: org.apache.pdfbox.cos.COSStream cannot be cast to org.apache.pdfbox.cos.COSString
-[PDFBOX-3864] - UTF16 encoded string to PDFDocEncoding
-[PDFBOX-3867] - IndexOutOfBoundsException on CMapParser
+[PDFBOX-3424] - Regression from 1.8.10: IOException: XREF for 171:0 points to wrong object: 173:0
+[PDFBOX-3639] - FDF does not parse: Missing root object specification in trailer.
+[PDFBOX-3874] - /Fontinfo instead of /FontInfo in type 1 font
+[PDFBOX-3881] - Handling of Byte Order Mark with Metadata-Fields
+[PDFBOX-3884] - GlyphList registers "wrong" Adobe name for "U+02DC SMALL TILDE"
+[PDFBOX-3887] - Getting a "DataFormatException: invalid distance too far back" exception for the attached file
+[PDFBOX-3894] - NPE on org.apache.pdfbox.pdmodel.PDPageTree.isPageTreeNode
+[PDFBOX-3896] - UnsupportedOperationException
+[PDFBOX-3898] - AcroFields' PDTextField (and others?) can have kids
+[PDFBOX-3909] - End of inline image not detected
+[PDFBOX-3913] - Japanese URI improperly encoded
+[PDFBOX-3914] - LayerUtility ignores OCProperties on import
+[PDFBOX-3916] - NPE on org.apache.pdfbox.pdmodel.font.PDType0Font.readEncoding
+[PDFBOX-3919] - Infinite loop while parsing (2)
+[PDFBOX-3923] - Expected a long type at offset 52152, instead got 'xref'
+[PDFBOX-3925] - QUADDING constants no longer public
+[PDFBOX-3928] - IllegalArgumentException: root cannot be null with truncated file
+[PDFBOX-3929] - Border style dictionary width ignored by Adobe Reader when float
+[PDFBOX-3930] - replace deprecated TBSCertificateStructure
+[PDFBOX-3932] - Image with predictor 15 not rendered correctly
+[PDFBOX-3934] - Page missing
+[PDFBOX-3935] - DataFormatException: invalid stored block lengths
+[PDFBOX-3936] - IllegalArgumentException: root cannot be null with truncated file (2)
+[PDFBOX-3937] - NPE in PDCIDFontType2 constructor
+[PDFBOX-3940] - Lost metadata in 2.0.8-SNAPSHOT
+[PDFBOX-3942] - ClassCastException in getOptionalContentGroups
+[PDFBOX-3943] - /Helv entry in /DR not created if /DR exists
 
 Improvement
 
-[PDFBOX-2963] - Remove Bouncy Castle Provider Reference
-[PDFBOX-3820] - [Patch] Improved signing of existing signature fields II
-[PDFBOX-3824] - Optimize TrueType font embedder
-[PDFBOX-3828] - Generate appearance stream for multiselect listboxes
-[PDFBOX-3854] - PDDeviceRGB.toRGBImage should return a RGB-Typed-Image
-[PDFBOX-3859] - Output destination page in PrintBookmarks example
-[PDFBOX-3860] - TilingPaint.getImage() should return an ARGB-Typed-Image
-[PDFBOX-3863] - Support duplex entry in ViewerPreferences
-[PDFBOX-3868] - Optimize usage of COSStream construction
-[PDFBOX-3869] - Splitter.createNewDocument() should be able to consider different MemoryUsageSetting configurations
+[PDFBOX-3878] - Improve and refactor RemoveAllText example
+[PDFBOX-3890] - The operator Tz is not available when creating new PDF using PDPageContentStream
+[PDFBOX-3897] - Avoid sRGB self-conversions
+[PDFBOX-3900] - Optimize PDSeparation for shadings
+[PDFBOX-3911] - Handle new line characters in single line text fields
+[PDFBOX-3920] - CIDSet should be PDF/A-2b compatible
+[PDFBOX-3927] - Support optional content in annotations
+[PDFBOX-3944] - ERROR "Can't read embedded ICC profile" is too scary
 
 Task
 
-[PDFBOX-3823] - Question about forming a PDF document, including CMYK images for printing.
-[PDFBOX-3865] - Add OWASP dependency-check to build
+[PDFBOX-3584] - Build and test PDFBox with JDK9
+[PDFBOX-3873] - Fix text comparison in PDFontTest
+[PDFBOX-3938] - Add test from PDFBOX-2079 to 2.0 and trunk
 
 
 Release Contents
