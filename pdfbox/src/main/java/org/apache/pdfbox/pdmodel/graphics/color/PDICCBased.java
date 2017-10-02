@@ -168,7 +168,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 {
                     isRGB = true;
                 }
-                LOG.error("Can't read embedded ICC profile (" + e.getLocalizedMessage() + "), using alternate color space: " + alternateColorSpace.getName());
+                LOG.warn("Can't read embedded ICC profile (" + e.getLocalizedMessage() + 
+                         "), using alternate color space: " + alternateColorSpace.getName());
                 initialColor = alternateColorSpace.getInitialColor();
             }
             else
