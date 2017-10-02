@@ -27,6 +27,7 @@ public class PDActionURITest
 {
     /**
      * PDFBOX-3913: Check that URIs encoded in UTF-8 are also supported.
+     * PDFBOX-3946: Check that there is no NPE if URI missing.
      */
     @Test
     public void testUTF8URI()
