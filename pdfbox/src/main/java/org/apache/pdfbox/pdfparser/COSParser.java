@@ -931,7 +931,7 @@ public class COSParser extends BaseParser
             for (COSObject next : parser.getObjects())
             {
                 COSObjectKey stmObjKey = new COSObjectKey(next);
-                Long offset = document.getXrefTable().get(stmObjKey);
+                Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey);
                 if (offset != null && offset == -objstmObjNr)
                 {
                     COSObject stmObj = document.getObjectFromPool(stmObjKey);
@@ -1767,6 +1767,7 @@ public class COSParser extends BaseParser
                 }
                 String numbersStr = new String(numbersBytes, start, numbersBytes.length - start,
                         "ISO-8859-1");
+                numbersStr = numbersStr.replaceAll("\n", " ").replaceAll("  ", " ");
                 String[] numbers = numbersStr.split(" ");
                 for (int i = 0; i < nrOfObjects; i++)
                 {
@@ -1925,48 +1926,66 @@ public class COSParser extends BaseParser
         for (Entry<COSObjectKey, Long> entry : bfCOSObjectKeyOffsets.entrySet())
         {
             Long offset = entry.getValue();
-            // skip compressed objects
+            COSDictionary dictionary = null;
+            // handle compressed objects
             if (offset < 0)
             {
-                continue;
+                parseObjectStream((int) -offset);
+                COSObject compressedObject = document.getObjectFromPool(entry.getKey());
+                if (compressedObject != null)
+                {
+                    COSBase baseObject = compressedObject.getObject();
+                    if (baseObject instanceof COSDictionary)
+                    {
+                        dictionary = (COSDictionary) baseObject;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
             }
-            source.seek(offset);
-            readObjectNumber();
-            readGenerationNumber();
-            readExpectedString(OBJ_MARKER, true);
-            try
+            else
             {
+                source.seek(offset);
+                readObjectNumber();
+                readGenerationNumber();
+                readExpectedString(OBJ_MARKER, true);
                 if (source.peek() != '<')
                 {
                     continue;
                 }
-                COSDictionary dictionary = parseCOSDictionary();
-                // document catalog
-                if (isCatalog(dictionary))
+                try
                 {
-                    trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
+                    dictionary = parseCOSDictionary();
                 }
-                // info dictionary
-                else if (!dictionary.containsKey(COSName.PARENT) && 
-                                  (dictionary.containsKey(COSName.MOD_DATE)
-                                || dictionary.containsKey(COSName.TITLE)
-                                || dictionary.containsKey(COSName.AUTHOR)
-                                || dictionary.containsKey(COSName.SUBJECT)
-                                || dictionary.containsKey(COSName.KEYWORDS)
-                                || dictionary.containsKey(COSName.CREATOR)
-                                || dictionary.containsKey(COSName.PRODUCER)
-                                || dictionary.containsKey(COSName.CREATION_DATE)))
+                catch (IOException exception)
                 {
-                    trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
+                    LOG.debug("Skipped object " + entry.getKey()
+                            + ", either it's corrupt or not a dictionary");
+                    continue;
                 }
-                // encryption dictionary, if existing, is lost
-                // We can't run "Algorithm 2" from PDF specification because of missing ID
             }
-            catch (IOException exception)
+            // document catalog
+            if (isCatalog(dictionary))
             {
-                LOG.debug("Skipped object " + entry.getKey()
-                        + ", either it's corrupt or not a dictionary");
+                trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
             }
+            // info dictionary
+            else if (!dictionary.containsKey(COSName.PARENT)
+                    && (dictionary.containsKey(COSName.MOD_DATE)
+                            || dictionary.containsKey(COSName.TITLE)
+                            || dictionary.containsKey(COSName.AUTHOR)
+                            || dictionary.containsKey(COSName.SUBJECT)
+                            || dictionary.containsKey(COSName.KEYWORDS)
+                            || dictionary.containsKey(COSName.CREATOR)
+                            || dictionary.containsKey(COSName.PRODUCER)
+                            || dictionary.containsKey(COSName.CREATION_DATE)))
+            {
+                trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
+            }
+            // encryption dictionary, if existing, is lost
+            // We can't run "Algorithm 2" from PDF specification because of missing ID
         }
         return trailer;
     }
