@@ -1735,9 +1735,16 @@ public class COSParser extends BaseParser
         // add all found compressed objects to the brute force search result
         for (Long offset : bfSearchObjStreamsOffsets.keySet())
         {
-            long bfOffset = bfSearchCOSObjectKeyOffsets.get(bfSearchObjStreamsOffsets.get(offset));
+            Long bfOffset = bfSearchCOSObjectKeyOffsets.get(bfSearchObjStreamsOffsets.get(offset));
+            // incomplete object stream found?
+            if (bfOffset == null)
+            {
+                LOG.warn("Skipped incomplete object stream:" + bfSearchObjStreamsOffsets.get(offset)
+                        + " at " + offset);
+                continue;
+            }
             // check if the object was overwritten
-            if (offset == bfOffset)
+            if (offset.equals(bfOffset))
             {
                 source.seek(offset);
                 long stmObjNumber = readObjectNumber();
