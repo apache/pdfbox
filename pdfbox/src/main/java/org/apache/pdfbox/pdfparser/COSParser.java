@@ -1729,6 +1729,12 @@ public class COSParser extends BaseParser
                         "ISO-8859-1");
                 numbersStr = numbersStr.replaceAll("\n", " ").replaceAll("  ", " ");
                 String[] numbers = numbersStr.split(" ");
+                if (numbers.length < nrOfObjects * 2)
+                {
+                    LOG.debug(
+                            "Skipped corrupt stream: (" + stmObjNumber + " 0 at offset " + offset);
+                    continue;
+                }
                 for (int i = 0; i < nrOfObjects; i++)
                 {
                     long objNumber = Long.parseLong(numbers[i * 2]);
