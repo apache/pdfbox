@@ -19,9 +19,11 @@ package org.apache.pdfbox.pdfparser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -244,8 +246,58 @@ public class PDFParser extends COSParser
             parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
         }
 
+        if (rebuildTrailer && root != null)
+        {
+            // check if all page objects are dereferenced
+            COSBase pages = root.getDictionaryObject(COSName.PAGES);
+            if (pages != null && pages instanceof COSDictionary)
+            {
+                checkPages((COSDictionary) pages);
+            }
+        }
         document.setDecrypted();
         initialParseDone = true;
+    }
+
+    private int checkPages(COSDictionary pagesDict)
+    {
+        // check for kids
+        COSBase kids = pagesDict.getDictionaryObject(COSName.KIDS);
+        int numberOfPages = 0;
+        if (kids != null && kids instanceof COSArray)
+        {
+            COSArray kidsArray = (COSArray) kids;
+            List<? extends COSBase> kidsList = kidsArray.toList();
+            for (COSBase kid : kidsList)
+            {
+                COSObject kidObject = (COSObject) kid;
+                COSBase kidBaseobject = kidObject.getObject();
+                // object wasn't dereferenced -> remove it
+                if (kidBaseobject.equals(COSNull.NULL))
+                {
+                    LOG.warn("Removed null object " + kid + " from pages dictionary");
+                    kidsArray.remove(kid);
+                }
+                else if (kidBaseobject instanceof COSDictionary)
+                {
+                    COSDictionary kidDictionary = (COSDictionary) kidBaseobject;
+                    COSName type = kidDictionary.getCOSName(COSName.TYPE);
+                    if (COSName.PAGES.equals(type))
+                    {
+                        // process nested pages dictionaries
+                        numberOfPages += checkPages(kidDictionary);
+                    }
+                    else if (COSName.PAGE.equals(type))
+                    {
+                        // count pages
+                        numberOfPages++;
+                    }
+                }
+            }
+        }
+        // fix counter
+        pagesDict.setInt(COSName.COUNT, numberOfPages);
+        return numberOfPages;
     }
 
     /**
