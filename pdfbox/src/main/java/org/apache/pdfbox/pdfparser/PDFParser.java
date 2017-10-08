@@ -209,7 +209,8 @@ public class PDFParser extends COSParser
         {
             parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
         }
-
+        // check pages dictionaries
+        checkPages(root);
         document.setDecrypted();
         initialParseDone = true;
     }
