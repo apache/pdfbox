@@ -1759,15 +1759,37 @@ public class COSParser extends BaseParser
                 long stmObjNumber = readObjectNumber();
                 readGenerationNumber();
                 readExpectedString(OBJ_MARKER, true);
-                COSDictionary dict = parseCOSDictionary();
-                int offsetFirstStream = dict.getInt(COSName.FIRST);
-                int nrOfObjects = dict.getInt(COSName.N);
-                COSStream stream = parseCOSStream(dict);
-                COSInputStream is = stream.createInputStream();
-                byte[] numbersBytes = new byte[offsetFirstStream];
-                is.read(numbersBytes);
-                is.close();
-                stream.close();
+                int nrOfObjects = 0;
+                byte[] numbersBytes = null;
+                COSStream stream = null;
+                COSInputStream is = null;
+                try
+                {
+                    COSDictionary dict = parseCOSDictionary();
+                    int offsetFirstStream = dict.getInt(COSName.FIRST);
+                    nrOfObjects = dict.getInt(COSName.N);
+                    stream = parseCOSStream(dict);
+                    is = stream.createInputStream();
+                    numbersBytes = new byte[offsetFirstStream];
+                    is.read(numbersBytes);
+                }
+                catch (IOException exception)
+                {
+                    LOG.debug(
+                            "Skipped corrupt stream: (" + stmObjNumber + " 0 at offset " + offset);
+                    continue;
+                }
+                finally
+                {
+                    if (is != null)
+                    {
+                        is.close();
+                    }
+                    if (stream != null)
+                    {
+                        stream.close();
+                    }
+                }
                 int start = 0;
                 // skip spaces
                 while (numbersBytes[start] == 32)
