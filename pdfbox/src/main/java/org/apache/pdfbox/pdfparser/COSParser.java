@@ -130,6 +130,8 @@ public class COSParser extends BaseParser
     private boolean isLenient = true;
 
     protected boolean initialParseDone = false;
+
+    private boolean trailerWasRebuild = false;
     /**
      * Contains all found objects of a brute force search.
      */
@@ -1993,14 +1995,74 @@ public class COSParser extends BaseParser
             // encryption dictionary, if existing, is lost
             // We can't run "Algorithm 2" from PDF specification because of missing ID
         }
+        trailerWasRebuild = true;
         return trailer;
+    }
+
+    /**
+     * Check if all entries of the pages dictionary are present. Those which can't be dereferenced are removed.
+     * 
+     * @param root the root dictionary of the pdf
+     */
+    protected void checkPages(COSDictionary root)
+    {
+        if (trailerWasRebuild && root != null)
+        {
+            // check if all page objects are dereferenced
+            COSBase pages = root.getDictionaryObject(COSName.PAGES);
+            if (pages != null && pages instanceof COSDictionary)
+            {
+                checkPagesDictionary((COSDictionary) pages);
+            }
+        }
+    }
+
+    private int checkPagesDictionary(COSDictionary pagesDict)
+    {
+        // check for kids
+        COSBase kids = pagesDict.getDictionaryObject(COSName.KIDS);
+        int numberOfPages = 0;
+        if (kids != null && kids instanceof COSArray)
+        {
+            COSArray kidsArray = (COSArray) kids;
+            List<? extends COSBase> kidsList = kidsArray.toList();
+            for (COSBase kid : kidsList)
+            {
+                COSObject kidObject = (COSObject) kid;
+                COSBase kidBaseobject = kidObject.getObject();
+                // object wasn't dereferenced -> remove it
+                if (kidBaseobject.equals(COSNull.NULL))
+                {
+                    LOG.warn("Removed null object " + kid + " from pages dictionary");
+                    kidsArray.remove(kid);
+                }
+                else if (kidBaseobject instanceof COSDictionary)
+                {
+                    COSDictionary kidDictionary = (COSDictionary) kidBaseobject;
+                    COSName type = kidDictionary.getCOSName(COSName.TYPE);
+                    if (COSName.PAGES.equals(type))
+                    {
+                        // process nested pages dictionaries
+                        numberOfPages += checkPagesDictionary(kidDictionary);
+                    }
+                    else if (COSName.PAGE.equals(type))
+                    {
+                        // count pages
+                        numberOfPages++;
+                    }
+                }
+            }
+        }
+        // fix counter
+        pagesDict.setInt(COSName.COUNT, numberOfPages);
+        return numberOfPages;
     }
 
     /**
      * Tell if the dictionary is a PDF catalog. Override this for an FDF catalog.
      * 
      * @param dictionary
-     * @return 
+     * @return
      */
     protected boolean isCatalog(COSDictionary dictionary)
     {
