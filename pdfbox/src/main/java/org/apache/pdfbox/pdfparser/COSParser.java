@@ -130,6 +130,8 @@ public class COSParser extends BaseParser
     private boolean isLenient = true;
 
     protected boolean initialParseDone = false;
+
+    private boolean trailerWasRebuild = false;
     /**
      * Contains all found objects of a brute force search.
      */
@@ -192,6 +194,53 @@ public class COSParser extends BaseParser
         {
             readTrailBytes = byteCount;
         }
+    }
+
+    /**
+     * Read the trailer information and provide a COSDictionary containing the trailer information.
+     * 
+     * @return a COSDictionary containing the trailer information
+     * @throws IOException if something went wrong
+     */
+    protected COSDictionary retrieveTrailer() throws IOException
+    {
+        COSDictionary trailer = null;
+        boolean rebuildTrailer = false;
+        try
+        {
+            // parse startxref
+            // TODO FDF files don't have a startxref value, so that rebuildTrailer is triggered
+            long startXRefOffset = getStartxrefOffset();
+            if (startXRefOffset > -1)
+            {
+                trailer = parseXref(startXRefOffset);
+            }
+            else
+            {
+                rebuildTrailer = isLenient();
+            }
+        }
+        catch (IOException exception)
+        {
+            if (isLenient())
+            {
+                rebuildTrailer = true;
+            }
+            else
+            {
+                throw exception;
+            }
+        }
+        // check if the trailer contains a Root object
+        if (trailer != null && trailer.getItem(COSName.ROOT) == null)
+        {
+            rebuildTrailer = isLenient();
+        }
+        if (rebuildTrailer)
+        {
+            trailer = rebuildTrailer();
+        }
+        return trailer;
     }
 
     /**
@@ -1868,7 +1917,7 @@ public class COSParser extends BaseParser
     
     /**
      * Rebuild the trailer dictionary if startxref can't be found.
-     *  
+     * 
      * @return the rebuild trailer dictionary
      * 
      * @throws IOException if something went wrong
@@ -1956,7 +2005,67 @@ public class COSParser extends BaseParser
                 // We can't run "Algorithm 2" from PDF specification because of missing ID
             }
         }
+        trailerWasRebuild = true;
         return trailer;
+    }
+
+    /**
+     * Check if all entries of the pages dictionary are present. Those which can't be dereferenced are removed.
+     * 
+     * @param root the root dictionary of the pdf
+     */
+    protected void checkPages(COSDictionary root)
+    {
+        if (trailerWasRebuild && root != null)
+        {
+            // check if all page objects are dereferenced
+            COSBase pages = root.getDictionaryObject(COSName.PAGES);
+            if (pages != null && pages instanceof COSDictionary)
+            {
+                checkPagesDictionary((COSDictionary) pages);
+            }
+        }
+    }
+
+    private int checkPagesDictionary(COSDictionary pagesDict)
+    {
+        // check for kids
+        COSBase kids = pagesDict.getDictionaryObject(COSName.KIDS);
+        int numberOfPages = 0;
+        if (kids != null && kids instanceof COSArray)
+        {
+            COSArray kidsArray = (COSArray) kids;
+            List<? extends COSBase> kidsList = kidsArray.toList();
+            for (COSBase kid : kidsList)
+            {
+                COSObject kidObject = (COSObject) kid;
+                COSBase kidBaseobject = kidObject.getObject();
+                // object wasn't dereferenced -> remove it
+                if (kidBaseobject.equals(COSNull.NULL))
+                {
+                    LOG.warn("Removed null object " + kid + " from pages dictionary");
+                    kidsArray.remove(kid);
+                }
+                else if (kidBaseobject instanceof COSDictionary)
+                {
+                    COSDictionary kidDictionary = (COSDictionary) kidBaseobject;
+                    COSName type = kidDictionary.getCOSName(COSName.TYPE);
+                    if (COSName.PAGES.equals(type))
+                    {
+                        // process nested pages dictionaries
+                        numberOfPages += checkPagesDictionary(kidDictionary);
+                    }
+                    else if (COSName.PAGE.equals(type))
+                    {
+                        // count pages
+                        numberOfPages++;
+                    }
+                }
+            }
+        }
+        // fix counter
+        pagesDict.setInt(COSName.COUNT, numberOfPages);
+        return numberOfPages;
     }
 
     /**
