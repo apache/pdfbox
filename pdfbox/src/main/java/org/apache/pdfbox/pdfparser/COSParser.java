@@ -1969,19 +1969,19 @@ public class COSParser extends BaseParser
                 // handle compressed objects
                 if (offset < 0)
                 {
-                    parseObjectStream((int) -offset);
                     COSObject compressedObject = document.getObjectFromPool(entry.getKey());
-                    if (compressedObject != null)
+                    if (compressedObject.getObject() == null)
                     {
-                        COSBase baseObject = compressedObject.getObject();
-                        if (baseObject instanceof COSDictionary)
-                        {
-                            dictionary = (COSDictionary) baseObject;
-                        }
-                        else
-                        {
-                            continue;
-                        }
+                        parseObjectStream((int) -offset);
+                    }
+                    COSBase baseObject = compressedObject.getObject();
+                    if (baseObject instanceof COSDictionary)
+                    {
+                        dictionary = (COSDictionary) baseObject;
+                    }
+                    else
+                    {
+                        continue;
                     }
                 }
                 else
