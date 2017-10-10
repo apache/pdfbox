@@ -2012,6 +2012,8 @@ public class COSParser extends BaseParser
                 }
                 // info dictionary
                 else if (!dictionary.containsKey(COSName.PARENT)
+                      && !dictionary.containsKey(COSName.A)
+                      && !dictionary.containsKey(COSName.DEST)
                         && (dictionary.containsKey(COSName.MOD_DATE)
                                 || dictionary.containsKey(COSName.TITLE)
                                 || dictionary.containsKey(COSName.AUTHOR)
