@@ -222,7 +222,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     {
         if (defaultWidth == 0)
         {
-            COSBase base = dict.getDictionaryObject(COgetCIDSystemInfoSName.DW);
+            COSBase base = dict.getDictionaryObject(COSName.DW);
             if (base instanceof COSNumber)
             {
                 defaultWidth = ((COSNumber) base).floatValue();
