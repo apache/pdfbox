@@ -1850,7 +1850,14 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         InputStream input = PDFTextStripper.class.getClassLoader().getResourceAsStream(path);
         try
         {
-            parseBidiFile(input);
+            if (input != null)
+            {
+                parseBidiFile(input);
+            }
+            else
+            {
+                LOG.warn("Could not find '" + path + "', mirroring char map will be empty: ");
+            }
         }
         catch (IOException e)
         {
