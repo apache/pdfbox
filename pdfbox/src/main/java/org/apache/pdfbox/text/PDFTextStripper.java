@@ -1808,26 +1808,22 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     static
     {
         String path = "org/apache/pdfbox/resources/text/BidiMirroring.txt";
-        InputStream input = PDFTextStripper.class.getClassLoader().getResourceAsStream(path);
-        try
+        try (InputStream input = PDFTextStripper.class.getClassLoader().getResourceAsStream(path))
         {
-            parseBidiFile(input);
+            if (input != null)
+            {
+                parseBidiFile(input);
+            }
+            else
+            {
+                LOG.warn("Could not find '" + path + "', mirroring char map will be empty: ");
+            }
+            
         }
         catch (IOException e)
         {
             LOG.warn("Could not parse BidiMirroring.txt, mirroring char map will be empty: "
                     + e.getMessage());
-        }
-        finally
-        {
-            try
-            {
-                input.close();
-            }
-            catch (IOException e)
-            {
-                LOG.error("Could not close BidiMirroring.txt ", e);
-            }
         }
     }
 
