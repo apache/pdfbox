@@ -1761,6 +1761,11 @@ public class COSParser extends BaseParser
                     COSDictionary dict = parseCOSDictionary();
                     int offsetFirstStream = dict.getInt(COSName.FIRST);
                     nrOfObjects = dict.getInt(COSName.N);
+                    // skip the stream if required values are missing
+                    if (offsetFirstStream == -1 || nrOfObjects == -1)
+                    {
+                        continue;
+                    }
                     stream = parseCOSStream(dict);
                     is = stream.createInputStream();
                     numbersBytes = new byte[offsetFirstStream];
