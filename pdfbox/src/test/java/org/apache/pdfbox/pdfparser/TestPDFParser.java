@@ -41,6 +41,7 @@ import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.DateConverter;
 import org.junit.Before;
 import org.junit.Test;
@@ -194,6 +195,232 @@ public class TestPDFParser
         assertEquals("C:REGULA~1IREGSFR_EQ_EM.PDF", di.getTitle());
         assertEquals(DateConverter.toCalendar("Tuesday, July 28, 1998 4:00:09 PM"), di.getCreationDate());
 
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-3783: test parsing of file with trash after %%EOF.
+     * 
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3783() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12867102/PDFBOX-3783-72GLBIGUC6LB46ELZFBARRJTLN4RBSQM.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3783 will be skipped");
+            return;
+        }
+
+        PDDocument.load(byteArray).close();
+    }
+
+    /**
+     * PDFBOX-3785, PDFBOX-3957:
+     * Test whether truncated file with several revisions has correct page count.
+     * 
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3785() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12867113/202097.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3785 will be skipped");
+            return;
+        }
+
+        PDDocument doc = PDDocument.load(byteArray);
+        assertEquals("Adjust test to 11 when PDFBOX-3785 is fixed", 1, doc.getNumberOfPages());
+        //assertEquals(11, doc.getNumberOfPages());
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-3947: test parsing of file with broken object stream.
+     *
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3947() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12890031/670064.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3947 will be skipped");
+            return;
+        }
+
+        PDDocument.load(byteArray).close();
+    }
+
+    /**
+     * PDFBOX-3948: test parsing of file with object stream containing some unexpected newlines.
+     * 
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3948() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12890034/EUWO6SQS5TM4VGOMRD3FLXZHU35V2CP2.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3948 will be skipped");
+            return;
+        }
+
+        PDDocument.load(byteArray).close();
+    }
+
+    /**
+     * PDFBOX-3949: test parsing of file with incomplete object stream.
+     * 
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3949() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12890037/MKFYUGZWS3OPXLLVU2Z4LWCTVA5WNOGF.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3949 will be skipped");
+            return;
+        }
+
+        PDDocument.load(byteArray).close();
+    }
+
+    /**
+     * PDFBOX-3950: test parsing and rendering of truncated file with missing pages.
+     * 
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3950() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12890042/23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3950 will be skipped");
+            return;
+        }
+
+        PDDocument doc = PDDocument.load(byteArray);
+        assertEquals(4, doc.getNumberOfPages());
+        PDFRenderer renderer = new PDFRenderer(doc);
+        for (int i = 0; i < doc.getNumberOfPages(); ++i)
+        {
+            try
+            {
+                renderer.renderImage(i);
+            }
+            catch (IOException ex)
+            {
+                if (i == 3 && ex.getMessage().equals("name for 'gs' operator not found in resources: /GS7"))
+                {
+                    continue;
+                }
+                throw ex;
+            }
+        }
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-3951: test parsing of truncated file.
+     * 
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3951() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12890047/FIHUZWDDL2VGPOE34N6YHWSIGSH5LVGZ.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3951 will be skipped");
+            return;
+        }
+
+        PDDocument doc = PDDocument.load(byteArray);
+        assertEquals(143, doc.getNumberOfPages());
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-3964: test parsing of broken file.
+     * 
+     * @throws MalformedURLException
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3964() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12892097/c687766d68ac766be3f02aaec5e0d713_2.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3964 will be skipped");
+            return;
+        }
+
+        PDDocument doc = PDDocument.load(byteArray);
+        assertEquals(10, doc.getNumberOfPages());
         doc.close();
     }
 
