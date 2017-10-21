@@ -23,6 +23,10 @@ import junit.framework.TestCase;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
@@ -109,6 +113,43 @@ public class PDFMergerUtilityTest extends TestCase
                 "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
                 "GlobalResourceMergeTestResult2.pdf",
                 MemoryUsageSetting.setupTempFileOnly());
+    }
+
+    /**
+     * PDFBOX-3972: Test that OpenAction page destination isn't lost after merge.
+     * 
+     * @throws IOException 
+     */
+    public void testPDFMergerOpenAction() throws IOException
+    {
+        PDDocument doc1 = new PDDocument();
+        doc1.addPage(new PDPage());
+        doc1.addPage(new PDPage());
+        doc1.addPage(new PDPage());
+        doc1.save(new File(TARGETTESTDIR,"MergerOpenActionTest1.pdf"));
+        doc1.close();
+
+        PDDocument doc2 = new PDDocument();
+        doc2.addPage(new PDPage());
+        doc2.addPage(new PDPage());
+        doc2.addPage(new PDPage());
+        PDPageDestination dest = new PDPageFitDestination();
+        dest.setPage(doc2.getPage(1));
+        doc2.getDocumentCatalog().setOpenAction(dest);
+        doc2.save(new File(TARGETTESTDIR,"MergerOpenActionTest2.pdf"));
+        doc2.close();
+
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        pdfMergerUtility.addSource(new File(TARGETTESTDIR, "MergerOpenActionTest1.pdf"));
+        pdfMergerUtility.addSource(new File(TARGETTESTDIR, "MergerOpenActionTest2.pdf"));
+        pdfMergerUtility.setDestinationFileName(TARGETTESTDIR + "MergerOpenActionTestResult.pdf");
+        pdfMergerUtility.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+
+        PDDocument mergedDoc = PDDocument.load(new File(TARGETTESTDIR, "MergerOpenActionTestResult.pdf"));
+        PDDocumentCatalog documentCatalog = mergedDoc.getDocumentCatalog();
+        dest = (PDPageDestination) documentCatalog.getOpenAction();
+        assertEquals(4, documentCatalog.getPages().indexOf(dest.getPage()));
+        mergedDoc.close();
     }
 
     // checks that the result file of a merge has the same rendering as the two
