@@ -67,7 +67,7 @@ public class PDSeedValue implements COSObjectable
      */
     public static final int FLAG_DIGEST_METHOD = 1 << 6;
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Default constructor.
