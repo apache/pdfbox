@@ -250,8 +250,7 @@ public class TestPDFParser
 
         try (PDDocument doc = PDDocument.load(byteArray))
         {
-            assertEquals("Adjust test to 11 when PDFBOX-3785 is fixed", 1, doc.getNumberOfPages());
-            //assertEquals(11, doc.getNumberOfPages());
+            assertEquals(11, doc.getNumberOfPages());
         }
     }
 
