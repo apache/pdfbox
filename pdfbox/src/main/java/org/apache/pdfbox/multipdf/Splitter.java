@@ -107,7 +107,7 @@ public class Splitter
     /**
      * This will set the start page.
      *
-     * @param start the start page
+     * @param start the 1-based start page
      * @throws IllegalArgumentException if the start page is smaller than one.
      */
     public void setStartPage(int start)
@@ -122,7 +122,7 @@ public class Splitter
     /**
      * This will set the end page.
      *
-     * @param end the end page
+     * @param end the 1-based end page
      * @throws IllegalArgumentException if the end page is smaller than one.
      */
     public void setEndPage(int end)
@@ -188,13 +188,13 @@ public class Splitter
      *     return isPrime(pageNumber);
      * }
      * </code>
-     * @param pageNumber the page number to be checked as splitting page
+     * @param pageNumber the 0-based page number to be checked as splitting page
      * 
      * @return true If a new document should be created.
      */
     protected boolean splitAtPage(int pageNumber)
     {
-        return pageNumber % splitLength == 0;
+        return (pageNumber + 1 - Math.max(1, startPage)) % splitLength == 0;
     }
 
     /**
