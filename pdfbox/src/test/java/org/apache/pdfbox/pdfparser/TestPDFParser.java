@@ -424,6 +424,39 @@ public class TestPDFParser
     }
 
     /**
+     * Test whether /Info dictionary is retrieved correctly in brute force search for the
+     * Info/Catalog dictionaries.
+     *
+     * @throws MalformedURLException
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3977() throws MalformedURLException, IOException
+    {
+        byte[] byteArray;
+        try
+        {
+            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12893582/63NGFQRI44HQNPIPEJH5W2TBM6DJZWMI.pdf").openStream();
+            byteArray = IOUtils.toByteArray(is);
+            is.close();
+        }
+        catch (IOException ex)
+        {
+            System.err.println("URL loading failed, testPDFBox3977 will be skipped");
+            return;
+        }
+
+        PDDocument doc = PDDocument.load(byteArray);
+        PDDocumentInformation di = doc.getDocumentInformation();
+        assertEquals("QuarkXPress(tm) 6.52", di.getCreator());
+        assertEquals("Acrobat Distiller 7.0 pour Macintosh", di.getProducer());
+        assertEquals("Fich sal Fabr corr1 (Page 6)", di.getTitle());
+        assertEquals(DateConverter.toCalendar("D:20070608151915+02'00'"), di.getCreationDate());
+        assertEquals(DateConverter.toCalendar("D:20080604152122+02'00'"), di.getModificationDate());
+        doc.close();
+    }
+
+    /**
      * Test parsing the "genko_oc_shiryo1.pdf" file, which is susceptible to regression.
      * 
      * @throws Exception 
