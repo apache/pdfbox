@@ -1660,7 +1660,7 @@ public class COSParser extends BaseParser
                         int genNumber = ((COSObject) infoObj).getGenerationNumber();
                         trailerKeys[1] = new COSObjectKey(objNumber, genNumber);
                     }
-                    if (trailerKeys[0] != null || trailerKeys[1] != null)
+                    if (trailerKeys[0] != null && trailerKeys[1] != null)
                     {
                         trailerDicts.add(trailerKeys);
                     }
@@ -1678,15 +1678,12 @@ public class COSParser extends BaseParser
         if (trailerdictsSize > 1)
         {
             COSObjectKey[] first = trailerDicts.get(0);
-            if (first[0] != null && first[1] != null)
+            for (int i = trailerdictsSize - 1; i > 0; i--)
             {
-                for (int i = trailerdictsSize - 1; i > 0; i--)
+                COSObjectKey[] other = trailerDicts.get(i);
+                if (first[0].equals(other[0]) && first[1].equals(other[1]))
                 {
-                    COSObjectKey[] other = trailerDicts.get(i);
-                    if (first[0].equals(other[0]) && first[1].equals(other[1]))
-                    {
-                        trailerDicts.remove(other);
-                    }
+                    trailerDicts.remove(other);
                 }
             }
         }
