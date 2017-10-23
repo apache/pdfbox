@@ -1678,15 +1678,17 @@ public class COSParser extends BaseParser
         if (trailerdictsSize > 1)
         {
             COSObjectKey[] first = trailerDicts.get(0);
-            for (int i = trailerdictsSize - 1; i > 0; i--)
+            if (first[0] != null && first[1] != null)
             {
-                COSObjectKey[] other = trailerDicts.get(i);
-                if (first[0].equals(other[0]) && first[1].equals(other[1]))
+                for (int i = trailerdictsSize - 1; i > 0; i--)
                 {
-                    trailerDicts.remove(other);
+                    COSObjectKey[] other = trailerDicts.get(i);
+                    if (first[0].equals(other[0]) && first[1].equals(other[1]))
+                    {
+                        trailerDicts.remove(other);
+                    }
                 }
             }
-
         }
         return trailerDicts;
     }
