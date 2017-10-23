@@ -1622,7 +1622,7 @@ public class COSParser extends BaseParser
      */
     private List<COSObjectKey[]> bfSearchForTrailer() throws IOException
     {
-        List<COSObjectKey[]> trailerDicts = new ArrayList<COSObjectKey[]>();
+        List<COSObjectKey[]> trailerDicts = new ArrayList<>();
         long originOffset = source.getPosition();
         source.seek(MINIMUM_SEARCH_OFFSET);
         while (!source.isEOF())
@@ -1671,15 +1671,17 @@ public class COSParser extends BaseParser
         if (trailerdictsSize > 1)
         {
             COSObjectKey[] first = trailerDicts.get(0);
-            for (int i = trailerdictsSize - 1; i > 0; i--)
+            if (first[0] != null && first[1] != null)
             {
-                COSObjectKey[] other = trailerDicts.get(i);
-                if (first[0].equals(other[0]) && first[1].equals(other[1]))
+                for (int i = trailerdictsSize - 1; i > 0; i--)
                 {
-                    trailerDicts.remove(other);
+                    COSObjectKey[] other = trailerDicts.get(i);
+                    if (first[0].equals(other[0]) && first[1].equals(other[1]))
+                    {
+                        trailerDicts.remove(other);
+                    }
                 }
             }
-
         }
         return trailerDicts;
     }
