@@ -2148,7 +2148,7 @@ public class COSParser extends BaseParser
         {
             // check if all page objects are dereferenced
             COSBase pages = root.getDictionaryObject(COSName.PAGES);
-            if (pages != null && pages instanceof COSDictionary)
+            if (pages instanceof COSDictionary)
             {
                 checkPagesDictionary((COSDictionary) pages);
             }
@@ -2160,7 +2160,7 @@ public class COSParser extends BaseParser
         // check for kids
         COSBase kids = pagesDict.getDictionaryObject(COSName.KIDS);
         int numberOfPages = 0;
-        if (kids != null && kids instanceof COSArray)
+        if (kids instanceof COSArray)
         {
             COSArray kidsArray = (COSArray) kids;
             List<? extends COSBase> kidsList = kidsArray.toList();
