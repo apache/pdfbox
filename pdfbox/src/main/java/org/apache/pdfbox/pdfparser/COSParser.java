@@ -2034,6 +2034,8 @@ public class COSParser extends BaseParser
         trailer = xrefTrailerResolver.getTrailer();
         getDocument().setTrailer(trailer);
         List<COSObjectKey[]> trailerObjects = bfSearchForTrailer();
+        boolean rootFound = false;
+        boolean infoFound = false;
         if (trailerObjects.size() == 1)
         {
             COSObjectKey[] trailerObj = trailerObjects.get(0);
@@ -2047,6 +2049,7 @@ public class COSParser extends BaseParser
                 if (rootDict != null && isCatalog(rootDict))
                 {
                     trailer.setItem(COSName.ROOT, document.getObjectFromPool(rootKey));
+                    rootFound = true;
                 }
             }
             if (infoKey != null && infoOffset != null)
@@ -2055,10 +2058,11 @@ public class COSParser extends BaseParser
                 if (infoDict != null && isInfo(infoDict))
                 {
                     trailer.setItem(COSName.INFO, document.getObjectFromPool(infoKey));
+                    infoFound = true;
                 }
             }
         }
-        else
+        if (!rootFound || !infoFound)
         {
             // search for the different parts of the trailer dictionary
             for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
