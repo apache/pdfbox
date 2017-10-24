@@ -78,7 +78,7 @@ public final class CreateEmptySignatureForm
 
             acroForm.getFields().add(signatureField);
 
-            document.save("target/EmptySignatureForm.pdf");
+            document.save(args[0]);
         }
     }
 }
