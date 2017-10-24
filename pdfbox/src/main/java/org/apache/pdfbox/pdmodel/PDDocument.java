@@ -834,7 +834,8 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * This will return the last signature.
+     * This will return the last signature from the field tree. Note that this may not be the
+     * last in time when empty signature fields are created first but signed after other fields.
      * 
      * @return the last signature as <code>PDSignatureField</code>.
      * @throws IOException if no document catalog can be found.
@@ -1331,7 +1332,7 @@ public class PDDocument implements Closeable
      * @return instance to be used for external signing and setting CMS signature
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream or
-     * signature optionss were not set.
+     * signature options were not set.
      */
     public ExternalSigningSupport saveIncrementalForExternalSigning(OutputStream output) throws IOException
     {
@@ -1339,7 +1340,18 @@ public class PDDocument implements Closeable
         {
             throw new IllegalStateException("document was not loaded from a file or a stream");
         }
-        int[] byteRange = getLastSignatureDictionary().getByteRange();
+        // PDFBOX-3978: getLastSignatureDictionary() not helpful if signing into a template
+        // that is not the last signature. So give higher priority to signature with update flag.
+        PDSignature foundSignature = null;
+        for (PDSignature sig : getSignatureDictionaries())
+        {
+            foundSignature = sig;
+            if (sig.getCOSObject().isNeedToBeUpdated())
+            {
+                break;
+            }
+        }
+        int[] byteRange = foundSignature.getByteRange();
         if (!Arrays.equals(byteRange, RESERVE_BYTE_RANGE))
         {
             throw new IllegalStateException("signature reserve byte range has been changed "
