@@ -24,9 +24,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -36,6 +39,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.examples.signature.TSAClient;
@@ -214,6 +218,69 @@ public class TestCreateSignature
         checkSignature(destFile);
     }
 
+    /**
+     * Test when visually signing externally on an existing signature field on a file which has
+     * been signed before.
+     * 
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     * @throws KeyStoreException
+     * @throws CertificateException
+     * @throws UnrecoverableKeyException
+     * @throws CMSException
+     * @throws OperatorCreationException
+     * @throws GeneralSecurityException 
+     */
+    @Test
+    public void testPDFBox3978() throws IOException, NoSuchAlgorithmException, KeyStoreException, 
+                                        CertificateException, UnrecoverableKeyException, 
+                                        CMSException, OperatorCreationException, GeneralSecurityException
+    {
+        String filename        = outDir + "EmptySignatureForm.pdf";
+        String filenameSigned1 = outDir + "EmptySignatureForm-signed1.pdf";
+        String filenameSigned2 = outDir + "EmptySignatureForm-signed2.pdf";
+
+        if (!externallySign)
+        {
+            return;
+        }
+
+        // load the keystore
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+
+        // create file with empty signature
+        CreateEmptySignatureForm.main(new String[]{filename});
+
+        // sign PDF
+        CreateSignature signing1 = new CreateSignature(keystore, password.toCharArray());
+        signing1.setExternalSigning(false);
+        signing1.signDetached(new File(filename), new File(filenameSigned1));
+
+        checkSignature(new File(filenameSigned1));
+
+        PDDocument doc1 = PDDocument.load(new File(filenameSigned1));
+        List<PDSignature> signatureDictionaries = doc1.getSignatureDictionaries();
+        Assert.assertEquals(1, signatureDictionaries.size());
+        doc1.close();
+
+        // do visual signing in the field
+        FileInputStream fis = new FileInputStream(jpegPath);
+        CreateVisibleSignature signing2 = new CreateVisibleSignature(keystore, password.toCharArray());
+        signing2.setVisibleSignDesigner(filenameSigned1, 0, 0, -50, fis, 1);
+        signing2.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
+        signing2.setExternalSigning(externallySign);
+        signing2.signPDF(new File(filenameSigned1), new File(filenameSigned2), null, "Signature1");
+        fis.close();
+
+        checkSignature(new File(filenameSigned2));
+
+        PDDocument doc2 = PDDocument.load(new File(filenameSigned2));
+        signatureDictionaries = doc2.getSignatureDictionaries();
+        Assert.assertEquals(2, signatureDictionaries.size());
+        doc2.close();
+    }
+
     private String getOutputFileName(String filePattern)
     {
         return MessageFormat.format(filePattern,(externallySign ? "_ext" : ""));
@@ -311,7 +378,7 @@ public class TestCreateSignature
             caught = true;
         }
         Assert.assertTrue("IllegalStateException should have been thrown", caught);
-        document.getLastSignatureDictionary().setByteRange(reserveByteRange);
+        signature.setByteRange(reserveByteRange);
         Assert.assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent()));
     }
 }
