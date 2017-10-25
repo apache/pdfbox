@@ -110,6 +110,10 @@ final class Type1Parser
         {
             // premature end
             Token token = lexer.peekToken();
+            if (token == null)
+            {
+                break;
+            }
             if (token.getKind() == Token.NAME &&
                 ("currentdict".equals(token.getText()) || "end".equals(token.getText())))
             {
@@ -312,12 +316,20 @@ final class Type1Parser
 
         for (int i = 0; i < length; i++)
         {
+            if (lexer.peekToken() == null)
+            {
+                break;
+            }
             if (lexer.peekToken().getKind() == Token.NAME &&
                !lexer.peekToken().getText().equals("end"))
             {
                 read(Token.NAME);
             }
             // premature end
+            if (lexer.peekToken() == null)
+            {
+                break;
+            }
             if (lexer.peekToken().getKind() == Token.NAME &&
                 lexer.peekToken().getText().equals("end"))
             {
@@ -501,7 +513,7 @@ final class Type1Parser
         for (int i = 0; i < length; i++)
         {
             // premature end
-            if (lexer.peekToken().getKind() != Token.LITERAL)
+            if (lexer.peekToken() == null || lexer.peekToken().getKind() != Token.LITERAL)
             {
                 break;
             }
@@ -633,6 +645,10 @@ final class Type1Parser
         for (int i = 0; i < length; i++)
         {
             // premature end
+            if (lexer.peekToken() == null)
+            {
+                break;
+            }
             if (!(lexer.peekToken().getKind() == Token.NAME &&
                   lexer.peekToken().getText().equals("dup")))
             {
@@ -691,6 +707,10 @@ final class Type1Parser
         for (int i = 0; i < length; i++)
         {
             // premature end
+            if (lexer.peekToken() == null)
+            {
+                break;
+            }
             if (lexer.peekToken().getKind() == Token.NAME &&
                 lexer.peekToken().getText().equals("end"))
             {
