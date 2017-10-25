@@ -115,7 +115,7 @@ public class CreateSignature extends CreateSignatureBase
     {
         setTsaClient(tsaClient);
 
-        int accessPermissions = getMDPPermission(document);
+        int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {
             throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
@@ -136,7 +136,7 @@ public class CreateSignature extends CreateSignatureBase
         // Optional: certify 
         if (accessPermissions == 0)
         {
-            setMDPPermission(document, signature, 2);
+            SigUtils.setMDPPermission(document, signature, 2);
         }        
 
         if (isExternalSigning())

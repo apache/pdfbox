@@ -196,7 +196,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // load document
         PDDocument doc = PDDocument.load(inputFile);
 
-        int accessPermissions = getMDPPermission(doc);
+        int accessPermissions = SigUtils.getMDPPermission(doc);
         if (accessPermissions == 1)
         {
             throw new IllegalStateException("No changes to the document are permitted due to DocMDP transform parameters dictionary");
@@ -222,7 +222,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // PDF/A-1b requires PDF version 1.4 max, so don't increase the version on such files.
         if (doc.getVersion() >= 1.5f && accessPermissions == 0)
         {
-            setMDPPermission(doc, signature, 2);
+            SigUtils.setMDPPermission(doc, signature, 2);
         }
 
         PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
