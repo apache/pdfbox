@@ -145,7 +145,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>2.1.0</version>
+                        <version>3.0.1</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         </configuration>
