@@ -44,7 +44,7 @@ public class SigUtils
      * return values are 1, 2 or 3. 2 is also returned if the DocMDP transform parameters dictionary
      * is found but did not contain a /P entry, or if the value is outside the valid range.
      */
-    static public int getMDPPermission(PDDocument doc)
+    public static int getMDPPermission(PDDocument doc)
     {
         COSBase base = doc.getDocumentCatalog().getCOSObject().getDictionaryObject(COSName.PERMS);
         if (base instanceof COSDictionary)
