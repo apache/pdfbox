@@ -24,20 +24,25 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 
 /**
- *
+ * Utility class for the signature / timestamp examples.
+ * 
  * @author Tilman Hausherr
  */
 public class SigUtils
 {
+    private SigUtils()
+    {
+    }
 
     /**
-     * Get the access permissions granted for this document in the DocMDP transform parameters dictionary. Details are
-     * described in the table "Entries in the DocMDP transform parameters dictionary" in the PDF specification.
+     * Get the access permissions granted for this document in the DocMDP transform parameters
+     * dictionary. Details are described in the table "Entries in the DocMDP transform parameters
+     * dictionary" in the PDF specification.
      *
      * @param doc document.
-     * @return the permission value. 0 means no DocMDP transform parameters dictionary exists. Other return values are
-     * 1, 2 or 3. 2 is also returned if the DocMDP transform parameters dictionary is found but did not contain a /P
-     * entry, or if the value is outside the valid range.
+     * @return the permission value. 0 means no DocMDP transform parameters dictionary exists. Other
+     * return values are 1, 2 or 3. 2 is also returned if the DocMDP transform parameters dictionary
+     * is found but did not contain a /P entry, or if the value is outside the valid range.
      */
     static public int getMDPPermission(PDDocument doc)
     {
@@ -81,6 +86,15 @@ public class SigUtils
         return 0;
     }
 
+    /**
+     * Set the access permissions granted for this document in the DocMDP transform parameters
+     * dictionary. Details are described in the table "Entries in the DocMDP transform parameters
+     * dictionary" in the PDF specification.
+     *
+     * @param doc The document.
+     * @param signature The signature object.
+     * @param accessPermissions The permission value (1, 2 or 3).
+     */
     static public void setMDPPermission(PDDocument doc, PDSignature signature, int accessPermissions)
     {
         COSDictionary sigDict = signature.getCOSObject();
@@ -94,7 +108,7 @@ public class SigUtils
 
         COSDictionary referenceDict = new COSDictionary();
         referenceDict.setItem(COSName.TYPE, COSName.getPDFName("SigRef"));
-        referenceDict.setItem("TransformMethod", COSName.getPDFName("DocMDP"));
+        referenceDict.setItem("TransformMethod", COSName.DOCMDP);
         referenceDict.setItem("DigestMethod", COSName.getPDFName("SHA1"));
         referenceDict.setItem("TransformParams", transformParameters);
         referenceDict.setNeedToBeUpdated(true);
