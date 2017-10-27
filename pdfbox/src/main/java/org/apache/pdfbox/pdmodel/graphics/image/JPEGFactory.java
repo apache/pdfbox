@@ -191,7 +191,7 @@ public final class JPEGFactory
      * quality by calling {@link #createFromStream(org.apache.pdfbox.pdmodel.PDDocument,
      * java.io.InputStream) createFromStream()} instead.
      * 
-     * The image will be created at 72 DPI.
+     * The image will be created with a dpi value of 72 to be stored in metadata.
      * @param document the document where the image will be created
      * @param image the BufferedImage to embed
      * @param quality the desired JPEG compression quality
@@ -205,7 +205,7 @@ public final class JPEGFactory
     }
 
     /**
-     * Creates a new JPEG Image XObject from a BufferedImage, a given quality and DPI.
+     * Creates a new JPEG Image XObject from a BufferedImage, a given quality and dpi metadata.
      * <p>
      * Do not read a JPEG image from a stream/file and call this method; you'll get more speed and
      * quality by calling {@link #createFromStream(org.apache.pdfbox.pdmodel.PDDocument,
@@ -214,7 +214,8 @@ public final class JPEGFactory
      * @param document the document where the image will be created
      * @param image the BufferedImage to embed
      * @param quality the desired JPEG compression quality
-     * @param dpi the desired DPI (resolution) of the JPEG
+     * @param dpi the desired dpi (resolution) value of the JPEG to be stored in metadata. This
+     * value has no influence on image content or size.
      * @return a new Image XObject
      * @throws IOException if the JPEG data cannot be written
      */
