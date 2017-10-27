@@ -133,8 +133,14 @@ public final class ShowSignature
                         }
                     }
 
-                    System.out.println("Name:     " + sig.getName());
-                    System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
+                    if (sig.getName() != null)
+                    {
+                        System.out.println("Name:     " + sig.getName());
+                    }
+                    if (sig.getSignDate() != null)
+                    {
+                        System.out.println("Modified: " + sdf.format(sig.getSignDate().getTime()));
+                    }
                     String subFilter = sig.getSubFilter();
                     if (subFilter != null)
                     {
