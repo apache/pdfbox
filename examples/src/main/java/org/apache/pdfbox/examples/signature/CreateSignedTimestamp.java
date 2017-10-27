@@ -111,11 +111,10 @@ public class CreateSignedTimestamp extends CreateSignedTimestampBase
         signature.setFilter(PDSignature.FILTER_ADOBE_PPKLITE);
         signature.setSubFilter(COSName.getPDFName("ETSI.RFC3161"));
 
-        // Optional: certify
-        if (accessPermissions == 0)
-        {
-            SigUtils.setMDPPermission(document, signature, 2);
-        }
+        // No certification allowed because /Reference not allowed in signature directory
+        // see ETSI EN 319 142-1 Part 1 and ETSI TS 102 778-4
+        // http://www.etsi.org/deliver/etsi_en%5C319100_319199%5C31914201%5C01.01.00_30%5Cen_31914201v010100v.pdf
+        // http://www.etsi.org/deliver/etsi_ts/102700_102799/10277804/01.01.01_60/ts_10277804v010101p.pdf
 
         // register signature dictionary and sign interface
         document.addSignature(signature, this);
