@@ -151,7 +151,8 @@ public final class ShowSignature
                     String subFilter = sig.getSubFilter();
                     if (subFilter != null)
                     {
-                        if (subFilter.equals("adbe.pkcs7.detached"))
+                        if (subFilter.equals("adbe.pkcs7.detached") || 
+                            subFilter.equals("ETSI.CAdES.detached"))
                         {
                             verifyPKCS7(buf, contents, sig);
                             
