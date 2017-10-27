@@ -147,6 +147,7 @@ public final class ShowSignature
                         switch (subFilter)
                         {
                             case "adbe.pkcs7.detached":
+                            case "ETSI.CAdES.detached":
                                 verifyPKCS7(buf, contents, sig);
 
                                 //TODO check certificate chain, revocation lists, timestamp...
