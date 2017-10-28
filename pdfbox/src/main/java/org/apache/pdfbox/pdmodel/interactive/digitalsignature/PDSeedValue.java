@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -473,6 +474,35 @@ public class PDSeedValue implements COSObjectable
         {
             dictionary.setItem(COSName.MDP, mdp.getCOSObject());
         }
+    }
+
+    /**
+     * (Optional) A certificate seed value dictionary containing information about the certificate
+     * to be used when signing.
+     *
+     * @return dictionary
+     */
+    public PDSeedValueCertificate getCertificate()
+    {
+        COSBase base = dictionary.getDictionaryObject(COSName.CERT);
+        PDSeedValueCertificate certificate = null;
+        if (base instanceof COSDictionary)
+        {
+            COSDictionary dict = (COSDictionary) base;
+            certificate = new PDSeedValueCertificate(dict);
+        }
+        return certificate;
+    }
+
+    /**
+     * (Optional) A certificate seed value dictionary containing information about the certificate
+     * to be used when signing.
+     *
+     * @param certificate dictionary
+     */
+    public void setCertificate(PDSeedValueCertificate certificate)
+    {
+        dictionary.setItem(COSName.CERT, certificate);
     }
 
     /**
