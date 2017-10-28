@@ -19,6 +19,8 @@ package org.apache.pdfbox.contentstream.operator.state;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -33,6 +35,8 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
  */
 public class SetGraphicsStateParameters extends OperatorProcessor
 {
+    private static final Log LOG = LogFactory.getLog(SetGraphicsStateParameters.class);
+
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -51,7 +55,8 @@ public class SetGraphicsStateParameters extends OperatorProcessor
         PDExtendedGraphicsState gs = context.getResources().getExtGState(graphicsName);
         if (gs == null)
         {
-            throw new IOException("name for 'gs' operator not found in resources: /" + graphicsName.getName());
+            LOG.error("name for 'gs' operator not found in resources: /" + graphicsName.getName());
+            return;
         }
         gs.copyIntoGraphicsState( context.getGraphicsState() );
     }
