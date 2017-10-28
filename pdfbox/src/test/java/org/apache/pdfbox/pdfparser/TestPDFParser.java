@@ -243,7 +243,7 @@ public class TestPDFParser
                 }
                 catch (IOException ex)
                 {
-                    if (i == 3 && ex.getMessage().equals("name for 'gs' operator not found in resources: /GS7"))
+                    if (i == 3 && ex.getMessage().equals("Missing descendant font array"))
                     {
                         continue;
                     }
