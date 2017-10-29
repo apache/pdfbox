@@ -44,7 +44,7 @@ public abstract class Filter
 
     /**
      * Compression Level System Property. Set this to a value from 0 to 9 to change the zlib deflate
-     * compression level used to compress /Flate streams. The default value is -1 with is
+     * compression level used to compress /Flate streams. The default value is -1 which is
      * {@link Deflater#DEFAULT_COMPRESSION}. To set maximum compression, use
      * {@code System.setProperty(Filter.SYSPROP_DEFLATELEVEL, "9");}
      */
