@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import org.apache.commons.logging.Log;
@@ -142,7 +143,18 @@ final class FlateFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        DeflaterOutputStream out = new DeflaterOutputStream(encoded);
+        int compressionLevel = Deflater.DEFAULT_COMPRESSION;
+        try
+        {
+            compressionLevel = Integer.parseInt(System.getProperty(Filter.SYSPROP_DEFLATELEVEL, "-1"));
+        }
+        catch (NumberFormatException ex)
+        {
+            LOG.warn(ex.getMessage(), ex);
+        }
+        compressionLevel = Math.max(-1, Math.min(Deflater.BEST_COMPRESSION, compressionLevel));
+        Deflater deflater = new Deflater(compressionLevel);
+        DeflaterOutputStream out = new DeflaterOutputStream(encoded, deflater);
         int amountRead;
         int mayRead = input.available();
         if (mayRead > 0)
