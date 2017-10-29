@@ -116,6 +116,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CCITTFAX_DECODE = new COSName("CCITTFaxDecode");
     public static final COSName CCITTFAX_DECODE_ABBREVIATION = new COSName("CCF");
     public static final COSName CENTER_WINDOW = new COSName("CenterWindow");
+    public static final COSName CERT = new COSName("Cert");
     public static final COSName CF = new COSName("CF");
     public static final COSName CFM = new COSName("CFM");
     //** Acro form field type for choice fields.
@@ -292,6 +293,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName INTERPOLATE = new COSName("Interpolate");
     public static final COSName IT = new COSName("IT");
     public static final COSName ITALIC_ANGLE = new COSName("ItalicAngle");
+    public static final COSName ISSUER = new COSName("Issuer");
     // J
     public static final COSName JAVA_SCRIPT = new COSName("JavaScript");
     public static final COSName JBIG2_DECODE = new COSName("JBIG2Decode");
@@ -301,6 +303,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // K
     public static final COSName K = new COSName("K");
     public static final COSName KEYWORDS = new COSName("Keywords");
+    public static final COSName KEY_USAGE = new COSName("KeyUsage");
     public static final COSName KIDS = new COSName("Kids");
     // L
     public static final COSName L = new COSName("L");
@@ -369,6 +372,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName OCGS = new COSName("OCGs");
     public static final COSName OCPROPERTIES = new COSName("OCProperties");
     public static final COSName OE = new COSName("OE");
+    public static final COSName OID = new COSName("OID");
     
     /**
      * "OFF", to be used for OCGs, not for Acroform
@@ -489,9 +493,11 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName SUB_FILTER = new COSName("SubFilter");
     public static final COSName SUBJ = new COSName("Subj");
     public static final COSName SUBJECT = new COSName("Subject");
+    public static final COSName SUBJECT_DN = new COSName("SubjectDN");
     public static final COSName SUBTYPE = new COSName("Subtype");
     public static final COSName SUPPLEMENT = new COSName("Supplement");
     public static final COSName SV = new COSName("SV");
+    public static final COSName SV_CERT = new COSName("SVCert");
     public static final COSName SW = new COSName("SW");
     public static final COSName SY = new COSName("Sy");
     public static final COSName SYNCHRONOUS = new COSName("Synchronous");
@@ -532,6 +538,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName UNIX = new COSName("Unix");
     public static final COSName URI = new COSName("URI");
     public static final COSName URL = new COSName("URL");
+    public static final COSName URL_TYPE = new COSName("URLType");
     // V
     public static final COSName V = new COSName("V");
     public static final COSName VERISIGN_PPKVS = new COSName("VeriSign.PPKVS");
