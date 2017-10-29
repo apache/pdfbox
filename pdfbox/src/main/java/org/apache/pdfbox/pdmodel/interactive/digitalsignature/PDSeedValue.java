@@ -482,7 +482,7 @@ public class PDSeedValue implements COSObjectable
      *
      * @return dictionary
      */
-    public PDSeedValueCertificate getCertificate()
+    public PDSeedValueCertificate getSeedValueCertificate()
     {
         COSBase base = dictionary.getDictionaryObject(COSName.CERT);
         PDSeedValueCertificate certificate = null;
@@ -500,7 +500,7 @@ public class PDSeedValue implements COSObjectable
      *
      * @param certificate dictionary
      */
-    public void setCertificate(PDSeedValueCertificate certificate)
+    public void setSeedValueCertificate(PDSeedValueCertificate certificate)
     {
         dictionary.setItem(COSName.CERT, certificate);
     }
