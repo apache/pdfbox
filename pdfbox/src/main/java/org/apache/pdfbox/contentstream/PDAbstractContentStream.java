@@ -1295,6 +1295,10 @@ public abstract class PDAbstractContentStream implements Closeable
         {
             throw new IllegalStateException("Error: setMiterLimit is not allowed within a text block.");
         }
+        if (miterLimit <= 0.0)
+        {
+            throw new IllegalArgumentException("A miter limit <= 0 is invalid and will not render in Acrobat Reader");
+        }
         writeOperand(miterLimit);
         writeOperator("M");
     }
