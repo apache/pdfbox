@@ -28,8 +28,8 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * this class represent certificate seed value dictionary that is in the seed value which puts constraints on
- * certificates when signing documents
+ * This class represents a certificate seed value dictionary that is in the seed value which puts
+ * constraints on certificates when signing documents.
  *
  * @author Hossam Hazem
  */
