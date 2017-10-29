@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * this class represent certificate dictionary that is in the seed value which puts constraints on
+ * this class represent certificate seed value dictionary that is in the seed value which puts constraints on
  * certificates when signing documents
  *
  * @author Hossam Hazem
@@ -80,7 +80,7 @@ public class PDSeedValueCertificate implements COSObjectable
     /**
      * Constructor.
      *
-     * @param dict The signature dictionary.
+     * @param dict The certificate seed value dictionary.
      */
     public PDSeedValueCertificate(COSDictionary dict)
     {
@@ -214,7 +214,7 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * Returns array of byte arrays that contains DER-encoded X.509v3 certificates
+     * Returns list of byte arrays that contains DER-encoded X.509v3 certificates
      */
     public List<byte[]> getSubject()
     {
@@ -280,7 +280,7 @@ public class PDSeedValueCertificate implements COSObjectable
         if (base instanceof COSArray)
         {
             COSArray array = (COSArray) base;
-            removeByteArrayFromCOSArray(subject, array);
+            array.remove(new COSString(subject));
         }
     }
 
@@ -464,15 +464,7 @@ public class PDSeedValueCertificate implements COSObjectable
         if (base instanceof COSArray)
         {
             COSArray array = (COSArray) base;
-            Iterator<COSBase> iterator = array.iterator();
-            while (iterator.hasNext())
-            {
-                COSBase item = iterator.next();
-                if (item instanceof COSString)
-                {
-                    iterator.remove();
-                }
-            }
+            array.remove(new COSString(keyUsageExtension));
         }
     }
 
@@ -542,7 +534,7 @@ public class PDSeedValueCertificate implements COSObjectable
         if (base instanceof COSArray)
         {
             COSArray array = (COSArray) base;
-            removeByteArrayFromCOSArray(issuer, array);
+            array.remove(new COSString(issuer));
         }
     }
 
@@ -611,7 +603,7 @@ public class PDSeedValueCertificate implements COSObjectable
         if (base instanceof COSArray)
         {
             COSArray array = (COSArray) base;
-            removeByteArrayFromCOSArray(oid, array);
+            array.remove(new COSString(oid));
         }
     }
 
@@ -665,9 +657,13 @@ public class PDSeedValueCertificate implements COSObjectable
      * signing. If the Ff attribute’s URL bit indicates that this is a required constraint, this
      * implies that the credential used when signing must come from this server.</li>
      * </ul>
+     * Third parties can extend the use of this attribute with their own attribute values, which
+     * must conform to the guidelines specified in
+     * <a href="http://www.adobe.com/content/dam/acom/en/devnet/pdf/PDF32000_2008.pdf#page=681">PDF
+     * Spec 1.7 Appendix E (PDF Name Registry)</a>
      * if urlType is not set the default is Browser for URL
      *
-     * @param urlType
+     * @param urlType String of the urlType
      */
     public void setURLType(String urlType)
     {
@@ -685,23 +681,6 @@ public class PDSeedValueCertificate implements COSObjectable
             }
         }
         return result;
-    }
-
-    private static void removeByteArrayFromCOSArray(byte[] bytes, COSArray array)
-    {
-        COSString string = new COSString(bytes);
-        Iterator<COSBase> iterator = array.iterator();
-        while (iterator.hasNext())
-        {
-            COSBase item = iterator.next();
-            if (item instanceof COSString)
-            {
-                if ((item).equals(string))
-                {
-                    iterator.remove();
-                }
-            }
-        }
     }
 
 }
