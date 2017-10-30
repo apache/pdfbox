@@ -425,8 +425,23 @@ public class PDSeedValue implements COSObjectable
      * by conforming products.
      *
      * @param reasons is a list of possible text string that specifying possible reasons
+     * 
+     * @deprecated use {@link #setReasons(java.util.List) }
      */
+    @Deprecated
     public void setReasonsd(List<String> reasons)
+    {
+        setReasons(reasons);
+    }
+
+    /**
+     * (Optional) An array of text strings that specifying possible reasons for signing
+     * a document. If specified, the reasons supplied in this entry replace those used
+     * by conforming products.
+     *
+     * @param reasons is a list of possible text string that specifying possible reasons
+     */
+    public void setReasons(List<String> reasons)
     {
         dictionary.setItem(COSName.REASONS, COSArrayList.converterToCOSArray(reasons));
     }
