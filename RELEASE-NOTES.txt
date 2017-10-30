@@ -24,7 +24,7 @@ Bug
 [PDFBOX-3896] - UnsupportedOperationException
 [PDFBOX-3898] - AcroFields' PDTextField (and others?) can have kids
 [PDFBOX-3909] - End of inline image not detected
-[PDFBOX-3913] - Japanese URI improperly encoded
+[PDFBOX-3913] - Japanese URI improperly decoded
 [PDFBOX-3914] - LayerUtility ignores OCProperties on import
 [PDFBOX-3916] - NPE on org.apache.pdfbox.pdmodel.font.PDType0Font.readEncoding
 [PDFBOX-3919] - Infinite loop while parsing (2)
@@ -41,6 +41,24 @@ Bug
 [PDFBOX-3940] - Lost metadata in 2.0.8-SNAPSHOT
 [PDFBOX-3942] - ClassCastException in getOptionalContentGroups
 [PDFBOX-3943] - /Helv entry in /DR not created if /DR exists
+[PDFBOX-3946] - NPE in PDActionURI.getURI() if URI doesn't exist
+[PDFBOX-3947] - ArrayIndexOutOfBoundsException in bfSearchForObjStreams
+[PDFBOX-3948] - NumberFormatException in bfSearchForObjStreams
+[PDFBOX-3949] - NPE in bfSearchForObjStreams
+[PDFBOX-3950] - NPE in PageIterator.enqueueKids
+[PDFBOX-3955] - new -- very slow processing on truncated PDF
+[PDFBOX-3957] - Pages lost
+[PDFBOX-3958] - UTF-16 (BE) URI improperly decoded
+[PDFBOX-3959] - DataFormatException: invalid code lengths set with truncated file
+[PDFBOX-3963] - ClassCastException in PDCIDFont.readVerticalDisplacements()
+[PDFBOX-3965] - Truetype Font glyphs not rendered
+[PDFBOX-3967] - IllegalArgumentException: Illegal Capacity: -1
+[PDFBOX-3969] - Splitting starts counting for cutting out pages wrongly
+[PDFBOX-3972] - Incorrect page after merge for OpenAction with GoTo page destination
+[PDFBOX-3976] - NPE in bfSearchForTrailer
+[PDFBOX-3977] - /Info dictionary no longer available
+[PDFBOX-3978] - IllegalStateException on saveIncrementalForExternalSigning
+[PDFBOX-3979] - NullPointerException on Type1Parser.readCharStrings(Type1Parser.java:713)
 
 Improvement
 
@@ -52,13 +70,16 @@ Improvement
 [PDFBOX-3920] - CIDSet should be PDF/A-2b compatible
 [PDFBOX-3927] - Support optional content in annotations
 [PDFBOX-3944] - ERROR "Can't read embedded ICC profile" is too scary
+[PDFBOX-3971] - Add Certificate Dictionary to seed value in signature field
+[PDFBOX-3982] - [Patch/RFC] Set maximum compression level on FlateFilter
+[PDFBOX-3983] - [Patch] Don't a allow a miter limit <= 0
 
 Task
 
 [PDFBOX-3584] - Build and test PDFBox with JDK9
 [PDFBOX-3873] - Fix text comparison in PDFontTest
 [PDFBOX-3938] - Add test from PDFBOX-2079 to 2.0 and trunk
-
+[PDFBOX-3974] - Add more parsing regression tests
 
 Release Contents
 ----------------

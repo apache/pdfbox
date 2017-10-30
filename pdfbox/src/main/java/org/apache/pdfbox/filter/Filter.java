@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.zip.Deflater;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -40,6 +41,14 @@ import org.apache.pdfbox.cos.COSName;
 public abstract class Filter
 {
     private static final Log LOG = LogFactory.getLog(Filter.class);
+
+    /**
+     * Compression Level System Property. Set this to a value from 0 to 9 to change the zlib deflate
+     * compression level used to compress /Flate streams. The default value is -1 which is
+     * {@link Deflater#DEFAULT_COMPRESSION}. To set maximum compression, use
+     * {@code System.setProperty(Filter.SYSPROP_DEFLATELEVEL, "9");}
+     */
+    public static final String SYSPROP_DEFLATELEVEL = "org.apache.pdfbox.filter.deflatelevel";
 
     /**
      * Constructor.

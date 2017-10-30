@@ -27,7 +27,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDSeedValueTimeStamp
 {
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Default constructor.

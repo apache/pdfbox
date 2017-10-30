@@ -186,41 +186,7 @@ public class PDFParser extends COSParser
      */
     protected void initialParse() throws InvalidPasswordException, IOException
     {
-        COSDictionary trailer = null;
-        boolean rebuildTrailer = false;
-        try
-        {
-            // parse startxref
-            long startXRefOffset = getStartxrefOffset();
-            if (startXRefOffset > -1)
-            {
-                trailer = parseXref(startXRefOffset);
-            }
-            else if (isLenient())
-            {
-                rebuildTrailer = true;
-            }
-        }
-        catch (IOException exception)
-        {
-            if (isLenient())
-            {
-                rebuildTrailer = true;
-            }
-            else
-            {
-                throw exception;
-            }
-        }
-        // check if the trailer contains a Root object
-        if (isLenient() && trailer != null && trailer.getItem(COSName.ROOT) == null)
-        {
-            rebuildTrailer = true;
-        }
-        if (rebuildTrailer)
-        {
-            trailer = rebuildTrailer();
-        }
+        COSDictionary trailer = retrieveTrailer();
         // prepare decryption if necessary
         prepareDecryption();
     
@@ -243,7 +209,8 @@ public class PDFParser extends COSParser
         {
             parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
         }
-
+        // check pages dictionaries
+        checkPages(root);
         document.setDecrypted();
         initialParseDone = true;
     }

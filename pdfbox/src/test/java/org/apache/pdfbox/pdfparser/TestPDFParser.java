@@ -28,28 +28,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.DateConverter;
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestPDFParser
 {
-
     private static final String PATH_OF_PDF = "src/test/resources/input/yaddatest.pdf";
     private static final File tmpDirectory = new File(System.getProperty("java.io.tmpdir"));
+    private static final File TARGETPDFDIR = new File("target/pdfs");
 
     private int numberOfTmpFiles = 0;
 
@@ -118,7 +115,7 @@ public class TestPDFParser
     public void testPDFParserMissingCatalog() throws IOException, URISyntaxException
     {
         // PDFBOX-3060
-        PDDocument.load(new File(TestPDFParser.class.getResource("MissingCatalog.pdf").toURI())).close();        
+        PDDocument.load(new File(TestPDFParser.class.getResource("MissingCatalog.pdf").toURI())).close();
     }
 
     /**
@@ -126,26 +123,12 @@ public class TestPDFParser
      * file. An incorrect algorithm would result in an outline dictionary being mistaken for an
      * /Info.
      *
-     * @throws MalformedURLException
      * @throws IOException
      */
     @Test
-    public void testPDFBox3208() throws MalformedURLException, IOException
+    public void testPDFBox3208() throws IOException
     {
-        byte[] byteArray;
-        try
-        {
-            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12784025/PDFBOX-3208-L33MUTT2SVCWGCS6UIYL5TH3PNPXHIS6.pdf").openStream();
-            byteArray = IOUtils.toByteArray(is);
-            is.close();
-        }
-        catch (IOException ex)
-        {
-            System.err.println("URL loading failed, testPDFBox3208 will be skipped");
-            return;
-        }
-
-        PDDocument doc = PDDocument.load(byteArray);
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR,"PDFBOX-3208-L33MUTT2SVCWGCS6UIYL5TH3PNPXHIS6.pdf"));
 
         PDDocumentInformation di = doc.getDocumentInformation();
         assertEquals("Liquent Enterprise Services", di.getAuthor());
@@ -164,27 +147,12 @@ public class TestPDFParser
      * Test whether the /Info is retrieved correctly when rebuilding the trailer of a corrupt file,
      * despite the /Info dictionary not having a modification date.
      *
-     * @throws MalformedURLException
      * @throws IOException
      */
     @Test
-    public void testPDFBox3940() throws MalformedURLException, IOException
+    public void testPDFBox3940() throws IOException
     {
-        byte[] byteArray;
-        try
-        {
-            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12888957/079977.pdf").openStream();
-            byteArray = IOUtils.toByteArray(is);
-            is.close();
-        }
-        catch (IOException ex)
-        {
-            System.err.println("URL loading failed, testPDFBox3940 will be skipped");
-            return;
-        }
-
-        PDDocument doc = PDDocument.load(byteArray);
-
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR,"PDFBOX-3940-079977.pdf"));
         PDDocumentInformation di = doc.getDocumentInformation();
         assertEquals("Unknown", di.getAuthor());
         assertEquals("C:REGULA~1IREGSFR_EQ_EM.WP", di.getCreator());
@@ -198,27 +166,146 @@ public class TestPDFParser
     }
 
     /**
-     * Test parsing the "genko_oc_shiryo1.pdf" file, which is susceptible to regression.
+     * PDFBOX-3783: test parsing of file with trash after %%EOF.
      * 
-     * @throws Exception 
+     * @throws IOException 
      */
     @Test
-    public void testParseGenko() throws Exception
+    public void testPDFBox3783() throws IOException
     {
-        byte[] byteArray;
-        try
-        {
-            InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/12867433/genko_oc_shiryo1.pdf").openStream();
-            byteArray = IOUtils.toByteArray(is);
-            is.close();
-        }
-        catch (IOException ex)
-        {
-            System.err.println("URL loading failed, testParseGenko will be skipped");
-            return;
-        }
+        PDDocument.load(new File(TARGETPDFDIR,"PDFBOX-3783-72GLBIGUC6LB46ELZFBARRJTLN4RBSQM.pdf")).close();
+    }
 
-        PDDocument.load(byteArray).close();
+    /**
+     * PDFBOX-3785, PDFBOX-3957:
+     * Test whether truncated file with several revisions has correct page count.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3785() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR,"PDFBOX-3785-202097.pdf"));
+        assertEquals(11, doc.getNumberOfPages());
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-3947: test parsing of file with broken object stream.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3947() throws IOException
+    {
+        PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3947-670064.pdf")).close();
+    }
+
+    /**
+     * PDFBOX-3948: test parsing of file with object stream containing some unexpected newlines.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3948() throws IOException
+    {
+        PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3948-EUWO6SQS5TM4VGOMRD3FLXZHU35V2CP2.pdf")).close();
+    }
+
+    /**
+     * PDFBOX-3949: test parsing of file with incomplete object stream.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3949() throws IOException
+    {
+        PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3949-MKFYUGZWS3OPXLLVU2Z4LWCTVA5WNOGF.pdf")).close();
+    }
+
+    /**
+     * PDFBOX-3950: test parsing and rendering of truncated file with missing pages.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3950() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf"));
+        assertEquals(4, doc.getNumberOfPages());
+        PDFRenderer renderer = new PDFRenderer(doc);
+        for (int i = 0; i < doc.getNumberOfPages(); ++i)
+        {
+            try
+            {
+                renderer.renderImage(i);
+            }
+            catch (IOException ex)
+            {
+                if (i == 3 && ex.getMessage().equals("Missing descendant font array"))
+                {
+                    continue;
+                }
+                throw ex;
+            }
+        }
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-3951: test parsing of truncated file.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3951() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3951-FIHUZWDDL2VGPOE34N6YHWSIGSH5LVGZ.pdf"));
+        assertEquals(143, doc.getNumberOfPages());
+        doc.close();
+    }
+
+    /**
+     * PDFBOX-3964: test parsing of broken file.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testPDFBox3964() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3964-c687766d68ac766be3f02aaec5e0d713_2.pdf"));
+        assertEquals(10, doc.getNumberOfPages());
+        doc.close();
+    }
+
+    /**
+     * Test whether /Info dictionary is retrieved correctly in brute force search for the
+     * Info/Catalog dictionaries.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3977() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR,"PDFBOX-3977-63NGFQRI44HQNPIPEJH5W2TBM6DJZWMI.pdf"));
+        PDDocumentInformation di = doc.getDocumentInformation();
+        assertEquals("QuarkXPress(tm) 6.52", di.getCreator());
+        assertEquals("Acrobat Distiller 7.0 pour Macintosh", di.getProducer());
+        assertEquals("Fich sal Fabr corr1 (Page 6)", di.getTitle());
+        assertEquals(DateConverter.toCalendar("D:20070608151915+02'00'"), di.getCreationDate());
+        assertEquals(DateConverter.toCalendar("D:20080604152122+02'00'"), di.getModificationDate());
+        doc.close();
+    }
+
+    /**
+     * Test parsing the "genko_oc_shiryo1.pdf" file, which is susceptible to regression.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testParseGenko() throws IOException
+    {
+        PDDocument.load(new File(TARGETPDFDIR, "genko_oc_shiryo1.pdf")).close();
     }
 
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException

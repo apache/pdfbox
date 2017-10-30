@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
@@ -67,7 +68,7 @@ public class PDSeedValue implements COSObjectable
      */
     public static final int FLAG_DIGEST_METHOD = 1 << 6;
 
-    private COSDictionary dictionary;
+    private final COSDictionary dictionary;
 
     /**
      * Default constructor.
@@ -424,8 +425,23 @@ public class PDSeedValue implements COSObjectable
      * by conforming products.
      *
      * @param reasons is a list of possible text string that specifying possible reasons
+     * 
+     * @deprecated use {@link #setReasons(java.util.List) }
      */
+    @Deprecated
     public void setReasonsd(List<String> reasons)
+    {
+        setReasons(reasons);
+    }
+
+    /**
+     * (Optional) An array of text strings that specifying possible reasons for signing
+     * a document. If specified, the reasons supplied in this entry replace those used
+     * by conforming products.
+     *
+     * @param reasons is a list of possible text string that specifying possible reasons
+     */
+    public void setReasons(List<String> reasons)
     {
         dictionary.setItem(COSName.REASONS, COSArrayList.converterToCOSArray(reasons));
     }
@@ -473,6 +489,35 @@ public class PDSeedValue implements COSObjectable
         {
             dictionary.setItem(COSName.MDP, mdp.getCOSObject());
         }
+    }
+
+    /**
+     * (Optional) A certificate seed value dictionary containing information about the certificate
+     * to be used when signing.
+     *
+     * @return dictionary
+     */
+    public PDSeedValueCertificate getSeedValueCertificate()
+    {
+        COSBase base = dictionary.getDictionaryObject(COSName.CERT);
+        PDSeedValueCertificate certificate = null;
+        if (base instanceof COSDictionary)
+        {
+            COSDictionary dict = (COSDictionary) base;
+            certificate = new PDSeedValueCertificate(dict);
+        }
+        return certificate;
+    }
+
+    /**
+     * (Optional) A certificate seed value dictionary containing information about the certificate
+     * to be used when signing.
+     *
+     * @param certificate dictionary
+     */
+    public void setSeedValueCertificate(PDSeedValueCertificate certificate)
+    {
+        dictionary.setItem(COSName.CERT, certificate);
     }
 
     /**
