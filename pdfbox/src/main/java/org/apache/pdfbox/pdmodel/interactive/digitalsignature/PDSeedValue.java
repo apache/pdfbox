@@ -426,7 +426,7 @@ public class PDSeedValue implements COSObjectable
      *
      * @param reasons is a list of possible text string that specifying possible reasons
      */
-    public void setReasonsd(List<String> reasons)
+    public void setReasons(List<String> reasons)
     {
         dictionary.setItem(COSName.REASONS, COSArrayList.converterToCOSArray(reasons));
     }
