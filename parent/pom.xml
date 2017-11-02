@@ -305,15 +305,15 @@
             </roles>
         </developer>
         <developer>
-            <id>jeremias</id>
-            <name>Jeremias Maerki</name>
+            <id>hennejg</id>
+            <name>Jörg Henne</name>
             <roles>
                 <role>PMC Member</role>
             </roles>
         </developer>
         <developer>
-            <id>koch</id>
-            <name>Johannes Koch</name>
+            <id>holdersn</id>
+            <name>Sebastian Holder</name>
             <roles>
                 <role>PMC Member</role>
             </roles>
@@ -326,8 +326,36 @@
             </roles>
         </developer>
         <developer>
+            <id>jeremias</id>
+            <name>Jeremias Maerki</name>
+            <roles>
+                <role>PMC Member</role>
+            </roles>
+        </developer>
+        <developer>
             <id>kjackson</id>
             <name>Kevin Jackson</name>
+            <roles>
+                <role>PMC Member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>koch</id>
+            <name>Johannes Koch</name>
+            <roles>
+                <role>PMC Member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>koehlecn</id>
+            <name>Carolin Köhler</name>
+            <roles>
+                <role>PMC Member</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>mmayer</id>
+            <name>Matthäus Mayer</name>
             <roles>
                 <role>PMC Member</role>
             </roles>
