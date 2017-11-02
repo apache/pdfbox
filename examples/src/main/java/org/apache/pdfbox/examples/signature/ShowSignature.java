@@ -47,6 +47,8 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.tsp.TSPException;
+import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Store;
 import org.bouncycastle.util.StoreException;
 
@@ -74,10 +76,12 @@ public final class ShowSignature
      * @throws java.security.InvalidKeyException
      * @throws java.security.NoSuchProviderException
      * @throws java.security.SignatureException
+     * @throws org.bouncycastle.tsp.TSPException
      */
     public static void main(String[] args) throws IOException, CertificateException,
                                                   NoSuchAlgorithmException, InvalidKeyException, 
-                                                  NoSuchProviderException, SignatureException
+                                                  NoSuchProviderException, SignatureException,
+                                                  TSPException
     {
         ShowSignature show = new ShowSignature();
         show.showSignature( args );
@@ -85,7 +89,8 @@ public final class ShowSignature
 
     private void showSignature(String[] args) throws IOException, CertificateException,
                                                      NoSuchAlgorithmException, InvalidKeyException,
-                                                     NoSuchProviderException, SignatureException
+                                                     NoSuchProviderException, SignatureException,
+                                                     TSPException
     {
         if( args.length != 2 )
         {
@@ -187,6 +192,19 @@ public final class ShowSignature
                             Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                             System.out.println("certs=" + certs);
                             
+                            //TODO verify signature
+                        }
+                        else if (subFilter.equals("ETSI.RFC3161"))
+                        {
+                            TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
+                            System.out.println("Time stamp gen time: " + timeStampToken.getTimeStampInfo().getGenTime());
+                            System.out.println("Time stamp tsa name: " + timeStampToken.getTimeStampInfo().getTsa().getName());
+
+                            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+                            ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
+                            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+                            System.out.println("certs=" + certs);
+
                             //TODO verify signature
                         }
                         else
