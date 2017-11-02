@@ -121,7 +121,7 @@ public final class ShowSignature
                         long fileLen = infile.length();
                         long rangeMax = byteRange[2] + (long) byteRange[3];
                         // multiply content length with 2 (because it is in hex in the PDF) and add 2 for < and >
-                        int contentLen = sigDict.getString(COSName.CONTENTS).length() * 2 + 2;
+                        int contentLen = contents.getString().length() * 2 + 2;
                         if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
                         {
                             // a false result doesn't necessarily mean that the PDF is a fake
@@ -155,9 +155,7 @@ public final class ShowSignature
                             case "adbe.pkcs7.sha1":
                             {
                                 // example: PDFBOX-1452.pdf
-                                COSString certString = (COSString) sigDict.getDictionaryObject(
-                                        COSName.CONTENTS);
-                                byte[] certData = certString.getBytes();
+                                byte[] certData = contents.getBytes();
                                 CertificateFactory factory = CertificateFactory.getInstance("X.509");
                                 ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
                                 Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
@@ -171,8 +169,12 @@ public final class ShowSignature
                             case "adbe.x509.rsa_sha1":
                             {
                                 // example: PDFBOX-2693.pdf
-                                COSString certString = (COSString) sigDict.getDictionaryObject(
-                                        COSName.getPDFName("Cert"));
+                                COSString certString = (COSString) sigDict.getDictionaryObject(COSName.CERT);
+                                if (certString == null)
+                                {
+                                    System.err.println("The /Cert certificate string is missing in the signature dictionary");
+                                    return;
+                                }
                                 byte[] certData = certString.getBytes();
                                 CertificateFactory factory = CertificateFactory.getInstance("X.509");
                                 ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
