@@ -45,10 +45,15 @@ final class RunLengthDecodeFilter extends Filter
             if (dupAmount <= 127)
             {
                 int amountToCopy = dupAmount + 1;
-                int compressedRead;
+                int compressedRead = 0;
                 while(amountToCopy > 0)
                 {
                     compressedRead = encoded.read(buffer, 0, amountToCopy);
+                    // EOF reached?
+                    if (compressedRead == -1)
+                    {
+                        break;
+                    }
                     decoded.write(buffer, 0, compressedRead);
                     amountToCopy -= compressedRead;
                 }
