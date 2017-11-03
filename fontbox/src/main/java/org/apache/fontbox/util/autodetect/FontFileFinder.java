@@ -99,7 +99,7 @@ public class FontFileFinder
     }
     
     /**
-     * walk down the driectory tree and search for font files.
+     * walk down the directory tree and search for font files.
      * 
      * @param directory the directory to start at
      * @param results names of all found font files
