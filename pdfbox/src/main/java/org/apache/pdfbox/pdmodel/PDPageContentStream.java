@@ -426,10 +426,23 @@ public final class PDPageContentStream implements Closeable
      *
      * @param leading The leading in unscaled text units.
      * @throws IOException If there is an error writing to the stream.
+     * @deprecated use {@link #setLeading(float) setLeading(float)}
      */
+    @Deprecated
     public void setLeading(double leading) throws IOException
     {
-        writeOperand((float) leading);
+        setLeading((float) leading);
+    }
+
+    /**
+     * Sets the text leading.
+     *
+     * @param leading The leading in unscaled text units.
+     * @throws IOException If there is an error writing to the stream.
+     */
+    public void setLeading(float leading) throws IOException
+    {
+        writeOperand(leading);
         writeOperator("TL");
     }
 
@@ -1152,14 +1165,28 @@ public final class PDPageContentStream implements Closeable
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameter is invalid.
+     * @deprecated use {@link #setStrokingColor(float) setStrokingColor(float)}
      */
+    @Deprecated
     public void setStrokingColor(double g) throws IOException
+    {
+        setStrokingColor((float) g);
+    }
+
+    /**
+     * Set the stroking color in the DeviceGray color space. Range is 0..1.
+     *
+     * @param g The gray value.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
+     */
+    public void setStrokingColor(float g) throws IOException
     {
         if (isOutsideOneInterval(g))
         {
             throw new IllegalArgumentException("Parameter must be within 0..1, but is " + g);
         }
-        writeOperand((float) g);
+        writeOperand(g);
         writeOperator("G");
         setStrokingColorSpaceStack(PDDeviceGray.INSTANCE);
     }
@@ -1295,7 +1322,24 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * Set the non-stroking color in the DeviceRGB color space. Range is 0..1.
+     * Set the non-stroking color in the DeviceCMYK color space. Range is 0..1.
+     *
+     * @param c The cyan value.
+     * @param m The magenta value.
+     * @param y The yellow value.
+     * @param k The black value.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     * @deprecated use
+     * {@link #setNonStrokingColor(float, float, float, float) setNonStrokingColor(float, float, float, float)}
+     */
+    @Deprecated
+    public void setNonStrokingColor(double c, double m, double y, double k) throws IOException
+    {
+        setNonStrokingColor((float) c, (float) m, (float) y, (float) k);
+    }
+
+    /**
+     * Set the non-stroking color in the DeviceCMYK color space. Range is 0..1.
      *
      * @param c The cyan value.
      * @param m The magenta value.
@@ -1303,17 +1347,17 @@ public final class PDPageContentStream implements Closeable
      * @param k The black value.
      * @throws IOException If an IO error occurs while writing to the stream.
      */
-    public void setNonStrokingColor(double c, double m, double y, double k) throws IOException
+    public void setNonStrokingColor(float c, float m, float y, float k) throws IOException
     {
         if (isOutsideOneInterval(c) || isOutsideOneInterval(m) || isOutsideOneInterval(y) || isOutsideOneInterval(k))
         {
             throw new IllegalArgumentException("Parameters must be within 0..1, but are "
                     + String.format("(%.2f,%.2f,%.2f,%.2f)", c, m, y, k));
         }
-        writeOperand((float) c);
-        writeOperand((float) m);
-        writeOperand((float) y);
-        writeOperand((float) k);
+        writeOperand(c);
+        writeOperand(m);
+        writeOperand(y);
+        writeOperand(k);
         writeOperator("k");
         setNonStrokingColorSpaceStack(PDDeviceCMYK.INSTANCE);
     }
@@ -1340,14 +1384,28 @@ public final class PDPageContentStream implements Closeable
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameter is invalid.
+     * @deprecated use {@link #setNonStrokingColor(float) setNonStrokingColor(float)}
      */
+    @Deprecated
     public void setNonStrokingColor(double g) throws IOException
+    {
+        setNonStrokingColor((float) g);
+    }
+
+    /**
+     * Set the non-stroking color in the DeviceGray color space. Range is 0..1.
+     *
+     * @param g The gray value.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameter is invalid.
+     */
+    public void setNonStrokingColor(float g) throws IOException
     {
         if (isOutsideOneInterval(g))
         {
             throw new IllegalArgumentException("Parameter must be within 0..1, but is " + g);
         }
-        writeOperand((float) g);
+        writeOperand(g);
         writeOperator("g");
         setNonStrokingColorSpaceStack(PDDeviceGray.INSTANCE);
     }
