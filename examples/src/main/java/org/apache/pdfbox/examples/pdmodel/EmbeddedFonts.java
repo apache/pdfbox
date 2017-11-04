@@ -51,7 +51,7 @@ public final class EmbeddedFonts
 
         stream.beginText();
         stream.setFont(font, 12);
-        stream.setLeading(12 * 1.2);
+        stream.setLeading(12 * 1.2f);
 
         stream.newLineAtOffset(50, 600);
         stream.showText("PDFBox's Unicode with Embedded TrueType Font");
