@@ -1115,7 +1115,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void appendRawCommands(double data) throws IOException
     {
-        writeOperand(data);
+        writeOperand((float) data);
     }
 
     /**
