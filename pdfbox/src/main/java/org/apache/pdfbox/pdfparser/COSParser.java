@@ -1467,15 +1467,17 @@ public class COSParser extends BaseParser
             long lastObjectId = Long.MIN_VALUE;
             int lastGenID = Integer.MIN_VALUE;
             long lastObjOffset = Long.MIN_VALUE;
-            char[] objString = " obj".toCharArray();
-            char[] endobjString = "endo".toCharArray();
+            char[] endobjString = "ndo".toCharArray();
+            char[] endobjRemainingString = "bj".toCharArray();
             boolean endOfObjFound = false;
             do
             {
                 source.seek(currentOffset);
-                if (isString(objString))
+                int nextChar = source.read();
+                currentOffset++;
+                if (nextChar == ' ' && isString(OBJ_MARKER))
                 {
-                    long tempOffset = currentOffset - 1;
+                    long tempOffset = currentOffset - 2;
                     source.seek(tempOffset);
                     int genID = source.peek();
                     // is the next char a digit?
@@ -1510,7 +1512,7 @@ public class COSParser extends BaseParser
                                 lastObjectId = objectId;
                                 lastGenID = genID;
                                 lastObjOffset = tempOffset + 1;
-                                currentOffset += objString.length - 1;
+                                currentOffset += OBJ_MARKER.length - 1;
                                 endOfObjFound = false;
                             }
                         }
@@ -1519,12 +1521,22 @@ public class COSParser extends BaseParser
                 // check for "endo" as abbreviation for "endobj", as the pdf may be cut off
                 // in the middle of the keyword, see PDFBOX-3936.
                 // We could possibly implement a more intelligent algorithm if necessary
-                else if (isString(endobjString))
+                else if (nextChar == 'e' && isString(endobjString))
                 {
-                    endOfObjFound = true;
-                    currentOffset += endobjString.length - 1;
+                    currentOffset += endobjString.length;
+                    source.seek(currentOffset);
+                    if (source.isEOF())
+                    {
+                        endOfObjFound = true;
+                        continue;
+                    }
+                    if (isString(endobjRemainingString))
+                    {
+                        currentOffset += endobjRemainingString.length;
+                        endOfObjFound = true;
+                        continue;
+                    }
                 }
-                currentOffset++;
             }
             while (currentOffset < lastEOFMarker && !source.isEOF());
             if ((lastEOFMarker < Long.MAX_VALUE || endOfObjFound) && lastObjOffset > 0)
