@@ -1665,11 +1665,14 @@ public class COSParser extends BaseParser
                     if (trailerDict.containsKey(COSName.INFO))
                     {
                         COSBase infoObj = trailerDict.getItem(COSName.INFO);
-                        long objNumber = ((COSObject) infoObj).getObjectNumber();
-                        int genNumber = ((COSObject) infoObj).getGenerationNumber();
-                        trailerKeys.append(objNumber).append(" ");
-                        trailerKeys.append(genNumber).append(" ");
-                        infoFound = true;
+                        if (infoObj instanceof COSObject)
+                        {
+                            long objNumber = ((COSObject) infoObj).getObjectNumber();
+                            int genNumber = ((COSObject) infoObj).getGenerationNumber();
+                            trailerKeys.append(objNumber).append(" ");
+                            trailerKeys.append(genNumber).append(" ");
+                            infoFound = true;
+                        }
                     }
                     if (rootFound && infoFound)
                     {
