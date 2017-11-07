@@ -648,7 +648,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      *
      * @param colorSpace The colorspace to write.
      * @throws IOException If there is an error writing the colorspace.
-     * @deprecated Use {@link #setNonStrokingColor} instead.
+     * @deprecated Use {@link #setNonStrokingColor(PDColor)} instead.
      */
     @Deprecated
     public void setNonStrokingColorSpace(PDColorSpace colorSpace) throws IOException
@@ -720,7 +720,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameter is invalid.
-     * @deprecated Use {@link #setStrokingColor(double)} instead.
+     * @deprecated Use {@link #setStrokingColor(float)} instead.
      */
     @Deprecated
     public void setStrokingColor(int g) throws IOException
