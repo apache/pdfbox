@@ -497,6 +497,11 @@ public class TrueTypeFont implements FontBoxFont, Closeable
                                                   CmapTable.ENCODING_UNICODE_2_0_FULL);
         if (cmap == null)
         {
+            cmap = cmapTable.getSubtable(CmapTable.PLATFORM_WINDOWS,
+                                         CmapTable.ENCODING_WIN_UNICODE_FULL);
+        }
+        if (cmap == null)
+        {
             cmap = cmapTable.getSubtable(CmapTable.PLATFORM_UNICODE,
                                          CmapTable.ENCODING_UNICODE_2_0_BMP);
         }
