@@ -17,8 +17,15 @@
 package org.apache.fontbox.cmap;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import junit.framework.TestCase;
+
+import static junit.framework.TestCase.assertEquals;
+import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeFont;
 
 /**
  * This will test the CMap implementation.
@@ -39,5 +46,32 @@ public class TestCMap extends TestCase
         CMap cMap = new CMap();
         cMap.addCharMapping(bs, "a");
         assertTrue("a".equals(cMap.toUnicode(200)));
+    }
+
+    /**
+     * PDFBOX-3997: test unicode that is above the basic bultilingual plane, here: helicopter
+     * symbol, or D83D DE81 in the Noto Emoji font.
+     *
+     * @throws IOException
+     */
+    public void testPDFBox3997() throws IOException
+    {
+        InputStream is;
+        try
+        {
+            System.out.println("Downloading Noto Emoji font...");
+            is = new URL("https://issues.apache.org/jira/secure/attachment/12896461/NotoEmoji-Regular.ttf").openStream();
+            System.out.println("Download finished!");
+        }
+        catch (IOException ex)
+        {
+            System.err.println("Noto Emoji font could not be downloaded, test skipped");
+            return;
+        }
+        try (TrueTypeFont ttf = new TTFParser().parse(is))
+        {
+            CmapSubtable cmap = ttf.getUnicodeCmap(false);
+            assertEquals(886, cmap.getGlyphId(0x1F681));
+        }
     }
 }
