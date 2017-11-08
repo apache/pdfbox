@@ -22,6 +22,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Stack;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
@@ -331,13 +332,12 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Shows the given text at the location specified by the current text matrix.
+     * Outputs a string using the correct encoding and subsetting as required.
      *
-     * @param text The Unicode text to show.
+     * @text The Unicode text to show.
      * @throws IOException If an io exception occurs.
      */
-    @Override
-    public void showText(String text) throws IOException
+    protected void showTextInternal(String text) throws IOException
     {
         if (!isInTextMode())
         {
@@ -362,11 +362,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
-        
         COSWriter.writeString(font.encode(text), getOutput());
-        write(" ");
-
-        writeOperator("Tj");
     }
 
     /**
