@@ -385,12 +385,60 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
+     * Shows the given text at the location specified by the current text matrix with the given
+     * interspersed positioning. This allows the user to efficiently position each glyph or sequence
+     * of glyphs.
+     *
+     * @param textWithPositioningArray An array consisting of String and Float types. Each String is
+     * output to the page using the current text matrix. Using the default coordinate system, each
+     * interspersed number adjusts the current text matrix by translating to the left or down for
+     * horizontal and vertical text respectively. The number is expressed in thousands of a text
+     * space unit, and may be negative.
+     *
+     * @throws IOException if an io exception occurs.
+     */
+    public void showTextWithPositioning(Object[] textWithPositioningArray) throws IOException
+    {
+        write("[");
+        for (Object obj : textWithPositioningArray)
+        {
+            if (obj instanceof String)
+            {
+                showTextInternal((String) obj);
+            }
+            else if (obj instanceof Float)
+            {
+                writeOperand(((Float) obj).floatValue());
+            }
+            else
+            {
+                throw new IllegalArgumentException("Argument must consist of array of Float and String types");
+            }
+        }
+        write("] ");
+        writeOperator("TJ");
+    }
+
+    /**
      * Shows the given text at the location specified by the current text matrix.
      *
      * @param text The Unicode text to show.
      * @throws IOException If an io exception occurs.
      */
     public void showText(String text) throws IOException
+    {
+        showTextInternal(text);
+        write(" ");
+        writeOperator("Tj");
+    }
+
+    /**
+     * Outputs a string using the correct encoding and subsetting as required.
+     *
+     * @text The Unicode text to show.
+     * @throws IOException If an io exception occurs.
+     */
+    protected void showTextInternal(String text) throws IOException
     {
         if (!inTextMode)
         {
@@ -416,9 +464,6 @@ public final class PDPageContentStream implements Closeable
         }
 
         COSWriter.writeString(font.encode(text), output);
-        write(" ");
-
-        writeOperator("Tj");
     }
 
     /**
