@@ -23,6 +23,10 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.StringTokenizer;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 
 /**
@@ -39,7 +43,9 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
     private volatile ColorSpace awtColorSpace;
-    
+
+    private static final Log LOG = LogFactory.getLog(PDDeviceRGB.class);
+
     private PDDeviceRGB()
     {
     }
@@ -54,6 +60,9 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         {
             return;
         }
+
+        suggestKCMS();
+
         synchronized (this)
         {
             // we might have been waiting for another thread, so check again
@@ -133,5 +142,48 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
             }
         }
         return dest;
+    }
+
+    private static void suggestKCMS()
+    {
+        String cmmProperty = System.getProperty("sun.java2d.cmm");
+        if (isMinJdk8() && !"sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
+        {
+            try
+            {
+                // Make sure that class exists
+                Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
+
+                LOG.info("To get more speed on JDK8 or higher, ");
+                LOG.info("  use the option -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider");
+                LOG.info("  or call System.setProperty(\"sun.java2d.cmm\", \"sun.java2d.cmm.kcms.KcmsServiceProvider\")");
+            }
+            catch (ClassNotFoundException e)
+            {
+                LOG.debug("KCMS doesn't exist anymore. SO SAD!");
+            }
+        }
+    }
+
+    private static boolean isMinJdk8()
+    {
+        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
+        String version = System.getProperty("java.specification.version");
+        final StringTokenizer st = new StringTokenizer(version, ".");
+        try
+        {
+            int major = Integer.parseInt(st.nextToken());
+            int minor = 0;
+            if (st.hasMoreTokens())
+            {
+                minor = Integer.parseInt(st.nextToken());
+            }
+            return major > 1 || (major == 1 && minor >= 8);
+        }
+        catch (NumberFormatException nfe)
+        {
+            // maybe some new numbering scheme in the 22nd century
+            return true;
+        }
     }
 }
