@@ -334,7 +334,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     /**
      * Outputs a string using the correct encoding and subsetting as required.
      *
-     * @text The Unicode text to show.
+     * @param text The Unicode text to show.
+     * 
      * @throws IOException If an io exception occurs.
      */
     @Override
