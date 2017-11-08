@@ -201,6 +201,17 @@ public class PDFDebugger extends JFrame
      */
     public static void main(String[] args) throws Exception
     {
+        try
+        {
+            // force KCMS (faster than LCMS) if available
+            Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
+            System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
+        }
+        catch (ClassNotFoundException e)
+        {
+            // do nothing
+        }
+
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         if (System.getProperty("apple.laf.useScreenMenuBar") == null)
         {
