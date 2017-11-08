@@ -337,6 +337,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @text The Unicode text to show.
      * @throws IOException If an io exception occurs.
      */
+    @Override
     protected void showTextInternal(String text) throws IOException
     {
         if (!isInTextMode())

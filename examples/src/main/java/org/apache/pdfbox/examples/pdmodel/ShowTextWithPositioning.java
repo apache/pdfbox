@@ -15,6 +15,7 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,22 +37,25 @@ import org.apache.pdfbox.util.Matrix;
  */
 public class ShowTextWithPositioning
 {
-    public static void main(String[] args) throws Exception
+    private static final float FONT_SIZE = 20.0f;
+
+    private ShowTextWithPositioning()
+    {
+    }
+
+    public static void main(String[] args) throws IOException
     {
         doIt("Hello World, this is a test!", "justify-example.pdf");
     }
 
-    public static void doIt(String message, String outfile) throws Exception
+    public static void doIt(String message, String outfile) throws IOException
     {
         // the document
         try (PDDocument doc = new PDDocument();
              InputStream is = PDDocument.class.getResourceAsStream("/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
         {
-            final float FONT_SIZE = 20.0f;
-
             // Page 1
             PDFont font = PDType0Font.load(doc, is, true);
-            //PDFont font = PDType1Font.COURIER;
             PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
 
@@ -79,11 +83,11 @@ public class ShowTextWithPositioning
                 
                 // Move to next line.
                 contentStream.setTextMatrix(
-                        Matrix.getTranslateInstance(0, pageSize.getHeight() - ((stringHeight / 1000f) * 2)));
+                        Matrix.getTranslateInstance(0, pageSize.getHeight() - stringHeight / 1000f * 2));
                 
                 // Now show word justified.
                 // The space we have to make up, in text space units.
-                float justifyWidth = ((pageSize.getWidth() * 1000f) - (stringWidth));
+                float justifyWidth = pageSize.getWidth() * 1000f - stringWidth;
                 
                 List<Object> text = new ArrayList<>();
                 String[] parts = message.split("\\s");
@@ -101,14 +105,14 @@ public class ShowTextWithPositioning
                     text.add(parts[i]);
                 }
                 contentStream.showTextWithPositioning(text.toArray());
-                contentStream.setTextMatrix(Matrix.getTranslateInstance(0, pageSize.getHeight() - ((stringHeight / 1000f) * 3)));
-                
+                contentStream.setTextMatrix(Matrix.getTranslateInstance(0, pageSize.getHeight() - stringHeight / 1000f * 3));
+
                 // Now show letter justified.
                 text = new ArrayList<>();
-                justifyWidth = ((pageSize.getWidth() * 1000f) - stringWidth);
+                justifyWidth = pageSize.getWidth() * 1000f - stringWidth;
                 float extraLetterWidth = (justifyWidth / (message.codePointCount(0, message.length()) - 1)) / FONT_SIZE;
                 
-                for (int i = 0; i < message.length();)
+                for (int i = 0; i < message.length(); i += Character.charCount(message.codePointAt(i)))
                 {
                     if (i != 0)
                     {
@@ -116,8 +120,6 @@ public class ShowTextWithPositioning
                     }
                     
                     text.add(String.valueOf(Character.toChars(message.codePointAt(i))));
-                    
-                    i += Character.charCount(message.codePointAt(i));
                 }
                 contentStream.showTextWithPositioning(text.toArray());
                 
