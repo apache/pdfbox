@@ -17,14 +17,25 @@ package org.apache.pdfbox.multipdf;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 import junit.framework.TestCase;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -156,6 +167,65 @@ public class PDFMergerUtilityTest extends TestCase
         }
     }
 
+    /**
+     * PDFBOX-3999: check that entries in the number tree only reference pages from the page tree.
+     * 
+     * @throws IOException 
+     */
+    public void testStructureTreeMerge() throws IOException
+    {
+        InputStream is;
+        try
+        {
+            System.out.println("Downloading GeneralForbearance.pdf...");
+            is = new URL("https://issues.apache.org/jira/secure/attachment/12896905/GeneralForbearance.pdf").openStream();
+            FileOutputStream fos = new FileOutputStream(new File("target", "GeneralForbearance.pdf"));
+            IOUtils.copy(is, fos);
+            is.close();
+            fos.close();
+            System.out.println("Download finished!");
+        }
+        catch (IOException ex)
+        {
+            System.err.println("GeneralForbearance.pdf could not be downloaded, test skipped");
+            return;
+        }
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File("target", "GeneralForbearance.pdf"));
+        PDDocument dst = PDDocument.load(new File("target", "GeneralForbearance.pdf"));
+        pdfMergerUtility.appendDocument(dst, src);
+        src.close(); //if we don't close the src then we don't have an error
+        dst.save(new File("target", "GovFormPreFlattened-merged.pdf"));
+        dst.close();
+
+        PDDocument doc = PDDocument.load(new File("target", "GovFormPreFlattened-merged.pdf"));
+        PDPageTree pageTree = doc.getPages();
+        PDNumberTreeNode parentTree = doc.getDocumentCatalog().getStructureTreeRoot().getParentTree();
+        COSArray numArray = (COSArray) parentTree.getCOSObject().getDictionaryObject(COSName.NUMS);
+        for (COSBase base : numArray)
+        {
+            if (base instanceof COSObject)
+            {
+                base = ((COSObject) base).getObject();
+            }
+            if (base instanceof COSArray)
+            {
+                for (COSBase base2 : (COSArray) base)
+                {
+                    if (base2 instanceof COSObject)
+                    {
+                        base2 = ((COSObject) base2).getObject();
+                    }
+                    checkForPage(pageTree, base2);
+                }
+            }
+            else if (base instanceof COSDictionary)
+            {
+                checkForPage(pageTree, base);
+            }
+        }
+    }
+
     // checks that the result file of a merge has the same rendering as the two source files
     private void checkMergeIdentical(String filename1, String filename2, String mergeFilename, 
             MemoryUsageSetting memUsageSetting)
@@ -227,4 +297,13 @@ public class PDFMergerUtilityTest extends TestCase
         }
     }
 
+    private void checkForPage(PDPageTree pageTree, COSBase base2)
+    {
+        COSDictionary dict = (COSDictionary) base2;
+        if (dict.containsKey(COSName.PG))
+        {
+            PDPage page = new PDPage((COSDictionary) dict.getDictionaryObject(COSName.PG));
+            assertTrue("Page is not in the page tree", pageTree.indexOf(page) != -1);
+        }
+    }
 }
