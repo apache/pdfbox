@@ -338,6 +338,19 @@
                             <sha512>71888e06a0323ac6196c5942c5961f76f8a4d8c6913114aaa9e215f43112cfa5f1b741b7c801e794dc44e62c2d34bfaafe89267a4c7de753e4da1481b35820f3</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-3999</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12896905/GeneralForbearance.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-3999-GeneralForbearance.pdf</outputFileName>
+                            <sha512>6ed5287342ec8a5459a86462d80917bb625d5973df96fdebd5e3c8bc2e9093e6c389f5c8151eb17472a24e1349386a3e7c1a0021e9a967761a554ac1ade557eb</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
