@@ -17,10 +17,7 @@ package org.apache.pdfbox.multipdf;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSArray;
@@ -28,7 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -50,6 +46,7 @@ public class PDFMergerUtilityTest extends TestCase
 {
     final String SRCDIR = "src/test/resources/input/merge/";
     final String TARGETTESTDIR = "target/test-output/merge/";
+    private static final File TARGETPDFDIR = new File("target/pdfs");
     final int DPI = 96;
 
     @Override
@@ -174,31 +171,15 @@ public class PDFMergerUtilityTest extends TestCase
      */
     public void testStructureTreeMerge() throws IOException
     {
-        InputStream is;
-        try
-        {
-            System.out.println("Downloading GeneralForbearance.pdf...");
-            is = new URL("https://issues.apache.org/jira/secure/attachment/12896905/GeneralForbearance.pdf").openStream();
-            FileOutputStream fos = new FileOutputStream(new File("target", "GeneralForbearance.pdf"));
-            IOUtils.copy(is, fos);
-            is.close();
-            fos.close();
-            System.out.println("Download finished!");
-        }
-        catch (IOException ex)
-        {
-            System.err.println("GeneralForbearance.pdf could not be downloaded, test skipped");
-            return;
-        }
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
-        PDDocument src = PDDocument.load(new File("target", "GeneralForbearance.pdf"));
-        PDDocument dst = PDDocument.load(new File("target", "GeneralForbearance.pdf"));
+        PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
+        PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
         pdfMergerUtility.appendDocument(dst, src);
-        src.close(); //if we don't close the src then we don't have an error
-        dst.save(new File("target", "GovFormPreFlattened-merged.pdf"));
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-3999-GovFormPreFlattened-merged.pdf"));
         dst.close();
 
-        PDDocument doc = PDDocument.load(new File("target", "GovFormPreFlattened-merged.pdf"));
+        PDDocument doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GovFormPreFlattened-merged.pdf"));
         PDPageTree pageTree = doc.getPages();
         PDNumberTreeNode parentTree = doc.getDocumentCatalog().getStructureTreeRoot().getParentTree();
         COSArray numArray = (COSArray) parentTree.getCOSObject().getDictionaryObject(COSName.NUMS);
