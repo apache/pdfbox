@@ -154,7 +154,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
                 // Make sure that class exists
                 Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
 
-                LOG.info("To get more speed on JDK8 or higher, ");
+                LOG.info("To get higher rendering speed on JDK8 or later,");
                 LOG.info("  use the option -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider");
                 LOG.info("  or call System.setProperty(\"sun.java2d.cmm\", \"sun.java2d.cmm.kcms.KcmsServiceProvider\")");
             }
