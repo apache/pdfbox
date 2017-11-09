@@ -652,10 +652,7 @@ public class PDFMergerUtility
             {
                 updateParentEntry(destKArray, kDictLevel0);
                 newKArray.addAll(destKArray);
-                if (mergeStructTree)
-                {
-                    updateParentEntry(srcKArray, kDictLevel0);
-                }
+                updateParentEntry(srcKArray, kDictLevel0);
                 newKArray.addAll(srcKArray);
             }
             kDictLevel0.setItem(COSName.K, newKArray);
