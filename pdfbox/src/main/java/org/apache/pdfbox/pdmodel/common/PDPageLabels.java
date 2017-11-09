@@ -93,7 +93,7 @@ public class PDPageLabels implements COSObjectable
         {
             return;
         }
-        PDNumberTreeNode root = new PDNumberTreeNode(dict, COSDictionary.class);
+        PDNumberTreeNode root = new PDNumberTreeNode(dict, PDPageLabelRange.class);
         findLabels(root);
     }
     
@@ -114,7 +114,7 @@ public class PDPageLabels implements COSObjectable
             {
                 if(i.getKey() >= 0)
                 {
-                    labels.put(i.getKey(), new PDPageLabelRange((COSDictionary)i.getValue()));
+                    labels.put(i.getKey(), (PDPageLabelRange) i.getValue());
                 }
             }
         }
