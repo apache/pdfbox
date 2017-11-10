@@ -108,17 +108,6 @@ public class PDDocument implements Closeable
         {
             LOG.debug("voodoo error", ex);
         }
-
-        try
-        {
-            //TODO remove this and deprecated COSNumber statics in 3.0
-            COSNumber.get("0");
-            COSNumber.get("1");
-        }
-        catch (IOException ex)
-        {
-            //
-        }
     }
     
     private final COSDocument document;
