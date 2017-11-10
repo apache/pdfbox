@@ -2506,6 +2506,12 @@ public final class PDPageContentStream implements Closeable
     /**
      * Set the word spacing. The value shall be added to the horizontal or vertical component of the
      * ASCII SPACE character, depending on the writing mode.
+     * <p>
+     * This will have an effect only with Type1 and TrueType fonts, not with Type0 fonts. The PDF
+     * specification tells why: "Word spacing shall be applied to every occurrence of the
+     * single-byte character code 32 in a string when using a simple font or a composite font that
+     * defines code 32 as a single-byte code. It shall not apply to occurrences of the byte value 32
+     * in multiple-byte codes."
      *
      * @param spacing word spacing
      * @throws IOException If the content stream could not be written.

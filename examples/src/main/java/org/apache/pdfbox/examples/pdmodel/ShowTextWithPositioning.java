@@ -26,7 +26,9 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -122,6 +124,39 @@ public class ShowTextWithPositioning
             text.add(String.valueOf(Character.toChars(message.codePointAt(i))));
         }
         contentStream.showTextWithPositioning(text.toArray());
+
+        // PDF specification about word spacing:
+        // "Word spacing shall be applied to every occurrence of the single-byte character 
+        // code 32 in a string when using a simple font or a composite font that defines 
+        // code 32 as a single-byte code. It shall not apply to occurrences of the byte 
+        // value 32 in multiple-byte codes.
+        // TrueType font with no word spacing
+        contentStream.setTextMatrix(
+                Matrix.getTranslateInstance(0, pageSize.getHeight() - stringHeight / 1000f * 4));
+        font = PDTrueTypeFont.load(doc, PDDocument.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), WinAnsiEncoding.INSTANCE);
+        contentStream.setFont(font, FONT_SIZE);
+        contentStream.showText(message);
+
+        float wordSpacing = (pageSize.getWidth() * 1000f - stringWidth) / (parts.length - 1) / 1000;
+
+        // TrueType font with word spacing
+        contentStream.setTextMatrix(
+                Matrix.getTranslateInstance(0, pageSize.getHeight() - stringHeight / 1000f * 5));
+        font = PDTrueTypeFont.load(doc, PDDocument.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"), WinAnsiEncoding.INSTANCE);
+        contentStream.setFont(font, FONT_SIZE);
+        contentStream.setWordSpacing(wordSpacing);
+        contentStream.showText(message);
+
+        // Type0 font with word spacing that has no effect
+        contentStream.setTextMatrix(
+                Matrix.getTranslateInstance(0, pageSize.getHeight() - stringHeight / 1000f * 6));
+        font = PDType0Font.load(doc, PDDocument.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"));
+        contentStream.setFont(font, FONT_SIZE);
+        contentStream.setWordSpacing(wordSpacing);
+        contentStream.showText(message);
 
         // Finish up.
         contentStream.endText();
