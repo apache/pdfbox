@@ -125,6 +125,10 @@ public class LayerUtility
     /**
      * Imports a page from some PDF file as a Form XObject so it can be placed on another page
      * in the target document.
+     * <p>
+     * You may want to call {@link #wrapInSaveRestore(PDPage) wrapInSaveRestore(PDPage)} before invoking the Form XObject to
+     * make sure that the graphics state is reset.
+     * 
      * @param sourceDoc the source PDF document that contains the page to be copied
      * @param pageNumber the page number of the page to be copied
      * @return a Form XObject containing the original page's content
@@ -142,6 +146,10 @@ public class LayerUtility
     /**
      * Imports a page from some PDF file as a Form XObject so it can be placed on another page
      * in the target document.
+     * <p>
+     * You may want to call {@link #wrapInSaveRestore(PDPage) wrapInSaveRestore(PDPage)} before invoking the Form XObject to
+     * make sure that the graphics state is reset.
+     * 
      * @param sourceDoc the source PDF document that contains the page to be copied
      * @param page the page in the source PDF document to be copied
      * @return a Form XObject containing the original page's content
@@ -217,6 +225,10 @@ public class LayerUtility
      * The form is enveloped in a marked content section to indicate that it's part of an
      * optional content group (OCG), here used as a layer. This optional group is returned and
      * can be enabled and disabled through methods on {@link PDOptionalContentProperties}.
+     * <p>
+     * You may want to call {@link #wrapInSaveRestore(PDPage) wrapInSaveRestore(PDPage)} before calling this method to make
+     * sure that the graphics state is reset.
+     *
      * @param targetPage the target page
      * @param form the form to place
      * @param transform the transformation matrix that controls the placement
