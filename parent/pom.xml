@@ -151,6 +151,7 @@
                         </configuration>
                         <executions>
                             <execution>
+                                <phase/>
                                 <goals>
                                     <goal>check</goal>
                                 </goals>
