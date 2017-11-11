@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -197,12 +198,14 @@ public class PDFMergerUtilityTest extends TestCase
                     {
                         base2 = ((COSObject) base2).getObject();
                     }
-                    checkForPage(pageTree, base2);
+                    PDStructureElement structureElement = new PDStructureElement((COSDictionary) base2);
+                    checkForPage(pageTree, structureElement);
                 }
             }
             else if (base instanceof COSDictionary)
             {
-                checkForPage(pageTree, base);
+                PDStructureElement structureElement = new PDStructureElement((COSDictionary) base);
+                checkForPage(pageTree, structureElement);
             }
         }
     }
@@ -278,12 +281,11 @@ public class PDFMergerUtilityTest extends TestCase
         }
     }
 
-    private void checkForPage(PDPageTree pageTree, COSBase base2)
+    private void checkForPage(PDPageTree pageTree, PDStructureElement structureElement)
     {
-        COSDictionary dict = (COSDictionary) base2;
-        if (dict.containsKey(COSName.PG))
+        PDPage page = structureElement.getPage();
+        if (page != null)
         {
-            PDPage page = new PDPage((COSDictionary) dict.getDictionaryObject(COSName.PG));
             assertTrue("Page is not in the page tree", pageTree.indexOf(page) != -1);
         }
     }
