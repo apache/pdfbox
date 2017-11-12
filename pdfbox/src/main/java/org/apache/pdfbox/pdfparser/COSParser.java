@@ -618,7 +618,17 @@ public class COSParser extends BaseParser
 
                     if (!parsedObjects.contains(objId))
                     {
-                        Long fileOffset = xrefTrailerResolver.getXrefTable().get(objKey);
+                        Long fileOffset = document.getXrefTable().get(objKey);
+                        if (fileOffset == null && isLenient && bfSearchCOSObjectKeyOffsets != null)
+                        {
+                            fileOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                            if (fileOffset != null)
+                            {
+                                LOG.debug("Set missing " + fileOffset + " for object " + objKey);
+                                document.getXrefTable().put(objKey, fileOffset);
+                            }
+                        }
+
                         // it is allowed that object references point to null,
                         // thus we have to test
                         if (fileOffset != null && fileOffset != 0)
@@ -632,13 +642,26 @@ public class COSParser extends BaseParser
                                 // negative offset means we have a compressed
                                 // object within object stream;
                                 // get offset of object stream
-                                fileOffset = xrefTrailerResolver.getXrefTable().get(
-                                        new COSObjectKey((int)-fileOffset, 0));
-                                if ((fileOffset == null) || (fileOffset <= 0))
+                                COSObjectKey key = new COSObjectKey((int) -fileOffset, 0);
+                                fileOffset = document.getXrefTable().get(key);
+                                if (fileOffset == null || fileOffset <= 0)
                                 {
-                                    throw new IOException(
-                                            "Invalid object stream xref object reference for key '" + objKey + "': "
-                                                    + fileOffset);
+                                    if (isLenient && bfSearchCOSObjectKeyOffsets != null)
+                                    {
+                                        fileOffset = bfSearchCOSObjectKeyOffsets.get(key);
+                                        if (fileOffset != null)
+                                        {
+                                            LOG.debug("Set missing " + fileOffset + " for object "
+                                                    + key);
+                                            document.getXrefTable().put(key, fileOffset);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new IOException(
+                                                "Invalid object stream xref object reference for key '"
+                                                        + objKey + "': " + fileOffset);
+                                    }
                                 }
 
                                 List<COSObject> stmObjects = objToBeParsed.get(fileOffset);
@@ -744,7 +767,18 @@ public class COSParser extends BaseParser
         {
             // not previously parsed
             // ---- read offset or object stream object number from xref table
-            Long offsetOrObjstmObNr = xrefTrailerResolver.getXrefTable().get(objKey);
+            Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
+
+            // maybe something is wrong with the xref table -> perform brute force search for all objects
+            if (offsetOrObjstmObNr == null && isLenient && bfSearchCOSObjectKeyOffsets != null)
+            {
+                offsetOrObjstmObNr = bfSearchCOSObjectKeyOffsets.get(objKey);
+                if (offsetOrObjstmObNr != null)
+                {
+                    LOG.debug("Set missing offset " + offsetOrObjstmObNr + " for object " + objKey);
+                    document.getXrefTable().put(objKey, offsetOrObjstmObNr);
+                }
+            }
 
             // sanity test to circumvent loops with broken documents
             if (requireExistingNotCompressedObj
@@ -761,7 +795,7 @@ public class COSParser extends BaseParser
                 if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
                 {
                     LOG.debug("Add all new read objects from brute force search to the xref table");
-                    Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
+                    Map<COSObjectKey, Long> xrefOffset = document.getXrefTable();
                     final Set<Map.Entry<COSObjectKey, Long>> entries = bfSearchCOSObjectKeyOffsets.entrySet();
                     for (Entry<COSObjectKey, Long> entry : entries)
                     {
@@ -923,7 +957,7 @@ public class COSParser extends BaseParser
             for (COSObject next : parser.getObjects())
             {
                 COSObjectKey stmObjKey = new COSObjectKey(next);
-                Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey); 
+                Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey);
                 if (offset != null && offset == -objstmObjNr)
                 {
                     COSObject stmObj = document.getObjectFromPool(stmObjKey);
