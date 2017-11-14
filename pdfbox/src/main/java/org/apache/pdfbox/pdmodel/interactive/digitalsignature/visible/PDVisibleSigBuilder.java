@@ -202,14 +202,33 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         LOG.info("Visible Signature Image has been created");
     }
 
+    /**
+     * {@inheritDoc }
+     * 
+     * @deprecated use {@link #createFormatterRectangle(int[]) createFormatterRectangle(int[])}
+     */
     @Override
+    @Deprecated
     public void createFormatterRectangle(byte[] params)
     {
         PDRectangle formatterRectangle = new PDRectangle();
-        formatterRectangle.setUpperRightX(params[0]);
-        formatterRectangle.setUpperRightY(params[1]);
-        formatterRectangle.setLowerLeftX(params[2]);
-        formatterRectangle.setLowerLeftY(params[3]);
+        formatterRectangle.setLowerLeftX(Math.min(params[0],params[2]));
+        formatterRectangle.setLowerLeftY(Math.min(params[1],params[3]));
+        formatterRectangle.setUpperRightX(Math.max(params[0],params[2]));
+        formatterRectangle.setUpperRightY(Math.max(params[1],params[3]));
+
+        pdfStructure.setFormatterRectangle(formatterRectangle);
+        LOG.info("Formatter rectangle has been created");
+    }
+
+    @Override
+    public void createFormatterRectangle(int[] params)
+    {
+        PDRectangle formatterRectangle = new PDRectangle();
+        formatterRectangle.setLowerLeftX(Math.min(params[0],params[2]));
+        formatterRectangle.setLowerLeftY(Math.min(params[1],params[3]));
+        formatterRectangle.setUpperRightX(Math.max(params[0],params[2]));
+        formatterRectangle.setUpperRightY(Math.max(params[1],params[3]));
 
         pdfStructure.setFormatterRectangle(formatterRectangle);
         LOG.info("Formatter rectangle has been created");
