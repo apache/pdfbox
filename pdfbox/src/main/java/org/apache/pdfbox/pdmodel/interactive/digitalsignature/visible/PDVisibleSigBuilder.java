@@ -172,10 +172,10 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
 
         PDRectangle formrect = new PDRectangle();
-        formrect.setUpperRightX(params[0]);
-        formrect.setUpperRightY(params[1]);
-        formrect.setLowerLeftX(params[2]);
-        formrect.setLowerLeftY(params[3]);
+        formrect.setLowerLeftX(Math.min(params[0],params[2]));
+        formrect.setLowerLeftY(Math.min(params[1],params[3]));
+        formrect.setUpperRightX(Math.max(params[0],params[2]));
+        formrect.setUpperRightY(Math.max(params[1],params[3]));
 
         pdfStructure.setFormaterRectangle(formrect);
         logger.info("Formater rectangle has been created");
