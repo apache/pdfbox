@@ -89,7 +89,7 @@ public class PDPanoseClassification
     @Override
     public String toString()
     {
-        return "{ FamilyType = " + getFamilyKind() + ", " +
+        return "{ FamilyKind = " + getFamilyKind() + ", " +
                  "SerifStyle = " + getSerifStyle() + ", " +
                  "Weight = " + getWeight() + ", " +
                  "Proportion = " + getProportion() + ", " + 
