@@ -130,10 +130,25 @@ public interface PDFTemplateBuilder
     void createSignatureImage(PDDocument template, BufferedImage image) throws IOException;
 
     /**
+     * An array of four numbers in the form coordinate system, giving the coordinates of the left,
+     * bottom, right, and top edges, respectively, of the form XObject’s bounding box. These
+     * boundaries shall be used to clip the form XObject and to determine its size for caching.
+     *
+     * @param params
      * 
+     * @deprecated use {@link #createFormatterRectangle(int[]) createFormatterRectangle(int[])}
+     */
+    @Deprecated
+    void createFormatterRectangle(byte[] params);
+
+    /**
+     * An array of four numbers in the form coordinate system, giving the coordinates of the left,
+     * bottom, right, and top edges, respectively, of the form XObject’s bounding box. These
+     * boundaries shall be used to clip the form XObject and to determine its size for caching.
+     *
      * @param params
      */
-    void createFormatterRectangle(byte[] params);
+    void createFormatterRectangle(int[] params);
 
     /**
      * 
