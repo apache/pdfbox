@@ -42,7 +42,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE_SQUARE = "Square";
     /**
-     * Constant for an Eliptical type of annotation.
+     * Constant for an elliptical type of annotation.
      */
     public static final String SUB_TYPE_CIRCLE = "Circle";
 
@@ -59,7 +59,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     /**
      * Creates a Line annotation from a COSDictionary, expected to be a correct object definition.
      *
-     * @param field the PDF objet to represent as a field.
+     * @param field the PDF object to represent as a field.
      */
     public PDAnnotationSquareCircle(COSDictionary field)
     {
