@@ -49,6 +49,7 @@ public class PDVisibleSignDesigner
     private BufferedImage image;
     private String signatureFieldName = "sig";
     private byte[] formatterRectangleParams = { 0, 0, 100, 50 };
+    private int[] formatterRectangleParameters = { 0, 0, 100, 50 };
     private AffineTransform affineTransform = new AffineTransform();
     private float imageSizeInPercents;
     private int rotation = 0;
@@ -211,7 +212,7 @@ public class PDVisibleSignDesigner
 
     /**
      * Adjust signature for page rotation. This is optional, call this after all x and y coordinates
-     * have been set if you want the signature to be postioned regardless of page orientation.
+     * have been set if you want the signature to be positioned regardless of page orientation.
      *
      * @return Visible Signature Configuration Object
      */
@@ -514,12 +515,22 @@ public class PDVisibleSignDesigner
     }
     
     /**
-     * 
-     * @return formatter PDRectanle parameters
+     * @return formatter PDRectangle parameters
+     * @deprecated use {@link #getFormatterRectangleParameters() getFormatterRectangleParameters()}
      */
+    @Deprecated
     public byte[] getFormatterRectangleParams()
     {
         return formatterRectangleParams;
+    }
+
+    /**
+     * 
+     * @return formatter PDRectangle parameters
+     */
+    public int[] getFormatterRectangleParameters()
+    {
+        return formatterRectangleParameters;
     }
 
     /**
@@ -527,10 +538,24 @@ public class PDVisibleSignDesigner
      * 
      * @param formatterRectangleParams
      * @return Visible Signature Configuration Object
+     * @deprecated use {@link #formatterRectangleParameters(int[]) formatterRectangleParameters(int[])}
      */
+    @Deprecated
     public PDVisibleSignDesigner formatterRectangleParams(byte[] formatterRectangleParams)
     {
         this.formatterRectangleParams = formatterRectangleParams;
+        return this;
+    }
+
+    /**
+     * Sets formatter PDRectangle
+     * 
+     * @param formatterRectangleParameters
+     * @return Visible Signature Configuration Object
+     */
+    public PDVisibleSignDesigner formatterRectangleParameters(int[] formatterRectangleParameters)
+    {
+        this.formatterRectangleParameters = formatterRectangleParameters;
         return this;
     }
 
