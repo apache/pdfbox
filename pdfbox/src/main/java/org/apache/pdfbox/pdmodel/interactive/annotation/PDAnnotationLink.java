@@ -61,7 +61,7 @@ public class PDAnnotationLink extends PDAnnotation
     public static final String SUB_TYPE = "Link";
     
     /**
-     * Custom apperance handler to generate an appearance stream.
+     * Custom appearance handler to generate an appearance stream.
      */
     private PDAppearanceHandler customAppearanceHandler;
 

@@ -134,7 +134,7 @@ public class PDSquareAnnotationTest
             assertEquals(-rectangle.getLowerLeftX(), matrix.getTranslateX(), DELTA);
             assertEquals(-rectangle.getLowerLeftY(), matrix.getTranslateY(), DELTA);
             
-            // test the content of the apperance stream
+            // test the content of the appearance stream
             PDStream contentStream = appearanceStream.getContentStream();
             assertNotNull("Content stream shall not be null", contentStream);
             PDFStreamParser parser = new PDFStreamParser(appearanceStream);
