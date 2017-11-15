@@ -113,7 +113,7 @@ public class PDFTemplateCreator
        
         // rectangle, formatter, image. /AcroForm/DR/XObject contains that form
         pdfBuilder.createSignatureRectangle(pdSignatureField, properties);
-        pdfBuilder.createFormatterRectangle(properties.getFormatterRectangleParams());
+        pdfBuilder.createFormatterRectangle(properties.getFormatterRectangleParameters());
         PDRectangle formatter = pdfStructure.getFormatterRectangle();
         pdfBuilder.createSignatureImage(template, properties.getImage());
 
