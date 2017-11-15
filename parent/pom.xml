@@ -145,13 +145,12 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>3.0.1</version>
+                        <version>3.0.2</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         </configuration>
                         <executions>
                             <execution>
-                                <phase/>
                                 <goals>
                                     <goal>check</goal>
                                 </goals>
