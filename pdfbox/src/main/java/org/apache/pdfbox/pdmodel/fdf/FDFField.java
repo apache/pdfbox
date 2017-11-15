@@ -584,7 +584,7 @@ public class FDFField implements COSObjectable
     /**
      * This will set the appearance dictionary.
      *
-     * @param ap The apperance dictionary.
+     * @param ap The appearance dictionary.
      */
     public void setAppearanceDictionary(PDAppearanceDictionary ap)
     {
