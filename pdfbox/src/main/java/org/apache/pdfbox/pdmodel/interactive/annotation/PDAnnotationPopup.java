@@ -45,7 +45,7 @@ public class PDAnnotationPopup extends PDAnnotation
     /**
      * Creates a popup annotation from a COSDictionary, expected to be a correct object definition.
      *
-     * @param field the PDF objet to represent as a field.
+     * @param field the PDF object to represent as a field.
      */
     public PDAnnotationPopup(COSDictionary field)
     {
