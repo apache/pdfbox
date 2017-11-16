@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Sides;
@@ -292,8 +293,9 @@ public class PDFDebugger extends JFrame
         });
 
         // Mac OS X file open/quit handler
-        if (IS_MAC_OS)
+        if (IS_MAC_OS && !isMinJdk9())
         {
+            //TODO this needs to be rewritten for JDK9, see PDFBOX-4013
             try
             {
                 Method osxOpenFiles = getClass().getDeclaredMethod("osxOpenFiles", String.class);
@@ -1424,5 +1426,27 @@ public class PDFDebugger extends JFrame
             }
         }
         return null;
+    }
+
+    private static boolean isMinJdk9()
+    {
+        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
+        String version = System.getProperty("java.specification.version");
+        final StringTokenizer st = new StringTokenizer(version, ".");
+        try
+        {
+            int major = Integer.parseInt(st.nextToken());
+            int minor = 0;
+            if (st.hasMoreTokens())
+            {
+                minor = Integer.parseInt(st.nextToken());
+            }
+            return major > 1 || (major == 1 && minor >= 9);
+        }
+        catch (NumberFormatException nfe)
+        {
+            // maybe some new numbering scheme in the 22nd century
+            return true;
+        }
     }
 }
