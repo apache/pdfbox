@@ -82,11 +82,14 @@ import org.apache.pdfbox.util.Vector;
 /**
  * Paints a page in a PDF document to a Graphics context. May be subclassed to provide custom
  * rendering.
- * 
- * <p>If you want to do custom graphics processing rather than Graphics2D rendering, then you should
- * subclass PDFGraphicsStreamEngine instead. Subclassing PageDrawer is only suitable for cases
- * where the goal is to render onto a Graphics2D surface.
- * 
+ *
+ * <p>
+ * If you want to do custom graphics processing rather than Graphics2D rendering, then you should
+ * subclass {@link PDFGraphicsStreamEngine} instead. Subclassing PageDrawer is only suitable for
+ * cases where the goal is to render onto a {@link Graphics2D} surface. In that case you'll also
+ * have to subclass {@link PDFRenderer} and modify
+ * {@link PDFRenderer#createPageDrawer(PageDrawerParameters)}.
+ *
  * @author Ben Litchfield
  */
 public class PageDrawer extends PDFGraphicsStreamEngine
