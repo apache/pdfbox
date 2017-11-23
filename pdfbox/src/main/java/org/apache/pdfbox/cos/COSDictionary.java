@@ -1344,6 +1344,26 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
+     * This is a special case of getItem that takes multiple keys, it will handle the situation
+     * where multiple keys could get the same value, ie if either CS or ColorSpace is used to get
+     * the colorspace. This will get an object from this dictionary.
+     *
+     * @param firstKey The first key to try.
+     * @param secondKey The second key to try.
+     *
+     * @return The object that matches the key.
+     */
+    public COSBase getItem(COSName firstKey, COSName secondKey)
+    {
+        COSBase retval = getItem(firstKey);
+        if (retval == null && secondKey != null)
+        {
+            retval = getItem(secondKey);
+        }
+        return retval;
+    }
+    
+    /**
      * Returns the names of the entries in this dictionary. The returned set is in the order the entries were added to
      * the dictionary.
      *
