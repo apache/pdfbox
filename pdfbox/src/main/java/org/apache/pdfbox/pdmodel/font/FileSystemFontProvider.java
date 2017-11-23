@@ -109,6 +109,12 @@ final class FileSystemFontProvider extends FontProvider
             return cidSystemInfo;
         }
 
+        /**
+         * {@inheritDoc}
+         * <p>
+         * The method returns null if there is there was an error opening the font.
+         * 
+         */
         @Override
         public FontBoxFont getFont()
         {
@@ -127,7 +133,10 @@ final class FileSystemFontProvider extends FontProvider
                     case OTF: font = parent.getOTFFont(postScriptName, file); break;
                     default: throw new RuntimeException("can't happen");
                 }
-                parent.cache.addFont(this, font);
+                if (font != null)
+                {
+                    parent.cache.addFont(this, font);
+                }
                 return font;
             }
         }
