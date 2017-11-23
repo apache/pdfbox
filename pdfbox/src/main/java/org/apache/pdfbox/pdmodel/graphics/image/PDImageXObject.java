@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -603,10 +604,26 @@ public final class PDImageXObject extends PDXObject implements PDImage
     {
         if (colorSpace == null)
         {
-            COSBase cosBase = getCOSObject().getDictionaryObject(COSName.COLORSPACE, COSName.CS);
+            COSBase cosBase = getCOSObject().getItem(COSName.COLORSPACE, COSName.CS);
             if (cosBase != null)
             {
+                COSObject indirect = null;
+                if (cosBase instanceof COSObject && resources.getResourceCache() != null)
+                {
+                    // PDFBOX-4022: use the resource cache because several images
+                    // might have the same colorspace indirect object.
+                    indirect = (COSObject) cosBase;
+                    colorSpace = resources.getResourceCache().getColorSpace(indirect);
+                    if (colorSpace != null)
+                    {
+                        return colorSpace;
+                    }
+                }
                 colorSpace = PDColorSpace.create(cosBase, resources);
+                if (indirect != null)
+                {
+                    resources.getResourceCache().put(indirect, colorSpace);
+                }
             }
             else if (isStencil())
             {
