@@ -1358,7 +1358,7 @@ public class COSParser extends BaseParser
             // a negative offset number represents a object number itself
             // see type 2 entry in xref stream
             if (objectOffset != null && objectOffset >= 0
-                    && !checkObjectKeys(objectKey, objectOffset))
+                    && !checkObjectKey(objectKey, objectOffset))
             {
                 LOG.debug("Stop checking xref offsets as at least one (" + objectKey
                         + ") couldn't be dereferenced");
@@ -1401,25 +1401,25 @@ public class COSParser extends BaseParser
      * @return returns true if the given object can be dereferenced at the given offset
      * @throws IOException if something went wrong
      */
-    private boolean checkObjectKeys(COSObjectKey objectKey, long offset) throws IOException
+    private boolean checkObjectKey(COSObjectKey objectKey, long offset) throws IOException
     {
         // there can't be any object at the very beginning of a pdf
         if (offset < MINIMUM_SEARCH_OFFSET)
         {
             return false;
         }
-        long objectNr = objectKey.getNumber();
-        int objectGen = objectKey.getGeneration();
+        boolean objectKeyFound = false;
         long originOffset = source.getPosition();
-        String objectString = createObjectString(objectNr, objectGen);
         try 
         {
             source.seek(offset);
-            if (isString(objectString.getBytes(ISO_8859_1)))
+            // try to read the given object/generation number
+            if (objectKey.getNumber() == readObjectNumber()
+                    && objectKey.getGeneration() == readGenerationNumber())
             {
-                // everything is ok, return origin object key
-                source.seek(originOffset);
-                return true;
+                // finally tro to read the object marker
+                readExpectedString(OBJ_MARKER, true);
+                objectKeyFound = true;
             }
         }
         catch (IOException exception)
@@ -1430,19 +1430,8 @@ public class COSParser extends BaseParser
         {
             source.seek(originOffset);
         }
-        // no valid object number found
-        return false;
-    }
-    /**
-     * Create a string for the given object id.
-     * 
-     * @param objectID the object id
-     * @param genID the generation id
-     * @return the generated string
-     */
-    private String createObjectString(long objectID, int genID)
-    {
-        return Long.toString(objectID) + " " + Integer.toString(genID) + " obj";
+        // return resulting value
+        return objectKeyFound;
     }
 
     private Map<COSObjectKey, Long> getBFCOSObjectOffsets() throws IOException
