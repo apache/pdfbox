@@ -252,36 +252,36 @@ public abstract class PDShading implements COSObjectable
     /**
      * Create the correct PD Model shading based on the COS base shading.
      *
-     * @param resourceDictionary the COS shading dictionary
+     * @param shadingDictionary the COS shading dictionary
      * @return the newly created shading resources object
      * @throws IOException if we are unable to create the PDShading object
      */
-    public static PDShading create(COSDictionary resourceDictionary) throws IOException
+    public static PDShading create(COSDictionary shadingDictionary) throws IOException
     {
         PDShading shading = null;
-        int shadingType = resourceDictionary.getInt(COSName.SHADING_TYPE, 0);
+        int shadingType = shadingDictionary.getInt(COSName.SHADING_TYPE, 0);
         switch (shadingType)
         {
             case SHADING_TYPE1:
-                shading = new PDShadingType1(resourceDictionary);
+                shading = new PDShadingType1(shadingDictionary);
                 break;
             case SHADING_TYPE2:
-                shading = new PDShadingType2(resourceDictionary);
+                shading = new PDShadingType2(shadingDictionary);
                 break;
             case SHADING_TYPE3:
-                shading = new PDShadingType3(resourceDictionary);
+                shading = new PDShadingType3(shadingDictionary);
                 break;
             case SHADING_TYPE4:
-                shading = new PDShadingType4(resourceDictionary);
+                shading = new PDShadingType4(shadingDictionary);
                 break;
             case SHADING_TYPE5:
-                shading = new PDShadingType5(resourceDictionary);
+                shading = new PDShadingType5(shadingDictionary);
                 break;
             case SHADING_TYPE6:
-                shading = new PDShadingType6(resourceDictionary);
+                shading = new PDShadingType6(shadingDictionary);
                 break;
             case SHADING_TYPE7:
-                shading = new PDShadingType7(resourceDictionary);
+                shading = new PDShadingType7(shadingDictionary);
                 break;
             default:
                 throw new IOException("Error: Unknown shading type " + shadingType);
