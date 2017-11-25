@@ -86,13 +86,13 @@ public final class CreateSimpleForm
             
             // add the field to the acroform
             acroForm.getFields().add(textBox);
-            
-            // Specify the annotation associated with the field
+
+            // Specify the widget annotation associated with the field
             PDAnnotationWidget widget = textBox.getWidgets().get(0);
             PDRectangle rect = new PDRectangle(50, 750, 200, 50);
             widget.setRectangle(rect);
             widget.setPage(page);
-            
+
             // set green border and yellow background
             // if you prefer defaults, just delete this code block
             PDAppearanceCharacteristicsDictionary fieldAppearance
@@ -100,11 +100,11 @@ public final class CreateSimpleForm
             fieldAppearance.setBorderColour(new PDColor(new float[]{0,1,0}, PDDeviceRGB.INSTANCE));
             fieldAppearance.setBackground(new PDColor(new float[]{1,1,0}, PDDeviceRGB.INSTANCE));
             widget.setAppearanceCharacteristics(fieldAppearance);
-            
-            // make sure the annotation is visible on screen and paper
+
+            // make sure the widget annotation is visible on screen and paper
             widget.setPrinted(true);
             
-            // Add the annotation to the page
+            // Add the widget annotation to the page
             page.getAnnotations().add(widget);
             
             // set the field value
