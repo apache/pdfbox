@@ -72,7 +72,7 @@ public class CreateSimpleFormWithEmbeddedFont
         textBox.setDefaultAppearance(defaultAppearanceString);
         acroForm.getFields().add(textBox);
 
-        // Specify the annotation associated with the field
+        // Specify the widget annotation associated with the field
         PDAnnotationWidget widget = textBox.getWidgets().get(0);
         PDRectangle rect = new PDRectangle(50, 700, 200, 50);
         widget.setRectangle(rect);
