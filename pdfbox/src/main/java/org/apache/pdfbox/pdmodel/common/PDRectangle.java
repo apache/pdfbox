@@ -138,6 +138,55 @@ public class PDRectangle implements COSObjectable
     }
 
     /**
+     * Constructor.
+     *
+     * @param paperSize paper size name
+     */
+    public PDRectangle( String paperSize )
+    {
+        if ("letter".equalsIgnoreCase(paperSize))
+        {
+            rectArray = LETTER.rectArray;
+        }
+        else if ("legal".equalsIgnoreCase(paperSize))
+        {
+            rectArray = LEGAL.rectArray;
+        }
+        else if ("A0".equalsIgnoreCase(paperSize))
+        {
+            rectArray = A0.rectArray;
+        }
+        else if ("A1".equalsIgnoreCase(paperSize))
+        {
+            rectArray = A1.rectArray;
+        }
+        else if ("A2".equalsIgnoreCase(paperSize))
+        {
+            rectArray = A2.rectArray;
+        }
+        else if ("A3".equalsIgnoreCase(paperSize))
+        {
+            rectArray = A3.rectArray;
+        }
+    	else if ("A4".equalsIgnoreCase(paperSize))
+        {
+            rectArray = A4.rectArray;
+        }
+        else if ("A5".equalsIgnoreCase(paperSize))
+        {
+            rectArray = A5.rectArray;
+        }
+        else if ("A6".equalsIgnoreCase(paperSize))
+        {
+            rectArray = A6.rectArray;
+        }
+        else
+        {
+            throw new RuntimeException("Unknown paper size passed: " + paperSize);
+        }
+    }
+
+    /**
      * Method to determine if the x/y point is inside this rectangle.
      * @param x The x-coordinate to test.
      * @param y The y-coordinate to test.
