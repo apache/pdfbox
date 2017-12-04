@@ -127,8 +127,7 @@ final class DCTFilter extends Filter
                         // already CMYK
                         break;
                     case 1:
-                        // TODO YCbCr
-                        LOG.warn("YCbCr JPEGs not implemented");
+                        raster = fromYCbCrtoCMYK(raster);
                         break;
                     case 2:
                         raster = fromYCCKtoCMYK(raster);
@@ -239,6 +238,44 @@ final class DCTFilter extends Filter
                 int r = clamp(Y + 1.402f * Cr - 179.456f);
                 int g = clamp(Y - 0.34414f * Cb - 0.71414f * Cr + 135.45984f);
                 int b = clamp(Y + 1.772f * Cb - 226.816f);
+
+                // naive RGB to CMYK
+                int cyan = 255 - r;
+                int magenta = 255 - g;
+                int yellow = 255 - b;
+
+                // update new raster
+                value[0] = cyan;
+                value[1] = magenta;
+                value[2] = yellow;
+                value[3] = (int)K;
+                writableRaster.setPixel(x, y, value);
+            }
+        }
+        return writableRaster;
+    }
+
+    private WritableRaster fromYCbCrtoCMYK(Raster raster)
+    {
+        WritableRaster writableRaster = raster.createCompatibleWritableRaster();
+
+        int[] value = new int[4];
+        for (int y = 0, height = raster.getHeight(); y < height; y++)
+        {
+            for (int x = 0, width = raster.getWidth(); x < width; x++)
+            {
+                raster.getPixel(x, y, value);
+
+                // 4-channels 0..255
+                float Y = value[0];
+                float Cb = value[1];
+                float Cr = value[2];
+                float K = value[3];
+
+                // YCbCr to RGB, see http://www.equasys.de/colorconversion.html
+                int r = clamp( (1.164f * (Y-16)) + (1.596f * (Cr - 128)) );
+                int g = clamp( (1.164f * (Y-16)) + (-0.392f * (Cb-128)) + (-0.813f * (Cr-128)));
+                int b = clamp( (1.164f * (Y-16)) + (2.017f * (Cb-128)));
 
                 // naive RGB to CMYK
                 int cyan = 255 - r;
