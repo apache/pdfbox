@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -206,16 +207,16 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     }
 
     /**
-     * This will get the optional Matrix of an XObjectForm. It maps the form space to user space.
+     * This will get the optional matrix of an XObjectForm. It maps the form space to user space.
      * @return the form matrix if available, or the identity matrix.
      */
     @Override
     public Matrix getMatrix()
     {
-        COSArray array = (COSArray) getCOSObject().getDictionaryObject(COSName.MATRIX);
-        if (array != null)
+        COSBase base = getCOSObject().getDictionaryObject(COSName.MATRIX);
+        if (base instanceof COSArray && ((COSArray) base).size() >= 6)
         {
-            return new Matrix(array);
+            return new Matrix((COSArray) base);
         }
         else
         {
