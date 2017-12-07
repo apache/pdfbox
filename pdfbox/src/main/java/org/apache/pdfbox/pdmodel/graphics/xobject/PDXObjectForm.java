@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.xobject;
 import java.awt.geom.AffineTransform;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -43,7 +44,7 @@ public class PDXObjectForm extends PDXObject
     public static final String SUB_TYPE = "Form";
 
     /**
-     * Standard constuctor.
+     * Standard constructor.
      * 
      * @param formStream The XObject is passed as a COSStream.
      */
@@ -154,16 +155,17 @@ public class PDXObjectForm extends PDXObject
     public Matrix getMatrix()
     {
         Matrix retval = null;
-        COSArray array = (COSArray) getCOSStream().getDictionaryObject(COSName.MATRIX);
-        if (array != null)
+        COSBase base = getCOSStream().getDictionaryObject(COSName.MATRIX);
+        if (base instanceof COSArray && ((COSArray) base).size() >= 6)
         {
+            COSArray array = (COSArray) base;
             retval = new Matrix();
-            retval.setValue(0, 0, ((COSNumber) array.get(0)).floatValue());
-            retval.setValue(0, 1, ((COSNumber) array.get(1)).floatValue());
-            retval.setValue(1, 0, ((COSNumber) array.get(2)).floatValue());
-            retval.setValue(1, 1, ((COSNumber) array.get(3)).floatValue());
-            retval.setValue(2, 0, ((COSNumber) array.get(4)).floatValue());
-            retval.setValue(2, 1, ((COSNumber) array.get(5)).floatValue());
+            retval.setValue(0, 0, ((COSNumber) array.getObject(0)).floatValue());
+            retval.setValue(0, 1, ((COSNumber) array.getObject(1)).floatValue());
+            retval.setValue(1, 0, ((COSNumber) array.getObject(2)).floatValue());
+            retval.setValue(1, 1, ((COSNumber) array.getObject(3)).floatValue());
+            retval.setValue(2, 0, ((COSNumber) array.getObject(4)).floatValue());
+            retval.setValue(2, 1, ((COSNumber) array.getObject(5)).floatValue());
         }
         return retval;
     }
