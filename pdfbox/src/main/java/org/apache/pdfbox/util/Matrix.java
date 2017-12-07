@@ -57,12 +57,12 @@ public final class Matrix implements Cloneable
     public Matrix(COSArray array)
     {
         single = new float[DEFAULT_SINGLE.length];
-        single[0] = ((COSNumber)array.get(0)).floatValue();
-        single[1] = ((COSNumber)array.get(1)).floatValue();
-        single[3] = ((COSNumber)array.get(2)).floatValue();
-        single[4] = ((COSNumber)array.get(3)).floatValue();
-        single[6] = ((COSNumber)array.get(4)).floatValue();
-        single[7] = ((COSNumber)array.get(5)).floatValue();
+        single[0] = ((COSNumber)array.getObject(0)).floatValue();
+        single[1] = ((COSNumber)array.getObject(1)).floatValue();
+        single[3] = ((COSNumber)array.getObject(2)).floatValue();
+        single[4] = ((COSNumber)array.getObject(3)).floatValue();
+        single[6] = ((COSNumber)array.getObject(4)).floatValue();
+        single[7] = ((COSNumber)array.getObject(5)).floatValue();
         single[8] = 1;
     }
 
