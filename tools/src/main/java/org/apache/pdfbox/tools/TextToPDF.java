@@ -61,6 +61,7 @@ public class TextToPDF
     private static final float LINE_HEIGHT_FACTOR = 1.05f;
 
     private int fontSize = DEFAULT_FONT_SIZE;
+    private PDRectangle mediaBox = PDRectangle.LETTER;
     private boolean landscape = false;
     private PDFont font = DEFAULT_FONT;
 
@@ -114,17 +115,17 @@ public class TextToPDF
 
             final int margin = 40;
             float height = font.getBoundingBox().getHeight() / FONTSCALE;
-            PDRectangle mediaBox = PDRectangle.LETTER;
+            PDRectangle actualMediaBox = mediaBox;
             if (landscape)
             {
-                mediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
+                actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
             }
 
             //calculate font height and increase by a factor.
             height = height*fontSize*LINE_HEIGHT_FACTOR;
             BufferedReader data = new BufferedReader( text );
             String nextLine;
-            PDPage page = new PDPage(mediaBox);
+            PDPage page = new PDPage(actualMediaBox);
             PDPageContentStream contentStream = null;
             float y = -1;
             float maxStringLength = page.getMediaBox().getWidth() - 2*margin;
@@ -199,13 +200,13 @@ public class TextToPDF
                                 (font.getStringWidth( lineWithNextWord )/FONTSCALE) * fontSize;
                         }
                     }
-                    while( lineIndex < lineWords.length &&
-                           lengthIfUsingNextWord < maxStringLength );
+                    while (lineIndex < lineWords.length && lengthIfUsingNextWord < maxStringLength);
+
                     if( y < margin )
                     {
                         // We have crossed the end-of-page boundary and need to extend the
                         // document by another page.
-                        page = new PDPage(mediaBox);
+                        page = new PDPage(actualMediaBox);
                         doc.addPage( page );
                         if( contentStream != null )
                         {
@@ -216,9 +217,7 @@ public class TextToPDF
                         contentStream.setFont( font, fontSize );
                         contentStream.beginText();
                         y = page.getMediaBox().getHeight() - margin + height;
-                        contentStream.newLineAtOffset(
-                                margin, y);
-
+                        contentStream.newLineAtOffset(margin, y);
                     }
 
                     if( contentStream == null )
@@ -230,7 +229,7 @@ public class TextToPDF
                     contentStream.showText(nextLineToDraw.toString());
                     if (ff)
                     {
-                        page = new PDPage(mediaBox);
+                        page = new PDPage(actualMediaBox);
                         doc.addPage(page);
                         contentStream.endText();
                         contentStream.close();
@@ -241,8 +240,6 @@ public class TextToPDF
                         contentStream.newLineAtOffset(margin, y);
                     }
                 }
-
-
             }
 
             // If the input text was the empty string, then the above while loop will have short-circuited
@@ -310,17 +307,70 @@ public class TextToPDF
                             i++;
                             app.setFontSize(Integer.parseInt(args[i]));
                             break;
+                        case "-pageSize":
+                            i++;
+                            PDRectangle rectangle = createRectangle(args[i]);
+                            if (rectangle == null)
+                            {
+                                throw new IOException("Unknown argument: " + args[i]);
+                            }
+                            app.setMediaBox(rectangle);
+                            break;
                         case "-landscape":
                             app.setLandscape(true);
                             break;
                         default:
-                            throw new IOException("Unknown argument:" + args[i]);
+                            throw new IOException("Unknown argument: " + args[i]);
                     }
                 }
                 
                 app.createPDFFromText( doc, new FileReader( args[args.length-1] ) );
                 doc.save( args[args.length-2] );
             }
+        }
+    }
+
+    private static PDRectangle createRectangle( String paperSize )
+    {
+        if ("letter".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.LETTER;
+        }
+        else if ("legal".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.LEGAL;
+        }
+        else if ("A0".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.A0;
+        }
+        else if ("A1".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.A1;
+        }
+        else if ("A2".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.A2;
+        }
+        else if ("A3".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.A3;
+        }
+    	else if ("A4".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.A4;
+        }
+        else if ("A5".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.A5;
+        }
+        else if ("A6".equalsIgnoreCase(paperSize))
+        {
+            return PDRectangle.A6;
+        }
+        else
+        {
+            return null;
         }
     }
 
@@ -341,9 +391,18 @@ public class TextToPDF
             message.append("                         ").append(std14String).append("\n");
         }
         message.append("  -ttf <ttf file>      : The TTF font to use.\n");
-        message.append("  -fontSize <fontSize> : default: ").append(DEFAULT_FONT_SIZE);
+        message.append("  -fontSize <fontSize> : default: ").append(DEFAULT_FONT_SIZE).append("\n");
+        message.append("  -pageSize <pageSize> : Letter (default)\n");
+        message.append("                         Legal\n");
+        message.append("                         A0\n");
+        message.append("                         A1\n");
+        message.append("                         A2\n");
+        message.append("                         A3\n");
+        message.append("                         A4\n");
+        message.append("                         A5\n");
+        message.append("                         A6\n");
         message.append("  -landscape           : sets orientation to landscape" );
-        
+
         System.err.println(message.toString());
         System.exit(1);
     }
@@ -402,9 +461,29 @@ public class TextToPDF
     }
 
     /**
+     * Sets page size of produced PDF.
+     *
+     * @return returns the page size (media box)
+     */
+    public PDRectangle getMediaBox()
+    {
+        return mediaBox;
+    }
+
+    /**
+     * Sets page size of produced PDF.
+     *
+     * @param mediaBox
+     */
+    public void setMediaBox(PDRectangle mediaBox)
+    {
+        this.mediaBox = mediaBox;
+    }
+
+    /**
      * Tells the paper orientation.
      *
-     * @return
+     * @return true for landscape orientation
      */
     public boolean isLandscape()
     {
