@@ -121,7 +121,7 @@ public final class Matrix implements Cloneable
      *
      * @return a Matrix object.
      */
-    static Matrix createMatrix(COSBase base)
+    public static Matrix createMatrix(COSBase base)
     {
         if (!(base instanceof COSArray))
         {
