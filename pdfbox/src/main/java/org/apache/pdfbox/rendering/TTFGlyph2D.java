@@ -131,6 +131,13 @@ final class TTFGlyph2D implements Glyph2D
                 else
                 {
                     LOG.warn("No glyph for " + code + " in font " + font.getName());
+                    if (code == 10 && font.isStandard14())
+                    {
+                        // PDFBOX-4001 return empty path for line feed on std14
+                        glyphPath = new GeneralPath();
+                        glyphs.put(code, glyphPath);
+                        return glyphPath;
+                    }
                 }
             }
             
