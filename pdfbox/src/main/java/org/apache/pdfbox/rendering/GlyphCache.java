@@ -61,11 +61,11 @@ final class GlyphCache
                 {
                     int cid = ((PDType0Font) font).codeToCID(code);
                     String cidHex = String.format("%04x", cid);
-                    LOG.warn("No glyph for " + code + " (CID " + cidHex + ") in font " + fontName);
+                    LOG.warn("No glyph for code " + code + " (CID " + cidHex + ") in font " + fontName);
                 }
                 else if (font instanceof PDSimpleFont)
                 {
-                    LOG.warn("No glyph for " + code + " in " + font.getClass().getSimpleName()
+                    LOG.warn("No glyph for code " + code + " in " + font.getClass().getSimpleName()
                             + " " + fontName + " (embedded or system font used: "
                             + ((PDSimpleFont) font).getFontBoxFont().getName() + ")");
                     PDSimpleFont simpleFont = (PDSimpleFont) font;
@@ -79,7 +79,7 @@ final class GlyphCache
                 }
                 else
                 {
-                    LOG.warn("No glyph for " + code + " in font " + fontName);
+                    LOG.warn("No glyph for code " + code + " in font " + fontName);
                 }
             }
 
