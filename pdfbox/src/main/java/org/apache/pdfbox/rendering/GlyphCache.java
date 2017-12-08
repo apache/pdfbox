@@ -68,6 +68,14 @@ final class GlyphCache
                     LOG.warn("No glyph for " + code + " in " + font.getClass().getSimpleName()
                             + " " + fontName + " (embedded or system font used: "
                             + ((PDSimpleFont) font).getFontBoxFont().getName() + ")");
+                    PDSimpleFont simpleFont = (PDSimpleFont) font;
+                    if (code == 10 && simpleFont.isStandard14())
+                    {
+                        // PDFBOX-4001 return empty path for line feed on std14
+                        path = new GeneralPath();
+                        cache.put(code, path);
+                        return path;
+                    }
                 }
                 else
                 {
