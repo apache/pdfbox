@@ -57,7 +57,7 @@ final class Type1Glyph2D implements Glyph2D
                 String name = font.getEncoding().getName(code);
                 if (!font.hasGlyph(name))
                 {
-                    LOG.warn("No glyph for " + code + " (" + name + ") in font " + font.getName());
+                    LOG.warn("No glyph for code " + code + " (" + name + ") in font " + font.getName());
                     if (code == 10 && font.isStandard14())
                     {
                         // PDFBOX-4001 return empty path for line feed on std14
