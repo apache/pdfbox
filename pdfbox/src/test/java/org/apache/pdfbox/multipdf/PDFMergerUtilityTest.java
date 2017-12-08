@@ -31,8 +31,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
-import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -162,11 +162,12 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
-     * PDFBOX-3999: check that entries in the number tree only reference pages from the page tree.
+     * PDFBOX-3999: check that page entries in the structure tree only reference pages from the page
+     * tree, i.e. that no orphan pages exist.
      * 
      * @throws IOException 
      */
-     public void testStructureTreeMerge() throws IOException
+    public void testStructureTreeMerge() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
@@ -178,30 +179,53 @@ public class PDFMergerUtilityTest extends TestCase
 
         PDDocument doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GovFormPreFlattened-merged.pdf"));
         PDPageTree pageTree = doc.getPages();
-        PDNumberTreeNode parentTree = doc.getDocumentCatalog().getStructureTreeRoot().getParentTree();
-        COSArray numArray = (COSArray) parentTree.getCOSObject().getDictionaryObject(COSName.NUMS);
-        for (COSBase base : numArray)
+
+        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
+        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
+        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
+        checkElement(pageTree, structureTreeRoot.getK());
+    }
+
+    // Each element can be an array, a dictionary or a number.
+    // See PDF specification Table 37 â€“ Entries in a number tree node dictionary
+    // See PDF specification Table 322 â€“ Entries in the structure tree root
+    // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
+    // from digitalcorpora site
+    private void checkElement(PDPageTree pageTree, COSBase base)
+    {
+        if (base instanceof COSArray)
         {
-            if (base instanceof COSObject)
+            for (COSBase base2 : (COSArray) base)
             {
-                base = ((COSObject) base).getObject();
-            }
-            if (base instanceof COSArray)
-            {
-                for (COSBase base2 : (COSArray) base)
+                if (base2 instanceof COSObject)
                 {
-                    if (base2 instanceof COSObject)
-                    {
-                        base2 = ((COSObject) base2).getObject();
-                    }
-                    PDStructureElement structureElement = new PDStructureElement((COSDictionary) base2);
-                    checkForPage(pageTree, structureElement);
+                    base2 = ((COSObject) base2).getObject();
                 }
+                checkElement(pageTree, base2);
             }
-            else if (base instanceof COSDictionary)
+        }
+        else if (base instanceof COSDictionary)
+        {
+            COSDictionary kdict = (COSDictionary) base;
+            if (kdict.containsKey(COSName.PG))
             {
-                PDStructureElement structureElement = new PDStructureElement((COSDictionary) base);
+                PDStructureElement structureElement = new PDStructureElement(kdict);
                 checkForPage(pageTree, structureElement);
+            }
+            if (kdict.containsKey(COSName.K))
+            {
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.K));
+                return;
+            }
+
+            // if we're in a number tree, check /Nums and /Kids
+            if (kdict.containsKey(COSName.KIDS))
+            {
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.KIDS));
+            }
+            else if (kdict.containsKey(COSName.NUMS))
+            {
+                checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS));
             }
         }
     }
