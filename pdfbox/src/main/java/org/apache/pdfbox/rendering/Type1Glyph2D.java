@@ -58,6 +58,13 @@ final class Type1Glyph2D implements Glyph2D
                 if (!font.hasGlyph(name))
                 {
                     LOG.warn("No glyph for " + code + " (" + name + ") in font " + font.getName());
+                    if (code == 10 && font.isStandard14())
+                    {
+                        // PDFBOX-4001 return empty path for line feed on std14
+                        path = new GeneralPath();
+                        cache.put(code, path);
+                        return path;
+                    }
                 }
     
                 // todo: can this happen? should it be encapsulated?
