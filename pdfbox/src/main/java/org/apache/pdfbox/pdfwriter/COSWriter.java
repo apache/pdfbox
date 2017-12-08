@@ -1432,12 +1432,6 @@ public class COSWriter implements ICOSVisitor, Closeable
                     isASCII = false;
                     break;
                 }
-                // PDFBOX-3107 EOL markers within a string are troublesome
-                if (b == 0x0d || b == 0x0a)
-                {
-                    isASCII = false;
-                    break;
-                }
             }
         }
 
@@ -1454,6 +1448,26 @@ public class COSWriter implements ICOSVisitor, Closeable
                     case '\\':
                         output.write('\\');
                         output.write(b);
+                        break;
+                    case '\n':  // LF - 0x0A
+                        output.write('\\');
+                        output.write('n');
+                        break;
+                    case '\r':  // CR - 0x0D
+                        output.write('\\');
+                        output.write('r');
+                        break;
+                    case '\t':  // HT - 0x09
+                        output.write('\\');
+                        output.write('t');
+                        break;
+                    case '\b':  // BS - 0x08
+                        output.write('\\');
+                        output.write('b');
+                        break;
+                    case '\f':  // FF - 0x0C
+                        output.write('\\');
+                        output.write('f');
                         break;
                     default:
                         output.write(b);
