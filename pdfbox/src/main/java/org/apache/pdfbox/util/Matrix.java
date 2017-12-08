@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
+import org.apache.pdfbox.cos.COSBase;
 
 /**
  * This class will be used for matrix manipulation.
@@ -109,6 +110,36 @@ public final class Matrix implements Cloneable
         single[4] = (float)at.getScaleY();
         single[6] = (float)at.getTranslateX();
         single[7] = (float)at.getTranslateY();
+    }
+
+    /**
+     * Convenience method to be used when creating a matrix from unverified data. If the parameter
+     * is a COSArray with at least six numbers, a Matrix object is created from the first six
+     * numbers and returned. If not, then the identity Matrix is returned.
+     *
+     * @param base a COS object, preferably a COSArray with six numbers.
+     *
+     * @return a Matrix object.
+     */
+    static Matrix createMatrix(COSBase base)
+    {
+        if (!(base instanceof COSArray))
+        {
+            return new Matrix();
+        }
+        COSArray array = (COSArray) base;
+        if (array.size() < 6)
+        {
+            return new Matrix();
+        }
+        for (int i = 0; i < 6; ++i)
+        {
+            if (!(array.getObject(i) instanceof COSNumber))
+            {
+                return new Matrix();
+            }
+        }
+        return new Matrix(array);
     }
 
     /**
