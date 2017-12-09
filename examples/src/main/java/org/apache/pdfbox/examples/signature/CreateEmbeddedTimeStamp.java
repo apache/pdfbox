@@ -183,13 +183,19 @@ public class CreateEmbeddedTimeStamp
 
     /**
      * Extracts last Document-Signature from the document
-     * 
+     *
      * @param document to get the Signature from
-     * @return the Signature, where a TimeStamp will be added. <code>null</code> when no Document-Signature available.
+     * 
+     * @return the Signature, where a TimeStamp will be added. <code>null</code> when no
+     * Document-Signature is available.
+     * 
      * @throws IOException
      */
     private void getRelevantSignature(PDDocument document) throws IOException
     {
+        // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
+        // if a signature is assigned to a pre-defined empty signature field that isn't the last.
+        // we get the last in time by looking at the offset in the PDF file.
         SortedMap<Integer, PDSignature> sortedMap = new TreeMap<>();
         for (PDSignature sig : document.getSignatureDictionaries())
         {
