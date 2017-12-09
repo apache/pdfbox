@@ -22,11 +22,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
@@ -35,6 +33,7 @@ import java.util.Calendar;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 
 /**
  * An example for singing a PDF with bouncy castle.
@@ -92,30 +91,30 @@ public class CreateSignature extends CreateSignatureBase
      * Signs the given PDF file.
      * @param inFile input PDF file
      * @param outFile output PDF file
-     * @param tsaClient optional TSA client
+     * @param tsaUrl optional TSA url
      * @throws IOException if the input file could not be read
      */
-    public void signDetached(File inFile, File outFile, TSAClient tsaClient) throws IOException
+    public void signDetached(File inFile, File outFile, String tsaUrl) throws IOException
     {
         if (inFile == null || !inFile.exists())
         {
             throw new FileNotFoundException("Document for signing does not exist");
         }
+        
+        setTsaUrl(tsaUrl);
 
         FileOutputStream fos = new FileOutputStream(outFile);
 
         // sign
         try (PDDocument doc = PDDocument.load(inFile))
         {
-            signDetached(doc, fos, tsaClient);
+            signDetached(doc, fos);
         }
     }
 
-    public void signDetached(PDDocument document, OutputStream output, TSAClient tsaClient)
+    public void signDetached(PDDocument document, OutputStream output)
             throws IOException
     {
-        setTsaClient(tsaClient);
-
         int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {
@@ -153,8 +152,11 @@ public class CreateSignature extends CreateSignatureBase
         }
         else
         {
+            SignatureOptions signatureOptions = new SignatureOptions();
+            // Size can vary, but should be enough for purpose.
+            signatureOptions.setPreferredSignatureSize(SignatureOptions.DEFAULT_SIGNATURE_SIZE * 2);
             // register signature dictionary and sign interface
-            document.addSignature(signature, this);
+            document.addSignature(signature, this, signatureOptions);
 
             // write incremental (only for signing purpose)
             document.saveIncremental(output);
@@ -195,14 +197,6 @@ public class CreateSignature extends CreateSignatureBase
         keystore.load(new FileInputStream(args[0]), password);
         // TODO alias command line argument
 
-        // TSA client
-        TSAClient tsaClient = null;
-        if (tsaUrl != null)
-        {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
-        }
-
         // sign PDF
         CreateSignature signing = new CreateSignature(keystore, password);
         signing.setExternalSigning(externalSig);
@@ -212,7 +206,7 @@ public class CreateSignature extends CreateSignatureBase
         String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(inFile.getParent(), substring + "_signed.pdf");
-        signing.signDetached(inFile, outFile, tsaClient);
+        signing.signDetached(inFile, outFile, tsaUrl);
     }
 
     private static void usage()
