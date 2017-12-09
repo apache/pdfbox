@@ -83,10 +83,9 @@ public class CreateSignedTimeStamp implements SignatureInterface
             throw new FileNotFoundException("Document for signing does not exist");
         }
 
-        FileOutputStream fos = new FileOutputStream(outFile);
-
         // sign
-        try (PDDocument doc = PDDocument.load(inFile))
+        try (PDDocument doc = PDDocument.load(inFile);
+             FileOutputStream fos = new FileOutputStream(outFile))
         {
             signDetached(doc, fos);
         }
