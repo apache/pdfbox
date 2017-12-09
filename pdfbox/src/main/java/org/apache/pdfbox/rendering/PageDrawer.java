@@ -1368,7 +1368,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // adjust bbox (x,y) position at the initial scale + cropbox
         float x = bbox.getLowerLeftX() - pageSize.getLowerLeftX();
         float y = pageSize.getUpperRightY() - bbox.getUpperRightY();
-        graphics.translate(x * xScale, y * yScale);
 
         if (flipTG)
         {
