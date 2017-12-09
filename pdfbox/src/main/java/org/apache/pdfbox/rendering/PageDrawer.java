@@ -1375,6 +1375,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             graphics.translate(0, image.getHeight());
             graphics.scale(1, -1);
         }
+        else
+        {
+            graphics.translate(x * xScale, y * yScale);
+        }
 
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if (softMask != null)
