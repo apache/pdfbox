@@ -223,11 +223,11 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * COSWriter constructor comment.
      *
-     * @param os The wrapped output stream.
+     * @param outputStream The wrapped output stream.
      */
-    public COSWriter(OutputStream os)
+    public COSWriter(OutputStream outputStream)
     {
-        setOutput(os);
+        setOutput(outputStream);
         setStandardOutput(new COSStandardOutputStream(output));
     }
 
@@ -670,19 +670,17 @@ public class COSWriter implements ICOSVisitor, Closeable
     }
 
     /**
-     * Write an incremental update for a non signature case. This can be used for e.g. augmenting signatures.
-     * 
+     * Write an incremental update for a non signature case. This can be used for e.g. augmenting
+     * signatures.
+     *
      * @throws IOException
      */
     private void doWriteIncrement() throws IOException
     {
-        ByteArrayOutputStream byteOut = (ByteArrayOutputStream) output;
-        byteOut.flush();
-        byte[] buffer = byteOut.toByteArray();
-        SequenceInputStream signStream = new SequenceInputStream(new RandomAccessInputStream(incrementalInput),
-                                                                 new ByteArrayInputStream(buffer));
-        // write the data to the incremental output stream
-        IOUtils.copy(signStream, incrementalOutput);
+        // write existing PDF
+        IOUtils.copy(new RandomAccessInputStream(incrementalInput), incrementalOutput);
+        // write the actual incremental update
+        incrementalOutput.write(((ByteArrayOutputStream) output).toByteArray());
     }
     
     private void doWriteSignature() throws IOException
@@ -1125,14 +1123,16 @@ public class COSWriter implements ICOSVisitor, Closeable
         getStandardOutput().write(EOF);
         getStandardOutput().writeEOL();
 
-        if(incrementalUpdate)
+        if (incrementalUpdate)
         {
-          if (signatureOffset == 0 || byteRangeOffset == 0)
-          {
-              doWriteIncrement();
-          } else {
-              doWriteSignature();
-          }
+            if (signatureOffset == 0 || byteRangeOffset == 0)
+            {
+                doWriteIncrement();
+            }
+            else
+            {
+                doWriteSignature();
+            }
         }
 
         return null;
