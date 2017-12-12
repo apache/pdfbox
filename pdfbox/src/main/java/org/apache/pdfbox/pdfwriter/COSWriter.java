@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
