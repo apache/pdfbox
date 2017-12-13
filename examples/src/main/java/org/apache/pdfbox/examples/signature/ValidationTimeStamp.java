@@ -39,7 +39,6 @@ import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
-import org.bouncycastle.tsp.TSPException;
 
 /**
  * This class wraps the TSAClient and the work that has to be done with it. Like Adding Signed
@@ -70,7 +69,7 @@ public class ValidationTimeStamp
      * Creates a signed timestamp token by the given input stream.
      * 
      * @param content InputStream of the content to sign
-     * @return
+     * @return the byte[] of the timestamp token
      * @throws IOException
      */
     public byte[] getTimeStampToken(InputStream content) throws IOException
@@ -84,17 +83,16 @@ public class ValidationTimeStamp
      * @param signedData Generated CMS signed data
      * @return CMSSignedData Extended CMS signed data
      * @throws IOException
-     * @throws org.bouncycastle.tsp.TSPException
      */
     public CMSSignedData addSignedTimeStamp(CMSSignedData signedData)
-            throws IOException, TSPException
+            throws IOException
     {
         SignerInformationStore signerStore = signedData.getSignerInfos();
         List<SignerInformation> newSigners = new ArrayList<>();
 
         for (SignerInformation signer : signerStore.getSigners())
         {
-            // This adds a timestamp to every signer (into his unsigend attributes) in the signature.
+            // This adds a timestamp to every signer (into his unsigned attributes) in the signature.
             newSigners.add(signTimeStamp(signer));
         }
 
@@ -108,9 +106,10 @@ public class ValidationTimeStamp
      *
      * @param signer information about signer
      * @return information about SignerInformation
+     * @throws IOException
      */
     private SignerInformation signTimeStamp(SignerInformation signer)
-            throws IOException, TSPException
+            throws IOException
     {
         AttributeTable unsignedAttributes = signer.getUnsignedAttributes();
 

@@ -43,7 +43,6 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.util.Store;
 
 public abstract class CreateSignatureBase implements SignatureInterface
@@ -109,11 +108,6 @@ public abstract class CreateSignatureBase implements SignatureInterface
         this.certificateChain = certificateChain;
     }
 
-    public String getTsaUrl()
-    {
-        return tsaUrl;
-    }
-
     public void setTsaUrl(String tsaUrl)
     {
         this.tsaUrl = tsaUrl;
@@ -154,7 +148,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
             }
             return signedData.getEncoded();
         }
-        catch (GeneralSecurityException | CMSException | TSPException | OperatorCreationException e)
+        catch (GeneralSecurityException | CMSException | OperatorCreationException e)
         {
             throw new IOException(e);
         }
