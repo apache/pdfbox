@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.measurement;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
@@ -30,11 +31,11 @@ public class PDViewportDictionary implements COSObjectable
 {
 
     /**
-     * The type of this annotation.
+     * The type of this object.
      */
     public static final String TYPE = "Viewport";
     
-    private COSDictionary viewportDictionary;
+    private final COSDictionary viewportDictionary;
 
     /**
      * Constructor.
@@ -83,10 +84,10 @@ public class PDViewportDictionary implements COSObjectable
      */
     public PDRectangle getBBox()
     {
-        COSArray bbox = (COSArray)this.getCOSObject().getDictionaryObject("BBox");
-        if (bbox != null)
+        COSBase bbox = this.getCOSObject().getDictionaryObject(COSName.BBOX);
+        if (bbox instanceof COSArray)
         {
-            return new PDRectangle(bbox);
+            return new PDRectangle((COSArray) bbox);
         }
         return null;
     }
@@ -98,7 +99,7 @@ public class PDViewportDictionary implements COSObjectable
      */
     public void setBBox(PDRectangle rectangle)
     {
-        this.getCOSObject().setItem("BBox", rectangle);
+        this.getCOSObject().setItem(COSName.BBOX, rectangle);
     }
 
     /**
@@ -128,10 +129,10 @@ public class PDViewportDictionary implements COSObjectable
      */
     public PDMeasureDictionary getMeasure()
     {
-        COSDictionary measure = (COSDictionary)this.getCOSObject().getDictionaryObject("Measure");
-        if (measure != null)
+        COSBase base = this.getCOSObject().getDictionaryObject(COSName.MEASURE);
+        if (base instanceof COSDictionary)
         {
-            return new PDMeasureDictionary(measure);
+            return new PDMeasureDictionary((COSDictionary) base);
         }
         return null;
     }
@@ -143,7 +144,7 @@ public class PDViewportDictionary implements COSObjectable
      */
     public void setMeasure(PDMeasureDictionary measure)
     {
-        this.getCOSObject().setItem("Measure", measure);
+        this.getCOSObject().setItem(COSName.MEASURE, measure);
     }
 
 }
