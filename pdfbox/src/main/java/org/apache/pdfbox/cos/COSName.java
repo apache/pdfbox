@@ -343,6 +343,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName MCID = new COSName("MCID");
     public static final COSName MDP = new COSName("MDP");
     public static final COSName MEDIA_BOX = new COSName("MediaBox");
+    public static final COSName MEASURE = new COSName("Measure");
     public static final COSName METADATA = new COSName("Metadata");
     public static final COSName MISSING_WIDTH = new COSName("MissingWidth");
     public static final COSName MIX = new COSName("Mix");
