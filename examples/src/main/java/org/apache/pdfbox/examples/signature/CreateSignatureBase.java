@@ -53,7 +53,6 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
-import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.util.Store;
 
 public abstract class CreateSignatureBase implements SignatureInterface
@@ -135,10 +134,9 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * @param signedData Generated CMS signed data
      * @return CMSSignedData Extended CMS signed data
      * @throws IOException
-     * @throws org.bouncycastle.tsp.TSPException
      */
     private CMSSignedData signTimeStamps(CMSSignedData signedData)
-            throws IOException, TSPException
+            throws IOException
     {
         SignerInformationStore signerStore = signedData.getSignerInfos();
         List<SignerInformation> newSigners = new ArrayList<SignerInformation>();
@@ -158,8 +156,7 @@ public abstract class CreateSignatureBase implements SignatureInterface
      * @param signer information about signer
      * @return information about SignerInformation
      */
-    private SignerInformation signTimeStamp(SignerInformation signer)
-            throws IOException, TSPException
+    private SignerInformation signTimeStamp(SignerInformation signer) throws IOException
     {
         AttributeTable unsignedAttributes = signer.getUnsignedAttributes();
 
@@ -227,10 +224,6 @@ public abstract class CreateSignatureBase implements SignatureInterface
             throw new IOException(e);
         }
         catch (CMSException e)
-        {
-            throw new IOException(e);
-        }
-        catch (TSPException e)
         {
             throw new IOException(e);
         }

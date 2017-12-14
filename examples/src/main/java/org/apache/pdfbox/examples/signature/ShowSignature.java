@@ -73,13 +73,12 @@ public final class ShowSignature
      * @throws IOException If there is an error reading the file.
      * @throws CertificateException
      * @throws java.security.NoSuchAlgorithmException
-     * @throws java.security.InvalidKeyException
      * @throws java.security.NoSuchProviderException
      * @throws java.security.SignatureException
      * @throws org.bouncycastle.tsp.TSPException
      */
     public static void main(String[] args) throws IOException, CertificateException,
-                                                  NoSuchAlgorithmException, InvalidKeyException, 
+                                                  NoSuchAlgorithmException, 
                                                   NoSuchProviderException, SignatureException,
                                                   TSPException
     {
@@ -88,7 +87,7 @@ public final class ShowSignature
     }
 
     private void showSignature(String[] args) throws IOException, CertificateException,
-                                                     NoSuchAlgorithmException, InvalidKeyException,
+                                                     NoSuchAlgorithmException,
                                                      NoSuchProviderException, SignatureException,
                                                      TSPException
     {
@@ -259,8 +258,8 @@ public final class ShowSignature
         Store certificatesStore = signedData.getCertificates();
         Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
         SignerInformation signerInformation = signers.iterator().next();
-        Collection matches = certificatesStore.getMatches(signerInformation.getSID());
-        X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
+        Collection<X509CertificateHolder> matches = certificatesStore.getMatches(signerInformation.getSID());
+        X509CertificateHolder certificateHolder = matches.iterator().next();
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
         certFromSignedData.checkValidity(sig.getSignDate().getTime());
