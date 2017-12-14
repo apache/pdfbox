@@ -115,10 +115,9 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param preferredSize
      * @param page
      * @param visualSignEnabled
-     * @throws IOException
      */
     public void setVisibleSignatureProperties(String name, String location, String reason, int preferredSize, 
-            int page, boolean visualSignEnabled) throws IOException
+            int page, boolean visualSignEnabled)
     {
         visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
                 preferredSize(preferredSize).page(page).visualSignEnabled(visualSignEnabled).
@@ -132,10 +131,9 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param location
      * @param reason
      * @param visualSignEnabled
-     * @throws IOException
      */
     public void setVisibleSignatureProperties(String name, String location, String reason,
-            boolean visualSignEnabled) throws IOException
+            boolean visualSignEnabled)
     {
         visibleSignatureProperties.signerName(name).signerLocation(location).signatureReason(reason).
                 visualSignEnabled(visualSignEnabled).setPdVisibleSignature(visibleSignDesigner);
