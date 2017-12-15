@@ -645,17 +645,17 @@ public class CFFParser
     private Map<String, Object> readPrivateDict(DictData privateDict)
     {
         Map<String, Object> privDict = new LinkedHashMap<>(17);
-        privDict.put("BlueValues", privateDict.getArray("BlueValues", null));
-        privDict.put("OtherBlues", privateDict.getArray("OtherBlues", null));
-        privDict.put("FamilyBlues", privateDict.getArray("FamilyBlues", null));
-        privDict.put("FamilyOtherBlues", privateDict.getArray("FamilyOtherBlues", null));
+        privDict.put("BlueValues", privateDict.getDelta("BlueValues", null));
+        privDict.put("OtherBlues", privateDict.getDelta("OtherBlues", null));
+        privDict.put("FamilyBlues", privateDict.getDelta("FamilyBlues", null));
+        privDict.put("FamilyOtherBlues", privateDict.getDelta("FamilyOtherBlues", null));
         privDict.put("BlueScale", privateDict.getNumber("BlueScale", 0.039625));
         privDict.put("BlueShift", privateDict.getNumber("BlueShift", 7));
         privDict.put("BlueFuzz", privateDict.getNumber("BlueFuzz", 1));
         privDict.put("StdHW", privateDict.getNumber("StdHW", null));
         privDict.put("StdVW", privateDict.getNumber("StdVW", null));
-        privDict.put("StemSnapH", privateDict.getArray("StemSnapH", null));
-        privDict.put("StemSnapV", privateDict.getArray("StemSnapV", null));
+        privDict.put("StemSnapH", privateDict.getDelta("StemSnapH", null));
+        privDict.put("StemSnapV", privateDict.getDelta("StemSnapV", null));
         privDict.put("ForceBold", privateDict.getBoolean("ForceBold", false));
         privDict.put("LanguageGroup", privateDict.getNumber("LanguageGroup", 0));
         privDict.put("ExpansionFactor", privateDict.getNumber("ExpansionFactor", 0.06));
@@ -1165,6 +1165,12 @@ public class CFFParser
             return entry != null && entry.getArray().size() > 0 ? entry.getNumber(0) : defaultValue;
         }
 
+        public List<Number> getDelta(String name, List<Number> defaultValue) 
+        {
+            Entry entry = getEntry(name);
+            return entry != null && entry.getDelta().size() > 0 ? entry.getDelta() : defaultValue;
+        }
+        
         /**
          * {@inheritDoc} 
          */
@@ -1208,6 +1214,19 @@ public class CFFParser
             public List<Number> getArray()
             {
                 return operands;
+            }
+
+            public List<Number> getDelta()
+            {
+                List<Number> result = new ArrayList<>(operands);
+                for (int i = 1; i < result.size(); i++)
+                {
+                    Number previous = result.get(i - 1);
+                    Number current = result.get(i);
+                    Integer sum = previous.intValue() + current.intValue();
+                    result.set(i, sum);
+                }
+                return result;
             }
 
             @Override
