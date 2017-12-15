@@ -41,6 +41,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.measurement.PDViewportDictionary;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransition;
 import org.apache.pdfbox.util.Matrix;
@@ -707,5 +708,54 @@ public class PDPage implements COSObjectable, PDContentStream
     public ResourceCache getResourceCache()
     {
         return resourceCache;
+    }
+
+    /**
+     * Get the viewports.
+     *
+     * @return a list of viewports or null if there is no /VP entry.
+     */
+    public List<PDViewportDictionary> getViewports()
+    {
+        COSBase base = page.getDictionaryObject(COSName.VP);
+        if (!(base instanceof COSArray))
+        {
+            return null;
+        }
+        COSArray array = (COSArray) base;
+        List<PDViewportDictionary> viewports = new ArrayList<PDViewportDictionary>();
+        for (int i = 0; i < array.size(); ++i)
+        {
+            COSBase base2 = array.getObject(i);
+            if (base2 instanceof COSDictionary)
+            {
+                viewports.add(new PDViewportDictionary((COSDictionary) base2));
+            }
+            else
+            {
+                LOG.warn("Array element " + base2 + " is skipped, must be a (viewport) dictionary");
+            }
+        }
+        return viewports;
+    }
+
+    /**
+     * Set the viewports.
+     *
+     * @param viewports A list of viewports, or null if the entry is to be deleted.
+     */
+    public void setViewports(List<PDViewportDictionary> viewports)
+    {
+        if (viewports == null)
+        {
+            page.removeItem(COSName.VP);
+            return;
+        }
+        COSArray array = new COSArray();
+        for (PDViewportDictionary viewport : viewports)
+        {
+            array.add(viewport);
+        }
+        page.setItem(COSName.VP, array);
     }
 }

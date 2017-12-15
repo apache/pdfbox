@@ -550,6 +550,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName VIEW_CLIP = new COSName("ViewClip");
     public static final COSName VIEWER_PREFERENCES = new COSName("ViewerPreferences");
     public static final COSName VOLUME = new COSName("Volume");
+    public static final COSName VP = new COSName("VP");
     // W
     public static final COSName W = new COSName("W");
     public static final COSName W2 = new COSName("W2");
