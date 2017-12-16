@@ -63,7 +63,28 @@
                 <exclude>src/main/resources/org/apache/fontbox/cmap/*</exclude>
             </excludes>
         </configuration>
-    </plugin>
+      </plugin>
+
+      <!-- download test files from JIRA and keep them in repository cache -->
+      <plugin>
+          <groupId>com.googlecode.maven-download-plugin</groupId>
+          <artifactId>download-maven-plugin</artifactId>
+          <version>1.3.0</version>
+          <executions>
+              <execution>
+                  <id>PDFBOX-4038</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/12684264/SourceSansProBold.otf</url>
+                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <sha512>28a044a2685fbc8da7810d9ac7b6b93a95542d504d7d8e671f009b8ebb2f5b70c974be7ea78974b188d8e6ab17d65b08f276c054927857315d5aad26f6fe36fc</sha512>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
     </plugins>
   </build>
 
