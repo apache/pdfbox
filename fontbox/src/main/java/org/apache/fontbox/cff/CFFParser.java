@@ -501,7 +501,7 @@ public class CFFParser
 
             List<Number> privMatrix = null;
             List<Map<String, Object>> fontDicts = ((CFFCIDFont) font).getFontDicts();
-            if (fontDicts.size() > 0 && fontDicts.get(0).containsKey("FontMatrix"))
+            if (!fontDicts.isEmpty() && fontDicts.get(0).containsKey("FontMatrix"))
             {
                 privMatrix = (List<Number>) fontDicts.get(0).get("FontMatrix");
             }
@@ -1150,25 +1150,25 @@ public class CFFParser
         public Boolean getBoolean(String name, boolean defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && entry.getArray().size() > 0 ? entry.getBoolean(0) : defaultValue;
+            return entry != null && !entry.getArray().isEmpty() ? entry.getBoolean(0) : defaultValue;
         }
 
         public List<Number> getArray(String name, List<Number> defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && entry.getArray().size() > 0 ? entry.getArray() : defaultValue;
+            return entry != null && !entry.getArray().isEmpty() ? entry.getArray() : defaultValue;
         }
 
         public Number getNumber(String name, Number defaultValue)
         {
             Entry entry = getEntry(name);
-            return entry != null && entry.getArray().size() > 0 ? entry.getNumber(0) : defaultValue;
+            return entry != null && !entry.getArray().isEmpty() ? entry.getNumber(0) : defaultValue;
         }
 
         public List<Number> getDelta(String name, List<Number> defaultValue) 
         {
             Entry entry = getEntry(name);
-            return entry != null && entry.getDelta().size() > 0 ? entry.getDelta() : defaultValue;
+            return entry != null && !entry.getArray().isEmpty() ? entry.getDelta() : defaultValue;
         }
         
         /**
