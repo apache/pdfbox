@@ -174,6 +174,7 @@ public class AddValidationInformation
             }
             catch (InstantiationException | IllegalAccessException e)
             {
+                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), e);
                 return null;
             }
             result.setDirect(false);
@@ -423,7 +424,6 @@ public class AddValidationInformation
 
     public static void main(String[] args) throws IOException, GeneralSecurityException
     {
-        args = new String[]{"C:\\Users\\Tilman Hausherr\\Documents\\Java\\PDFBoxPageImageExtraction\\1_only_signed.pdf"};
         if (args.length != 1)
         {
             usage();
