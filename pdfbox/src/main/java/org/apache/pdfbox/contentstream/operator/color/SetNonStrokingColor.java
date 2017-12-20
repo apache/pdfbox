@@ -20,7 +20,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
- * sc: Sets the colour to use for stroking non-stroking operations.
+ * sc: Sets the colour to use for non-stroking operations.
  *
  * @author John Hewson
  */
