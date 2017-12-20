@@ -26,22 +26,30 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.IOUtils;
 
+import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.tools.imageio.ImageIOUtil;
-import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
-import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
+import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * Extracts the images from a PDF file.
@@ -217,6 +225,10 @@ public final class ExtractImages
         {
             if (pdImage instanceof PDImageXObject)
             {
+                if (pdImage.isStencil())
+                {
+                    processColor(getGraphicsState().getNonStrokingColor());
+                }
                 PDImageXObject xobject = (PDImageXObject)pdImage;
                 if (seen.contains(xobject.getCOSObject()))
                 {
@@ -285,27 +297,59 @@ public final class ExtractImages
         }
 
         @Override
+        protected void showGlyph(Matrix textRenderingMatrix, 
+                                 PDFont font,
+                                 int code,
+                                 String unicode,
+                                 Vector displacement) throws IOException
+        {
+            RenderingMode renderingMode = getGraphicsState().getTextState().getRenderingMode();
+            if (renderingMode.isFill())
+            {
+                processColor(getGraphicsState().getNonStrokingColor());
+            }
+            if (renderingMode.isStroke())
+            {
+                processColor(getGraphicsState().getStrokingColor());
+            }
+        }
+
+        @Override
         public void strokePath() throws IOException
         {
-
+            processColor(getGraphicsState().getStrokingColor());
         }
 
         @Override
         public void fillPath(int windingRule) throws IOException
         {
-
+            processColor(getGraphicsState().getNonStrokingColor());
         }
 
         @Override
         public void fillAndStrokePath(int windingRule) throws IOException
         {
-
+            processColor(getGraphicsState().getNonStrokingColor());
         }
 
         @Override
         public void shadingFill(COSName shadingName) throws IOException
         {
 
+        }
+
+        // find out if it is a tiling pattern, then process that one
+        private void processColor(PDColor color) throws IOException
+        {
+            if (color.getColorSpace() instanceof PDPattern)
+            {
+                PDPattern pattern = (PDPattern) color.getColorSpace();
+                PDAbstractPattern abstractPattern = pattern.getPattern(color);
+                if (abstractPattern instanceof PDTilingPattern)
+                {
+                    processTilingPattern((PDTilingPattern) abstractPattern, null, null);
+                }
+            }
         }
     }
 
