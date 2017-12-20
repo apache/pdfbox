@@ -317,7 +317,7 @@ public final class ExtractImages
      * @param directJPEG if true, force saving JPEG/JPX streams as they are in the PDF file. 
      * @throws IOException When something is wrong with the corresponding file.
      */
-    private void write2file(PDImage pdImage, String filename, boolean directJPEG) throws IOException
+    private void write2file(PDImage pdImage, String prefix, boolean directJPEG) throws IOException
     {
         String suffix = pdImage.getSuffix();
         if (suffix == null || "jb2".equals(suffix))
@@ -330,7 +330,7 @@ public final class ExtractImages
             suffix = "jp2";
         }
 
-        try (FileOutputStream out = new FileOutputStream(filename + "." + suffix))
+        try (FileOutputStream out = new FileOutputStream(prefix + "." + suffix))
         {
             BufferedImage image = pdImage.getImage();
             if (image != null)
