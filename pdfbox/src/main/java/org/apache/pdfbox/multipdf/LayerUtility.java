@@ -231,7 +231,9 @@ public class LayerUtility
      *
      * @param targetPage the target page
      * @param form the form to place
-     * @param transform the transformation matrix that controls the placement
+     * @param transform the transformation matrix that controls the placement of your form. You'll
+     * need this if your page has a crop box different than the media box, or if these have negative
+     * coordinates, or if you want to scale or adjust your form.
      * @param layerName the name for the layer/OCG to produce
      * @return the optional content group that was generated for the form usage
      * @throws IOException if an I/O error occurs
