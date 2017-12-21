@@ -87,7 +87,7 @@ import org.apache.pdfbox.contentstream.operator.text.ShowText;
 
 /**
  * PDFStreamEngine subclass for advanced processing of graphics.
- * This class should be subclasses by end users looking to hook into graphics operations.
+ * This class should be subclassed by end users looking to hook into graphics operations.
  *
  * @author John Hewson
  */
