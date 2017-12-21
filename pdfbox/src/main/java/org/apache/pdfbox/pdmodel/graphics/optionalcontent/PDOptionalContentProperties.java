@@ -317,7 +317,8 @@ public class PDOptionalContentProperties implements COSObjectable
      */
     public boolean setGroupEnabled(String groupName, boolean enable)
     {
-        COSArray on, off;
+        COSArray on;
+        COSArray off;
 
         COSDictionary d = getD();
         COSBase base = d.getDictionaryObject(COSName.ON);
