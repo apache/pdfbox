@@ -87,7 +87,12 @@ public class PDOptionalContentProperties implements COSObjectable
     {
         this.dict = new COSDictionary();
         this.dict.setItem(COSName.OCGS, new COSArray());
-        this.dict.setItem(COSName.D, new COSDictionary());
+        COSDictionary d = new COSDictionary();
+
+        // Name optional but required for PDF/A-3
+        d.setString(COSName.NAME, "Top");
+
+        this.dict.setItem(COSName.D, d);
     }
 
     /**
@@ -119,12 +124,20 @@ public class PDOptionalContentProperties implements COSObjectable
 
     private COSDictionary getD()
     {
-        COSDictionary d = (COSDictionary)this.dict.getDictionaryObject(COSName.D);
-        if (d == null)
+        COSBase base = this.dict.getDictionaryObject(COSName.D);
+        if (base instanceof COSDictionary)
         {
-            d = new COSDictionary();
-            this.dict.setItem(COSName.D, d); //D is required
+            return (COSDictionary) base;
         }
+
+        COSDictionary d = new COSDictionary();
+
+        // Name optional but required for PDF/A-3
+        d.setString(COSName.NAME, "Top");
+
+        // D is required
+        this.dict.setItem(COSName.D, d);        
+
         return d;
     }
 
@@ -250,10 +263,10 @@ public class PDOptionalContentProperties implements COSObjectable
         //i.e. OCProperties/Configs
 
         COSDictionary d = getD();
-        COSArray on = (COSArray)d.getDictionaryObject(COSName.ON);
-        if (on != null)
+        COSBase base = d.getDictionaryObject(COSName.ON);
+        if (base instanceof COSArray)
         {
-            for (COSBase o : on)
+            for (COSBase o : (COSArray) base)
             {
                 COSDictionary group = toDictionary(o);
                 String name = group.getString(COSName.NAME);
@@ -264,10 +277,10 @@ public class PDOptionalContentProperties implements COSObjectable
             }
         }
 
-        COSArray off = (COSArray)d.getDictionaryObject(COSName.OFF);
-        if (off != null)
+        base = d.getDictionaryObject(COSName.OFF);
+        if (base instanceof COSArray)
         {
-            for (COSBase o : off)
+            for (COSBase o : (COSArray) base)
             {
                 COSDictionary group = toDictionary(o);
                 String name = group.getString(COSName.NAME);
@@ -304,18 +317,28 @@ public class PDOptionalContentProperties implements COSObjectable
      */
     public boolean setGroupEnabled(String groupName, boolean enable)
     {
+        COSArray on, off;
+
         COSDictionary d = getD();
-        COSArray on = (COSArray)d.getDictionaryObject(COSName.ON);
-        if (on == null)
+        COSBase base = d.getDictionaryObject(COSName.ON);
+        if (!(base instanceof COSArray))
         {
             on = new COSArray();
             d.setItem(COSName.ON, on);
         }
-        COSArray off = (COSArray)d.getDictionaryObject(COSName.OFF);
-        if (off == null)
+        else
+        {
+            on = (COSArray) base;
+        }
+        base = d.getDictionaryObject(COSName.OFF);
+        if (!(base instanceof COSArray))
         {
             off = new COSArray();
             d.setItem(COSName.OFF, off);
+        }
+        else
+        {
+            off = (COSArray) base;
         }
 
         boolean found = false;
@@ -365,6 +388,4 @@ public class PDOptionalContentProperties implements COSObjectable
         }
         return found;
     }
-
-
 }
