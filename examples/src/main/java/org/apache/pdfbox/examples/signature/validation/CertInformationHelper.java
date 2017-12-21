@@ -82,7 +82,7 @@ public class CertInformationHelper
 
     /**
      * Verifies whether the certificate is signed by the given public key. Can be done to check
-     * signature Chain. Idea & code is from user Julius Musseau at:
+     * signature chain. Idea and code are from Julius Musseau at:
      * https://stackoverflow.com/a/10822177/2497581
      *
      * @param cert Child certificate to check
