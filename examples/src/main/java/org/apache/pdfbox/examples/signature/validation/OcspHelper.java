@@ -40,7 +40,9 @@ import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.Extensions;
+import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509ContentVerifierProviderBuilder;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.CertificateID;
 import org.bouncycastle.cert.ocsp.CertificateStatus;
@@ -51,7 +53,9 @@ import org.bouncycastle.cert.ocsp.OCSPResp;
 import org.bouncycastle.cert.ocsp.RevokedStatus;
 import org.bouncycastle.cert.ocsp.SingleResp;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.ContentVerifierProvider;
 import org.bouncycastle.operator.DigestCalculator;
+import org.bouncycastle.operator.OperatorCreationException;
 
 /**
  * Helper Class for OCSP-Operations with bouncy castle.
@@ -61,7 +65,7 @@ import org.bouncycastle.operator.DigestCalculator;
 public class OcspHelper
 {
     private static final Log LOG = LogFactory.getLog(OcspHelper.class);
-    
+
     private final X509Certificate issuerCertificate;
     private final X509Certificate certificateToCheck;
     private final String ocspUrl;
@@ -69,7 +73,7 @@ public class OcspHelper
 
     /**
      * @param checkCertificate Certificate to be OCSP-Checked
-     * @param issuerCertificate Certificate of the issuer 
+     * @param issuerCertificate Certificate of the issuer
      * @param ocspUrl where to fetch for OCSP
      */
     public OcspHelper(X509Certificate checkCertificate, X509Certificate issuerCertificate,
@@ -111,22 +115,9 @@ public class OcspHelper
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
         if (basicResponse != null)
         {
-            Extension nonceExt = basicResponse
-                    .getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);
-            if (nonceExt != null)
-            {
-                DEROctetString responseNonceString = (DEROctetString) nonceExt.getExtnValue();
-                if (!responseNonceString.equals(encodedNonce))
-                {
-                    throw new OCSPException("Invalid Nonce found in response!");
-                }
-            }
-            else if (encodedNonce != null)
-            {
-                throw new OCSPException("Nonce not found in response!");
-            }
+            checkOcspSignature(basicResponse.getCerts()[0], basicResponse);
 
-            // TODO Optional check if signature is correct. basicResponse.isSignatureValid(...)
+            checkNonce(basicResponse);
 
             SingleResp[] responses = basicResponse.getResponses();
             if (responses.length == 1)
@@ -138,11 +129,65 @@ public class OcspHelper
                 {
                     throw new RevokedCertificateException("OCSP: Certificate is revoked.");
                 }
-                else if(status != CertificateStatus.GOOD)
+                else if (status != CertificateStatus.GOOD)
                 {
                     throw new OCSPException("OCSP: Status of Cert is unknown");
                 }
             }
+            else
+            {
+                throw new OCSPException(
+                        "OCSP: Recieved " + responses.length + " responses instead of 1!");
+            }
+        }
+    }
+
+    /**
+     * Checks whether the OCSP response is signed by the given certificate.
+     * 
+     * @param certificate the certificate to check the signature
+     * @param basicResponse OCSP response containing the signature
+     * @throws OCSPException when the signature is invalid or could not be checked
+     */
+    private void checkOcspSignature(X509CertificateHolder certificate, BasicOCSPResp basicResponse)
+            throws OCSPException
+    {
+        try
+        {
+            ContentVerifierProvider verifier = new JcaX509ContentVerifierProviderBuilder()
+                    .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(certificate);
+
+            if (!basicResponse.isSignatureValid(verifier))
+            {
+                throw new OCSPException("OCSP-Signature is not valid!");
+            }
+        }
+        catch (OperatorCreationException e)
+        {
+            throw new OCSPException("Error checking Ocsp-Signature", e);
+        }
+    }
+
+    /**
+     * Checks if the nonce in the response is correct
+     * 
+     * @param basicResponse Response to be checked
+     * @throws OCSPException if nonce is wrong or inexistent
+     */
+    private void checkNonce(BasicOCSPResp basicResponse) throws OCSPException
+    {
+        Extension nonceExt = basicResponse.getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);
+        if (nonceExt != null)
+        {
+            DEROctetString responseNonceString = (DEROctetString) nonceExt.getExtnValue();
+            if (!responseNonceString.equals(encodedNonce))
+            {
+                throw new OCSPException("Invalid Nonce found in response!");
+            }
+        }
+        else if (encodedNonce != null)
+        {
+            throw new OCSPException("Nonce not found in response!");
         }
     }
 
@@ -287,13 +332,13 @@ public class OcspHelper
         {
             return bOut;
         }
-        
+
         @Override
         public byte[] getDigest()
         {
             byte[] bytes = bOut.toByteArray();
             bOut.reset();
-            
+
             try
             {
                 MessageDigest md = MessageDigest.getInstance("SHA-1");
