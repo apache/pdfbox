@@ -253,11 +253,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
     @Override
     public void createHolderForm(PDResources holderFormResources, PDStream holderFormStream,
-                                 PDRectangle formrect)
+                                 PDRectangle bbox)
     {
         PDFormXObject holderForm = new PDFormXObject(holderFormStream);
         holderForm.setResources(holderFormResources);
-        holderForm.setBBox(formrect);
+        holderForm.setBBox(bbox);
         holderForm.setFormType(1);
         pdfStructure.setHolderForm(holderForm);
         LOG.info("Holder form has been created");
@@ -300,11 +300,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
     @Override
     public void createInnerForm(PDResources innerFormResources, PDStream innerFormStream,
-                                PDRectangle formrect)
+                                PDRectangle bbox)
     {
         PDFormXObject innerForm = new PDFormXObject(innerFormStream);
         innerForm.setResources(innerFormResources);
-        innerForm.setBBox(formrect);
+        innerForm.setBBox(bbox);
         innerForm.setFormType(1);
         pdfStructure.setInnerForm(innerForm);
         LOG.info("Another form (inner form - it will be inside holder form) has been created");
@@ -337,11 +337,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
     @Override
     public void createImageForm(PDResources imageFormResources, PDResources innerFormResource,
-                                PDStream imageFormStream, PDRectangle formrect, AffineTransform at,
+                                PDStream imageFormStream, PDRectangle bbox, AffineTransform at,
                                 PDImageXObject img) throws IOException
     {
         PDFormXObject imageForm = new PDFormXObject(imageFormStream);
-        imageForm.setBBox(formrect);
+        imageForm.setBBox(bbox);
         imageForm.setMatrix(at);
         imageForm.setResources(imageFormResources);
         imageForm.setFormType(1);
@@ -358,12 +358,12 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     }
 
     @Override
-    public void createBackgroundLayerForm(PDResources innerFormResource, PDRectangle formatter)
+    public void createBackgroundLayerForm(PDResources innerFormResource, PDRectangle bbox)
              throws IOException
     {
         // create blank n0 background layer form
         PDFormXObject n0Form = new PDFormXObject(pdfStructure.getTemplate().getDocument().createCOSStream());
-        n0Form.setBBox(formatter);
+        n0Form.setBBox(bbox);
         n0Form.setResources(new PDResources());
         n0Form.setFormType(1);
         innerFormResource.put(COSName.getPDFName("n0"), n0Form);
