@@ -114,7 +114,7 @@ public class PDFTemplateCreator
         // rectangle, formatter, image. /AcroForm/DR/XObject contains that form
         pdfBuilder.createSignatureRectangle(pdSignatureField, properties);
         pdfBuilder.createFormatterRectangle(properties.getFormatterRectangleParameters());
-        PDRectangle formatter = pdfStructure.getFormatterRectangle();
+        PDRectangle bbox = pdfStructure.getFormatterRectangle();
         pdfBuilder.createSignatureImage(template, properties.getImage());
 
         // create form stream, form and  resource. 
@@ -122,7 +122,7 @@ public class PDFTemplateCreator
         PDStream holderFormStream = pdfStructure.getHolderFormStream();
         pdfBuilder.createHolderFormResources();
         PDResources holderFormResources = pdfStructure.getHolderFormResources();
-        pdfBuilder.createHolderForm(holderFormResources, holderFormStream, formatter);
+        pdfBuilder.createHolderForm(holderFormResources, holderFormStream, bbox);
         
         // that is /AP entry the appearance dictionary.
         pdfBuilder.createAppearanceDictionary(pdfStructure.getHolderForm(), pdSignatureField);
@@ -131,7 +131,7 @@ public class PDFTemplateCreator
         pdfBuilder.createInnerFormStream(template);
         pdfBuilder.createInnerFormResource();
         PDResources innerFormResource = pdfStructure.getInnerFormResources();
-        pdfBuilder.createInnerForm(innerFormResource, pdfStructure.getInnerFormStream(), formatter);
+        pdfBuilder.createInnerForm(innerFormResource, pdfStructure.getInnerFormStream(), bbox);
         PDFormXObject innerForm = pdfStructure.getInnerForm();
        
         // inner form must be in the holder form as we wrote
@@ -142,10 +142,10 @@ public class PDFTemplateCreator
         PDStream imageFormStream = pdfStructure.getImageFormStream();
         pdfBuilder.createImageFormResources();
         PDResources imageFormResources = pdfStructure.getImageFormResources();
-        pdfBuilder.createImageForm(imageFormResources, innerFormResource, imageFormStream, formatter,
+        pdfBuilder.createImageForm(imageFormResources, innerFormResource, imageFormStream, bbox,
                 transform, pdfStructure.getImage());
         
-        pdfBuilder.createBackgroundLayerForm(innerFormResource, formatter);
+        pdfBuilder.createBackgroundLayerForm(innerFormResource, bbox);
        
         // now inject procSetArray
         pdfBuilder.injectProcSetArray(innerForm, page, innerFormResource, imageFormResources,

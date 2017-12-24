@@ -166,10 +166,10 @@ public interface PDFTemplateBuilder
      * 
      * @param holderFormResources
      * @param holderFormStream
-     * @param formrect
+     * @param bbox
      */
     void createHolderForm(PDResources holderFormResources, PDStream holderFormStream,
-            PDRectangle formrect);
+            PDRectangle bbox);
 
     /**
      * Creates appearance dictionary
@@ -196,10 +196,9 @@ public interface PDFTemplateBuilder
      * 
      * @param innerFormResources
      * @param innerFormStream
-     * @param formrect
+     * @param bbox
      */
-    void createInnerForm(PDResources innerFormResources, PDStream innerFormStream,
-            PDRectangle formrect);
+    void createInnerForm(PDResources innerFormResources, PDStream innerFormStream, PDRectangle bbox);
 
     /**
      * 
@@ -226,13 +225,13 @@ public interface PDFTemplateBuilder
      * @param imageFormResources
      * @param innerFormResource
      * @param imageFormStream
-     * @param formrect
+     * @param bbox
      * @param affineTransform
      * @param img
      * @throws IOException
      */
     void createImageForm(PDResources imageFormResources, PDResources innerFormResource,
-            PDStream imageFormStream, PDRectangle formrect, AffineTransform affineTransform,
+            PDStream imageFormStream, PDRectangle bbox, AffineTransform affineTransform,
             PDImageXObject img) throws IOException;
 
     /**
