@@ -38,9 +38,12 @@ import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.apache.pdfbox.pdmodel.encryption.StandardSecurityHandler;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.util.Charsets;
 import org.junit.Assert;
 
 /**
@@ -313,6 +316,22 @@ public class TestSymmetricKeyEncryption extends TestCase
         encryptedDoc = PDDocument.load(pdfFile, ownerpassword);
         Assert.assertTrue(encryptedDoc.isEncrypted());
         Assert.assertTrue(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
+
+        // Older encryption allows to get the user password when the owner password is known
+        PDEncryption encryption = encryptedDoc.getEncryption();
+        int revision = encryption.getRevision();
+        if (revision < 5)
+        {
+            StandardSecurityHandler standardSecurityHandler = new StandardSecurityHandler();
+            int keyLengthInBytes = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
+            byte[] computedUserPassword = standardSecurityHandler.getUserPassword(
+                    ownerpassword.getBytes(Charsets.ISO_8859_1),
+                    encryption.getOwnerKey(),
+                    revision,
+                    keyLengthInBytes);
+            Assert.assertEquals(userpassword.substring(0, 32), new String(computedUserPassword, Charsets.ISO_8859_1));
+        }
+
         encryptedDoc.close();
 
         // test with user password => restricted permissions
