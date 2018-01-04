@@ -98,7 +98,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
     /**
      * Computes the version number of the StandardSecurityHandler
-     * regarding the encryption key length.
+     * based on the encryption key length.
      * See PDF Spec 1.6 p 93 and PDF 1.7 AEL3
      *
      * @return The computed version number.
@@ -555,7 +555,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param permissions The set of permissions on the document.
      * @param id The document id.
      * @param encRevision The encryption algorithm revision.
-     * @param length The encryption key length.
+     * @param keyLengthInBytes The encryption key length in bytes.
      * @param encryptMetadata The encryption metadata
      *
      * @return True If the ownerPassword param is the owner password.
@@ -563,7 +563,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @throws IOException If there is an error accessing data.
      */
     public boolean isOwnerPassword(byte[] ownerPassword, byte[] user, byte[] owner,
-                                   int permissions, byte[] id, int encRevision, int length,
+                                   int permissions, byte[] id, int encRevision, int keyLengthInBytes,
                                    boolean encryptMetadata) throws IOException
     {
         if (encRevision == 6 || encRevision == 5)
@@ -589,8 +589,8 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         else
         {
-            byte[] userPassword = getUserPassword( ownerPassword, owner, encRevision, length );
-            return isUserPassword( userPassword, user, owner, permissions, id, encRevision, length,
+            byte[] userPassword = getUserPassword( ownerPassword, owner, encRevision, keyLengthInBytes );
+            return isUserPassword( userPassword, user, owner, permissions, id, encRevision, keyLengthInBytes,
                                    encryptMetadata );
         }
     }
@@ -649,7 +649,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param permissions The permissions for the document.
      * @param id The document id.
      * @param encRevision The revision of the encryption algorithm.
-     * @param length The length of the encryption key.
+     * @param keyLengthInBytes The length of the encryption key in bytes.
      * @param encryptMetadata The encryption metadata
      * @param isOwnerPassword whether the password given is the owner password (for revision 6)
      *
@@ -658,7 +658,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @throws IOException If there is an error with encryption.
      */
     public byte[] computeEncryptedKey(byte[] password, byte[] o, byte[] u, byte[] oe, byte[] ue,
-                                      int permissions, byte[] id, int encRevision, int length,
+                                      int permissions, byte[] id, int encRevision, int keyLengthInBytes,
                                       boolean encryptMetadata, boolean isOwnerPassword)
                                       throws IOException
     {
@@ -668,7 +668,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         else
         {
-            return computeEncryptedKeyRev234(password, o, permissions, id, encryptMetadata, length, encRevision);
+            return computeEncryptedKeyRev234(password, o, permissions, id, encryptMetadata, keyLengthInBytes, encRevision);
         }
     }
 
@@ -774,7 +774,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param permissions The document permissions.
      * @param id The document id.
      * @param encRevision The revision of the encryption.
-     * @param length The length of the encryption key.
+     * @param keyLengthInBytes The length of the encryption key in bytes.
      * @param encryptMetadata The encryption metadata
      *
      * @return The user password.
@@ -782,12 +782,12 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @throws IOException if the password could not be computed
      */
     public byte[] computeUserPassword(byte[] password, byte[] owner, int permissions,
-                                      byte[] id, int encRevision, int length,
+                                      byte[] id, int encRevision, int keyLengthInBytes,
                                       boolean encryptMetadata) throws IOException
     {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] encKey = computeEncryptedKey( password, owner, null, null, null, permissions,
-                id, encRevision, length, encryptMetadata, true );
+                id, encRevision, keyLengthInBytes, encryptMetadata, true );
         
         if( encRevision == 2 )
         {
@@ -868,7 +868,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         return encrypted.toByteArray();
     }
 
-    // steps (a) to (d) of "Algorithm 3: Computing the encryption dictionary?s O (owner password) value".
+    // steps (a) to (d) of "Algorithm 3: Computing the encryption dictionary’s O (owner password) value".
     private byte[] computeRC4key(byte[] ownerPassword, int encRevision, int length)
     {
         MessageDigest md = MessageDigests.getMD5();
@@ -916,15 +916,15 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param permissions The permissions set in the PDF.
      * @param id The document id used for encryption.
      * @param encRevision The revision of the encryption algorithm.
-     * @param length The length of the encryption key.
-     * @param encryptMetadata The encryption metadata
+     * @param keyLengthInBytes The length of the encryption key in bytes.
+     * @param encryptMetadata The encryption metadata.
      *
      * @return true If the plaintext password is the user password.
      *
      * @throws IOException If there is an error accessing data.
      */
     public boolean isUserPassword(byte[] password, byte[] user, byte[] owner, int permissions,
-                                  byte[] id, int encRevision, int length, boolean encryptMetadata)
+                                  byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)
                                   throws IOException
     {
         switch (encRevision)
@@ -933,7 +933,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             case 3:
             case 4:
                 return isUserPassword234(password, user, owner, permissions, id, encRevision,
-                                         length, encryptMetadata);
+                                         keyLengthInBytes, encryptMetadata);
             case 5:
             case 6:
                 return isUserPassword56(password, user, encRevision);
@@ -989,7 +989,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param permissions The permissions set in the PDF.
      * @param id The document id used for encryption.
      * @param encRevision The revision of the encryption algorithm.
-     * @param length The length of the encryption key.
+     * @param keyLengthInBytes The length of the encryption key in bytes.
      * @param encryptMetadata The encryption metadata
      *
      * @return true If the plaintext password is the user password.
@@ -997,18 +997,18 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @throws IOException If there is an error accessing data.
      */
     public boolean isUserPassword(String password, byte[] user, byte[] owner, int permissions,
-                                  byte[] id, int encRevision,  int length, boolean encryptMetadata)
+                                  byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)
                                   throws IOException
     {
         if (encRevision == 6 || encRevision == 5)
         {
             return isUserPassword(password.getBytes(Charsets.UTF_8), user, owner, permissions, id,
-                    encRevision, length, encryptMetadata);
+                    encRevision, keyLengthInBytes, encryptMetadata);
         }
         else
         {
             return isUserPassword(password.getBytes(Charsets.ISO_8859_1), user, owner, permissions, id,
-                    encRevision, length, encryptMetadata);
+                    encRevision, keyLengthInBytes, encryptMetadata);
         }
     }
 
@@ -1021,7 +1021,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @param permissions The set of permissions on the document.
      * @param id The document id.
      * @param encRevision The encryption algorithm revision.
-     * @param length The encryption key length.
+     * @param keyLengthInBytes The encryption key length in bytes.
      * @param encryptMetadata The encryption metadata
      *
      * @return True If the ownerPassword param is the owner password.
@@ -1029,11 +1029,11 @@ public final class StandardSecurityHandler extends SecurityHandler
      * @throws IOException If there is an error accessing data.
      */
     public boolean isOwnerPassword(String password, byte[] user, byte[] owner, int permissions,
-                                   byte[] id, int encRevision, int length, boolean encryptMetadata)
+                                   byte[] id, int encRevision, int keyLengthInBytes, boolean encryptMetadata)
                                    throws IOException
     {
         return isOwnerPassword(password.getBytes(Charsets.ISO_8859_1), user,owner,permissions, id,
-                               encRevision, length, encryptMetadata);
+                               encRevision, keyLengthInBytes, encryptMetadata);
     }
 
     // Algorithm 2.A from ISO 32000-1
