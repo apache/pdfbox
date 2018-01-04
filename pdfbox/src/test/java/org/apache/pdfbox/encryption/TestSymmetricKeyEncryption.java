@@ -315,7 +315,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         Assert.assertTrue(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
         encryptedDoc.close();
 
-        // test with owner password => restricted permissions
+        // test with user password => restricted permissions
         encryptedDoc = PDDocument.load(pdfFile, userpassword);
         Assert.assertTrue(encryptedDoc.isEncrypted());
         Assert.assertFalse(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
