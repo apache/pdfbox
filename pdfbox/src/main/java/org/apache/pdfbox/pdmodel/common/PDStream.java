@@ -48,7 +48,7 @@ public class PDStream implements COSObjectable
     private final COSStream stream;
     
     /**
-     * Creates a new PDStream object.
+     * Creates a new empty PDStream object.
      * 
      * @param document The document that the stream will be part of.
      */
@@ -58,7 +58,7 @@ public class PDStream implements COSObjectable
     }
 
     /**
-     * Creates a new PDStream object.
+     * Creates a new empty PDStream object.
      *
      * @param document The document that the stream will be part of.
      */
