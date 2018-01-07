@@ -1289,7 +1289,7 @@ public class PDDocument implements Closeable
      * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
      * file or a stream, not if the document was created in PDFBox itself.
      *
-     * @param output stream to write
+     * @param output stream to write. It should <i><b>not</b></i> point to the source file.
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */
@@ -1345,7 +1345,7 @@ public class PDDocument implements Closeable
      * {@code PDDocument} instance and only AFTER {@link ExternalSigningSupport} instance is used.
      * </p>
      *
-     * @param output stream to write final PDF
+     * @param output stream to write final PDF. It should <i><b>not</b></i> point to the source file.
      * @return instance to be used for external signing and setting CMS signature
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream or
