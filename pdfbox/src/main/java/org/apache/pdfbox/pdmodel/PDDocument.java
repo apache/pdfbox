@@ -111,7 +111,6 @@ public class PDDocument implements Closeable
 
         try
         {
-            //TODO remove this and deprecated COSNumber statics in 3.0
             COSNumber.get("0");
             COSNumber.get("1");
         }
