@@ -339,15 +339,17 @@ public class PDFMergerUtility
         {
             // PDFBOX-3972: get local dest page index, it must be reassigned after the page cloning
             PDDestinationOrAction openAction = srcCatalog.getOpenAction();
-            PDDestination openActionDestination;
+            PDDestination openActionDestination = null;
             if (openAction instanceof PDActionGoTo)
             {
                 openActionDestination = ((PDActionGoTo) openAction).getDestination();
             }
-            else
+            else if (openAction instanceof PDDestination)
             {
                 openActionDestination = (PDDestination) openAction;
             }
+            // note that it can also be something else, e.g. PDActionJavaScript, then do nothing
+
             if (openActionDestination instanceof PDPageDestination)
             {
                 PDPage page = ((PDPageDestination) openActionDestination).getPage();
@@ -608,7 +610,7 @@ public class PDFMergerUtility
                 // The openAction is either a PDActionGoTo or a PDPageDestination
                 PDDestinationOrAction openAction = destCatalog.getOpenAction();
                 PDPageDestination pageDestination;
-                if (destCatalog.getOpenAction() instanceof PDActionGoTo)
+                if (openAction instanceof PDActionGoTo)
                 {
                     pageDestination = (PDPageDestination) ((PDActionGoTo) openAction).getDestination();
                 }
