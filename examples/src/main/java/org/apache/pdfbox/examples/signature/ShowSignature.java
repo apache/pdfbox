@@ -136,6 +136,8 @@ public final class ShowSignature
                         if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
                         {
                             // a false result doesn't necessarily mean that the PDF is a fake
+                            // see this answer why:
+                            // https://stackoverflow.com/a/48185913/535646
                             System.out.println("Signature does not cover whole document");
                         }
                         else
