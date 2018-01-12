@@ -221,6 +221,7 @@ public class PDVisibleSignDesigner
         switch (rotation)
         {
             case 90:
+                // https://stackoverflow.com/a/34359956/535646
                 float temp = yAxis;
                 yAxis = pageHeight - xAxis - imageWidth;
                 xAxis = temp;
