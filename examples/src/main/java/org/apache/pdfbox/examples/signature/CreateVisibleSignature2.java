@@ -79,6 +79,24 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
     private boolean lateExternalSigning = false;
     private File imageFile;
 
+    /**
+     * Initialize the signature creator with a keystore (pkcs12) and pin that
+     * should be used for the signature.
+     *
+     * @param keystore is a pkcs12 keystore.
+     * @param pin is the pin for the keystore / private key
+     * @throws KeyStoreException if the keystore has not been initialized (loaded)
+     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
+     * @throws UnrecoverableKeyException if the given password is wrong
+     * @throws CertificateException if the certificate is not valid as signing time
+     * @throws IOException if no certificate could be found
+     */
+    public CreateVisibleSignature2(KeyStore keystore, char[] pin)
+            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
+    {
+        super(keystore, pin);
+    }
+
     public File getImageFile()
     {
         return imageFile;
@@ -104,24 +122,6 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
     public void setLateExternalSigning(boolean lateExternalSigning)
     {
         this.lateExternalSigning = lateExternalSigning;
-    }
-
-    /**
-     * Initialize the signature creator with a keystore (pkcs12) and pin that
-     * should be used for the signature.
-     *
-     * @param keystore is a pkcs12 keystore.
-     * @param pin is the pin for the keystore / private key
-     * @throws KeyStoreException if the keystore has not been initialized (loaded)
-     * @throws NoSuchAlgorithmException if the algorithm for recovering the key cannot be found
-     * @throws UnrecoverableKeyException if the given password is wrong
-     * @throws CertificateException if the certificate is not valid as signing time
-     * @throws IOException if no certificate could be found
-     */
-    public CreateVisibleSignature2(KeyStore keystore, char[] pin)
-            throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException
-    {
-        super(keystore, pin);
     }
 
     /**
