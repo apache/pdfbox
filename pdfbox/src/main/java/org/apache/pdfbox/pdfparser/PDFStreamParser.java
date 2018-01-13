@@ -348,9 +348,13 @@ public class PDFStreamParser extends BaseParser
                 pdfSource.read();
 
                 boolean dotNotRead = (c != '.');
-                while( Character.isDigit(( c = (char)pdfSource.peek()) ) || (dotNotRead && (c == '.')) )
+                while (Character.isDigit((c = (char) pdfSource.peek())) || (dotNotRead && (c == '.')) || c == '-')
                 {
-                    buf.append( c );
+                    if (c != '-')
+                    {
+                        // PDFBOX-4064: ignore "-" in the middle of a number
+                        buf.append(c);
+                    }
                     pdfSource.read();
 
                     if (dotNotRead && (c == '.'))
