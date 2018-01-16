@@ -29,9 +29,10 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
@@ -153,8 +154,7 @@ public final class AddAnnotations
             annotations.add(txtLink);
             
             // Now draw a few more annotations
-            PDAnnotationSquareCircle aCircle = new PDAnnotationSquareCircle(
-                    PDAnnotationSquareCircle.SUB_TYPE_CIRCLE);
+            PDAnnotationCircle aCircle = new PDAnnotationCircle();
             aCircle.setContents("Circle Annotation");
             aCircle.setInteriorColor(red);  // Fill in circle in red
             aCircle.setColor(blue); // The border itself will be blue
@@ -171,8 +171,7 @@ public final class AddAnnotations
             annotations.add(aCircle);
 
             // Now a square annotation
-            PDAnnotationSquareCircle aSquare = new PDAnnotationSquareCircle(
-                    PDAnnotationSquareCircle.SUB_TYPE_SQUARE);
+            PDAnnotationSquare aSquare = new PDAnnotationSquare();
             aSquare.setContents("Square Annotation");
             aSquare.setColor(red);  // Outline in red, not setting a fill
             aSquare.setBorderStyle(borderThick);
