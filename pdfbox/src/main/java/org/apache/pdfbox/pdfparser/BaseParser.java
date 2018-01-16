@@ -295,7 +295,7 @@ public abstract class BaseParser
 
         if (value == null)
         {
-            LOG.warn("Bad Dictionary Declaration " + seqSource);
+            LOG.warn("Bad dictionary declaration at offset " + seqSource.getPosition());
         }
         else
         {
@@ -398,7 +398,7 @@ public abstract class BaseParser
         else if (nextChar != '(')
         {
             throw new IOException( "parseCOSString string should start with '(' or '<' and not '" +
-                    nextChar + "' " + seqSource);
+                    nextChar + "' at offset " + seqSource.getPosition());
         }
         
         ByteArrayOutputStream out = new ByteArrayOutputStream();
