@@ -69,7 +69,6 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @return object representing the color.
      */
-    @Override
     public PDColor getInteriorColor()
     {
         return getColor(COSName.IC);
