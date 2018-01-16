@@ -22,30 +22,14 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
-import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDCircleAppearanceHandler;
-import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDSquareAppearanceHandler;
 
 /**
  * This is the class that represents a rectangular or elliptical annotation introduced in PDF 1.3 specification .
  *
  * @author Paul King
  */
-public class PDAnnotationSquareCircle extends PDAnnotationMarkup
+public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
 {
-
-    private PDAppearanceHandler squareAppearanceHandler;
-    private PDAppearanceHandler circleAppearanceHandler;
-    
-    /**
-     * Constant for a Rectangular type of annotation.
-     */
-    public static final String SUB_TYPE_SQUARE = "Square";
-    /**
-     * Constant for an elliptical type of annotation.
-     */
-    public static final String SUB_TYPE_CIRCLE = "Circle";
-
     /**
      * Creates a Circle or Square annotation of the specified sub type.
      *
@@ -57,66 +41,20 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
     }
 
     /**
-     * Creates a Line annotation from a COSDictionary, expected to be a correct object definition.
+     * Constructor.
      *
-     * @param field the PDF object to represent as a field.
+     * @param dict The annotations dictionary.
      */
-    public PDAnnotationSquareCircle(COSDictionary field)
+    public PDAnnotationSquareCircle(COSDictionary dict)
     {
-        super(field);
+        super(dict);
     }
 
-    /**
-     * Set a custom appearance handler for generating the annotations appearance streams.
-     * 
-     * @param squareAppearanceHandler
-     */
-    public void setCustomSquareAppearanceHandler(PDAppearanceHandler squareAppearanceHandler)
-    {
-        this.squareAppearanceHandler = squareAppearanceHandler;
-    }
-    
-    /**
-     * Set a custom appearance handler for generating the annotations appearance streams.
-     * 
-     * @param circleAppearanceHandler
-     */
-    public void setCustomCircleAppearanceHandler(PDAppearanceHandler circleAppearanceHandler)
-    {
-        this.circleAppearanceHandler = circleAppearanceHandler;
-    }
-    
     @Override
-    public void constructAppearances()
-    {
-        if (SUB_TYPE_SQUARE.equals(getSubtype()))
-        {
-            if (squareAppearanceHandler == null)
-            {
-                PDSquareAppearanceHandler appearanceHandler = new PDSquareAppearanceHandler(this);
-                appearanceHandler.generateAppearanceStreams();
-            }
-            else
-            {
-                squareAppearanceHandler.generateAppearanceStreams();
-            }
-        }
-        else if (SUB_TYPE_CIRCLE.equals(getSubtype()))
-        {
-            if (circleAppearanceHandler == null)
-            {
-                PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this);
-                appearanceHandler.generateAppearanceStreams();
-            }
-            else
-            {
-                circleAppearanceHandler.generateAppearanceStreams();
-            }
-        }
-    }
+    public abstract void constructAppearances();
     
     /**
-     * This will set interior color of the drawn area color is in DeviceRGB colo rspace.
+     * This will set interior color of the drawn area color is in DeviceRGB colorspace.
      *
      * @param ic color in the DeviceRGB color space.
      *
@@ -131,6 +69,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @return object representing the color.
      */
+    @Override
     public PDColor getInteriorColor()
     {
         return getColor(COSName.IC);
@@ -196,6 +135,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         }
     }
 
+    //TODO setSubtype() and getSubtype() should move up?
     /**
      * This will set the sub type (and hence appearance, AP taking precedence) For this annotation. See the SUB_TYPE_XXX
      * constants for valid values.
