@@ -86,6 +86,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         this.circleAppearanceHandler = circleAppearanceHandler;
     }
     
+    @Override
     public void constructAppearances()
     {
         if (SUB_TYPE_SQUARE.equals(getSubtype()))
