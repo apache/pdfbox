@@ -123,10 +123,13 @@ public abstract class PDAnnotation implements COSObjectable
             {
                 annot = new PDAnnotationRubberStamp(annotDic);
             }
-            else if (PDAnnotationSquareCircle.SUB_TYPE_SQUARE.equals(subtype)
-                    || PDAnnotationSquareCircle.SUB_TYPE_CIRCLE.equals(subtype))
+            else if (PDAnnotationSquare.SUB_TYPE.equals(subtype))
             {
-                annot = new PDAnnotationSquareCircle(annotDic);
+                annot = new PDAnnotationSquare(annotDic);
+            }
+            else if (PDAnnotationCircle.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationCircle(annotDic);
             }
             else if (PDAnnotationText.SUB_TYPE.equals(subtype))
             {
