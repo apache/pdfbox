@@ -135,10 +135,6 @@ public abstract class PDAnnotation implements COSObjectable
             {
                 annot = new PDAnnotationTextMarkup(annotDic);
             }
-            else if (PDAnnotationLink.SUB_TYPE.equals(subtype))
-            {
-                annot = new PDAnnotationLink(annotDic);
-            }
             else if (PDAnnotationWidget.SUB_TYPE.equals(subtype))
             {
                 annot = new PDAnnotationWidget(annotDic);
