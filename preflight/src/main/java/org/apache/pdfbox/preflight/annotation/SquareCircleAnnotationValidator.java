@@ -21,10 +21,6 @@
 
 package org.apache.pdfbox.preflight.annotation;
 
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -36,25 +32,17 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDD
 /**
  * Validation class for the Square/Circle Annotation
  */
-public class SquareCircleAnnotationValidator extends AnnotationValidator
+public abstract class SquareCircleAnnotationValidator extends AnnotationValidator
 {
     /**
      * PDFBox object which wraps the annotation dictionary
      */
     protected PDAnnotationSquareCircle pdSquareCircle = null;
 
-    public SquareCircleAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
+    public SquareCircleAnnotationValidator(PreflightContext ctx, PDAnnotationSquareCircle annotation)
     {
-        super(ctx, annotDictionary);
-        //TODO split this class after first successful commit + build
-        if (COSName.getPDFName("ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE").equals(annotDictionary.getItem(COSName.SUBTYPE)))
-        {
-            this.pdSquareCircle = new PDAnnotationCircle(annotDictionary);
-        }
-        else
-        {
-            this.pdSquareCircle = new PDAnnotationSquare(annotDictionary);
-        }
+        super(ctx, annotation.getCOSObject());
+        this.pdSquareCircle = annotation;
         this.pdAnnot = this.pdSquareCircle;
     }
 
