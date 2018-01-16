@@ -67,9 +67,9 @@ public class PDSquareAnnotationTest
     @Test
     public void createDefaultSquareAnnotation()
     {
-        PDAnnotation annotation = new PDAnnotationSquareCircle(PDAnnotationSquareCircle.SUB_TYPE_SQUARE);
+        PDAnnotation annotation = new PDAnnotationSquare();
         assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));
-        assertEquals(PDAnnotationSquareCircle.SUB_TYPE_SQUARE,
+        assertEquals(PDAnnotationSquare.SUB_TYPE,
                 annotation.getCOSObject().getNameAsString(COSName.SUBTYPE));
     }
 
@@ -85,7 +85,7 @@ public class PDSquareAnnotationTest
             document.addPage(page);
             List<PDAnnotation> annotations = page.getAnnotations();
             
-            PDAnnotationSquareCircle annotation = new PDAnnotationSquareCircle(PDAnnotationSquareCircle.SUB_TYPE_SQUARE);
+            PDAnnotationSquareCircle annotation = new PDAnnotationSquare();
             
             PDBorderStyleDictionary borderThin = new PDBorderStyleDictionary();
             borderThin.setWidth(borderWidth);
