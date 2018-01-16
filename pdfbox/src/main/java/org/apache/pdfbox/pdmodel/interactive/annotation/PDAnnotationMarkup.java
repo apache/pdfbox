@@ -355,4 +355,17 @@ public class PDAnnotationMarkup extends PDAnnotation
         return null;
     }
 
+    //TODO this isn't available for all markup annotations, only
+    // polygon, polyline, line, square, circle. 
+    // Thus we need to created more classes (polygon, polyline).
+
+    /**
+     * This will retrieve the interior color.
+     *
+     * @return object representing the color.
+     */
+    public PDColor getInteriorColor()
+    {
+        return getColor(COSName.IC);
+    }
 }
