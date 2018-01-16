@@ -382,7 +382,7 @@ public class PDFMergerUtility
             if (destAcroForm == null && srcAcroForm != null)
             {
                 destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
-                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));       
+                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));     
                 
             }
             else
@@ -730,8 +730,8 @@ public class PDFMergerUtility
             }
 
             COSArray destFields = (COSArray) destAcroForm.getCOSObject().getItem(COSName.FIELDS);
-            for (PDField srcField : srcAcroForm.getFieldTree())
-            {
+            for (PDField srcField : srcAcroForm.getFields())
+            {           	
                 COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
                 // if the form already has a field with this name then we need to rename this field
                 // to prevent merge conflicts.
