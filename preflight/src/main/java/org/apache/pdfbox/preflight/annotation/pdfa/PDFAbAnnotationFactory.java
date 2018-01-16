@@ -39,6 +39,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VA
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_WIDGET;
 
 import org.apache.pdfbox.preflight.annotation.AnnotationValidatorFactory;
+import org.apache.pdfbox.preflight.annotation.CircleAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.FreeTextAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.InkAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.LineAnnotationValidator;
@@ -47,7 +48,7 @@ import org.apache.pdfbox.preflight.annotation.MarkupAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.PopupAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.PrintMarkAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.RubberStampAnnotationValidator;
-import org.apache.pdfbox.preflight.annotation.SquareCircleAnnotationValidator;
+import org.apache.pdfbox.preflight.annotation.SquareAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.TextAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.TrapNetAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.WidgetAnnotationValidator;
@@ -66,8 +67,8 @@ public class PDFAbAnnotationFactory extends AnnotationValidatorFactory
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_FREETEXT, FreeTextAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_LINE, LineAnnotationValidator.class);
 
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE, SquareCircleAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE, SquareCircleAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE, SquareAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE, CircleAnnotationValidator.class);
 
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_HIGHLIGHT, MarkupAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_UNDERLINE, MarkupAnnotationValidator.class);
