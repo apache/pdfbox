@@ -244,6 +244,7 @@ public class PDAnnotationLink extends PDAnnotation
         this.customAppearanceHandler = customAppearanceHandler;
     }
     
+    @Override
     public void constructAppearances()
     {
         if (customAppearanceHandler == null)
