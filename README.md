@@ -49,7 +49,7 @@ This will get you help from the entire community.
 
 The PDFBox examples and the test code in the sources will also provide additional information.
 
-And there are additonal resources available on sites such as
+And there are additional resources available on sites such as
 [Stack Overflow](http://stackoverflow.com/search?q=pdfbox "Stack Overflow").
 
 If you are sure you have found a bug the please report the issue in our 
