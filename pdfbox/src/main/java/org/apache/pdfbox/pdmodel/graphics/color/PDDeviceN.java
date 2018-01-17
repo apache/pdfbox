@@ -280,9 +280,9 @@ public class PDDeviceN extends PDSpecialColorSpace
     //
     private BufferedImage toRGBWithTintTransform(WritableRaster raster) throws IOException
     {
-        // map only in use if one color component
-        Map<Float,int[]> map1 = new HashMap<Float,int[]>();
-        float key = 0;
+        // cache color mappings
+        Map<String, int[]> map1 = new HashMap<String, int[]>();
+        String key = null;
 
         int width = raster.getWidth();
         int height = raster.getHeight();
@@ -299,27 +299,23 @@ public class PDDeviceN extends PDSpecialColorSpace
             for (int x = 0; x < width; x++)
             {
                 raster.getPixel(x, y, src);
-                if (numSrcComponents == 1)
+                // use a string representation as key
+                key = Float.toString(src[0]);
+                for (int s = 1; s < numSrcComponents; s++)
                 {
-                    int[] pxl = map1.get(src[0]);
-                    if (pxl != null)
-                    {
-                        rgbRaster.setPixel(x, y, pxl);
-                        continue;
-                    }
-                    else
-                    {
-                        // need to remember key because src is modified
-                        key = src[0];
-                    }
+                    key += "#" + Float.toString(src[s]);
                 }
-
+                int[] pxl = map1.get(key);
+                if (pxl != null)
+                {
+                    rgbRaster.setPixel(x, y, pxl);
+                    continue;
+                }
                 // scale to 0..1
                 for (int s = 0; s < numSrcComponents; s++)
                 {
                     src[s] = src[s] / 255;
                 }
-
                 // convert to alternate color space via tint transform
                 float[] result = tintTransform.eval(src);
                 
@@ -331,12 +327,8 @@ public class PDDeviceN extends PDSpecialColorSpace
                     // scale to 0..255
                     rgb[s] = (int) (rgbFloat[s] * 255f);
                 }                
-
-                if (numSrcComponents == 1)
-                {
-                    // must clone because rgb is reused
-                    map1.put(key, rgb.clone());
-                }
+                // must clone because rgb is reused
+                map1.put(key, rgb.clone());
 
                 rgbRaster.setPixel(x, y, rgb);
             }
