@@ -22,10 +22,8 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolygon;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
@@ -52,17 +50,16 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        // Adobe doesn't generate an appearance for a link annotation
         float lineWidth = getLineWidth();
         try
         {
-            PDAnnotation annotation = getAnnotation();
+            PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
             PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
             contentStream.setStrokingColorOnDemand(getColor());
 
             // TODO: handle opacity settings
 
-            contentStream.setBorderLine(lineWidth, ((PDAnnotationMarkup) annotation).getBorderStyle());
+            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
 
             // the differences rectangle
             // TODO: this only works for border effect solid. Cloudy needs a
@@ -108,38 +105,35 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
             }
             else
             {
-                COSBase vertices = annotation.getCOSObject().getDictionaryObject(COSName.VERTICES);
-                if (!(vertices instanceof COSArray))
+                //TODO use getVertices
+                float[] verticesArray = annotation.getVertices();
+                if (verticesArray == null)
                 {
                     return;
                 }
 
-                COSArray verticesArray = (COSArray) vertices;
-                int nPoints = verticesArray.size() / 2;
+                int nPoints = verticesArray.length / 2;
                 for (int i = 0; i < nPoints; i++)
                 {
-                    COSBase bx = verticesArray.getObject(i * 2);
-                    COSBase by = verticesArray.getObject(i * 2 + 1);
-                    if (bx instanceof COSNumber && by instanceof COSNumber)
+                    float x = verticesArray[i * 2];
+                    float y = verticesArray[i * 2 + 1];
+                    if (i == 0)
                     {
-                        float x = ((COSNumber) bx).floatValue();
-                        float y = ((COSNumber) by).floatValue();
-                        if (i == 0)
-                        {
-                            contentStream.moveTo(x, y);
-                        }
-                        else
-                        {
-                            contentStream.lineTo(x, y);
-                        }
+                        contentStream.moveTo(x, y);
+                    }
+                    else
+                    {
+                        contentStream.lineTo(x, y);
                     }
                 }
                 contentStream.stroke();
             }
 
             contentStream.close();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
+            //TODO
             e.printStackTrace();
         }
     }
@@ -173,7 +167,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationLink annotation = (PDAnnotationLink) getAnnotation();
+        PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
 
         PDBorderStyleDictionary bs = annotation.getBorderStyle();
 

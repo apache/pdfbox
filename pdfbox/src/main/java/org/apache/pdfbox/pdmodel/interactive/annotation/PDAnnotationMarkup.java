@@ -23,7 +23,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 
 /**
  * This class represents the additional fields of a Markup type Annotation. See section 12.5.6 of ISO32000-1:2008
@@ -37,14 +36,6 @@ public class PDAnnotationMarkup extends PDAnnotation
      * Constant for a FreeText type of annotation.
      */
     public static final String SUB_TYPE_FREETEXT = "FreeText";
-    /**
-     * Constant for an Polygon type of annotation.
-     */
-    public static final String SUB_TYPE_POLYGON = "Polygon";
-    /**
-     * Constant for an PolyLine type of annotation.
-     */
-    public static final String SUB_TYPE_POLYLINE = "PolyLine";
     /**
      * Constant for an Caret type of annotation.
      */
@@ -353,19 +344,5 @@ public class PDAnnotationMarkup extends PDAnnotation
             return new PDBorderStyleDictionary((COSDictionary) bs);
         }
         return null;
-    }
-
-    //TODO this isn't available for all markup annotations, only
-    // polygon, polyline, line, square, circle. 
-    // Thus we need to created more classes (polygon, polyline).
-
-    /**
-     * This will retrieve the interior color.
-     *
-     * @return object representing the color.
-     */
-    public PDColor getInteriorColor()
-    {
-        return getColor(COSName.IC);
     }
 }
