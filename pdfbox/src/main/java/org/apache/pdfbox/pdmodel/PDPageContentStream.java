@@ -48,6 +48,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
+import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
@@ -314,7 +315,7 @@ public final class PDPageContentStream implements Closeable
      *
      * @param doc The document the appearance is part of.
      * @param form The XObject form to add to.
-     * @param outputStream The appearances output stream to write to.
+     * @param outputStream The output stream to write to.
      * @throws IOException If there is an error writing to the page contents.
      */
     public PDPageContentStream(PDDocument doc, PDFormXObject form, OutputStream outputStream)
@@ -324,6 +325,26 @@ public final class PDPageContentStream implements Closeable
 
         output = outputStream;
         this.resources = form.getResources();
+
+        formatDecimal.setMaximumFractionDigits(4);
+        formatDecimal.setGroupingUsed(false);
+    }
+
+    /**
+     * Create a new appearance stream. Note that this is not actually a "page" content stream.
+     *
+     * @param doc The document the appearance is part of.
+     * @param pattern The pattern to add to.
+     * @param outputStream The output stream to write to.
+     * @throws IOException If there is an error writing to the page contents.
+     */
+    public PDPageContentStream(PDDocument doc, PDTilingPattern pattern, OutputStream outputStream)
+            throws IOException
+    {
+        this.document = doc;
+
+        output = outputStream;
+        this.resources = pattern.getResources();
 
         formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
