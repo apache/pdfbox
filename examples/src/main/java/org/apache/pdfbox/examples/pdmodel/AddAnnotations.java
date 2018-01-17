@@ -236,6 +236,13 @@ public final class AddAnnotations
             pageLink.setAction(actionGoto);
             annotations.add(pageLink);      
             
+            // Create the appearance streams.
+            // Adobe Reader will always display annotations without appearance streams nicely,
+            // but other applications may not.
+            for (PDAnnotation ann : annotations)
+            {
+                ann.constructAppearances();
+            }
 
             showPageNo(document, page1, "Page 1");
             showPageNo(document, page2, "Page 2");
