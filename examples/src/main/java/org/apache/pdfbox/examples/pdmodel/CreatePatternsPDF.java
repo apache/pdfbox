@@ -16,8 +16,8 @@
 
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.awt.Color;
 import java.io.IOException;
-import java.io.OutputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -29,7 +29,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * This is an example of how to create a page that uses patterns to paint areas.
@@ -63,13 +62,20 @@ public final class CreatePatternsPDF
         tilingPattern1.setYStep(10);
 
         COSName patternName1 = page.getResources().add(tilingPattern1);
-        //TODO 
-        // there's no way to create something like a PDPageContentStream, 
-        // so we'll do it the hard way
-        OutputStream os1 = tilingPattern1.getContentStream().createOutputStream();
+
+        PDPageContentStream cs1 = new PDPageContentStream(doc,
+                tilingPattern1,
+                tilingPattern1.getContentStream().createOutputStream());
         // Set color, draw diagonal line + 2 more diagonals so that corners look good
-        os1.write("1 0 0 RG 0 0 m 10 10 l -1 9 m 1 11 l 9 -1 m 11 1 l s".getBytes(Charsets.US_ASCII));
-        os1.close();
+        cs1.setStrokingColor(Color.red);
+        cs1.moveTo(0, 0);
+        cs1.lineTo(10, 10);
+        cs1.moveTo(-1, 9);
+        cs1.lineTo(1, 11);
+        cs1.moveTo(9, -1);
+        cs1.lineTo(11, 1);
+        cs1.stroke();
+        cs1.close();
 
         PDColor patternColor1 = new PDColor(patternName1, patternCS1);
 
@@ -86,10 +92,17 @@ public final class CreatePatternsPDF
         tilingPattern2.setYStep(10);
 
         COSName patternName2 = page.getResources().add(tilingPattern2);
-        OutputStream os2 = tilingPattern2.getContentStream().createOutputStream();
+
+        PDPageContentStream cs2 = new PDPageContentStream(doc, 
+                tilingPattern2, 
+                tilingPattern2.getContentStream().createOutputStream());
         // draw a cross
-        os2.write("0 5 m 10 5 l 5 0 m 5 10 l s".getBytes(Charsets.US_ASCII));
-        os2.close();
+        cs2.moveTo(0, 5);
+        cs2.lineTo(10, 5);
+        cs2.moveTo(5, 0);
+        cs2.lineTo(5, 10);
+        cs2.stroke();
+        cs2.close();
 
         // Uncolored pattern colorspace needs to know the colorspace
         // for the color values that will be passed when painting the fill
