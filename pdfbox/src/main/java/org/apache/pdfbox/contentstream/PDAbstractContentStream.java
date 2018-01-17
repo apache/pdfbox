@@ -123,7 +123,7 @@ public abstract class PDAbstractContentStream implements Closeable
     }
     
     /**
-     * Create a new appearance stream. Note that this is not actually a "page" content stream.
+     * Create a new appearance stream.
      *
      * @param appearance The appearance stream to add to.
      * @param outputStream The appearances output stream to write to.
@@ -138,7 +138,22 @@ public abstract class PDAbstractContentStream implements Closeable
         formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
     }
-    
+
+    /**
+     * Create a new appearance stream.
+     * 
+     * @param outputStream The appearances output stream to write to.
+     * @throws IOException 
+     */
+    public PDAbstractContentStream(OutputStream outputStream) throws IOException
+    {
+        output = outputStream;
+        this.resources = null;
+
+        formatDecimal.setMaximumFractionDigits(4);
+        formatDecimal.setGroupingUsed(false);
+    }
+
     /**
      * Sets the maximum number of digits allowed for fractional numbers.
      * 
