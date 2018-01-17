@@ -131,6 +131,14 @@ public abstract class PDAnnotation implements COSObjectable
             {
                 annot = new PDAnnotationCircle(annotDic);
             }
+            else if (PDAnnotationPolygon.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationPolygon(annotDic);
+            }
+            else if (PDAnnotationPolyline.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationPolyline(annotDic);
+            }
             else if (PDAnnotationText.SUB_TYPE.equals(subtype))
             {
                 annot = new PDAnnotationText(annotDic);
@@ -148,8 +156,6 @@ public abstract class PDAnnotation implements COSObjectable
                 annot = new PDAnnotationWidget(annotDic);
             }
             else if (PDAnnotationMarkup.SUB_TYPE_FREETEXT.equals(subtype)
-                    || PDAnnotationMarkup.SUB_TYPE_POLYGON.equals(subtype)
-                    || PDAnnotationMarkup.SUB_TYPE_POLYLINE.equals(subtype)
                     || PDAnnotationMarkup.SUB_TYPE_CARET.equals(subtype)
                     || PDAnnotationMarkup.SUB_TYPE_INK.equals(subtype)
                     || PDAnnotationMarkup.SUB_TYPE_SOUND.equals(subtype))
