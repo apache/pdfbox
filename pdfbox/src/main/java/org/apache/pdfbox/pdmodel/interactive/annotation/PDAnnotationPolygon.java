@@ -110,11 +110,11 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param squareAppearanceHandler
+     * @param polygonAppearanceHandler
      */
-    public void setCustomSquareAppearanceHandler(PDAppearanceHandler squareAppearanceHandler)
+    public void setCustomPolygonAppearanceHandler(PDAppearanceHandler polygonAppearanceHandler)
     {
-        this.polygonAppearanceHandler = squareAppearanceHandler;
+        this.polygonAppearanceHandler = polygonAppearanceHandler;
     }
 
     @Override

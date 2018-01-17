@@ -107,11 +107,11 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param squareAppearanceHandler
+     * @param polylineAppearanceHandler
      */
-    public void setCustomSquareAppearanceHandler(PDAppearanceHandler squareAppearanceHandler)
+    public void setCustomPolylineAppearanceHandler(PDAppearanceHandler polylineAppearanceHandler)
     {
-        this.polylineAppearanceHandler = squareAppearanceHandler;
+        this.polylineAppearanceHandler = polylineAppearanceHandler;
     }
 
     @Override
