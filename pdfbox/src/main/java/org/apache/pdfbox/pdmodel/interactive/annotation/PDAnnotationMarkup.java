@@ -41,10 +41,6 @@ public class PDAnnotationMarkup extends PDAnnotation
      */
     public static final String SUB_TYPE_CARET = "Caret";
     /**
-     * Constant for an Ink type of annotation.
-     */
-    public static final String SUB_TYPE_INK = "Ink";
-    /**
      * Constant for an Sound type of annotation.
      */
     public static final String SUB_TYPE_SOUND = "Sound";
