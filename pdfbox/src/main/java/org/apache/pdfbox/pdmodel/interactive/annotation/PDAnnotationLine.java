@@ -109,7 +109,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public PDAnnotationLine()
     {
-        getCOSObject().setItem(COSName.SUBTYPE, COSName.getPDFName(SUB_TYPE));
+        getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
         // Dictionary value L is mandatory, fill in with arbitary value
         setLine(new float[] { 0, 0, 0, 0 });
     }

@@ -98,7 +98,7 @@ public class PDAnnotationRubberStamp extends PDAnnotationMarkup
      */
     public PDAnnotationRubberStamp()
     {
-        getCOSObject().setItem(COSName.SUBTYPE, COSName.getPDFName(SUB_TYPE));
+        getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
     }
 
     /**
