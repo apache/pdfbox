@@ -76,7 +76,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
      */
     public PDAnnotationText()
     {
-        getCOSObject().setItem(COSName.SUBTYPE, COSName.getPDFName(SUB_TYPE));
+        getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
     }
 
     /**
