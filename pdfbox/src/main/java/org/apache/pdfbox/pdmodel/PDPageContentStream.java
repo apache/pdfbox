@@ -310,6 +310,26 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
+     * Create a new appearance stream. Note that this is not actually a "page" content stream.
+     *
+     * @param doc The document the appearance is part of.
+     * @param form The XObject form to add to.
+     * @param outputStream The appearances output stream to write to.
+     * @throws IOException If there is an error writing to the page contents.
+     */
+    public PDPageContentStream(PDDocument doc, PDFormXObject form, OutputStream outputStream)
+            throws IOException
+    {
+        this.document = doc;
+
+        output = outputStream;
+        this.resources = form.getResources();
+
+        formatDecimal.setMaximumFractionDigits(4);
+        formatDecimal.setGroupingUsed(false);
+    }
+
+    /**
      * Begin some text operations.
      *
      * @throws IOException If there is an error writing to the stream or if you attempt to
