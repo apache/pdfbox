@@ -23,7 +23,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolyline;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
- * Handler to generate the polygon annotations appearance.
+ * Handler to generate the polyline annotations appearance.
  *
  */
 public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
@@ -50,13 +50,13 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateRolloverAppearance()
     {
-        // No rollover appearance generated for a polygon annotation
+        // No rollover appearance generated for a polyline annotation
     }
 
     @Override
     public void generateDownAppearance()
     {
-        // No down appearance generated for a polygon annotation
+        // No down appearance generated for a polyline annotation
     }
 
     //TODO DRY, this code is from polygonAppearanceHandler so it's double
