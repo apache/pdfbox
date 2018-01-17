@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStrea
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
- * Handler to generate the square annotations appearance.
+ * Handler to generate the circle annotations appearance.
  *
  */
 public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
