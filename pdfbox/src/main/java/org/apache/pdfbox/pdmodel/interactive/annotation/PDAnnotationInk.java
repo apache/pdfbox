@@ -16,6 +16,8 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
@@ -52,9 +54,28 @@ public class PDAnnotationInk extends PDAnnotationMarkup
         super(dict);
     }
 
-    //TODO get InkList
-    
-    
+
+    //TODO setInkList, javadoc
+ 
+    public float[][] getInkList()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.INKLIST);
+        if (base instanceof COSArray)
+        {
+            COSArray array = (COSArray) base;
+            float[][] inkList = new float[array.size()][];
+            for (int i = 0; i < array.size(); ++i)
+            {
+                //TODO check for class
+                COSArray innerArray = (COSArray) array.getObject(i);
+                inkList[i] = innerArray.toFloatArray();
+            }
+            return inkList;
+        }
+        // Should never happen as this is a required item
+        return null; 
+    }
+
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
