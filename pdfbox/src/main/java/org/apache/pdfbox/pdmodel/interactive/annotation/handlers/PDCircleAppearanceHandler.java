@@ -18,11 +18,12 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
@@ -32,6 +33,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
  */
 public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
 {
+    private static final Log LOG = LogFactory.getLog(PDCircleAppearanceHandler.class);
     
     public PDCircleAppearanceHandler(PDAnnotation annotation)
     {
@@ -52,54 +54,57 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
         float lineWidth = getLineWidth();
         try
         {
-            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
-            contentStream.setStrokingColorOnDemand(getColor());
-            boolean hasBackground = contentStream
-                    .setNonStrokingColorOnDemand(((PDAnnotationSquareCircle) getAnnotation()).getInteriorColor());
-
-            handleOpacity(((PDAnnotationSquareCircle) getAnnotation()).getConstantOpacity());
-            
-            contentStream.setBorderLine(lineWidth, ((PDAnnotationSquareCircle) getAnnotation()).getBorderStyle());
-            
-            // the differences rectangle
-            // TODO: this only works for border effect solid. Cloudy needs a different approach.
-            setRectDifference(lineWidth);
-            
-            // Acrobat applies a padding to each side of the bbox so the line is completely within
-            // the bbox.
-            // TODO: Needs validation for Circles as Adobe Reader seems to extend the bbox bei the rect differenve
-            // for circle annotations.
-            PDRectangle bbox = getRectangle();
-            PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth/2);
-            
-            // lower left corner 
-            float x0 = borderEdge.getLowerLeftX();
-            float y0 = borderEdge.getLowerLeftY();
-            // upper right corner
-            float x1 = borderEdge.getUpperRightX();
-            float y1 = borderEdge.getUpperRightY();
-            // mid points
-            float xm = x0 + borderEdge.getWidth() / 2;
-            float ym = y0 + borderEdge.getHeight() / 2;
-            // see http://spencermortensen.com/articles/bezier-circle/
-            // the below number was calculated from sampling content streams
-            // generated using Adobe Reader
-            float magic = 0.55555417f;
-            // control point offsets
-            float vOffset = borderEdge.getHeight() / 2 * magic;
-            float hOffset = borderEdge.getWidth() / 2 * magic;
-            
-            contentStream.moveTo(xm, y1);
-            contentStream.curveTo((xm + hOffset), y1, x1, (ym + vOffset), x1, ym);
-            contentStream.curveTo(x1, (ym - vOffset), (xm + hOffset), y0, xm, y0);
-            contentStream.curveTo((xm - hOffset), y0, x0, (ym - vOffset), x0, ym);
-            contentStream.curveTo(x0, (ym + vOffset), (xm - hOffset), y1, xm, y1);
-            contentStream.closePath();
-            contentStream.drawShape(lineWidth, hasBackground);
-            contentStream.close();
-        } catch (IOException e)
+            PDAnnotationCircle annotation = (PDAnnotationCircle) getAnnotation();
+            try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
+            {
+                contentStream.setStrokingColorOnDemand(getColor());
+                boolean hasBackground = contentStream
+                        .setNonStrokingColorOnDemand(annotation.getInteriorColor());
+                
+                handleOpacity(annotation.getConstantOpacity());
+                
+                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
+                
+                // the differences rectangle
+                // TODO: this only works for border effect solid. Cloudy needs a different approach.
+                setRectDifference(lineWidth);
+                
+                // Acrobat applies a padding to each side of the bbox so the line is completely within
+                // the bbox.
+                // TODO: Needs validation for Circles as Adobe Reader seems to extend the bbox bei the rect differenve
+                // for circle annotations.
+                PDRectangle bbox = getRectangle();
+                PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth/2);
+                
+                // lower left corner
+                float x0 = borderEdge.getLowerLeftX();
+                float y0 = borderEdge.getLowerLeftY();
+                // upper right corner
+                float x1 = borderEdge.getUpperRightX();
+                float y1 = borderEdge.getUpperRightY();
+                // mid points
+                float xm = x0 + borderEdge.getWidth() / 2;
+                float ym = y0 + borderEdge.getHeight() / 2;
+                // see http://spencermortensen.com/articles/bezier-circle/
+                // the below number was calculated from sampling content streams
+                // generated using Adobe Reader
+                float magic = 0.55555417f;
+                // control point offsets
+                float vOffset = borderEdge.getHeight() / 2 * magic;
+                float hOffset = borderEdge.getWidth() / 2 * magic;
+                
+                contentStream.moveTo(xm, y1);
+                contentStream.curveTo((xm + hOffset), y1, x1, (ym + vOffset), x1, ym);
+                contentStream.curveTo(x1, (ym - vOffset), (xm + hOffset), y0, xm, y0);
+                contentStream.curveTo((xm - hOffset), y0, x0, (ym - vOffset), x0, ym);
+                contentStream.curveTo(x0, (ym + vOffset), (xm - hOffset), y1, xm, y1);
+                contentStream.closePath();
+                contentStream.drawShape(lineWidth, hasBackground);
+            }
+        }
+        catch (IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
         }
     }
 
@@ -132,7 +137,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationSquareCircle annotation = (PDAnnotationSquareCircle) getAnnotation();
+        PDAnnotationCircle annotation = (PDAnnotationCircle) getAnnotation();
 
         PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
