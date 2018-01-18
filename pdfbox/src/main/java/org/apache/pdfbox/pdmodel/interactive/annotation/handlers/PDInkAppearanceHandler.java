@@ -16,7 +16,12 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
+import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationInk;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
 
 /**
  * Handler to generate the ink annotations appearance.
@@ -24,6 +29,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
  */
 public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
 {
+    private static final Log LOG = LogFactory.getLog(PDInkAppearanceHandler.class);
+
     public PDInkAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
@@ -40,18 +47,67 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        //TODO
+        PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
+        try
+        {
+            try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
+            {
+                AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
+                if (ab.width == 0 || ab.color.getComponents().length == 0)
+                {
+                    ;
+                }
+                else
+                {
+                    cs.setStrokingColor(ab.color);
+                    if (ab.dashArray != null)
+                    {
+                        cs.setLineDashPattern(ab.dashArray, 0);
+                    }
+                    cs.setLineWidth(ab.width);
+
+                    float[][] inkList = ink.getInkList();
+                    // PDF spec does not mention /Border for ink annotations, but it is used if /BS is not available
+                    for (float[] pathArray : inkList)
+                    {
+                        int nPoints = pathArray.length / 2;
+
+                        // "When drawn, the points shall be connected by straight lines or curves 
+                        // in an implementation-dependent way" - we do lines.
+                        for (int i = 0; i < nPoints; ++i)
+                        {
+                            float x = pathArray[i * 2];
+                            float y = pathArray[i * 2 + 1];
+
+                            if (i == 0)
+                            {
+                                cs.moveTo(x, y);
+                            }
+                            else
+                            {
+                                cs.lineTo(x, y);
+                            }
+                        }
+                        cs.stroke();
+                    }
+                }
+            }
+        }
+        catch (IOException ex)
+        {
+            LOG.error(ex);
+        }
     }
 
     @Override
     public void generateRolloverAppearance()
     {
-        // No rollover appearance generated for a polygon annotation
+        // No rollover appearance generated
     }
 
     @Override
     public void generateDownAppearance()
     {
-        // No down appearance generated for a polygon annotation
+        // No down appearance generated
     }
 }
