@@ -54,9 +54,36 @@ public class PDAnnotationInk extends PDAnnotationMarkup
         super(dict);
     }
 
+    /**
+     * Sets the paths that make this annotation.
+     *
+     * @param inkList An array of arrays, each representing a stroked path. Each array shall be a
+     * series of alternating horizontal and vertical coordinates. If the parameter is null the entry
+     * will be removed.
+     */
+    public void setInkList(float[][] inkList)
+    {
+        if (inkList == null)
+        {
+            getCOSObject().removeItem(COSName.INKLIST);
+            return;
+        }
+        COSArray array = new COSArray();
+        for (float[] path : inkList)
+        {
+            COSArray innerArray = new COSArray();
+            innerArray.setFloatArray(path);
+            array.add(innerArray);
+        }
+        getCOSObject().setItem(COSName.INKLIST, array);
+    }
 
-    //TODO setInkList, javadoc
- 
+    /**
+     * Get one or more disjoint paths that make this annotation.
+     *
+     * @return An array of arrays, each representing a stroked path. Each array shall be a series of
+     * alternating horizontal and vertical coordinates.
+     */
     public float[][] getInkList()
     {
         COSBase base = getCOSObject().getDictionaryObject(COSName.INKLIST);
@@ -66,14 +93,19 @@ public class PDAnnotationInk extends PDAnnotationMarkup
             float[][] inkList = new float[array.size()][];
             for (int i = 0; i < array.size(); ++i)
             {
-                //TODO check for class
-                COSArray innerArray = (COSArray) array.getObject(i);
-                inkList[i] = innerArray.toFloatArray();
+                COSBase base2 = array.getObject(i);
+                if (base2 instanceof COSArray)
+                {
+                    inkList[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                }
+                else
+                {
+                    inkList[i] = new float[0];
+                }
             }
             return inkList;
         }
-        // Should never happen as this is a required item
-        return null; 
+        return new float[0][0];
     }
 
     /**
