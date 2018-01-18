@@ -18,6 +18,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -33,6 +35,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
  */
 public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
 {
+    private static final Log LOG = LogFactory.getLog(PDPolygonAppearanceHandler.class);
 
     public PDPolygonAppearanceHandler(PDAnnotation annotation)
     {
@@ -54,87 +57,86 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         try
         {
             PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
-            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
-            contentStream.setStrokingColorOnDemand(getColor());
-
-            // TODO: handle opacity settings
-
-            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
-
-            // the differences rectangle
-            // TODO: this only works for border effect solid. Cloudy needs a
-            // different approach.
-            setRectDifference(lineWidth);
-
-            // Acrobat applies a padding to each side of the bbox so the line is
-            // completely within
-            // the bbox.
-
-            // PDF 2.0: Path takes priority over Vertices
-            COSBase path = annotation.getCOSObject().getDictionaryObject(COSName.getPDFName("Path"));
-            if (path instanceof COSArray)
+            try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
-                COSArray pathArray = (COSArray) path;
-                for (int i = 0; i < pathArray.size(); i++)
+                contentStream.setStrokingColorOnDemand(getColor());
+                
+                // TODO: handle opacity settings
+                
+                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
+                
+                // the differences rectangle
+                // TODO: this only works for border effect solid. Cloudy needs a
+                // different approach.
+                setRectDifference(lineWidth);
+                
+                // Acrobat applies a padding to each side of the bbox so the line is
+                // completely within
+                // the bbox.
+                
+                // PDF 2.0: Path takes priority over Vertices
+                COSBase path = annotation.getCOSObject().getDictionaryObject(COSName.getPDFName("Path"));
+                if (path instanceof COSArray)
                 {
-                    COSBase points = pathArray.get(i);
-                    if (points instanceof COSArray)
+                    COSArray pathArray = (COSArray) path;
+                    for (int i = 0; i < pathArray.size(); i++)
                     {
-                        float[] pointsArray = ((COSArray) points).toFloatArray();
-                        // first array shall be of size 2 and specify the moveto
-                        // operator
-                        if (i == 0 && pointsArray.length == 2)
+                        COSBase points = pathArray.get(i);
+                        if (points instanceof COSArray)
                         {
-                            contentStream.moveTo(pointsArray[0], pointsArray[1]);
-                        }
-                        else
-                        {
-                            // entries of length 2 shall be treated as lineto
+                            float[] pointsArray = ((COSArray) points).toFloatArray();
+                            // first array shall be of size 2 and specify the moveto
                             // operator
-                            if (pointsArray.length == 2)
+                            if (i == 0 && pointsArray.length == 2)
                             {
-                                contentStream.lineTo(pointsArray[0], pointsArray[1]);
-                            } else if (pointsArray.length == 6)
+                                contentStream.moveTo(pointsArray[0], pointsArray[1]);
+                            }
+                            else
                             {
-                                contentStream.curveTo(pointsArray[0], pointsArray[1], pointsArray[2], pointsArray[3],
-                                        pointsArray[4], pointsArray[5]);
+                                // entries of length 2 shall be treated as lineto
+                                // operator
+                                if (pointsArray.length == 2)
+                                {
+                                    contentStream.lineTo(pointsArray[0], pointsArray[1]);
+                                }
+                                else if (pointsArray.length == 6)
+                                {
+                                    contentStream.curveTo(pointsArray[0], pointsArray[1], pointsArray[2], pointsArray[3],
+                                            pointsArray[4], pointsArray[5]);
+                                }
                             }
                         }
                     }
                 }
-            }
-            else
-            {
-                //TODO use getVertices
-                float[] verticesArray = annotation.getVertices();
-                if (verticesArray == null)
+                else
                 {
-                    return;
-                }
+                    float[] verticesArray = annotation.getVertices();
+                    if (verticesArray == null)
+                    {
+                        return;
+                    }
 
-                int nPoints = verticesArray.length / 2;
-                for (int i = 0; i < nPoints; i++)
-                {
-                    float x = verticesArray[i * 2];
-                    float y = verticesArray[i * 2 + 1];
-                    if (i == 0)
+                    int nPoints = verticesArray.length / 2;
+                    for (int i = 0; i < nPoints; i++)
                     {
-                        contentStream.moveTo(x, y);
+                        float x = verticesArray[i * 2];
+                        float y = verticesArray[i * 2 + 1];
+                        if (i == 0)
+                        {
+                            contentStream.moveTo(x, y);
+                        }
+                        else
+                        {
+                            contentStream.lineTo(x, y);
+                        }
                     }
-                    else
-                    {
-                        contentStream.lineTo(x, y);
-                    }
+                    contentStream.stroke();
                 }
-                contentStream.stroke();
             }
-
-            contentStream.close();
         }
         catch (IOException e)
         {
-            //TODO
-            e.printStackTrace();
+            LOG.error(e);
         }
     }
 
