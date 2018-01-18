@@ -18,6 +18,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -32,6 +34,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
  */
 public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
 {
+    private static final Log LOG = LogFactory.getLog(PDLinkAppearanceHandler.class);
     
     public PDLinkAppearanceHandler(PDAnnotation annotation)
     {
@@ -53,30 +56,31 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
         float lineWidth = getLineWidth();
         try
         {
-            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
-            contentStream.setStrokingColorOnDemand(getColor());
-            boolean hasBackground = contentStream.setNonStrokingColorOnDemand(getAnnotation().getColor());
-
-            // TODO: handle opacity settings
-            
-            contentStream.setBorderLine(lineWidth, ((PDAnnotationLink) getAnnotation()).getBorderStyle());
-            
-            // the differences rectangle
-            // TODO: this only works for border effect solid. Cloudy needs a different approach.
-            setRectDifference(lineWidth);
-            
-            // Acrobat applies a padding to each side of the bbox so the line is completely within
-            // the bbox.
-            PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
-            contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
-                    borderEdge.getWidth(), borderEdge.getHeight());
-            
-            contentStream.drawShape(lineWidth, hasBackground);
-            
-            contentStream.close();
-        } catch (IOException e)
+            try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
+            {
+                contentStream.setStrokingColorOnDemand(getColor());
+                boolean hasBackground = contentStream.setNonStrokingColorOnDemand(getAnnotation().getColor());
+                
+                // TODO: handle opacity settings
+                
+                contentStream.setBorderLine(lineWidth, ((PDAnnotationLink) getAnnotation()).getBorderStyle());
+                
+                // the differences rectangle
+                // TODO: this only works for border effect solid. Cloudy needs a different approach.
+                setRectDifference(lineWidth);
+                
+                // Acrobat applies a padding to each side of the bbox so the line is completely within
+                // the bbox.
+                PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
+                contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
+                        borderEdge.getWidth(), borderEdge.getHeight());
+                
+                contentStream.drawShape(lineWidth, hasBackground);
+            }
+        }
+        catch (IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
         }
     }
 
