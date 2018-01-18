@@ -1115,7 +1115,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             if (annotation instanceof PDAnnotationInk)
             {
-                drawAnnotationInk(annotation);
+                drawAnnotationInk((PDAnnotationInk) annotation);
             }
         }
     }
