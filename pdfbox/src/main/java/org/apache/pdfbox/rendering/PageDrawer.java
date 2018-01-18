@@ -73,8 +73,8 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationInk;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -1113,9 +1113,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 drawAnnotationLinkBorder((PDAnnotationLink) annotation);
             }
 
-            if (annotation instanceof PDAnnotationMarkup && annotation.getSubtype().equals(PDAnnotationMarkup.SUB_TYPE_INK))
+            if (annotation instanceof PDAnnotationInk)
             {
-                drawAnnotationInk((PDAnnotationMarkup) annotation);
+                drawAnnotationInk(annotation);
             }
         }
     }
@@ -1205,7 +1205,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setStroke(oldStroke);
     }
 
-    private void drawAnnotationInk(PDAnnotationMarkup inkAnnotation) throws IOException
+    private void drawAnnotationInk(PDAnnotationInk inkAnnotation) throws IOException
     {
         if (!inkAnnotation.getCOSObject().containsKey(COSName.INKLIST))
         {
