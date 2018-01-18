@@ -18,11 +18,13 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
@@ -32,7 +34,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
  */
 public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    
+    private static final Log LOG = LogFactory.getLog(PDSquareAppearanceHandler.class);
+        
     public PDSquareAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
@@ -52,31 +55,33 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
         float lineWidth = getLineWidth();
         try
         {
-            PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream();
-            contentStream.setStrokingColorOnDemand(getColor());
-            boolean hasBackground = contentStream
-                    .setNonStrokingColorOnDemand(((PDAnnotationSquareCircle) getAnnotation()).getInteriorColor());
-
-            handleOpacity(((PDAnnotationSquareCircle) getAnnotation()).getConstantOpacity());
-            
-            contentStream.setBorderLine(lineWidth, ((PDAnnotationSquareCircle) getAnnotation()).getBorderStyle());
-            
-            // the differences rectangle
-            // TODO: this only works for border effect solid. Cloudy needs a different approach.
-            setRectDifference(lineWidth);
-            
-            // Acrobat applies a padding to each side of the bbox so the line is completely within
-            // the bbox.
-            PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
-            contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
-                    borderEdge.getWidth(), borderEdge.getHeight());
-            
-            contentStream.drawShape(lineWidth, hasBackground);
-            
-            contentStream.close();
-        } catch (IOException e)
+            PDAnnotationSquare annotation = (PDAnnotationSquare) getAnnotation();
+            try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
+            {
+                contentStream.setStrokingColorOnDemand(getColor());
+                boolean hasBackground = contentStream
+                        .setNonStrokingColorOnDemand(annotation.getInteriorColor());
+                
+                handleOpacity(annotation.getConstantOpacity());
+                
+                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
+                
+                // the differences rectangle
+                // TODO: this only works for border effect solid. Cloudy needs a different approach.
+                setRectDifference(lineWidth);
+                
+                // Acrobat applies a padding to each side of the bbox so the line is completely within
+                // the bbox.
+                PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
+                contentStream.addRect(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY(),
+                        borderEdge.getWidth(), borderEdge.getHeight());
+                
+                contentStream.drawShape(lineWidth, hasBackground);
+            }
+        }
+        catch (IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e);
         }
     }
 
@@ -109,7 +114,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationSquareCircle annotation = (PDAnnotationSquareCircle) getAnnotation();
+        PDAnnotationSquare annotation = (PDAnnotationSquare) getAnnotation();
 
         PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
