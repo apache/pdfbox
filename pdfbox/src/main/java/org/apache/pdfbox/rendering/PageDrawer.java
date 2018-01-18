@@ -1104,8 +1104,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
+        if (annotation.getAppearance() == null)
+        {
+            annotation.constructAppearances();
+        }
         super.showAnnotation(annotation);
 
+        //TODO delete these when PDFBOX-3353 done
         if (annotation.getAppearance() == null)
         {
             if (annotation instanceof PDAnnotationLink)
