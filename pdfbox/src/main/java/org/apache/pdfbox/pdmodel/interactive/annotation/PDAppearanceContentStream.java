@@ -263,9 +263,13 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
                 stroke();
             }
         }
-        else
+        else if (hasFill)
         {
             fill();
+        }
+        else
+        {
+            writeOperator("n");
         }
     }
 }
