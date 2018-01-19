@@ -25,7 +25,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
- *
+ * Class to collect all sort of border info about annotations.
+ * 
  * @author Tilman Hausherr
  */
 class AnnotationBorder
@@ -41,9 +42,9 @@ class AnnotationBorder
             PDBorderStyleDictionary borderStyle)
     {
         AnnotationBorder ab = new AnnotationBorder();
-        COSArray border = annotation.getBorder();
         if (borderStyle == null)
         {
+            COSArray border = annotation.getBorder();
             if (border.getObject(2) instanceof COSNumber)
             {
                 ab.width = ((COSNumber) border.getObject(2)).floatValue();
