@@ -127,7 +127,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
             COSArray borderCharacteristics = annotation.getBorder();
             if (borderCharacteristics.size() >= 3)
             {
-                return borderCharacteristics.getInt(3);
+                return borderCharacteristics.getInt(2);
             }
         }
 
