@@ -17,9 +17,14 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
+import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolyline;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
@@ -28,6 +33,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
  */
 public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
 {
+    private static final Log LOG = LogFactory.getLog(PDPolylineAppearanceHandler.class);
+
     public PDPolylineAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
@@ -44,7 +51,69 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        //TODO
+        PDAnnotationPolyline annotation = (PDAnnotationPolyline) getAnnotation();
+        PDRectangle rect = annotation.getRectangle();
+        float[] pathsArray = annotation.getVertices();
+        if (pathsArray == null)
+        {
+            return;
+        }
+        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
+        if (ab.width == 0 || ab.color.getComponents().length == 0)
+        {
+            return;
+        }
+
+        // Adjust rectangle even if not empty
+        // CTAN-example-Annotations.pdf and pdf_commenting_new.pdf p11
+        //TODO in a class structure this should be overridable
+        float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, maxX = 0, maxY = 0;
+        for (int i = 0; i < pathsArray.length / 2; ++i)
+        {
+            float x = pathsArray[i * 2];
+            float y = pathsArray[i * 2 + 1];
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+        }
+        rect.setLowerLeftX(Math.min(minX - ab.width / 2, rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - ab.width / 2, rect.getLowerLeftY()));
+        rect.setUpperRightX(Math.max(maxX + ab.width, rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + ab.width, rect.getUpperRightY()));
+        annotation.setRectangle(rect);
+
+        try
+        {
+            try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
+            {
+                cs.setStrokingColor(ab.color);
+                if (ab.dashArray != null)
+                {
+                    cs.setLineDashPattern(ab.dashArray, 0);
+                }
+                cs.setLineWidth(ab.width);
+
+                for (int i = 0; i < pathsArray.length / 2; ++i)
+                {
+                    float x = pathsArray[i * 2];
+                    float y = pathsArray[i * 2 + 1];
+                    if (i == 0)
+                    {
+                        cs.moveTo(x, y);
+                    }
+                    else
+                    {
+                        cs.lineTo(x, y);
+                    }
+                }
+                cs.stroke();
+            }
+        }
+        catch (IOException ex)
+        {
+            LOG.error(ex);
+        }
     }
 
     @Override
