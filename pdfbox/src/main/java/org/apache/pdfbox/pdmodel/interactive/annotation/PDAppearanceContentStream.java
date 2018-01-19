@@ -207,13 +207,12 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     {
         // Can't use PDBorderStyleDictionary.getDashStyle() as
         // this will return a default dash style if non is existing
-        if (bs != null && (bs.getCOSObject().containsKey(COSName.D)))
+        if (bs != null && bs.getCOSObject().containsKey(COSName.D) && 
+                          bs.getStyle().equals(PDBorderStyleDictionary.STYLE_DASHED))
         {
             setLineDashPattern(bs.getDashStyle().getDashArray(), 0);
-        } else
-        {
-            setLineWidthOnDemand(lineWidth);
         }
+        setLineWidthOnDemand(lineWidth);
     }
 
     /**
