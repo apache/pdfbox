@@ -219,6 +219,8 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * Sets the line width. The command is only emitted if the lineWidth is
      * different to 1.
      * 
+     * @param lineWidth the line width of the path.
+     * @throws java.io.IOException
      * @see PDAbstractContentStream#setLineWidth(float)
      */
     public void setLineWidthOnDemand(float lineWidth) throws IOException
@@ -233,10 +235,10 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     }
     
     /**
-     * Close a path.
+     * Draw a shape.
      * 
      * <p>Dependent on the lineWidth and whether or not there is a background
-     * to be generated there are different commands to be used for closing a path.
+     * to be generated there are different commands to be used for draw a shape.
      * 
      * @param lineWidth the line width of the path.
      * @param hasBackground shall there be a background color.
