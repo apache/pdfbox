@@ -232,8 +232,9 @@ public abstract class PDField implements COSObjectable
     }
 
     /**
-     * sets the field to be required.
-     * 
+     * sets the flag whether the field is to be required to have a value at the time it is exported
+     * by a submit-form action.
+     *
      * @param required The new flag for required.
      */
     public void setRequired(boolean required)
@@ -242,8 +243,8 @@ public abstract class PDField implements COSObjectable
     }
 
     /**
-     * 
-     * @return true if the field is required
+     * @return true if the field is required to have a value at the time it is exported by a
+     * submit-form action.
      */
     public boolean isRequired()
     {
