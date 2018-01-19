@@ -215,7 +215,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      * @param index The index into the list.
      *
-     * @return The value at that index or -1 if it is null.
+     * @return The value at that index or -1 if does not exist.
      */
     public int getInt( int index )
     {
@@ -223,8 +223,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
-     * Get the value of the array as an integer, return the default if it does
-     * not exist.
+     * Get the value of the array as an integer, return the default if it does not exist.
      *
      * @param index The value of the array.
      * @param defaultValue The value to return if the value is null.
