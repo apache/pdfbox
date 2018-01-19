@@ -52,6 +52,14 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
+        PDAnnotationLink annotation = (PDAnnotationLink) getAnnotation();
+        if (annotation.getRectangle() == null)
+        {
+            // 660402-p1-AnnotationEmptyRect.pdf has /Rect entry with 0 elements
+            //TODO check for qzadpoints before quitting
+            return;
+        }
+
         // Adobe doesn't generate an appearance for a link annotation
         float lineWidth = getLineWidth();
         try
@@ -59,11 +67,8 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
                 contentStream.setStrokingColorOnDemand(getColor());
-                boolean hasBackground = contentStream.setNonStrokingColorOnDemand(getAnnotation().getColor());
-                
-                // TODO: handle opacity settings
-                
-                contentStream.setBorderLine(lineWidth, ((PDAnnotationLink) getAnnotation()).getBorderStyle());
+
+                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
                 
                 // the differences rectangle
                 // TODO: this only works for border effect solid. Cloudy needs a different approach.
@@ -75,7 +80,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
                         borderEdge.getWidth(), borderEdge.getHeight());
                 
-                contentStream.drawShape(lineWidth, hasBackground);
+                contentStream.drawShape(lineWidth, false);
             }
         }
         catch (IOException e)
