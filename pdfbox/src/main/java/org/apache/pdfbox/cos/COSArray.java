@@ -198,8 +198,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
     }
 
     /**
-     * This will get an object from the array.  This will NOT derefernce
-     * the COS object.
+     * This will get an object from the array.  This will NOT dereference the COS object.
      *
      * @param index The index into the array to get the object.
      *
@@ -215,7 +214,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
      *
      * @param index The index into the list.
      *
-     * @return The value at that index or -1 if it is null.
+     * @return The value at that index or -1 if it does not exist.
      */
     public int getInt( int index )
     {
@@ -223,8 +222,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>
     }
 
     /**
-     * Get the value of the array as an integer, return the default if it does
-     * not exist.
+     * Get the value of the array as an integer, return the default if it does not exist.
      *
      * @param index The value of the array.
      * @param defaultValue The value to return if the value is null.
