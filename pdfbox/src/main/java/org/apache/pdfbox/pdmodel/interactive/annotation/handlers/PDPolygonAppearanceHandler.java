@@ -59,7 +59,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
             PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
-                contentStream.setStrokingColorOnDemand(getColor());
+                boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
 
                 boolean hasBackground = contentStream
                         .setNonStrokingColorOnDemand(annotation.getInteriorColor());
@@ -134,7 +134,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
                         }
                     }
                 }
-                contentStream.drawShape(lineWidth, hasBackground);
+                contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
         }
         catch (IOException e)

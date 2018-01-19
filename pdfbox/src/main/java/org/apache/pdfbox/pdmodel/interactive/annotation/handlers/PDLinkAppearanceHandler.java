@@ -66,7 +66,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
         {
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
-                contentStream.setStrokingColorOnDemand(getColor());
+                boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
                 
@@ -80,7 +80,7 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
                         borderEdge.getWidth(), borderEdge.getHeight());
                 
-                contentStream.drawShape(lineWidth, false);
+                contentStream.drawShape(lineWidth, hasStroke, false);
             }
         }
         catch (IOException e)

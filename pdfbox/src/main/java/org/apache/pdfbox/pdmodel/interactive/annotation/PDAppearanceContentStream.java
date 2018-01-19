@@ -236,28 +236,36 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     
     /**
      * Draw a shape.
-     * 
-     * <p>Dependent on the lineWidth and whether or not there is a background
-     * to be generated there are different commands to be used for draw a shape.
-     * 
+     *
+     * <p>
+     * Dependent on the lineWidth and whether or not there is a background to be generated there are
+     * different commands to be used for draw a shape.
+     *
      * @param lineWidth the line width of the path.
-     * @param hasBackground shall there be a background color.
+     * @param hasStroke shall there be a stroking color.
+     * @param hasFill shall there be a fill color.
      * @throws IOException if an IO error occurs while writing to the stream.
      */
-    public void drawShape(float lineWidth, boolean hasBackground) throws IOException
+    public void drawShape(float lineWidth, boolean hasStroke, boolean hasFill) throws IOException
     {
-        if (lineWidth < 1e-6) {
-            writeOperator("n");
+        if (hasFill && hasStroke)
+        {
+            fillAndStroke();
+        }
+        else if (hasStroke)
+        {
+            if (lineWidth < 1e-6)
+            {
+                writeOperator("n");
+            }
+            else
+            {
+                stroke();
+            }
         }
         else
         {
-            if (!hasBackground)
-            {
-                stroke();
-            } else
-            {
-                fillAndStroke();
-            }
+            fill();
         }
     }
 }
