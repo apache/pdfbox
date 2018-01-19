@@ -57,7 +57,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
             PDAnnotationCircle annotation = (PDAnnotationCircle) getAnnotation();
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
-                contentStream.setStrokingColorOnDemand(getColor());
+                boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
                 boolean hasBackground = contentStream
                         .setNonStrokingColorOnDemand(annotation.getInteriorColor());
                 
@@ -99,7 +99,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
                 contentStream.curveTo((xm - hOffset), y0, x0, (ym - vOffset), x0, ym);
                 contentStream.curveTo(x0, (ym + vOffset), (xm - hOffset), y1, xm, y1);
                 contentStream.closePath();
-                contentStream.drawShape(lineWidth, hasBackground);
+                contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
         }
         catch (IOException e)

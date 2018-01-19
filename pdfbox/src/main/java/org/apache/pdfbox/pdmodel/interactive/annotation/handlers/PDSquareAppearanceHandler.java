@@ -58,7 +58,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
             PDAnnotationSquare annotation = (PDAnnotationSquare) getAnnotation();
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
-                contentStream.setStrokingColorOnDemand(getColor());
+                boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
                 boolean hasBackground = contentStream
                         .setNonStrokingColorOnDemand(annotation.getInteriorColor());
                 
@@ -76,7 +76,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                 contentStream.addRect(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY(),
                         borderEdge.getWidth(), borderEdge.getHeight());
                 
-                contentStream.drawShape(lineWidth, hasBackground);
+                contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
         }
         catch (IOException e)
