@@ -60,9 +60,12 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
                 contentStream.setStrokingColorOnDemand(getColor());
-                
-                // TODO: handle opacity settings
-                
+
+                boolean hasBackground = contentStream
+                        .setNonStrokingColorOnDemand(annotation.getInteriorColor());
+
+                handleOpacity(annotation.getConstantOpacity());
+
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
                 
                 // the differences rectangle
@@ -130,8 +133,8 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
                             contentStream.lineTo(x, y);
                         }
                     }
-                    contentStream.stroke();
                 }
+                contentStream.drawShape(lineWidth, hasBackground);
             }
         }
         catch (IOException e)
