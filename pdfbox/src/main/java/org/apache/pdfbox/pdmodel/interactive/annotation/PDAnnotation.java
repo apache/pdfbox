@@ -147,13 +147,21 @@ public abstract class PDAnnotation implements COSObjectable
             {
                 annot = new PDAnnotationText(annotDic);
             }
-            else if (PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT.equals(subtype)
-                    || PDAnnotationTextMarkup.SUB_TYPE_UNDERLINE.equals(subtype)
-                    || PDAnnotationTextMarkup.SUB_TYPE_SQUIGGLY.equals(subtype)
-                    || PDAnnotationTextMarkup.SUB_TYPE_STRIKEOUT.equals(subtype))
+            else if (PDAnnotationHighlight.SUB_TYPE.equals(subtype))
             {
-                // see 12.5.6.10 Text Markup Annotations
-                annot = new PDAnnotationTextMarkup(annotDic);
+                annot = new PDAnnotationHighlight(annotDic);
+            }
+            else if (PDAnnotationUnderline.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationUnderline(annotDic);
+            }
+            else if (PDAnnotationStrikeout.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationStrikeout(annotDic);
+            }
+            else if (PDAnnotationSquiggly.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationSquiggly(annotDic);
             }
             else if (PDAnnotationWidget.SUB_TYPE.equals(subtype))
             {
