@@ -67,7 +67,10 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         // Adjust rectangle even if not empty
         // CTAN-example-Annotations.pdf and pdf_commenting_new.pdf p11
         //TODO in a class structure this should be overridable
-        float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, maxX = 0, maxY = 0;
+        float minX = Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE;
+        float maxX = Float.MIN_VALUE;
+        float maxY = Float.MIN_VALUE;
         for (int i = 0; i < pathsArray.length / 2; ++i)
         {
             float x = pathsArray[i * 2];
