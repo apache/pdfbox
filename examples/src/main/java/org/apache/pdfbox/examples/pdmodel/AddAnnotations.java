@@ -30,10 +30,10 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationHighlight;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitWidthDestination;
@@ -102,10 +102,10 @@ public final class AddAnnotations
             }
 
             // Now add the markup annotation, a highlight to PDFBox text
-            PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(
-                    PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
-            txtMark.setColor(blue);
-            txtMark.setConstantOpacity((float)0.2); // 20% transparent
+            PDAnnotationHighlight txtHighlight = new PDAnnotationHighlight();
+            txtHighlight.setColor(new PDColor(new float[] { 0, 1, 1 }, PDDeviceRGB.INSTANCE));
+            // 20% transparent
+            txtHighlight.setConstantOpacity((float)0.2); 
 
             // Set the rectangle containing the markup
             float textWidth = font.getStringWidth("PDFBox") / 1000 * 18;
@@ -114,7 +114,7 @@ public final class AddAnnotations
             position.setLowerLeftY(ph - INCH - 18);
             position.setUpperRightX(INCH + textWidth);
             position.setUpperRightY(ph - INCH);
-            txtMark.setRectangle(position);
+            txtHighlight.setRectangle(position);
 
             // work out the points forming the four corners of the annotations
             // set out in anti clockwise form (Completely wraps the text)
@@ -130,9 +130,9 @@ public final class AddAnnotations
             quads[6] = quads[2]; // x4
             quads[7] = quads[5]; // y5
 
-            txtMark.setQuadPoints(quads);
-            txtMark.setContents("Highlighted since it's important");
-            annotations.add(txtMark);
+            txtHighlight.setQuadPoints(quads);
+            txtHighlight.setContents("Highlighted since it's important");
+            annotations.add(txtHighlight);
 
             // Now add the link annotation, so the click on "External URL" works
             PDAnnotationLink txtLink = new PDAnnotationLink();
