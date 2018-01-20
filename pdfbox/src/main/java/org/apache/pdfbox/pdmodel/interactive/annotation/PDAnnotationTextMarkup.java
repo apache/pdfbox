@@ -22,46 +22,23 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 
 /**
- * This is the abstract class that represents a text markup annotation Introduced in PDF 1.3 specification, except
- * Squiggly lines in 1.4.
+ * This is the abstract class that represents a text markup annotation introduced in the PDF 1.3
+ * specification, except Squiggly lines in 1.4.
  *
  * @author Paul King
  */
 public class PDAnnotationTextMarkup extends PDAnnotationMarkup
 {
-
-    /**
-     * The types of annotation.
-     */
-    public static final String SUB_TYPE_HIGHLIGHT = "Highlight";
-    /**
-     * The types of annotation.
-     */
-    public static final String SUB_TYPE_UNDERLINE = "Underline";
-    /**
-     * The types of annotation.
-     */
-    public static final String SUB_TYPE_SQUIGGLY = "Squiggly";
-    /**
-     * The types of annotation.
-     */
-    public static final String SUB_TYPE_STRIKEOUT = "StrikeOut";
-
-    private PDAnnotationTextMarkup()
-    {
-        // Must be constructed with a subType or dictionary parameter
-    }
-
     /**
      * Creates a TextMarkup annotation of the specified sub type.
      *
      * @param subType the subtype the annotation represents
      */
-    public PDAnnotationTextMarkup(String subType)
+    protected PDAnnotationTextMarkup(String subType)
     {
         setSubtype(subType);
 
-        // Quad points are required, set and empty array
+        // Quad points are required, set an empty array
         setQuadPoints(new float[0]);
     }
 
@@ -70,7 +47,7 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
      *
      * @param field the PDF object to represent as a field.
      */
-    public PDAnnotationTextMarkup(COSDictionary field)
+    protected PDAnnotationTextMarkup(COSDictionary field)
     {
         super(field);
     }
@@ -104,20 +81,22 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
     }
 
     /**
-     * This will set the sub type (and hence appearance, AP taking precedence) For this annotation. See the SUB_TYPE_XXX
-     * constants for valid values.
+     * This will set the sub type (and hence appearance, AP taking precedence) For this annotation.
+     * See the SUB_TYPE constants in subclasses for valid values.
      *
      * @param subType The subtype of the annotation
      */
-    public final void setSubtype(String subType)
+    private void setSubtype(String subType)
     {
         getCOSObject().setName(COSName.SUBTYPE, subType);
     }
 
     /**
-     * This will retrieve the sub type (and hence appearance, AP taking precedence) For this annotation.
+     * This will retrieve the sub type (and hence appearance, AP taking precedence) For this
+     * annotation.
      *
-     * @return The subtype of this annotation, see the SUB_TYPE_XXX constants.
+     * @return The subtype of this annotation, see the SUB_TYPE constants in subclasses for valid
+     * values.
      */
     @Override
     public String getSubtype()
