@@ -30,7 +30,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VA
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_PRINTERMARK;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUILGGLY;
+import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUIGGLY;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_STAMP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_STRIKEOUT;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_TEXT;
@@ -41,17 +41,21 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VA
 import org.apache.pdfbox.preflight.annotation.AnnotationValidatorFactory;
 import org.apache.pdfbox.preflight.annotation.CircleAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.FreeTextAnnotationValidator;
+import org.apache.pdfbox.preflight.annotation.HighlightAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.InkAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.LineAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.LinkAnnotationValidator;
-import org.apache.pdfbox.preflight.annotation.MarkupAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.PopupAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.PrintMarkAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.RubberStampAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.SquareAnnotationValidator;
+import org.apache.pdfbox.preflight.annotation.SquigglyAnnotationValidator;
+import org.apache.pdfbox.preflight.annotation.StrikeoutAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.TextAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.TrapNetAnnotationValidator;
+import org.apache.pdfbox.preflight.annotation.UnderlineAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.WidgetAnnotationValidator;
+
 
 /**
  * Factory to instantiate AnnotationValidator for a PDF/A-1b validation.
@@ -70,10 +74,10 @@ public class PDFAbAnnotationFactory extends AnnotationValidatorFactory
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE, SquareAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE, CircleAnnotationValidator.class);
 
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_HIGHLIGHT, MarkupAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_UNDERLINE, MarkupAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STRIKEOUT, MarkupAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUILGGLY, MarkupAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_HIGHLIGHT, HighlightAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_UNDERLINE, UnderlineAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STRIKEOUT, StrikeoutAnnotationValidator.class);
+        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUIGGLY, SquigglyAnnotationValidator.class);
 
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STAMP, RubberStampAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_INK, InkAnnotationValidator.class);

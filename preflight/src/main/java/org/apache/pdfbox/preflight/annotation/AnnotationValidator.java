@@ -65,7 +65,6 @@ public abstract class AnnotationValidator
 
     public AnnotationValidator(PreflightContext context, COSDictionary annotDictionary)
     {
-        super();
         this.ctx = context;
         this.annotDictionary = annotDictionary;
         this.cosDocument = this.ctx.getDocument().getDocument();

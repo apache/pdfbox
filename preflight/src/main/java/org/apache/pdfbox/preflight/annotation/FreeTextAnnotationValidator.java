@@ -23,7 +23,7 @@ package org.apache.pdfbox.preflight.annotation;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.preflight.PreflightContext;
 
 /**
@@ -34,12 +34,12 @@ public class FreeTextAnnotationValidator extends AnnotationValidator
     /**
      * PDFBox object which wraps the Annotation dictionary
      */
-    protected PDAnnotationTextMarkup pdFreeText = null;
+    protected PDAnnotationMarkup pdFreeText = null;
 
     public FreeTextAnnotationValidator(PreflightContext ctx, COSDictionary annotDictionary)
     {
         super(ctx, annotDictionary);
-        this.pdFreeText = new PDAnnotationTextMarkup(annotDictionary);
+        this.pdFreeText = new PDAnnotationMarkup(annotDictionary);
         this.pdAnnot = this.pdFreeText;
     }
 

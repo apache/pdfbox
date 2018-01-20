@@ -41,7 +41,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
  */
 public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 {
-    private PDAnnotation annotation;
+    private final PDAnnotation annotation;
     private PDAppearanceEntry appearanceEntry;
     private PDAppearanceContentStream contentStream;
     
@@ -50,10 +50,13 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         this.annotation = annotation;
     }
 
+    @Override
     public abstract void generateNormalAppearance();
 
+    @Override
     public abstract void generateRolloverAppearance();
 
+    @Override
     public abstract void generateDownAppearance();
 
     PDAnnotation getAnnotation()
@@ -124,6 +127,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (appearanceEntry.isSubDictionary())
         {
+            //TODO replace with "document.getDocument().createCOSStream()" 
             appearanceEntry = new PDAppearanceEntry(new COSStream());
             appearanceDictionary.setDownAppearance(appearanceEntry);
         }
