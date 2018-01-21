@@ -48,48 +48,45 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
+        // PDF spec does not mention /Border for ink annotations, but it is used if /BS is not available
+        AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
+        if (ab.width == 0 || ab.color.getComponents().length == 0)
+        {
+            return;
+        }
+
         try
         {
             try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
             {
-                AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
-                if (ab.width == 0 || ab.color.getComponents().length == 0)
+                cs.setStrokingColor(ab.color);
+                if (ab.dashArray != null)
                 {
-                    ;
+                    cs.setLineDashPattern(ab.dashArray, 0);
                 }
-                else
+                cs.setLineWidth(ab.width);
+
+                for (float[] pathArray : ink.getInkList())
                 {
-                    cs.setStrokingColor(ab.color);
-                    if (ab.dashArray != null)
-                    {
-                        cs.setLineDashPattern(ab.dashArray, 0);
-                    }
-                    cs.setLineWidth(ab.width);
+                    int nPoints = pathArray.length / 2;
 
-                    float[][] inkList = ink.getInkList();
-                    // PDF spec does not mention /Border for ink annotations, but it is used if /BS is not available
-                    for (float[] pathArray : inkList)
+                    // "When drawn, the points shall be connected by straight lines or curves 
+                    // in an implementation-dependent way" - we do lines.
+                    for (int i = 0; i < nPoints; ++i)
                     {
-                        int nPoints = pathArray.length / 2;
+                        float x = pathArray[i * 2];
+                        float y = pathArray[i * 2 + 1];
 
-                        // "When drawn, the points shall be connected by straight lines or curves 
-                        // in an implementation-dependent way" - we do lines.
-                        for (int i = 0; i < nPoints; ++i)
+                        if (i == 0)
                         {
-                            float x = pathArray[i * 2];
-                            float y = pathArray[i * 2 + 1];
-
-                            if (i == 0)
-                            {
-                                cs.moveTo(x, y);
-                            }
-                            else
-                            {
-                                cs.lineTo(x, y);
-                            }
+                            cs.moveTo(x, y);
                         }
-                        cs.stroke();
+                        else
+                        {
+                            cs.lineTo(x, y);
+                        }
                     }
+                    cs.stroke();
                 }
             }
         }
