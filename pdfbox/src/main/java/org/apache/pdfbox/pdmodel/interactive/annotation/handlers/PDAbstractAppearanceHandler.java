@@ -151,6 +151,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (appearanceEntry.isSubDictionary())
         {
+            //TODO replace with "document.getDocument().createCOSStream()" 
             appearanceEntry = new PDAppearanceEntry(new COSStream());
             appearanceDictionary.setRolloverAppearance(appearanceEntry);
         }
@@ -193,16 +194,26 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
             gs.setStrokingAlphaConstant(opacity);
             gs.setNonStrokingAlphaConstant(opacity);
             
-            PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
-            
-            PDResources resources = appearanceStream.getResources();
-            if (resources == null)
-            {
-                resources = new PDResources();
-                appearanceStream.setResources(resources);
-                contentStream.setResources(resources);
-            }
+            prepareResources();
+
             contentStream.setGraphicsStateParameters(gs);
+        }
+    }
+
+    /**
+     * Assign the resources dictionary from the appearance entry to the content stream and create
+     * the resources if needed.
+     */
+    void prepareResources()
+    {
+        PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
+        
+        PDResources resources = appearanceStream.getResources();
+        if (resources == null)
+        {
+            resources = new PDResources();
+            appearanceStream.setResources(resources);
+            contentStream.setResources(resources);
         }
     }
     
@@ -222,6 +233,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (appearanceEntry.isSubDictionary())
         {
+            //TODO replace with "document.getDocument().createCOSStream()" 
             appearanceEntry = new PDAppearanceEntry(new COSStream());
             appearanceDictionary.setNormalAppearance(appearanceEntry);
         }
