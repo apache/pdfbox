@@ -403,7 +403,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public String getCaptionPositioning()
     {
-        return this.getDictionary().getString("CP");
+        return this.getDictionary().getNameAsString("CP");
     }
 
     /**
@@ -414,7 +414,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public void setCaptionPositioning(String captionPositioning)
     {
-        this.getDictionary().setString("CP", captionPositioning);
+        this.getDictionary().setName("CP", captionPositioning);
     }
 
     /**
