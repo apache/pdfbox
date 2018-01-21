@@ -367,7 +367,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public String getCaptionPositioning()
     {
-        return this.getCOSObject().getString(COSName.CP);
+        return this.getCOSObject().getNameAsString(COSName.CP);
     }
 
     /**
@@ -377,7 +377,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public void setCaptionPositioning(String captionPositioning)
     {
-        this.getCOSObject().setString(COSName.CP, captionPositioning);
+        this.getCOSObject().setName(COSName.CP, captionPositioning);
     }
 
     /**
