@@ -25,6 +25,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
@@ -68,7 +70,13 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
         {
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
-                boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
+                PDColor color = annotation.getColor();
+                if (color == null)
+                {
+                    // spec is unclear, but black is what Adobe does
+                    color = new PDColor(new float[] { 0 }, PDDeviceGray.INSTANCE);
+                }
+                boolean hasStroke = contentStream.setStrokingColorOnDemand(color);
 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
                 
@@ -79,8 +87,17 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 // Acrobat applies a padding to each side of the bbox so the line is completely within
                 // the bbox.
                 PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
-                contentStream.addRect(borderEdge.getLowerLeftX() , borderEdge.getLowerLeftY(),
-                        borderEdge.getWidth(), borderEdge.getHeight());
+                if (annotation.getBorderStyle() != null &&
+                    annotation.getBorderStyle().getStyle().equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
+                {
+                    contentStream.moveTo(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY());
+                    contentStream.lineTo(borderEdge.getLowerLeftX() + borderEdge.getWidth(), borderEdge.getLowerLeftY());
+                }
+                else
+                {
+                    contentStream.addRect(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY(),
+                                          borderEdge.getWidth(), borderEdge.getHeight());
+                }
                 
                 contentStream.drawShape(lineWidth, hasStroke, false);
             }
