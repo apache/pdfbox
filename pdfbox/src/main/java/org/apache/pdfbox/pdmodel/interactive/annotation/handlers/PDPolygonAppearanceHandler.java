@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolygon;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
@@ -54,10 +55,40 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
+        PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
         float lineWidth = getLineWidth();
+        PDRectangle rect = annotation.getRectangle();
+
+        // Adjust rectangle even if not empty
+        // CTAN-example-Annotations.pdf p2
+        //TODO in a class structure this should be overridable
+        float minX = Float.MAX_VALUE;
+        float minY = Float.MAX_VALUE;
+        float maxX = Float.MIN_VALUE;
+        float maxY = Float.MIN_VALUE;
+        float[] pathsArray = annotation.getVertices();
+        if (pathsArray != null)
+        {
+            //TODO this adjustment is only for PDF 1.*. 
+            //     Similar code should be done for PDF 2.0 (see "Path")
+            for (int i = 0; i < pathsArray.length / 2; ++i)
+            {
+                float x = pathsArray[i * 2];
+                float y = pathsArray[i * 2 + 1];
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
+            }
+            rect.setLowerLeftX(Math.min(minX - lineWidth / 2, rect.getLowerLeftX()));
+            rect.setLowerLeftY(Math.min(minY - lineWidth / 2, rect.getLowerLeftY()));
+            rect.setUpperRightX(Math.max(maxX + lineWidth, rect.getUpperRightX()));
+            rect.setUpperRightY(Math.max(maxY + lineWidth, rect.getUpperRightY()));
+            annotation.setRectangle(rect);
+        }
+
         try
         {
-            PDAnnotationPolygon annotation = (PDAnnotationPolygon) getAnnotation();
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
                 boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
