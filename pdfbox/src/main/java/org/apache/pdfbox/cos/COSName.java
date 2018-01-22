@@ -691,7 +691,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public void writePDF(OutputStream output) throws IOException
     {
         output.write('/');
-        byte[] bytes = getName().getBytes(Charsets.US_ASCII);
+        byte[] bytes = getName().getBytes(Charsets.UTF_8);
         for (byte b : bytes)
         {
             int current = b & 0xFF;
