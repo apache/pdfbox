@@ -224,7 +224,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                                 pathsArray[of + 6], pathsArray[of + 7]).getBytes(Charsets.ISO_8859_1));
                     }
 
-                    os.write("f%n".getBytes(Charsets.ISO_8859_1));
+                    os.write("f\n".getBytes(Charsets.ISO_8859_1));
                     of += 8;
 
                     //TODO Adobe puts a "w" (line width). Why?
