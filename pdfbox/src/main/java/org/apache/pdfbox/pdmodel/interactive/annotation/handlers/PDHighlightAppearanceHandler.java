@@ -131,17 +131,17 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                 switch (color.getComponents().length)
                 {
                     case 1:
-                        os.write(String.format(java.util.Locale.US, "%.6f g\n", 
+                        os.write(String.format(java.util.Locale.US, "%.6f g%n", 
                                 color.getComponents()[0]).getBytes(Charsets.ISO_8859_1));
                         break;
                     case 3:
-                        os.write(String.format(java.util.Locale.US, "%.6f %.6f %.6f rg\n", 
+                        os.write(String.format(java.util.Locale.US, "%.6f %.6f %.6f rg%n", 
                                 color.getComponents()[0], 
                                 color.getComponents()[1], 
                                 color.getComponents()[2]).getBytes(Charsets.ISO_8859_1));
                         break;
                     case 4:
-                        os.write(String.format(java.util.Locale.US, "%.6f %.6f %.6f %.6f k\n", 
+                        os.write(String.format(java.util.Locale.US, "%.6f %.6f %.6f %.6f k%n", 
                                 color.getComponents()[0], 
                                 color.getComponents()[1], 
                                 color.getComponents()[2], 
@@ -177,12 +177,12 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                         delta = (pathsArray[of + 0] - pathsArray[of + 4]) / 4;
                     }
 
-                    os.write(String.format(java.util.Locale.US, "%.4f %.4f m\n",
+                    os.write(String.format(java.util.Locale.US, "%.4f %.4f m%n",
                             pathsArray[of + 4], pathsArray[of + 5]).getBytes(Charsets.ISO_8859_1));
                     if (pathsArray[of + 0] == pathsArray[of + 4])
                     {
                         // horizontal highlight
-                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c\n",
+                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c%n",
                                 pathsArray[of + 4] - delta, pathsArray[of + 5] + delta,
                                 pathsArray[of + 0] - delta, pathsArray[of + 1] - delta,
                                 pathsArray[of + 0], pathsArray[of + 1]).getBytes(Charsets.ISO_8859_1));
@@ -190,22 +190,22 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                     else if (pathsArray[of + 5] == pathsArray[of + 1])
                     {
                         // vertical highlight
-                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c\n",
+                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c%n",
                                 pathsArray[of + 4] + delta, pathsArray[of + 5] + delta,
                                 pathsArray[of + 0] - delta, pathsArray[of + 1] + delta,
                                 pathsArray[of + 0], pathsArray[of + 1]).getBytes(Charsets.ISO_8859_1));
                     }
                     else
                     {
-                        os.write(String.format(java.util.Locale.US, "%.4f %.4f l\n",
+                        os.write(String.format(java.util.Locale.US, "%.4f %.4f l%n",
                                 pathsArray[of + 0], pathsArray[of + 1]).getBytes(Charsets.ISO_8859_1));
                     }
-                    os.write(String.format(java.util.Locale.US, "%.4f %.4f l\n",
+                    os.write(String.format(java.util.Locale.US, "%.4f %.4f l%n",
                             pathsArray[of + 2], pathsArray[of + 3]).getBytes(Charsets.ISO_8859_1));
                     if (pathsArray[of + 2] == pathsArray[of + 6])
                     {
                         // horizontal highlight
-                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c\n",
+                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c%n",
                                 pathsArray[of + 2] + delta, pathsArray[of + 3] - delta,
                                 pathsArray[of + 6] + delta, pathsArray[of + 7] + delta,
                                 pathsArray[of + 6], pathsArray[of + 7]).getBytes(Charsets.ISO_8859_1));
@@ -213,18 +213,18 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                     else if (pathsArray[of + 3] == pathsArray[of + 7])
                     {
                         // vertical highlight
-                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c\n",
+                        os.write(String.format(java.util.Locale.US, "%.4f %.4f %.4f %.4f %.4f %.4f c%n",
                                 pathsArray[of + 2] - delta, pathsArray[of + 3] - delta,
                                 pathsArray[of + 6] + delta, pathsArray[of + 7] - delta,
                                 pathsArray[of + 6], pathsArray[of + 7]).getBytes(Charsets.ISO_8859_1));
                     }
                     else
                     {
-                        os.write(String.format(java.util.Locale.US, "%.4f %.4f l\n",
+                        os.write(String.format(java.util.Locale.US, "%.4f %.4f l%n",
                                 pathsArray[of + 6], pathsArray[of + 7]).getBytes(Charsets.ISO_8859_1));
                     }
 
-                    os.write("f\n".getBytes(Charsets.ISO_8859_1));
+                    os.write("f%n".getBytes(Charsets.ISO_8859_1));
                     of += 8;
 
                     //TODO Adobe puts a "w" (line width). Why?
