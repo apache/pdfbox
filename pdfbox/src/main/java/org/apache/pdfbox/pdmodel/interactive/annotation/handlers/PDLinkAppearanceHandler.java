@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
@@ -131,7 +133,11 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
             COSArray borderCharacteristics = annotation.getBorder();
             if (borderCharacteristics.size() >= 3)
             {
-                return borderCharacteristics.getInt(2);
+                COSBase base = borderCharacteristics.getObject(2);
+                if (base instanceof COSNumber)
+                {
+                    return ((COSNumber) base).floatValue();
+                }
             }
         }
 
