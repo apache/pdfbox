@@ -92,6 +92,8 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
         {
             try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
             {
+                handleOpacity(annotation.getConstantOpacity());
+
                 cs.setStrokingColor(ab.color);
                 if (ab.dashArray != null)
                 {
