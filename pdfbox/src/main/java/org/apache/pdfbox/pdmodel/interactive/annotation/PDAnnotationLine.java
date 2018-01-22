@@ -22,6 +22,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDLineAppearanceHandler;
 
 /**
  * This is the class that represents a line annotation. Introduced in PDF 1.3 specification
@@ -30,6 +32,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
  */
 public class PDAnnotationLine extends PDAnnotationMarkup
 {
+    private PDAppearanceHandler lineAppearanceHandler;
 
     /*
      * The various values for intent (get/setIT, see the PDF 1.6 reference Table 8.22
@@ -453,4 +456,27 @@ public class PDAnnotationLine extends PDAnnotationMarkup
         return retval;
     }
 
+    /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param lineAppearanceHandler
+     */
+    public void setCustomLineAppearanceHandler(PDAppearanceHandler lineAppearanceHandler)
+    {
+        this.lineAppearanceHandler = lineAppearanceHandler;
+    }
+
+    @Override
+    public void constructAppearances()
+    {
+        if (lineAppearanceHandler == null)
+        {
+            PDLineAppearanceHandler appearanceHandler = new PDLineAppearanceHandler(this);
+            appearanceHandler.generateAppearanceStreams();
+        }
+        else
+        {
+            lineAppearanceHandler.generateAppearanceStreams();
+        }
+    }
 }
