@@ -103,10 +103,10 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 cs.setLineWidth(ab.width);
 
-                float x1 = pathsArray[0] - rect.getLowerLeftX();
-                float y1 = pathsArray[1] - rect.getLowerLeftY();
-                float x2 = pathsArray[2] - rect.getLowerLeftX();
-                float y2 = pathsArray[3] - rect.getLowerLeftY();
+                float x1 = pathsArray[0];
+                float y1 = pathsArray[1];
+                float x2 = pathsArray[2];
+                float y2 = pathsArray[3];
 
                 String contents = annotation.getContents();
                 if (contents == null)
@@ -158,6 +158,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
                     if (contentLength > 0)
                     {
+                        prepareResources();
+
                         // don't show if there was trouble before
                         cs.beginText();
                         //TODO reduce font? How to decide the size?
