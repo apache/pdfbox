@@ -89,6 +89,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
         {
             try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
             {
+                handleOpacity(annotation.getConstantOpacity());
+
                 // Tested with Adobe Reader:
                 // text is written first (TODO)
                 // width 0 is used by Adobe as such (but results in a visible line in rendering)

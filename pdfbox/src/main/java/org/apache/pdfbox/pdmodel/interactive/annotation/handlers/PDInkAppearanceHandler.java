@@ -59,6 +59,8 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
         {
             try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
             {
+                handleOpacity(ink.getConstantOpacity());
+
                 cs.setStrokingColor(ab.color);
                 if (ab.dashArray != null)
                 {
