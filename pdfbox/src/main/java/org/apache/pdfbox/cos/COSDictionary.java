@@ -643,8 +643,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a
+     * string. Null is returned if the entry does not exist in the dictionary.
      *
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
@@ -655,8 +655,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a
+     * string. Null is returned if the entry does not exist in the dictionary.
      *
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
@@ -673,8 +673,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a
+     * string. Null is returned if the entry does not exist in the dictionary.
      *
      * @param key The key to the item in the dictionary.
      * @param defaultValue The default value to return.
@@ -686,8 +686,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a
+     * string. Null is returned if the entry does not exist in the dictionary.
      *
      * @param key The key to the item in the dictionary.
      * @param defaultValue The default value to return.
@@ -755,10 +755,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public String getEmbeddedString(String embedded, COSName key, String defaultValue)
     {
         String retval = defaultValue;
-        COSDictionary dic = (COSDictionary) getDictionaryObject(embedded);
-        if (dic != null)
+        COSBase base = getDictionaryObject(embedded);
+        if (base instanceof COSDictionary)
         {
-            retval = dic.getString(key, defaultValue);
+            retval = ((COSDictionary) base).getString(key, defaultValue);
         }
         return retval;
     }
