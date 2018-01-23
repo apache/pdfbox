@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.pattern;
 
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSBase;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -37,7 +38,6 @@ public class PDShadingPattern extends PDAbstractPattern
      */
     public PDShadingPattern()
     {
-        super();
         getCOSObject().setInt(COSName.PATTERN_TYPE, PDAbstractPattern.TYPE_SHADING_PATTERN);
     }
 
@@ -64,12 +64,10 @@ public class PDShadingPattern extends PDAbstractPattern
     {
         if (extendedGraphicsState == null)
         {
-            COSDictionary dictionary = (COSDictionary)getCOSObject()
-                    .getDictionaryObject(COSName.EXT_G_STATE);
-
-            if( dictionary != null )
+            COSBase base = getCOSObject().getDictionaryObject(COSName.EXT_G_STATE);
+            if (base instanceof COSDictionary)
             {
-                extendedGraphicsState = new PDExtendedGraphicsState( dictionary );
+                extendedGraphicsState = new PDExtendedGraphicsState((COSDictionary) base);
             }
         }
         return extendedGraphicsState;
@@ -92,12 +90,12 @@ public class PDShadingPattern extends PDAbstractPattern
      */
     public PDShading getShading() throws IOException
     {
-        if (shading == null) 
+        if (shading == null)
         {
-            COSDictionary dictionary = (COSDictionary) getCOSObject().getDictionaryObject(COSName.SHADING);
-            if( dictionary != null )
+            COSBase base = getCOSObject().getDictionaryObject(COSName.SHADING);
+            if (base instanceof COSDictionary)
             {
-                shading = PDShading.create(dictionary);
+                shading = PDShading.create((COSDictionary) base);
             }
         }
         return shading;
