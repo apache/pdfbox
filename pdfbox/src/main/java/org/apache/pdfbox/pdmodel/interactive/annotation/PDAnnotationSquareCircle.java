@@ -35,7 +35,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @param subType the subtype the annotation represents.
      */
-    public PDAnnotationSquareCircle(String subType)
+    protected PDAnnotationSquareCircle(String subType)
     {
         setSubtype(subType);
     }
@@ -45,14 +45,14 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      *
      * @param dict The annotations dictionary.
      */
-    public PDAnnotationSquareCircle(COSDictionary dict)
+    protected PDAnnotationSquareCircle(COSDictionary dict)
     {
         super(dict);
     }
 
     @Override
     public abstract void constructAppearances();
-    
+
     /**
      * This will set interior color of the drawn area color is in DeviceRGB colorspace.
      *
