@@ -32,19 +32,6 @@ import org.apache.pdfbox.cos.COSString;
  */
 public class PDAnnotationMarkup extends PDAnnotation
 {
-    /**
-     * Constant for a FreeText type of annotation.
-     */
-    public static final String SUB_TYPE_FREETEXT = "FreeText";
-    /**
-     * Constant for an Caret type of annotation.
-     */
-    public static final String SUB_TYPE_CARET = "Caret";
-    /**
-     * Constant for an Sound type of annotation.
-     */
-    public static final String SUB_TYPE_SOUND = "Sound";
-
     /*
      * The various values of the reply type as defined in the PDF 1.7 reference Table 170
      */
