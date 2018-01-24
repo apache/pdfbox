@@ -145,8 +145,8 @@ public abstract class PDVariableText extends PDTerminalField
      * This will get the 'quadding' or justification of the text to be displayed.
      * 
      * This is an inheritable attribute.
-     * 
-     * 0 - Left(default)<br>
+     * <br>
+     * 0 - Left (default)<br>
      * 1 - Centered<br>
      * 2 - Right<br>
      * Please see the QUADDING_CONSTANTS.

@@ -95,10 +95,8 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
 
     /**
      * This will get the 'quadding' or justification of the text to be displayed.
-     * 
-     * This is an inheritable attribute.
      * <br>
-     * 0 - Left(default)<br>
+     * 0 - Left (default)<br>
      * 1 - Centered<br>
      * 2 - Right<br>
      * Please see the QUADDING_CONSTANTS in {@link PDVariableText }.
