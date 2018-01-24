@@ -1465,7 +1465,7 @@ public class COSParser extends BaseParser
             source.seek(currentOffset);
             int nextChar = source.read();
             currentOffset++;
-            if (nextChar == ' ' && isString(OBJ_MARKER))
+            if (isWhitespace(nextChar) && isString(OBJ_MARKER))
             {
                 long tempOffset = currentOffset - 2;
                 source.seek(tempOffset);
@@ -1476,9 +1476,9 @@ public class COSParser extends BaseParser
                     genID -= 48;
                     tempOffset--;
                     source.seek(tempOffset);
-                    if (isSpace())
+                    if (isWhitespace())
                     {
-                        while (tempOffset > MINIMUM_SEARCH_OFFSET && isSpace())
+                        while (tempOffset > MINIMUM_SEARCH_OFFSET && isWhitespace())
                         {
                             source.seek(--tempOffset);
                         }
