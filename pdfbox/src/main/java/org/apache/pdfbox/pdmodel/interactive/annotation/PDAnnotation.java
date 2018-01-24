@@ -167,12 +167,17 @@ public abstract class PDAnnotation implements COSObjectable
             {
                 annot = new PDAnnotationWidget(annotDic);
             }
-            else if (PDAnnotationMarkup.SUB_TYPE_FREETEXT.equals(subtype)
-                    || PDAnnotationMarkup.SUB_TYPE_CARET.equals(subtype)
-                    || PDAnnotationMarkup.SUB_TYPE_SOUND.equals(subtype))
+            else if (PDAnnotationFreeText.SUB_TYPE.equals(subtype))
             {
-                // 12.5.6.2 Markup Annotations
-                annot = new PDAnnotationMarkup(annotDic);
+                annot = new PDAnnotationFreeText(annotDic);
+            }
+            else if (PDAnnotationCaret.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationCaret(annotDic);
+            }
+            else if (PDAnnotationSound.SUB_TYPE.equals(subtype))
+            {
+                annot = new PDAnnotationSound(annotDic);
             }
             else
             {
