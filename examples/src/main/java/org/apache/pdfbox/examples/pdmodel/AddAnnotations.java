@@ -18,6 +18,8 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -241,7 +243,7 @@ public final class AddAnnotations
             // but other applications may not.
             for (PDAnnotation ann : annotations)
             {
-                ann.constructAppearances();
+                ann.constructAppearances(ScratchFile.getMainMemoryOnlyInstance());
             }
 
             showPageNo(document, page1, "Page 1");
