@@ -42,7 +42,6 @@ public class PDActionRemoteGoTo extends PDAction
      */
     public PDActionRemoteGoTo()
     {
-        action = new COSDictionary();
         setSubType( SUB_TYPE );
     }
 

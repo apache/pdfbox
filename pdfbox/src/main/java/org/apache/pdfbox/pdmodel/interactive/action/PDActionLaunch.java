@@ -42,7 +42,6 @@ public class PDActionLaunch extends PDAction
      */
     public PDActionLaunch()
     {
-        super();
         setSubType( SUB_TYPE );
     }
 
