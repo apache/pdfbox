@@ -1105,7 +1105,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         if (annotation.getAppearance() == null)
         {
-            annotation.constructAppearances();
+            // TODO: Improve memory consumption by passing a ScratchFile
+            annotation.constructAppearances(null);
         }
         super.showAnnotation(annotation);
 

@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDHighlightAppearanceHandler;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 
 /**
@@ -62,7 +63,7 @@ public class PDAnnotationHighlight extends PDAnnotationTextMarkup
     }
 
     @Override
-    public void constructAppearances()
+    public void constructAppearances(ScratchFile scratchFile)
     {
         if (appearanceHandler == null)
         {

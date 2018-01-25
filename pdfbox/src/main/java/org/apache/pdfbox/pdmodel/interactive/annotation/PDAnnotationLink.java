@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
@@ -245,7 +246,7 @@ public class PDAnnotationLink extends PDAnnotation
     }
     
     @Override
-    public void constructAppearances()
+    public void constructAppearances(ScratchFile scratchFile)
     {
         if (customAppearanceHandler == null)
         {

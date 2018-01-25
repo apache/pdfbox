@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -803,8 +804,11 @@ public abstract class PDAnnotation implements COSObjectable
      * Create the appearance entry for this annotation. Not having it may prevent display in some
      * viewers. This method is for overriding in subclasses, the default implementation does
      * nothing.
+     * 
+     * @param scratchFile memory handler for buffering of PDF streams.
+     *                    Passing null will use an in memory buffer {@link ScratchFile.getMainMemoryOnlyInstance()}.
      */
-    public void constructAppearances()
+    public void constructAppearances(ScratchFile scratchFile)
     {
     }
 

@@ -17,6 +17,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFreeTextAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
@@ -130,7 +131,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
     }
 
     @Override
-    public void constructAppearances()
+    public void constructAppearances(ScratchFile scratchFile)
     {
         if (freeTextAppearanceHandler == null)
         {
