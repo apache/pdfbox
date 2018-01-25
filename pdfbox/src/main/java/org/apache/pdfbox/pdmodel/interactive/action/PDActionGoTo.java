@@ -43,7 +43,6 @@ public class PDActionGoTo extends PDAction
      */
     public PDActionGoTo()
     {
-        super();
         setSubType( SUB_TYPE );
     }
 
