@@ -98,7 +98,7 @@ public class PDSquareAnnotationTest
             
             annotation.setRectangle(rectangle);
             
-            annotation.constructAppearances();
+            annotation.constructAppearances(null);
             annotations.add(annotation);
         }
     }
