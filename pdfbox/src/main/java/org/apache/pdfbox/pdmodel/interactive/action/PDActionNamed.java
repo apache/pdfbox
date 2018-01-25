@@ -33,7 +33,6 @@ public class PDActionNamed extends PDAction
      */
     public PDActionNamed()
     {
-        action = new COSDictionary();
         setSubType(SUB_TYPE);
     }
 
