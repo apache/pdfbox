@@ -36,7 +36,6 @@ public class PDActionMovie extends PDAction
      */
     public PDActionMovie()
     {
-        action = new COSDictionary();
         setSubType(SUB_TYPE);
     }
 

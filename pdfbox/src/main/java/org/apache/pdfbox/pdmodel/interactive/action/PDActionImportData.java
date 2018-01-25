@@ -39,7 +39,6 @@ public class PDActionImportData extends PDAction
      */
     public PDActionImportData()
     {
-        action = new COSDictionary();
         setSubType(SUB_TYPE);
     }
 

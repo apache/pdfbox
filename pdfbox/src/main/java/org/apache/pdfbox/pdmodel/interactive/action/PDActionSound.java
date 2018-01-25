@@ -42,7 +42,6 @@ public class PDActionSound extends PDAction
      */
     public PDActionSound()
     {
-        action = new COSDictionary();
         setSubType(SUB_TYPE);
     }
 

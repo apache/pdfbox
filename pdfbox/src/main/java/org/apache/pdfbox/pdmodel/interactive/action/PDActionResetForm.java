@@ -38,7 +38,6 @@ public class PDActionResetForm extends PDAction
      */
     public PDActionResetForm()
     {
-        action = new COSDictionary();
         setSubType(SUB_TYPE);
     }
 
