@@ -33,6 +33,9 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDLineAppearanceHandler.class);
 
+    static final double ARROW_ANGLE = Math.toRadians(30);
+    static final int FONT_SIZE = 9;
+            
     public PDLineAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
@@ -76,12 +79,13 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             maxX = Math.max(maxX, x);
             maxY = Math.max(maxY, y);
         }
-        // add/substract with and font height
-        //TODO also consider arrow and other stuff
-        rect.setLowerLeftX(Math.min(minX - ab.width - 12, rect.getLowerLeftX()));
-        rect.setLowerLeftY(Math.min(minY - ab.width - 12, rect.getLowerLeftY()));
-        rect.setUpperRightX(Math.max(maxX + ab.width + 12, rect.getUpperRightX()));
-        rect.setUpperRightY(Math.max(maxY + ab.width + 12, rect.getUpperRightY()));
+        // add/substract with, font height, and arrows
+        //TODO also consider other stuff at line ends
+        // arrow length is 10 * width at about 30° => 5 * width should be enough
+        rect.setLowerLeftX(Math.min(minX - ab.width * 5, rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - ab.width * 5, rect.getLowerLeftY()));
+        rect.setUpperRightX(Math.max(maxX + ab.width * 5, rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + ab.width * 5, rect.getUpperRightY()));
 
         annotation.setRectangle(rect);
 
@@ -127,45 +131,62 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     float contentLength = 0;
                     try
                     {
-                        contentLength = font.getStringWidth(annotation.getContents()) / 1000 * 12;
+                        contentLength = font.getStringWidth(annotation.getContents()) / 1000 * FONT_SIZE;
+
+                        //TODO How to decide the size of the font?
+                        // 9 seems to be standard, but if the text doesn't fit, a scaling is done
+                        // see AnnotationSample.Standard.pdf, diagonal line
                     }
                     catch (IllegalArgumentException ex)
                     {
                         //TODO test with "illegal" char to see what Adobe does
                     }
-                    float xOffset = (lineLength - contentLength) / 2 - 1;
+                    float xOffset = (lineLength - contentLength) / 2;
                     float yOffset;
 
                     String captionPositioning = annotation.getCaptionPositioning();
+
                     // draw the line horizontally, using the rotation CTM to get to correct final position
                     // that's the easiest way to calculate the positions for the line before and after inline caption
-                    cs.moveTo(0, 0);
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
+                    {
+                        cs.moveTo(ab.width, 0);
+                    }
+                    else
+                    {
+                        cs.moveTo(0, 0);
+                    }
                     if ("Top".equals(captionPositioning))
                     {
-                        // Add 1/2 of size
-                        yOffset = 6;
+                        // this arbitrary number is from Adobe
+                        yOffset = 1.908f;
                     }
                     else
                     {
                         // Inline
-                        yOffset = -3;
+                        // this arbitrary number is from Adobe
+                        yOffset = -2.6f;
 
-                        // chitgoks: 
-                        // "for the 1st half of the line i set is to xOffset - 2. that looks evened out"
-                        cs.lineTo(0 + xOffset - 2, 0);
-                        cs.moveTo(lineLength - xOffset, 0);
+                        cs.lineTo(xOffset - ab.width, 0);
+                        cs.moveTo(lineLength - xOffset + ab.width, 0);
                     }
-                    cs.lineTo(lineLength, 0);
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
+                    {
+                        cs.lineTo(lineLength - ab.width, 0);
+                    }
+                    else
+                    {
+                        cs.lineTo(lineLength, 0);
+                    }
                     cs.drawShape(ab.width, hasStroke, false);
 
+                    // check contentLength so we don't show if there was trouble before
                     if (contentLength > 0)
                     {
                         prepareResources();
 
-                        // don't show if there was trouble before
                         cs.beginText();
-                        //TODO reduce font? How to decide the size?
-                        cs.setFont(font, 12);
+                        cs.setFont(font, FONT_SIZE);
                         cs.setTextMatrix(Matrix.getTranslateInstance(xOffset, yOffset));
                         cs.showText(annotation.getContents());
                         cs.endText();
@@ -173,25 +194,42 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 else
                 {
-                    cs.moveTo(0, 0);
-                    cs.lineTo(lineLength, 0);
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
+                    {
+                        cs.moveTo(ab.width, 0);
+                    }
+                    else
+                    {
+                        cs.moveTo(0, 0);
+                    }
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
+                    {
+                        cs.lineTo(lineLength - ab.width, 0);
+                    }
+                    else
+                    {
+                        cs.lineTo(lineLength, 0);
+                    }
                     cs.drawShape(ab.width, hasStroke, false);
                 }
 
                 // there can be many, many more styles...
                 //TODO numbers for arrow size are arbitrary and likely wrong
+                // current strategy: angle 30Â°, arrow arm length = 10 * line width
+                // cos(angle) = x position
+                // sin(angle) = y position
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
                 {
-                    cs.moveTo(6, 3);
-                    cs.lineTo(0, 0);
-                    cs.lineTo(6, -3);
+                    cs.moveTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
+                    cs.lineTo(ab.width, 0);
+                    cs.lineTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), -(float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
                     cs.stroke();
                 }
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
                 {
-                    cs.moveTo(lineLength - 6, 3);
-                    cs.lineTo(lineLength, 0);
-                    cs.lineTo(lineLength - 6, -3);
+                    cs.moveTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
+                    cs.lineTo(lineLength - ab.width, 0);
+                    cs.lineTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), -(float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
                     cs.stroke();
                 }
             }
