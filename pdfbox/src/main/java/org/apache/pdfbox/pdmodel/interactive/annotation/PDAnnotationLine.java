@@ -307,7 +307,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public float getLeaderLineLength()
     {
-        return this.getCOSObject().getFloat(COSName.LL);
+        return this.getCOSObject().getFloat(COSName.LL, 0);
     }
 
     /**
@@ -327,7 +327,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public float getLeaderLineExtensionLength()
     {
-        return this.getCOSObject().getFloat(COSName.LLE);
+        return this.getCOSObject().getFloat(COSName.LLE, 0);
     }
 
     /**
@@ -347,7 +347,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public float getLeaderLineOffsetLength()
     {
-        return this.getCOSObject().getFloat(COSName.LLO);
+        return this.getCOSObject().getFloat(COSName.LLO, 0);
     }
 
     /**
