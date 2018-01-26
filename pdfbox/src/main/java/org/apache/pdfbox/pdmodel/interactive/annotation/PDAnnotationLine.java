@@ -343,7 +343,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public float getLeaderLineLength()
     {
-        return this.getDictionary().getFloat("LL");
+        return this.getDictionary().getFloat("LL", 0);
     }
 
     /**
@@ -363,7 +363,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public float getLeaderLineExtensionLength()
     {
-        return this.getDictionary().getFloat("LLE");
+        return this.getDictionary().getFloat("LLE", 0);
     }
 
     /**
@@ -383,7 +383,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
      */
     public float getLeaderLineOffsetLength()
     {
-        return this.getDictionary().getFloat("LLO");
+        return this.getDictionary().getFloat("LLO", 0);
     }
 
     /**
