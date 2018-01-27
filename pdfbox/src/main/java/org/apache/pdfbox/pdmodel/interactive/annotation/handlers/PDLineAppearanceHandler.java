@@ -93,15 +93,14 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
         // add/substract with, font height, and arrows
         //TODO also consider other stuff at line ends
-        // arrow length is 10 * width at about 30° => 5 * width should be enough
+        // arrow length is 10 * width at about 30° => 6 * width seems to be enough
         // but need to consider ll, lle and llo too
-        rect.setLowerLeftX(Math.min(minX - Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getLowerLeftX()));
-        rect.setLowerLeftY(Math.min(minY - Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getLowerLeftY()));
-        rect.setUpperRightX(Math.max(maxX + Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getUpperRightX()));
-        rect.setUpperRightY(Math.max(maxY + Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getUpperRightY()));
+        rect.setLowerLeftX(Math.min(minX - Math.max(ab.width * 6, Math.abs(llo+ll+lle)), rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - Math.max(ab.width * 6, Math.abs(llo+ll+lle)), rect.getLowerLeftY()));
+        rect.setUpperRightX(Math.max(maxX + Math.max(ab.width * 6, Math.abs(llo+ll+lle)), rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + Math.max(ab.width * 6, Math.abs(llo+ll+lle)), rect.getUpperRightY()));
 
         annotation.setRectangle(rect);
-
 
         try
         {
@@ -173,7 +172,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
                     // draw the line horizontally, using the rotation CTM to get to correct final position
                     // that's the easiest way to calculate the positions for the line before and after inline caption
-                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
                     {
                         cs.moveTo(ab.width, y);
                     }
@@ -195,7 +195,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         cs.lineTo(xOffset - ab.width, y);
                         cs.moveTo(lineLength - xOffset + ab.width, y);
                     }
-                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                     {
                         cs.lineTo(lineLength - ab.width, y);
                     }
@@ -219,7 +220,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 else
                 {
-                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
                     {
                         cs.moveTo(ab.width, y);
                     }
@@ -227,7 +229,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         cs.moveTo(0, y);
                     }
-                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
+                    if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                     {
                         cs.lineTo(lineLength - ab.width, y);
                     }
@@ -238,24 +241,47 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     cs.drawShape(ab.width, hasStroke, false);
                 }
 
+                // do this here and not before showing the text, or the text would appear in the
+                // interior color
+                boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
+
                 // there can be many, many more styles...
                 //TODO numbers for arrow size are arbitrary and likely wrong
                 // current strategy: angle 30Â°, arrow arm length = 10 * line width
                 // cos(angle) = x position
                 // sin(angle) = y position
-                if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
+                if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
+                    PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
                 {
                     cs.moveTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
                     cs.lineTo(ab.width, y);
                     cs.lineTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
-                    cs.drawShape(ab.width, hasStroke, false);
+                    if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                    {
+                        cs.closePath();
+                        cs.drawShape(ab.width, hasStroke, hasBackground);
+                    }
+                    else
+                    {
+                        // need to do this separately, because sometimes /IC is set anyway
+                        cs.drawShape(ab.width, hasStroke, false);
+                    }
                 }
-                if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
+                if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle())
+                        || PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                 {
                     cs.moveTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
                     cs.lineTo(lineLength - ab.width, y);
                     cs.lineTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
-                    cs.drawShape(ab.width, hasStroke, false);
+                    if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                    {
+                        cs.closePath();
+                        cs.drawShape(ab.width, hasStroke, hasBackground);
+                    }
+                    else
+                    {
+                        cs.drawShape(ab.width, hasStroke, false);
+                    }
                 }
             }
         }
