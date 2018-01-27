@@ -64,6 +64,9 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
         {
             return;
         }
+        float ll = annotation.getLeaderLineLength();
+        float lle = annotation.getLeaderLineExtensionLength();
+        float llo = annotation.getLeaderLineOffsetLength();
 
         // Adjust rectangle even if not empty, see PLPDF.com-MarkupAnnotations.pdf
         float minX = Float.MAX_VALUE;
@@ -79,15 +82,26 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             maxX = Math.max(maxX, x);
             maxY = Math.max(maxY, y);
         }
+
+        // Leader lines
+        if (ll < 0)
+        {
+            // /LLO and /LLE go in the same direction as /LL
+            llo = -llo;
+            lle = -lle;
+        }
+
         // add/substract with, font height, and arrows
         //TODO also consider other stuff at line ends
         // arrow length is 10 * width at about 30° => 5 * width should be enough
-        rect.setLowerLeftX(Math.min(minX - ab.width * 5, rect.getLowerLeftX()));
-        rect.setLowerLeftY(Math.min(minY - ab.width * 5, rect.getLowerLeftY()));
-        rect.setUpperRightX(Math.max(maxX + ab.width * 5, rect.getUpperRightX()));
-        rect.setUpperRightY(Math.max(maxY + ab.width * 5, rect.getUpperRightY()));
+        // but need to consider ll, lle and llo too
+        rect.setLowerLeftX(Math.min(minX - Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getLowerLeftY()));
+        rect.setUpperRightX(Math.max(maxX + Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + Math.max(ab.width * 5, Math.abs(llo+ll+lle)), rect.getUpperRightY()));
 
         annotation.setRectangle(rect);
+
 
         try
         {
@@ -113,6 +127,11 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 float y1 = pathsArray[1];
                 float x2 = pathsArray[2];
                 float y2 = pathsArray[3];
+
+                // if there are leader lines, then the /L coordinates represent
+                // the endpoints of the leader lines rather than the endpoints of the line itself.
+                // so for us, llo + ll is the vertical offset for the line.
+                float y = llo + ll;
 
                 String contents = annotation.getContents();
                 if (contents == null)
@@ -143,6 +162,12 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     }
                     float xOffset = (lineLength - contentLength) / 2;
                     float yOffset;
+                    
+                    // Leader lines
+                    cs.moveTo(0, llo);
+                    cs.lineTo(0, llo + ll + lle);
+                    cs.moveTo(lineLength, llo);
+                    cs.lineTo(lineLength, llo + ll + lle);
 
                     String captionPositioning = annotation.getCaptionPositioning();
 
@@ -150,11 +175,11 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // that's the easiest way to calculate the positions for the line before and after inline caption
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
                     {
-                        cs.moveTo(ab.width, 0);
+                        cs.moveTo(ab.width, y);
                     }
                     else
                     {
-                        cs.moveTo(0, 0);
+                        cs.moveTo(0, y);
                     }
                     if ("Top".equals(captionPositioning))
                     {
@@ -167,16 +192,16 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         // this arbitrary number is from Adobe
                         yOffset = -2.6f;
 
-                        cs.lineTo(xOffset - ab.width, 0);
-                        cs.moveTo(lineLength - xOffset + ab.width, 0);
+                        cs.lineTo(xOffset - ab.width, y);
+                        cs.moveTo(lineLength - xOffset + ab.width, y);
                     }
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
                     {
-                        cs.lineTo(lineLength - ab.width, 0);
+                        cs.lineTo(lineLength - ab.width, y);
                     }
                     else
                     {
-                        cs.lineTo(lineLength, 0);
+                        cs.lineTo(lineLength, y);
                     }
                     cs.drawShape(ab.width, hasStroke, false);
 
@@ -187,7 +212,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
                         cs.beginText();
                         cs.setFont(font, FONT_SIZE);
-                        cs.setTextMatrix(Matrix.getTranslateInstance(xOffset, yOffset));
+                        cs.setTextMatrix(Matrix.getTranslateInstance(xOffset, y + yOffset));
                         cs.showText(annotation.getContents());
                         cs.endText();
                     }
@@ -196,19 +221,19 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
                     {
-                        cs.moveTo(ab.width, 0);
+                        cs.moveTo(ab.width, y);
                     }
                     else
                     {
-                        cs.moveTo(0, 0);
+                        cs.moveTo(0, y);
                     }
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
                     {
-                        cs.lineTo(lineLength - ab.width, 0);
+                        cs.lineTo(lineLength - ab.width, y);
                     }
                     else
                     {
-                        cs.lineTo(lineLength, 0);
+                        cs.lineTo(lineLength, y);
                     }
                     cs.drawShape(ab.width, hasStroke, false);
                 }
@@ -220,17 +245,17 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // sin(angle) = y position
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()))
                 {
-                    cs.moveTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
-                    cs.lineTo(ab.width, 0);
-                    cs.lineTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), -(float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
-                    cs.stroke();
+                    cs.moveTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
+                    cs.lineTo(ab.width, y);
+                    cs.lineTo((float) (Math.cos(ARROW_ANGLE) * ab.width * 10), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
+                    cs.drawShape(ab.width, hasStroke, false);
                 }
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()))
                 {
-                    cs.moveTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
-                    cs.lineTo(lineLength - ab.width, 0);
-                    cs.lineTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), -(float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
-                    cs.stroke();
+                    cs.moveTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
+                    cs.lineTo(lineLength - ab.width, y);
+                    cs.lineTo((float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 10), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 10));
+                    cs.drawShape(ab.width, hasStroke, false);
                 }
             }
         }
