@@ -657,14 +657,10 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public List<PDAnnotation> getAnnotations() throws IOException
     {
-        COSArrayList<PDAnnotation> retval;
-        COSArray annots = (COSArray) page.getDictionaryObject(COSName.ANNOTS);
-        if (annots == null)
+        COSBase base = page.getDictionaryObject(COSName.ANNOTS);
+        if (base instanceof COSArray)
         {
-            return new COSArrayList<PDAnnotation>(page, COSName.ANNOTS);
-        }
-        else
-        {
+            COSArray annots = (COSArray) base;
             List<PDAnnotation> actuals = new ArrayList<PDAnnotation>();
             for (int i = 0; i < annots.size(); i++)
             {
@@ -675,9 +671,9 @@ public class PDPage implements COSObjectable, PDContentStream
                 }
                 actuals.add(PDAnnotation.createAnnotation(item));
             }
-            retval = new COSArrayList<PDAnnotation>(actuals, annots);
+            return new COSArrayList<PDAnnotation>(actuals, annots);
         }
-        return retval;
+        return new COSArrayList<PDAnnotation>(page, COSName.ANNOTS);
     }
 
     /**
