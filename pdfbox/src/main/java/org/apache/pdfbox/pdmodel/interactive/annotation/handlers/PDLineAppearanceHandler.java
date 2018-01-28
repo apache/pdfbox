@@ -141,6 +141,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 double angle = Math.atan2(y2 - y1, x2 - x1);
                 cs.transform(Matrix.getRotateInstance(angle, x1, y1));
                 float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
+                //TODO rename getCaption() to isCaption() or hasCaption()
                 if (annotation.getCaption() && !contents.isEmpty())
                 {
                     PDType1Font font = PDType1Font.HELVETICA;
@@ -206,6 +207,10 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     }
                     cs.drawShape(ab.width, hasStroke, false);
 
+                    // /CO entry (caption offset)
+                    float captionHorizontalOffset = annotation.getCaptionHorizontalOffset();
+                    float captionVerticalOffset = annotation.getCaptionVerticalOffset();
+
                     // check contentLength so we don't show if there was trouble before
                     if (contentLength > 0)
                     {
@@ -213,9 +218,18 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
                         cs.beginText();
                         cs.setFont(font, FONT_SIZE);
-                        cs.setTextMatrix(Matrix.getTranslateInstance(xOffset, y + yOffset));
+                        cs.setTextMatrix(Matrix.getTranslateInstance(
+                                xOffset + captionHorizontalOffset, 
+                                y + yOffset + captionVerticalOffset));
                         cs.showText(annotation.getContents());
                         cs.endText();
+                    }
+
+                    if (captionVerticalOffset != 0)
+                    {
+                        // Adobe paints vertical bar to the caption
+                        cs.moveTo(0 + lineLength / 2, y);
+                        cs.lineTo(0 + lineLength / 2, y + captionVerticalOffset);
                     }
                 }
                 else
@@ -238,8 +252,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         cs.lineTo(lineLength, y);
                     }
-                    cs.drawShape(ab.width, hasStroke, false);
                 }
+                cs.drawShape(ab.width, hasStroke, false);
 
                 // do this here and not before showing the text, or the text would appear in the
                 // interior color
@@ -247,7 +261,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
                 // there can be many, many more styles...
                 //TODO numbers for arrow size are arbitrary and likely wrong
-                // current strategy: angle 30Â°, arrow arm length = 10 * line width
+                // current strategy: angle 30°, arrow arm length = 10 * line width
                 // cos(angle) = x position
                 // sin(angle) = y position
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
