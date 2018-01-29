@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  */
 public class PDAppearanceEntry implements COSObjectable
 {
-    private COSBase entry;
+    private COSDictionary entry;
 
     private PDAppearanceEntry()
     {
@@ -44,7 +44,7 @@ public class PDAppearanceEntry implements COSObjectable
      * 
      * @param entry
      */
-    public PDAppearanceEntry(COSBase entry)
+    public PDAppearanceEntry(COSDictionary entry)
     {
         this.entry = entry;
     }
@@ -97,7 +97,7 @@ public class PDAppearanceEntry implements COSObjectable
             throw new IllegalStateException();
         }
 
-        COSDictionary dict = (COSDictionary) entry;
+        COSDictionary dict = entry;
         Map<COSName, PDAppearanceStream> map = new HashMap<>();
 
         for (COSName name : dict.keySet())
