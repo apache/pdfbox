@@ -62,6 +62,17 @@ public abstract class BlendMode
         }
         return BlendMode.COMPATIBLE;
     }
+    
+    /**
+     * Determines the blend mode name from the BM object.
+     *
+     * @param bm Blend mode.
+     * @return name of blend mode.
+     */
+    public static COSName getCOSName(BlendMode bm)
+    {
+        return BLEND_MODE_NAMES.get(bm);
+    }
 
     public static final SeparableBlendMode NORMAL = new SeparableBlendMode()
     {
@@ -184,8 +195,9 @@ public abstract class BlendMode
         }
     };
 
-    // this map *must* come after the declarations above, otherwise its values will be null
+    // these maps *must* come after the declarations above, otherwise its values will be null
     private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
+    private static final Map<BlendMode, COSName> BLEND_MODE_NAMES = createBlendModeNamesMap();
 
     private static Map<COSName, BlendMode> createBlendModeMap()
     {
@@ -205,6 +217,26 @@ public abstract class BlendMode
         map.put(COSName.EXCLUSION, BlendMode.EXCLUSION);
         // TODO - non-separable blending modes
         // hue saturation color luminosity
+        return map;
+    }
+
+    private static Map<BlendMode, COSName> createBlendModeNamesMap()
+    {
+        Map<BlendMode, COSName> map = new HashMap<>(13);
+        map.put(BlendMode.NORMAL, COSName.NORMAL);
+        map.put(BlendMode.COMPATIBLE, COSName.COMPATIBLE);
+        map.put(BlendMode.MULTIPLY, COSName.MULTIPLY);
+        map.put(BlendMode.SCREEN, COSName.SCREEN);
+        map.put(BlendMode.OVERLAY, COSName.OVERLAY);
+        map.put(BlendMode.DARKEN, COSName.DARKEN);
+        map.put(BlendMode.LIGHTEN, COSName.LIGHTEN);
+        map.put(BlendMode.COLOR_DODGE, COSName.COLOR_DODGE);
+        map.put(BlendMode.COLOR_BURN, COSName.COLOR_BURN);
+        map.put(BlendMode.HARD_LIGHT, COSName.HARD_LIGHT);
+        map.put(BlendMode.SOFT_LIGHT, COSName.SOFT_LIGHT);
+        map.put(BlendMode.DIFFERENCE, COSName.DIFFERENCE);
+        map.put(BlendMode.EXCLUSION, COSName.EXCLUSION);
+        // TODO - non-separable blending modes
         return map;
     }
 
