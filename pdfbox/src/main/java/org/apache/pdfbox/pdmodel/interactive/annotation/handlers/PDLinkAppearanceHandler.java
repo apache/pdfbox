@@ -79,7 +79,17 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 boolean hasStroke = contentStream.setStrokingColorOnDemand(color);
 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
-                
+                //TODO find better way to do this. Either pass border array to
+                // setBorderLine(), or use AnnotationBorder class
+                if (annotation.getBorderStyle() == null)
+                {
+                    COSArray border = annotation.getBorder();
+                    if (border.size() > 3 && border.getObject(3) instanceof COSArray)
+                    {
+                        contentStream.setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
+                    }
+                }
+
                 // the differences rectangle
                 // TODO: this only works for border effect solid. Cloudy needs a different approach.
                 setRectDifference(lineWidth);
