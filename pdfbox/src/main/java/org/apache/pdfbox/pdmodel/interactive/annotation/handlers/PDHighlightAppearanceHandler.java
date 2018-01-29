@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -103,8 +104,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                 r0.setStrokingAlphaConstant(annotation.getConstantOpacity());
                 r0.setNonStrokingAlphaConstant(annotation.getConstantOpacity());
                 r1.setAlphaSourceFlag(false);
-                //TODO PDExtendedGraphicsState.setBlendMode() is missing
-                r1.getCOSObject().setItem(COSName.BM, COSName.MULTIPLY);
+                r1.setBlendMode(BlendMode.MULTIPLY);
                 cs.setGraphicsStateParameters(r0);
                 cs.setGraphicsStateParameters(r1);
                 //TODO replace with document.getDocument().createCOSStream()
