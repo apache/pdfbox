@@ -806,7 +806,7 @@ public abstract class PDAnnotation implements COSObjectable
      * nothing.
      * 
      * @param scratchFile memory handler for buffering of PDF streams.
-     *                    Passing null will use an in memory buffer {@link ScratchFile.getMainMemoryOnlyInstance()}.
+     *                    Passing null will use an in memory buffer {@link ScratchFile#getMainMemoryOnlyInstance()}.
      */
     public void constructAppearances(ScratchFile scratchFile)
     {

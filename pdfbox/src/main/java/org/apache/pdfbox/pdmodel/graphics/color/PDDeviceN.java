@@ -281,8 +281,8 @@ public class PDDeviceN extends PDSpecialColorSpace
     private BufferedImage toRGBWithTintTransform(WritableRaster raster) throws IOException
     {
         // cache color mappings
-        Map<String, int[]> map1 = new HashMap<String, int[]>();
-        String key = null;
+        Map<String, int[]> map1 = new HashMap<>();
+        String key;
 
         int width = raster.getWidth();
         int height = raster.getHeight();
