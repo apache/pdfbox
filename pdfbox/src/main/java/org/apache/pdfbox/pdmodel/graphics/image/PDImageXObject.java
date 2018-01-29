@@ -590,7 +590,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
             if (cosBase != null)
             {
                 COSObject indirect = null;
-                if (cosBase instanceof COSObject && resources.getResourceCache() != null)
+                if (cosBase instanceof COSObject &&
+                        resources != null && resources.getResourceCache() != null)
                 {
                     // PDFBOX-4022: use the resource cache because several images
                     // might have the same colorspace indirect object.
