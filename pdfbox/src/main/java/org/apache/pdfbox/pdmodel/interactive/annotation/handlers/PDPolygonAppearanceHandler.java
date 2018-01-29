@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -61,31 +60,34 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
 
         // Adjust rectangle even if not empty
         // CTAN-example-Annotations.pdf p2
-        //TODO in a class structure this should be overridable
         float minX = Float.MAX_VALUE;
         float minY = Float.MAX_VALUE;
         float maxX = Float.MIN_VALUE;
         float maxY = Float.MIN_VALUE;
-        float[] pathsArray = annotation.getVertices();
-        if (pathsArray != null)
+
+        float[][] pathArray = getPathArray(annotation);
+        if (pathArray == null)
         {
-            //TODO this adjustment is only for PDF 1.*. 
-            //     Similar code should be done for PDF 2.0 (see "Path")
-            for (int i = 0; i < pathsArray.length / 2; ++i)
+            return;
+        }
+        for (int i = 0; i < pathArray.length; ++i)
+        {
+            for (int j = 0; j < pathArray[i].length / 2; ++j)
             {
-                float x = pathsArray[i * 2];
-                float y = pathsArray[i * 2 + 1];
+                float x = pathArray[i][j * 2];
+                float y = pathArray[i][j * 2 + 1];
                 minX = Math.min(minX, x);
                 minY = Math.min(minY, y);
                 maxX = Math.max(maxX, x);
                 maxY = Math.max(maxY, y);
             }
-            rect.setLowerLeftX(Math.min(minX - lineWidth / 2, rect.getLowerLeftX()));
-            rect.setLowerLeftY(Math.min(minY - lineWidth / 2, rect.getLowerLeftY()));
-            rect.setUpperRightX(Math.max(maxX + lineWidth, rect.getUpperRightX()));
-            rect.setUpperRightY(Math.max(maxY + lineWidth, rect.getUpperRightY()));
-            annotation.setRectangle(rect);
         }
+
+        rect.setLowerLeftX(Math.min(minX - lineWidth / 2, rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - lineWidth / 2, rect.getLowerLeftY()));
+        rect.setUpperRightX(Math.max(maxX + lineWidth, rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + lineWidth, rect.getUpperRightY()));
+        annotation.setRectangle(rect);
 
         try
         {
@@ -99,73 +101,49 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
                 handleOpacity(annotation.getConstantOpacity());
 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
-                
+                //TODO find better way to do this. Either pass border array to
+                // setBorderLine(), or use AnnotationBorder class
+                if (annotation.getBorderStyle() == null)
+                {
+                    COSArray border = annotation.getBorder();
+                    if (border.size() > 3 && border.getObject(3) instanceof COSArray)
+                    {
+                        contentStream.setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
+                    }
+                }
+
                 // the differences rectangle
                 // TODO: this only works for border effect solid. Cloudy needs a
                 // different approach.
                 setRectDifference(lineWidth);
-                
-                // Acrobat applies a padding to each side of the bbox so the line is
-                // completely within
-                // the bbox.
-                
-                // PDF 2.0: Path takes priority over Vertices
-                COSBase path = annotation.getCOSObject().getDictionaryObject(COSName.getPDFName("Path"));
-                if (path instanceof COSArray)
-                {
-                    COSArray pathArray = (COSArray) path;
-                    for (int i = 0; i < pathArray.size(); i++)
-                    {
-                        COSBase points = pathArray.get(i);
-                        if (points instanceof COSArray)
-                        {
-                            float[] pointsArray = ((COSArray) points).toFloatArray();
-                            // first array shall be of size 2 and specify the moveto
-                            // operator
-                            if (i == 0 && pointsArray.length == 2)
-                            {
-                                contentStream.moveTo(pointsArray[0], pointsArray[1]);
-                            }
-                            else
-                            {
-                                // entries of length 2 shall be treated as lineto
-                                // operator
-                                if (pointsArray.length == 2)
-                                {
-                                    contentStream.lineTo(pointsArray[0], pointsArray[1]);
-                                }
-                                else if (pointsArray.length == 6)
-                                {
-                                    contentStream.curveTo(pointsArray[0], pointsArray[1], pointsArray[2], pointsArray[3],
-                                            pointsArray[4], pointsArray[5]);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    float[] verticesArray = annotation.getVertices();
-                    if (verticesArray == null)
-                    {
-                        return;
-                    }
 
-                    int nPoints = verticesArray.length / 2;
-                    for (int i = 0; i < nPoints; i++)
+                // Acrobat applies a padding to each side of the bbox so the line is
+                // completely within the bbox.
+
+                for (int i = 0; i < pathArray.length; i++)
+                {
+                    float[] pointsArray = pathArray[i];
+                    // first array shall be of size 2 and specify the moveto operator
+                    if (i == 0 && pointsArray.length == 2)
                     {
-                        float x = verticesArray[i * 2];
-                        float y = verticesArray[i * 2 + 1];
-                        if (i == 0)
+                        contentStream.moveTo(pointsArray[0], pointsArray[1]);
+                    }
+                    else
+                    {
+                        // entries of length 2 shall be treated as lineto operator
+                        if (pointsArray.length == 2)
                         {
-                            contentStream.moveTo(x, y);
+                            contentStream.lineTo(pointsArray[0], pointsArray[1]);
                         }
-                        else
+                        else if (pointsArray.length == 6)
                         {
-                            contentStream.lineTo(x, y);
+                            contentStream.curveTo(pointsArray[0], pointsArray[1],
+                                    pointsArray[2], pointsArray[3],
+                                    pointsArray[4], pointsArray[5]);
                         }
                     }
                 }
+
                 contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
         }
@@ -173,6 +151,29 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         {
             LOG.error(e);
         }
+    }
+
+    private float[][] getPathArray(PDAnnotationPolygon annotation)
+    {
+        // PDF 2.0: Path takes priority over Vertices
+        float[][] pathArray = annotation.getPath();
+        if (pathArray == null)
+        {
+            // convert PDF 1.* array to PDF 2.0 array
+            float[] verticesArray = annotation.getVertices();
+            if (verticesArray == null)
+            {
+                return null;
+            }
+            int points = verticesArray.length / 2;
+            pathArray = new float[points][2];
+            for (int i = 0; i < points; ++i)
+            {
+                pathArray[i][0] = verticesArray[i * 2];
+                pathArray[i][1] = verticesArray[i * 2 + 1];
+            }
+        }
+        return pathArray;
     }
 
     @Override

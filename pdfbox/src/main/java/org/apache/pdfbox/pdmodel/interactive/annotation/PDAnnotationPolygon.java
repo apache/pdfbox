@@ -109,6 +109,37 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
     }
 
     /**
+     * PDF 2.0: This will retrieve the arrays that shall represent the alternating horizontal
+     * and vertical coordinates for path building.
+     *
+     * @return An array of float arrays, each supplying the operands for a path building operator
+     * (m, l or c). The first array should have 2 elements, the others should have 2 or 6 elements.
+     */
+    public float[][] getPath()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.PATH);
+        if (base instanceof COSArray)
+        {
+            COSArray array = (COSArray) base;
+            float[][] pathArray = new float[array.size()][];
+            for (int i = 0; i < array.size(); ++i)
+            {
+                COSBase base2 = array.getObject(i);
+                if (base2 instanceof COSArray)
+                {
+                    pathArray[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                }
+                else
+                {
+                    pathArray[i] = new float[0];
+                }
+            }
+            return pathArray;
+        }
+        return null;
+    }
+
+    /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
      * @param polygonAppearanceHandler
