@@ -60,7 +60,6 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
         if (annotation.getRectangle() == null)
         {
             // 660402-p1-AnnotationEmptyRect.pdf has /Rect entry with 0 elements
-            //TODO check for qzadpoints before quitting
             return;
         }
 
@@ -97,18 +96,62 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                 // Acrobat applies a padding to each side of the bbox so the line is completely within
                 // the bbox.
                 PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
-                if (annotation.getBorderStyle() != null &&
-                    annotation.getBorderStyle().getStyle().equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
+
+                float[] pathsArray = annotation.getQuadPoints();
+
+                if (pathsArray != null)
                 {
-                    contentStream.moveTo(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY());
-                    contentStream.lineTo(borderEdge.getLowerLeftX() + borderEdge.getWidth(), borderEdge.getLowerLeftY());
+                    // QuadPoints shall be ignored if any coordinate in the array lies outside
+                    // the region specified by Rect.
+                    PDRectangle rect = annotation.getRectangle();
+                    for (int i = 0; i < pathsArray.length / 2; ++i)
+                    {
+                        if (!rect.contains(pathsArray[i * 2], pathsArray[i * 2 + 1]))
+                        {
+                            pathsArray = null;
+                            LOG.warn("At least one /QuadPoints entry (" + 
+                                    pathsArray[i * 2] + ";" + pathsArray[i * 2 + 1] + 
+                                    ") is outside of rectangle, " + rect + 
+                                    ", /QuadPoints are ignored and /Rect is used instead");
+                            break;
+                        }
+                    }
                 }
-                else
+
+                if (pathsArray == null)
                 {
-                    contentStream.addRect(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY(),
-                                          borderEdge.getWidth(), borderEdge.getHeight());
+                    // Convert rectangle coordinates as if it was a /QuadPoints entry
+                    pathsArray = new float[8];
+                    pathsArray[0] = borderEdge.getLowerLeftX();
+                    pathsArray[1] = borderEdge.getLowerLeftY();
+                    pathsArray[2] = borderEdge.getUpperRightX();
+                    pathsArray[3] = borderEdge.getLowerLeftY();
+                    pathsArray[4] = borderEdge.getUpperRightX();
+                    pathsArray[5] = borderEdge.getUpperRightY();
+                    pathsArray[6] = borderEdge.getLowerLeftX();
+                    pathsArray[7] = borderEdge.getUpperRightY();
                 }
-                
+
+                int of = 0;
+                while (of + 7 < pathsArray.length)
+                {
+                    if (annotation.getBorderStyle() != null &&
+                        annotation.getBorderStyle().getStyle().equals(PDBorderStyleDictionary.STYLE_UNDERLINE))
+                    {
+                        contentStream.moveTo(pathsArray[of], pathsArray[of + 1]);
+                        contentStream.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
+                    }
+                    else
+                    {
+                        contentStream.moveTo(pathsArray[of], pathsArray[of + 1]);
+                        contentStream.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
+                        contentStream.lineTo(pathsArray[of + 4], pathsArray[of + 5]);
+                        contentStream.lineTo(pathsArray[of + 6], pathsArray[of + 7]);
+                        contentStream.closePath();
+                    }
+                    of += 8;
+                }
+
                 contentStream.drawShape(lineWidth, hasStroke, false);
             }
         }
