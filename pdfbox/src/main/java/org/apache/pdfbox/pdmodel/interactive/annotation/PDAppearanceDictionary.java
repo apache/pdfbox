@@ -66,14 +66,11 @@ public class PDAppearanceDictionary implements COSObjectable
     public PDAppearanceEntry getNormalAppearance()
     {
         COSBase entry = dictionary.getDictionaryObject(COSName.N);
-        if (entry == null)
-        {
-            return null;
-        }
-        else
+        if (entry instanceof COSDictionary)
         {
             return new PDAppearanceEntry(entry);
         }
+        return null;
     }
 
     /**
@@ -107,13 +104,13 @@ public class PDAppearanceDictionary implements COSObjectable
     public PDAppearanceEntry getRolloverAppearance()
     {
         COSBase entry = dictionary.getDictionaryObject(COSName.R);
-        if (entry == null)
+        if (entry instanceof COSDictionary)
         {
-            return getNormalAppearance();
+            return new PDAppearanceEntry(entry);
         }
         else
         {
-            return new PDAppearanceEntry(entry);
+            return getNormalAppearance();
         }
     }
 
@@ -148,13 +145,13 @@ public class PDAppearanceDictionary implements COSObjectable
     public PDAppearanceEntry getDownAppearance()
     {
         COSBase entry = dictionary.getDictionaryObject(COSName.D);
-        if (entry == null)
+        if (entry instanceof COSDictionary)
         {
-            return getNormalAppearance();
+            return new PDAppearanceEntry(entry);
         }
         else
         {
-            return new PDAppearanceEntry(entry);
+            return getNormalAppearance();
         }
     }
 
