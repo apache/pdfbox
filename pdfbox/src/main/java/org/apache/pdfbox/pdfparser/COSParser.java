@@ -1623,7 +1623,7 @@ public class COSParser extends BaseParser
      */
     private boolean bfSearchForTrailer(COSDictionary trailer) throws IOException
     {
-        Map<String, COSDictionary> trailerDicts = new HashMap<String, COSDictionary>();
+        Map<String, COSDictionary> trailerDicts = new HashMap<>();
         long originOffset = source.getPosition();
         source.seek(MINIMUM_SEARCH_OFFSET);
         while (!source.isEOF())
