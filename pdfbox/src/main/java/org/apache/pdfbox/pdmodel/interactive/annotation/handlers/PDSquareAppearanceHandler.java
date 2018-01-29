@@ -74,7 +74,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                 
                 // Acrobat applies a padding to each side of the bbox so the line is completely within
                 // the bbox.
-                PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
+                PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth);
                 contentStream.addRect(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY(),
                         borderEdge.getWidth(), borderEdge.getHeight());
                 

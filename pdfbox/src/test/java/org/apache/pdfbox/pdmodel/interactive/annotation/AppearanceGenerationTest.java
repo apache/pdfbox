@@ -56,6 +56,10 @@ public class AppearanceGenerationTest
 {
 
     // delta for comparing equality of float values
+    // a difference in float values smaller than this
+    // will be treated equal between Adobe and PDFBox 
+    // values.
+    // TODO: revisit that number as our code improves
     private static final float DELTA = 3e-3f;
     
     // the location of the annotation
@@ -75,7 +79,7 @@ public class AppearanceGenerationTest
     }
     
     // Test currently disabled as the content stream differs
-    // @Test
+    @Test
     public void rectangleFullStrokeNoFill() throws IOException
     {
         PDPage page = document.getPage(0);
