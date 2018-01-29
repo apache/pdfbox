@@ -231,7 +231,6 @@ public class PDAnnotationLink extends PDAnnotation
         {
             return ((COSArray) base).toFloatArray();
         }
-        // Should never happen as this is a required item
         return null; 
     }
     
