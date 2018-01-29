@@ -68,7 +68,7 @@ public class PDAppearanceDictionary implements COSObjectable
         COSBase entry = dictionary.getDictionaryObject(COSName.N);
         if (entry instanceof COSDictionary)
         {
-            return new PDAppearanceEntry(entry);
+            return new PDAppearanceEntry((COSDictionary) entry);
         }
         return null;
     }
@@ -106,7 +106,7 @@ public class PDAppearanceDictionary implements COSObjectable
         COSBase entry = dictionary.getDictionaryObject(COSName.R);
         if (entry instanceof COSDictionary)
         {
-            return new PDAppearanceEntry(entry);
+            return new PDAppearanceEntry((COSDictionary) entry);
         }
         else
         {
@@ -147,7 +147,7 @@ public class PDAppearanceDictionary implements COSObjectable
         COSBase entry = dictionary.getDictionaryObject(COSName.D);
         if (entry instanceof COSDictionary)
         {
-            return new PDAppearanceEntry(entry);
+            return new PDAppearanceEntry((COSDictionary) entry);
         }
         else
         {
