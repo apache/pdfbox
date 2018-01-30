@@ -35,7 +35,6 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -71,8 +70,6 @@ public class PDFMergerUtility
      * Log instance.
      */
     private static final Log LOG = LogFactory.getLog(PDFMergerUtility.class);
-
-    private static final String STRUCTURETYPE_DOCUMENT = "Document";
 
     private final List<InputStream> sources;
     private final List<FileInputStream> fileInputStreams;
@@ -565,7 +562,7 @@ public class PDFMergerUtility
             }
             kDictLevel0.setItem(COSName.K, newKArray);
             kDictLevel0.setItem(COSName.P, destStructTree);
-            kDictLevel0.setItem(COSName.S, new COSString(STRUCTURETYPE_DOCUMENT));
+            kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
             destStructTree.setK(kDictLevel0);
         }
     }
