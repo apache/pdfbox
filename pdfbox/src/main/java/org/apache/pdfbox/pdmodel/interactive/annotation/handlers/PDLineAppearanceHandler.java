@@ -174,7 +174,10 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // draw the line horizontally, using the rotation CTM to get to correct final position
                     // that's the easiest way to calculate the positions for the line before and after inline caption
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
-                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_SQUARE.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CIRCLE.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_DIAMOND.equals(annotation.getStartPointEndingStyle()))
                     {
                         cs.moveTo(ab.width, y);
                     }
@@ -197,7 +200,10 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         cs.moveTo(lineLength - xOffset + ab.width, y);
                     }
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
-                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_SQUARE.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CIRCLE.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_DIAMOND.equals(annotation.getEndPointEndingStyle()))
                     {
                         cs.lineTo(lineLength - ab.width, y);
                     }
@@ -230,12 +236,16 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         // Adobe paints vertical bar to the caption
                         cs.moveTo(0 + lineLength / 2, y);
                         cs.lineTo(0 + lineLength / 2, y + captionVerticalOffset);
+                        cs.drawShape(ab.width, hasStroke, false);
                     }
                 }
                 else
                 {
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
-                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_SQUARE.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CIRCLE.equals(annotation.getStartPointEndingStyle()) ||
+                        PDAnnotationLine.LE_DIAMOND.equals(annotation.getStartPointEndingStyle()))
                     {
                         cs.moveTo(ab.width, y);
                     }
@@ -244,7 +254,10 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         cs.moveTo(0, y);
                     }
                     if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
-                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                        PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_SQUARE.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_CIRCLE.equals(annotation.getEndPointEndingStyle()) ||
+                        PDAnnotationLine.LE_DIAMOND.equals(annotation.getEndPointEndingStyle()))
                     {
                         cs.lineTo(lineLength - ab.width, y);
                     }
@@ -252,8 +265,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         cs.lineTo(lineLength, y);
                     }
+                    cs.drawShape(ab.width, hasStroke, false);
                 }
-                cs.drawShape(ab.width, hasStroke, false);
 
                 // do this here and not before showing the text, or the text would appear in the
                 // interior color
@@ -281,6 +294,38 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         cs.drawShape(ab.width, hasStroke, false);
                     }
                 }
+                else if (PDAnnotationLine.LE_BUTT.equals(annotation.getStartPointEndingStyle()))
+                {
+                    cs.moveTo(0, y - ab.width * 3);
+                    cs.lineTo(0, y + ab.width * 3);
+                    cs.drawShape(ab.width, hasStroke, false);
+                }
+                else if (PDAnnotationLine.LE_DIAMOND.equals(annotation.getStartPointEndingStyle()))
+                {
+                    cs.moveTo(0 - ab.width * 3, y);
+                    cs.lineTo(0, y + ab.width * 3);
+                    cs.lineTo(0 + ab.width * 3, y);
+                    cs.lineTo(0, y - ab.width * 3);
+                    cs.closePath();
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
+                }
+                else if (PDAnnotationLine.LE_SQUARE.equals(annotation.getStartPointEndingStyle()))
+                {
+                    cs.addRect(0 - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
+                }
+                else if (PDAnnotationLine.LE_CIRCLE.equals(annotation.getStartPointEndingStyle()))
+                {
+                    // http://stackoverflow.com/a/2007782/535646
+                    float magic = ab.width * 3 * 0.551784f;
+                    cs.moveTo(0, y + ab.width * 3);
+                    cs.curveTo(magic, y + ab.width * 3, ab.width * 3, y + magic, ab.width * 3, y);
+                    cs.curveTo(ab.width * 3, y - magic, magic, y - ab.width * 3, 0, y - ab.width * 3);
+                    cs.curveTo(-magic, y - ab.width * 3, -ab.width * 3, y - magic, -ab.width * 3, y);
+                    cs.curveTo(-ab.width * 3, y + magic, -magic, y + ab.width * 3, 0, y + ab.width * 3);
+                    cs.closePath();
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
+                }
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle())
                         || PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                 {
@@ -296,6 +341,38 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         cs.drawShape(ab.width, hasStroke, false);
                     }
+                }
+                else if (PDAnnotationLine.LE_BUTT.equals(annotation.getEndPointEndingStyle()))
+                {
+                    cs.moveTo(lineLength, y - ab.width * 3);
+                    cs.lineTo(lineLength, y + ab.width * 3);
+                    cs.drawShape(ab.width, hasStroke, false);
+                }
+                else if (PDAnnotationLine.LE_DIAMOND.equals(annotation.getEndPointEndingStyle()))
+                {
+                    cs.moveTo(lineLength - ab.width * 3, y);
+                    cs.lineTo(lineLength, y + ab.width * 3);
+                    cs.lineTo(lineLength + ab.width * 3, y);
+                    cs.lineTo(lineLength, y - ab.width * 3);
+                    cs.closePath();
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
+                }
+                else if (PDAnnotationLine.LE_SQUARE.equals(annotation.getEndPointEndingStyle()))
+                {
+                    cs.addRect(lineLength - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
+                }
+                else if (PDAnnotationLine.LE_CIRCLE.equals(annotation.getEndPointEndingStyle()))
+                {
+                    // http://stackoverflow.com/a/2007782/535646
+                    float magic = ab.width * 3 * 0.551784f;
+                    cs.moveTo(lineLength, y + ab.width * 3);
+                    cs.curveTo(lineLength + magic, y + ab.width * 3, lineLength + ab.width * 3, y + magic, lineLength + ab.width * 3, y);
+                    cs.curveTo(lineLength + ab.width * 3, y - magic, lineLength + magic, y - ab.width * 3, lineLength, y - ab.width * 3);
+                    cs.curveTo(lineLength - magic, y - ab.width * 3, lineLength - ab.width * 3, y - magic, lineLength - ab.width * 3, y);
+                    cs.curveTo(lineLength - ab.width * 3, y + magic, lineLength - magic, y + ab.width * 3, lineLength, y + ab.width * 3);
+                    cs.closePath();
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
             }
         }
