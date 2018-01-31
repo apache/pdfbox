@@ -1168,14 +1168,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setTransform(prev);
     }
 
-    private static class AnnotationBorder
-    {
-        private float[] dashArray = null;
-        private boolean underline = false;
-        private float width = 0;
-        private PDColor color;
-    }
-
     /**
      * Transparency group.
      **/
