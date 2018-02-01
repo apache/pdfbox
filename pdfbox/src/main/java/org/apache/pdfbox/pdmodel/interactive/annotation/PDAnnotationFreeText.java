@@ -15,7 +15,10 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
@@ -120,6 +123,48 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
         getCOSObject().setInt(COSName.Q, q);
     }
 
+    /**
+     * This will set the margin between the annotations "outer" rectangle defined by
+     * /Rect and the border.
+     * 
+     * @param margin
+     */
+    public void setMargins(float margin) {
+        setMargins(margin, margin, margin, margin);
+    }
+    
+    /**
+     * This will set the margin between the annotations "outer" rectangle defined by
+     * /Rect and the border.
+     * 
+     * @param margin
+     */
+    public void setMargins(float marginLeft, float marginTop, float marginRight, float marginBottom)
+    {
+        COSArray margins = new COSArray();
+        margins.add(new COSFloat(marginLeft));
+        margins.add(new COSFloat(marginTop));
+        margins.add(new COSFloat(marginRight));
+        margins.add(new COSFloat(marginBottom));
+        getCOSObject().setItem(COSName.RD, margins);    
+    }
+    
+    /**
+     * This will get the margin between the annotations "outer" rectangle defined by
+     * /Rect and the border.
+     * 
+     * @return the margins. If the entry hasn't been set defaults to 0 on all sides.
+     */
+    public float[] getMargins()
+    {
+        COSBase margin = getCOSObject().getItem(COSName.RD);
+        if (margin instanceof COSArray)
+        {
+            return ((COSArray) margin).toFloatArray();
+        }
+        return new float[]{0f, 0f, 0f, 0f};
+    }
+    
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
