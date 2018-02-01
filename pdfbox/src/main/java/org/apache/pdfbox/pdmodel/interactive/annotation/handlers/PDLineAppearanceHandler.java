@@ -42,15 +42,26 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
     /**
      * styles where the line has to be drawn shorter (minus line width).
      */
-    private static final Set<String> SHORTSTYLES = new HashSet<>();
-    
+    private static final Set<String> SHORT_STYLES = new HashSet<>();
+
+    /**
+     * styles where there is an interior color.
+     */
+    private static final Set<String> INTERIOR_COLOR_STYLES = new HashSet<>();
+
     static
     {
-        SHORTSTYLES.add(PDAnnotationLine.LE_OPEN_ARROW);
-        SHORTSTYLES.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        SHORTSTYLES.add(PDAnnotationLine.LE_SQUARE);
-        SHORTSTYLES.add(PDAnnotationLine.LE_CIRCLE);
-        SHORTSTYLES.add(PDAnnotationLine.LE_DIAMOND);
+        SHORT_STYLES.add(PDAnnotationLine.LE_OPEN_ARROW);
+        SHORT_STYLES.add(PDAnnotationLine.LE_CLOSED_ARROW);
+        SHORT_STYLES.add(PDAnnotationLine.LE_SQUARE);
+        SHORT_STYLES.add(PDAnnotationLine.LE_CIRCLE);
+        SHORT_STYLES.add(PDAnnotationLine.LE_DIAMOND);
+
+        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_CLOSED_ARROW);
+        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_CIRCLE);
+        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_DIAMOND);
+        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
+        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_SQUARE);
     }
 
     public PDLineAppearanceHandler(PDAnnotation annotation)
@@ -190,7 +201,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
                     // draw the line horizontally, using the rotation CTM to get to correct final position
                     // that's the easiest way to calculate the positions for the line before and after inline caption
-                    if (SHORTSTYLES.contains(annotation.getStartPointEndingStyle()))
+                    if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
                     {
                         cs.moveTo(ab.width, y);
                     }
@@ -212,7 +223,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         cs.lineTo(xOffset - ab.width, y);
                         cs.moveTo(lineLength - xOffset + ab.width, y);
                     }
-                    if (SHORTSTYLES.contains(annotation.getEndPointEndingStyle()))
+                    if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
                     {
                         cs.lineTo(lineLength - ab.width, y);
                     }
@@ -249,7 +260,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 else
                 {
-                    if (SHORTSTYLES.contains(annotation.getStartPointEndingStyle()))
+                    if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
                     {
                         cs.moveTo(ab.width, y);
                     }
@@ -257,7 +268,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         cs.moveTo(0, y);
                     }
-                    if (SHORTSTYLES.contains(annotation.getEndPointEndingStyle()))
+                    if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
                     {
                         cs.lineTo(lineLength - ab.width, y);
                     }
@@ -271,121 +282,111 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // do this here and not before showing the text, or the text would appear in the
                 // interior color
                 boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
-
-                // current strategy for arrows: angle 30°, arrow arm length = 9 * line width
-                // cos(angle) = x position
-                // sin(angle) = y position
-                // this comes very close to what Adobe is doing
-                //TODO all four arrow paintings can be put into one method
-                //     params: x, y, orientation, width, hasStroke, hasBackground
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
                     PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
                 {
-                    cs.moveTo(ab.width + (float) (Math.cos(ARROW_ANGLE) * ab.width * 9), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
-                    cs.lineTo(ab.width, y);
-                    cs.lineTo(ab.width + (float) (Math.cos(ARROW_ANGLE) * ab.width * 9), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
-                    if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                    drawArrow(cs, ab.width, y, ab.width * 9);                    
+                    if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
                     {
                         cs.closePath();
-                        cs.drawShape(ab.width, hasStroke, hasBackground);
-                    }
-                    else
-                    {
-                        // need to do this separately, because sometimes /IC is set anyway
-                        cs.drawShape(ab.width, hasStroke, false);
                     }
                 }
                 else if (PDAnnotationLine.LE_BUTT.equals(annotation.getStartPointEndingStyle()))
                 {
                     cs.moveTo(0, y - ab.width * 3);
                     cs.lineTo(0, y + ab.width * 3);
-                    cs.drawShape(ab.width, hasStroke, false);
                 }
                 else if (PDAnnotationLine.LE_DIAMOND.equals(annotation.getStartPointEndingStyle()))
                 {
                     drawDiamond(cs, 0, y, ab.width * 3);
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
                 else if (PDAnnotationLine.LE_SQUARE.equals(annotation.getStartPointEndingStyle()))
                 {
                     cs.addRect(0 - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
                 else if (PDAnnotationLine.LE_CIRCLE.equals(annotation.getStartPointEndingStyle()))
                 {
                     addCircle(cs, 0, y, ab.width * 3);
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
                 else if (PDAnnotationLine.LE_R_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
                          PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
                 {
-                    cs.moveTo(-ab.width - (float) (Math.cos(ARROW_ANGLE) * ab.width * 9), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
-                    cs.lineTo(-ab.width, y);
-                    cs.lineTo(-ab.width - (float) (Math.cos(ARROW_ANGLE) * ab.width * 9), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
+                    drawArrow(cs, -ab.width, y, -ab.width * 9);
                     if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
                     {
                         cs.closePath();
-                        cs.drawShape(ab.width, hasStroke, hasBackground);
-                    }
-                    else
-                    {
-                        cs.drawShape(ab.width, hasStroke, false);
                     }
                 }
-                
-                
+                else if (PDAnnotationLine.LE_SLASH.equals(annotation.getStartPointEndingStyle()))
+                {
+                    // the line is 18 x linewidth at an angle of 60°
+                    cs.moveTo((float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
+                               y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
+                    cs.lineTo((float) (Math.cos(Math.toRadians(240)) * ab.width * 9), 
+                               y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
+                }
+                if (INTERIOR_COLOR_STYLES.contains(annotation.getStartPointEndingStyle()))
+                {
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
+                }
+                else if (!PDAnnotationLine.LE_NONE.equals(annotation.getStartPointEndingStyle()))
+                {
+                    // need to do this separately, because sometimes /IC is set anyway
+                    cs.drawShape(ab.width, hasStroke, false);
+                }
+
+
                 if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
                     PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                 {
-                    cs.moveTo(-ab.width + (float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 9), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
-                    cs.lineTo(lineLength - ab.width, y);
-                    cs.lineTo(-ab.width + (float) (lineLength - Math.cos(ARROW_ANGLE) * ab.width * 9), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
+                    drawArrow(cs, lineLength - ab.width, y, -ab.width * 9);
                     if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                     {
                         cs.closePath();
-                        cs.drawShape(ab.width, hasStroke, hasBackground);
-                    }
-                    else
-                    {
-                        cs.drawShape(ab.width, hasStroke, false);
                     }
                 }
                 else if (PDAnnotationLine.LE_BUTT.equals(annotation.getEndPointEndingStyle()))
                 {
                     cs.moveTo(lineLength, y - ab.width * 3);
                     cs.lineTo(lineLength, y + ab.width * 3);
-                    cs.drawShape(ab.width, hasStroke, false);
                 }
                 else if (PDAnnotationLine.LE_DIAMOND.equals(annotation.getEndPointEndingStyle()))
                 {
                     drawDiamond(cs, lineLength, y, ab.width * 3);
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
                 else if (PDAnnotationLine.LE_SQUARE.equals(annotation.getEndPointEndingStyle()))
                 {
                     cs.addRect(lineLength - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
                 else if (PDAnnotationLine.LE_CIRCLE.equals(annotation.getEndPointEndingStyle()))
                 {
                     addCircle(cs, lineLength, y, ab.width * 3);
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
                 else if (PDAnnotationLine.LE_R_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
                          PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                 {
-                    cs.moveTo(lineLength + ab.width + (float) (Math.cos(ARROW_ANGLE) * ab.width * 9), y + (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
-                    cs.lineTo(lineLength + ab.width, y);
-                    cs.lineTo(lineLength + ab.width + (float) (Math.cos(ARROW_ANGLE) * ab.width * 9), y - (float) (Math.sin(ARROW_ANGLE) * ab.width * 9));
+                    drawArrow(cs, lineLength + ab.width, y, ab.width * 9);
                     if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
                     {
                         cs.closePath();
-                        cs.drawShape(ab.width, hasStroke, hasBackground);
                     }
-                    else
-                    {
-                        cs.drawShape(ab.width, hasStroke, false);
-                    }
+                }
+                else if (PDAnnotationLine.LE_SLASH.equals(annotation.getEndPointEndingStyle()))
+                {
+                    // the line is 18 x linewidth at an angle of 60Â°
+                    cs.moveTo(lineLength + (float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
+                                       y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
+                    cs.lineTo(lineLength + (float) (Math.cos(Math.toRadians(240)) * ab.width * 9), 
+                                       y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
+                }
+                if (INTERIOR_COLOR_STYLES.contains(annotation.getEndPointEndingStyle()))
+                {
+                    cs.drawShape(ab.width, hasStroke, hasBackground);
+                }
+                else if (!PDAnnotationLine.LE_NONE.equals(annotation.getEndPointEndingStyle()))
+                {
+                    // need to do this separately, because sometimes /IC is set anyway
+                    cs.drawShape(ab.width, hasStroke, false);
                 }
             }
         }
@@ -396,7 +397,28 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
     }
 
     /**
-     * Add a square diamond shape to the path.
+     * Add the two arms of a horizontal arrow.
+     * 
+     * @param cs Content stream
+     * @param x
+     * @param y
+     * @param len The arm length. Positive goes to the right, negative goes to the left.
+     * 
+     * @throws IOException If the content stream could not be written
+     */
+    private void drawArrow(PDAbstractContentStream cs, float x, float y, float len) throws IOException
+    {
+        // strategy for arrows: angle 30°, arrow arm length = 9 * line width
+        // cos(angle) = x position
+        // sin(angle) = y position
+        // this comes very close to what Adobe is doing
+        cs.moveTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y + (float) (Math.sin(ARROW_ANGLE) * len));
+        cs.lineTo(x, y);
+        cs.lineTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y - (float) (Math.sin(ARROW_ANGLE) * len));
+    }
+
+    /**
+     * Add a square diamond shape (corner on top) to the path.
      *
      * @param cs Content stream
      * @param x
