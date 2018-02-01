@@ -65,8 +65,11 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
             return;
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        if (ab.color.getComponents().length == 0)
+        if (annotation.getColor() == null || ab.color.getComponents().length == 0)
         {
+            //TODO Annotation border color handling is different here than with shape annotations,
+            // consider this when/if refactoring AnnotationBorder class,
+            // e.g. set a parameter what to use as default.
             return;
         }
 
@@ -127,7 +130,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                 frm2.setBBox(annotation.getRectangle());
                 os = frm2.getCOSObject().createOutputStream();
                 //TODO why can't we get a "classic" content stream?
-                PDColor color = annotation.getColor();
+                PDColor color = ab.color;
                 switch (color.getComponents().length)
                 {
                     case 1:
