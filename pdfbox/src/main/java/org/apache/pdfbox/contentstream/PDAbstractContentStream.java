@@ -180,7 +180,7 @@ public abstract class PDAbstractContentStream implements Closeable
         return resources;
     }
     
-    public void setResources(PDResources resources)
+    public final void setResources(PDResources resources)
     {
         this.resources = resources;
     }
