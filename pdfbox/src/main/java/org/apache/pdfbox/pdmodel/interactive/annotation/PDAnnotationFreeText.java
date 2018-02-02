@@ -124,30 +124,34 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
     }
 
     /**
-     * This will set the margin between the annotations "outer" rectangle defined by
+     * This will set the difference between the annotations "outer" rectangle defined by
      * /Rect and the border.
      * 
-     * <p>This will set an equal offset for all sides</p>
+     * <p>This will set an equal difference for all sides</p>
      * 
-     * @param differences from the annotations /Rect entry
+     * @param difference from the annotations /Rect entry
      */
-    public void setRectDifferences(float margin) {
-        setRectDifferences(margin, margin, margin, margin);
+    public void setRectDifferences(float difference) {
+        setRectDifferences(difference, difference, difference, difference);
     }
     
     /**
-     * This will set the margin between the annotations "outer" rectangle defined by
+     * This will set the difference between the annotations "outer" rectangle defined by
      * /Rect and the border.
      * 
-     * @param differences from the annotations /Rect entry
+     * @param differenceLeft left difference from the annotations /Rect entry
+     * @param differenceTop top difference from the annotations /Rect entry
+     * @param differenceRight right difference from  the annotations /Rect entry
+     * @param differenceBottom bottom difference from the annotations /Rect entry
+     * 
      */
-    public void setRectDifferences(float marginLeft, float marginTop, float marginRight, float marginBottom)
+    public void setRectDifferences(float differenceLeft, float differenceTop, float differenceRight, float differenceBottom)
     {
         COSArray margins = new COSArray();
-        margins.add(new COSFloat(marginLeft));
-        margins.add(new COSFloat(marginTop));
-        margins.add(new COSFloat(marginRight));
-        margins.add(new COSFloat(marginBottom));
+        margins.add(new COSFloat(differenceLeft));
+        margins.add(new COSFloat(differenceTop));
+        margins.add(new COSFloat(differenceRight));
+        margins.add(new COSFloat(differenceBottom));
         getCOSObject().setItem(COSName.RD, margins);    
     }
     
