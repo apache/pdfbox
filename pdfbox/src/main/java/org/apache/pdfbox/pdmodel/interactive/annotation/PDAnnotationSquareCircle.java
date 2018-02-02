@@ -191,19 +191,21 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * This will set the margin between the annotations "outer" rectangle defined by
      * /Rect and the border.
      * 
-     * @param margin
+     * <p>This will set an equal offset for all sides</p>
+     * 
+     * @param differences from the annotations /Rect entry
      */
-    public void setMargins(float margin) {
-        setMargins(margin, margin, margin, margin);
+    public void setRectDifferences(float margin) {
+        setRectDifferences(margin, margin, margin, margin);
     }
     
     /**
      * This will set the margin between the annotations "outer" rectangle defined by
      * /Rect and the border.
      * 
-     * @param margin
+     * @param differences from the annotations /Rect entry
      */
-    public void setMargins(float marginLeft, float marginTop, float marginRight, float marginBottom)
+    public void setRectDifferences(float marginLeft, float marginTop, float marginRight, float marginBottom)
     {
         COSArray margins = new COSArray();
         margins.add(new COSFloat(marginLeft));
@@ -217,9 +219,9 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * This will get the margin between the annotations "outer" rectangle defined by
      * /Rect and the border.
      * 
-     * @return the margins. If the entry hasn't been set am empty array is returned.
+     * @return the differences. If the entry hasn't been set am empty array is returned.
      */
-    public float[] getMargins()
+    public float[] getRectDifferences()
     {
         COSBase margin = getCOSObject().getItem(COSName.RD);
         if (margin instanceof COSArray)
