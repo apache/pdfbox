@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,7 +67,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                 
                 handleOpacity(annotation.getConstantOpacity());
                 
-                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
+                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());                
                 
                 // handle the border box
                 // 
@@ -87,6 +88,13 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                     // TODO: this only works for border effect solid. Cloudy needs a different approach.
                     annotation.setRectDifferences(lineWidth/2);
                     annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+                    
+                    // when the normal appearance stream was generated BBox and Matrix have been set to the
+                    // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
+                    annotation.getNormalAppearanceStream().setBBox(getRectangle());
+                    AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
+                            -getRectangle().getLowerLeftY());
+                    annotation.getNormalAppearanceStream().setMatrix(transform);
                 }
                 else
                 {
