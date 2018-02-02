@@ -147,7 +147,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                         // quadpoints spec sequence is incorrect, correct one is (4,5 0,1 2,3 6,7)
                         // https://stackoverflow.com/questions/9855814/pdf-spec-vs-acrobat-creation-quadpoints
 
-                        // for "curvy" highlighting, two BÃ©zier control points are used that seem to have a
+                        // for "curvy" highlighting, two Bézier control points are used that seem to have a
                         // distance of about 1/4 of the height.
                         // note that curves won't appear if outside of the rectangle
                         float delta = 0;
