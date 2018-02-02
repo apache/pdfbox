@@ -68,15 +68,34 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
                 
-                // the differences rectangle
-                // TODO: this only works for border effect solid. Cloudy needs a different approach.
-                setRectDifference(lineWidth);
+                // handle the border box
+                // 
+                // There are two options. The handling is not part of the PDF specification but
+                // implementation specific to Adobe Reader
+                // - if /RD is set the border box is the /Rect entry inset by the respective
+                //   border difference.
+                // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
+                //   be set to be the line width and the /Rect is enlarged by the /RD amount
+
+                PDRectangle borderBox = null;
+                float[] rectDifferences = annotation.getRectDifferences();
                 
-                // Acrobat applies a padding to each side of the bbox so the line is completely within
-                // the bbox.
-                PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth);
-                contentStream.addRect(borderEdge.getLowerLeftX(), borderEdge.getLowerLeftY(),
-                        borderEdge.getWidth(), borderEdge.getHeight());
+                if (rectDifferences.length == 0)
+                {
+                    borderBox = getPaddedRectangle(getRectangle(), lineWidth/2);
+                    // the differences rectangle
+                    // TODO: this only works for border effect solid. Cloudy needs a different approach.
+                    annotation.setRectDifferences(lineWidth/2);
+                    annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+                }
+                else
+                {
+                    borderBox = applyRectDifferences(getRectangle(), rectDifferences);
+                    borderBox = getPaddedRectangle(borderBox, lineWidth/2);
+                }
+                
+                contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
+                        borderBox.getWidth(), borderBox.getHeight());
                 
                 contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }

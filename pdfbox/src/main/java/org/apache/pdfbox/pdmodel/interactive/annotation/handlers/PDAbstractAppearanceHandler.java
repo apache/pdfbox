@@ -185,6 +185,49 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         return new PDRectangle(rectangle.getLowerLeftX() + padding, rectangle.getLowerLeftY() + padding,
                 rectangle.getWidth() - 2 * padding, rectangle.getHeight() - 2 * padding);
     }
+    
+    /**
+     * Get a rectangle enlarged by the differences.
+     * 
+     * <p>Creates a new rectangle with differences added to each side.
+     * .
+     * @param rectangle the rectangle.
+     * @param diifferences the differences to apply.
+     * @return the padded rectangle.
+     */
+    PDRectangle addRectDifferences(PDRectangle rectangle, float[] differences)
+    {
+        if (differences == null || differences.length != 4)
+        {
+            return rectangle;
+        }
+        
+        return new PDRectangle(rectangle.getLowerLeftX() - differences[0],
+                rectangle.getLowerLeftY() - differences[1],
+                rectangle.getWidth() + differences[0] + differences[2],
+                rectangle.getHeight() + differences[1] + differences[3]);
+    }
+    
+    /**
+     * Get a rectangle with the differences applied to each side.
+     * 
+     * <p>Creates a new rectangle with differences added to each side.
+     * .
+     * @param rectangle the rectangle.
+     * @param diifferences the differences to apply.
+     * @return the padded rectangle.
+     */
+    PDRectangle applyRectDifferences(PDRectangle rectangle, float[] differences)
+    {
+        if (differences == null || differences.length != 4)
+        {
+            return rectangle;
+        }
+        return new PDRectangle(rectangle.getLowerLeftX() + differences[0],
+                rectangle.getLowerLeftY() + differences[1],
+                rectangle.getWidth() - differences[0] - differences[2],
+                rectangle.getHeight() - differences[1] - differences[3]);
+    }
 
     void handleOpacity(float opacity) throws IOException
     {
