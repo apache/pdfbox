@@ -153,7 +153,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      * This will get the margin between the annotations "outer" rectangle defined by
      * /Rect and the border.
      * 
-     * @return the margins. If the entry hasn't been set defaults to 0 on all sides.
+     * @return the margins. If the entry hasn't been set am empty array is returned.
      */
     public float[] getMargins()
     {
@@ -162,7 +162,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
         {
             return ((COSArray) margin).toFloatArray();
         }
-        return new float[]{0f, 0f, 0f, 0f};
+        return new float[]{};
     }
     
     /**
