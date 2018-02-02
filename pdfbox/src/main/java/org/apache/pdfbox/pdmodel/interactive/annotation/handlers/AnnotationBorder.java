@@ -45,7 +45,7 @@ class AnnotationBorder
         if (borderStyle == null)
         {
             COSArray border = annotation.getBorder();
-            if (border.getObject(2) instanceof COSNumber)
+            if (border.size() >= 3 && border.getObject(2) instanceof COSNumber)
             {
                 ab.width = ((COSNumber) border.getObject(2)).floatValue();
             }
