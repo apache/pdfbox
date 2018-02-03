@@ -27,7 +27,7 @@ public class PDFormContentStream extends PDAbstractContentStream
 {
     public PDFormContentStream(PDFormXObject form) throws IOException
     {
-        super(form.getStream().createOutputStream());
+        super(form.getContentStream().createOutputStream());
         setResources(form.getResources());
     }
 }
