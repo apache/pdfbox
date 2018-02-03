@@ -87,7 +87,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      */
     public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream) throws IOException
     {
-        super(appearance, outputStream);
+        super(outputStream);
         setResources(appearance.getResources());
     }
 
