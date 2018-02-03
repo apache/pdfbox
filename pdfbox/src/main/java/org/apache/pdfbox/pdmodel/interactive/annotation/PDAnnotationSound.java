@@ -32,7 +32,7 @@ public class PDAnnotationSound extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE = "Sound";
 
-    private PDAppearanceHandler soundAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
     public PDAnnotationSound()
     {
@@ -52,24 +52,24 @@ public class PDAnnotationSound extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param soundAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomSoundAppearanceHandler(PDAppearanceHandler soundAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.soundAppearanceHandler = soundAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (soundAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDSoundAppearanceHandler appearanceHandler = new PDSoundAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            soundAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

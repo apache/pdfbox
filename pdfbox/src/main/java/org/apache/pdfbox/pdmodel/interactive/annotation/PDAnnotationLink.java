@@ -237,11 +237,11 @@ public class PDAnnotationLink extends PDAnnotation
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param customAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomAppearanceHandler(PDAppearanceHandler customAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.customAppearanceHandler = customAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
     
     @Override

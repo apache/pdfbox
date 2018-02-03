@@ -35,7 +35,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE = "PolyLine";
 
-    private PDAppearanceHandler polylineAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
     
     /**
      * Constructor.
@@ -108,24 +108,24 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param polylineAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomPolylineAppearanceHandler(PDAppearanceHandler polylineAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.polylineAppearanceHandler = polylineAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (polylineAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDPolylineAppearanceHandler appearanceHandler = new PDPolylineAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            polylineAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

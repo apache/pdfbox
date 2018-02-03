@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDLineAppearanc
  */
 public class PDAnnotationLine extends PDAnnotationMarkup
 {
-    private PDAppearanceHandler lineAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
     /*
      * The various values for intent (get/setIT, see the PDF 1.6 reference Table 8.22
@@ -460,24 +460,24 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param lineAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomLineAppearanceHandler(PDAppearanceHandler lineAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.lineAppearanceHandler = lineAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (lineAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDLineAppearanceHandler appearanceHandler = new PDLineAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            lineAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

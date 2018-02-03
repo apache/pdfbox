@@ -31,7 +31,7 @@ public class PDAnnotationCircle extends PDAnnotationSquareCircle
      */
     public static final String SUB_TYPE = "Circle";
 
-    private PDAppearanceHandler circleAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
     public PDAnnotationCircle()
     {
@@ -51,24 +51,24 @@ public class PDAnnotationCircle extends PDAnnotationSquareCircle
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param circleAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomCircleAppearanceHandler(PDAppearanceHandler circleAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.circleAppearanceHandler = circleAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (circleAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            circleAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

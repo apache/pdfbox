@@ -32,7 +32,7 @@ public class PDAnnotationUnderline extends PDAnnotationTextMarkup
      */
     public static final String SUB_TYPE = "Underline";
 
-    private PDAppearanceHandler appearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
      /**
      * Constructor.
@@ -57,22 +57,22 @@ public class PDAnnotationUnderline extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomUnderlineAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.appearanceHandler = appearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (appearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDUnderlineAppearanceHandler appearanceHandler = new PDUnderlineAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            appearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

@@ -35,7 +35,7 @@ public class PDAnnotationInk extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE = "Ink";
 
-    private PDAppearanceHandler inkAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
     /**
      * Constructor.
@@ -112,24 +112,24 @@ public class PDAnnotationInk extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param inkAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomInkAppearanceHandler(PDAppearanceHandler inkAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.inkAppearanceHandler = inkAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (inkAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDInkAppearanceHandler appearanceHandler = new PDInkAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            inkAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

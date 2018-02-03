@@ -32,7 +32,7 @@ public class PDAnnotationSquiggly extends PDAnnotationTextMarkup
      */
     public static final String SUB_TYPE = "Squiggly";
 
-    private PDAppearanceHandler appearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
      /**
      * Constructor.
@@ -57,22 +57,22 @@ public class PDAnnotationSquiggly extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomSquigglyAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.appearanceHandler = appearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (appearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDSquigglyAppearanceHandler appearanceHandler = new PDSquigglyAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            appearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }
