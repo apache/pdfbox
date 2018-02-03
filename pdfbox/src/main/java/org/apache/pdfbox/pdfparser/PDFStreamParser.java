@@ -32,8 +32,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
  * This will parse a PDF byte stream and extract operands and such.
@@ -52,34 +50,6 @@ public class PDFStreamParser extends BaseParser
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
     
-    /**
-     * Constructor.
-     *
-     * @param stream The stream to parse.
-     * @throws IOException If there is an error initializing the stream.
-     * 
-     * @deprecated Use {@link PDFStreamParser#PDFStreamParser(PDContentStream)} instead.
-     */
-    @Deprecated
-    public PDFStreamParser(PDStream stream) throws IOException
-    {
-        super(new InputStreamSource(stream.createInputStream()));
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param stream The stream to parse.
-     * @throws IOException If there is an error initializing the stream.
-     * 
-     * @deprecated Use {@link PDFStreamParser#PDFStreamParser(PDContentStream)} instead.
-     */
-    @Deprecated
-    public PDFStreamParser(COSStream stream) throws IOException
-    {
-        super(new InputStreamSource(stream.createInputStream()));
-    }
-
     /**
      * Constructor.
      *
