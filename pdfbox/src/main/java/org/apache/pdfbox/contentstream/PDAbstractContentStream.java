@@ -58,35 +58,6 @@ import org.apache.pdfbox.util.NumberFormatUtil;
 public abstract class PDAbstractContentStream implements Closeable
 {
     
-    /**
-     * This is to choose what to do with the stream: overwrite, append or prepend.
-     */
-    public enum AppendMode
-    {
-        /**
-         * Overwrite the existing page content streams.
-         */
-        OVERWRITE, 
-        /**
-         * Append the content stream after all existing page content streams.
-         */
-        APPEND, 
-        /**
-         * Insert before all other page content streams.
-         */
-        PREPEND;
-
-        public boolean isOverwrite()
-        {
-            return this == OVERWRITE;
-        }
-
-        public boolean isPrepend()
-        {
-            return this == PREPEND;
-        }
-    }
-    
     private OutputStream output;
     private PDResources resources;
 
