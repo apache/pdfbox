@@ -33,35 +33,6 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
 {
 
     /**
-     * This is to choose what to do with the stream: overwrite, append or
-     * prepend.
-     */
-    public enum AppendMode
-    {
-        /**
-         * Overwrite the existing page content streams.
-         */
-        OVERWRITE, /**
-                    * Append the content stream after all existing page content
-                    * streams.
-                    */
-        APPEND, /**
-                 * Insert before all other page content streams.
-                 */
-        PREPEND;
-
-        public boolean isOverwrite()
-        {
-            return this == OVERWRITE;
-        }
-
-        public boolean isPrepend()
-        {
-            return this == PREPEND;
-        }
-    }
-
-    /**
      * Create a new appearance stream.
      *
      * @param appearance
