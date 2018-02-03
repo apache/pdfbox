@@ -73,9 +73,8 @@ public abstract class PDAbstractContentStream implements Closeable
     /**
      * Create a new appearance stream.
      *
-     * @throws IOException If there is an error writing to the page contents.
      */
-    public PDAbstractContentStream() throws IOException
+    public PDAbstractContentStream()
     {
         formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
@@ -85,9 +84,8 @@ public abstract class PDAbstractContentStream implements Closeable
      * Create a new appearance stream.
      * 
      * @param outputStream The appearances output stream to write to.
-     * @throws IOException 
      */
-    public PDAbstractContentStream(OutputStream outputStream) throws IOException
+    public PDAbstractContentStream(OutputStream outputStream)
     {
         output = outputStream;
         this.resources = null;
