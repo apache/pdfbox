@@ -18,12 +18,14 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.pdfbox.cos.COSName;
 
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -32,6 +34,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFreeText;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationHighlight;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
@@ -39,6 +42,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitWidthDestination;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
 
 /**
  * Add annotations to pages of a PDF document.
@@ -236,7 +241,49 @@ public final class AddAnnotations
             dest.setPage(page3);
             actionGoto.setDestination(dest);
             pageLink.setAction(actionGoto);
-            annotations.add(pageLink);      
+            annotations.add(pageLink);
+
+            PDAnnotationFreeText freeTextAnnotation = new PDAnnotationFreeText();
+            PDColor yellow = new PDColor(new float[] { 1, 1, 0 }, PDDeviceRGB.INSTANCE);
+            // this sets background only (contradicts PDF specification)
+            freeTextAnnotation.setColor(yellow);
+            position = new PDRectangle();
+            position.setLowerLeftX(1 * INCH);
+            position.setLowerLeftY(ph - 5f * INCH - 3 * INCH);
+            position.setUpperRightX(pw - INCH);
+            position.setUpperRightY(ph - 5f * INCH);
+            freeTextAnnotation.setRectangle(position);
+            freeTextAnnotation.setTitlePopup("Sophia Lorem");
+            freeTextAnnotation.setSubject("Lorem ipsum");
+            freeTextAnnotation.setContents("Lorem ipsum dolor sit amet, consetetur sadipscing elitr,"
+                    + " sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+                    + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
+                    + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
+                    + "dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
+                    + "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+                    + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
+                    + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
+                    + "dolor sit amet.");
+            // Text and border in blue RGB color, "Helv" font, 20 point
+            freeTextAnnotation.setDefaultAppearance("0 0 1 rg /Helv 20 Tf");
+            // Quadding does not have any effect?!
+            freeTextAnnotation.setQ(PDVariableText.QUADDING_RIGHT);
+            annotations.add(freeTextAnnotation);
+
+            // add the "Helv" font to the default resources
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            if (acroForm == null)
+            {
+                acroForm = new PDAcroForm(document);
+                document.getDocumentCatalog().setAcroForm(acroForm);
+            }
+            PDResources dr = acroForm.getDefaultResources();
+            if (dr == null)
+            {
+                dr = new PDResources();
+                acroForm.setDefaultResources(dr);
+            }
+            dr.put(COSName.getPDFName("Helv"), PDType1Font.HELVETICA);
             
             // Create the appearance streams.
             // Adobe Reader will always display annotations without appearance streams nicely,
