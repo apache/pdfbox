@@ -32,7 +32,7 @@ public class PDAnnotationStrikeout extends PDAnnotationTextMarkup
      */
     public static final String SUB_TYPE = "StrikeOut";
 
-    private PDAppearanceHandler appearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
      /**
      * Constructor.
@@ -57,22 +57,22 @@ public class PDAnnotationStrikeout extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomStrikeoutAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.appearanceHandler = appearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (appearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDStrikeoutAppearanceHandler appearanceHandler = new PDStrikeoutAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            appearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

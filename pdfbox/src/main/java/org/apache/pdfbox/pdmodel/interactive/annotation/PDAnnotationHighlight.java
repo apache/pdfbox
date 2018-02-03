@@ -32,7 +32,7 @@ public class PDAnnotationHighlight extends PDAnnotationTextMarkup
      */
     public static final String SUB_TYPE = "Highlight";
 
-    private PDAppearanceHandler appearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
      /**
      * Constructor.
@@ -57,22 +57,22 @@ public class PDAnnotationHighlight extends PDAnnotationTextMarkup
      * 
      * @param appearanceHandler
      */
-    public void setCustomHighlightAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.appearanceHandler = appearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (appearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDHighlightAppearanceHandler appearanceHandler = new PDHighlightAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            appearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

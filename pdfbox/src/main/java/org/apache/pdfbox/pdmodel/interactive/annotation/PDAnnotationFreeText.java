@@ -36,7 +36,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE = "FreeText";
 
-    private PDAppearanceHandler freeTextAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
     public PDAnnotationFreeText()
     {
@@ -174,24 +174,24 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param freeTextAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomFreeTextAppearanceHandler(PDAppearanceHandler freeTextAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.freeTextAppearanceHandler = freeTextAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (freeTextAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDFreeTextAppearanceHandler appearanceHandler = new PDFreeTextAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            freeTextAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

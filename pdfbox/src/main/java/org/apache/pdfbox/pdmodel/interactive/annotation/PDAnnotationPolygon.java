@@ -35,7 +35,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE = "Polygon";
 
-    private PDAppearanceHandler polygonAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
     
     /**
      * Constructor.
@@ -142,24 +142,24 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param polygonAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomPolygonAppearanceHandler(PDAppearanceHandler polygonAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.polygonAppearanceHandler = polygonAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (polygonAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            polygonAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }

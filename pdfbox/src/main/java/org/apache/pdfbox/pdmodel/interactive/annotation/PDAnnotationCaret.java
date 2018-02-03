@@ -35,7 +35,7 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
      */
     public static final String SUB_TYPE = "Caret";
 
-    private PDAppearanceHandler caretAppearanceHandler;
+    private PDAppearanceHandler customAppearanceHandler;
 
     public PDAnnotationCaret()
     {
@@ -103,24 +103,24 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
-     * @param caretAppearanceHandler
+     * @param appearanceHandler
      */
-    public void setCustomCaretAppearanceHandler(PDAppearanceHandler caretAppearanceHandler)
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
-        this.caretAppearanceHandler = caretAppearanceHandler;
+        customAppearanceHandler = appearanceHandler;
     }
 
     @Override
     public void constructAppearances(ScratchFile scratchFile)
     {
-        if (caretAppearanceHandler == null)
+        if (customAppearanceHandler == null)
         {
             PDCaretAppearanceHandler appearanceHandler = new PDCaretAppearanceHandler(this);
             appearanceHandler.generateAppearanceStreams();
         }
         else
         {
-            caretAppearanceHandler.generateAppearanceStreams();
+            customAppearanceHandler.generateAppearanceStreams();
         }
     }
 }
