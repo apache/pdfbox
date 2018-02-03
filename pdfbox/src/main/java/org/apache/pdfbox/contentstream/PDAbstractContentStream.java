@@ -572,7 +572,7 @@ public abstract class PDAbstractContentStream implements Closeable
         writeOperator("Q");
     }
 
-    protected COSName getName(PDColorSpace colorSpace) throws IOException
+    protected COSName getName(PDColorSpace colorSpace)
     {
         if (colorSpace instanceof PDDeviceGray ||
             colorSpace instanceof PDDeviceRGB ||
