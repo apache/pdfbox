@@ -278,10 +278,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param doc The document the appearance is part of.
      * @param appearance The appearance stream to add to.
      * @param outputStream The appearances output stream to write to.
-     * @throws IOException If there is an error writing to the page contents.
      */
     public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream)
-            throws IOException
     {
         super(outputStream);
         this.document = doc;
