@@ -85,7 +85,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @throws IOException
      *             If there is an error writing to the page contents.
      */
-    public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream) throws IOException
+    public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream)
     {
         super(outputStream);
         setResources(appearance.getResources());
