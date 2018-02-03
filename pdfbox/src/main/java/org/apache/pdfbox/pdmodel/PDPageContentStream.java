@@ -283,7 +283,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream)
             throws IOException
     {
-        super(appearance, outputStream);
+        super(outputStream);
         this.document = doc;
         
         setResources(appearance.getResources());
