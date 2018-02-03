@@ -169,9 +169,8 @@ public class PDAnnotationMarkup extends PDAnnotation
      * This will retrieve the date and time the annotation was created.
      *
      * @return the creation date/time.
-     * @throws IOException if there is a format problem when converting the date.
      */
-    public Calendar getCreationDate() throws IOException
+    public Calendar getCreationDate()
     {
         return getCOSObject().getDate(COSName.CREATION_DATE);
     }
