@@ -25,6 +25,13 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
  */
 public class PDFormContentStream extends PDAbstractContentStream
 {
+    /**
+     * Create a new form XObject content stream.
+     *
+     * @param form The form XObject stream to write to.
+     * 
+     * @throws IOException If there is an error writing to the form contents.
+     */
     public PDFormContentStream(PDFormXObject form) throws IOException
     {
         super(form.getContentStream().createOutputStream());

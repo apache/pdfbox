@@ -25,6 +25,13 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
  */
 public class PDPatternContentStream extends PDAbstractContentStream
 {
+    /**
+     * Create a new tiling pattern content stream.
+     *
+     * @param pattern The tiling pattern stream to write to.
+     * 
+     * @throws IOException If there is an error writing to the form contents.
+     */
     public PDPatternContentStream(PDTilingPattern pattern) throws IOException
     {
         super(pattern.getContentStream().createOutputStream());
