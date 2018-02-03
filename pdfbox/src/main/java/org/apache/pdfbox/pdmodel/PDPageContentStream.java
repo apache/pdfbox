@@ -106,24 +106,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Create a new PDPage content stream.
-     *
-     * @param document The document the page is part of.
-     * @param sourcePage The page to write the contents to.
-     * @param appendContent Indicates whether content will be overwritten. If false all previous
-     *                      content is deleted.
-     * @param compress Tell if the content stream should compress the page contents.
-     * @throws IOException If there is an error writing to the page contents.
-     * @deprecated use {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean)}
-     */
-    @Deprecated
-    public PDPageContentStream(PDDocument document, PDPage sourcePage, boolean appendContent,
-                               boolean compress) throws IOException
-    {
-        this(document, sourcePage, appendContent, compress, false);
-    }
-
-    /**
      * Create a new PDPage content stream. If the appendContent parameter is set to
      * {@link AppendMode#APPEND}, you may want to use
      * {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean, boolean)}
@@ -139,27 +121,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                                boolean compress) throws IOException
     {
         this(document, sourcePage, appendContent, compress, false);
-    }
-
-    /**
-     * Create a new PDPage content stream.
-     *
-     * @param document The document the page is part of.
-     * @param sourcePage The page to write the contents to.
-     * @param appendContent Indicates whether content will be overwritten. If false all previous
-     *                      content is deleted.
-     * @param compress Tell if the content stream should compress the page contents.
-     * @param resetContext Tell if the graphic context should be reseted. You should use this when
-     * appending to an existing stream, because the existing stream may have changed graphic
-     * properties (e.g. scaling, rotation).
-     * @throws IOException If there is an error writing to the page contents.
-     * @deprecated use {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean, boolean) }
-     */
-    @Deprecated
-    public PDPageContentStream(PDDocument document, PDPage sourcePage, boolean appendContent,
-                               boolean compress, boolean resetContext) throws IOException
-    {
-      this (document, sourcePage, appendContent ? AppendMode.APPEND : AppendMode.OVERWRITE, compress, resetContext);
     }
     
     /**
