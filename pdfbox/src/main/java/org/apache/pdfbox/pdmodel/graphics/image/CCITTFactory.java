@@ -152,43 +152,6 @@ public final class CCITTFactory
         image.getCOSObject().setItem(COSName.DECODE_PARMS, dict);
         return image;
     }
-   
-    /**
-     * Creates a new CCITT Fax compressed image XObject from the first image of a TIFF file.
-     * 
-     * @param document the document to create the image as part of.
-     * @param reader the random access TIFF file which contains a suitable CCITT
-     * compressed image
-     * @return a new image XObject
-     * @throws IOException if there is an error reading the TIFF data.
-     * 
-     * @deprecated Use {@link #createFromFile(PDDocument, File)} instead.
-     */
-    @Deprecated
-    public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader)
-            throws IOException
-    {
-        return createFromRandomAccessImpl(document, reader, 0);
-    }
-
-    /**
-     * Creates a new CCITT Fax compressed image XObject from a specific image of a TIFF file.
-     *
-     * @param document the document to create the image as part of.
-     * @param reader the random access TIFF file which contains a suitable CCITT
-     * compressed image
-     * @param number TIFF image number, starting from 0
-     * @return a new image XObject, or null if no such page
-     * @throws IOException if there is an error reading the TIFF data.
-     * 
-     * @deprecated Use {@link #createFromFile(PDDocument, File, int)} instead.
-     */
-    @Deprecated
-    public static PDImageXObject createFromRandomAccess(PDDocument document, RandomAccess reader,
-                                                        int number) throws IOException
-    {
-        return createFromRandomAccessImpl(document, reader, number);
-    }
 
     /**
      * Creates a new CCITT Fax compressed image XObject from the first image of a TIFF file. Only
