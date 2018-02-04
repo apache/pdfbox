@@ -138,6 +138,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         acroForm.setAppendOnly(true);
         acroFormDict.setDirect(true);
         acroFormFields.add(signatureField);
+        // WTF sylfaen? 
         acroForm.setDefaultAppearance("/sylfaen 0 Tf 0 g");
         pdfStructure.setAcroFormFields(acroFormFields);
         pdfStructure.setAcroFormDictionary(acroFormDict);
@@ -158,21 +159,6 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
         signatureField.getWidgets().get(0).setRectangle(rect);
         pdfStructure.setSignatureRectangle(rect);
         LOG.info("Signature rectangle has been created");
-    }
-
-    /**
-     * {@inheritDoc }
-     *
-     * @deprecated use {@link #createAffineTransform(java.awt.geom.AffineTransform) }
-     */
-    @Override
-    @Deprecated
-    public void createAffineTransform(byte[] params)
-    {
-        AffineTransform transform = new AffineTransform(params[0], params[1], params[2],
-                                                        params[3], params[4],  params[5]);
-        pdfStructure.setAffineTransform(transform);
-        LOG.info("Matrix has been added");
     }
 
     @Override
@@ -200,25 +186,6 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
     {
         pdfStructure.setImage(LosslessFactory.createFromImage(template, image));
         LOG.info("Visible Signature Image has been created");
-    }
-
-    /**
-     * {@inheritDoc }
-     * 
-     * @deprecated use {@link #createFormatterRectangle(int[]) createFormatterRectangle(int[])}
-     */
-    @Override
-    @Deprecated
-    public void createFormatterRectangle(byte[] params)
-    {
-        PDRectangle formatterRectangle = new PDRectangle();
-        formatterRectangle.setLowerLeftX(Math.min(params[0],params[2]));
-        formatterRectangle.setLowerLeftY(Math.min(params[1],params[3]));
-        formatterRectangle.setUpperRightX(Math.max(params[0],params[2]));
-        formatterRectangle.setUpperRightY(Math.max(params[1],params[3]));
-
-        pdfStructure.setFormatterRectangle(formatterRectangle);
-        LOG.info("Formatter rectangle has been created");
     }
 
     @Override
