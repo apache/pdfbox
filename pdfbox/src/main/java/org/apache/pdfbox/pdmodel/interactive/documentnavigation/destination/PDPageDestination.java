@@ -113,43 +113,6 @@ public abstract class PDPageDestination extends PDDestination
      * Returns the page number for this destination, regardless of whether this is a page number or
      * a reference to a page.
      *
-     * @since Apache PDFBox 1.0.0
-     * @see org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem
-     * @return page number, or -1 if the destination type is unknown. The page number is 0-based if
-     * it was in the dictionary (for remote destinations), and 1-based if it was computed from a
-     * page reference (for local destinations).
-     * @deprecated This method has inconsistent behavior (see returns), use {@link #retrievePageNumber()} instead.
-     */
-    @Deprecated
-    public int findPageNumber()
-    {
-        int retval = -1;
-        if( array.size() > 0 )
-        {
-            COSBase page = array.getObject( 0 );
-            if( page instanceof COSNumber )
-            {
-                retval = ((COSNumber)page).intValue();
-            }
-            else if (page instanceof COSDictionary)
-            {
-                COSBase parent = page;
-                while (((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P) != null)
-                {
-                    parent = ((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P);
-                }
-                // now parent is the pages node
-                PDPageTree pages = new PDPageTree((COSDictionary) parent);
-                return pages.indexOf(new PDPage((COSDictionary) page)) + 1;
-            }
-        }
-        return retval;
-    }
-
-    /**
-     * Returns the page number for this destination, regardless of whether this is a page number or
-     * a reference to a page.
-     *
      * @see org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem
      * @return the 0-based page number, or -1 if the destination type is unknown.
      */
