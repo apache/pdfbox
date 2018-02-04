@@ -115,7 +115,7 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
      * the chosen key length. The default is false. This setting is only relevant if the key length
      * is 128 bits.
      *
-     * @return
+     * @return true if AES encryption is preferred
      */
     public boolean isPreferAES()
     {

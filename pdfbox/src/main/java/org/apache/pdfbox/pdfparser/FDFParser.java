@@ -78,7 +78,7 @@ public class FDFParser extends COSParser
      * Tell if the dictionary is a FDF catalog.
      *
      * @param dictionary
-     * @return
+     * @return true if the dictionary is a FDF catalog
      */
     @Override
     protected final boolean isCatalog(COSDictionary dictionary)
