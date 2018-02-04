@@ -272,19 +272,6 @@ public class PDStream implements COSObjectable
     }
 
     /**
-     * Get the cos stream associated with this object.
-     *
-     * @return The cos object that matches this Java object.
-     * 
-     * @deprecated use {@link #getCOSObject() }
-     */
-    @Deprecated
-    public COSStream getStream()
-    {
-        return stream;
-    }
-
-    /**
      * This will get the length of the filtered/compressed stream. This is
      * readonly in the PD Model and will be managed by this class.
      * 
