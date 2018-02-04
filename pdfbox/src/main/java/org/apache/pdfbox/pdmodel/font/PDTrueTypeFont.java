@@ -44,7 +44,6 @@ import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.font.encoding.MacOSRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Type1Encoding;
-import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 
 
 import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
@@ -211,39 +210,6 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
             throws IOException
     {
         return new PDTrueTypeFont(doc, ttf, encoding, false);
-    }
-
-    /**
-     * Loads a TTF to be embedded into a document as a simple font. Only supports WinAnsiEncoding.
-     *
-     * @param doc The PDF document that will hold the embedded font.
-     * @param file A TTF file.
-     * @return a PDTrueTypeFont instance.
-     * @throws IOException If there is an error loading the data.
-     *
-     * @deprecated Use {@link PDType0Font#load(PDDocument, File)} instead.
-     */
-    @Deprecated
-    public static PDTrueTypeFont loadTTF(PDDocument doc, File file) throws IOException
-    {
-        return new PDTrueTypeFont(doc, new TTFParser().parse(file), WinAnsiEncoding.INSTANCE, true);
-    }
-
-    /**
-     * Loads a TTF to be embedded into a document as a simple font. Only supports WinAnsiEncoding.
-     *
-     * @param doc The PDF document that will hold the embedded font.
-     * @param input A TTF file stream
-     * @return a PDTrueTypeFont instance.
-     * @throws IOException If there is an error loading the data.
-     *
-     * @deprecated Use {@link PDType0Font#load(PDDocument, InputStream)} instead.
-     */
-    @Deprecated
-    public static PDTrueTypeFont loadTTF(PDDocument doc, InputStream input) throws IOException
-    {
-        return new PDTrueTypeFont(doc, new TTFParser().parse(input), WinAnsiEncoding.INSTANCE,
-                true);
     }
 
     /**
