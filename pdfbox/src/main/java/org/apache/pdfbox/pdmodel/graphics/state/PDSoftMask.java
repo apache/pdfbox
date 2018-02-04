@@ -173,7 +173,6 @@ public final class PDSoftMask implements COSObjectable
     /**
      * Returns the CTM at the time the ExtGState was activated.
      *
-     * @return
      */
     public Matrix getInitialTransformationMatrix()
     {
