@@ -223,30 +223,6 @@ public class PDGraphicsState implements Cloneable
      * Get the value of the non-stroke alpha constant property.
      *
      * @return The value of the non-stroke alpha constant parameter.
-     * @deprecated use {@link #getNonStrokeAlphaConstant() }
-     */
-    @Deprecated
-    public double getNonStrokeAlphaConstants()
-    {
-        return nonStrokingAlphaConstant;
-    }
-
-    /**
-     * set the value of the non-stroke alpha constant property.
-     *
-     * @param value The value of the non-stroke alpha constant parameter.
-     * @deprecated use {@link #setNonStrokeAlphaConstant(double) }
-     */
-    @Deprecated
-    public void setNonStrokeAlphaConstants(double value)
-    {
-        nonStrokingAlphaConstant = value;
-    }
-
-    /**
-     * Get the value of the non-stroke alpha constant property.
-     *
-     * @return The value of the non-stroke alpha constant parameter.
      */
     public double getNonStrokeAlphaConstant()
     {
