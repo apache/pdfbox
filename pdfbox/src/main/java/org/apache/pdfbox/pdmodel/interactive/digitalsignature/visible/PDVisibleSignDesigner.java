@@ -453,44 +453,10 @@ public class PDVisibleSignDesigner
 
     /**
      * @return Affine Transform parameters for PDF Matrix
-     * 
-     * @deprecated use {@link #getTransform() }.
-     */
-    @Deprecated
-    public byte[] getAffineTransformParams()
-    {
-        return new byte[] 
-        {
-            (byte) affineTransform.getScaleX(), 
-            (byte) affineTransform.getShearY(), 
-            (byte) affineTransform.getShearX(), 
-            (byte) affineTransform.getScaleY(), 
-            (byte) affineTransform.getTranslateX(), 
-            (byte) affineTransform.getTranslateY()
-        };
-    }
-
-    /**
-     * @return Affine Transform parameters for PDF Matrix
      */
     public AffineTransform getTransform()
     {
         return affineTransform;
-    }
-
-    /**
-     * 
-     * @param affineTransformParams
-     * @return Visible Signature Configuration Object
-     * @deprecated use {@link #transform}.
-     */
-    @Deprecated
-    public PDVisibleSignDesigner affineTransformParams(byte[] affineTransformParams)
-    {
-        affineTransform = new AffineTransform(affineTransformParams[0], affineTransformParams[1],
-                affineTransformParams[2], affineTransformParams[3],
-                affineTransformParams[4], affineTransformParams[5]);
-        return this;
     }
 
     /**
@@ -503,16 +469,6 @@ public class PDVisibleSignDesigner
         this.affineTransform = new AffineTransform(affineTransform);
         return this;
     }
-    
-    /**
-     * @return formatter PDRectangle parameters
-     * @deprecated use {@link #getFormatterRectangleParameters() getFormatterRectangleParameters()}
-     */
-    @Deprecated
-    public byte[] getFormatterRectangleParams()
-    {
-        return formatterRectangleParams;
-    }
 
     /**
      * 
@@ -521,20 +477,6 @@ public class PDVisibleSignDesigner
     public int[] getFormatterRectangleParameters()
     {
         return formatterRectangleParameters;
-    }
-
-    /**
-     * Sets formatter PDRectangle
-     * 
-     * @param formatterRectangleParams
-     * @return Visible Signature Configuration Object
-     * @deprecated use {@link #formatterRectangleParameters(int[]) formatterRectangleParameters(int[])}
-     */
-    @Deprecated
-    public PDVisibleSignDesigner formatterRectangleParams(byte[] formatterRectangleParams)
-    {
-        this.formatterRectangleParams = formatterRectangleParams;
-        return this;
     }
 
     /**
