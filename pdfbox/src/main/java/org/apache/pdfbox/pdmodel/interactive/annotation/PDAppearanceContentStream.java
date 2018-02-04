@@ -53,8 +53,6 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      *            The appearance stream to add to.
      * @param outputStream
      *            The appearances output stream to write to.
-     * @throws IOException
-     *             If there is an error writing to the page contents.
      */
     public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream)
     {
