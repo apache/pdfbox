@@ -140,28 +140,6 @@ public class PDXObject implements COSObjectable
     /**
      * Returns the stream.
      * @return The stream for this object.
-     * @deprecated use {@link #getCOSObject() }
-     */
-    @Deprecated
-    public final COSStream getCOSStream()
-    {
-        return stream.getCOSObject();
-    }
-
-    /**
-     * Returns the stream.
-     * @return The stream for this object.
-     * @deprecated Use {@link #getStream()} instead.
-     */
-    @Deprecated
-    public final PDStream getPDStream()
-    {
-        return stream;
-    }
-
-    /**
-     * Returns the stream.
-     * @return The stream for this object.
      */
     public final PDStream getStream()
     {
