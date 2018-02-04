@@ -177,7 +177,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             {
                 // create a new stream to encapsulate the existing stream
                 PDStream saveGraphics = new PDStream(document);
-                setOutput(saveGraphics.createOutputStream(filter));
+                setOutputStream(saveGraphics.createOutputStream(filter));
                 
                 // save the initial/unmodified graphics context
                 saveGraphicsState();
@@ -189,7 +189,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
             // Sets the compoundStream as page contents
             sourcePage.getCOSObject().setItem(COSName.CONTENTS, array);
-            setOutput(contentsToAppend.createOutputStream(filter));
+            setOutputStream(contentsToAppend.createOutputStream(filter));
 
             // restore the initial/unmodified graphics context
             if (resetContext)
@@ -205,7 +205,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             PDStream contents = new PDStream(document);
             sourcePage.setContents(contents);
-            setOutput(contents.createOutputStream(filter));
+            setOutputStream(contents.createOutputStream(filter));
         }
         
         // this has to be done here, as the resources will be set to null when resetting the content
@@ -323,7 +323,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
-        COSWriter.writeString(font.encode(text), getOutput());
+        COSWriter.writeString(font.encode(text), getOutputStream());
     }
 
     /**

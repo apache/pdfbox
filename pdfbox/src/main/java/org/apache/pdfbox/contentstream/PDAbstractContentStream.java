@@ -57,7 +57,7 @@ import org.apache.pdfbox.util.NumberFormatUtil;
 public abstract class PDAbstractContentStream implements Closeable
 {
     
-    private OutputStream output;
+    private OutputStream outputStream;
     private PDResources resources;
 
     private boolean inTextMode = false;
@@ -87,7 +87,7 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     public PDAbstractContentStream(OutputStream outputStream)
     {
-        output = outputStream;
+        this.outputStream = outputStream;
         this.resources = null;
 
         formatDecimal.setMaximumFractionDigits(4);
@@ -105,14 +105,14 @@ public abstract class PDAbstractContentStream implements Closeable
         formatDecimal.setMaximumFractionDigits(fractionDigitsNumber);
     }
     
-    public OutputStream getOutput()
+    public OutputStream getOutputStream()
     {
-        return this.output;
+        return outputStream;
     }
 
-    public void setOutput(OutputStream outputStream)
+    public void setOutputStream(OutputStream outputStream)
     {
-        this.output = outputStream;
+        this.outputStream = outputStream;
     }
     
     public PDResources getResources()
@@ -278,7 +278,7 @@ public abstract class PDAbstractContentStream implements Closeable
             }
         }
 
-        COSWriter.writeString(font.encode(text), output);
+        COSWriter.writeString(font.encode(text), outputStream);
     }
 
     /**
@@ -1367,9 +1367,9 @@ public abstract class PDAbstractContentStream implements Closeable
         {
             throw new IllegalArgumentException("comment should not include a newline");
         }
-        output.write('%');
-        output.write(comment.getBytes(Charsets.US_ASCII));
-        output.write('\n');
+        outputStream.write('%');
+        outputStream.write(comment.getBytes(Charsets.US_ASCII));
+        outputStream.write('\n');
     }
 
     /**
@@ -1388,9 +1388,9 @@ public abstract class PDAbstractContentStream implements Closeable
         }
         else
         {
-            output.write(formatBuffer, 0, byteCount);
+            outputStream.write(formatBuffer, 0, byteCount);
         }
-        output.write(' ');
+        outputStream.write(' ');
     }
 
     /**
@@ -1401,7 +1401,7 @@ public abstract class PDAbstractContentStream implements Closeable
     protected void writeOperand(int integer) throws IOException
     {
         write(formatDecimal.format(integer));
-        output.write(' ');
+        outputStream.write(' ');
     }
 
     /**
@@ -1411,8 +1411,8 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     protected void writeOperand(COSName name) throws IOException
     {
-        name.writePDF(output);
-        output.write(' ');
+        name.writePDF(outputStream);
+        outputStream.write(' ');
     }
 
     /**
@@ -1422,8 +1422,8 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     protected void writeOperator(String text) throws IOException
     {
-        output.write(text.getBytes(Charsets.US_ASCII));
-        output.write('\n');
+        outputStream.write(text.getBytes(Charsets.US_ASCII));
+        outputStream.write('\n');
     }
 
     /**
@@ -1433,7 +1433,7 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     protected void write(String text) throws IOException
     {
-        output.write(text.getBytes(Charsets.US_ASCII));
+        outputStream.write(text.getBytes(Charsets.US_ASCII));
     }
 
     /**
@@ -1443,7 +1443,7 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     protected void write(byte[] data) throws IOException
     {
-        output.write(data);
+        outputStream.write(data);
     }
     
     /**
@@ -1452,7 +1452,7 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     protected void writeLine() throws IOException
     {
-        output.write('\n');
+        outputStream.write('\n');
     }
 
     /**
@@ -1462,7 +1462,7 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     protected void writeBytes(byte[] data) throws IOException
     {
-        output.write(data);
+        outputStream.write(data);
     }
 
     /**
@@ -1486,7 +1486,7 @@ public abstract class PDAbstractContentStream implements Closeable
     @Override
     public void close() throws IOException
     {
-        output.close();
+        outputStream.close();
     }
 
     protected boolean isOutside255Interval(int val)
