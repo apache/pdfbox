@@ -47,7 +47,6 @@ public class PDVisibleSignDesigner
     private float pageWidth;
     private BufferedImage image;
     private String signatureFieldName = "sig";
-    private byte[] formatterRectangleParams = { 0, 0, 100, 50 };
     private int[] formatterRectangleParameters = { 0, 0, 100, 50 };
     private AffineTransform affineTransform = new AffineTransform();
     private float imageSizeInPercents;
