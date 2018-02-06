@@ -222,7 +222,7 @@ public abstract class PDAbstractContentStream implements Closeable
             }
             else if (obj instanceof Float)
             {
-                writeOperand(((Float) obj).floatValue());
+                writeOperand((Float) obj);
             }
             else
             {
