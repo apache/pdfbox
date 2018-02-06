@@ -282,48 +282,46 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // do this here and not before showing the text, or the text would appear in the
                 // interior color
                 boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
-                if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
-                    PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
+                switch (annotation.getStartPointEndingStyle())
                 {
-                    drawArrow(cs, ab.width, y, ab.width * 9);                    
-                    if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
-                    {
-                        cs.closePath();
-                    }
-                }
-                else if (PDAnnotationLine.LE_BUTT.equals(annotation.getStartPointEndingStyle()))
-                {
-                    cs.moveTo(0, y - ab.width * 3);
-                    cs.lineTo(0, y + ab.width * 3);
-                }
-                else if (PDAnnotationLine.LE_DIAMOND.equals(annotation.getStartPointEndingStyle()))
-                {
-                    drawDiamond(cs, 0, y, ab.width * 3);
-                }
-                else if (PDAnnotationLine.LE_SQUARE.equals(annotation.getStartPointEndingStyle()))
-                {
-                    cs.addRect(0 - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
-                }
-                else if (PDAnnotationLine.LE_CIRCLE.equals(annotation.getStartPointEndingStyle()))
-                {
-                    addCircle(cs, 0, y, ab.width * 3);
-                }
-                else if (PDAnnotationLine.LE_R_OPEN_ARROW.equals(annotation.getStartPointEndingStyle()) ||
-                         PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
-                {
-                    drawArrow(cs, -ab.width, y, -ab.width * 9);
-                    if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
-                    {
-                        cs.closePath();
-                    }
-                }
-                else if (PDAnnotationLine.LE_SLASH.equals(annotation.getStartPointEndingStyle()))
-                {
-                    // the line is 18 x linewidth at an angle of 60°
-                    cs.moveTo((float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
-                               y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
-                    cs.lineTo((float) (Math.cos(Math.toRadians(240)) * ab.width * 9), 
-                               y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
+                    case PDAnnotationLine.LE_OPEN_ARROW:
+                    case PDAnnotationLine.LE_CLOSED_ARROW:
+                        drawArrow(cs, ab.width, y, ab.width * 9);
+                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
+                        {
+                            cs.closePath();
+                        }
+                        break;
+                    case PDAnnotationLine.LE_BUTT:
+                        cs.moveTo(0, y - ab.width * 3);
+                        cs.lineTo(0, y + ab.width * 3);
+                        break;
+                    case PDAnnotationLine.LE_DIAMOND:
+                        drawDiamond(cs, 0, y, ab.width * 3);
+                        break;
+                    case PDAnnotationLine.LE_SQUARE:
+                        cs.addRect(0 - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
+                        break;
+                    case PDAnnotationLine.LE_CIRCLE:
+                        addCircle(cs, 0, y, ab.width * 3);
+                        break;
+                    case PDAnnotationLine.LE_R_OPEN_ARROW:
+                    case PDAnnotationLine.LE_R_CLOSED_ARROW:
+                        drawArrow(cs, -ab.width, y, -ab.width * 9);
+                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
+                        {
+                            cs.closePath();
+                        }
+                        break;
+                    case PDAnnotationLine.LE_SLASH:
+                        // the line is 18 x linewidth at an angle of 60°
+                        cs.moveTo((float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
+                              y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
+                        cs.lineTo((float) (Math.cos(Math.toRadians(240)) * ab.width * 9),
+                              y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
+                        break;
+                    default:
+                        break;
                 }
                 if (INTERIOR_COLOR_STYLES.contains(annotation.getStartPointEndingStyle()))
                 {
@@ -335,49 +333,46 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     cs.drawShape(ab.width, hasStroke, false);
                 }
 
-
-                if (PDAnnotationLine.LE_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
-                    PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                switch (annotation.getEndPointEndingStyle())
                 {
-                    drawArrow(cs, lineLength - ab.width, y, -ab.width * 9);
-                    if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
-                    {
-                        cs.closePath();
-                    }
-                }
-                else if (PDAnnotationLine.LE_BUTT.equals(annotation.getEndPointEndingStyle()))
-                {
-                    cs.moveTo(lineLength, y - ab.width * 3);
-                    cs.lineTo(lineLength, y + ab.width * 3);
-                }
-                else if (PDAnnotationLine.LE_DIAMOND.equals(annotation.getEndPointEndingStyle()))
-                {
-                    drawDiamond(cs, lineLength, y, ab.width * 3);
-                }
-                else if (PDAnnotationLine.LE_SQUARE.equals(annotation.getEndPointEndingStyle()))
-                {
-                    cs.addRect(lineLength - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
-                }
-                else if (PDAnnotationLine.LE_CIRCLE.equals(annotation.getEndPointEndingStyle()))
-                {
-                    addCircle(cs, lineLength, y, ab.width * 3);
-                }
-                else if (PDAnnotationLine.LE_R_OPEN_ARROW.equals(annotation.getEndPointEndingStyle()) ||
-                         PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
-                {
-                    drawArrow(cs, lineLength + ab.width, y, ab.width * 9);
-                    if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
-                    {
-                        cs.closePath();
-                    }
-                }
-                else if (PDAnnotationLine.LE_SLASH.equals(annotation.getEndPointEndingStyle()))
-                {
-                    // the line is 18 x linewidth at an angle of 60Â°
-                    cs.moveTo(lineLength + (float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
-                                       y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
-                    cs.lineTo(lineLength + (float) (Math.cos(Math.toRadians(240)) * ab.width * 9), 
-                                       y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
+                    case PDAnnotationLine.LE_OPEN_ARROW:
+                    case PDAnnotationLine.LE_CLOSED_ARROW:
+                        drawArrow(cs, lineLength - ab.width, y, -ab.width * 9);
+                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                        {
+                            cs.closePath();
+                        }
+                        break;
+                    case PDAnnotationLine.LE_BUTT:
+                        cs.moveTo(lineLength, y - ab.width * 3);
+                        cs.lineTo(lineLength, y + ab.width * 3);
+                        break;
+                    case PDAnnotationLine.LE_DIAMOND:
+                        drawDiamond(cs, lineLength, y, ab.width * 3);
+                        break;
+                    case PDAnnotationLine.LE_SQUARE:
+                        cs.addRect(lineLength - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
+                        break;
+                    case PDAnnotationLine.LE_CIRCLE:
+                        addCircle(cs, lineLength, y, ab.width * 3);
+                        break;
+                    case PDAnnotationLine.LE_R_OPEN_ARROW:
+                    case PDAnnotationLine.LE_R_CLOSED_ARROW:
+                        drawArrow(cs, lineLength + ab.width, y, ab.width * 9);
+                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                        {
+                            cs.closePath();
+                        }
+                        break;
+                    case PDAnnotationLine.LE_SLASH:
+                        // the line is 18 x linewidth at an angle of 60Â°
+                        cs.moveTo(lineLength + (float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
+                                           y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
+                        cs.lineTo(lineLength + (float) (Math.cos(Math.toRadians(240)) * ab.width * 9),
+                                           y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
+                        break;
+                    default:
+                        break;
                 }
                 if (INTERIOR_COLOR_STYLES.contains(annotation.getEndPointEndingStyle()))
                 {
