@@ -59,7 +59,8 @@ public class PDDocumentCatalog implements COSObjectable
     private PDAcroForm cachedAcroForm;
 
     /**
-     * Constructor. AcroForm.
+     * Constructor. Internal PDFBox use only! If you need to get the document catalog, call
+     * {@link PDDocument#getDocumentCatalog()}.
      *
      * @param doc The document that this catalog is part of.
      */
@@ -72,7 +73,8 @@ public class PDDocumentCatalog implements COSObjectable
     }
 
     /**
-     * Constructor.
+     * Constructor. Internal PDFBox use only! If you need to get the document catalog, call
+     * {@link PDDocument#getDocumentCatalog()}.
      *
      * @param doc The document that this catalog is part of.
      * @param rootDictionary The root dictionary that this object wraps.
