@@ -270,10 +270,10 @@ public class PDPage implements COSObjectable, PDContentStream
     {
         if (mediaBox == null)
         {
-            COSArray array = (COSArray) PDPageTree.getInheritableAttribute(page, COSName.MEDIA_BOX);
-            if (array != null)
+            COSBase base = PDPageTree.getInheritableAttribute(page, COSName.MEDIA_BOX);
+            if (base instanceof COSArray)
             {
-                mediaBox = new PDRectangle(array);
+                mediaBox = new PDRectangle((COSArray) base);
             }
         }
         if (mediaBox == null)
@@ -309,10 +309,10 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getCropBox()
     {
-        COSArray array = (COSArray) PDPageTree.getInheritableAttribute(page, COSName.CROP_BOX);
-        if (array != null)
+        COSBase base = PDPageTree.getInheritableAttribute(page, COSName.CROP_BOX);
+        if (base instanceof COSArray)
         {
-            return clipToMediaBox(new PDRectangle(array));
+            return clipToMediaBox(new PDRectangle((COSArray) base));
         }
         else
         {
@@ -346,17 +346,15 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getBleedBox()
     {
-        PDRectangle retval;
-        COSArray array = (COSArray) page.getDictionaryObject(COSName.BLEED_BOX);
-        if (array != null)
+        COSBase base = page.getDictionaryObject(COSName.BLEED_BOX);
+        if (base instanceof COSArray)
         {
-            retval = clipToMediaBox(new PDRectangle(array));
+            return clipToMediaBox(new PDRectangle((COSArray) base));
         }
         else
         {
-            retval = getCropBox();
+            return getCropBox();
         }
-        return retval;
     }
 
     /**
@@ -384,17 +382,15 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getTrimBox()
     {
-        PDRectangle retval;
-        COSArray array = (COSArray) page.getDictionaryObject(COSName.TRIM_BOX);
-        if (array != null)
+        COSBase base = page.getDictionaryObject(COSName.TRIM_BOX);
+        if (base instanceof COSArray)
         {
-            retval = clipToMediaBox(new PDRectangle(array));
+            return clipToMediaBox(new PDRectangle((COSArray) base));
         }
         else
         {
-            retval = getCropBox();
+            return getCropBox();
         }
-        return retval;
     }
 
     /**
@@ -423,17 +419,15 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDRectangle getArtBox()
     {
-        PDRectangle retval;
-        COSArray array = (COSArray) page.getDictionaryObject(COSName.ART_BOX);
-        if (array != null)
+        COSBase base = page.getDictionaryObject(COSName.ART_BOX);
+        if (base instanceof COSArray)
         {
-            retval = clipToMediaBox(new PDRectangle(array));
+            return clipToMediaBox(new PDRectangle((COSArray) base));
         }
         else
         {
-            retval = getCropBox();
+            return getCropBox();
         }
-        return retval;
     }
 
     /**
@@ -541,12 +535,12 @@ public class PDPage implements COSObjectable, PDContentStream
         List<PDThreadBead> pdObjects = new ArrayList<>();
         for (int i = 0; i < beads.size(); i++)
         {
-            COSDictionary beadDic = (COSDictionary) beads.getObject(i);
+            COSBase base = beads.getObject(i);
             PDThreadBead bead = null;
             // in some cases the bead is null
-            if (beadDic != null)
+            if (base instanceof COSDictionary)
             {
-                bead = new PDThreadBead(beadDic);
+                bead = new PDThreadBead((COSDictionary) base);
             }
             pdObjects.add(bead);
         }
@@ -572,10 +566,10 @@ public class PDPage implements COSObjectable, PDContentStream
     public PDMetadata getMetadata()
     {
         PDMetadata retval = null;
-        COSStream stream = (COSStream) page.getDictionaryObject(COSName.METADATA);
-        if (stream != null)
+        COSBase base = page.getDictionaryObject(COSName.METADATA);
+        if (base instanceof COSStream)
         {
-            retval = new PDMetadata(stream);
+            retval = new PDMetadata((COSStream) base);
         }
         return retval;
     }
@@ -597,8 +591,13 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDPageAdditionalActions getActions()
     {
-        COSDictionary addAct = (COSDictionary) page.getDictionaryObject(COSName.AA);
-        if (addAct == null)
+        COSDictionary addAct;
+        COSBase base = page.getDictionaryObject(COSName.AA);
+        if (base instanceof COSDictionary)
+        {
+            addAct = (COSDictionary) base;
+        }
+        else
         {
             addAct = new COSDictionary();
             page.setItem(COSName.AA, addAct);
@@ -621,8 +620,8 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public PDTransition getTransition()
     {
-        COSDictionary transitionDictionary = (COSDictionary) page.getDictionaryObject(COSName.TRANS);
-        return transitionDictionary == null ? null : new PDTransition(transitionDictionary);
+        COSBase base = page.getDictionaryObject(COSName.TRANS);
+        return base instanceof COSDictionary ? new PDTransition((COSDictionary) base) : null;
     }
 
     /**
