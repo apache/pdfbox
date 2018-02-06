@@ -200,13 +200,12 @@ public class PDPage implements COSObjectable, PDContentStream
     {
         if (pageResources == null)
         {
-            COSDictionary resources = (COSDictionary)
-                    PDPageTree.getInheritableAttribute(page, COSName.RESOURCES);
+            COSBase base = PDPageTree.getInheritableAttribute(page, COSName.RESOURCES);
 
             // note: it's an error for resources to not be present
-            if (resources != null)
+            if (base instanceof COSDictionary)
             {
-                pageResources = new PDResources(resources, resourceCache);
+                pageResources = new PDResources((COSDictionary) base, resourceCache);
             }
         }
         return pageResources;
