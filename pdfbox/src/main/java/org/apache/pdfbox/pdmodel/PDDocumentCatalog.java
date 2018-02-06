@@ -64,7 +64,7 @@ public class PDDocumentCatalog implements COSObjectable
      *
      * @param doc The document that this catalog is part of.
      */
-    public PDDocumentCatalog(PDDocument doc)
+    protected PDDocumentCatalog(PDDocument doc)
     {
         document = doc;
         root = new COSDictionary();
@@ -79,7 +79,7 @@ public class PDDocumentCatalog implements COSObjectable
      * @param doc The document that this catalog is part of.
      * @param rootDictionary The root dictionary that this object wraps.
      */
-    public PDDocumentCatalog(PDDocument doc, COSDictionary rootDictionary)
+    protected PDDocumentCatalog(PDDocument doc, COSDictionary rootDictionary)
     {
         document = doc;
         root = rootDictionary;
