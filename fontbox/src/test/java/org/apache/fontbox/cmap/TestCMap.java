@@ -49,7 +49,7 @@ public class TestCMap extends TestCase
     }
 
     /**
-     * PDFBOX-3997: test unicode that is above the basic bultilingual plane, here: helicopter
+     * PDFBOX-3997: test unicode that is above the basic multilingual plane, here: helicopter
      * symbol, or D83D DE81 in the Noto Emoji font.
      *
      * @throws IOException
