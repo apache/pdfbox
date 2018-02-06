@@ -181,14 +181,14 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * This will retrieve the line ending style for the start point, possible values shown in the LE_ constants section.
      *
-     * @return The ending style for the start point.
+     * @return The ending style for the start point, LE_NONE if missing, never null.
      */
     public String getStartPointEndingStyle()
     {
         COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
         if (base instanceof COSArray && ((COSArray) base).size() >= 2)
         {
-            return ((COSArray) base).getName(0);
+            return ((COSArray) base).getName(0, LE_NONE);
         }
         return LE_NONE;
     }
@@ -223,14 +223,14 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * This will retrieve the line ending style for the end point, possible values shown in the LE_ constants section.
      *
-     * @return The ending style for the end point.
+     * @return The ending style for the end point, LE_NONE if missing, never null.
      */
     public String getEndPointEndingStyle()
     {
         COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
         if (base instanceof COSArray && ((COSArray) base).size() >= 2)
         {
-            return ((COSArray) base).getName(1);
+            return ((COSArray) base).getName(1, LE_NONE);
         }
         return LE_NONE;
     }
