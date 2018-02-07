@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -370,4 +373,28 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      * @throws IOException If the text could not be encoded.
      */
     protected abstract byte[] encode(int unicode) throws IOException;
+
+    int[] readCIDToGIDMap() throws IOException
+    {
+        int[] cid2gid = null;
+        COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
+        if (map instanceof COSStream)
+        {
+            COSStream stream = (COSStream) map;
+
+            InputStream is = stream.createInputStream();
+            byte[] mapAsBytes = IOUtils.toByteArray(is);
+            IOUtils.closeQuietly(is);
+            int numberOfInts = mapAsBytes.length / 2;
+            cid2gid = new int[numberOfInts];
+            int offset = 0;
+            for (int index = 0; index < numberOfInts; index++)
+            {
+                int gid = (mapAsBytes[offset] & 0xff) << 8 | mapAsBytes[offset + 1] & 0xff;
+                cid2gid[index] = gid;
+                offset += 2;
+            }
+        }
+        return cid2gid;
+    }
 }
