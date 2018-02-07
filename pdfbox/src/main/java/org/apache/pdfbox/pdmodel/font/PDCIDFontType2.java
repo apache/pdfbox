@@ -18,9 +18,6 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.Type2CharString;
@@ -31,11 +28,7 @@ import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
@@ -209,44 +202,6 @@ public class PDCIDFontType2 extends PDCIDFont
             }
         }
         return ttf.getFontBBox();
-    }
-
-    private int[] readCIDToGIDMap() throws IOException
-    {
-        int[] cid2gid = null;
-        COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
-        if (map instanceof COSStream)
-        {
-            COSStream stream = (COSStream) map;
-
-            InputStream is = stream.createInputStream();
-            byte[] mapAsBytes = IOUtils.toByteArray(is);
-            IOUtils.closeQuietly(is);
-            int numberOfInts = mapAsBytes.length / 2;
-            cid2gid = new int[numberOfInts];
-            int offset = 0;
-            for (int index = 0; index < numberOfInts; index++)
-            {
-                int gid = (mapAsBytes[offset] & 0xff) << 8 | mapAsBytes[offset + 1] & 0xff;
-                cid2gid[index] = gid;
-                offset += 2;
-            }
-        }
-        return cid2gid;
-    }
-
-    private Map<Integer, Integer> invert(int[] cid2gid)
-    {
-        if (cid2gid == null)
-        {
-            return null;
-        }
-        Map<Integer, Integer> inverse = new HashMap<Integer, Integer>(cid2gid.length);
-        for (int i = 0; i < cid2gid.length; i++)
-        {
-            inverse.put(cid2gid[i], i);
-        }
-        return inverse;
     }
 
     @Override

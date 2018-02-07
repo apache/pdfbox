@@ -62,6 +62,7 @@ public class PDCIDFontType0 extends PDCIDFont
     private Matrix fontMatrix;
     private final AffineTransform fontMatrixTransform;
     private BoundingBox fontBBox;
+    private int[] cid2gid = null;
 
     /**
      * Constructor.
@@ -119,6 +120,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 cidFont = null;
                 t1Font = cffFont;
             }
+            cid2gid = readCIDToGIDMap();
             isEmbedded = true;
             isDamaged = false;
         }
@@ -324,6 +326,11 @@ public class PDCIDFontType0 extends PDCIDFont
     public GeneralPath getPath(int code) throws IOException
     {
         int cid = codeToCID(code);
+        if (cid2gid != null && isEmbedded)
+        {
+            // PDFBOX-4093: despite being a type 0 font, there is a CIDToGIDMap
+            cid = cid2gid[cid];
+        }
         Type2CharString charstring = getType2CharString(cid);
         if (charstring != null)
         {
