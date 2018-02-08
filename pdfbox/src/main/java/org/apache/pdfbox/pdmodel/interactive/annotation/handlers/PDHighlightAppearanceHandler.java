@@ -210,12 +210,6 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
 
                         frm2CS.fill();
                         of += 8;
-                        
-                        //TODO Adobe puts a "w" (line width). Why?
-                        //TODO If quadpoints is not present or the conforming reader does not recognize it,
-                        //     the region specified by the Rect entry should be used.
-                        //     QuadPoints shall be ignored if any coordinate in the array lies
-                        //     outside the region specified by Rect
                     }
                 }
             }
