@@ -169,8 +169,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 double angle = Math.atan2(y2 - y1, x2 - x1);
                 cs.transform(Matrix.getRotateInstance(angle, x1, y1));
                 float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-                //TODO rename getCaption() to isCaption() or hasCaption()
-                if (annotation.getCaption() && !contents.isEmpty())
+                if (annotation.hasCaption() && !contents.isEmpty())
                 {
                     PDType1Font font = PDType1Font.HELVETICA;
                     // TODO: support newlines!!!!!
