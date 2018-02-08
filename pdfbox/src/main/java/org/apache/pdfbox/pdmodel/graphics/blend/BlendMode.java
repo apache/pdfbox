@@ -136,7 +136,16 @@ public abstract class BlendMode
         @Override
         public float blendChannel(float srcValue, float dstValue)
         {
-            return (srcValue < 1) ? Math.min(1, dstValue / (1 - srcValue)) : 1;
+            // See PDF 2.0 specification
+            if (dstValue == 0)
+            {
+                return 0;
+            }
+            if (dstValue >= 1 - srcValue)
+            {
+                return 1;
+            }
+            return dstValue / (1 - srcValue);
         }
     };
 
@@ -145,7 +154,16 @@ public abstract class BlendMode
         @Override
         public float blendChannel(float srcValue, float dstValue)
         {
-            return (srcValue > 0) ? 1 - Math.min(1, (1 - dstValue) / srcValue) : 0;
+            // See PDF 2.0 specification
+            if (dstValue == 1)
+            {
+                return 1;
+            }
+            if (1 - dstValue >= srcValue)
+            {
+                return 0;
+            }
+            return 1 - (1 - dstValue) / srcValue;
         }
     };
 
