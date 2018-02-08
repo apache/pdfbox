@@ -267,11 +267,12 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     }
 
     /**
-     * This will retrieve if the contents are shown as a caption or not.
+     * This will retrieve whether the text specified by the /Contents or /RC entries shall be
+     * shown as a caption in the appearance of the line.
      *
-     * @return boolean if the content is shown as a caption.
+     * @return boolean if the contents shall be shown as a caption (default: false).
      */
-    public boolean getCaption()
+    public boolean hasCaption()
     {
         return getCOSObject().getBoolean(COSName.CAP, false);
     }
