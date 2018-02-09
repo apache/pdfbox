@@ -1486,7 +1486,11 @@ public abstract class PDAbstractContentStream implements Closeable
     @Override
     public void close() throws IOException
     {
-        outputStream.close();
+        if (outputStream != null)
+        {
+            outputStream.close();
+            outputStream = null;
+        }
     }
 
     protected boolean isOutside255Interval(int val)
