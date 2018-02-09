@@ -80,6 +80,10 @@ public final class COSOutputStream extends FilterOutputStream
     @Override
     public void close() throws IOException
     {
+        if (buffer == null)
+        {
+            return;
+        }
         // apply filters in reverse order
         for (int i = filters.size() - 1; i >= 0; i--)
         {
@@ -91,5 +95,6 @@ public final class COSOutputStream extends FilterOutputStream
         // flush the entire stream
         out.write(buffer.toByteArray());
         super.close();
+        buffer = null;
     }
 }
