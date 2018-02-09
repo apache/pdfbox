@@ -162,11 +162,11 @@ public class PDSignatureField extends PDTerminalField
     public PDSignature getValue()
     {
         COSBase value = getCOSObject().getDictionaryObject(COSName.V);
-        if (value == null)
+        if (value instanceof COSDictionary)
         {
-            return null;
+            return new PDSignature((COSDictionary)value);
         }
-        return new PDSignature((COSDictionary)value);
+        return null;
     }
 
     /**

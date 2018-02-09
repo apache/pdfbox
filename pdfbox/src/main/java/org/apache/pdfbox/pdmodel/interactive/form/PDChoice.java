@@ -224,7 +224,7 @@ public abstract class PDChoice extends PDVariableText
     public List<Integer> getSelectedOptionsIndex()
     {
         COSBase value = getCOSObject().getDictionaryObject(COSName.I);
-        if (value != null)
+        if (value instanceof COSArray)
         {
             return COSArrayList.convertIntegerCOSArrayToList((COSArray) value);
         }
