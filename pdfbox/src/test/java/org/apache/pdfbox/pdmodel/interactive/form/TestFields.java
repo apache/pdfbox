@@ -76,10 +76,8 @@ public class TestFields extends TestCase
      */
     public void testFlags() throws IOException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = new PDDocument())
         {
-            doc = new PDDocument();
             PDAcroForm form = new PDAcroForm( doc );
             PDTextField textBox = new PDTextField(form);
 
@@ -115,13 +113,6 @@ public class TestFields extends TestCase
             textBox.setComb( true );
             assertTrue( textBox.isComb() );
         }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
-        }
     }
     
     /**
@@ -131,13 +122,9 @@ public class TestFields extends TestCase
      * @throws IOException If there is an error creating the field.
      */
     public void testAcroFormsBasicFields() throws IOException
-    {
-        PDDocument doc = null;
-        
-        try
-        {
-            doc = PDDocument.load(new File(PATH_OF_PDF));
-            
+    {       
+        try (PDDocument doc = PDDocument.load(new File(PATH_OF_PDF)))
+        {            
             // get and assert that there is a form
             PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
             assertNotNull(form);
@@ -185,13 +172,6 @@ public class TestFields extends TestCase
             assertEquals(textField.getValue().length(),145396);
             
         }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
-        }
     }
     
     
@@ -201,13 +181,9 @@ public class TestFields extends TestCase
      * @throws IOException If there is an error loading the form or the field.
      */
     public void testWidgetMissingRect() throws IOException
-    {
-        PDDocument doc = null;
-        
-        try
-        {
-            doc = PDDocument.load(new File(PATH_OF_PDF));
-            
+    {        
+        try (PDDocument doc = PDDocument.load(new File(PATH_OF_PDF)))
+        {            
             PDAcroForm form = doc.getDocumentCatalog().getAcroForm();
             
             PDTextField textField = (PDTextField)form.getField("TextField-DefaultValue");
@@ -222,13 +198,6 @@ public class TestFields extends TestCase
             // behave as Adobe Acrobat does
             assertNull(widget.getCOSObject().getDictionaryObject(COSName.AP));
              
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
         }
     }
 }

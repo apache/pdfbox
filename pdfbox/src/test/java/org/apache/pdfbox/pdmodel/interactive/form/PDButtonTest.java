@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.pdfbox.cos.COSName;
@@ -107,18 +108,13 @@ public class PDButtonTest
      * 
      * @throws IOException
      */
-    public void testRadioButtonWithOptions()
+    public void testRadioButtonWithOptions() throws MalformedURLException
     {
-        URL url;
-        PDDocument pdfDocument = null;
+        URL url = new URL("https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf");
         
-        try
-        {
-            url = new URL("https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf");
-            InputStream is = url.openStream();
-            
-            pdfDocument = PDDocument.load(is);
-            
+        try (InputStream is = url.openStream();
+            PDDocument pdfDocument = PDDocument.load(is))
+        {   
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("Checking/Savings");
             radioButton.setValue("Off");
             for (PDAnnotationWidget widget : radioButton.getWidgets())
@@ -130,20 +126,6 @@ public class PDButtonTest
         catch (IOException e)
         {
             fail("Unexpected IOException " + e.getMessage());
-        }
-        finally
-        {
-            if (pdfDocument != null)
-            {
-                try
-                {
-                    pdfDocument.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
         }
     }
     
@@ -157,18 +139,13 @@ public class PDButtonTest
      * 
      * @throws IOException
      */
-    public void testOptionsAndNamesNotNumbers()
+    public void testOptionsAndNamesNotNumbers() throws MalformedURLException
     {
-        URL url;
-        PDDocument pdfDocument = null;
+        URL url = new URL("https://issues.apache.org/jira/secure/attachment/12852207/test.pdf");
         
-        try
-        {
-            url = new URL("https://issues.apache.org/jira/secure/attachment/12852207/test.pdf");
-            InputStream is = url.openStream();
-            
-            pdfDocument = PDDocument.load(is);
-            
+        try (InputStream is = url.openStream();
+                PDDocument pdfDocument = PDDocument.load(is))
+        {            
             pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton").setValue("c");
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton");
             radioButton.setValue("c");
@@ -185,24 +162,10 @@ public class PDButtonTest
         {
             fail("Unexpected IOException " + e.getMessage());
         }
-        finally
-        {
-            if (pdfDocument != null)
-            {
-                try
-                {
-                    pdfDocument.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
         
     @Test
-    public void retrieveAcrobatCheckBoxProperties() throws IOException
+    public void retrieveAcrobatCheckBoxProperties()
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         assertNotNull(checkbox);
@@ -359,7 +322,7 @@ public class PDButtonTest
     }    
 
     @Test
-    public void retrieveAcrobatRadioButtonProperties() throws IOException
+    public void retrieveAcrobatRadioButtonProperties()
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
         assertNotNull(radioButton);

@@ -72,10 +72,8 @@ public class TestRadioButtons extends TestCase
      */
     public void testRadioButtonPDModel() throws IOException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = new PDDocument())
         {
-            doc = new PDDocument();
             PDAcroForm form = new PDAcroForm( doc );
             PDRadioButton radioButton = new PDRadioButton(form);
             
@@ -109,13 +107,6 @@ public class TestRadioButtons extends TestCase
             assertNull(radioButton.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
             assertEquals(radioButton.getExportValues(), new ArrayList<String>());
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
         }
     }
 }
