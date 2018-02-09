@@ -123,16 +123,16 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     PDAppearanceEntry getDownAppearance()
     {
         PDAppearanceDictionary appearanceDictionary = getAppearance();
-        PDAppearanceEntry appearanceEntry = appearanceDictionary.getDownAppearance();
+        PDAppearanceEntry downAppearanceEntry = appearanceDictionary.getDownAppearance();
 
-        if (appearanceEntry.isSubDictionary())
+        if (downAppearanceEntry.isSubDictionary())
         {
             //TODO replace with "document.getDocument().createCOSStream()" 
-            appearanceEntry = new PDAppearanceEntry(new COSStream());
-            appearanceDictionary.setDownAppearance(appearanceEntry);
+            downAppearanceEntry = new PDAppearanceEntry(new COSStream());
+            appearanceDictionary.setDownAppearance(downAppearanceEntry);
         }
 
-        return appearanceEntry;
+        return downAppearanceEntry;
     }
 
     /**
@@ -147,16 +147,16 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     PDAppearanceEntry getRolloverAppearance()
     {
         PDAppearanceDictionary appearanceDictionary = getAppearance();
-        PDAppearanceEntry appearanceEntry = appearanceDictionary.getRolloverAppearance();
+        PDAppearanceEntry rolloverAppearanceEntry = appearanceDictionary.getRolloverAppearance();
 
-        if (appearanceEntry.isSubDictionary())
+        if (rolloverAppearanceEntry.isSubDictionary())
         {
             //TODO replace with "document.getDocument().createCOSStream()" 
-            appearanceEntry = new PDAppearanceEntry(new COSStream());
-            appearanceDictionary.setRolloverAppearance(appearanceEntry);
+            rolloverAppearanceEntry = new PDAppearanceEntry(new COSStream());
+            appearanceDictionary.setRolloverAppearance(rolloverAppearanceEntry);
         }
 
-        return appearanceEntry;
+        return rolloverAppearanceEntry;
     }
     
     /**
@@ -272,22 +272,22 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     private PDAppearanceEntry getNormalAppearance()
     {
         PDAppearanceDictionary appearanceDictionary = getAppearance();
-        PDAppearanceEntry appearanceEntry = appearanceDictionary.getNormalAppearance();
+        PDAppearanceEntry normalAappearanceEntry = appearanceDictionary.getNormalAppearance();
 
-        if (appearanceEntry.isSubDictionary())
+        if (normalAappearanceEntry.isSubDictionary())
         {
             //TODO replace with "document.getDocument().createCOSStream()" 
-            appearanceEntry = new PDAppearanceEntry(new COSStream());
-            appearanceDictionary.setNormalAppearance(appearanceEntry);
+            normalAappearanceEntry = new PDAppearanceEntry(new COSStream());
+            appearanceDictionary.setNormalAppearance(normalAappearanceEntry);
         }
 
-        return appearanceEntry;
+        return normalAappearanceEntry;
     }
     
     
-    private PDAppearanceContentStream getAppearanceEntryAsContentStream(PDAppearanceEntry appearanceEntry) throws IOException
+    private PDAppearanceContentStream getAppearanceEntryAsContentStream(PDAppearanceEntry appearanceEntryToStream) throws IOException
     {
-        PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
+        PDAppearanceStream appearanceStream = appearanceEntryToStream.getAppearanceStream();
         setTransformationMatrix(appearanceStream);
         return new PDAppearanceContentStream(appearanceStream);
     }
