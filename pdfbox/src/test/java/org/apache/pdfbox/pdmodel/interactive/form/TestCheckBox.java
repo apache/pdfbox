@@ -72,10 +72,8 @@ public class TestCheckBox extends TestCase
      */
     public void testCheckboxPDModel() throws IOException
     {
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = new PDDocument())
         {
-            doc = new PDDocument();
             PDAcroForm form = new PDAcroForm( doc );
             PDCheckBox checkBox = new PDCheckBox(form);
             
@@ -107,13 +105,6 @@ public class TestCheckBox extends TestCase
             assertNull(checkBox.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
             assertEquals(checkBox.getExportValues(), new ArrayList<String>());
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
         }
     }
 }

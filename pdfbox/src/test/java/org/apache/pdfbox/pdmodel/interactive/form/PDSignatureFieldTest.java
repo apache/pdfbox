@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class PDSignatureFieldTest
     }
 
     @Test
-    public void createDefaultSignatureField() throws IOException
+    public void createDefaultSignatureField()
     {
         PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");
@@ -67,7 +66,7 @@ public class PDSignatureFieldTest
     }
     
     @Test(expected=UnsupportedOperationException.class)
-    public void setValueForAbstractedSignatureField() throws IOException
+    public void setValueForAbstractedSignatureField()
     {
         PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");

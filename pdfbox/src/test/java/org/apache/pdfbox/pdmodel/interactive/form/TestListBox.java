@@ -97,10 +97,8 @@ public class TestListBox extends TestCase
         displayValues.add("display01");
         displayValues.add("display03");
 
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = new PDDocument())
         {
-            doc = new PDDocument();
             PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             PDAcroForm form = new PDAcroForm( doc );
@@ -251,13 +249,6 @@ public class TestListBox extends TestCase
                 assertEquals( 
                         "The number of entries for exportValue and displayValue shall be the same.",
                         e.getMessage() );
-            }
-        }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
             }
         }
     }
