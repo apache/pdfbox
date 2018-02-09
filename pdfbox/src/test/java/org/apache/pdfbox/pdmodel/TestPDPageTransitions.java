@@ -39,38 +39,42 @@ public class TestPDPageTransitions
     @Test
     public void readTransitions() throws IOException, URISyntaxException
     {
-        PDDocument doc = PDDocument.load(new File(this.getClass().getResource(
-                "/org/apache/pdfbox/pdmodel/interactive/pagenavigation/transitions_test.pdf").toURI()));
-        PDTransition firstTransition = doc.getPages().get(0).getTransition();
-        assertEquals(PDTransitionStyle.Glitter.name(), firstTransition.getStyle());
-        assertEquals(2, firstTransition.getDuration(), 0);
-        assertEquals(PDTransitionDirection.TOP_LEFT_TO_BOTTOM_RIGHT.getCOSBase(),
-                firstTransition.getDirection());
-        doc.close();
+        try (PDDocument doc = PDDocument.load(new File(this.getClass().getResource(
+                "/org/apache/pdfbox/pdmodel/interactive/pagenavigation/transitions_test.pdf").toURI())))
+        {
+            PDTransition firstTransition = doc.getPages().get(0).getTransition();
+            assertEquals(PDTransitionStyle.Glitter.name(), firstTransition.getStyle());
+            assertEquals(2, firstTransition.getDuration(), 0);
+            assertEquals(PDTransitionDirection.TOP_LEFT_TO_BOTTOM_RIGHT.getCOSBase(),
+                    firstTransition.getDirection());
+        }
     }
 
     @Test
     public void saveAndReadTransitions() throws IOException
     {
-        // save
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-        PDTransition transition = new PDTransition(PDTransitionStyle.Fly);
-        transition.setDirection(PDTransitionDirection.NONE);
-        transition.setFlyScale(0.5f);
-        page.setTransition(transition, 2);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        document.save(baos);
-        document.close();
 
+        // save
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            PDTransition transition = new PDTransition(PDTransitionStyle.Fly);
+            transition.setDirection(PDTransitionDirection.NONE);
+            transition.setFlyScale(0.5f);
+            page.setTransition(transition, 2);
+            document.save(baos);
+        }
+        
         // read
-        PDDocument doc = PDDocument.load(baos.toByteArray());
-        page = doc.getPages().get(0);
-        PDTransition loadedTransition = page.getTransition();
-        assertEquals(PDTransitionStyle.Fly.name(), loadedTransition.getStyle());
-        assertEquals(2, page.getCOSObject().getFloat(COSName.DUR), 0);
-        assertEquals(PDTransitionDirection.NONE.getCOSBase(), loadedTransition.getDirection());
-        doc.close();
+        try (PDDocument doc = PDDocument.load(baos.toByteArray()))
+        {
+            PDPage page = doc.getPages().get(0);
+            PDTransition loadedTransition = page.getTransition();
+            assertEquals(PDTransitionStyle.Fly.name(), loadedTransition.getStyle());
+            assertEquals(2, page.getCOSObject().getFloat(COSName.DUR), 0);
+            assertEquals(PDTransitionDirection.NONE.getCOSBase(), loadedTransition.getDirection());
+        }
     }
 }
