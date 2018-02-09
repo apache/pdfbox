@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationStrikeout;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
@@ -55,7 +56,8 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
             return;
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        if (ab.color.getComponents().length == 0)
+        PDColor color = annotation.getColor();
+        if (color == null || color.getComponents().length == 0)
         {
             return;
         }
@@ -93,7 +95,7 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
             {
                 handleOpacity(annotation.getConstantOpacity());
 
-                cs.setStrokingColor(ab.color);
+                cs.setStrokingColor(color);
                 if (ab.dashArray != null)
                 {
                     cs.setLineDashPattern(ab.dashArray, 0);

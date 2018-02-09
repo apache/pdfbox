@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolyline;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
@@ -61,7 +62,8 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
             return;
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        if (ab.width == 0 || ab.color.getComponents().length == 0)
+        PDColor color = annotation.getColor();
+        if (color == null || color.getComponents().length == 0 || ab.width == 0)
         {
             return;
         }
@@ -94,7 +96,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
             {
                 handleOpacity(annotation.getConstantOpacity());
 
-                cs.setStrokingColor(ab.color);
+                cs.setStrokingColor(color);
                 if (ab.dashArray != null)
                 {
                     cs.setLineDashPattern(ab.dashArray, 0);

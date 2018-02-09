@@ -19,8 +19,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
@@ -34,7 +32,6 @@ class AnnotationBorder
     float[] dashArray = null;
     boolean underline = false;
     float width = 0;
-    PDColor color;
 
     // return border info. BorderStyle must be provided as parameter because
     // method is not available in the base class
@@ -69,12 +66,6 @@ class AnnotationBorder
             {
                 ab.underline = true;
             }
-        }
-        ab.color = annotation.getColor();
-        if (ab.color == null)
-        {
-            // spec is unclear, but black seems to be the right thing to do
-            ab.color = new PDColor(new float[] { 0 }, PDDeviceGray.INSTANCE);
         }
         if (ab.dashArray != null)
         {
