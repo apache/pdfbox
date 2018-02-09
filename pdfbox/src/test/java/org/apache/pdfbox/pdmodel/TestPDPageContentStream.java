@@ -31,56 +31,61 @@ public class TestPDPageContentStream extends TestCase
 {
     public void testSetCmykColors() throws IOException
     {
-        PDDocument doc = new PDDocument();
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
 
-        PDPage page = new PDPage();
-        doc.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true))
+            {
+                // pass a non-stroking color in CMYK color space
+                contentStream.setNonStrokingColor(0.1f, 0.2f, 0.3f, 0.4f);
+                contentStream.close();
+            }
 
-        PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
-        // pass a non-stroking color in CMYK color space
-        contentStream.setNonStrokingColor(0.1f, 0.2f, 0.3f, 0.4f);
-        contentStream.close();
+                // now read the PDF stream and verify that the CMYK values are correct
+            PDFStreamParser parser = new PDFStreamParser(page);
+            parser.parse();
+            java.util.List<Object>  pageTokens = parser.getTokens();
+            // expected five tokens :
+            // [0] = COSFloat{0.1}
+            // [1] = COSFloat{0.2}
+            // [2] = COSFloat{0.3}
+            // [3] = COSFloat{0.4}
+            // [4] = PDFOperator{"k"}
+            assertEquals(0.1f, ((COSFloat)pageTokens.get(0)).floatValue());
+            assertEquals(0.2f, ((COSFloat)pageTokens.get(1)).floatValue());
+            assertEquals(0.3f, ((COSFloat)pageTokens.get(2)).floatValue());
+            assertEquals(0.4f, ((COSFloat)pageTokens.get(3)).floatValue());
+            assertEquals("k", ((Operator) pageTokens.get(4)).getName());
 
-        // now read the PDF stream and verify that the CMYK values are correct
-        PDFStreamParser parser = new PDFStreamParser(page);
-        parser.parse();
-        java.util.List<Object>  pageTokens = parser.getTokens();
-        // expected five tokens :
-        // [0] = COSFloat{0.1}
-        // [1] = COSFloat{0.2}
-        // [2] = COSFloat{0.3}
-        // [3] = COSFloat{0.4}
-        // [4] = PDFOperator{"k"}
-        assertEquals(0.1f, ((COSFloat)pageTokens.get(0)).floatValue());
-        assertEquals(0.2f, ((COSFloat)pageTokens.get(1)).floatValue());
-        assertEquals(0.3f, ((COSFloat)pageTokens.get(2)).floatValue());
-        assertEquals(0.4f, ((COSFloat)pageTokens.get(3)).floatValue());
-        assertEquals("k", ((Operator) pageTokens.get(4)).getName());
+            // same as above but for PDPageContentStream#setStrokingColor
+            page = new PDPage();
+            doc.addPage(page);
 
-        // same as above but for PDPageContentStream#setStrokingColor
-        page = new PDPage();
-        doc.addPage(page);
+            try ( PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
+            {
+                // pass a non-stroking color in CMYK color space
+                contentStream.setStrokingColor(0.5f, 0.6f, 0.7f, 0.8f);
+                contentStream.close();
+            }
 
-        contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
-        // pass a non-stroking color in CMYK color space
-        contentStream.setStrokingColor(0.5f, 0.6f, 0.7f, 0.8f);
-        contentStream.close();
-
-        // now read the PDF stream and verify that the CMYK values are correct
-        parser = new PDFStreamParser(page);
-        parser.parse();
-        pageTokens = parser.getTokens();
-        // expected five tokens  :
-        // [0] = COSFloat{0.5}
-        // [1] = COSFloat{0.6}
-        // [2] = COSFloat{0.7}
-        // [3] = COSFloat{0.8}
-        // [4] = PDFOperator{"K"}
-        assertEquals(0.5f, ((COSFloat)pageTokens.get(0)).floatValue());
-        assertEquals(0.6f, ((COSFloat)pageTokens.get(1)).floatValue());
-        assertEquals(0.7f, ((COSFloat)pageTokens.get(2)).floatValue());
-        assertEquals(0.8f, ((COSFloat)pageTokens.get(3)).floatValue());
-        assertEquals("K", ((Operator)pageTokens.get(4)).getName());
+            // now read the PDF stream and verify that the CMYK values are correct
+            parser = new PDFStreamParser(page);
+            parser.parse();
+            pageTokens = parser.getTokens();
+            // expected five tokens  :
+            // [0] = COSFloat{0.5}
+            // [1] = COSFloat{0.6}
+            // [2] = COSFloat{0.7}
+            // [3] = COSFloat{0.8}
+            // [4] = PDFOperator{"K"}
+            assertEquals(0.5f, ((COSFloat)pageTokens.get(0)).floatValue());
+            assertEquals(0.6f, ((COSFloat)pageTokens.get(1)).floatValue());
+            assertEquals(0.7f, ((COSFloat)pageTokens.get(2)).floatValue());
+            assertEquals(0.8f, ((COSFloat)pageTokens.get(3)).floatValue());
+            assertEquals("K", ((Operator)pageTokens.get(4)).getName());
+        }
     }
 
     /**

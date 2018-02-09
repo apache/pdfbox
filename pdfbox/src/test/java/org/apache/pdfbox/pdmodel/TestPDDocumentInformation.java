@@ -32,11 +32,9 @@ public class TestPDDocumentInformation extends TestCase
 
     public void testMetadataExtraction() throws Exception
     {
-        PDDocument doc = null;
-        try
+        // This document has been selected for this test as it contains custom metadata.
+        try (PDDocument doc = PDDocument.load( new File("src/test/resources/input/hello3.pdf")))
         {
-           // This document has been selected for this test as it contains custom metadata.
-           doc = PDDocument.load( new File("src/test/resources/input/hello3.pdf"));
            PDDocumentInformation info = doc.getDocumentInformation();
            
            assertEquals("Wrong author", "Brian Carrier", info.getAuthor());
@@ -62,13 +60,6 @@ public class TestPDDocumentInformation extends TestCase
            assertEquals("Wrong company", "Basis Technology Corp.", info.getCustomMetadataValue("Company"));
            assertEquals("Wrong sourceModified", "D:20080819181502", info.getCustomMetadataValue("SourceModified"));
         }
-        finally
-        {
-            if( doc != null )
-            {
-                doc.close();
-            }
-        }
     }
     
     /**
@@ -78,10 +69,11 @@ public class TestPDDocumentInformation extends TestCase
      */
     public void testPDFBox3068() throws Exception
     {
-        PDDocument doc = PDDocument.load(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf"));
-        PDDocumentInformation documentInformation = doc.getDocumentInformation();
-        assertEquals("Title", documentInformation.getTitle());
-        doc.close();
+        try (PDDocument doc = PDDocument.load(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf")))
+        {
+            PDDocumentInformation documentInformation = doc.getDocumentInformation();
+            assertEquals("Title", documentInformation.getTitle());
+        }
     }
     
 }
