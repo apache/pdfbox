@@ -28,6 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -39,11 +40,6 @@ import org.xml.sax.SAXException;
  */
 public final class PDXFAResource implements COSObjectable
 {
-    
-    /**
-     * The default buffer size
-     */
-    private static final int BUFFER_SIZE = 1024;
     
     private final COSBase xfa;
 
@@ -86,53 +82,46 @@ public final class PDXFAResource implements COSObjectable
      */    
     public byte[] getBytes() throws IOException 
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        InputStream is = null;
-        byte[] xfaBytes;
-
-        try 
+        // handle the case if the XFA is split into individual parts
+        if (this.getCOSObject() instanceof COSArray) 
         {
-            // handle the case if the XFA is split into individual parts
-            if (this.getCOSObject() instanceof COSArray) 
-            {
-                xfaBytes = new byte[BUFFER_SIZE];
-                COSArray cosArray = (COSArray) this.getCOSObject();
-                for (int i = 1; i < cosArray.size(); i += 2) 
-                {
-                    COSBase cosObj = cosArray.getObject(i);
-                    if (cosObj instanceof COSStream) 
-                    {
-                        is = ((COSStream) cosObj).createInputStream();
-                        int nRead;
-                        while ((nRead = is.read(xfaBytes, 0, xfaBytes.length)) != -1) 
-                        {
-                          baos.write(xfaBytes, 0, nRead);
-                        }
-                        baos.flush();
-                    }
-                }
-            // handle the case if the XFA is represented as a single stream
-            } 
-            else if (xfa.getCOSObject() instanceof COSStream) 
-            {
-                xfaBytes = new byte[BUFFER_SIZE];
-                is = ((COSStream) xfa.getCOSObject()).createInputStream();
-                int nRead;
-                while ((nRead = is.read(xfaBytes, 0, xfaBytes.length)) != -1) 
-                {
-                  baos.write(xfaBytes, 0, nRead);
-                }
-                baos.flush();
-            }
-        } 
-        finally 
-        {
-            if (is != null) 
-            {
-                is.close();
-            }
+            return getBytesFromPacket((COSArray) this.getCOSObject());
         }
-        return baos.toByteArray();
+        else if (xfa.getCOSObject() instanceof COSStream) 
+        {
+            return getBytesFromStream((COSStream) this.getCOSObject());
+        }
+        return new byte[0];
+    }
+    
+    /*
+     * Read all bytes from a packet
+     */
+    private static byte[] getBytesFromPacket(final COSArray cosArray) throws IOException
+    {
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        {
+            for (int i = 1; i < cosArray.size(); i += 2) 
+            {
+                COSBase cosObj = cosArray.getObject(i);
+                if (cosObj instanceof COSStream) 
+                {
+                    baos.write(getBytesFromStream((COSStream) cosObj.getCOSObject()));
+                }
+            }
+            return baos.toByteArray();
+        }
+    }
+    
+    /*
+     * Read all bytes from a COSStream
+     */
+    private static byte[] getBytesFromStream(final COSStream stream) throws IOException
+    {
+        try (final InputStream is = stream.createInputStream())
+        {
+            return IOUtils.toByteArray(is);
+        }
     }
     
     /**
