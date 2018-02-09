@@ -2481,7 +2481,11 @@ public final class PDPageContentStream implements Closeable
     @Override
     public void close() throws IOException
     {
-        output.close();
+        if (output != null)
+        {
+            output.close();
+            output = null;
+        }
     }
 
     private boolean isOutside255Interval(int val)
