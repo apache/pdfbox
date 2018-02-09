@@ -39,6 +39,7 @@ public class SetStrokingDeviceRGBColor extends SetStrokingColor
      * @param arguments List
      * @throws IOException If the color space cannot be read.
      */
+    @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
         PDColorSpace cs = context.getResources().getColorSpace(COSName.DEVICERGB);
