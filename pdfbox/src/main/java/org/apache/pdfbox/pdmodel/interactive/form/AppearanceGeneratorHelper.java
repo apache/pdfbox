@@ -273,51 +273,53 @@ class AppearanceGeneratorHelper
      */
     private void initializeAppearanceContent(PDAnnotationWidget widget, PDAppearanceStream appearanceStream) throws IOException
     {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output);
-        PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
-        
-        // TODO: support more entries like patterns, etc.
-        if (appearanceCharacteristics != null)
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream();
+                PDAppearanceContentStream contents = new PDAppearanceContentStream(appearanceStream, output))
         {
-            PDColor backgroundColour = appearanceCharacteristics.getBackground();
-            if (backgroundColour != null)
-            {
-                contents.setNonStrokingColor(backgroundColour);
-                PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
-                contents.addRect(bbox.getLowerLeftX(),bbox.getLowerLeftY(),bbox.getWidth(), bbox.getHeight());
-                contents.fill();
-            }
 
-            float lineWidth = 0f;
-            PDColor borderColour = appearanceCharacteristics.getBorderColour();
-            if (borderColour != null)
+            PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
+            
+            // TODO: support more entries like patterns, etc.
+            if (appearanceCharacteristics != null)
             {
-                contents.setStrokingColor(borderColour);
-                lineWidth = 1f;
-            }
-            PDBorderStyleDictionary borderStyle = widget.getBorderStyle();
-            if (borderStyle != null && borderStyle.getWidth() > 0)
-            {
-                lineWidth = borderStyle.getWidth();
-            }
-
-            if (lineWidth > 0 && borderColour != null)
-            {
-                if (lineWidth != 1)
+                PDColor backgroundColour = appearanceCharacteristics.getBackground();
+                if (backgroundColour != null)
                 {
-                    contents.setLineWidth(lineWidth);
+                    contents.setNonStrokingColor(backgroundColour);
+                    PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+                    contents.addRect(bbox.getLowerLeftX(),bbox.getLowerLeftY(),bbox.getWidth(), bbox.getHeight());
+                    contents.fill();
                 }
-                PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
-                PDRectangle clipRect = applyPadding(bbox, Math.max(DEFAULT_PADDING, lineWidth/2)); 
-                contents.addRect(clipRect.getLowerLeftX(),clipRect.getLowerLeftY(),clipRect.getWidth(), clipRect.getHeight());
-                contents.closeAndStroke();
+    
+                float lineWidth = 0f;
+                PDColor borderColour = appearanceCharacteristics.getBorderColour();
+                if (borderColour != null)
+                {
+                    contents.setStrokingColor(borderColour);
+                    lineWidth = 1f;
+                }
+                PDBorderStyleDictionary borderStyle = widget.getBorderStyle();
+                if (borderStyle != null && borderStyle.getWidth() > 0)
+                {
+                    lineWidth = borderStyle.getWidth();
+                }
+    
+                if (lineWidth > 0 && borderColour != null)
+                {
+                    if (lineWidth != 1)
+                    {
+                        contents.setLineWidth(lineWidth);
+                    }
+                    PDRectangle bbox = resolveBoundingBox(widget, appearanceStream);
+                    PDRectangle clipRect = applyPadding(bbox, Math.max(DEFAULT_PADDING, lineWidth/2)); 
+                    contents.addRect(clipRect.getLowerLeftX(),clipRect.getLowerLeftY(),clipRect.getWidth(), clipRect.getHeight());
+                    contents.closeAndStroke();
+                }
             }
+            
+            writeToStream(output.toByteArray(), appearanceStream);
+
         }
-        
-        contents.close();
-        output.close();
-        writeToStream(output.toByteArray(), appearanceStream);
     }
     
     /**
@@ -342,40 +344,40 @@ class AppearanceGeneratorHelper
         
         // then replace the existing contents of the appearance stream from /Tx BMC
         // to the matching EMC
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        ContentStreamWriter writer = new ContentStreamWriter(output);
-        
-        List<Object> tokens = tokenize(appearanceStream);
-        int bmcIndex = tokens.indexOf(BMC);
-        if (bmcIndex == -1)
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream())
         {
-            // append to existing stream
-            writer.writeTokens(tokens);
-            writer.writeTokens(COSName.TX, BMC);
+            ContentStreamWriter writer = new ContentStreamWriter(output);
+            
+            List<Object> tokens = tokenize(appearanceStream);
+            int bmcIndex = tokens.indexOf(BMC);
+            if (bmcIndex == -1)
+            {
+                // append to existing stream
+                writer.writeTokens(tokens);
+                writer.writeTokens(COSName.TX, BMC);
+            }
+            else
+            {
+                // prepend content before BMC
+                writer.writeTokens(tokens.subList(0, bmcIndex + 1));
+            }
+            
+            // insert field contents
+            insertGeneratedAppearance(widget, appearanceStream, output);
+            
+            int emcIndex = tokens.indexOf(EMC);
+            if (emcIndex == -1)
+            {
+                // append EMC
+                writer.writeTokens(EMC);
+            }
+            else
+            {
+                // append contents after EMC
+                writer.writeTokens(tokens.subList(emcIndex, tokens.size()));
+            }
+            writeToStream(output.toByteArray(), appearanceStream);
         }
-        else
-        {
-            // prepend content before BMC
-            writer.writeTokens(tokens.subList(0, bmcIndex + 1));
-        }
-        
-        // insert field contents
-        insertGeneratedAppearance(widget, appearanceStream, output);
-        
-        int emcIndex = tokens.indexOf(EMC);
-        if (emcIndex == -1)
-        {
-            // append EMC
-            writer.writeTokens(EMC);
-        }
-        else
-        {
-            // append contents after EMC
-            writer.writeTokens(tokens.subList(emcIndex, tokens.size()));
-        }
-
-        output.close();
-        writeToStream(output.toByteArray(), appearanceStream);
     }
     
     /**
