@@ -43,10 +43,8 @@ public class PDSignatureField extends PDTerminalField
      * @see PDTerminalField#PDTerminalField(PDAcroForm)
      *
      * @param acroForm The acroForm for this field.
-     * @throws IOException If there is an error while resolving partial name for the signature field
-     *         or getting the widget object.
      */
-    public PDSignatureField(PDAcroForm acroForm) throws IOException
+    public PDSignatureField(PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.SIG);
@@ -149,7 +147,7 @@ public class PDSignatureField extends PDTerminalField
      *
      * @param value is the PDSignatureField
      */
-    public void setDefaultValue(PDSignature value) throws IOException
+    public void setDefaultValue(PDSignature value)
     {
         getCOSObject().setItem(COSName.DV, value);
     }

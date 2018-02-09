@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -94,9 +93,8 @@ public final class PDRadioButton extends PDButton
      * is no such entry the fields value</p>
      * 
      * @return the export value of the field.
-     * @throws IOException in case the fields value can not be retrieved
      */
-    public List<String> getSelectedExportValues() throws IOException
+    public List<String> getSelectedExportValues()
     {
         Set<String> onValues = getOnValues();
         List<String> exportValues = getExportValues();
