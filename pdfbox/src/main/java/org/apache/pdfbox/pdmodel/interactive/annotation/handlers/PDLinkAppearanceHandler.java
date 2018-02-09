@@ -108,11 +108,11 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
                     {
                         if (!rect.contains(pathsArray[i * 2], pathsArray[i * 2 + 1]))
                         {
-                            pathsArray = null;
                             LOG.warn("At least one /QuadPoints entry (" + 
                                     pathsArray[i * 2] + ";" + pathsArray[i * 2 + 1] + 
                                     ") is outside of rectangle, " + rect + 
                                     ", /QuadPoints are ignored and /Rect is used instead");
+                            pathsArray = null;
                             break;
                         }
                     }
