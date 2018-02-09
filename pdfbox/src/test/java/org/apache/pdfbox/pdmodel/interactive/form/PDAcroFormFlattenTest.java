@@ -33,7 +33,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Test flatten different forms and compare with rendering.
@@ -221,12 +220,13 @@ public class PDAcroFormFlattenTest {
 		File inputFile = new File(IN_DIR, targetFileName);
         File outputFile = new File(OUT_DIR, targetFileName);
 		
-        PDDocument testPdf = PDDocument.load(inputFile);
-        testPdf.getDocumentCatalog().getAcroForm().flatten();
-        testPdf.setAllSecurityToBeRemoved(true);
-        assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
-        testPdf.save(outputFile);
-        testPdf.close();
+		try (PDDocument testPdf = PDDocument.load(inputFile))
+		{
+			testPdf.getDocumentCatalog().getAcroForm().flatten();
+			testPdf.setAllSecurityToBeRemoved(true);
+			assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
+			testPdf.save(outputFile);
+		}
 
         // compare rendering
         TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
@@ -256,19 +256,20 @@ public class PDAcroFormFlattenTest {
 		getFromUrl(sourceUrl, targetFile);
 		
 		File file = new File(IN_DIR,targetFile);
-		PDDocument document = PDDocument.load(file, (String)null);
-        String outputPrefix = IN_DIR.getAbsolutePath() + '/' + file.getName() + "-";
-        int numPages = document.getNumberOfPages();
-		
-        PDFRenderer renderer = new PDFRenderer(document);
-        for (int i = 0; i < numPages; i++)
-        {
-            String fileName = outputPrefix + (i + 1) + ".png";
-            BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
-            ImageIO.write(image, "PNG", new File(fileName));
-        }
-        
-        document.close();
+
+		try (PDDocument document = PDDocument.load(file, (String)null))
+		{
+			String outputPrefix = IN_DIR.getAbsolutePath() + '/' + file.getName() + "-";
+			int numPages = document.getNumberOfPages();
+			
+			PDFRenderer renderer = new PDFRenderer(document);
+			for (int i = 0; i < numPages; i++)
+			{
+				String fileName = outputPrefix + (i + 1) + ".png";
+				BufferedImage image = renderer.renderImageWithDPI(i, 96); // Windows native DPI
+				ImageIO.write(image, "PNG", new File(fileName));
+			}
+		}
 	}
 	
 	/*
@@ -277,18 +278,18 @@ public class PDAcroFormFlattenTest {
 	private static void getFromUrl(String sourceUrl, String targetFile) throws IOException
 	{
 		URL url = new URL(sourceUrl);
-		InputStream is = url.openStream();
-		OutputStream os = new FileOutputStream(new File(IN_DIR,targetFile));
+		
+		try (InputStream is = url.openStream();
+			OutputStream os = new FileOutputStream(new File(IN_DIR,targetFile)))
+		{
 
-		byte[] b = new byte[2048];
-		int length;
+			byte[] b = new byte[2048];
+			int length;
 
-		while ((length = is.read(b)) != -1) {
-			os.write(b, 0, length);
+			while ((length = is.read(b)) != -1) {
+				os.write(b, 0, length);
+			}
 		}
-
-		is.close();
-		os.close();
 	}
 
 	/*
