@@ -93,11 +93,13 @@ public class PDAcroFormTest
     @Test
     public void testFlatten() throws IOException
     {
-        PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf"));
-        testPdf.getDocumentCatalog().getAcroForm().flatten();
-        assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
         File file = new File(OUT_DIR, "AlignmentTests-flattened.pdf");
-        testPdf.save(file);
+        try (PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf")))
+        {
+            testPdf.getDocumentCatalog().getAcroForm().flatten();
+            assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
+            testPdf.save(file);
+        }
         // compare rendering
         TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
@@ -116,17 +118,20 @@ public class PDAcroFormTest
     @Test
     public void testFlattenWidgetNoRef() throws IOException
     {
-        PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf"));
-        PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
-        for (PDField field : acroForm.getFieldTree()) {
-        	for (PDAnnotationWidget widget : field.getWidgets()) {
-        		widget.getCOSObject().removeItem(COSName.P);
-        	}
-        }
-        testPdf.getDocumentCatalog().getAcroForm().flatten();
-        assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
         File file = new File(OUT_DIR, "AlignmentTests-flattened-noRef.pdf");
-        testPdf.save(file);
+
+        try (PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf")))
+        {
+            PDAcroForm acroFormToTest = testPdf.getDocumentCatalog().getAcroForm();
+            for (PDField field : acroFormToTest.getFieldTree()) {
+                for (PDAnnotationWidget widget : field.getWidgets()) {
+                    widget.getCOSObject().removeItem(COSName.P);
+                }
+            }
+            acroFormToTest.flatten();
+            assertTrue(acroFormToTest.getFields().isEmpty());
+            testPdf.save(file);
+        }
         // compare rendering
         TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
@@ -147,18 +152,20 @@ public class PDAcroFormTest
         try
         {
             byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
-            PDDocument pdfDocument = PDDocument.load(pdfBytes);
             
-            // do a low level access to the AcroForm to avoid the generation of missing entries
-            PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
-            COSDictionary catalogDictionary = documentCatalog.getCOSObject();
-            COSDictionary acroFormDictionary = (COSDictionary) catalogDictionary.getDictionaryObject(COSName.ACRO_FORM);
+            try (PDDocument pdfDocument = PDDocument.load(pdfBytes))
+            {
+                // do a low level access to the AcroForm to avoid the generation of missing entries
+                PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
+                COSDictionary catalogDictionary = documentCatalog.getCOSObject();
+                COSDictionary acroFormDictionary = (COSDictionary) catalogDictionary.getDictionaryObject(COSName.ACRO_FORM);
 
-            // ensure that the missing information has not been generated
-            assertNull(acroFormDictionary.getDictionaryObject(COSName.DA));
-            assertNull(acroFormDictionary.getDictionaryObject(COSName.RESOURCES));
-            
-            pdfDocument.close();
+                // ensure that the missing information has not been generated
+                assertNull(acroFormDictionary.getDictionaryObject(COSName.DA));
+                assertNull(acroFormDictionary.getDictionaryObject(COSName.RESOURCES));
+                
+                pdfDocument.close();
+            }
         }
         catch (IOException e)
         {
@@ -179,25 +186,26 @@ public class PDAcroFormTest
         try
         {
             byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
-            PDDocument pdfDocument = PDDocument.load(pdfBytes);
-            PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
-            
-            // this call shall trigger the generation of missing information
-            PDAcroForm theAcroForm = documentCatalog.getAcroForm();
-            
-            // ensure that the missing information has been generated
-            // DA entry
-            assertEquals("/Helv 0 Tf 0 g ", theAcroForm.getDefaultAppearance());
-            assertNotNull(theAcroForm.getDefaultResources());
-            
-            // DR entry
-            PDResources acroFormResources = theAcroForm.getDefaultResources();
-            assertNotNull(acroFormResources.getFont(COSName.getPDFName("Helv")));
-            assertEquals("Helvetica", acroFormResources.getFont(COSName.getPDFName("Helv")).getName());
-            assertNotNull(acroFormResources.getFont(COSName.getPDFName("ZaDb")));
-            assertEquals("ZapfDingbats", acroFormResources.getFont(COSName.getPDFName("ZaDb")).getName());
 
-            pdfDocument.close();
+            try (PDDocument pdfDocument = PDDocument.load(pdfBytes))
+            {
+                PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
+                
+                // this call shall trigger the generation of missing information
+                PDAcroForm theAcroForm = documentCatalog.getAcroForm();
+                
+                // ensure that the missing information has been generated
+                // DA entry
+                assertEquals("/Helv 0 Tf 0 g ", theAcroForm.getDefaultAppearance());
+                assertNotNull(theAcroForm.getDefaultResources());
+                
+                // DR entry
+                PDResources acroFormResources = theAcroForm.getDefaultResources();
+                assertNotNull(acroFormResources.getFont(COSName.getPDFName("Helv")));
+                assertEquals("Helvetica", acroFormResources.getFont(COSName.getPDFName("Helv")).getName());
+                assertNotNull(acroFormResources.getFont(COSName.getPDFName("ZaDb")));
+                assertEquals("ZapfDingbats", acroFormResources.getFont(COSName.getPDFName("ZaDb")).getName());
+            }
         }
         catch (IOException e)
         {
@@ -216,31 +224,33 @@ public class PDAcroFormTest
     
     private byte[] createAcroFormWithMissingResourceInformation() throws IOException
     {
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
+        try (PDDocument tmpDocument = new PDDocument();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        {
+            PDPage page = new PDPage();
+            tmpDocument.addPage(page);
 
-        PDAcroForm newAcroForm = new PDAcroForm(document);
-        document.getDocumentCatalog().setAcroForm(newAcroForm);
+            PDAcroForm newAcroForm = new PDAcroForm(document);
+            tmpDocument.getDocumentCatalog().setAcroForm(newAcroForm);
 
-        PDTextField textBox = new PDTextField(newAcroForm);
-        textBox.setPartialName("SampleField");
-        newAcroForm.getFields().add(textBox);
+            PDTextField textBox = new PDTextField(newAcroForm);
+            textBox.setPartialName("SampleField");
+            newAcroForm.getFields().add(textBox);
 
-        PDAnnotationWidget widget = textBox.getWidgets().get(0);
-        PDRectangle rect = new PDRectangle(50, 750, 200, 20);
-        widget.setRectangle(rect);
-        widget.setPage(page);
+            PDAnnotationWidget widget = textBox.getWidgets().get(0);
+            PDRectangle rect = new PDRectangle(50, 750, 200, 20);
+            widget.setRectangle(rect);
+            widget.setPage(page);
 
-        page.getAnnotations().add(widget);
+            page.getAnnotations().add(widget);
 
-        // acroForm.setNeedAppearances(true);
-        // acroForm.getField("SampleField").getCOSObject().setString(COSName.V, "content");
+            // acroForm.setNeedAppearances(true);
+            // acroForm.getField("SampleField").getCOSObject().setString(COSName.V, "content");
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        document.save(baos); // this is a working PDF
-        document.close();
-        return baos.toByteArray();
+            tmpDocument.save(baos); // this is a working PDF
+            tmpDocument.close();
+            return baos.toByteArray();
+        }
     }
     
 }
