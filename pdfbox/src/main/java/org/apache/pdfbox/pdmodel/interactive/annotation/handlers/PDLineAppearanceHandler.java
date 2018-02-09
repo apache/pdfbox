@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
@@ -88,7 +89,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             return;
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        if (ab.color.getComponents().length == 0)
+        PDColor color = annotation.getColor();
+        if (color == null || color.getComponents().length == 0)
         {
             return;
         }
@@ -142,7 +144,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // empty color array results in an invisible line ("n" operator) but the rest is visible
                 // empty content is like no caption
 
-                boolean hasStroke = cs.setStrokingColorOnDemand(getColor());
+                boolean hasStroke = cs.setStrokingColorOnDemand(color);
 
                 if (ab.dashArray != null)
                 {

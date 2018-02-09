@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationInk;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
@@ -50,7 +51,8 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
         PDAnnotationInk ink = (PDAnnotationInk) getAnnotation();
         // PDF spec does not mention /Border for ink annotations, but it is used if /BS is not available
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(ink, ink.getBorderStyle());
-        if (ab.width == 0 || ab.color.getComponents().length == 0)
+        PDColor color = ink.getColor();
+        if (color == null || color.getComponents().length == 0 || ab.width == 0)
         {
             return;
         }
@@ -61,7 +63,7 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
             {
                 handleOpacity(ink.getConstantOpacity());
 
-                cs.setStrokingColor(ab.color);
+                cs.setStrokingColor(color);
                 if (ab.dashArray != null)
                 {
                     cs.setLineDashPattern(ab.dashArray, 0);

@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.PDFormContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -64,11 +65,9 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
             return;
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        if (annotation.getColor() == null || ab.color.getComponents().length == 0)
+        PDColor color = annotation.getColor();
+        if (color == null || color.getComponents().length == 0)
         {
-            //TODO Annotation border color handling is different here than with shape annotations,
-            // consider this when/if refactoring AnnotationBorder class,
-            // e.g. set a parameter what to use as default.
             return;
         }
 
@@ -140,7 +139,7 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                 frm2.setBBox(annotation.getRectangle());
                 try (PDFormContentStream frm2CS = new PDFormContentStream(frm2))
                 {
-                    frm2CS.setNonStrokingColor(ab.color);
+                    frm2CS.setNonStrokingColor(color);
                     int of = 0;
                     while (of + 7 < pathsArray.length)
                     {
