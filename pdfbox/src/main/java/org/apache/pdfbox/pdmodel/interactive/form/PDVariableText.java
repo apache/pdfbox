@@ -180,9 +180,8 @@ public abstract class PDVariableText extends PDTerminalField
      * Get the fields rich text value.
      * 
      * @return the rich text value string
-     * @throws IOException if the field dictionary entry is not a text type
      */
-    public String getRichTextValue() throws IOException
+    public String getRichTextValue()
     {
         return getStringOrStream(getInheritableAttribute(COSName.RV));
     }

@@ -222,9 +222,8 @@ public final class PDTextField extends PDVariableText
      * Sets the default value of this field.
      *
      * @param value Plain text
-     * @throws IOException if the value could not be set
      */
-    public void setDefaultValue(String value) throws IOException
+    public void setDefaultValue(String value)
     {
         getCOSObject().setString(COSName.DV, value);
     }

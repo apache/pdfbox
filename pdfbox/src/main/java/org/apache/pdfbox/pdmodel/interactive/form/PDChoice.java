@@ -389,9 +389,8 @@ public abstract class PDChoice extends PDVariableText
      * Sets the default value of this field.
      *
      * @param value The name of the selected item.
-     * @throws IOException if the value could not be set
      */
-    public void setDefaultValue(String value) throws IOException
+    public void setDefaultValue(String value)
     {
         getCOSObject().setString(COSName.DV, value);
     }
