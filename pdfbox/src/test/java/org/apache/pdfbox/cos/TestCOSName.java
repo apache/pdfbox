@@ -34,17 +34,21 @@ public class TestCOSName
     public void PDFBox4076() throws IOException
     {
         String special = "中国你好!";
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage();
-        document.addPage(page);
-        document.getDocumentCatalog().getCOSObject().setString(COSName.getPDFName(special), special);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        document.save(baos);
-        document.close();
-        document = PDDocument.load(baos.toByteArray());
-        COSDictionary catalogDict = document.getDocumentCatalog().getCOSObject();
-        Assert.assertTrue(catalogDict.containsKey(special));
-        Assert.assertEquals(special, catalogDict.getString(special));
-        document.close();
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            document.addPage(page);
+            document.getDocumentCatalog().getCOSObject().setString(COSName.getPDFName(special), special);
+            
+            document.save(baos);
+        }
+        try (PDDocument document = PDDocument.load(baos.toByteArray()))
+        {
+            COSDictionary catalogDict = document.getDocumentCatalog().getCOSObject();
+            Assert.assertTrue(catalogDict.containsKey(special));
+            Assert.assertEquals(special, catalogDict.getString(special));
+        }
     }
 }

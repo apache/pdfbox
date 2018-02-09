@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdfwriter.COSWriter;
  */
 public class TestCOSInteger extends TestCOSNumber
 {
+    @Override
     public void setUp()
     {
         try
