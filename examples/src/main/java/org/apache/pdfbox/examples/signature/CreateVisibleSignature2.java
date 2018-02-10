@@ -156,9 +156,9 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         setTsaUrl(tsaUrl);
 
         // creating output document and prepare the IO streams.
-        FileOutputStream fos = new FileOutputStream(signedFile);
 
-        try (PDDocument doc = PDDocument.load(inputFile))
+        try (FileOutputStream fos = new FileOutputStream(signedFile);
+                PDDocument doc = PDDocument.load(inputFile))
         {
             int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)
