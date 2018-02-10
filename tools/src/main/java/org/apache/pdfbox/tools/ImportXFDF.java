@@ -77,29 +77,19 @@ public class ImportXFDF
 
     private void importXFDF( String[] args ) throws IOException
     {
-        PDDocument pdf = null;
-        FDFDocument fdf = null;
-
-        try
+        if( args.length != 3 )
         {
-            if( args.length != 3 )
+            usage();
+        }
+        else
+        {
+            ImportFDF importer = new ImportFDF();
+            try (PDDocument pdf = PDDocument.load( new File(args[0]) );
+                    FDFDocument fdf = FDFDocument.loadXFDF( args[1] ))
             {
-                usage();
-            }
-            else
-            {
-                ImportFDF importer = new ImportFDF();
-                pdf = PDDocument.load( new File(args[0]) );
-                fdf = FDFDocument.loadXFDF( args[1] );
-
                 importer.importFDF( pdf, fdf );
                 pdf.save( args[2] );
             }
-        }
-        finally
-        {
-            close( fdf );
-            close( pdf );
         }
     }
 
@@ -110,35 +100,5 @@ public class ImportXFDF
     {
         System.err.println( "usage: org.apache.pdfbox.tools.ImportXFDF <pdf-file> <fdf-file> <output-file>" );
         System.exit(1);
-    }
-
-    /**
-     * Close the document.
-     *
-     * @param doc The doc to close.
-     *
-     * @throws IOException If there is an error closing the document.
-     */
-    public void close( FDFDocument doc ) throws IOException
-    {
-        if( doc != null )
-        {
-            doc.close();
-        }
-    }
-
-    /**
-     * Close the document.
-     *
-     * @param doc The doc to close.
-     *
-     * @throws IOException If there is an error closing the document.
-     */
-    public void close( PDDocument doc ) throws IOException
-    {
-        if( doc != null )
-        {
-            doc.close();
-        }
     }
 }
