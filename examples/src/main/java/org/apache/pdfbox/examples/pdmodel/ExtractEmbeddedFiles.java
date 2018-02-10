@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
+import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFileAttachment;
 
@@ -93,9 +94,13 @@ public final class ExtractEmbeddedFiles
                         if (annotation instanceof PDAnnotationFileAttachment)
                         {
                             PDAnnotationFileAttachment annotationFileAttachment = (PDAnnotationFileAttachment) annotation;
-                            PDComplexFileSpecification fileSpec = (PDComplexFileSpecification) annotationFileAttachment.getFile();
-                            PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
-                            extractFile(filePath, fileSpec.getFilename(), embeddedFile);
+                            PDFileSpecification fileSpec = annotationFileAttachment.getFile();
+                            if (fileSpec instanceof PDComplexFileSpecification)
+                            {
+                                PDComplexFileSpecification complexFileSpec = (PDComplexFileSpecification) fileSpec;
+                                PDEmbeddedFile embeddedFile = getEmbeddedFile(complexFileSpec);
+                                extractFile(filePath, complexFileSpec.getFilename(), embeddedFile);
+                            }
                         }
                     }
                 }
