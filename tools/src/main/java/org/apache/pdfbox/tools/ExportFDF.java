@@ -58,18 +58,14 @@ public class ExportFDF
 
     private void exportFDF( String[] args ) throws IOException
     {
-        PDDocument pdf = null;
-        FDFDocument fdf = null;
-
-        try
+        if( args.length != 1 && args.length != 2 )
         {
-            if( args.length != 1 && args.length != 2 )
+            usage();
+        }
+        else
+        {
+            try (PDDocument pdf = PDDocument.load( new File(args[0]) ))
             {
-                usage();
-            }
-            else
-            {
-                pdf = PDDocument.load( new File(args[0]) );
                 PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
                 if( form == null )
                 {
@@ -89,15 +85,12 @@ public class ExportFDF
                             fdfName = args[0].substring( 0, args[0].length() -4 ) + ".fdf";
                         }
                     }
-                    fdf = form.exportFDF();
-                    fdf.save( fdfName );
+                    try (FDFDocument fdf = form.exportFDF())
+                    {
+                        fdf.save( fdfName );
+                    }
                 }
             }
-        }
-        finally
-        {
-            close( fdf );
-            close( pdf );
         }
     }
 
@@ -112,35 +105,5 @@ public class ExportFDF
         
         System.err.println(message);
         System.exit(1);
-    }
-
-    /**
-     * Close the document.
-     *
-     * @param doc The doc to close.
-     *
-     * @throws IOException If there is an error closing the document.
-     */
-    public void close( FDFDocument doc ) throws IOException
-    {
-        if( doc != null )
-        {
-            doc.close();
-        }
-    }
-
-    /**
-     * Close the document.
-     *
-     * @param doc The doc to close.
-     *
-     * @throws IOException If there is an error closing the document.
-     */
-    public void close( PDDocument doc ) throws IOException
-    {
-        if( doc != null )
-        {
-            doc.close();
-        }
     }
 }
