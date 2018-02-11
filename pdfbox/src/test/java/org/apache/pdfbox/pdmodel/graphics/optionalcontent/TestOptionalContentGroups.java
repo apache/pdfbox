@@ -41,7 +41,7 @@ import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentPrope
  */
 public class TestOptionalContentGroups extends TestCase
 {
-    private File testResultsDir = new File("target/test-output");
+    private final File testResultsDir = new File("target/test-output");
 
     @Override
     protected void setUp() throws Exception
@@ -205,4 +205,76 @@ public class TestOptionalContentGroups extends TestCase
         }
     }
 
+    public void testOCGsWithSameNameCanHaveDifferentVisibility() throws Exception
+    {
+        PDDocument doc = new PDDocument();
+        try
+        {
+            //Create new page
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDResources resources = page.getResources();
+            if( resources == null )
+            {
+                resources = new PDResources();
+                page.setResources( resources );
+            }
+
+            //Prepare OCG functionality
+            PDOptionalContentProperties ocprops = new PDOptionalContentProperties();
+            doc.getDocumentCatalog().setOCProperties(ocprops);
+            //ocprops.setBaseState(BaseState.ON); //ON=default
+
+            //Create visible OCG
+            PDOptionalContentGroup visible = new PDOptionalContentGroup("layer");
+            ocprops.addGroup(visible);
+            assertTrue(ocprops.isGroupEnabled(visible));
+
+            //Create invisible OCG
+            PDOptionalContentGroup invisible = new PDOptionalContentGroup("layer");
+            ocprops.addGroup(invisible);
+            assertFalse(ocprops.setGroupEnabled(invisible, false));
+            assertFalse(ocprops.isGroupEnabled(invisible));
+
+            //Check that visible layer is still visible
+            assertTrue(ocprops.isGroupEnabled(visible));
+
+            //Setup page content stream and paint background/title
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
+            PDFont font = PDType1Font.HELVETICA_BOLD;
+            contentStream.beginMarkedContent(COSName.OC, visible);
+            contentStream.beginText();
+            contentStream.setFont(font, 14);
+            contentStream.newLineAtOffset(80, 700);
+            contentStream.showText("PDF 1.5: Optional Content Groups");
+            contentStream.endText();
+            font = PDType1Font.HELVETICA;
+            contentStream.beginText();
+            contentStream.setFont(font, 12);
+            contentStream.newLineAtOffset(80, 680);
+            contentStream.showText("You should see this text, but no red text line.");
+            contentStream.endText();
+            contentStream.endMarkedContent();
+
+            //Paint disabled layer
+            contentStream.beginMarkedContent(COSName.OC, invisible);
+            contentStream.setNonStrokingColor(Color.RED);
+            contentStream.beginText();
+            contentStream.setFont(font, 12);
+            contentStream.newLineAtOffset(80, 500);
+            contentStream.showText(
+                    "This is from a disabled layer. If you see this, that's NOT good!");
+            contentStream.endText();
+            contentStream.endMarkedContent();
+
+            contentStream.close();
+
+            File targetFile = new File(testResultsDir, "ocg-generation-same-name.pdf");
+            doc.save(targetFile.getAbsolutePath());
+        }
+        finally
+        {
+            doc.close();
+        }
+    }
 }
