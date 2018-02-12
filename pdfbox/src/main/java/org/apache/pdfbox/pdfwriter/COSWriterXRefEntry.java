@@ -41,6 +41,20 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     }
 
     /**
+     * COSWriterXRefEntry constructor comment.
+     *
+     * @param start The start attribute.
+     * @param obj The COS object that this entry represents.
+     * @param keyValue The key to the COS object.
+     */
+    public COSWriterXRefEntry(long start, COSBase obj, COSObjectKey keyValue)
+    {
+        setOffset(start);
+        setObject(obj);
+        setKey(keyValue);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -129,21 +143,6 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     public final void setOffset(long newOffset)
     {
         offset = newOffset;
-    }
-
-    /**
-     * COSWriterXRefEntry constructor comment.
-     *
-     * @param start The start attribute.
-     * @param obj The COS object that this entry represents.
-     * @param keyValue The key to the COS object.
-     */
-    public COSWriterXRefEntry(long start, COSBase obj, COSObjectKey keyValue)
-    {
-        super();
-        setOffset(start);
-        setObject(obj);
-        setKey(keyValue);
     }
 
     /**
