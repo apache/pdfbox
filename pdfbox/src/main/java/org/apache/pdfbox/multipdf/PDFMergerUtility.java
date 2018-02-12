@@ -361,33 +361,7 @@ public class PDFMergerUtility
 
         PDFCloneUtility cloner = new PDFCloneUtility(destination);
 
-        try
-        {
-            PDAcroForm destAcroForm = destCatalog.getAcroForm();
-            PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
-            
-            if (destAcroForm == null && srcAcroForm != null)
-            {
-                destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
-                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));       
-                
-            }
-            else
-            {
-                if (srcAcroForm != null)
-                {
-                    mergeAcroForm(cloner, destAcroForm, srcAcroForm);
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            // if we are not ignoring exceptions, we'll re-throw this
-            if (!ignoreAcroFormErrors)
-            {
-                throw new IOException(e);
-            }
-        }
+        mergeAcroForm(cloner, destCatalog, srcCatalog);
 
         COSArray destThreads = (COSArray) destCatalog.getCOSObject().getDictionaryObject(COSName.THREADS);
         COSArray srcThreads = (COSArray) cloner.cloneForNewDocument(destCatalog.getCOSObject().getDictionaryObject(
@@ -651,41 +625,39 @@ public class PDFMergerUtility
         }
     }
 
-    // copy outputIntents to destination, but avoid duplicate OutputConditionIdentifier,
-    // except when it is missing or is named "Custom".
-    private void mergeOutputIntents(PDFCloneUtility cloner, 
-            PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog) throws IOException
+    private void mergeAcroForm(PDFCloneUtility cloner, PDDocumentCatalog destCatalog,
+            PDDocumentCatalog srcCatalog ) throws IOException
     {
-        List<PDOutputIntent> srcOutputIntents = srcCatalog.getOutputIntents();
-        List<PDOutputIntent> dstOutputIntents = destCatalog.getOutputIntents();
-        for (PDOutputIntent srcOI : srcOutputIntents)
+        try
         {
-            String srcOCI = srcOI.getOutputConditionIdentifier();
-            if (srcOCI != null && !"Custom".equals(srcOCI))
+            PDAcroForm destAcroForm = destCatalog.getAcroForm();
+            PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
+            
+            if (destAcroForm == null && srcAcroForm != null)
             {
-                // is that identifier already there?
-                boolean skip = false;
-                for (PDOutputIntent dstOI : dstOutputIntents)
+                destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
+                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));       
+                
+            }
+            else
+            {
+                if (srcAcroForm != null)
                 {
-                    if (dstOI.getOutputConditionIdentifier().equals(srcOCI))
-                    {
-                        skip = true;
-                        break;
-                    }
-                }
-                if (skip)
-                {
-                    continue;
+                    acroFormLegacyMerge(cloner, destAcroForm, srcAcroForm);
                 }
             }
-            destCatalog.addOutputIntent(new PDOutputIntent((COSDictionary) cloner.cloneForNewDocument(srcOI)));
-            dstOutputIntents.add(srcOI);
+        }
+        catch (IOException e)
+        {
+            // if we are not ignoring exceptions, we'll re-throw this
+            if (!ignoreAcroFormErrors)
+            {
+                throw new IOException(e);
+            }
         }
     }
-
-    private int nextFieldNum = 1;
-
-    /**
+    
+    /*
      * Merge the contents of the source form into the destination form for the
      * destination file.
      *
@@ -694,7 +666,7 @@ public class PDFMergerUtility
      * @param srcAcroForm the source form
      * @throws IOException If an error occurs while adding the field.
      */
-    private void mergeAcroForm(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
+    private void acroFormLegacyMerge(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {
         List<PDField> srcFields = srcAcroForm.getFields();
@@ -731,6 +703,42 @@ public class PDFMergerUtility
             destAcroForm.getCOSObject().setItem(COSName.FIELDS,destFields);
         }
     }
+
+
+    // copy outputIntents to destination, but avoid duplicate OutputConditionIdentifier,
+    // except when it is missing or is named "Custom".
+    private void mergeOutputIntents(PDFCloneUtility cloner, 
+            PDDocumentCatalog srcCatalog, PDDocumentCatalog destCatalog) throws IOException
+    {
+        List<PDOutputIntent> srcOutputIntents = srcCatalog.getOutputIntents();
+        List<PDOutputIntent> dstOutputIntents = destCatalog.getOutputIntents();
+        for (PDOutputIntent srcOI : srcOutputIntents)
+        {
+            String srcOCI = srcOI.getOutputConditionIdentifier();
+            if (srcOCI != null && !"Custom".equals(srcOCI))
+            {
+                // is that identifier already there?
+                boolean skip = false;
+                for (PDOutputIntent dstOI : dstOutputIntents)
+                {
+                    if (dstOI.getOutputConditionIdentifier().equals(srcOCI))
+                    {
+                        skip = true;
+                        break;
+                    }
+                }
+                if (skip)
+                {
+                    continue;
+                }
+            }
+            destCatalog.addOutputIntent(new PDOutputIntent((COSDictionary) cloner.cloneForNewDocument(srcOI)));
+            dstOutputIntents.add(srcOI);
+        }
+    }
+
+    private int nextFieldNum = 1;
+
 
     /**
      * Indicates if acroform errors are ignored or not.
