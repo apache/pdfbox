@@ -18,12 +18,16 @@ package org.apache.pdfbox.multipdf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -38,6 +42,7 @@ import org.junit.Test;
  */
 public class MergeAcroFormsTest
 {
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
     private static final File OUT_DIR = new File("target/test-output/merge/");
 
     @Before
@@ -45,6 +50,73 @@ public class MergeAcroFormsTest
     {
         OUT_DIR.mkdirs();
     }
+    
+    /*
+     * Test LegacyMode merge
+     */
+    @Test
+    public void testLegacyModeMerge() throws IOException
+    {
+        PDFMergerUtility merger = new PDFMergerUtility();
+        File toBeMerged = new File(IN_DIR,"AcroFormForMerge.pdf");
+        File pdfOutput = new File(OUT_DIR,"PDFBoxLegacyMerge-SameMerged.pdf");
+        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+        merger.addSource(toBeMerged);
+        merger.addSource(toBeMerged);
+        merger.mergeDocuments(null);
+        
+        try (PDDocument compliantDocument = PDDocument.load(new File(IN_DIR,"PDFBoxLegacyMerge-SameMerged.pdf"));
+                PDDocument toBeCompared = PDDocument.load(new File(OUT_DIR,"PDFBoxLegacyMerge-SameMerged.pdf")))
+        {
+            PDAcroForm compliantAcroForm = compliantDocument.getDocumentCatalog().getAcroForm();
+            PDAcroForm toBeComparedAcroForm = toBeCompared.getDocumentCatalog().getAcroForm();
+            
+            assertEquals("There shall be the same number of root fields",
+                    compliantAcroForm.getFields().size(),
+                    toBeComparedAcroForm.getFields().size());
+            
+            for (PDField compliantField : compliantAcroForm.getFieldTree())
+            {
+                assertNotNull("There shall be a field with the same FQN", toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName()));
+                PDField toBeComparedField = toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName());
+                compareFieldProperties(compliantField, toBeComparedField);
+            }
+
+            for (PDField toBeComparedField : toBeComparedAcroForm.getFieldTree())
+            {
+                assertNotNull("There shall be a field with the same FQN", compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName()));
+                PDField compliantField = compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName());
+                compareFieldProperties(toBeComparedField, compliantField);
+            }       
+        }
+    }
+    
+    private void compareFieldProperties(PDField sourceField, PDField toBeComapredField)
+    {
+        // List of keys for comparison
+        // Don't include too complex properties such as AP as this will fail the test because
+        // of a stack overflow when 
+        final String[] keys = {"FT", "T", "TU", "TM", "Ff", "V", "DV", "Opts", "TI", "I", "Rect", "DA", };
+        
+        COSDictionary sourceFieldCos = sourceField.getCOSObject();
+        COSDictionary toBeComparedCos = toBeComapredField.getCOSObject();     
+        
+        for (String key : keys)
+        {
+            COSBase sourceBase = sourceFieldCos.getDictionaryObject(key);
+            COSBase toBeComparedBase = toBeComparedCos.getDictionaryObject(key);
+            
+            if (sourceBase != null)
+            {
+                assertEquals("The content of the field properties shall be the same",sourceBase.toString(), toBeComparedBase.toString());    
+            }
+            else
+            {
+                assertNull("If the source property is null the compared property shall be null too", toBeComparedBase);
+            }
+        }
+    }
+    
     
     /*
      * PDFBOX-1031 Ensure that after merging the PDFs there is an Annots entry per page.
