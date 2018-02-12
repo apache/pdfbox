@@ -367,7 +367,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         }
                         break;
                     case PDAnnotationLine.LE_SLASH:
-                        // the line is 18 x linewidth at an angle of 60Â°
+                        // the line is 18 x linewidth at an angle of 60°
                         cs.moveTo(lineLength + (float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
                                            y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
                         cs.lineTo(lineLength + (float) (Math.cos(Math.toRadians(240)) * ab.width * 9),
