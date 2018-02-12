@@ -48,15 +48,7 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     {
         if (obj != null)
         {
-            if (getKey().getNumber() < obj.getKey().getNumber())
-            {
-                return -1;
-            }
-            else if (getKey().getNumber() > obj.getKey().getNumber())
-            {
-                return 1;
-            }
-            return 0;
+            return Long.compare(getKey().getNumber(), obj.getKey().getNumber());
         }
         return -1;
     }
@@ -140,7 +132,6 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
      */
     public COSWriterXRefEntry(long start, COSBase obj, COSObjectKey keyValue)
     {
-        super();
         setOffset(start);
         setObject(obj);
         setKey(keyValue);
