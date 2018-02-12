@@ -711,8 +711,9 @@ public class PDFMergerUtility
             throws IOException
     {
         List<PDField> srcFields = srcAcroForm.getFields();
+        COSArray destFields = null;
 
-        if (srcFields != null)
+        if (srcFields != null && srcFields.size() > 0)
         {
             // if a form is merged multiple times using PDFBox the newly generated
             // fields starting with dummyFieldName may already exist. We need to determine the last unique 
@@ -729,7 +730,18 @@ public class PDFMergerUtility
                 }
             }
 
-            COSArray destFields = (COSArray) destAcroForm.getCOSObject().getItem(COSName.FIELDS);
+            // get the destinations root fields. Could be that the entry doesn't exist
+            // or is of wrong type
+            COSBase base = destAcroForm.getCOSObject().getItem(COSName.FIELDS);
+            if (base instanceof COSArray)
+            {
+                destFields = (COSArray) base;
+            }
+            else
+            {
+                destFields = new COSArray();
+            }
+            
             for (PDField srcField : srcAcroForm.getFields())
             {
                 COSDictionary dstField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
