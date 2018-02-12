@@ -29,6 +29,7 @@ import java.net.URL;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.multipdf.PDFMergerUtility.AcroFormMergeMode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
@@ -64,6 +65,7 @@ public class MergeAcroFormsTest
         merger.addSource(toBeMerged);
         merger.addSource(toBeMerged);
         merger.mergeDocuments(null);
+        merger.setAcroFormMergeMode(AcroFormMergeMode.PDFBOX_LEGACY_MODE);
         
         try (PDDocument compliantDocument = PDDocument.load(new File(IN_DIR,"PDFBoxLegacyMerge-SameMerged.pdf"));
                 PDDocument toBeCompared = PDDocument.load(new File(OUT_DIR,"PDFBoxLegacyMerge-SameMerged.pdf")))
