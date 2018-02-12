@@ -130,27 +130,30 @@ public class MergeAcroFormsTest
         PDFMergerUtility merger = new PDFMergerUtility();
         
         URL url1 = new URL("https://issues.apache.org/jira/secure/attachment/12481683/1.pdf");
-        InputStream is1 = url1.openStream();
-
         URL url2 = new URL("https://issues.apache.org/jira/secure/attachment/12481684/2.pdf");
-        InputStream is2 = url2.openStream();
         File pdfOutput = new File(OUT_DIR,"PDFBOX-1031.pdf");
-        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
-        merger.addSource(is1);
-        merger.addSource(is2);
-        merger.mergeDocuments(null);
+
+        try (InputStream is1 = url1.openStream();
+                InputStream is2 = url2.openStream())
+        {
+            
+            merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+            merger.addSource(is1);
+            merger.addSource(is2);
+            merger.mergeDocuments(null);
+        }
         
         // Test merge result
-        PDDocument mergedPDF = PDDocument.load(pdfOutput);
-        assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
-        
-        assertNotNull("There shall be an /Annots entry for the first page", mergedPDF.getPage(0).getCOSObject().getDictionaryObject(COSName.ANNOTS));
-        assertEquals("There shall be 1 annotation for the first page", 1, mergedPDF.getPage(0).getAnnotations().size());
-        
-        assertNotNull("There shall be an /Annots entry for the second page", mergedPDF.getPage(1).getCOSObject().getDictionaryObject(COSName.ANNOTS));
-        assertEquals("There shall be 1 annotation for the second page", 1, mergedPDF.getPage(0).getAnnotations().size());
-
-        mergedPDF.close();
+        try (PDDocument mergedPDF = PDDocument.load(pdfOutput))
+        {
+            assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
+            
+            assertNotNull("There shall be an /Annots entry for the first page", mergedPDF.getPage(0).getCOSObject().getDictionaryObject(COSName.ANNOTS));
+            assertEquals("There shall be 1 annotation for the first page", 1, mergedPDF.getPage(0).getAnnotations().size());
+            
+            assertNotNull("There shall be an /Annots entry for the second page", mergedPDF.getPage(1).getCOSObject().getDictionaryObject(COSName.ANNOTS));
+            assertEquals("There shall be 1 annotation for the second page", 1, mergedPDF.getPage(0).getAnnotations().size());
+        }
     }    
     
     /*
@@ -163,31 +166,33 @@ public class MergeAcroFormsTest
         PDFMergerUtility merger = new PDFMergerUtility();
         
         URL url1 = new URL("https://issues.apache.org/jira/secure/attachment/12490774/a.pdf");
-        InputStream is1 = url1.openStream();
-
         URL url2 = new URL("https://issues.apache.org/jira/secure/attachment/12490775/b.pdf");
-        InputStream is2 = url2.openStream();
         File pdfOutput = new File(OUT_DIR,"PDFBOX-1100.pdf");
-        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
-        merger.addSource(is1);
-        merger.addSource(is2);
-        merger.mergeDocuments(null);
+
+        try (InputStream is1 = url1.openStream();
+                InputStream is2 = url2.openStream())
+        {
+            merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+            merger.addSource(is1);
+            merger.addSource(is2);
+            merger.mergeDocuments(null);
+        }
         
         // Test merge result
-        PDDocument mergedPDF = PDDocument.load(pdfOutput);
-        assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
-        
-        PDAcroForm acroForm = mergedPDF.getDocumentCatalog().getAcroForm();
-        
-        PDField formField = acroForm.getField("Testfeld");
-        assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
-        assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
-
-        formField = acroForm.getField("Testfeld2");
-        assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
-        assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
-
-        mergedPDF.close();
+        try (PDDocument mergedPDF = PDDocument.load(pdfOutput))
+        {
+            assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
+            
+            PDAcroForm acroForm = mergedPDF.getDocumentCatalog().getAcroForm();
+            
+            PDField formField = acroForm.getField("Testfeld");
+            assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
+            assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+    
+            formField = acroForm.getField("Testfeld2");
+            assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
+            assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+        }
     }
     
     
