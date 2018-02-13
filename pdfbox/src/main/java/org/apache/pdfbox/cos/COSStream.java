@@ -77,10 +77,12 @@ public class COSStream extends COSDictionary implements Closeable
      */
     private void checkClosed() throws IOException
     {
-        if ((randomAccess != null) && randomAccess.isClosed())
+        if (randomAccess != null && randomAccess.isClosed())
         {
             throw new IOException("COSStream has been closed and cannot be read. " +
                                   "Perhaps its enclosing PDDocument has been closed?");
+            // Tip for debugging: look at the destination file with an editor, you'll see an 
+            // incomplete stream at the bottom.
         }
     }
 
