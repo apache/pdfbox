@@ -131,7 +131,10 @@ public class PDStream implements COSObjectable
         }
         finally
         {
-            input.close();
+            if (input != null)
+            {
+                input.close();
+            }
         }
     }
 
