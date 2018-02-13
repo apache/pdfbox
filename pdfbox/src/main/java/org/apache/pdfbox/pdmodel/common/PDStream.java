@@ -124,23 +124,14 @@ public class PDStream implements COSObjectable
      */
     private PDStream(PDDocument doc, InputStream input, COSBase filters) throws IOException
     {
-        OutputStream output = null;
-        try
+        stream = doc.getDocument().createCOSStream();
+        try (OutputStream output = stream.createOutputStream(filters))
         {
-            stream = doc.getDocument().createCOSStream();
-            output = stream.createOutputStream(filters);
             IOUtils.copy(input, output);
         }
         finally
         {
-            if (output != null)
-            {
-                output.close();
-            }
-            if (input != null)
-            {
-                input.close();
-            }
+            input.close();
         }
     }
 
