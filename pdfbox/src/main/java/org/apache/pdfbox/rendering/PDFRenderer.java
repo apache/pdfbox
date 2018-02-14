@@ -20,9 +20,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 
 /**
  * Renders a PDF document to an AWT BufferedImage.
@@ -114,20 +118,30 @@ public class PDFRenderer
         int heightPx = Math.round(heightPt * scale);
         int rotationAngle = page.getRotation();
 
+        int bimType = imageType.toBufferedImageType();
+        if (imageType != ImageType.ARGB && hasBlendMode(page))
+        {
+            // PDFBOX-4095: if the PDF has blending on the top level, draw on transparent background
+            // Inpired from PDF.js: if a PDF page uses any blend modes other than Normal, 
+            // PDF.js renders everything on a fully transparent RGBA canvas. 
+            // Finally when the page has been rendered, PDF.js draws the RGBA canvas on a white canvas.
+            bimType = BufferedImage.TYPE_INT_ARGB;
+        }
+
         // swap width and height
         BufferedImage image;
         if (rotationAngle == 90 || rotationAngle == 270)
         {
-            image = new BufferedImage(heightPx, widthPx, imageType.toBufferedImageType());
+            image = new BufferedImage(heightPx, widthPx, bimType);
         }
         else
         {
-            image = new BufferedImage(widthPx, heightPx, imageType.toBufferedImageType());
+            image = new BufferedImage(widthPx, heightPx, bimType);
         }
 
-        // use a transparent background if the imageType supports alpha
+        // use a transparent background if the image type supports alpha
         Graphics2D g = image.createGraphics();
-        if (imageType == ImageType.ARGB)
+        if (image.getType() == BufferedImage.TYPE_INT_ARGB)
         {
             g.setBackground(new Color(0, 0, 0, 0));
         }
@@ -145,6 +159,19 @@ public class PDFRenderer
         drawer.drawPage(g, page.getCropBox());       
         
         g.dispose();
+
+        if (image.getType() != imageType.toBufferedImageType())
+        {
+            // PDFBOX-4095: draw temporary transparent image on white background
+            BufferedImage newImage = 
+                    new BufferedImage(image.getWidth(), image.getHeight(), imageType.toBufferedImageType());
+            Graphics2D dstGraphics = newImage.createGraphics();
+            dstGraphics.setBackground(Color.WHITE);
+            dstGraphics.clearRect(0, 0, image.getWidth(), image.getHeight());
+            dstGraphics.drawImage(image, 0, 0, null);
+            dstGraphics.dispose();
+            image = newImage;
+        }
 
         return image;
     }
@@ -223,5 +250,31 @@ public class PDFRenderer
     protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
     {
         return new PageDrawer(parameters);
+    }
+
+    private boolean hasBlendMode(PDPage page)
+    {
+        // check the current resources for blend modes
+        PDResources resources = page.getResources();
+        if (resources == null)
+        {
+            return false;
+        }
+        for (COSName name : resources.getExtGStateNames())
+        {
+            PDExtendedGraphicsState extGState = resources.getExtGState(name);
+            if (extGState == null)
+            {
+                // can happen if key exists but no value 
+                // see PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf
+                continue;
+            }
+            BlendMode blendMode = extGState.getBlendMode();
+            if (blendMode != BlendMode.NORMAL)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
