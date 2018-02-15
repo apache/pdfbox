@@ -135,7 +135,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             }
 
             // skip composite glyph components that have no code point
-            List<Integer> codes = cmap.getCharCodes(cid); // old GID -> Unicode
+            List<Integer> codes = cmapLookup.getCharCodes(cid); // old GID -> Unicode
             if (codes != null)
             {
                 // use the first entry even for ambiguous mappings

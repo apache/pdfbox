@@ -100,7 +100,7 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
             {
                 String uni = glyphList.toUnicode(name);
                 int charCode = uni.codePointAt(0);
-                int gid = cmap.getGlyphId(charCode);
+                int gid = cmapLookup.getGlyphId(charCode);
                 widths.set(entry.getKey() - firstChar,
                            Math.round(hmtx.getAdvanceWidth(gid) * scaling));
             }

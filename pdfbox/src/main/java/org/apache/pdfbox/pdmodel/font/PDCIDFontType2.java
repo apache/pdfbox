@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.cmap.CMap;
-import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.GlyphData;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
@@ -46,7 +46,7 @@ public class PDCIDFontType2 extends PDCIDFont
     private final int[] cid2gid;
     private final boolean isEmbedded;
     private final boolean isDamaged;
-    private final CmapSubtable cmap; // may be null
+    private final CmapLookup cmap; // may be null
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
 
@@ -142,7 +142,7 @@ public class PDCIDFontType2 extends PDCIDFont
             }
             ttf = ttfFont;
         }
-        cmap = ttf.getUnicodeCmap(false);
+        cmap = ttf.getUnicodeCmapLookup(false);
         cid2gid = readCIDToGIDMap();
     }
 
