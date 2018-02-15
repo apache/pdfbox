@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.HorizontalHeaderTable;
@@ -56,7 +57,9 @@ abstract class TrueTypeEmbedder implements Subsetter
     private final PDDocument document;
     protected TrueTypeFont ttf;
     protected PDFontDescriptor fontDescriptor;
-    protected final CmapSubtable cmap;
+    @Deprecated
+    protected final CmapSubtable cmap; // for API backwards compatibility
+    protected final CmapLookup cmapLookup;
     private final Set<Integer> subsetCodePoints = new HashSet<>();
     private final boolean embedSubset;
 
@@ -88,6 +91,7 @@ abstract class TrueTypeEmbedder implements Subsetter
 
         // choose a Unicode "cmap"
         cmap = ttf.getUnicodeCmap();
+        cmapLookup = ttf.getUnicodeCmapLookup();
     }
 
     public final void buildFontFile2(InputStream ttfStream) throws IOException
