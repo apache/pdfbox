@@ -300,6 +300,10 @@ public class TTFParser
         {
             table = new VerticalOriginTable(font);
         }
+        else if (tag.equals(GlyphSubstitutionTable.TAG))
+        {
+            table = new GlyphSubstitutionTable(font);
+        }
         else
         {
             table = readTable(font, tag);
