@@ -27,6 +27,8 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
+import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 
 /**
  * Renders a PDF document to an AWT BufferedImage.
@@ -38,6 +40,18 @@ public class PDFRenderer
 {
     protected final PDDocument document;
     // TODO keep rendering state such as caches here
+    
+    /**
+    * Default annotations filter, returns all annotations
+    */
+    private AnnotationFilter annotationFilter = new AnnotationFilter()
+    {
+        @Override
+        public boolean accept(PDAnnotation annotation)
+        {
+            return true;
+        }
+    };
 
     /**
      * Creates a new PDFRenderer.
@@ -46,6 +60,28 @@ public class PDFRenderer
     public PDFRenderer(PDDocument document)
     {
         this.document = document;
+    }
+    
+    /**
+     * Return the AnnotationFilter.
+     * 
+     * @return the AnnotationFilter
+     */
+    public AnnotationFilter getAnnotationsFilter()
+    {
+        return annotationFilter;
+    }
+
+    /**
+     * Set the AnnotationFilter.
+     * 
+     * <p>Allows to only render annotation accepted by the filter.
+     * 
+     * @param annotationsFilter the AnnotationFilter
+     */
+    public void setAnnotationsFilter(AnnotationFilter annotationsFilter)
+    {
+        this.annotationFilter = annotationsFilter;
     }
 
     /**
@@ -249,7 +285,9 @@ public class PDFRenderer
      */
     protected PageDrawer createPageDrawer(PageDrawerParameters parameters) throws IOException
     {
-        return new PageDrawer(parameters);
+        PageDrawer pageDrawer = new PageDrawer(parameters);
+        pageDrawer.setAnnotationFilter(annotationFilter);
+        return pageDrawer;
     }
 
     private boolean hasBlendMode(PDPage page)
