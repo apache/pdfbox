@@ -158,7 +158,7 @@ public class PDCIDFontType2 extends PDCIDFont
 
     private void fixVerticalDisplacements() throws IOException
     {
-        if (!parent.dict.getCOSName(COSName.ENCODING).equals(COSName.IDENTITY_V))
+        if (!COSName.IDENTITY_V.equals(parent.dict.getCOSName(COSName.ENCODING)))
         {
             return;
         }
