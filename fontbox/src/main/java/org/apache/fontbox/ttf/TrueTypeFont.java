@@ -311,7 +311,18 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
         return (KerningTable) getTable(KerningTable.TAG);
     }
-    
+
+    /**
+     * Get the "gsub" table for this TTF.
+     *
+     * @return The "gsub" table.
+     * @throws IOException if there was an error reading the table.
+     */
+    public GlyphSubstitutionTable getGsub() throws IOException
+    {
+        return (GlyphSubstitutionTable) getTable(GlyphSubstitutionTable.TAG);
+    }
+
     /**
      * Get the data of the TrueType Font
      * program representing the stream used to build this 
