@@ -28,7 +28,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.VerticalHeaderTable;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
@@ -45,10 +48,14 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
  */
 final class PDCIDFontType2Embedder extends TrueTypeEmbedder
 {
+
+    private static final Log LOG = LogFactory.getLog(PDCIDFontType2Embedder.class);
+
     private final PDDocument document;
     private final PDType0Font parent;
     private final COSDictionary dict;
     private final COSDictionary cidFont;
+    private final boolean vertical;
 
     /**
      * Creates a new TrueType font embedder for the given TTF as a PDCIDFontType2.
@@ -66,6 +73,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         this.document = document;
         this.dict = dict;
         this.parent = parent;
+        this.vertical = vertical;
 
         // parent Type 0 font
         dict.setItem(COSName.SUBTYPE, COSName.TYPE0);
@@ -102,6 +110,11 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         }
         // build unicode mapping before subsetting as the subsetted font won't have a cmap
         buildToUnicodeCMap(gidToCid);
+        // build vertical metrics before subsetting as the subsetted font won't have vhea, vmtx
+        if (vertical)
+        {
+            buildVerticalMetrics(cidToGid);
+        }
         // rebuild the relevant part of the font
         buildFontFile2(ttfSubset);
         addNameTag(tag);
@@ -197,6 +210,12 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         // W - widths
         buildWidths(cidFont);
 
+        // Vertical metrics
+        if (vertical)
+        {
+            buildVerticalMetrics(cidFont);
+        }
+
         // CIDToGIDMap
         cidFont.setItem(COSName.CID_TO_GID_MAP, COSName.IDENTITY);
 
@@ -289,6 +308,78 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             prev = cid;
         }
         cidFont.setItem(COSName.W, widths);
+    }
+
+    private boolean buildVerticalHeader(COSDictionary cidFont) throws IOException
+    {
+        VerticalHeaderTable vhea = ttf.getVerticalHeader();
+        if (vhea == null)
+        {
+            LOG.warn("Font to be subset is set to vertical, but has no 'vhea' table");
+            return false;
+        }
+
+        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+
+        long v = Math.round(vhea.getAscender() * scaling);
+        long w1 = Math.round(-vhea.getAdvanceHeightMax() * scaling);
+        if (v != 880 || w1 != -1000)
+        {
+            COSArray cosDw2 = new COSArray();
+            cosDw2.add(COSInteger.get(v));
+            cosDw2.add(COSInteger.get(w1));
+            cidFont.setItem(COSName.DW2, cosDw2);
+        }
+        return true;
+    }
+
+    /**
+     * Builds vertical metrics with a custom CIDToGIDMap (for embedding font subset).
+     */
+    private void buildVerticalMetrics(Map<Integer, Integer> cidToGid) throws IOException
+    {
+        // The "vhea" and "vmtx" tables that specify vertical metrics shall never be used by a conforming
+        // reader. The only way to specify vertical metrics in PDF shall be by means of the DW2 and W2
+        // entries in a CIDFont dictionary.
+
+        if (!buildVerticalHeader(cidFont))
+        {
+            return;
+        }
+
+        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+
+        long w1 = Math.round(-ttf.getVerticalHeader().getAdvanceHeightMax() * scaling);
+
+        COSArray heights = new COSArray();
+        COSArray w2 = new COSArray();
+        int prev = Integer.MIN_VALUE;
+        // Use a sorted list to get an optimal width array
+        Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
+        for (int cid : keys)
+        {
+            // Unlike buildWidths, we look up with cid (not gid) here because this is
+            // the original TTF, not the rebuilt one.
+            long height = Math.round(-ttf.getVerticalMetrics().getAdvanceHeight(cid) * scaling);
+            if (height == w1)
+            {
+                // skip default height
+                continue;
+            }
+            // c [w1_1y v_1x v_1y w1_2y v_2x v_2y ... w1_ny v_nx v_ny]
+            if (prev != cid - 1)
+            {
+                w2 = new COSArray();
+                heights.add(COSInteger.get(cid)); // c
+                heights.add(w2);
+            }
+            w2.add(COSInteger.get(height)); // w1_iy
+            long width = Math.round(ttf.getHorizontalMetrics().getAdvanceWidth(cid) * scaling);
+            w2.add(COSInteger.get(width / 2)); // v_ix
+            w2.add(COSInteger.get(w1)); // v_iy
+            prev = cid;
+        }
+        cidFont.setItem(COSName.W2, heights);
     }
 
     /**
@@ -404,6 +495,157 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
                 outer.add(COSInteger.get(lastCid));
                 outer.add(COSInteger.get(lastValue));
                 break;
+        }
+        return outer;
+    }
+
+    /**
+     * Build vertical metrics with Identity CIDToGIDMap (for embedding full font).
+     */
+    private void buildVerticalMetrics(COSDictionary cidFont) throws IOException
+    {
+        if (!buildVerticalHeader(cidFont))
+        {
+            return;
+        }
+
+        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+
+        long v = Math.round(ttf.getVerticalHeader().getAscender() * scaling);
+        long w1 = Math.round(-ttf.getVerticalHeader().getAdvanceHeightMax() * scaling);
+        if (v != 880 || w1 != -1000)
+        {
+            COSArray cosDw2 = new COSArray();
+            cosDw2.add(COSInteger.get(v));
+            cosDw2.add(COSInteger.get(w1));
+            cidFont.setItem(COSName.DW2, cosDw2);
+        }
+
+        int cidMax = ttf.getNumberOfGlyphs();
+        int[] gidMetrics = new int[cidMax * 3];
+        for (int cid = 0; cid < cidMax; cid++)
+        {
+            gidMetrics[cid * 3] = cid;
+            gidMetrics[cid * 3 + 1] = ttf.getVerticalMetrics().getAdvanceHeight(cid);
+            gidMetrics[cid * 3 + 2] = ttf.getHorizontalMetrics().getAdvanceWidth(cid);
+        }
+
+        cidFont.setItem(COSName.W2, getVerticalMetrics(gidMetrics));
+    }
+
+    private COSArray getVerticalMetrics(int[] values) throws IOException
+    {
+        if (values.length == 0)
+        {
+            throw new IllegalArgumentException("length of values must be > 0");
+        }
+
+        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
+
+        long v_y = Math.round(ttf.getVerticalHeader().getAscender() * scaling);
+
+        long lastCid = values[0];
+        long lastW1Value = Math.round(-values[1] * scaling);
+        long lastVxValue = Math.round(values[2] * scaling / 2);
+
+        COSArray inner = null;
+        COSArray outer = new COSArray();
+        outer.add(COSInteger.get(lastCid));
+
+        State state = State.FIRST;
+
+        for (int i = 3; i < values.length; i += 3)
+        {
+            long cid = values[i];
+            long w1Value = Math.round(-values[i + 1] * scaling);
+            long vxValue = Math.round(values[i + 2] * scaling / 2);
+
+            switch (state)
+            {
+            case FIRST:
+                if (cid == lastCid + 1 && w1Value == lastW1Value && vxValue == lastVxValue)
+                {
+                    state = State.SERIAL;
+                }
+                else if (cid == lastCid + 1)
+                {
+                    state = State.BRACKET;
+                    inner = new COSArray();
+                    inner.add(COSInteger.get(lastW1Value));
+                    inner.add(COSInteger.get(lastVxValue));
+                    inner.add(COSInteger.get(v_y));
+                }
+                else
+                {
+                    inner = new COSArray();
+                    inner.add(COSInteger.get(lastW1Value));
+                    inner.add(COSInteger.get(lastVxValue));
+                    inner.add(COSInteger.get(v_y));
+                    outer.add(inner);
+                    outer.add(COSInteger.get(cid));
+                }
+                break;
+            case BRACKET:
+                if (cid == lastCid + 1 && w1Value == lastW1Value && vxValue == lastVxValue)
+                {
+                    state = State.SERIAL;
+                    outer.add(inner);
+                    outer.add(COSInteger.get(lastCid));
+                }
+                else if (cid == lastCid + 1)
+                {
+                    inner.add(COSInteger.get(lastW1Value));
+                    inner.add(COSInteger.get(lastVxValue));
+                    inner.add(COSInteger.get(v_y));
+                }
+                else
+                {
+                    state = State.FIRST;
+                    inner.add(COSInteger.get(lastW1Value));
+                    inner.add(COSInteger.get(lastVxValue));
+                    inner.add(COSInteger.get(v_y));
+                    outer.add(inner);
+                    outer.add(COSInteger.get(cid));
+                }
+                break;
+            case SERIAL:
+                if (cid != lastCid + 1 || w1Value != lastW1Value || vxValue != lastVxValue)
+                {
+                    outer.add(COSInteger.get(lastCid));
+                    outer.add(COSInteger.get(lastW1Value));
+                    outer.add(COSInteger.get(lastVxValue));
+                    outer.add(COSInteger.get(v_y));
+                    outer.add(COSInteger.get(cid));
+                    state = State.FIRST;
+                }
+                break;
+            }
+            lastW1Value = w1Value;
+            lastVxValue = vxValue;
+            lastCid = cid;
+        }
+
+        switch (state)
+        {
+        case FIRST:
+            inner = new COSArray();
+            inner.add(COSInteger.get(lastW1Value));
+            inner.add(COSInteger.get(lastVxValue));
+            inner.add(COSInteger.get(v_y));
+            outer.add(inner);
+            break;
+        case BRACKET:
+            inner.add(COSInteger.get(lastW1Value));
+            inner.add(COSInteger.get(lastVxValue));
+            inner.add(COSInteger.get(v_y));
+            outer.add(inner);
+            break;
+        case SERIAL:
+            outer.add(COSInteger.get(lastCid));
+            outer.add(COSInteger.get(lastW1Value));
+            outer.add(COSInteger.get(lastVxValue));
+            outer.add(COSInteger.get(v_y));
+            break;
         }
         return outer;
     }
