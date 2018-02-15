@@ -504,7 +504,9 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      * by which this is accomplished are implementation-dependent."
      * 
      * @throws IOException if the font could not be read
+     * @deprecated Use {@link #getUnicodeCmapLookup()} instead
      */
+    @Deprecated
     public CmapSubtable getUnicodeCmap() throws IOException
     {
         return getUnicodeCmap(true);
@@ -516,8 +518,43 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      * 
      * @param isStrict False if we allow falling back to any cmap, even if it's not Unicode.
      * @throws IOException if the font could not be read, or there is no Unicode cmap
+     * @deprecated Use {@link #getUnicodeCmapLookup(boolean)} instead
      */
+    @Deprecated
     public CmapSubtable getUnicodeCmap(boolean isStrict) throws IOException
+    {
+        return getUnicodeCmapImpl(isStrict);
+    }
+
+    /**
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
+     * by which this is accomplished are implementation-dependent."
+     *
+     * The returned cmap will perform glyph substitution.
+     *
+     * @throws IOException if the font could not be read
+     */
+    public CmapLookup getUnicodeCmapLookup() throws IOException
+    {
+        return getUnicodeCmapLookup(true);
+    }
+
+    /**
+     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
+     * by which this is accomplished are implementation-dependent."
+     *
+     * The returned cmap will perform glyph substitution.
+     *
+     * @param isStrict False if we allow falling back to any cmap, even if it's not Unicode.
+     * @throws IOException if the font could not be read, or there is no Unicode cmap
+     */
+    public CmapLookup getUnicodeCmapLookup(boolean isStrict) throws IOException
+    {
+        CmapSubtable cmap = getUnicodeCmapImpl(isStrict);
+        return cmap;
+    }
+
+    private CmapSubtable getUnicodeCmapImpl(boolean isStrict) throws IOException
     {
         CmapTable cmapTable = getCmap();
         if (cmapTable == null)
@@ -592,7 +629,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         int uni = parseUniName(name);
         if (uni > -1)
         {
-            CmapSubtable cmap = getUnicodeCmap(false);
+            CmapLookup cmap = getUnicodeCmapLookup(false);
             return cmap.getGlyphId(uni);
         }
         

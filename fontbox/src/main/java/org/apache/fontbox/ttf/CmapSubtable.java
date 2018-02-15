@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Ben Litchfield
  */
-public class CmapSubtable
+public class CmapSubtable implements CmapLookup
 {
     private static final Log LOG = LogFactory.getLog(CmapSubtable.class);
 
