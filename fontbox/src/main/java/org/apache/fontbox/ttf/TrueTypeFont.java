@@ -20,8 +20,10 @@ import java.awt.geom.GeneralPath;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +46,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     
     private final Object lockReadtable = new Object();
     private final Object lockPSNames = new Object();
+    private final List<String> enabledGsubFeatures = new ArrayList<>();
 
     /**
      * Constructor.  Clients should use the TTFParser to create a new TrueTypeFont object.
@@ -551,6 +554,15 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     public CmapLookup getUnicodeCmapLookup(boolean isStrict) throws IOException
     {
         CmapSubtable cmap = getUnicodeCmapImpl(isStrict);
+        if (!enabledGsubFeatures.isEmpty())
+        {
+            GlyphSubstitutionTable table = getGsub();
+            if (table != null)
+            {
+                return new SubstitutingCmapLookup(cmap, (GlyphSubstitutionTable) table,
+                        Collections.unmodifiableList(enabledGsubFeatures));
+            }
+        }
         return cmap;
     }
 
@@ -717,6 +729,27 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     {
         float scale = 1000f / getUnitsPerEm();
         return Arrays.<Number>asList(0.001f * scale, 0, 0, 0.001f * scale, 0, 0);
+    }
+
+    /**
+     * Enable a particular glyph substitution feature. This feature might not be supported by the
+     * font, or might not be implemented in PDFBox yet.
+     *
+     * @param featureTag The GSUB feature to enable
+     */
+    public void enableGsubFeature(String featureTag)
+    {
+        enabledGsubFeatures.add(featureTag);
+    }
+
+    /**
+     * Disable a particular glyph substitution feature.
+     *
+     * @param featureTag The GSUB feature to disable
+     */
+    public void disableGsubFeature(String featureTag)
+    {
+        enabledGsubFeatures.remove(featureTag);
     }
 
     @Override
