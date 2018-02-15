@@ -295,33 +295,12 @@ public class KerningSubtable
             assert p1.length >= 2;
             assert p2 != null;
             assert p2.length >= 2;
-            int l1 = p1[0];
-            int l2 = p2[0];
-            if (l1 < l2)
+            int cmp1 = Integer.compare(p1[0], p2[0]);
+            if (cmp1 != 0)
             {
-                return -1;
+                return cmp1;
             }
-            else if (l1 > l2)
-            {
-                return 1;
-            }
-            else
-            {
-                int r1 = p1[1];
-                int r2 = p2[1];
-                if (r1 < r2)
-                {
-                    return -1;
-                }
-                else if (r1 > r2)
-                {
-                    return 1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
+            return Integer.compare(p1[1], p2[1]);
         }
     }
 }
