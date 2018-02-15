@@ -86,10 +86,13 @@ public class PDType0Font extends PDFont implements PDVectorFont
     * Private. Creates a new TrueType font for embedding.
     */
     private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
-            boolean closeOnSubset)
-            throws IOException
+            boolean closeOnSubset, boolean vertical) throws IOException
     {
-        embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this);
+        if (vertical)
+        {
+            ttf.enableVerticalSubstitutions();
+        }
+        embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this, vertical);
         descendantFont = embedder.getCIDFont();
         readEncoding();
         fetchCMapUCS2();
@@ -105,7 +108,6 @@ public class PDType0Font extends PDFont implements PDVectorFont
                 ttf.close();
             }
         }
-
     }
 
     /**
@@ -118,7 +120,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     */
     public static PDType0Font load(PDDocument doc, File file) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(file), true, true);
+        return new PDType0Font(doc, new TTFParser().parse(file), true, true, false);
     }
 
     /**
@@ -131,7 +133,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     */
     public static PDType0Font load(PDDocument doc, InputStream input) throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), true, true);
+        return new PDType0Font(doc, new TTFParser().parse(input), true, true, false);
     }
 
     /**
@@ -146,7 +148,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, InputStream input, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true);
+        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true, false);
     }
 
     /**
@@ -161,7 +163,63 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public static PDType0Font load(PDDocument doc, TrueTypeFont ttf, boolean embedSubset)
             throws IOException
     {
-        return new PDType0Font(doc, ttf, embedSubset, false);
+        return new PDType0Font(doc, ttf, embedSubset, false, false);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a vertical Type 0 font.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param file A TrueType font.
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font file.
+     */
+    public static PDType0Font loadVertical(PDDocument doc, File file) throws IOException
+    {
+        return new PDType0Font(doc, new TTFParser().parse(file), true, true, true);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a vertical Type 0 font.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param input A TrueType font.
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
+    public static PDType0Font loadVertical(PDDocument doc, InputStream input) throws IOException
+    {
+        return new PDType0Font(doc, new TTFParser().parse(input), true, true, true);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a vertical Type 0 font.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param input A TrueType font.
+     * @param embedSubset True if the font will be subset before embedding
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
+    public static PDType0Font loadVertical(PDDocument doc, InputStream input, boolean embedSubset)
+            throws IOException
+    {
+        return new PDType0Font(doc, new TTFParser().parse(input), embedSubset, true, true);
+    }
+
+    /**
+     * Loads a TTF to be embedded into a document as a vertical Type 0 font.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param ttf A TrueType font.
+     * @param embedSubset True if the font will be subset before embedding
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
+    public static PDType0Font loadVertical(PDDocument doc, TrueTypeFont ttf, boolean embedSubset)
+            throws IOException
+    {
+        return new PDType0Font(doc, ttf, embedSubset, false, true);
     }
 
     @Override

@@ -60,7 +60,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
      * @throws IOException if the TTF could not be read
      */
     PDCIDFontType2Embedder(PDDocument document, COSDictionary dict, TrueTypeFont ttf,
-                           boolean embedSubset, PDType0Font parent) throws IOException
+            boolean embedSubset, PDType0Font parent, boolean vertical) throws IOException
     {
         super(document, dict, ttf, embedSubset);
         this.document = document;
@@ -70,7 +70,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         // parent Type 0 font
         dict.setItem(COSName.SUBTYPE, COSName.TYPE0);
         dict.setName(COSName.BASE_FONT, fontDescriptor.getFontName());
-        dict.setItem(COSName.ENCODING, COSName.IDENTITY_H); // CID = GID
+        dict.setItem(COSName.ENCODING, vertical ? COSName.IDENTITY_V : COSName.IDENTITY_H); // CID = GID
 
         // descendant CIDFont
         cidFont = createCIDFont();
