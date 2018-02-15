@@ -40,6 +40,7 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.interactive.action.PDPageAdditionalActions;
+import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.measurement.PDViewportDictionary;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
@@ -644,7 +645,7 @@ public class PDPage implements COSObjectable, PDContentStream
         page.setItem(COSName.TRANS, transition);
         page.setItem(COSName.DUR, new COSFloat(duration));
     }
-
+    
     /**
      * This will return a list of the annotations for this page.
      *
@@ -654,6 +655,27 @@ public class PDPage implements COSObjectable, PDContentStream
      * @throws IOException If there is an error while creating the annotation list.
      */
     public List<PDAnnotation> getAnnotations() throws IOException
+    {
+        return getAnnotations(new AnnotationFilter()
+        {
+            @Override
+            public boolean accept(PDAnnotation annotation)
+            {
+                return true;
+            }
+        });
+    }    
+
+    /**
+     * This will return a list of the annotations for this page.
+     *
+     * @param annotationFilter the annotation filter provided allowing to filter out specific annotations
+     * @return List of the PDAnnotation objects, never null. The returned list is backed by the
+     * annotations COSArray, so any adding or deleting in this list will change the document too.
+     * 
+     * @throws IOException If there is an error while creating the annotation list.
+     */
+    public List<PDAnnotation> getAnnotations(AnnotationFilter annotationFilter) throws IOException
     {
         COSBase base = page.getDictionaryObject(COSName.ANNOTS);
         if (base instanceof COSArray)
@@ -667,7 +689,11 @@ public class PDPage implements COSObjectable, PDContentStream
                 {
                     continue;
                 }
-                actuals.add(PDAnnotation.createAnnotation(item));
+                PDAnnotation createdAnnotation = PDAnnotation.createAnnotation(item);
+                if (annotationFilter.accept(createdAnnotation))
+                {
+                    actuals.add(createdAnnotation);
+                }
             }
             return new COSArrayList<PDAnnotation>(actuals, annots);
         }
