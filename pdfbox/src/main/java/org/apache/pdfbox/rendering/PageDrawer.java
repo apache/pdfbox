@@ -77,6 +77,7 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
+import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
@@ -131,6 +132,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
     
     private final TilingPaintFactory tilingPaintFactory = new TilingPaintFactory(this);
+    
+    /**
+    * Default annotations filter, returns all annotations
+    */
+    private AnnotationFilter annotationFilter = new AnnotationFilter()
+    {
+        @Override
+        public boolean accept(PDAnnotation annotation)
+        {
+            return true;
+        }
+    };
 
     /**
      * Constructor.
@@ -144,6 +157,28 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         this.renderer = parameters.getRenderer();
     }
 
+    /**
+     * Return the AnnotationFilter.
+     * 
+     * @return the AnnotationFilter
+     */
+    public AnnotationFilter getAnnotationFilter()
+    {
+        return annotationFilter;
+    }
+
+    /**
+     * Set the AnnotationFilter.
+     * 
+     * <p>Allows to only render annotation accepted by the filter.
+     * 
+     * @param annotationsFilter the AnnotationFilter
+     */
+    public void setAnnotationFilter(AnnotationFilter annotationFilter)
+    {
+        this.annotationFilter = annotationFilter;
+    }    
+    
     /**
      * Returns the parent renderer.
      */
@@ -205,7 +240,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         processPage(getPage());
 
-        for (PDAnnotation annotation : getPage().getAnnotations())
+        for (PDAnnotation annotation : getPage().getAnnotations(annotationFilter))
         {
             showAnnotation(annotation);
         }
