@@ -287,6 +287,9 @@ public class TTFParser
             case VerticalOriginTable.TAG:
                 table = new VerticalOriginTable(font);
                 break;
+            case GlyphSubstitutionTable.TAG:
+                table = new GlyphSubstitutionTable(font);
+                break;
             default:
                 table = readTable(font, tag);
                 break;
