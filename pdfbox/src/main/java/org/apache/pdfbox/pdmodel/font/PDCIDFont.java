@@ -49,9 +49,9 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
     private float defaultWidth;
     private float averageWidth;
 
-    private final Map<Integer, Float> verticalDisplacementY = new HashMap<>(); // w1y
-    private final Map<Integer, Vector> positionVectors = new HashMap<>();     // v
-    private float[] dw2 = new float[] { 880, -1000 };
+    final Map<Integer, Float> verticalDisplacementY = new HashMap<>(); // w1y
+    final Map<Integer, Vector> positionVectors = new HashMap<>();     // v
+    float[] dw2 = new float[] { 880, -1000 };
 
     protected final COSDictionary dict;
     private PDFontDescriptor fontDescriptor;
@@ -359,6 +359,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      *
      * @param code character code
      * @return GID
+     * @throws java.io.IOException
      */
     public abstract int codeToGID(int code) throws IOException;
 
