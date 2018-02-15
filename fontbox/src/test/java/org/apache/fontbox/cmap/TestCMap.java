@@ -20,12 +20,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import junit.framework.TestCase;
-
-import static junit.framework.TestCase.assertEquals;
-import org.apache.fontbox.ttf.CmapSubtable;
+import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+
+import junit.framework.TestCase;
 
 /**
  * This will test the CMap implementation.
@@ -69,7 +68,7 @@ public class TestCMap extends TestCase
             return;
         }
         TrueTypeFont ttf = new TTFParser().parse(is);
-        CmapSubtable cmap = ttf.getUnicodeCmap(false);
+        CmapLookup cmap = ttf.getUnicodeCmapLookup(false);
         assertEquals(886, cmap.getGlyphId(0x1F681));
         ttf.close();
     }
