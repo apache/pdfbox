@@ -595,6 +595,7 @@ public class CmapSubtable implements CmapLookup
      * @param characterCode the given character code to be mapped
      * @return glyphId the corresponding glyph id for the given character code
      */
+    @Override
     public int getGlyphId(int characterCode)
     {
         Integer glyphId = characterCodeToGlyphId.get(characterCode);
@@ -646,6 +647,7 @@ public class CmapSubtable implements CmapLookup
      * @return a list with all character codes the given gid maps to
      * 
      */
+    @Override
     public List<Integer> getCharCodes(int gid)
     {
         int code = getCharCode(gid);
