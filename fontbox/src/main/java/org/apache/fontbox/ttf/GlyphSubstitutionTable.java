@@ -324,16 +324,14 @@ public class GlyphSubstitutionTable extends TTFTable
                     || (OpenTypeScript.TAG_DEFAULT.equals(tag) && !scriptList.containsKey(tag)))
             {
                 // We don't know what script this should be.
-                if (lastUsedSupportedScript != null)
-                {
-                    // Use past context
-                    return lastUsedSupportedScript;
-                }
-                else
+                if (lastUsedSupportedScript == null)
                 {
                     // We have no past context and (currently) no way to get future context so we guess.
-                    return lastUsedSupportedScript = scriptList.keySet().iterator().next();
+                    lastUsedSupportedScript = scriptList.keySet().iterator().next();
                 }
+                // else use past context
+
+                return lastUsedSupportedScript;
             }
         }
         for (String tag : tags)
@@ -342,7 +340,8 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 // Use the first recognized tag. We assume a single font only recognizes one version ("ver. 2")
                 // of a single script, or if it recognizes more than one that it prefers the latest one.
-                return lastUsedSupportedScript = tag;
+                lastUsedSupportedScript = tag;
+                return lastUsedSupportedScript;
             }
         }
         return tags[0];
