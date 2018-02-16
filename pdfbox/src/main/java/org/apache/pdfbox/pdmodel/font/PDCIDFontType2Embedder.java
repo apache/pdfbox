@@ -415,7 +415,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         long lastCid = widths[0];
         long lastValue = Math.round(widths[1] * scaling);
 
-        COSArray inner = null;
+        COSArray inner = new COSArray();
         COSArray outer = new COSArray();
         outer.add(COSInteger.get(lastCid));
 
@@ -548,7 +548,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         long lastW1Value = Math.round(-values[1] * scaling);
         long lastVxValue = Math.round(values[2] * scaling / 2);
 
-        COSArray inner = null;
+        COSArray inner = new COSArray();
         COSArray outer = new COSArray();
         outer.add(COSInteger.get(lastCid));
 
