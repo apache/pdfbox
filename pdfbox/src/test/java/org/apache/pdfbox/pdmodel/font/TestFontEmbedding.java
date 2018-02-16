@@ -21,6 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import junit.framework.TestCase;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -31,6 +34,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
  * Tests font embedding.
  *
  * @author John Hewson
+ * @author Tilman Hausherr
  */
 public class TestFontEmbedding extends TestCase
 {
@@ -87,6 +91,50 @@ public class TestFontEmbedding extends TestCase
         // check that the extracted text matches what we wrote
         String extracted = getUnicodeText(file);
         assertEquals(text, extracted.trim());
+    }
+
+    /**
+     * Embed a TTF as vertical CIDFontType2 with subsetting.
+     * 
+     * @throws IOException 
+     */
+    public void testCIDFontType2VerticalSubset() throws IOException
+    {
+        String text = "「ABC」";
+        String expectedExtractedtext = "「\r\nA\r\nB\r\nC\r\n」";
+        File pdf = new File(OUT_DIR, "CIDFontType2V.pdf");
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            File ipafont = new File("target/fonts/ipag00303", "ipag.ttf");
+            PDType0Font vfont = PDType0Font.loadVertical(document, ipafont);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont(vfont, 20);
+                contentStream.newLineAtOffset(50, 700);
+                contentStream.showText(text);
+                contentStream.endText();
+            }
+            // Check the font substitution
+            byte[] encode = vfont.encode(text);
+            int cid = ((encode[0] & 0xFF) << 8) + (encode[1] & 0xFF);
+            assertEquals(7392, cid); // it's 441 without substitution
+            // Check the dictionaries
+            COSDictionary fontDict = vfont.getCOSObject();
+            assertEquals(COSName.IDENTITY_V, fontDict.getDictionaryObject(COSName.ENCODING));
+            COSDictionary descFontDict = vfont.getDescendantFont().getCOSObject();
+            COSArray dw2 = (COSArray) descFontDict.getDictionaryObject(COSName.DW2);
+            assertEquals(880, dw2.getInt(0));
+            assertEquals(-1000, dw2.getInt(1));
+            document.save(pdf);
+        }
+
+        // Check text extraction
+        String extracted = getUnicodeText(pdf);
+        assertEquals(expectedExtractedtext, extracted.trim());
     }
 
     private String getUnicodeText(File file) throws IOException
