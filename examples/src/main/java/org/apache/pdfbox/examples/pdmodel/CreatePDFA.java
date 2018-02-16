@@ -87,7 +87,6 @@ public final class CreatePDFA
             contents.newLineAtOffset(100, 700);
             contents.showText(message);
             contents.endText();
-            contents.saveGraphicsState();
             contents.close();
 
             // add XMP metadata
