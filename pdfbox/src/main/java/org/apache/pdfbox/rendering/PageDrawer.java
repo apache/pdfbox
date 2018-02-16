@@ -172,7 +172,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      * 
      * <p>Allows to only render annotation accepted by the filter.
      * 
-     * @param annotationsFilter the AnnotationFilter
+     * @param annotationFilter the AnnotationFilter
      */
     public void setAnnotationFilter(AnnotationFilter annotationFilter)
     {
