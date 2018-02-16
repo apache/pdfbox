@@ -23,7 +23,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 
 /**
- * This is the class that represents a file attachement.
+ * This is the class that represents a file attachment.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
@@ -102,17 +102,30 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      */
     public String getAttachmentName()
     {
-        return getDictionary().getNameAsString( "Name", ATTACHMENT_NAME_PUSH_PIN );
+        return getDictionary().getNameAsString(COSName.NAME, ATTACHMENT_NAME_PUSH_PIN );
     }
 
     /**
-     * Set the name used to draw the attachement icon.
+     * Set the name used to draw the attachment icon.
+     * See the ATTACHMENT_NAME_XXX constants.
+     *
+     * @param name The name of the visual icon to draw.
+     * @deprecated use {@link #setAttachmentName(java.lang.String)}.
+     */
+    @Deprecated
+    public void setAttachementName(String name)
+    {
+        getDictionary().setName(COSName.NAME, name);
+    }
+
+    /**
+     * Set the name used to draw the attachment icon.
      * See the ATTACHMENT_NAME_XXX constants.
      *
      * @param name The name of the visual icon to draw.
      */
-    public void setAttachementName( String name )
+    public void setAttachmentName(String name)
     {
-        getDictionary().setName( "Name", name );
+        getDictionary().setName(COSName.NAME, name);
     }
 }
