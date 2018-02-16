@@ -27,19 +27,19 @@ public interface CmapLookup
 {
 
     /**
-     * Returns all possible character codes for the given gid, or null if there is none.
-     *
-     * @param gid glyph id
-     * @return a list with all character codes the given gid maps to
-     */
-    List<Integer> getCharCodes(int gid);
-
-    /**
      * Returns the GlyphId linked with the given character code.
      *
      * @param codePointAt the given character code to be mapped
      * @return glyphId the corresponding glyph id for the given character code
      */
     int getGlyphId(int codePointAt);
+
+    /**
+     * Returns all possible character codes for the given gid, or null if there is none.
+     *
+     * @param gid glyph id
+     * @return a list with all character codes the given gid maps to
+     */
+    List<Integer> getCharCodes(int gid);
 
 }
