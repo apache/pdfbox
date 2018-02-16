@@ -58,8 +58,15 @@ abstract class TrueTypeEmbedder implements Subsetter
     private final PDDocument document;
     protected TrueTypeFont ttf;
     protected PDFontDescriptor fontDescriptor;
+    
+    /**
+     * For API backwards compatibility.
+     * 
+     * @deprecated
+     */
     @Deprecated
-    protected final CmapSubtable cmap; // for API backwards compatibility
+    protected final CmapSubtable cmap;
+
     protected final CmapLookup cmapLookup;
     private final Set<Integer> subsetCodePoints = new HashSet<Integer>();
     private final boolean embedSubset;
