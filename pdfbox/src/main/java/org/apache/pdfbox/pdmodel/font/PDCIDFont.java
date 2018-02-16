@@ -375,7 +375,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      */
     protected abstract byte[] encode(int unicode) throws IOException;
 
-    int[] readCIDToGIDMap() throws IOException
+    final int[] readCIDToGIDMap() throws IOException
     {
         int[] cid2gid = null;
         COSBase map = dict.getDictionaryObject(COSName.CID_TO_GID_MAP);
