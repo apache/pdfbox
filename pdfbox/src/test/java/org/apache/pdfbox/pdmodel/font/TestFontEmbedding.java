@@ -101,7 +101,7 @@ public class TestFontEmbedding extends TestCase
     public void testCIDFontType2VerticalSubset() throws IOException
     {
         String text = "「ABC」";
-        String expectedExtractedtext = "「\r\nA\r\nB\r\nC\r\n」";
+        String expectedExtractedtext = "「\nA\nB\nC\n」";
         File pdf = new File(OUT_DIR, "CIDFontType2V.pdf");
 
         try (PDDocument document = new PDDocument())
@@ -133,9 +133,8 @@ public class TestFontEmbedding extends TestCase
         }
 
         // Check text extraction
-        String extracted = getUnicodeText(pdf);
-// works only on windows?!        
-//        assertEquals(expectedExtractedtext, extracted.trim());
+        String extracted = getUnicodeText(pdf);        
+        assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
     private String getUnicodeText(File file) throws IOException
