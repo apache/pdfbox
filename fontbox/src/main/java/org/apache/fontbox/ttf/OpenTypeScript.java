@@ -36,7 +36,8 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author Aaron Madlon-Kay
  *
- * @see <a href="https://www.microsoft.com/typography/otspec/scripttags.htm">Microsoft Typography: Script Tags</a>
+ * @see <a href="https://www.microsoft.com/typography/otspec/scripttags.htm">Microsoft Typography:
+ * Script Tags</a>
  * @see <a href="https://www.unicode.org/reports/tr24/">Unicode Script Property</a>
  */
 public final class OpenTypeScript
@@ -60,150 +61,157 @@ public final class OpenTypeScript
 
     static
     {
-        Map<String, String[]> map = new HashMap<>();
-        map.put("Adlam", new String[] { "adlm" });
-        map.put("Ahom", new String[] { "ahom" });
-        map.put("Anatolian_Hieroglyphs", new String[] { "hluw" });
-        map.put("Arabic", new String[] { "arab" });
-        map.put("Armenian", new String[] { "armn" });
-        map.put("Avestan", new String[] { "avst" });
-        map.put("Balinese", new String[] { "bali" });
-        map.put("Bamum", new String[] { "bamu" });
-        map.put("Bassa_Vah", new String[] { "bass" });
-        map.put("Batak", new String[] { "batk" });
-        map.put("Bengali", new String[] { "bng2", "beng" });
-        map.put("Bhaiksuki", new String[] { "bhks" });
-        map.put("Bopomofo", new String[] { "bopo" });
-        map.put("Brahmi", new String[] { "brah" });
-        map.put("Braille", new String[] { "brai" });
-        map.put("Buginese", new String[] { "bugi" });
-        map.put("Buhid", new String[] { "buhd" });
-        // Byzantine Music: byzm
-        map.put("Canadian_Aboriginal", new String[] { "cans" });
-        map.put("Carian", new String[] { "cari" });
-        map.put("Caucasian_Albanian", new String[] { "aghb" });
-        map.put("Chakma", new String[] { "cakm" });
-        map.put("Cham", new String[] { "cham" });
-        map.put("Cherokee", new String[] { "cher" });
-        map.put("Common", new String[] { TAG_DEFAULT }); // "Default" in OpenType
-        map.put("Coptic", new String[] { "copt" });
-        map.put("Cuneiform", new String[] { "xsux" }); // "Sumero-Akkadian Cuneiform" in OpenType
-        map.put("Cypriot", new String[] { "cprt" });
-        map.put("Cyrillic", new String[] { "cyrl" });
-        map.put("Deseret", new String[] { "dsrt" });
-        map.put("Devanagari", new String[] { "dev2", "deva" });
-        map.put("Duployan", new String[] { "dupl" });
-        map.put("Egyptian_Hieroglyphs", new String[] { "egyp" });
-        map.put("Elbasan", new String[] { "elba" });
-        map.put("Ethiopic", new String[] { "ethi" });
-        map.put("Georgian", new String[] { "geor" });
-        map.put("Glagolitic", new String[] { "glag" });
-        map.put("Gothic", new String[] { "goth" });
-        map.put("Grantha", new String[] { "gran" });
-        map.put("Greek", new String[] { "grek" });
-        map.put("Gujarati", new String[] { "gjr2", "gujr" });
-        map.put("Gurmukhi", new String[] { "gur2", "guru" });
-        map.put("Han", new String[] { "hani" }); // "CJK Ideographic" in OpenType
-        map.put("Hangul", new String[] { "hang" });
-        // Hangul Jamo: jamo
-        map.put("Hanunoo", new String[] { "hano" });
-        map.put("Hatran", new String[] { "hatr" });
-        map.put("Hebrew", new String[] { "hebr" });
-        map.put("Hiragana", new String[] { "kana" });
-        map.put("Imperial_Aramaic", new String[] { "armi" });
-        map.put(INHERITED, new String[] { INHERITED });
-        map.put("Inscriptional_Pahlavi", new String[] { "phli" });
-        map.put("Inscriptional_Parthian", new String[] { "prti" });
-        map.put("Javanese", new String[] { "java" });
-        map.put("Kaithi", new String[] { "kthi" });
-        map.put("Kannada", new String[] { "knd2", "knda" });
-        map.put("Katakana", new String[] { "kana" });
-        map.put("Kayah_Li", new String[] { "kali" });
-        map.put("Kharoshthi", new String[] { "khar" });
-        map.put("Khmer", new String[] { "khmr" });
-        map.put("Khojki", new String[] { "khoj" });
-        map.put("Khudawadi", new String[] { "sind" });
-        map.put("Lao", new String[] { "lao " });
-        map.put("Latin", new String[] { "latn" });
-        map.put("Lepcha", new String[] { "lepc" });
-        map.put("Limbu", new String[] { "limb" });
-        map.put("Linear_A", new String[] { "lina" });
-        map.put("Linear_B", new String[] { "linb" });
-        map.put("Lisu", new String[] { "lisu" });
-        map.put("Lycian", new String[] { "lyci" });
-        map.put("Lydian", new String[] { "lydi" });
-        map.put("Mahajani", new String[] { "mahj" });
-        map.put("Malayalam", new String[] { "mlm2", "mlym" });
-        map.put("Mandaic", new String[] { "mand" });
-        map.put("Manichaean", new String[] { "mani" });
-        map.put("Marchen", new String[] { "marc" });
-        // Mathematical Alphanumeric Symbols: math
-        map.put("Meetei_Mayek", new String[] { "mtei" });
-        map.put("Mende_Kikakui", new String[] { "mend" });
-        map.put("Meroitic_Cursive", new String[] { "merc" });
-        map.put("Meroitic_Hieroglyphs", new String[] { "mero" });
-        map.put("Miao", new String[] { "plrd" });
-        map.put("Modi", new String[] { "modi" });
-        map.put("Mongolian", new String[] { "mong" });
-        map.put("Mro", new String[] { "mroo" });
-        map.put("Multani", new String[] { "mult" });
-        // Musical Symbols: musc
-        map.put("Myanmar", new String[] { "mym2", "mymr" });
-        map.put("Nabataean", new String[] { "nbat" });
-        map.put("Newa", new String[] { "newa" });
-        map.put("New_Tai_Lue", new String[] { "talu" });
-        map.put("Nko", new String[] { "nko " });
-        map.put("Ogham", new String[] { "ogam" });
-        map.put("Ol_Chiki", new String[] { "olck" });
-        map.put("Old_Italic", new String[] { "ital" });
-        map.put("Old_Hungarian", new String[] { "hung" });
-        map.put("Old_North_Arabian", new String[] { "narb" });
-        map.put("Old_Permic", new String[] { "perm" });
-        map.put("Old_Persian", new String[] { "xpeo" });
-        map.put("Old_South_Arabian", new String[] { "sarb" });
-        map.put("Old_Turkic", new String[] { "orkh" });
-        map.put("Oriya", new String[] { "ory2", "orya" }); // "Odia (formerly Oriya)" in OpenType
-        map.put("Osage", new String[] { "osge" });
-        map.put("Osmanya", new String[] { "osma" });
-        map.put("Pahawh_Hmong", new String[] { "hmng" });
-        map.put("Palmyrene", new String[] { "palm" });
-        map.put("Pau_Cin_Hau", new String[] { "pauc" });
-        map.put("Phags_Pa", new String[] { "phag" });
-        map.put("Phoenician", new String[] { "phnx" });
-        map.put("Psalter_Pahlavi", new String[] { "phlp" });
-        map.put("Rejang", new String[] { "rjng" });
-        map.put("Runic", new String[] { "runr" });
-        map.put("Samaritan", new String[] { "samr" });
-        map.put("Saurashtra", new String[] { "saur" });
-        map.put("Sharada", new String[] { "shrd" });
-        map.put("Shavian", new String[] { "shaw" });
-        map.put("Siddham", new String[] { "sidd" });
-        map.put("SignWriting", new String[] { "sgnw" });
-        map.put("Sinhala", new String[] { "sinh" });
-        map.put("Sora_Sompeng", new String[] { "sora" });
-        map.put("Sundanese", new String[] { "sund" });
-        map.put("Syloti_Nagri", new String[] { "sylo" });
-        map.put("Syriac", new String[] { "syrc" });
-        map.put("Tagalog", new String[] { "tglg" });
-        map.put("Tagbanwa", new String[] { "tagb" });
-        map.put("Tai_Le", new String[] { "tale" });
-        map.put("Tai_Tham", new String[] { "lana" });
-        map.put("Tai_Viet", new String[] { "tavt" });
-        map.put("Takri", new String[] { "takr" });
-        map.put("Tamil", new String[] { "tml2", "taml" });
-        map.put("Tangut", new String[] { "tang" });
-        map.put("Telugu", new String[] { "tel2", "telu" });
-        map.put("Thaana", new String[] { "thaa" });
-        map.put("Thai", new String[] { "thai" });
-        map.put("Tibetan", new String[] { "tibt" });
-        map.put("Tifinagh", new String[] { "tfng" });
-        map.put("Tirhuta", new String[] { "tirh" });
-        map.put("Ugaritic", new String[] { "ugar" });
-        map.put(UNKNOWN, new String[] { TAG_DEFAULT });
-        map.put("Vai", new String[] { "vai " });
-        map.put("Warang_Citi", new String[] { "wara" });
-        map.put("Yi", new String[] { "yi  " });
-        UNICODE_SCRIPT_TO_OPENTYPE_TAG_MAP = map;
+        Object[][] table = 
+        {
+            {"Adlam", new String[] { "adlm" }},
+            {"Ahom", new String[] { "ahom" }},
+            {"Anatolian_Hieroglyphs", new String[] { "hluw" }},
+            {"Arabic", new String[] { "arab" }},
+            {"Armenian", new String[] { "armn" }},
+            {"Avestan", new String[] { "avst" }},
+            {"Balinese", new String[] { "bali" }},
+            {"Bamum", new String[] { "bamu" }},
+            {"Bassa_Vah", new String[] { "bass" }},
+            {"Batak", new String[] { "batk" }},
+            {"Bengali", new String[] { "bng2", "beng" }},
+            {"Bhaiksuki", new String[] { "bhks" }},
+            {"Bopomofo", new String[] { "bopo" }},
+            {"Brahmi", new String[] { "brah" }},
+            {"Braille", new String[] { "brai" }},
+            {"Buginese", new String[] { "bugi" }},
+            {"Buhid", new String[] { "buhd" }},
+            // Byzantine Music: byzm
+            {"Canadian_Aboriginal", new String[] { "cans" }},
+            {"Carian", new String[] { "cari" }},
+            {"Caucasian_Albanian", new String[] { "aghb" }},
+            {"Chakma", new String[] { "cakm" }},
+            {"Cham", new String[] { "cham" }},
+            {"Cherokee", new String[] { "cher" }},
+            {"Common", new String[] { TAG_DEFAULT }}, // "Default" in OpenType
+            {"Coptic", new String[] { "copt" }},
+            {"Cuneiform", new String[] { "xsux" }}, // "Sumero-Akkadian Cuneiform" in OpenType
+            {"Cypriot", new String[] { "cprt" }},
+            {"Cyrillic", new String[] { "cyrl" }},
+            {"Deseret", new String[] { "dsrt" }},
+            {"Devanagari", new String[] { "dev2", "deva" }},
+            {"Duployan", new String[] { "dupl" }},
+            {"Egyptian_Hieroglyphs", new String[] { "egyp" }},
+            {"Elbasan", new String[] { "elba" }},
+            {"Ethiopic", new String[] { "ethi" }},
+            {"Georgian", new String[] { "geor" }},
+            {"Glagolitic", new String[] { "glag" }},
+            {"Gothic", new String[] { "goth" }},
+            {"Grantha", new String[] { "gran" }},
+            {"Greek", new String[] { "grek" }},
+            {"Gujarati", new String[] { "gjr2", "gujr" }},
+            {"Gurmukhi", new String[] { "gur2", "guru" }},
+            {"Han", new String[] { "hani" }}, // "CJK Ideographic" in OpenType
+            {"Hangul", new String[] { "hang" }},
+            // Hangul Jamo: jamo
+            {"Hanunoo", new String[] { "hano" }},
+            {"Hatran", new String[] { "hatr" }},
+            {"Hebrew", new String[] { "hebr" }},
+            {"Hiragana", new String[] { "kana" }},
+            {"Imperial_Aramaic", new String[] { "armi" }},
+            {INHERITED, new String[] { INHERITED }},
+            {"Inscriptional_Pahlavi", new String[] { "phli" }},
+            {"Inscriptional_Parthian", new String[] { "prti" }},
+            {"Javanese", new String[] { "java" }},
+            {"Kaithi", new String[] { "kthi" }},
+            {"Kannada", new String[] { "knd2", "knda" }},
+            {"Katakana", new String[] { "kana" }},
+            {"Kayah_Li", new String[] { "kali" }},
+            {"Kharoshthi", new String[] { "khar" }},
+            {"Khmer", new String[] { "khmr" }},
+            {"Khojki", new String[] { "khoj" }},
+            {"Khudawadi", new String[] { "sind" }},
+            {"Lao", new String[] { "lao " }},
+            {"Latin", new String[] { "latn" }},
+            {"Lepcha", new String[] { "lepc" }},
+            {"Limbu", new String[] { "limb" }},
+            {"Linear_A", new String[] { "lina" }},
+            {"Linear_B", new String[] { "linb" }},
+            {"Lisu", new String[] { "lisu" }},
+            {"Lycian", new String[] { "lyci" }},
+            {"Lydian", new String[] { "lydi" }},
+            {"Mahajani", new String[] { "mahj" }},
+            {"Malayalam", new String[] { "mlm2", "mlym" }},
+            {"Mandaic", new String[] { "mand" }},
+            {"Manichaean", new String[] { "mani" }},
+            {"Marchen", new String[] { "marc" }},
+            // Mathematical Alphanumeric Symbols: math
+            {"Meetei_Mayek", new String[] { "mtei" }},
+            {"Mende_Kikakui", new String[] { "mend" }},
+            {"Meroitic_Cursive", new String[] { "merc" }},
+            {"Meroitic_Hieroglyphs", new String[] { "mero" }},
+            {"Miao", new String[] { "plrd" }},
+            {"Modi", new String[] { "modi" }},
+            {"Mongolian", new String[] { "mong" }},
+            {"Mro", new String[] { "mroo" }},
+            {"Multani", new String[] { "mult" }},
+            // Musical Symbols: musc
+            {"Myanmar", new String[] { "mym2", "mymr" }},
+            {"Nabataean", new String[] { "nbat" }},
+            {"Newa", new String[] { "newa" }},
+            {"New_Tai_Lue", new String[] { "talu" }},
+            {"Nko", new String[] { "nko " }},
+            {"Ogham", new String[] { "ogam" }},
+            {"Ol_Chiki", new String[] { "olck" }},
+            {"Old_Italic", new String[] { "ital" }},
+            {"Old_Hungarian", new String[] { "hung" }},
+            {"Old_North_Arabian", new String[] { "narb" }},
+            {"Old_Permic", new String[] { "perm" }},
+            {"Old_Persian", new String[] { "xpeo" }},
+            {"Old_South_Arabian", new String[] { "sarb" }},
+            {"Old_Turkic", new String[] { "orkh" }},
+            {"Oriya", new String[] { "ory2", "orya" }}, // "Odia (formerly Oriya)" in OpenType
+            {"Osage", new String[] { "osge" }},
+            {"Osmanya", new String[] { "osma" }},
+            {"Pahawh_Hmong", new String[] { "hmng" }},
+            {"Palmyrene", new String[] { "palm" }},
+            {"Pau_Cin_Hau", new String[] { "pauc" }},
+            {"Phags_Pa", new String[] { "phag" }},
+            {"Phoenician", new String[] { "phnx" }},
+            {"Psalter_Pahlavi", new String[] { "phlp" }},
+            {"Rejang", new String[] { "rjng" }},
+            {"Runic", new String[] { "runr" }},
+            {"Samaritan", new String[] { "samr" }},
+            {"Saurashtra", new String[] { "saur" }},
+            {"Sharada", new String[] { "shrd" }},
+            {"Shavian", new String[] { "shaw" }},
+            {"Siddham", new String[] { "sidd" }},
+            {"SignWriting", new String[] { "sgnw" }},
+            {"Sinhala", new String[] { "sinh" }},
+            {"Sora_Sompeng", new String[] { "sora" }},
+            {"Sundanese", new String[] { "sund" }},
+            {"Syloti_Nagri", new String[] { "sylo" }},
+            {"Syriac", new String[] { "syrc" }},
+            {"Tagalog", new String[] { "tglg" }},
+            {"Tagbanwa", new String[] { "tagb" }},
+            {"Tai_Le", new String[] { "tale" }},
+            {"Tai_Tham", new String[] { "lana" }},
+            {"Tai_Viet", new String[] { "tavt" }},
+            {"Takri", new String[] { "takr" }},
+            {"Tamil", new String[] { "tml2", "taml" }},
+            {"Tangut", new String[] { "tang" }},
+            {"Telugu", new String[] { "tel2", "telu" }},
+            {"Thaana", new String[] { "thaa" }},
+            {"Thai", new String[] { "thai" }},
+            {"Tibetan", new String[] { "tibt" }},
+            {"Tifinagh", new String[] { "tfng" }},
+            {"Tirhuta", new String[] { "tirh" }},
+            {"Ugaritic", new String[] { "ugar" }},
+            {UNKNOWN, new String[] { TAG_DEFAULT }},
+            {"Vai", new String[] { "vai " }},
+            {"Warang_Citi", new String[] { "wara" }},
+            {"Yi", new String[] { "yi  " }}
+        };
+        UNICODE_SCRIPT_TO_OPENTYPE_TAG_MAP = new HashMap<>(table.length);
+        for (Object obj : table)
+        {
+            Object[] array = (Object[]) obj;
+            UNICODE_SCRIPT_TO_OPENTYPE_TAG_MAP.put((String) array[0], (String[]) array[1]);
+        }
     }
 
     private static int[] unicodeRangeStarts;
