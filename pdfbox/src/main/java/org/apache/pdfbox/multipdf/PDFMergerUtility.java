@@ -711,9 +711,9 @@ public class PDFMergerUtility
             throws IOException
     {
         List<PDField> srcFields = srcAcroForm.getFields();
-        COSArray destFields = null;
+        COSArray destFields;
 
-        if (srcFields != null && srcFields.size() > 0)
+        if (srcFields != null && !srcFields.isEmpty())
         {
             // if a form is merged multiple times using PDFBox the newly generated
             // fields starting with dummyFieldName may already exist. We need to determine the last unique 
