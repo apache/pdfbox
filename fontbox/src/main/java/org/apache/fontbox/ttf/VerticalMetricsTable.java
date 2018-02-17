@@ -38,7 +38,7 @@ public class VerticalMetricsTable extends TTFTable
     
     private int[] advanceHeight;
     private short[] topSideBearing;
-    private short[] nonVerticalTopSideBearing;
+    private short[] additionalTopSideBearing;
     private int numVMetrics;
 
     VerticalMetricsTable(TrueTypeFont font)
@@ -80,18 +80,35 @@ public class VerticalMetricsTable extends TTFTable
                 numberNonVertical = numGlyphs;
             }
 
-            nonVerticalTopSideBearing = new short[ numberNonVertical ];
+            additionalTopSideBearing = new short[numberNonVertical];
             for( int i=0; i<numberNonVertical; i++ )
             {
                 if (bytesRead < getLength())
                 {
-                    nonVerticalTopSideBearing[i] = data.readSignedShort();
+                    additionalTopSideBearing[i] = data.readSignedShort();
                     bytesRead += 2;
                 }
             }
         }
 
         initialized = true;
+    }
+
+    /**
+     * Returns the top sidebearing for the given GID
+     *
+     * @param gid GID
+     */
+    public int getTopSideBearing(int gid)
+    {
+        if (gid < numVMetrics)
+        {
+            return topSideBearing[gid];
+        }
+        else
+        {
+            return additionalTopSideBearing[gid - numVMetrics];
+        }
     }
 
     /**
