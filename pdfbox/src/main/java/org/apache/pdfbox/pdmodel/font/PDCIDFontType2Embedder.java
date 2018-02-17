@@ -530,9 +530,12 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         for (int cid = 0; cid < cidMax; cid++)
         {
             GlyphData glyph = ttf.getGlyph().getGlyph(cid);
-            if (glyph == null) {
+            if (glyph == null)
+            {
                 gidMetrics[cid * 4] = Integer.MIN_VALUE;
-            } else {
+            }
+            else
+            {
                 gidMetrics[cid * 4] = cid;
                 gidMetrics[cid * 4 + 1] = ttf.getVerticalMetrics().getAdvanceHeight(cid);
                 gidMetrics[cid * 4 + 2] = ttf.getHorizontalMetrics().getAdvanceWidth(cid);
