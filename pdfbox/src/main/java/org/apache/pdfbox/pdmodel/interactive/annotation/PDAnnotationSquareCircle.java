@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 
@@ -53,7 +52,7 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
     }
 
     @Override
-    public abstract void constructAppearances(ScratchFile scratchFile);
+    public abstract void constructAppearances();
 
     /**
      * This will set interior color of the drawn area color is in DeviceRGB colorspace.
