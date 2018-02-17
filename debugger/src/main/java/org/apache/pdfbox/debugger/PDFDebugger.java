@@ -750,9 +750,9 @@ public class PDFDebugger extends JFrame
                 openDialog.setFilenameFilter(new FilenameFilter()
                 {
                     @Override
-                    public boolean accept(File file, String s)
+                    public boolean accept(File dir, String name)
                     {
-                        return file.getName().toLowerCase().endsWith(".pdf");
+                        return name.toLowerCase().endsWith(".pdf");
                     }
                 });
                 openDialog.setVisible(true);
