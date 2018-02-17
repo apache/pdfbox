@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDStrikeoutAppearanceHandler;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 
 /**
@@ -63,7 +62,7 @@ public class PDAnnotationStrikeout extends PDAnnotationTextMarkup
     }
 
     @Override
-    public void constructAppearances(ScratchFile scratchFile)
+    public void constructAppearances()
     {
         if (customAppearanceHandler == null)
         {
