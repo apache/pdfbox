@@ -424,8 +424,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         GeneralPath path = glyph2D.getPathForCharacterCode(code);
         if (path != null)
         {
-            // stretch non-embedded glyph if it does not match the width contained in the PDF
-            if (!font.isEmbedded())
+            // Stretch non-embedded glyph if it does not match the height/width contained in the PDF.
+            // Vertical fonts have zero X displacement, so the following code scales to 0 if we don't skip it.
+            // TODO: How should vertical fonts be handled?
+            if (!font.isEmbedded() && !font.isVertical())
             {
                 float fontWidth = font.getWidthFromFont(code);
                 if (fontWidth > 0 && // ignore spaces
