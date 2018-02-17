@@ -63,15 +63,15 @@ public class TestFontEmbedding extends TestCase
     }
 
     /**
-     * Embed a TTF as vertical CIDFontType2 with subsetting.
-     * 
-     * @throws IOException 
+     * Embed a monospace TTF as vertical CIDFontType2 with subsetting.
+     *
+     * @throws IOException
      */
-    public void testCIDFontType2VerticalSubset() throws IOException
+    public void testCIDFontType2VerticalSubsetMonospace() throws IOException
     {
         String text = "「ABC」";
         String expectedExtractedtext = "「\nA\nB\nC\n」";
-        File pdf = new File(OUT_DIR, "CIDFontType2V.pdf");
+        File pdf = new File(OUT_DIR, "CIDFontType2VM.pdf");
 
         try (PDDocument document = new PDDocument())
         {
@@ -94,11 +94,15 @@ public class TestFontEmbedding extends TestCase
             // Check the dictionaries
             COSDictionary fontDict = vfont.getCOSObject();
             assertEquals(COSName.IDENTITY_V, fontDict.getDictionaryObject(COSName.ENCODING));
+
+            document.save(pdf);
+
+            // Vertical metrics are fixed during subsetting, so do this after calling save()
             COSDictionary descFontDict = vfont.getDescendantFont().getCOSObject();
             COSArray dw2 = (COSArray) descFontDict.getDictionaryObject(COSName.DW2);
-            assertEquals(880, dw2.getInt(0));
-            assertEquals(-1000, dw2.getInt(1));
-            document.save(pdf);
+            assertNull(dw2); // This font uses default values for DW2
+            COSArray w2 = (COSArray) descFontDict.getDictionaryObject(COSName.W2);
+            assertEquals(0, w2.size()); // Monospaced font has no entries
         }
 
         // Check text extraction
