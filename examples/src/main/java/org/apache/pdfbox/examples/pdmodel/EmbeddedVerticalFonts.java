@@ -30,6 +30,10 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
  */
 public class EmbeddedVerticalFonts
 {
+    private EmbeddedVerticalFonts()
+    {
+    }
+
     public static void main(String[] args) throws IOException
     {
         PDDocument document = new PDDocument();
