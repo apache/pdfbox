@@ -139,7 +139,7 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     COSArray array = (COSArray)next;
                     for (int j = 0; j < array.size(); j++)
                     {
-                        int cid = c.intValue() + j;
+                        int cid = c.intValue() + j / 3;
                         COSNumber w1y = (COSNumber) array.getObject(j);
                         COSNumber v1x = (COSNumber) array.getObject(++j);
                         COSNumber v1y = (COSNumber) array.getObject(++j);
