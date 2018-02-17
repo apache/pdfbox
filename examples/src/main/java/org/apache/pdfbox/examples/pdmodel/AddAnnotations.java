@@ -290,7 +290,7 @@ public final class AddAnnotations
             // but other applications may not.
             for (PDAnnotation ann : annotations)
             {
-                ann.constructAppearances(ScratchFile.getMainMemoryOnlyInstance());
+                ann.constructAppearances();
             }
 
             showPageNo(document, page1, "Page 1");
