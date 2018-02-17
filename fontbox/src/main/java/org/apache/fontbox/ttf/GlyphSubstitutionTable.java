@@ -247,7 +247,7 @@ public class GlyphSubstitutionTable extends TTFTable
             LookupTypeSingleSubstFormat1 lookupSubTable = new LookupTypeSingleSubstFormat1();
             lookupSubTable.substFormat = substFormat;
             int coverageOffset = data.readUnsignedShort();
-            lookupSubTable.deltaGlyphID = data.readUnsignedShort();
+            lookupSubTable.deltaGlyphID = data.readSignedShort();
             lookupSubTable.coverageTable = readCoverageTable(data, offset + coverageOffset);
             return lookupSubTable;
         }
@@ -649,7 +649,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     static class LookupTypeSingleSubstFormat1 extends LookupSubTable
     {
-        int deltaGlyphID;
+        short deltaGlyphID;
 
         @Override
         int doSubstitution(int gid, int coverageIndex)
