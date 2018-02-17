@@ -509,18 +509,6 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
             return;
         }
 
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
-
-        long v = Math.round(ttf.getVerticalHeader().getAscender() * scaling);
-        long w1 = Math.round(-ttf.getVerticalHeader().getAdvanceHeightMax() * scaling);
-        if (v != 880 || w1 != -1000)
-        {
-            COSArray cosDw2 = new COSArray();
-            cosDw2.add(COSInteger.get(v));
-            cosDw2.add(COSInteger.get(w1));
-            cidFont.setItem(COSName.DW2, cosDw2);
-        }
-
         int cidMax = ttf.getNumberOfGlyphs();
         int[] gidMetrics = new int[cidMax * 3];
         for (int cid = 0; cid < cidMax; cid++)
