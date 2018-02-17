@@ -105,18 +105,6 @@ public class PDAnnotationFileAttachment extends PDAnnotationMarkup
      * Set the name used to draw the attachment icon. See the ATTACHMENT_NAME_XXX constants.
      *
      * @param name The name of the visual icon to draw.
-     * @deprecated use {@link #setAttachmentName(java.lang.String)}.
-     */
-    @Deprecated
-    public void setAttachementName(String name)
-    {
-        getCOSObject().setName(COSName.NAME, name);
-    }
-
-    /**
-     * Set the name used to draw the attachment icon. See the ATTACHMENT_NAME_XXX constants.
-     *
-     * @param name The name of the visual icon to draw.
      */
     public void setAttachmentName(String name)
     {
