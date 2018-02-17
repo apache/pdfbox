@@ -18,31 +18,20 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.Type2CharString;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.GlyphData;
-import org.apache.fontbox.ttf.HorizontalMetricsTable;
 import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.fontbox.ttf.VerticalHeaderTable;
-import org.apache.fontbox.ttf.VerticalMetricsTable;
 import org.apache.fontbox.util.BoundingBox;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
-import org.apache.pdfbox.util.Vector;
 
 /**
  * Type 2 CIDFont (TrueType).
@@ -155,85 +144,6 @@ public class PDCIDFontType2 extends PDCIDFont
         }
         cmap = ttf.getUnicodeCmapLookup(false);
         cid2gid = readCIDToGIDMap();
-        fixVerticalDisplacements();
-    }
-
-    private void fixVerticalDisplacements() throws IOException
-    {
-        if (!COSName.IDENTITY_V.equals(parent.dict.getCOSName(COSName.ENCODING)))
-        {
-            return;
-        }
-        // The "vhea" and "vmtx" tables that specify vertical metrics shall never be used by a conforming
-        // reader. The only way to specify vertical metrics in PDF shall be by means of the DW2 and W2
-        // entries in a CIDFont dictionary.
-        VerticalHeaderTable vhea = ttf.getVerticalHeader();
-        if (vhea == null)
-        {
-            if (dict.getItem(COSName.DW2) == null)
-            {
-                LOG.warn("Identity-V font seems to be missing vertical metrics: it has no 'vhea' table and no DW2 entry");
-            }
-            return;
-        }
-        // Clear any data previously set from DW2 / W2
-        verticalDisplacementY.clear();
-        positionVectors.clear();
-
-        float scaling = 1000f / ttf.getHeader().getUnitsPerEm();
-
-        dw2[0] = vhea.getAscender() * scaling;
-        dw2[1] = -vhea.getAdvanceHeightMax() * scaling;
-        Map<Integer, Integer> gid2cid = invert(cid2gid);
-        HorizontalMetricsTable hmtx = ttf.getHorizontalMetrics();
-        VerticalMetricsTable vmtx = ttf.getVerticalMetrics();
-        for (int gid = 0; gid < ttf.getNumberOfGlyphs(); gid++)
-        {
-            float advance = -vmtx.getAdvanceHeight(gid) * scaling;
-            if (advance != dw2[1])
-            {
-                int cid = gid2cid == null ? gid : gid2cid.get(gid);
-                verticalDisplacementY.put(cid, advance);
-                positionVectors.put(cid, new Vector(hmtx.getAdvanceWidth(gid) / 2f, dw2[0]));
-            }
-        }
-        freezeVerticalPositions();
-    }
-
-    private void freezeVerticalPositions() throws IOException
-    {
-        COSArray cosDw2 = new COSArray();
-        cosDw2.add(COSInteger.get(Math.round(dw2[0])));
-        cosDw2.add(COSInteger.get(Math.round(dw2[1])));
-        dict.setItem(COSName.DW2, cosDw2);
-
-        COSArray cosW2 = new COSArray();
-        COSArray values = new COSArray();
-        int prev = Integer.MIN_VALUE;
-        Set<Integer> keys = new TreeSet<Integer>(verticalDisplacementY.keySet());
-        for (int cid : keys)
-        {
-            long w1 = Math.round(verticalDisplacementY.get(cid));
-            if (w1 == dw2[1])
-            {
-                continue;
-            }
-            Vector pos = positionVectors.get(cid);
-            long v_x = Math.round(pos.getX());
-            long v_y = Math.round(pos.getY());
-            // c [w1_1y v_1x v_1y w1_2y v_2x v_2y ... w1_ny v_nx v_ny]
-            if (prev != cid - 1)
-            {
-                values = new COSArray();
-                cosW2.add(COSInteger.get(cid)); // c
-                cosW2.add(values);
-            }
-            values.add(COSInteger.get(w1)); // w1_iy
-            values.add(COSInteger.get(v_x)); // v_ix
-            values.add(COSInteger.get(v_y)); // v_iy
-            prev = cid;
-        }
-        dict.setItem(COSName.W2, cosW2);
     }
 
     private TrueTypeFont findFontOrSubstitute() throws IOException
@@ -307,20 +217,6 @@ public class PDCIDFontType2 extends PDCIDFont
         }
 
         return cMap.toCID(code);
-    }
-
-    private Map<Integer, Integer> invert(int[] cid2gid)
-    {
-        if (cid2gid == null)
-        {
-            return null;
-        }
-        Map<Integer, Integer> inverse = new HashMap<Integer, Integer>(cid2gid.length);
-        for (int i = 0; i < cid2gid.length; i++)
-        {
-            inverse.put(cid2gid[i], i);
-        }
-        return inverse;
     }
 
     /**
