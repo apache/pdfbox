@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.pdfbox.cos.COSName;
 
-import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
