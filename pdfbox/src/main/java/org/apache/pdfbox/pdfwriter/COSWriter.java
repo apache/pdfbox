@@ -1330,6 +1330,10 @@ public class COSWriter implements ICOSVisitor, Closeable
                 missingID = false;
             }
         }
+        else
+        {
+            idArray = new COSArray();
+        }
         // check for an existing documentID
         if (idArray != null && idArray.size() == 2)
         {
