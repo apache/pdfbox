@@ -46,13 +46,8 @@ final class FlateFilter extends Filter
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
-        int predictor = -1;
-
         final COSDictionary decodeParams = getDecodeParams(parameters, index);
-        if (decodeParams != null)
-        {
-            predictor = decodeParams.getInt(COSName.PREDICTOR);
-        }
+        int predictor = decodeParams.getInt(COSName.PREDICTOR);
 
         try
         {

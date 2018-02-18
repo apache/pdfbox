@@ -105,7 +105,11 @@ public abstract class Filter
             COSArray array = (COSArray)obj;
             if (index < array.size())
             {
-                return (COSDictionary)array.getObject(index);
+                COSBase objAtIndex = array.getObject(index);
+                if (objAtIndex instanceof COSDictionary)
+                {
+                    return (COSDictionary)array.getObject(index);
+                }
             }
         }
         else if (obj != null && !(filter instanceof COSArray || obj instanceof COSArray))
