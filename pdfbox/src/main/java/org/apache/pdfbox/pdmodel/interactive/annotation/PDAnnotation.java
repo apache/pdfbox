@@ -804,8 +804,6 @@ public abstract class PDAnnotation implements COSObjectable
      * viewers. This method is for overriding in subclasses, the default implementation does
      * nothing.
      * 
-     * @param scratchFile memory handler for buffering of PDF streams.
-     *                    Passing null will use an in memory buffer {@link ScratchFile#getMainMemoryOnlyInstance()}.
      */
     public void constructAppearances()
     {
