@@ -874,7 +874,7 @@ public class PDDocument implements Closeable
         for (PDSignatureField field : getSignatureFields())
         {
             COSBase value = field.getCOSObject().getDictionaryObject(COSName.V);
-            if (value != null)
+            if (value instanceof COSDictionary)
             {
                 signatures.add(new PDSignature((COSDictionary)value));
             }
