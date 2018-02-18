@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -743,7 +744,7 @@ public class PDStructureElement extends PDStructureNode
         {
             return root.getRoleMap();
         }
-        return null;
+        return Collections.emptyMap();
     }
 
 }
