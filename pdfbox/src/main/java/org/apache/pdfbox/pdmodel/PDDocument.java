@@ -1339,6 +1339,12 @@ public class PDDocument implements Closeable
                 break;
             }
         }
+
+        if (foundSignature == null)
+        {
+            throw new IllegalStateException("document does not contain signature fields");
+        }
+
         int[] byteRange = foundSignature.getByteRange();
         if (!Arrays.equals(byteRange, RESERVE_BYTE_RANGE))
         {
