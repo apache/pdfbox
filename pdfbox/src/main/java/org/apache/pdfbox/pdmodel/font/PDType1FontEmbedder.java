@@ -98,6 +98,7 @@ class PDType1FontEmbedder
         dict.setInt(COSName.FIRST_CHAR, 0);
         dict.setInt(COSName.LAST_CHAR, 255);
         dict.setItem(COSName.WIDTHS, COSArrayList.converterToCOSArray(widths));
+        dict.setItem(COSName.ENCODING, encoding);
     }
 
     /**
