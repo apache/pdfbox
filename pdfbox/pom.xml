@@ -379,6 +379,19 @@
                             <sha512>26d0a9bfba7f5457a98b0bf45a4a6b081bca4140047a0886625691231459f8c81a6cdbe523e9abcbd45fd7caed21d78f1baf3a2cf9167320f6b79be3d697cb5b</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4115</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12911053/n019003l.pfb</url>
+                            <outputDirectory>${project.build.directory}/fonts</outputDirectory>
+                            <outputFileName>n019003l.pfb</outputFileName>
+                            <sha512>8eafe21ffa6f3d7d0a50e9f4e5bcdeb727e804b552d74e65b709e778c9ed4605e5aa63743be285f0bc17ad162768583fec4196e1d1146d98f8703359247f22d0</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
