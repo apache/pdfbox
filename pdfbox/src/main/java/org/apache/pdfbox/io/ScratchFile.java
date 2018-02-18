@@ -149,6 +149,29 @@ public class ScratchFile implements Closeable
             return null;
         }
     }
+
+    /**
+     * Getter for an instance to only use main-memory with the defined maximum.
+     * 
+     * @param maxMainMemoryBytes maximum number of main-memory to be used;
+     *                           <code>-1</code> for no restriction;
+     *                           <code>0</code> will also be interpreted here as no restriction
+     * 
+     * @return instance configured to only use main memory with no size restriction
+     */
+    public static ScratchFile getMainMemoryOnlyInstance(long maxMainMemoryBytes)
+    {
+        try
+        {
+            return new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly(maxMainMemoryBytes));
+        }
+        catch (IOException ioe)
+        {
+            // cannot happen for main memory setup
+            LOG.error("Unexpected exception occurred creating main memory scratch file instance: " + ioe.getMessage() );
+            return null;
+        }
+    }
     
     /**
      * Returns a new free page, either from free page pool
