@@ -210,7 +210,8 @@ public class PDFDebugger extends JFrame
         }
         catch (ClassNotFoundException e)
         {
-            // do nothing
+            System.out.println("Oh-oh, sun.java2d.cmm.kcms.KcmsServiceProvider no longer exists, "
+                             + "so image rendering will be much slower :-(");
         }
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
