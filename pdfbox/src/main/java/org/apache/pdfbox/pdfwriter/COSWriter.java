@@ -1319,7 +1319,7 @@ public class COSWriter implements ICOSVisitor, Closeable
 
         COSDocument cosDoc = pdDocument.getDocument();
         COSDictionary trailer = cosDoc.getTrailer();
-        COSArray idArray = null;
+        COSArray idArray;
         boolean missingID = true;
         COSBase base = trailer.getDictionaryObject(COSName.ID);
         if (base instanceof COSArray)
@@ -1333,11 +1333,6 @@ public class COSWriter implements ICOSVisitor, Closeable
         else
         {
             idArray = new COSArray();
-        }
-        // check for an existing documentID
-        if (idArray != null && idArray.size() == 2)
-        {
-            missingID = false;
         }
         if( missingID || incrementalUpdate)
         {
