@@ -150,18 +150,18 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                         // distance of about 1/4 of the height.
                         // note that curves won't appear if outside of the rectangle
                         float delta = 0;
-                        if (pathsArray[of + 0] == pathsArray[of + 4] &&
-                            pathsArray[of + 1] == pathsArray[of + 3] &&
-                            pathsArray[of + 2] == pathsArray[of + 6] &&
-                            pathsArray[of + 5] == pathsArray[of + 7])
+                        if (Float.compare(pathsArray[of + 0], pathsArray[of + 4]) == 0 &&
+                            Float.compare(pathsArray[of + 1], pathsArray[of + 3]) == 0 &&
+                            Float.compare(pathsArray[of + 2], pathsArray[of + 6]) == 0 &&
+                            Float.compare(pathsArray[of + 5], pathsArray[of + 7]) == 0)
                         {
                             // horizontal highlight
                             delta = (pathsArray[of + 1] - pathsArray[of + 5]) / 4;
                         }
-                        else if (pathsArray[of + 1] == pathsArray[of + 5] &&
-                                 pathsArray[of + 0] == pathsArray[of + 2] &&
-                                 pathsArray[of + 3] == pathsArray[of + 7] &&
-                                 pathsArray[of + 4] == pathsArray[of + 6])
+                        else if (Float.compare(pathsArray[of + 1], pathsArray[of + 5]) == 0 &&
+                                 Float.compare(pathsArray[of + 0], pathsArray[of + 2]) == 0 &&
+                                 Float.compare(pathsArray[of + 3], pathsArray[of + 7]) == 0 &&
+                                 Float.compare(pathsArray[of + 4], pathsArray[of + 6]) == 0)
                         {
                             // vertical highlight
                             delta = (pathsArray[of + 0] - pathsArray[of + 4]) / 4;
@@ -169,14 +169,14 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
 
                         frm2CS.moveTo(pathsArray[of + 4], pathsArray[of + 5]);
 
-                        if (pathsArray[of + 0] == pathsArray[of + 4])
+                        if (Float.compare(pathsArray[of + 0], pathsArray[of + 4]) == 0)
                         {
                             // horizontal highlight
                             frm2CS.curveTo(pathsArray[of + 4] - delta, pathsArray[of + 5] + delta,
                                            pathsArray[of + 0] - delta, pathsArray[of + 1] - delta,
                                            pathsArray[of + 0], pathsArray[of + 1]);
                         }
-                        else if (pathsArray[of + 5] == pathsArray[of + 1])
+                        else if (Float.compare(pathsArray[of + 5], pathsArray[of + 1]) == 0)
                         {
                             // vertical highlight
                             frm2CS.curveTo(pathsArray[of + 4] + delta, pathsArray[of + 5] + delta,
@@ -188,14 +188,14 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
                             frm2CS.lineTo(pathsArray[of + 0], pathsArray[of + 1]);
                         }
                         frm2CS.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
-                        if (pathsArray[of + 2] == pathsArray[of + 6])
+                        if (Float.compare(pathsArray[of + 2], pathsArray[of + 6]) == 0)
                         {
                             // horizontal highlight
                             frm2CS.curveTo(pathsArray[of + 2] + delta, pathsArray[of + 3] - delta,
                                            pathsArray[of + 6] + delta, pathsArray[of + 7] + delta,
                                            pathsArray[of + 6], pathsArray[of + 7]);
                         }
-                        else if (pathsArray[of + 3] == pathsArray[of + 7])
+                        else if (Float.compare(pathsArray[of + 3], pathsArray[of + 7]) == 0)
                         {
                             // vertical highlight
                             frm2CS.curveTo(pathsArray[of + 2] - delta, pathsArray[of + 3] - delta,
