@@ -325,7 +325,8 @@ public final class PDAcroForm implements COSObjectable
                         PDRectangle bbox = appearanceStream.getBBox();
                         PDRectangle fieldRect = annotation.getRectangle();
                         
-                        if (bbox.getWidth() - fieldRect.getWidth() != 0 && bbox.getHeight() - fieldRect.getHeight() != 0)
+                        if (Float.compare(bbox.getWidth() - fieldRect.getWidth(), 0) != 0 && 
+                            Float.compare(bbox.getHeight() - fieldRect.getHeight(), 0) != 0)
                         {
                             float xScale = fieldRect.getWidth() / bbox.getWidth();
                             float yScale = fieldRect.getHeight() / bbox.getHeight();
@@ -730,7 +731,7 @@ public final class PDAcroForm implements COSObjectable
                         PDRectangle bbox = ((PDFormXObject)xObject).getBBox();
                         float llX = bbox.getLowerLeftX();
                         float llY = bbox.getLowerLeftY();
-                        if (llX == 0 && llY == 0)
+                        if (Float.compare(llX, 0) == 0 && Float.compare(llY, 0) == 0)
                         {
                             needsTranslation = true;
                         }
