@@ -145,7 +145,7 @@ public class ScratchFile implements Closeable
         catch (IOException ioe)
         {
             // cannot happen for main memory setup
-            LOG.error("Unexpected exception occurred creating main memory scratch file instance: " + ioe.getMessage() );
+            LOG.error("Unexpected exception occurred creating main memory scratch file instance: " + ioe.getMessage(), ioe);
             return null;
         }
     }
@@ -168,7 +168,7 @@ public class ScratchFile implements Closeable
         catch (IOException ioe)
         {
             // cannot happen for main memory setup
-            LOG.error("Unexpected exception occurred creating main memory scratch file instance: " + ioe.getMessage() );
+            LOG.error("Unexpected exception occurred creating main memory scratch file instance: " + ioe.getMessage(), ioe);
             return null;
         }
     }
