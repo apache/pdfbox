@@ -306,7 +306,7 @@ class AppearanceGeneratorHelper
     
                 if (lineWidth > 0 && borderColour != null)
                 {
-                    if (lineWidth != 1)
+                    if (Float.compare(lineWidth, 1) != 0)
                     {
                         contents.setLineWidth(lineWidth);
                     }
@@ -415,7 +415,7 @@ class AppearanceGeneratorHelper
             // calculate the fontSize (because 0 = autosize)
             float fontSize = defaultAppearance.getFontSize();
             
-            if (fontSize == 0)
+            if (Float.compare(fontSize, 0) == 0)
             {
                 fontSize = calculateFontSize(font, contentRect);
             }
@@ -728,7 +728,7 @@ class AppearanceGeneratorHelper
         float fontSize = defaultAppearance.getFontSize();
         
         // zero is special, it means the text is auto-sized
-        if (fontSize == 0)
+        if (Float.compare(fontSize, 0) == 0)
         {
             if (isMultiLine())
             {

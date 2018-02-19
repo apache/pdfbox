@@ -230,7 +230,7 @@ public class PDSignatureField extends PDTerminalField
         {
             // check if the signature is visible
             if (widget.getRectangle() == null ||
-                widget.getRectangle().getHeight() == 0 && widget.getRectangle().getWidth() == 0 ||
+                Float.compare(widget.getRectangle().getHeight(), 0) == 0 && Float.compare(widget.getRectangle().getWidth(), 0) == 0 ||
                 widget.isNoView() ||  widget.isHidden())
             {
                 return;
