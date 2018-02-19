@@ -133,6 +133,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 }
                 else
                 {
+                    profile = ensureDisplayProfile(profile);
                     awtColorSpace = new ICC_ColorSpace(profile);
                     iccProfile = profile;
                 }
@@ -190,6 +191,32 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 ICC_Profile.icHdrModel, ICC_Profile.icHdrModel + 7);
         String deviceModel = new String(bytes, Charsets.US_ASCII).trim();
         return deviceModel.equals("sRGB");
+    }
+
+    // PDFBOX-4114: fix profile that has the wrong display class,
+    // as done by Harald Kuhr in twelvemonkeys JPEGImageReader.ensureDisplayProfile()
+    private static ICC_Profile ensureDisplayProfile(ICC_Profile profile)
+    {
+        if (profile.getProfileClass() != ICC_Profile.CLASS_DISPLAY)
+        {
+            byte[] profileData = profile.getData(); // Need to clone entire profile, due to a OpenJDK bug
+
+            if (profileData[ICC_Profile.icHdrRenderingIntent] == ICC_Profile.icPerceptual)
+            {
+                LOG.warn("ICC profile is Perceptual, ignoring, treating as Display class");
+            	intToBigEndian(ICC_Profile.icSigDisplayClass, profileData, ICC_Profile.icHdrDeviceClass);
+                return ICC_Profile.getInstance(profileData);
+            }
+        }
+        return profile;
+    }
+
+    private static void intToBigEndian(int value, byte[] array, int index)
+    {
+        array[index] = (byte) (value >> 24);
+        array[index + 1] = (byte) (value >> 16);
+        array[index + 2] = (byte) (value >> 8);
+        array[index + 3] = (byte) (value);
     }
 
     @Override
