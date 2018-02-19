@@ -61,7 +61,7 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
         {
             return;
         }
-        if (ab.width == 0)
+        if (Float.compare(ab.width, 0) == 0)
         {
             // value found in adobe reader
             ab.width = 1.5f;

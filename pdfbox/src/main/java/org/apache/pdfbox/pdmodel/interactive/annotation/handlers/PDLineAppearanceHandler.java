@@ -252,7 +252,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                         cs.endText();
                     }
 
-                    if (captionVerticalOffset != 0)
+                    if (Float.compare(captionVerticalOffset, 0) != 0)
                     {
                         // Adobe paints vertical bar to the caption
                         cs.moveTo(0 + lineLength / 2, y);

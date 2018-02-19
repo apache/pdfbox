@@ -63,7 +63,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
         PDColor color = annotation.getColor();
-        if (color == null || color.getComponents().length == 0 || ab.width == 0)
+        if (color == null || color.getComponents().length == 0 || Float.compare(ab.width, 0) == 0)
         {
             return;
         }
