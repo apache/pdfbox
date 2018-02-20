@@ -30,6 +30,9 @@ import java.util.Map;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.util.BoundingBox;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A TrueType font file.
  * 
@@ -37,6 +40,9 @@ import org.apache.fontbox.util.BoundingBox;
  */
 public class TrueTypeFont implements FontBoxFont, Closeable
 {
+
+    private static final Log LOG = LogFactory.getLog(TrueTypeFont.class);
+
     private float version;
     private int numberOfGlyphs = -1;
     private int unitsPerEm = -1;
@@ -777,6 +783,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         }
         catch (IOException e)
         {
+            LOG.debug("Error getting the NamingTable for the font", e);
             return "(null - " + e.getMessage() + ")";
         }
     }

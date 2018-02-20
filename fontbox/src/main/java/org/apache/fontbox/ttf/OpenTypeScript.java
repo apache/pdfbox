@@ -234,7 +234,7 @@ public final class OpenTypeScript
         catch (IOException e)
         {
             LOG.warn("Could not parse Scripts.txt, mirroring char map will be empty: "
-                    + e.getMessage());
+                    + e.getMessage(), e);
         }
     }
 
