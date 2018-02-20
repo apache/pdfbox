@@ -23,6 +23,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.fontbox.util.Charsets;
 
 /**
@@ -31,6 +34,8 @@ import org.apache.fontbox.util.Charsets;
  */
 public class WindowsFontDirFinder implements FontDirFinder
 {
+
+    private static final Log LOG = LogFactory.getLog(WindowsFontDirFinder.class);
 
     /**
      * Attempts to read windir environment variable on windows (disclaimer: This is a bit dirty but seems to work
@@ -71,6 +76,7 @@ public class WindowsFontDirFinder implements FontDirFinder
         }
         catch (SecurityException e)
         {
+            LOG.debug("Couldn't get Windows font directories - ignoring", e);
             // should continue if this fails
         }
         String osName = System.getProperty("os.name");
@@ -82,6 +88,7 @@ public class WindowsFontDirFinder implements FontDirFinder
             }
             catch (IOException | SecurityException e)
             {
+                LOG.debug("Couldn't get Windows font directories - ignoring", e);
                 // should continue if this fails
             }
         }
@@ -123,6 +130,7 @@ public class WindowsFontDirFinder implements FontDirFinder
                 }
                 catch (SecurityException e)
                 {
+                    LOG.debug("Couldn't get Windows font directories - ignoring", e);
                     // should continue if this fails
                 }
             }
@@ -140,6 +148,7 @@ public class WindowsFontDirFinder implements FontDirFinder
                 }
                 catch (SecurityException e)
                 {
+                    LOG.debug("Couldn't get Windows font directories - ignoring", e);
                     // should continue if this fails
                 }
             }

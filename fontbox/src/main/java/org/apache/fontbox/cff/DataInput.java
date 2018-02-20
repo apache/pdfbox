@@ -19,6 +19,9 @@ package org.apache.fontbox.cff;
 import java.io.EOFException;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.fontbox.util.Charsets;
 
 /**
@@ -31,6 +34,8 @@ public class DataInput
 
     private byte[] inputBuffer = null;
     private int bufferPosition = 0;
+
+    private static final Log LOG = LogFactory.getLog(DataInput.class);
 
     /**
      * Constructor.
@@ -93,6 +98,7 @@ public class DataInput
         } 
         catch (RuntimeException re)
         {
+            LOG.debug("An error occured reading a byte - returning -1", re);
             return -1;
         }
     }
@@ -199,6 +205,7 @@ public class DataInput
         } 
         catch (RuntimeException re)
         {
+            LOG.debug("An error occured reading an int - returning -1", re);
             return -1;
         }
     }
@@ -212,6 +219,7 @@ public class DataInput
         }
         catch (RuntimeException re)
         {
+            LOG.debug("An error occured peeking at offset " + offset + " - returning -1", re);
             return -1;
         }
     }
