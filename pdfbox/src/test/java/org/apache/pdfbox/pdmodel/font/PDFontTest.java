@@ -185,33 +185,32 @@ public class PDFontTest
 
     private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
     {
-        PDDocument doc = PDDocument.load(byteArray);
-
-        PDPage page2 = doc.getPage(0);
-
-        // F1 = type0 subset
-        PDType0Font fontF1 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F1"));
-        Assert.assertTrue(fontF1.getName().contains("+"));
-        Assert.assertTrue(fontFile.length() > fontF1.getFontDescriptor().getFontFile2().toByteArray().length);
-
-        // F2 = type0 full embed
-        PDType0Font fontF2 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F2"));
-        Assert.assertFalse(fontF2.getName().contains("+"));
-        Assert.assertEquals(fontFile.length(), fontF2.getFontDescriptor().getFontFile2().toByteArray().length);
-
-        // F3 = tt full embed
-        PDTrueTypeFont fontF3 = (PDTrueTypeFont) page2.getResources().getFont(COSName.getPDFName("F3"));
-        Assert.assertFalse(fontF2.getName().contains("+"));
-        Assert.assertEquals(fontFile.length(), fontF3.getFontDescriptor().getFontFile2().toByteArray().length);
-
-        new PDFRenderer(doc).renderImage(0);
-
-        PDFTextStripper stripper = new PDFTextStripper();
-        stripper.setLineSeparator("\n");
-        String text = stripper.getText(doc);
-        Assert.assertEquals("testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3", text.trim());
-
-        doc.close();
+        try (PDDocument doc = PDDocument.load(byteArray))
+        {
+            PDPage page2 = doc.getPage(0);
+            
+            // F1 = type0 subset
+            PDType0Font fontF1 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F1"));
+            Assert.assertTrue(fontF1.getName().contains("+"));
+            Assert.assertTrue(fontFile.length() > fontF1.getFontDescriptor().getFontFile2().toByteArray().length);
+            
+            // F2 = type0 full embed
+            PDType0Font fontF2 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F2"));
+            Assert.assertFalse(fontF2.getName().contains("+"));
+            Assert.assertEquals(fontFile.length(), fontF2.getFontDescriptor().getFontFile2().toByteArray().length);
+            
+            // F3 = tt full embed
+            PDTrueTypeFont fontF3 = (PDTrueTypeFont) page2.getResources().getFont(COSName.getPDFName("F3"));
+            Assert.assertFalse(fontF2.getName().contains("+"));
+            Assert.assertEquals(fontFile.length(), fontF3.getFontDescriptor().getFontFile2().toByteArray().length);
+            
+            new PDFRenderer(doc).renderImage(0);
+            
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setLineSeparator("\n");
+            String text = stripper.getText(doc);
+            Assert.assertEquals("testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3", text.trim());
+        }
     }
 
     private byte[] testPDFBox3826createDoc(TrueTypeFont ttf) throws IOException
@@ -223,27 +222,28 @@ public class PDFontTest
             doc.addPage(page);
             // type 0 subset embedding
             PDFont font = PDType0Font.load(doc, ttf, true);
-            PDPageContentStream cs = new PDPageContentStream(doc, page);
-            cs.beginText();
-            cs.newLineAtOffset(10, 700);
-            cs.setFont(font, 10);
-            cs.showText("testMultipleFontFileReuse1");
-            cs.endText();
-            // type 0 full embedding
-            font = PDType0Font.load(doc, ttf, false);
-            cs.beginText();
-            cs.newLineAtOffset(10, 650);
-            cs.setFont(font, 10);
-            cs.showText("testMultipleFontFileReuse2");
-            cs.endText();
-            // tt full embedding but only WinAnsiEncoding
-            font = PDTrueTypeFont.load(doc, ttf, WinAnsiEncoding.INSTANCE);
-            cs.beginText();
-            cs.newLineAtOffset(10, 600);
-            cs.setFont(font, 10);
-            cs.showText("testMultipleFontFileReuse3");
-            cs.endText();
-            cs.close();
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                cs.beginText();
+                cs.newLineAtOffset(10, 700);
+                cs.setFont(font, 10);
+                cs.showText("testMultipleFontFileReuse1");
+                cs.endText();
+                // type 0 full embedding
+                font = PDType0Font.load(doc, ttf, false);
+                cs.beginText();
+                cs.newLineAtOffset(10, 650);
+                cs.setFont(font, 10);
+                cs.showText("testMultipleFontFileReuse2");
+                cs.endText();
+                // tt full embedding but only WinAnsiEncoding
+                font = PDTrueTypeFont.load(doc, ttf, WinAnsiEncoding.INSTANCE);
+                cs.beginText();
+                cs.newLineAtOffset(10, 600);
+                cs.setFont(font, 10);
+                cs.showText("testMultipleFontFileReuse3");
+                cs.endText();
+            }
 
             doc.save(baos);
         }
