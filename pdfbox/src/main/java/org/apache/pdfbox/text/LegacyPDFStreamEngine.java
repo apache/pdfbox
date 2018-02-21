@@ -111,8 +111,10 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
 
         // load additional glyph list for Unicode mapping
         String path = "org/apache/pdfbox/resources/glyphlist/additional.txt";
-        InputStream input = GlyphList.class.getClassLoader().getResourceAsStream(path);
-        glyphList = new GlyphList(GlyphList.getAdobeGlyphList(), input);
+        try (InputStream input = GlyphList.class.getClassLoader().getResourceAsStream(path))
+        {
+            glyphList = new GlyphList(GlyphList.getAdobeGlyphList(), input);
+        }
     }
 
     /**
@@ -127,7 +129,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         this.pageRotation = page.getRotation();
         this.pageSize = page.getCropBox();
         
-        if (pageSize.getLowerLeftX() == 0 && pageSize.getLowerLeftY() == 0)
+        if (Float.compare(pageSize.getLowerLeftX(), 0) == 0 && Float.compare(pageSize.getLowerLeftY(), 0) == 0)
         {
             translateMatrix = null;
         }
@@ -174,7 +176,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         if (fontDescriptor != null)
         {
             float capHeight = fontDescriptor.getCapHeight();
-            if (capHeight != 0 && (capHeight < glyphHeight || glyphHeight == 0))
+            if (Float.compare(capHeight, 0) != 0 && (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0))
             {
                 glyphHeight = capHeight;
             }
@@ -269,13 +271,13 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
             LOG.warn(exception, exception);
         }
 
-        if (spaceWidthText == 0)
+        if (Float.compare(spaceWidthText, 0) == 0)
         {
             spaceWidthText = font.getAverageFontWidth() * glyphSpaceToTextSpaceFactor;
             // the average space width appears to be higher than necessary so make it smaller
             spaceWidthText *= .80f;
         }
-        if (spaceWidthText == 0)
+        if (Float.compare(spaceWidthText, 0) == 0)
         {
             spaceWidthText = 1.0f; // if could not find font, use a generic value
         }
