@@ -228,13 +228,26 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         }
         if (awtColorSpace != null)
         {
+            // PDFBOX-2142: clamp bad values
             // WARNING: toRGB is very slow when used with LUT-based ICC profiles
-            return awtColorSpace.toRGB(value);
+            return awtColorSpace.toRGB(clampColors(awtColorSpace, value));
         }
         else
         {
             return alternateColorSpace.toRGB(value);
         }
+    }
+
+    private float[] clampColors(ICC_ColorSpace cs, float[] value)
+    {
+        float[] result = new float[value.length];
+        for (int i = 0; i < value.length; ++i)
+        {
+            float minValue = cs.getMinValue(i);
+            float maxValue = cs.getMaxValue(i);
+            result[i] = value[i] < minValue ? minValue : (value[i] > maxValue ? maxValue : value[i]);
+        }
+        return result;
     }
 
     @Override
