@@ -147,7 +147,7 @@ public class LZWFilter extends Filter
         }
         catch (EOFException ex)
         {
-            LOG.warn("Premature EOF in LZW stream, EOD code missing");
+            LOG.warn("Premature EOF in LZW stream, EOD code missing", ex);
         }
         decoded.flush();
     }

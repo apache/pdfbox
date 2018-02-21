@@ -87,6 +87,7 @@ final class DCTFilter extends Filter
                 {
                     // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
                     // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
+                    LOG.debug("Couldn't read use read() for RGB image - using readRaster() as fallback", e);
                     raster = reader.readRaster(0, null);
                 }
             }
@@ -109,6 +110,7 @@ final class DCTFilter extends Filter
                 catch (IIOException | NegativeArraySizeException e)
                 {
                     // we really tried asking nicely, now we're using brute force.
+                    LOG.debug("Couldn't read usíng getAdobeTransform() - using getAdobeTransformByBruteForce() as fallback", e);
                     transform = getAdobeTransformByBruteForce(iis);
                 }
                 int colorTransform = transform != null ? transform : 0;
@@ -326,6 +328,7 @@ final class DCTFilter extends Filter
         }
         catch (IOException | NegativeArraySizeException e)
         {
+            LOG.debug("Couldn't read metadata - returning empty string", e);
             return "";
         }
     }    
