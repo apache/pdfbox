@@ -784,6 +784,7 @@ public abstract class BaseParser
         }
         catch (CharacterCodingException e)
         {
+            LOG.debug("Character could not be decoded using Charsets.UTF_8 - returning false", e);
             return false;
         }
     }
