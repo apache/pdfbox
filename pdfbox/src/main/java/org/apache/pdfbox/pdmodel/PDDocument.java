@@ -170,11 +170,8 @@ public class PDDocument implements Closeable
         {
             LOG.warn("Error initializing scratch file: " + ioe.getMessage() +
                      ". Fall back to main memory usage only.", ioe);
-            try
-            {
-                scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly());
-            }
-            catch (IOException ioe2) {}
+            
+            scratchFile = ScratchFile.getMainMemoryOnlyInstance();
         }
         
         document = new COSDocument(scratchFile);
@@ -557,7 +554,6 @@ public class PDDocument implements Closeable
     }
 
     private void prepareNonVisibleSignature(PDSignatureField signatureField)
-            throws IOException
     {
         // "Signature fields that are not intended to be visible shall
         // have an annotation rectangle that has zero height and width."
@@ -813,10 +809,8 @@ public class PDDocument implements Closeable
      * This will set the encryption dictionary for this document.
      * 
      * @param encryption The encryption dictionary(most likely a PDStandardEncryption object)
-     * 
-     * @throws IOException If there is an error determining which security handler to use.
      */
-    public void setEncryptionDictionary(PDEncryption encryption) throws IOException
+    public void setEncryptionDictionary(PDEncryption encryption)
     {
         this.encryption = encryption;
     }
@@ -826,9 +820,8 @@ public class PDDocument implements Closeable
      * last in time when empty signature fields are created first but signed after other fields.
      * 
      * @return the last signature as <code>PDSignatureField</code>.
-     * @throws IOException if no document catalog can be found.
      */
-    public PDSignature getLastSignatureDictionary() throws IOException
+    public PDSignature getLastSignatureDictionary()
     {
         List<PDSignature> signatureDictionaries = getSignatureDictionaries();
         int size = signatureDictionaries.size();
@@ -843,9 +836,8 @@ public class PDDocument implements Closeable
      * Retrieve all signature fields from the document.
      * 
      * @return a <code>List</code> of <code>PDSignatureField</code>s
-     * @throws IOException if no document catalog can be found.
      */
-    public List<PDSignatureField> getSignatureFields() throws IOException
+    public List<PDSignatureField> getSignatureFields()
     {
         List<PDSignatureField> fields = new ArrayList<>();
         PDAcroForm acroForm = getDocumentCatalog().getAcroForm();
@@ -866,9 +858,8 @@ public class PDDocument implements Closeable
      * Retrieve all signature dictionaries from the document.
      * 
      * @return a <code>List</code> of <code>PDSignatureField</code>s
-     * @throws IOException if no document catalog can be found.
      */
-    public List<PDSignature> getSignatureDictionaries() throws IOException
+    public List<PDSignature> getSignatureDictionaries()
     {
         List<PDSignature> signatures = new ArrayList<>();
         for (PDSignatureField field : getSignatureFields())
