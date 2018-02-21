@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -54,6 +57,8 @@ import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferenc
  */
 public class PDDocumentCatalog implements COSObjectable
 {
+    private static final Log LOG = LogFactory.getLog(PDDocumentCatalog.class);
+    
     private final COSDictionary root;
     private final PDDocument document;
     private PDAcroForm cachedAcroForm;
@@ -457,6 +462,7 @@ public class PDDocumentCatalog implements COSObjectable
             }
             catch (IllegalArgumentException e)
             {
+                LOG.debug("Invalid PageMode used '" + mode + "' - setting to PageMode.USE_NONE", e);
                 return PageMode.USE_NONE;
             }
         }
