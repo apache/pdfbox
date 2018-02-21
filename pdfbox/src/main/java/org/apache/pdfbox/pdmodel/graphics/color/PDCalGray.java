@@ -37,7 +37,7 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     // PDFBOX-4119: cache the results for much improved performance
     // cached values MUST be cloned, because they are modified by the caller.
     // this can be observed in rendering of PDFBOX-1724
-    private final Map<Float, float[]> map1 = new HashMap<>();
+    private final Map<Float, float[]> map1 = new HashMap<Float, float[]>();
 
     /**
      * Create a new CalGray color space.
