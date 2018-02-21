@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -31,6 +33,11 @@ import org.apache.pdfbox.cos.COSNumber;
 public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
 {
     private final PDColor initialColor = new PDColor(new float[] { 0 }, this);
+    
+    // PDFBOX-4119: cache the results for much improved performance
+    // cached values MUST be cloned, because they are modified by the caller.
+    // this can be observed in rendering of PDFBOX-1724
+    private final Map<Float, float[]> map1 = new HashMap<>();
 
     /**
      * Create a new CalGray color space.
@@ -77,13 +84,20 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        // see implementation of toRGB in PDCabRGB, and PDFBOX-2971
+        // see implementation of toRGB in PDCalRGB, and PDFBOX-2971
         if (wpX == 1 && wpY == 1 && wpZ == 1)
         {
             float a = value[0];
+            float[] result = map1.get(a);
+            if (result != null)
+            {
+                return result.clone();
+            }
             float gamma = getGamma();
             float powAG = (float) Math.pow(a, gamma);
-            return convXYZtoRGB(powAG, powAG, powAG);
+            result = convXYZtoRGB(powAG, powAG, powAG);
+            map1.put(a, result.clone());
+            return result;
         }
         else
         {
