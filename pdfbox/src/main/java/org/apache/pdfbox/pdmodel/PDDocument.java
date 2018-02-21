@@ -169,7 +169,7 @@ public class PDDocument implements Closeable
         catch (IOException ioe)
         {
             LOG.warn("Error initializing scratch file: " + ioe.getMessage() +
-                     ". Fall back to main memory usage only.");
+                     ". Fall back to main memory usage only.", ioe);
             try
             {
                 scratchFile = new ScratchFile(MemoryUsageSetting.setupMainMemoryOnly());
