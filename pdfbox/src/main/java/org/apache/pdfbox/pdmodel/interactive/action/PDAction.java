@@ -80,7 +80,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @return The Type of PDF object.
      */
-    public String getType()
+    public final String getType()
     {
        return action.getNameAsString( COSName.TYPE );
     }
@@ -91,7 +91,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param type The new Type for the PDF object.
      */
-    public final void setType( String type )
+    protected final void setType(String type)
     {
        action.setName(COSName.TYPE, type );
     }
@@ -101,7 +101,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @return The S entry of actions dictionary.
      */
-    public String getSubType()
+    public final String getSubType()
     {
         return action.getNameAsString(COSName.S);
     }
@@ -111,7 +111,7 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param s The new type of action.
      */
-    public void setSubType( String s )
+    protected final void setSubType(String s)
     {
         action.setName(COSName.S, s);
     }
