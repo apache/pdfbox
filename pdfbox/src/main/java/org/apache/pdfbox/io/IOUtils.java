@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This class contains various I/O-related methods.
  */
@@ -32,6 +35,11 @@ public final class IOUtils
 {
 
     //TODO PDFBox should really use Apache Commons IO.
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(IOUtils.class);
 
     private IOUtils()
     {
@@ -112,6 +120,7 @@ public final class IOUtils
         }
         catch (IOException ioe)
         {
+            LOG.debug("An exception occured while trying to close - ignoring", ioe);
             // ignore
         }
     }
