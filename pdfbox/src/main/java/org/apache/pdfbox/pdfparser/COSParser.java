@@ -1312,6 +1312,7 @@ public class COSParser extends BaseParser
                 catch (IOException exception)
                 {
                     // there wasn't an object of a xref stream
+                    LOG.debug("No Xref stream at given location " + startXRefOffset, exception);
                     source.seek(startXRefOffset);
                 }
             }
@@ -1425,6 +1426,7 @@ public class COSParser extends BaseParser
         catch (IOException exception)
         {
             // Swallow the exception, obviously there isn't any valid object number
+            LOG.debug("No valid object at given location " + offset + " - ignoring", exception);
         }
         finally 
         {
@@ -1670,6 +1672,7 @@ public class COSParser extends BaseParser
                 }
                 catch (IOException exception)
                 {
+                    LOG.debug("An exception occured during brute force search for trailer - ignoring", exception);
                     continue;
                 }
             }
@@ -1783,6 +1786,7 @@ public class COSParser extends BaseParser
                     catch (IOException exception)
                     {
                         // save the EOF marker as the following data is most likely some garbage
+                        LOG.debug("An exception occured during brute force for last EOF - ignoring", exception);
                         lastEOFMarker = tempMarker;
                     }
                 }
@@ -1914,7 +1918,7 @@ public class COSParser extends BaseParser
                 catch (IOException exception)
                 {
                     LOG.debug(
-                            "Skipped corrupt stream: (" + stmObjNumber + " 0 at offset " + offset);
+                            "Skipped corrupt stream: (" + stmObjNumber + " 0 at offset " + offset, exception);
                     continue;
                 }
                 finally
@@ -2173,7 +2177,7 @@ public class COSParser extends BaseParser
             }
             catch (IOException exception)
             {
-                LOG.debug("Skipped object " + key + ", either it's corrupt or not a dictionary");
+                LOG.debug("Skipped object " + key + ", either it's corrupt or not a dictionary", exception);
             }
         }
         return dictionary;
