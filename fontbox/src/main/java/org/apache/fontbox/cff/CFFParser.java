@@ -25,6 +25,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import javax.lang.model.util.ElementScanner6;
+
 import org.apache.fontbox.util.Charsets;
 
 /**
@@ -33,6 +38,11 @@ import org.apache.fontbox.util.Charsets;
  */
 public class CFFParser
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(CFFParser.class);
+
     private static final String TAG_OTTO = "OTTO";
     private static final String TAG_TTCF = "ttcf";
     private static final String TAG_TTFONLY = "\u0000\u0001\u0000\u0000";
@@ -103,6 +113,11 @@ public class CFFParser
             throw new IOException("Name index missing in CFF font");
         }
         byte[][] topDictIndex = readIndexData(input);
+        if (topDictIndex == null)
+        {
+            throw new IOException("Top DICT INDEX missing in CFF font");
+        }
+        
         stringIndex = readStringIndexData(input);
         byte[][] globalSubrIndex = readIndexData(input);
 
@@ -471,18 +486,27 @@ public class CFFParser
             {
                 charset = CFFExpertSubsetCharset.getInstance();
             }
-            else
+            else if (charStringsIndex != null)
             {
                 input.setPosition(charsetId);
                 charset = readCharset(input, charStringsIndex.length, isCIDFont);
             }
+            // that should not happen
+            else
+            {
+                LOG.debug("Couldn't read CharStrings index - returning empty charset instead");
+                charset = new EmptyCharset(0);
+            }
+            
         }
         else
         {
             if (isCIDFont)
             {
+                // CharStrings index could be null if the index data couldnÄt be read
+                int numEntries = charStringsIndex == null ? 0 :  charStringsIndex.length;
                 // a CID font with no charset does not default to any predefined charset
-                charset = new EmptyCharset(charStringsIndex.length);
+                charset = new EmptyCharset(numEntries);
             }
             else
             {
