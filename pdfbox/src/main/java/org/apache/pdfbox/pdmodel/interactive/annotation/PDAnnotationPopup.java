@@ -18,6 +18,9 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -28,6 +31,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDAnnotationPopup extends PDAnnotation
 {
+    private static final Log LOG = LogFactory.getLog(PDAnnotationPopup.class);
 
     /**
      * The type of annotation.
@@ -97,6 +101,7 @@ public class PDAnnotationPopup extends PDAnnotation
         }
         catch (IOException ioe)
         {
+            LOG.debug("An exception while trying to get the parent markup - ignoring", ioe);
             // Couldn't construct the annotation, so return null i.e. do nothing
         }
         return am;
