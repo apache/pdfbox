@@ -72,6 +72,7 @@ public final class GlyphList
         catch (SecurityException e)  // can occur on System.getProperty
         {
             // PDFBOX-1946 ignore and continue
+            LOG.debug("Error getting system property 'glyphlist_ext' - ignoring", e);
         }
     }
     

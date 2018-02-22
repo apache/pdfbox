@@ -231,7 +231,7 @@ public abstract class FDFAnnotation implements COSObjectable
         }
         catch (XPathExpressionException e)
         {
-            LOG.debug("Error while evaluating XPath expression for richtext contents");
+            LOG.debug("Error while evaluating XPath expression for richtext contents", e);
         }
 
         try
@@ -246,7 +246,7 @@ public abstract class FDFAnnotation implements COSObjectable
         }
         catch (XPathExpressionException e)
         {
-            LOG.debug("Error while evaluating XPath expression for richtext contents");
+            LOG.debug("Error while evaluating XPath expression for richtext contents", e);
         }
 
         PDBorderStyleDictionary borderStyle = new PDBorderStyleDictionary();
@@ -987,7 +987,7 @@ public abstract class FDFAnnotation implements COSObjectable
         }
         catch (XPathExpressionException e)
         {
-            LOG.debug("Error while evaluating XPath expression for richtext contents");
+            LOG.debug("Error while evaluating XPath expression for richtext contents", e);
         }
         return retval;
     }

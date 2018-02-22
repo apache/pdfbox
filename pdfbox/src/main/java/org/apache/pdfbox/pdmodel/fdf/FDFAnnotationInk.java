@@ -108,7 +108,7 @@ public class FDFAnnotationInk extends FDFAnnotation
         }
         catch (XPathExpressionException e)
         {
-            LOG.debug("Error while evaluating XPath expression for inklist gestures");
+            LOG.debug("Error while evaluating XPath expression for inklist gestures", e);
         }
     }
 

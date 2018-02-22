@@ -270,6 +270,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
             }
             catch (IOException e)
             {
+                LOG.debug("Couldn't get font matrix - returning default value", e);
                 fontMatrix = DEFAULT_FONT_MATRIX;
             }
 

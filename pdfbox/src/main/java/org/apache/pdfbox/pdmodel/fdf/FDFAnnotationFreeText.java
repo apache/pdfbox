@@ -83,7 +83,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
         }
         catch (XPathExpressionException ex)
         {
-            LOG.debug("Error while evaluating XPath expression");
+            LOG.debug("Error while evaluating XPath expression", ex);
         }
         initCallout(element);
         String rotation = element.getAttribute("rotation");

@@ -512,7 +512,7 @@ public abstract class SecurityHandler
         catch (IOException ex)
         {
             LOG.error("Failed to decrypt COSString of length " + string.getBytes().length + 
-                    " in object " + objNum + ": " + ex.getMessage());
+                    " in object " + objNum + ": " + ex.getMessage(), ex);
         }
     }
 

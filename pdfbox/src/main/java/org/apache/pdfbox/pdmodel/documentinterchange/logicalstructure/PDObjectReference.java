@@ -18,6 +18,9 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -36,6 +39,10 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
  */
 public class PDObjectReference implements COSObjectable
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDObjectReference.class);
 
     /**
      * TYPE of this object.
@@ -115,6 +122,7 @@ public class PDObjectReference implements COSObjectable
         }
         catch (IOException exception)
         {
+            LOG.debug("Couldn't get the referenced object - returning null instead", exception);
             // this can only happen if the target is an XObject.
         }
         return null;
