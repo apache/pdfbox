@@ -741,6 +741,7 @@ public final class PDAcroForm implements COSObjectable
                 {
                     // we can safely ignore the exception here
                     // as this might only cause a misplacement
+                    LOG.debug("Couldn't resolve possible need for translation - ignoring, content might be misplaced", e);
                 }
             }
             return needsTranslation;

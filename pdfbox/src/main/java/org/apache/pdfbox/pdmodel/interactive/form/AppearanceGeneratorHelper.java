@@ -132,7 +132,7 @@ class AppearanceGeneratorHelper
                     }
                     catch (IOException e)
                     {
-                        LOG.warn("Unable to match field level font with AcroForm font");
+                        LOG.warn("Unable to match field level font with AcroForm font", e);
                     }
                 }
             }

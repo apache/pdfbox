@@ -22,9 +22,17 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 public class COSFilterInputStream extends FilterInputStream
 {
+  /**
+  * Log instance.
+   */
+  private static final Log LOG = LogFactory.getLog(COSFilterInputStream.class);
+
   private final int[] byteRange;
   private long position = 0;
   
@@ -88,6 +96,7 @@ public class COSFilterInputStream extends FilterInputStream
     }
     catch (IOException ee) 
     {
+      LOG.debug("An exception occured while trying to fill byte[] - ignoring", ee);
     }
     return i;
   }
