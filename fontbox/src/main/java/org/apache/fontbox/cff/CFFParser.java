@@ -28,8 +28,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.lang.model.util.ElementScanner6;
-
 import org.apache.fontbox.util.Charsets;
 
 /**
