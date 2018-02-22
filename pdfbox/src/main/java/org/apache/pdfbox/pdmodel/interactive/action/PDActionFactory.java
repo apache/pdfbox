@@ -92,6 +92,9 @@ public final class PDActionFactory
                     case PDActionThread.SUB_TYPE:
                         retval = new PDActionThread(action);
                         break;
+                    case PDActionEmbeddedGoTo.SUB_TYPE:
+                        retval = new PDActionEmbeddedGoTo(action);
+                        break;
                     default:
                         break;
                 }
