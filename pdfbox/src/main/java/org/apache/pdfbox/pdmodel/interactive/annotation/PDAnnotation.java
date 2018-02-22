@@ -216,6 +216,27 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
+     * This will set the sub type (and hence appearance, AP taking precedence) For this annotation. See the SUB_TYPE_XXX
+     * constants for valid values.
+     *
+     * @param subType The subtype of the annotation
+     */
+    protected final void setSubtype(String subType)
+    {
+        getCOSObject().setName(COSName.SUBTYPE, subType);
+    }
+
+    /**
+     * This will retrieve the subtype of the annotation.
+     *
+     * @return The subtype of this annotation, see the SUB_TYPE_XXX constants.
+     */
+    public final String getSubtype()
+    {
+        return getCOSObject().getNameAsString(COSName.SUBTYPE);
+    }
+
+    /**
      * The annotation rectangle, defining the location of the annotation on the page in default user space units. This
      * is usually required and should not return null on valid PDF documents. But where this is a parent form field with
      * children, such as radio button collections then the rectangle will be null.
@@ -762,16 +783,6 @@ public abstract class PDAnnotation implements COSObjectable
             return new PDColor((COSArray) c, colorSpace);
         }
         return null;
-    }
-
-    /**
-     * This will retrieve the subtype of the annotation.
-     * 
-     * @return the subtype
-     */
-    public String getSubtype()
-    {
-        return this.getCOSObject().getNameAsString(COSName.SUBTYPE);
     }
 
     /**
