@@ -160,7 +160,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
             }
             catch (ClassNotFoundException e)
             {
-                LOG.debug("KCMS doesn't exist anymore. SO SAD!");
+                LOG.debug("KCMS doesn't exist anymore. SO SAD!", e);
             }
         }
     }

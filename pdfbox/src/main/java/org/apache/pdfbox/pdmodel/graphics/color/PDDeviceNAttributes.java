@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Contains additional information about the components of colour space.
  * Instead of using the alternate color space and tint transform, conforming readers may use custom
@@ -34,6 +37,11 @@ import java.util.Map;
  */
 public final class PDDeviceNAttributes
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDDeviceNAttributes.class);
+
     private final COSDictionary dictionary;
 
     /**
@@ -150,6 +158,7 @@ public final class PDDeviceNAttributes
         }
         catch (IOException e)
         {
+            LOG.debug("Couldn't get the colorants information - returning 'ERROR' instead'", e);
             sb.append("ERROR");
         }
         sb.append('}');
