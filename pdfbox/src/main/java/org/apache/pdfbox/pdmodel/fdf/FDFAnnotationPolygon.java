@@ -104,7 +104,7 @@ public class FDFAnnotationPolygon extends FDFAnnotation
         }
         catch (XPathExpressionException e)
         {
-            LOG.debug("Error while evaluating XPath expression for polygon vertices");
+            LOG.debug("Error while evaluating XPath expression for polygon vertices", e);
         }
     }
 

@@ -28,6 +28,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.DateConverter;
@@ -41,6 +44,11 @@ import org.apache.pdfbox.util.SmallMap;
  */
 public class COSDictionary extends COSBase implements COSUpdateInfo
 {
+
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(COSDictionary.class);
 	
     private static final String PATH_SEPARATOR = "/";
     private boolean needToBeUpdated;
@@ -1515,6 +1523,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         catch (IOException e)
         {
+            LOG.debug("An exception occured trying - returning error message instead", e);
             return "COSDictionary{" + e.getMessage() + "}";
         }
     }

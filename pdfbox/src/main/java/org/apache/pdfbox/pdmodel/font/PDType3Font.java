@@ -19,6 +19,10 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
@@ -41,6 +45,11 @@ import org.apache.pdfbox.util.Vector;
  */
 public class PDType3Font extends PDSimpleFont
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDType3Font.class);
+
     private PDResources resources;
     private COSDictionary charProcs;
     private Matrix fontMatrix;
@@ -298,6 +307,7 @@ public class PDType3Font extends PDSimpleFont
                     catch (IOException ex)
                     {
                         // ignore
+                        LOG.debug("error getting the glyph bounding box - font bounding box will be used", ex);
                     }
                 }
             }

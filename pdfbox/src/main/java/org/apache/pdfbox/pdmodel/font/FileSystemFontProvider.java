@@ -300,6 +300,7 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (SecurityException e)
             {
+                LOG.debug("Couldn't create writer for " + file.getAbsolutePath(), e);
                 return;
             }
 

@@ -374,6 +374,7 @@ public class COSStream extends COSDictionary implements Closeable
         }
         catch (IOException e)
         {
+            LOG.debug("An exception occured trying to get the content - returning empty string instead", e);
             return "";
         }
         finally

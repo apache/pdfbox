@@ -156,6 +156,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             }
             catch (IOException e)
             {
+                LOG.debug("Couldn't get font name - setting to '?'", e);
                 fontName = "?";
             }
             LOG.warn("Using fallback font " + fontName + " for base font " + getBaseFont());
@@ -265,7 +266,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                 }
                 catch (DamagedFontException e)
                 {
-                    LOG.warn("Can't read damaged embedded Type1 font " + fd.getFontName());
+                    LOG.warn("Can't read damaged embedded Type1 font " + fd.getFontName(), e);
                     fontIsDamaged = true;
                 }
                 catch (IOException e)
@@ -669,6 +670,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
             }
             catch (IOException e)
             {
+                LOG.debug("Couldn't get font matrix box - returning default value", e);
                 fontMatrix = DEFAULT_FONT_MATRIX;
             }
             

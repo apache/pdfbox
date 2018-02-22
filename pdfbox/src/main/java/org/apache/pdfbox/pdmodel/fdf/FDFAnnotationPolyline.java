@@ -100,7 +100,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
         }
         catch (XPathExpressionException e)
         {
-            LOG.debug("Error while evaluating XPath expression for polyline vertices");
+            LOG.debug("Error while evaluating XPath expression for polyline vertices", e);
         }
     }
 

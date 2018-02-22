@@ -185,6 +185,7 @@ public class PDCIDFontType0 extends PDCIDFont
                 }
                 catch (IOException e)
                 {
+                    LOG.debug("Couldn't get font matrix - returning default value", e);
                     return new Matrix(0.001f, 0, 0, 0.001f, 0, 0);
                 }
             }
@@ -235,6 +236,7 @@ public class PDCIDFontType0 extends PDCIDFont
             }
             catch (IOException e)
             {
+                LOG.debug("Couldn't get font bounding box - returning default value", e);
                 return new BoundingBox();
             }
         }
