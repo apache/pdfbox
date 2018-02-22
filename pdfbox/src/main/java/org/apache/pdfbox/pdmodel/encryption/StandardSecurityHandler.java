@@ -338,7 +338,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     /**
      * Prepare document for encryption.
      *
-     * @param document The documeent to encrypt.
+     * @param document The document to encrypt.
      *
      * @throws IOException If there is an error accessing data.
      */
