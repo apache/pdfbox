@@ -135,29 +135,6 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
         }
     }
 
-    //TODO setSubtype() and getSubtype() should move up?
-    /**
-     * This will set the sub type (and hence appearance, AP taking precedence) For this annotation. See the SUB_TYPE_XXX
-     * constants for valid values.
-     *
-     * @param subType The subtype of the annotation
-     */
-    public void setSubtype(String subType)
-    {
-        getCOSObject().setName(COSName.SUBTYPE, subType);
-    }
-
-    /**
-     * This will retrieve the sub type (and hence appearance, AP taking precedence) For this annotation.
-     *
-     * @return The subtype of this annotation, see the SUB_TYPE_XXX constants.
-     */
-    @Override
-    public String getSubtype()
-    {
-        return getCOSObject().getNameAsString(COSName.SUBTYPE);
-    }
-
     /**
      * This will set the border style dictionary, specifying the width and dash pattern used in drawing the line.
      *

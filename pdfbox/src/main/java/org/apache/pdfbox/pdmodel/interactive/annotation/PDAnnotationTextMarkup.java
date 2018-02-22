@@ -79,29 +79,4 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
         // Should never happen as this is a required item
         return null; 
     }
-
-    /**
-     * This will set the sub type (and hence appearance, AP taking precedence) For this annotation.
-     * See the SUB_TYPE constants in subclasses for valid values.
-     *
-     * @param subType The subtype of the annotation
-     */
-    private void setSubtype(String subType)
-    {
-        getCOSObject().setName(COSName.SUBTYPE, subType);
-    }
-
-    /**
-     * This will retrieve the sub type (and hence appearance, AP taking precedence) For this
-     * annotation.
-     *
-     * @return The subtype of this annotation, see the SUB_TYPE constants in subclasses for valid
-     * values.
-     */
-    @Override
-    public String getSubtype()
-    {
-        return getCOSObject().getNameAsString(COSName.SUBTYPE);
-    }
-
 }
