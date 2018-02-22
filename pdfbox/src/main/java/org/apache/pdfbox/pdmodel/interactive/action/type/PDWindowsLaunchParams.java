@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * Launch paramaters for the windows OS.
+ * Launch parameters for the windows OS.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.2 $
@@ -34,7 +34,7 @@ public class PDWindowsLaunchParams implements COSObjectable
      */
     public static final String OPERATION_OPEN = "open";
     /**
-     * The print operation for the lanuch.
+     * The print operation for the launch.
      */
     public static final String OPERATION_PRINT = "print";
 
