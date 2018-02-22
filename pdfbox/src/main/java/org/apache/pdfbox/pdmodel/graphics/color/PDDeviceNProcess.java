@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * A DeviceN Process Dictionary
  *
@@ -32,6 +35,11 @@ import java.util.List;
  */
 public class PDDeviceNProcess
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDDeviceNProcess.class);
+
     private final COSDictionary dictionary;
 
     /**
@@ -110,6 +118,7 @@ public class PDDeviceNProcess
         }
         catch (IOException e)
         {
+            LOG.debug("Couldn't get the colorants information - returning 'ERROR' instead'", e);
             sb.append("ERROR");
         }
         sb.append('}');

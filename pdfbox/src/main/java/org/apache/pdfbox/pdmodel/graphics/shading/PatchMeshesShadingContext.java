@@ -154,6 +154,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
                 }
                 catch (EOFException ex)
                 {
+                    LOG.debug("Couldn't get the patches information - stop reading", ex);
                     eof = true;
                 }
             }
@@ -231,7 +232,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
         }
         catch (EOFException ex)
         {
-            LOG.debug("EOF");
+            LOG.debug("EOF", ex);
             return null;
         }
         return generatePatch(points, color);
