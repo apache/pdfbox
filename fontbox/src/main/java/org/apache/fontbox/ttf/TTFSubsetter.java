@@ -489,15 +489,33 @@ public final class TTFSubsetter
             Set<Integer> glyphIdsToAdd = null;
             try
             {
-                is.skip(g.getOffset());
+                long isResult = is.skip(g.getOffset());
+                
+                if (Long.compare(isResult, g.getOffset()) != 0)
+                {
+                    LOG.debug("Tried skipping " + g.getOffset() + " bytes but skipped only " + isResult + " bytes");
+                }
+
                 long lastOff = 0L;
                 for (Integer glyphId : glyphIds)
                 {
                     long offset = offsets[glyphId];
                     long len = offsets[glyphId + 1] - offset;
-                    is.skip(offset - lastOff);
+                    isResult = is.skip(offset - lastOff);
+                    
+                    if (Long.compare(isResult, offset - lastOff) != 0)
+                    {
+                        LOG.debug("Tried skipping " + (offset - lastOff) + " bytes but skipped only " + isResult + " bytes");
+                    }
+
                     byte[] buf = new byte[(int)len];
-                    is.read(buf);
+                    isResult = is.read(buf);
+
+                    if (Long.compare(isResult, len) != 0)
+                    {
+                        LOG.debug("Tried reading " + len + " bytes but only " + isResult + " bytes read");
+                    }
+                    
                     // rewrite glyphIds for compound glyphs
                     if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1)
                     {
@@ -570,7 +588,12 @@ public final class TTFSubsetter
         long[] offsets = ttf.getIndexToLocation().getOffsets();
         try (InputStream is = ttf.getOriginalData())
         {
-            is.skip(g.getOffset());
+            long isResult = is.skip(g.getOffset());
+
+            if (Long.compare(isResult, g.getOffset()) != 0)
+            {
+                LOG.debug("Tried skipping " + g.getOffset() + " bytes but skipped only " + isResult + " bytes");
+            }
 
             long prevEnd = 0;    // previously read glyph offset
             long newOffset = 0;  // new offset for the glyph in the subset font
@@ -583,10 +606,20 @@ public final class TTFSubsetter
                 long length = offsets[gid + 1] - offset;
 
                 newOffsets[newGid++] = newOffset;
-                is.skip(offset - prevEnd);
+                isResult = is.skip(offset - prevEnd);
+
+                if (Long.compare(isResult, offset - prevEnd) != 0)
+                {
+                    LOG.debug("Tried skipping " + (offset - prevEnd) + " bytes but skipped only " + isResult + " bytes");
+                }
 
                 byte[] buf = new byte[(int)length];
-                is.read(buf);
+                isResult = is.read(buf);
+
+                if (Long.compare(isResult, length) != 0)
+                {
+                    LOG.debug("Tried reading " + length + " bytes but only " + isResult + " bytes read");
+                }
 
                 // detect glyph type
                 if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1)
@@ -885,7 +918,13 @@ public final class TTFSubsetter
 
         try
         {
-            is.skip(hm.getOffset());
+            long isResult = is.skip(hm.getOffset());
+
+            if (Long.compare(isResult, hm.getOffset()) != 0)
+            {
+                LOG.debug("Tried skipping " + hm.getOffset() + " bytes but only " + isResult + " bytes skipped");
+            }
+
             long lastOffset = 0;
             for (Integer glyphId : glyphIds)
             {
