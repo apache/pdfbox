@@ -116,7 +116,7 @@ final class ToUnicodeWriter
         List<String> dstString = new ArrayList<>();
 
         int srcPrev = -1;
-        String dstPrev = null;
+        String dstPrev = "";
 
         int srcCode1 = -1;
 
