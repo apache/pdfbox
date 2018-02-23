@@ -519,7 +519,19 @@ public class CFFParser
         // format-specific dictionaries
         if (isCIDFont)
         {
-            parseCIDFontDicts(input, topDict, (CFFCIDFont) font, charStringsIndex.length);
+
+            // CharStrings index could be null if the index data couldn't be read
+            int numEntries = 0;
+            if (charStringsIndex == null)
+            {
+                LOG.debug("Couldn't read CharStrings index - parsing CIDFontDicts with number of char strings set to 0");
+            }
+            else
+            {
+                numEntries = charStringsIndex.length;
+            }
+
+            parseCIDFontDicts(input, topDict, (CFFCIDFont) font, numEntries);
 
             List<Number> privMatrix = null;
             List<Map<String, Object>> fontDicts = ((CFFCIDFont) font).getFontDicts();

@@ -506,22 +506,22 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public void doWriteObject( COSBase obj ) throws IOException
     {
-        writtenObjects.add( obj );
-        // find the physical reference
-        currentObjectKey = getObjectKey( obj );
-        // add a x ref entry
-        addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
-        // write the object
-        getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(Charsets.ISO_8859_1));
-        getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(Charsets.ISO_8859_1));
-        getStandardOutput().write(SPACE);
-        getStandardOutput().write(OBJ);
-        getStandardOutput().writeEOL();
-        obj.accept( this );
-        getStandardOutput().writeEOL();
-        getStandardOutput().write(ENDOBJ);
-        getStandardOutput().writeEOL();
+            writtenObjects.add( obj );
+            // find the physical reference
+            currentObjectKey = getObjectKey( obj );
+            // add a x ref entry
+            addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
+            // write the object
+            getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(SPACE);
+            getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(SPACE);
+            getStandardOutput().write(OBJ);
+            getStandardOutput().writeEOL();
+            obj.accept( this );
+            getStandardOutput().writeEOL();
+            getStandardOutput().write(ENDOBJ);
+            getStandardOutput().writeEOL();
     }
 
     /**
@@ -1179,12 +1179,12 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public void writeReference(COSBase obj) throws IOException
     {
-        COSObjectKey key = getObjectKey(obj);
-        getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(Charsets.ISO_8859_1));
-        getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(Charsets.ISO_8859_1));
-        getStandardOutput().write(SPACE);
-        getStandardOutput().write(REFERENCE);
+            COSObjectKey key = getObjectKey(obj);
+            getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(SPACE);
+            getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(SPACE);
+            getStandardOutput().write(REFERENCE);
     }
 
     @Override
