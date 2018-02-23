@@ -174,7 +174,7 @@ public class ValidationResult
          * Error identifier. This error code can be used as identifier to internationalize the logging message using
          * i18n.
          */
-        private String errorCode;
+        private final String errorCode;
 
         /**
          * Error details
@@ -436,11 +436,7 @@ public class ValidationResult
             {
                 ValidationError ve = (ValidationError) o;
                 // check errorCode
-                if (errorCode == null && ve.errorCode != null)
-                {
-                    return false;
-                }
-                else if (!errorCode.equals(ve.errorCode))
+                if (!errorCode.equals(ve.errorCode))
                 {
                     return false;
                 }
@@ -463,13 +459,11 @@ public class ValidationResult
                 }
                 // check warning
                 return isWarning == ve.isWarning;
-
             }
             else
             {
                 return false;
             }
         }
-
     }
 }
