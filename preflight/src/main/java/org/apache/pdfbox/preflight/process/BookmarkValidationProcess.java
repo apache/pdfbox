@@ -157,6 +157,13 @@ public class BookmarkValidationProcess extends AbstractProcess
                         "Loop detected: /Next " + currentObj + " is already in the list"));
                 return false;
             }
+            if (realPrevObject == null)
+            {
+                // unclear if this can ever happen
+                addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
+                        "Outline object before " + currentObj + " is null"));
+                return false;
+            }
             levelObjects.add(currentObj);
             currentItem = currentItem.getNextSibling();
             if (currentItem == null)
