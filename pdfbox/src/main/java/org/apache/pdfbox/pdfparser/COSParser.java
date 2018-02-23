@@ -1913,7 +1913,12 @@ public class COSParser extends BaseParser
                     stream = parseCOSStream(dict);
                     is = stream.createInputStream();
                     numbersBytes = new byte[offsetFirstStream];
-                    is.read(numbersBytes);
+                    long isResult = is.read(numbersBytes);
+
+                    if (Long.compare(isResult, numbersBytes.length) != 0)
+                    {
+                        LOG.debug("Tried reading " + numbersBytes.length + " bytes but only " + isResult + " bytes read");
+                    }
                 }
                 catch (IOException exception)
                 {
