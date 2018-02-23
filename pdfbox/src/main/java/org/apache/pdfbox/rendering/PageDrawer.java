@@ -1038,10 +1038,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
+        AffineTransform imageTransform = new AffineTransform(at);
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if( softMask != null )
         {
-            AffineTransform imageTransform = new AffineTransform(at);
             imageTransform.scale(1, -1);
             imageTransform.translate(0, -1);
             Paint awtPaint = new TexturePaint(image,
@@ -1060,9 +1060,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 image = applyTransferFunction(image, transfer);
             }
 
-            int width = image.getWidth(null);
-            int height = image.getHeight(null);
-            AffineTransform imageTransform = new AffineTransform(at);
+            int width = image.getWidth();
+            int height = image.getHeight();
             imageTransform.scale(1.0 / width, -1.0 / height);
             imageTransform.translate(0, -height);
             graphics.drawImage(image, imageTransform, null);
