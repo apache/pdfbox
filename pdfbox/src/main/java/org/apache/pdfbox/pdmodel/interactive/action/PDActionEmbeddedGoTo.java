@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
@@ -124,21 +125,36 @@ public class PDActionEmbeddedGoTo extends PDAction
      * entry is absent, the viewer application should behave in accordance with the current user
      * preference.
      *
-     * @return A flag specifying whether to open the destination document in a new window.
+     * @return A flag specifying whether to open the destination document in a new window, or null
+     * if the entry is absent.
      */
-    public boolean shouldOpenInNewWindow()
+    public Boolean shouldOpenInNewWindow()
     {
-        return getCOSObject().getBoolean("NewWindow", true);
+        if (getCOSObject().getDictionaryObject(COSName.NEW_WINDOW) instanceof COSBoolean)
+        {
+            return getCOSObject().getBoolean(COSName.NEW_WINDOW, true);
+        }
+        return null;
     }
 
     /**
-     * This will specify the destination document to open in a new window.
+     * This will specify whether to open the destination document in a new window. If this flag is
+     * false, the destination document will replace the current document in the same window. If this
+     * entry is absent, the viewer application should behave in accordance with the current user
+     * preference.
      *
-     * @param value The flag value.
+     * @param value The flag value or null if the entry should be removed.
      */
-    public void setOpenInNewWindow(boolean value)
+    public void setOpenInNewWindow(Boolean value)
     {
-        getCOSObject().setBoolean("NewWindow", value);
+        if (value == null)
+        {
+            getCOSObject().removeItem(COSName.NEW_WINDOW);
+        }
+        else
+        {
+            getCOSObject().setBoolean(COSName.NEW_WINDOW, value);
+        }
     }
 
     /**
