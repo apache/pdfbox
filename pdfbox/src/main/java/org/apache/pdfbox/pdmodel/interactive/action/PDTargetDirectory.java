@@ -90,7 +90,7 @@ public class PDTargetDirectory implements COSObjectable
      */
     public void setRelationship(COSName relationship)
     {
-        if (!COSName.P.equals(relationship) && !COSName.P.equals(relationship))
+        if (!COSName.P.equals(relationship) && !COSName.C.equals(relationship))
         {
             throw new IllegalArgumentException("The only valid are P or C, not " + relationship.getName());
         }
