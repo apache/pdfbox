@@ -266,7 +266,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
             // to avoid crash as described in PDFBOX-614, see what the space displacement should be
             spaceWidthText = font.getSpaceWidth() * glyphSpaceToTextSpaceFactor;
         }
-        catch (Throwable exception)
+        catch (Exception exception)
         {
             LOG.warn(exception, exception);
         }
