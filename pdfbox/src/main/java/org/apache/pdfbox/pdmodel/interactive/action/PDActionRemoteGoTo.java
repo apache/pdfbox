@@ -119,7 +119,7 @@ public class PDActionRemoteGoTo extends PDAction
      */
     public boolean shouldOpenInNewWindow()
     {
-        return action.getBoolean( "NewWindow", true );
+        return action.getBoolean(COSName.NEW_WINDOW, true );
     }
 
     /**
@@ -129,6 +129,6 @@ public class PDActionRemoteGoTo extends PDAction
      */
     public void setOpenInNewWindow( boolean value )
     {
-        action.setBoolean( "NewWindow", value );
+        action.setBoolean(COSName.NEW_WINDOW, value );
     }
 }
