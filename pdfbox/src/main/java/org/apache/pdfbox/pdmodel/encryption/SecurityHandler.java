@@ -418,7 +418,12 @@ public abstract class SecurityHandler
             try (InputStream is = stream.createRawInputStream())
             {
                 buf = new byte[10];
-                is.read(buf);
+                long isResult = is.read(buf);
+
+                if (Long.compare(isResult, buf.length) != 0)
+                {
+                    LOG.debug("Tried reading " + buf.length + " bytes but only " + isResult + " bytes read");
+                }
             }
             if (Arrays.equals(buf, "<?xpacket ".getBytes(Charsets.ISO_8859_1)))
             {

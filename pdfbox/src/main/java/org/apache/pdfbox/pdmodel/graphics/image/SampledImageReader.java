@@ -283,7 +283,13 @@ final class SampledImageReader
             int i = 0;
             for (int y = 0; y < height; ++y)
             {
-                input.read(tempBytes);
+                long inputResult = input.read(tempBytes);
+
+                if (Long.compare(inputResult, tempBytes.length) != 0)
+                {
+                    LOG.debug("Tried reading " + tempBytes.length + " bytes but only " + inputResult + " bytes read");
+                }
+
                 for (int x = 0; x < width; ++x)
                 {
                     for (int c = 0; c < numComponents; c++)
