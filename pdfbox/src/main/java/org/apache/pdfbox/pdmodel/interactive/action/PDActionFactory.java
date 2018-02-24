@@ -101,6 +101,10 @@ public final class PDActionFactory
             {
                 retval = new PDActionThread(action);
             }
+            else if (PDActionEmbeddedGoTo.SUB_TYPE.equals(type))
+            {
+                retval = new PDActionEmbeddedGoTo(action);
+            }
         }
         return retval;
     }

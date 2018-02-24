@@ -18,32 +18,35 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 
 /**
- * This represents a remote go-to action that can be executed in a PDF document.
+ * This represents a embedded go-to action that can be executed in a PDF document.
  *
  * @author Ben Litchfield
  * @author Panagiotis Toumasis
+ * @author Tilman Hausherr
  */
-public class PDActionRemoteGoTo extends PDAction
+public class PDActionEmbeddedGoTo extends PDAction
 {
     /**
      * This type of action this object represents.
      */
-    public static final String SUB_TYPE = "GoToR";
+    public static final String SUB_TYPE = "GoToE";
 
     /**
      * Default constructor.
      */
-    public PDActionRemoteGoTo()
+    public PDActionEmbeddedGoTo()
     {
-        setSubType( SUB_TYPE );
+        setSubType(SUB_TYPE);
     }
 
     /**
@@ -51,47 +54,59 @@ public class PDActionRemoteGoTo extends PDAction
      *
      * @param a The action dictionary.
      */
-    public PDActionRemoteGoTo( COSDictionary a )
+    public PDActionEmbeddedGoTo(COSDictionary a)
     {
-        super( a );
+        super(a);
     }
 
     /**
-     * This will get the type of action that the actions dictionary describes.
-     * It must be GoToR for a remote go-to action.
+     * This will get the destination to jump to.
      *
-     * @return The S entry of the specific remote go-to action dictionary.
-     * @deprecated use {@link #getSubType() }.
+     * @return The D entry of the specific go-to action dictionary.
+     *
+     * @throws IOException If there is an error creating the destination.
      */
-    @Deprecated
-    public String getS()
+    public PDDestination getDestination() throws IOException
     {
-       return action.getNameAsString( COSName.S );
+        return PDDestination.create(getCOSObject().getDictionaryObject(COSName.D));
     }
 
     /**
-     * This will set the type of action that the actions dictionary describes.
-     * It must be GoToR for a remote go-to action.
+     * This will set the destination to jump to.
      *
-     * @param s The remote go-to action.
-     * @deprecated use {@link #setSubType(java.lang.String) }.
+     * @param d The destination.
+     *
+     * @throws IllegalArgumentException if the destination is not a page dictionary object.
      */
-    @Deprecated
-    public void setS( String s )
+    public void setDestination(PDDestination d)
     {
-       action.setName( COSName.S, s );
+        if (d instanceof PDPageDestination)
+        {
+            PDPageDestination pageDest = (PDPageDestination) d;
+            COSArray destArray = pageDest.getCOSObject();
+            if (destArray.size() >= 1)
+            {
+                COSBase page = destArray.getObject(0);
+                if (!(page instanceof COSDictionary))
+                {
+                    throw new IllegalArgumentException("Destination of a GoToE action must be "
+                            + "a page dictionary object");
+                }
+            }
+        }
+        getCOSObject().setItem(COSName.D, d);
     }
 
     /**
      * This will get the file in which the destination is located.
      *
-     * @return The F entry of the specific remote go-to action dictionary.
+     * @return The F entry of the specific embedded go-to action dictionary.
      *
      * @throws IOException If there is an error creating the file spec.
      */
     public PDFileSpecification getFile() throws IOException
     {
-        return PDFileSpecification.createFS( action.getDictionaryObject( COSName.F ) );
+        return PDFileSpecification.createFS(getCOSObject().getDictionaryObject(COSName.F));
     }
 
     /**
@@ -99,70 +114,9 @@ public class PDActionRemoteGoTo extends PDAction
      *
      * @param fs The file specification.
      */
-    public void setFile( PDFileSpecification fs )
+    public void setFile(PDFileSpecification fs)
     {
-        action.setItem( COSName.F, fs );
-    }
-
-    /**
-     * This will get the destination to jump to.
-     * If the value is an array defining an explicit destination,
-     * its first element must be a page number within the remote
-     * document rather than an indirect reference to a page object
-     * in the current document. The first page is numbered 0.
-     *
-     * @return The D entry of the specific remote go-to action dictionary.
-     */
-
-    // Array or String.
-    public COSBase getD()
-    {
-        return action.getDictionaryObject( COSName.D );
-    }
-
-    /**
-     * This will set the destination to jump to.
-     * If the value is an array defining an explicit destination,
-     * its first element must be a page number within the remote
-     * document rather than an indirect reference to a page object
-     * in the current document. The first page is numbered 0.
-     *
-     * @param d The destination.
-     */
-
-    // In case the value is an array.
-    public void setD( COSBase d )
-    {
-        action.setItem( COSName.D, d );
-    }
-
-    /**
-     * This will specify whether to open the destination document in a new window.
-     * If this flag is false, the destination document will replace the current
-     * document in the same window. If this entry is absent, the viewer application
-     * should behave in accordance with the current user preference.
-     *
-     * @return A flag specifying whether to open the destination document in a new window.
-     * 
-     * @deprecated use {@link #getOpenInNewWindow()}
-     */
-    @Deprecated
-    public boolean shouldOpenInNewWindow()
-    {
-        return action.getBoolean(COSName.NEW_WINDOW, true );
-    }
-
-    /**
-     * This will specify the destination document to open in a new window.
-     *
-     * @param value The flag value.
-     * 
-     * @deprecated use {@link #setOpenInNewWindow(OpenMode)}
-     */
-    @Deprecated
-    public void setOpenInNewWindow( boolean value )
-    {
-        action.setBoolean(COSName.NEW_WINDOW, value );
+        getCOSObject().setItem(COSName.F, fs);
     }
 
     /**
@@ -208,5 +162,30 @@ public class PDActionRemoteGoTo extends PDAction
                 // shouldn't happen unless the enum type is changed
                 break;
         }
+    }
+
+    /**
+     * Get the target directory.
+     *
+     * @return the target directory or null if there is none.
+     */
+    public PDTargetDirectory getTargetDirectory()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.T);
+        if (base instanceof COSDictionary)
+        {
+            return new PDTargetDirectory((COSDictionary) base);
+        }
+        return null;
+    }
+
+    /**
+     * Sets the target directory.
+     * 
+     * @param targetDirectory
+     */
+    public void setTargetDirectory(PDTargetDirectory targetDirectory)
+    {
+        getCOSObject().setItem(COSName.T, targetDirectory);
     }
 }
