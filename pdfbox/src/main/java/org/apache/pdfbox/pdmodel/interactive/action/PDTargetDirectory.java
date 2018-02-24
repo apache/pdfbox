@@ -18,8 +18,11 @@ package org.apache.pdfbox.pdmodel.interactive.action;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 
 /**
  * A target dictionary specifying path information to the target document. Each target dictionary
@@ -147,10 +150,132 @@ public class PDTargetDirectory implements COSObjectable
         dict.setItem(COSName.T, targetDirectory);
     }
 
-    // page 420
-    //TODO P, A
-    // getPageNumber int
-    // getNamedDestination PDNamedDestination
-    // getAnnotationIndex int
-    // getAnnotationName String
+    /**
+     * If the value in the /P entry is an integer, this will get the page number (zero-based) in the
+     * current document containing the file attachment annotation.
+     *
+     * @return the zero based page number or -1 if the /P entry value is missing or not a number.
+     */
+    public int getPageNumber()
+    {
+        COSBase base = dict.getDictionaryObject(COSName.P);
+        if (base instanceof COSInteger)
+        {
+            return ((COSInteger) base).intValue();
+        }
+        return -1;
+    }
+
+    /**
+     * Set the page number (zero-based) in the current document containing the file attachment
+     * annotation.
+     *
+     * @param pageNumber the zero based page number. If this is &lt; 0 then the entry is removed.
+     */
+    public void setPageNumber(int pageNumber)
+    {
+        if (pageNumber < 0)
+        {
+            dict.removeItem(COSName.P);
+        }
+        else
+        {
+            dict.setInt(COSName.P, pageNumber);
+        }
+    }
+
+    /**
+     * If the value in the /P entry is a string, this will get a named destination in the current
+     * document that provides the page number of the file attachment annotation.
+     *
+     * @return a named destination or null if the /P entry value is missing or not a string.
+     */
+    public PDNamedDestination getNamedDestination()
+    {
+        COSBase base = dict.getDictionaryObject(COSName.P);
+        if (base instanceof COSString)
+        {
+            return new PDNamedDestination((COSString) base);
+        }
+        return null;
+    }
+
+    /**
+     * This will set a named destination in the current document that provides the page number of
+     * the file attachment annotation.
+     *
+     * @param dest a named destination or null if the entry is to be removed.
+     */
+    public void setNamedDestination(PDNamedDestination dest)
+    {
+        if (dest == null)
+        {
+            dict.removeItem(COSName.P);
+        }
+        else
+        {
+            dict.setItem(COSName.P, dest);
+        }
+    }
+
+    /**
+     * If the value in the /A entry is an integer, this will get the index (zero-based) of the
+     * annotation in the /Annots array of the page specified by the /P entry.
+     *
+     * @return the zero based page number or -1 if the /P entry value is missing or not a number.
+     */
+    public int getAnnotationIndex()
+    {
+        COSBase base = dict.getDictionaryObject(COSName.A);
+        if (base instanceof COSInteger)
+        {
+            return ((COSInteger) base).intValue();
+        }
+        return -1;
+    }
+    
+    /**
+     * This will set the index (zero-based) of the annotation in the /Annots array of the page
+     * specified by the /P entry.
+     *
+     * @param index the zero based index. If this is &lt; 0 then the entry is removed.
+     */
+    public void setAnnotationIndex(int index)
+    {
+        if (index < 0)
+        {
+            dict.removeItem(COSName.A);
+        }
+        else
+        {
+            dict.setInt(COSName.A, index);
+        }
+    }
+
+    /**
+     * If the value in the /A entry is a string, this will get the value of the /NM entry in the
+     * annotation dictionary.
+     *
+     * @return the /NM value of an annotation dictionary or null if the /A entry value is missing or
+     * not a string.
+     */
+    public String getAnnotationName()
+    {
+        COSBase base = dict.getDictionaryObject(COSName.A);
+        if (base instanceof COSString)
+        {
+            return ((COSString) base).getString();
+        }
+        return null;
+    }
+
+    /**
+     * This will get the value of the /NM entry in the annotation dictionary.
+     *
+     * @param name the /NM value of an annotation dictionary or null if the entry is to be removed.
+     */
+    public void setAnnotationName(String name)
+    {
+        dict.setString(COSName.A, name);
+    }
 }
