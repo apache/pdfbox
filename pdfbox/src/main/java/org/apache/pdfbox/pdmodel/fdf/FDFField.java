@@ -120,6 +120,14 @@ public class FDFField implements COSObjectable
         {
             output.write("<value>" + escapeXML((String) value) + "</value>\n");
         }
+        else if (value instanceof List)
+        {
+            List<String> items = (List<String>) value;
+            for (String item : items)
+            {
+                output.write("<value>" + escapeXML((String) item) + "</value>\n");
+            }
+        }
 
         String rt = getRichText();
         if (rt != null)
