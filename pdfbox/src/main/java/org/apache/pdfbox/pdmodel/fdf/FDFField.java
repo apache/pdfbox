@@ -117,17 +117,12 @@ public class FDFField implements COSObjectable
     {
         output.write("<field name=\"" + getPartialFieldName() + "\">\n");
         Object value = getValue();
-        if (value != null)
+
+        if (value instanceof String)
         {
-            if (value instanceof COSString)
-            {
-                output.write("<value>" + escapeXML(((COSString) value).getString()) + "</value>\n");
-            }
-            else if (value instanceof COSStream)
-            {
-                output.write("<value>" + escapeXML(((COSStream) value).toTextString()) + "</value>\n");
-            }
+            output.write("<value>" + escapeXML((String) value) + "</value>\n");
         }
+
         String rt = getRichText();
         if (rt != null)
         {
