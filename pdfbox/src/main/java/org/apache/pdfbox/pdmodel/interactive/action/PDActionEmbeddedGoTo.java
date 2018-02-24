@@ -120,40 +120,47 @@ public class PDActionEmbeddedGoTo extends PDAction
     }
 
     /**
-     * This will specify whether to open the destination document in a new window. If this flag is
-     * false, the destination document will replace the current document in the same window. If this
-     * entry is absent, the viewer application should behave in accordance with the current user
-     * preference.
+     * This will specify whether to open the destination document in a new window, in the same
+     * window, or behave in accordance with the current user preference.
      *
-     * @return A flag specifying whether to open the destination document in a new window, or null
-     * if the entry is absent.
+     * @return A flag specifying how to open the destination document.
      */
-    public Boolean shouldOpenInNewWindow()
+    public OpenMode getOpenInNewWindow()
     {
         if (getCOSObject().getDictionaryObject(COSName.NEW_WINDOW) instanceof COSBoolean)
         {
-            return getCOSObject().getBoolean(COSName.NEW_WINDOW, true);
+            COSBoolean b = (COSBoolean) getCOSObject().getDictionaryObject(COSName.NEW_WINDOW);
+            return b.getValue() ? OpenMode.NEW_WINDOW : OpenMode.SAME_WINDOW;
         }
-        return null;
+        return OpenMode.USER_PREFERENCE;
     }
 
     /**
-     * This will specify whether to open the destination document in a new window. If this flag is
-     * false, the destination document will replace the current document in the same window. If this
-     * entry is absent, the viewer application should behave in accordance with the current user
-     * preference.
+     * This will specify whether to open the destination document in a new window.
      *
-     * @param value The flag value or null if the entry should be removed.
+     * @param value The flag value.
      */
-    public void setOpenInNewWindow(Boolean value)
+    public void setOpenInNewWindow(OpenMode value)
     {
-        if (value == null)
+        if (null == value)
         {
             getCOSObject().removeItem(COSName.NEW_WINDOW);
+            return;
         }
-        else
+        switch (value)
         {
-            getCOSObject().setBoolean(COSName.NEW_WINDOW, value);
+            case USER_PREFERENCE:
+                getCOSObject().removeItem(COSName.NEW_WINDOW);
+                break;
+            case SAME_WINDOW:
+                getCOSObject().setBoolean(COSName.NEW_WINDOW, false);
+                break;
+            case NEW_WINDOW:
+                getCOSObject().setBoolean(COSName.NEW_WINDOW, true);
+                break;
+            default:
+                // shouldn't happen unless the enum type is changed
+                break;
         }
     }
 
