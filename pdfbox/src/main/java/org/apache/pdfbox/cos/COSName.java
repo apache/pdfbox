@@ -136,6 +136,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName CMAPNAME = new COSName("CMapName");
     public static final COSName CMYK = new COSName("CMYK");
     public static final COSName CO = new COSName("CO");
+    public static final COSName COLOR = new COSName("Color");
     public static final COSName COLOR_BURN = new COSName("ColorBurn");
     public static final COSName COLOR_DODGE = new COSName("ColorDodge");
     public static final COSName COLORANTS = new COSName("Colorants");
@@ -274,6 +275,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName HIDE_MENUBAR = new COSName("HideMenubar");
     public static final COSName HIDE_TOOLBAR = new COSName("HideToolbar");
     public static final COSName HIDE_WINDOWUI = new COSName("HideWindowUI");
+    public static final COSName HUE = new COSName("Hue");
     // I
     public static final COSName I = new COSName("I");
     public static final COSName IC = new COSName("IC");
@@ -464,6 +466,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // S
     public static final COSName S = new COSName("S");
     public static final COSName SA = new COSName("SA");
+    public static final COSName SATURATION = new COSName("Saturation");
     public static final COSName SCREEN = new COSName("Screen");
     public static final COSName SE = new COSName("SE");
     public static final COSName SEPARATION = new COSName("Separation");
