@@ -32,6 +32,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
+import org.apache.pdfbox.cos.COSDictionary;
 
 /**
  * A color space specifies how the colours of graphics objects will be painted on the page.
@@ -216,6 +217,16 @@ public abstract class PDColorSpace implements COSObjectable
             {
                 throw new IOException("Invalid color space kind: " + name);
             }
+        }else if(colorSpace instanceof COSDictionary)
+        {
+            COSDictionary dictionary = (COSDictionary)colorSpace;
+            
+            if(dictionary.containsKey(COSName.COLORSPACE))
+            {
+                return create(dictionary.getDictionaryObject(COSName.COLORSPACE), resources, wasDefault);
+            }
+            
+            throw new IOException("Expected dictionary to have colorSpace key, but none found");
         }
         else
         {
