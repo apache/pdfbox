@@ -24,9 +24,9 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
@@ -82,7 +82,8 @@ public final class JPXFilter extends Filter
     private BufferedImage readJPX(InputStream input, DecodeResult result) throws IOException
     {
         ImageReader reader = findImageReader("JPEG2000", "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
-        try (ImageInputStream iis = ImageIO.createImageInputStream(input))
+        // PDFBOX-4121: ImageIO.createImageInputStream() is much slower
+        try (ImageInputStream iis = new MemoryCacheImageInputStream(input))
         {
             reader.setInput(iis, true, true);
 
