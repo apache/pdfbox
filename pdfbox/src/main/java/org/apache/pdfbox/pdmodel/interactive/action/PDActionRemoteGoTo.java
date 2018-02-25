@@ -111,35 +111,6 @@ public class PDActionRemoteGoTo extends PDAction
     }
 
     /**
-     * This will specify whether to open the destination document in a new window.
-     * If this flag is false, the destination document will replace the current
-     * document in the same window. If this entry is absent, the viewer application
-     * should behave in accordance with the current user preference.
-     *
-     * @return A flag specifying whether to open the destination document in a new window.
-     * 
-     * @deprecated use {@link #getOpenInNewWindow()}
-     */
-    @Deprecated
-    public boolean shouldOpenInNewWindow()
-    {
-        return action.getBoolean(COSName.NEW_WINDOW, true );
-    }
-
-    /**
-     * This will specify the destination document to open in a new window.
-     *
-     * @param value The flag value.
-     * 
-     * @deprecated use {@link #setOpenInNewWindow(OpenMode)}
-     */
-    @Deprecated
-    public void setOpenInNewWindow( boolean value )
-    {
-        action.setBoolean(COSName.NEW_WINDOW, value );
-    }
-
-    /**
      * This will specify whether to open the destination document in a new window, in the same
      * window, or behave in accordance with the current user preference.
      *
