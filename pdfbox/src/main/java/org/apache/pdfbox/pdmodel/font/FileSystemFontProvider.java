@@ -445,11 +445,17 @@ final class FileSystemFontProvider extends FontProvider
                         }
                     }
                     fontFile = new File(parts[9]);
-                    
-                    FSFontInfo info = new FSFontInfo(fontFile, format, postScriptName,
-                            cidSystemInfo, usWeightClass, sFamilyClass, ulCodePageRange1,
-                            ulCodePageRange2, macStyle, panose, this);
-                    results.add(info);
+                    if (fontFile.exists())
+                    {
+                        FSFontInfo info = new FSFontInfo(fontFile, format, postScriptName,
+                                cidSystemInfo, usWeightClass, sFamilyClass, ulCodePageRange1,
+                                ulCodePageRange2, macStyle, panose, this);
+                        results.add(info);
+                    }
+                    else
+                    {
+                        LOG.debug("Font file " + fontFile.getAbsolutePath() + " not found, skipped");
+                    }
                     pending.remove(fontFile.getAbsolutePath());
                 }
             }
