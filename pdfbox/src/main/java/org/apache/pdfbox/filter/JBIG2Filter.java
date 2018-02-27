@@ -48,11 +48,23 @@ final class JBIG2Filter extends Filter
 {
     private static final Log LOG = LogFactory.getLog(JBIG2Filter.class);
 
+    private static boolean newPluginChecked = false;
+
     @Override
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
         ImageReader reader = findImageReader("JBIG2", "jbig2-imageio is not installed");
+        if (!newPluginChecked)
+        {
+            if (reader.getClass().getName().contains("levigo"))
+            {
+                LOG.info("The Levigo JBIG2 plugin has been donated to the Apache Foundation");
+                LOG.info("and an improved version is available for download at "
+                        + "https://pdfbox.apache.org/download.cgi");
+            }
+            newPluginChecked = true;
+        }
         DecodeResult result = new DecodeResult(new COSDictionary());
         result.getParameters().addAll(parameters);
 
