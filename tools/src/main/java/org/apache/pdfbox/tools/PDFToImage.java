@@ -220,8 +220,10 @@ public final class PDFToImage
 
                 //if a CropBox has been specified, update the CropBox:
                 //changeCropBoxes(PDDocument document,float a, float b, float c,float d)
-                if ( cropBoxLowerLeftX!=0 || cropBoxLowerLeftY!=0
-                        || cropBoxUpperRightX!=0 || cropBoxUpperRightY!=0 )
+                if (Float.compare(cropBoxLowerLeftX, 0) !=0 ||
+                    Float.compare(cropBoxLowerLeftY, 0) !=0 ||
+                    Float.compare(cropBoxUpperRightX, 0) !=0 ||
+                    Float.compare(cropBoxUpperRightY, 0) !=0 )
                 {
                     changeCropBox(document,
                             cropBoxLowerLeftX, cropBoxLowerLeftY,

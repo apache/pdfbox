@@ -118,7 +118,7 @@ public class PDFText2HTML extends PDFTextStripper
                     float currentFontSize = position.getFontSize();
                     //If we're past 64 chars we will assume that we're past the title
                     //64 is arbitrary
-                    if (currentFontSize != lastFontSize || titleText.length() > 64)
+                    if (Float.compare(currentFontSize, lastFontSize) != 0 || titleText.length() > 64)
                     {
                         if (titleText.length() > 0)
                         {
