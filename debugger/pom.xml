@@ -48,14 +48,14 @@
         <artifactId>pdfbox</artifactId>
         <version>${project.version}</version>
     </dependency>
+    <dependency>
+        <groupId>org.apache.pdfbox</groupId>
+        <artifactId>jbig2-imageio</artifactId>
+        <scope>test</scope>
+    </dependency>
     <!-- For legal reasons (incompatible license), these two dependencies 
         are to be used only in the tests and may not be distributed. 
         See also LEGAL-195 -->
-    <dependency>
-        <groupId>com.levigo.jbig2</groupId>
-        <artifactId>levigo-jbig2-imageio</artifactId>
-        <scope>test</scope>
-    </dependency>
     <dependency>
         <groupId>com.github.jai-imageio</groupId>
         <artifactId>jai-imageio-core</artifactId>

@@ -213,12 +213,9 @@
 			<artifactId>bcprov-jdk15on</artifactId>
 			<optional>true</optional>
 		</dependency>
-                <!-- For legal reasons (incompatible license), this dependency
-                is to be used only in the tests and may not be distributed. 
-                See also LEGAL-195 -->
                 <dependency>
-                    <groupId>com.levigo.jbig2</groupId>
-                    <artifactId>levigo-jbig2-imageio</artifactId>
+                    <groupId>org.apache.pdfbox</groupId>
+                    <artifactId>jbig2-imageio</artifactId>
                     <scope>test</scope>
                 </dependency>
 
