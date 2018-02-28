@@ -386,6 +386,7 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (SecurityException e)
         {
+            LOG.debug("Error checking for file existence", e);
         }
         if (fileExists)
         {

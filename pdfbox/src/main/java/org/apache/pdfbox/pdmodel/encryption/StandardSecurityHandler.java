@@ -1194,6 +1194,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
         catch (NoSuchAlgorithmException ex)
         {
+            LOG.debug("AES Algorithm not available", ex);
         }
     }
 
