@@ -70,8 +70,6 @@ final class JBIG2Filter extends Filter
         {
             logLevigoDonated();
         }
-        DecodeResult result = new DecodeResult(new COSDictionary());
-        result.getParameters().addAll(parameters);
 
         int bits = parameters.getInt(COSName.BITS_PER_COMPONENT, 1);
         COSDictionary params = getDecodeParams(parameters, index);
@@ -131,13 +129,6 @@ final class JBIG2Filter extends Filter
         {
             reader.dispose();
         }
-
-        // repair missing color space
-        if (!parameters.containsKey(COSName.COLORSPACE))
-        {
-            result.getParameters().setName(COSName.COLORSPACE, COSName.DEVICEGRAY.getName());
-        }
-
         return new DecodeResult(parameters);
     }
 
