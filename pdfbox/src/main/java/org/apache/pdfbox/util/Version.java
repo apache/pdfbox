@@ -21,11 +21,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Exposes PDFBox version.
  */
 public final class Version
 {
+    private static final Log LOG = LogFactory.getLog(Version.class);
+
     private static final String PDFBOX_VERSION_PROPERTIES =
             "org/apache/pdfbox/resources/version.properties";
 
@@ -52,6 +57,7 @@ public final class Version
         }
         catch (IOException io)
         {
+            LOG.debug("Unable to read version from properties - returning null", io);
             return null;
         }
     }

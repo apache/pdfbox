@@ -25,6 +25,9 @@ import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSString;
 
 /*
@@ -64,6 +67,8 @@ public final class DateConverter
     private DateConverter()
     {
     }
+
+    private static final Log LOG = LogFactory.getLog(DateConverter.class);
 
     // milliseconds/1000 = seconds; seconds / 60 = minutes; minutes/60 = hours
     private static final int MINUTES_PER_HOUR = 60;
@@ -553,6 +558,7 @@ public final class DateConverter
         }
         catch (IllegalArgumentException ill) 
         {
+            LOG.debug("Couldn't parse arguments text:" + text + " initialWhere:" + initialWhere, ill);
             return  null;
         }
         initialWhere.setIndex(where.getIndex());

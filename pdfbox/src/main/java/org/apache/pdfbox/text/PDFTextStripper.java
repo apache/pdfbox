@@ -83,6 +83,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         {
             // PDFBOX-1946 when run in an applet
             // ignore and use default
+            LOG.debug("Couldn't read system properties - using defauults", e);
         }
         if (strIndent != null && strIndent.length() > 0)
         {
@@ -1823,7 +1824,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         catch (IOException e)
         {
             LOG.warn("Could not parse BidiMirroring.txt, mirroring char map will be empty: "
-                    + e.getMessage());
+                    + e.getMessage(), e);
         }
     }
 
