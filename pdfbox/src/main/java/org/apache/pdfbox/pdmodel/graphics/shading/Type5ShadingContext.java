@@ -23,6 +23,7 @@ import java.awt.image.ColorModel;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -66,9 +67,18 @@ class Type5ShadingContext extends GouraudShadingContext
     private List<ShadedTriangle> collectTriangles(PDShadingType5 latticeTriangleShadingType,
             AffineTransform xform, Matrix matrix) throws IOException
     {
-        COSDictionary cosDictionary = latticeTriangleShadingType.getCOSObject();
+        COSDictionary dict = latticeTriangleShadingType.getCOSObject();
+        if (!(dict instanceof COSStream))
+        {
+            return Collections.emptyList();
+        }
         PDRange rangeX = latticeTriangleShadingType.getDecodeForParameter(0);
         PDRange rangeY = latticeTriangleShadingType.getDecodeForParameter(1);
+        if (Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
+            Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
+        {
+            return Collections.emptyList();
+        }
         int numPerRow = latticeTriangleShadingType.getVerticesPerRow();
         PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
@@ -78,7 +88,7 @@ class Type5ShadingContext extends GouraudShadingContext
         List<Vertex> vlist = new ArrayList<Vertex>();
         long maxSrcCoord = (long) Math.pow(2, bitsPerCoordinate) - 1;
         long maxSrcColor = (long) Math.pow(2, bitsPerColorComponent) - 1;
-        COSStream cosStream = (COSStream) cosDictionary;
+        COSStream cosStream = (COSStream) dict;
 
         ImageInputStream mciis = new MemoryCacheImageInputStream(cosStream.createInputStream());
         try
