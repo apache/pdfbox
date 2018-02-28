@@ -39,8 +39,7 @@ import org.apache.pdfbox.cos.COSStream;
  * monochrome (1 bit per pixel) image data (or an approximation of that data).
  *
  * Requires a JBIG2 plugin for Java Image I/O to be installed. A known working
- * plug-in is <a href="https://github.com/levigo/jbig2-imageio">jbig2-imageio</a>
- * which is available under the GPL v3 license.
+ * plug-in is the Apache PDFBox JBIG2 plugin.
  *
  * @author Timo Boehme
  */
