@@ -1388,6 +1388,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
                 catch (IOException ex)
                 {
+                    LOG.debug("Couldn't get an alternate ColorSpace", ex);
                     return false;
                 }
             }

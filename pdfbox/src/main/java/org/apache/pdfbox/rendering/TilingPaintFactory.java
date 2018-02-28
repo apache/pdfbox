@@ -20,6 +20,10 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -33,6 +37,8 @@ import org.apache.pdfbox.util.Matrix;
  */
 class TilingPaintFactory
 {
+    private static final Log LOG = LogFactory.getLog(TilingPaintFactory.class);
+
     private final PageDrawer drawer;
     private final Map<TilingPaintParameter, WeakReference<TilingPaint>> weakCache
             = new WeakHashMap<>();
@@ -129,6 +135,7 @@ class TilingPaintFactory
             }
             catch (IOException ex)
             {
+                LOG.debug("Couldn't convert color to RGB - treating as not equal", ex);
                 return false;
             }
             return !(this.xform != other.xform && (this.xform == null || !this.xform.equals(other.xform)));

@@ -111,7 +111,7 @@ public class FontMetrics
         if( metric != null )
         {
             result = metric.getWy(); 
-            if( result == 0 )
+            if( Float.compare(result, 0) == 0 )
             {
                 result = metric.getBoundingBox().getHeight();
             }

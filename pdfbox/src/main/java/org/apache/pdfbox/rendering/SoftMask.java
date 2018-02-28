@@ -29,6 +29,10 @@ import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.common.function.PDFunctionTypeIdentity;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -43,6 +47,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
  */
 class SoftMask implements Paint
 {
+
+    private static final Log LOG = LogFactory.getLog(SoftMask.class);
+
     private static final ColorModel ARGB_COLOR_MODEL =
             new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).getColorModel();
 
@@ -86,6 +93,7 @@ class SoftMask implements Paint
             catch (IOException ex)
             {
                 // keep default
+                LOG.debug("Couldn't convert backdropColor to RGB - keeping default", ex);
             }
         }
     }
@@ -183,6 +191,7 @@ class SoftMask implements Paint
                             catch (IOException ex)
                             {
                                 // ignore exception, treat as outside
+                                LOG.debug("Couldn't apply transferFunction - treating as outside", ex);
                                 pixelOutput[3] = Math.round(pixelOutput[3] * (bc / 255f));
                             }
                         }
