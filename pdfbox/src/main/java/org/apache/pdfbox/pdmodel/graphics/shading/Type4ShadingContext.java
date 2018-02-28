@@ -23,6 +23,7 @@ import java.awt.image.ColorModel;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -69,8 +70,17 @@ class Type4ShadingContext extends GouraudShadingContext
             throws IOException
     {
         COSDictionary dict = freeTriangleShadingType.getCOSObject();
+        if (!(dict instanceof COSStream))
+        {
+            return Collections.emptyList();
+        }
         PDRange rangeX = freeTriangleShadingType.getDecodeForParameter(0);
         PDRange rangeY = freeTriangleShadingType.getDecodeForParameter(1);
+        if (Float.compare(rangeX.getMin(), rangeX.getMax()) == 0 ||
+            Float.compare(rangeY.getMin(), rangeY.getMax()) == 0)
+        {
+            return Collections.emptyList();
+        }
         PDRange[] colRange = new PDRange[numberOfColorComponents];
         for (int i = 0; i < numberOfColorComponents; ++i)
         {
