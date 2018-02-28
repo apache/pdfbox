@@ -27,6 +27,9 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.EXTGSTATE_PROCE
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -45,7 +48,8 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class ShadingPatternValidationProcess extends AbstractProcess
 {
-
+    private static final Log LOGGER = LogFactory.getLog(ShadingPatternValidationProcess.class);
+    
     @Override
     public void validate(PreflightContext context) throws ValidationException
     {
@@ -92,6 +96,7 @@ public class ShadingPatternValidationProcess extends AbstractProcess
         }
         catch (IOException e)
         {
+            LOGGER.debug("Unable to get the color space", e);
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE, e.getMessage()));
         }
     }

@@ -27,6 +27,8 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXP
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -48,6 +50,8 @@ import org.apache.pdfbox.preflight.utils.RenderingIntents;
  */
 public class XObjImageValidator extends AbstractXObjValidator
 {
+    private static final Log LOGGER = LogFactory.getLog(XObjImageValidator.class);
+
     protected PDImageXObject xImage = null;
 
     public XObjImageValidator(PreflightContext context, PDImageXObject xobj)
@@ -145,6 +149,7 @@ public class XObjImageValidator extends AbstractXObjValidator
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't create PDColorSpace " + csImg, e);
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE));
             }
         }
