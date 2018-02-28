@@ -35,6 +35,9 @@ import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -62,6 +65,7 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class SinglePageValidationProcess extends AbstractProcess
 {
+    private static final Log LOGGER = LogFactory.getLog(SinglePageValidationProcess.class);
 
     @Override
     public void validate(PreflightContext context) throws ValidationException
@@ -128,7 +132,7 @@ public class SinglePageValidationProcess extends AbstractProcess
                 catch (IOException e)
                 {
                     // fixme: this code was previously in PDResources
-                    // LOG.error("error while creating a colorspace", exception);
+                    LOGGER.debug("Unable to create colorspace", e);
                 }
             }
         }
@@ -158,6 +162,7 @@ public class SinglePageValidationProcess extends AbstractProcess
             }
             catch (IOException e)
             {
+                LOGGER.debug("Unable to read Thumb image", e);
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID, "Unable to read Thumb image : "
                         + e.getMessage()));
             }
@@ -185,6 +190,7 @@ public class SinglePageValidationProcess extends AbstractProcess
         }
         catch (IOException e)
         {
+            LOGGER.debug("Unable to read page contet stream", e);
             context.addValidationError(new ValidationError(ERROR_UNKOWN_ERROR, e.getMessage(), e));
         }
     }

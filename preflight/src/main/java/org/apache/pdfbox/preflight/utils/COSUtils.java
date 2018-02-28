@@ -66,6 +66,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning false", e);
                 return false;
             }
         }
@@ -91,6 +92,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning false", e);
                 return false;
             }
         }
@@ -117,6 +119,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning false", e);
                 return false;
             }
         }
@@ -143,6 +146,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning false", e);
                 return false;
             }
         }
@@ -181,6 +185,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning false", e);
                 return false;
             }
         }
@@ -207,6 +212,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning false", e);
                 return false;
             }
         }
@@ -241,6 +247,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning null", e);
                 return null;
             }
         }
@@ -286,6 +293,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning null", e);
                 return null;
             }
         }
@@ -330,6 +338,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning null", e);
                 return null;
             }
         }
@@ -370,6 +379,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning null", e);
                 return null;
             }
         }
@@ -414,6 +424,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning null", e);
                 return null;
             }
         }
@@ -458,6 +469,7 @@ public final class COSUtils
             }
             catch (IOException e)
             {
+                LOGGER.debug("Couldn't get COSObject from object pool - returning null", e);
                 return null;
             }
         }
@@ -488,7 +500,7 @@ public final class COSUtils
         }
         catch (IOException e)
         {
-            LOGGER.warn("Error occured during the close of a COSDocument : " + e.getMessage());
+            LOGGER.warn("Error occured during the close of a COSDocument : " + e.getMessage(), e);
         }
     }
 
