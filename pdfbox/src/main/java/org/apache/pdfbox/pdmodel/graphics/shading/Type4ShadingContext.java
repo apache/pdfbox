@@ -155,7 +155,6 @@ class Type4ShadingContext extends GouraudShadingContext
                 }
                 catch (EOFException ex)
                 {
-                    LOG.debug("Couldn't get the triangle information - stop reading", ex);
                     eof = true;
                 }
             }
