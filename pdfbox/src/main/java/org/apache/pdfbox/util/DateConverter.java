@@ -64,11 +64,11 @@ import org.apache.pdfbox.cos.COSString;
  */
 public final class DateConverter
 {
+    private static final Log LOG = LogFactory.getLog(DateConverter.class);
+
     private DateConverter()
     {
     }
-
-    private static final Log LOG = LogFactory.getLog(DateConverter.class);
 
     // milliseconds/1000 = seconds; seconds / 60 = minutes; minutes/60 = hours
     private static final int MINUTES_PER_HOUR = 60;
