@@ -95,7 +95,7 @@ public abstract class COSBase implements COSObjectable
     /**
      * Set the state true, if the dictionary should be written as a direct object and not indirect.
      * 
-     * @param direct set it true, for writting direct object
+     * @param direct set it true, for writing direct object
      */
     public void setDirect(boolean direct)
     {
