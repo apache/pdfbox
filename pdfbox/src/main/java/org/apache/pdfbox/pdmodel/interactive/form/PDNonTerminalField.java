@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -42,6 +44,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
  */
 public class PDNonTerminalField extends PDField
 {
+    private static final Log LOG = LogFactory.getLog(PDNonTerminalField.class);
+
     /**
      * Constructor.
      * 
@@ -136,6 +140,11 @@ public class PDNonTerminalField extends PDField
             COSBase kid = kids.getObject(i);
             if (kid instanceof COSDictionary)
             {
+                if (kid.getCOSObject() == this.getCOSObject())
+                {
+                    LOG.warn("Child field is same object as parent");
+                    continue;
+                }
                 PDField field = PDField.fromDictionary(getAcroForm(), (COSDictionary) kid, this);
                 if (field != null)
                 {
