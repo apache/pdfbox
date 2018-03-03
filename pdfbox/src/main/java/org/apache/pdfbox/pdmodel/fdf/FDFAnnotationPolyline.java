@@ -126,7 +126,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     }
 
     /**
-     * This will set the coordinates of the the vertices.
+     * This will set the coordinates of the vertices.
      *
      * @param vertices array of floats [x1, y1, x2, y2, ...] vertex coordinates in default user space.
      */
@@ -138,7 +138,7 @@ public class FDFAnnotationPolyline extends FDFAnnotation
     }
 
     /**
-     * This will get the coordinates of the the vertices.
+     * This will get the coordinates of the vertices.
      *
      * @return array of floats [x1, y1, x2, y2, ...] vertex coordinates in default user space.
      */
