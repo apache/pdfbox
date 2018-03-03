@@ -49,7 +49,7 @@ public class SquareCircleAnnotationValidator extends AnnotationValidator
     }
 
     /**
-     * In addition of the AnnotationValidator.validate() method, this method executes the the checkIColors method.
+     * In addition of the AnnotationValidator.validate() method, this method executes the checkIColors method.
      * 
      * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate(java.util.List)
      */

@@ -239,7 +239,7 @@ public class PDIndexed extends PDColorSpace
     /**
      * Get the lookup data table.
      * 
-     * @return a byte array containing the the lookup data.
+     * @return a byte array containing  the lookup data.
      * @throws IOException if an error occurs.
      */
     public byte[] getLookupData() throws IOException
