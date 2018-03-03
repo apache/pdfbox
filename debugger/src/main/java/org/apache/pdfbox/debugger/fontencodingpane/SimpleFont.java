@@ -49,6 +49,7 @@ class SimpleFont extends FontPane
         attributes.put("Font", font.getName());
         attributes.put("Encoding", getEncodingName(font));
         attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
+        attributes.put("Standard 14", Boolean.toString(font.isStandard14()));
 
         view = new FontEncodingView(tableData, attributes, 
                 new String[] {"Code", "Glyph Name", "Unicode Character", "Glyph"}, yBounds);
