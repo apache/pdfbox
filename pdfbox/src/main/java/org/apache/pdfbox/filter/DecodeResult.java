@@ -55,7 +55,7 @@ public final class DecodeResult
 
     /**
      * Returns the embedded JPX color space, if any.
-     * @return the the embedded JPX color space, or null if there is none.
+     * @return the embedded JPX color space, or null if there is none.
      */
     public PDJPXColorSpace getJPXColorSpace()
     {
