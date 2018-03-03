@@ -559,7 +559,7 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * Sets the the stroking color space.
+     * Sets the stroking color space.
      *
      * @param colorSpace The new stroking color space.
      */
@@ -579,7 +579,7 @@ public class PDGraphicsState implements Cloneable
     }
 
     /**
-     * Sets the the non-stroking color space.
+     * Sets the non-stroking color space.
      *
      * @param colorSpace The new non-stroking color space.
      */

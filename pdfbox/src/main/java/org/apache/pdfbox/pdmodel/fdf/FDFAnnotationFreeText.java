@@ -149,7 +149,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
     }
 
     /**
-     * This will get the coordinates of the the callout line.
+     * This will get the coordinates of the callout line.
      *
      * @return An array of four or six numbers specifying a callout line attached to the free text
      * annotation. Six numbers [ x1 y1 x2 y2 x3 y3 ] represent the starting, knee point, and ending
