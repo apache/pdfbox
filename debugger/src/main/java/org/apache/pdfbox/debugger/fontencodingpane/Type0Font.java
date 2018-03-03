@@ -69,7 +69,8 @@ class Type0Font extends FontPane
             attributes.put("Font", descendantFont.getName());
             attributes.put("CIDs", Integer.toString(tab.length));
             attributes.put("Glyphs", Integer.toString(totalAvailableGlyph));
-            
+            attributes.put("Standard 14", Boolean.toString(parentFont.isStandard14()));
+
             view = new FontEncodingView(tab, attributes, 
                     new String[]{"Code", "CID", "GID", "Unicode Character", "Glyph"}, getYBounds(tab, 4));
         }
