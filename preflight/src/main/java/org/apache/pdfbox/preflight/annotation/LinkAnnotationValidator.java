@@ -53,7 +53,7 @@ public class LinkAnnotationValidator extends AnnotationValidator
     }
 
     /**
-     * In addition of the AnnotationValidator.validate() method, this method executes the the checkDest method.
+     * In addition of the AnnotationValidator.validate() method, this method executes the checkDest method.
      * 
      * @see org.apache.padaf.preflight.annotation.AnnotationValidator#validate()
      */

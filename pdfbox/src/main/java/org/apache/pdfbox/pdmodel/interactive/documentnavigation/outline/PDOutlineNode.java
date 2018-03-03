@@ -120,7 +120,7 @@ public class PDOutlineNode implements COSObjectable
         {
             int currentOpenCount = getOpenCount();
             setFirstChild( outlineNode );
-            //1 for the the item we are adding;
+            //1 for the item we are adding;
             int numberOfOpenNodesWeAreAdding = 1;
             if( outlineNode.isNodeOpen() )
             {

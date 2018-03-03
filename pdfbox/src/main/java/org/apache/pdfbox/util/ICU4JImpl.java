@@ -20,7 +20,7 @@ import com.ibm.icu.text.Bidi;
 import com.ibm.icu.text.Normalizer;
 
 /**
- * This class is an implementation the the ICU4J class. TextNormalize 
+ * This class is an implementation the ICU4J class. TextNormalize 
  * will call this only if the ICU4J library exists in the classpath.
  * @author <a href="mailto:carrier@digital-evidence.org">Brian Carrier</a>
  * @version $Revision: 1.0 $

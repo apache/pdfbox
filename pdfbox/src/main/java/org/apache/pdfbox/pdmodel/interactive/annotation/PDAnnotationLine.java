@@ -440,7 +440,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     /**
      * This will retrieve the horizontal offset of the caption.
      * 
-     * @return the the horizontal offset of the caption
+     * @return the horizontal offset of the caption
      */
     public float getCaptionHorizontalOffset()
     {
