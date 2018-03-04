@@ -85,6 +85,12 @@ final class Standard14Fonts
             addAFM("Times,Italic", "Times-Italic");
             addAFM("Times,Bold", "Times-Bold");
             addAFM("Times,BoldItalic", "Times-BoldItalic");
+
+            // PDFBOX-3457: PDF.js file bug864847.pdf
+            addAFM("ArialMT", "Helvetica");
+            addAFM("Arial-ItalicMT", "Helvetica-Oblique");
+            addAFM("Arial-BoldMT", "Helvetica-Bold");
+            addAFM("Arial-BoldItalicMT", "Helvetica-BoldOblique");
         }
         catch (IOException e)
         {
