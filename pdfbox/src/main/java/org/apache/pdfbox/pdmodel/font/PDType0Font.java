@@ -402,6 +402,12 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     @Override
+    public boolean hasExplicitWidth(int code) throws IOException
+    {
+        return descendantFont.hasExplicitWidth(code);
+    }
+
+    @Override
     public float getAverageFontWidth()
     {
         return descendantFont.getAverageFontWidth();
