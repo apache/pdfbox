@@ -39,6 +39,7 @@ import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -123,15 +124,24 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDImageXObject(PDStream stream, PDResources resources) throws IOException
     {
-        this(stream, resources, stream.createInputStream());
-    }
-    
-    // repairs parameters using decode result
-    private PDImageXObject(PDStream stream, PDResources resources, COSInputStream input)
-    {
-        super(repair(stream, input), COSName.IMAGE);
+        super(stream, COSName.IMAGE);
         this.resources = resources;
-        this.colorSpace = input.getDecodeResult().getJPXColorSpace();
+        List<COSName> filters = stream.getFilters();
+        if (filters != null && filters.size() > 0 && COSName.JPX_DECODE.equals(filters.get(filters.size()-1)))
+        {
+            COSInputStream is = null;
+            try
+            {
+                is = stream.createInputStream();
+                DecodeResult decodeResult = is.getDecodeResult();
+                stream.getCOSObject().addAll(decodeResult.getParameters());
+                this.colorSpace = decodeResult.getJPXColorSpace();
+            }
+            finally
+            {
+                IOUtils.closeQuietly(is);
+            }
+        }
     }
 
     /**
@@ -334,13 +344,6 @@ public final class PDImageXObject extends PDXObject implements PDImage
             return LosslessFactory.createFromImage(document, bim);
         }
         throw new IllegalArgumentException("Image type not supported: " + name);
-    }
-
-    // repairs parameters using decode result
-    private static PDStream repair(PDStream stream, COSInputStream input)
-    {
-        stream.getCOSObject().addAll(input.getDecodeResult().getParameters());
-        return stream;
     }
 
     /**
