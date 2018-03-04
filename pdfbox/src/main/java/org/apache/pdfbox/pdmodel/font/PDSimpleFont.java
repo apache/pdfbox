@@ -423,4 +423,18 @@ public abstract class PDSimpleFont extends PDFont
     {
         return false;
     }
+
+    @Override
+    public boolean hasExplicitWidth(int code) throws IOException
+    {
+        if (dict.containsKey(COSName.WIDTHS))
+        {
+            int firstChar = dict.getInt(COSName.FIRST_CHAR, -1);
+            if (code >= firstChar && code - firstChar < getWidths().size())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
