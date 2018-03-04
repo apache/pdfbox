@@ -83,7 +83,7 @@ final class DebugPageDrawer extends PageDrawer
                 }
 
                 // stretch non-embedded glyph if it does not match the width contained in the PDF
-                if (!font.isEmbedded())
+                if (!font.isEmbedded() && !font.isVertical() && !font.isStandard14() && font.hasExplicitWidth(code))
                 {
                     float fontWidth = font.getWidthFromFont(code);
                     if (fontWidth > 0 && // ignore spaces
