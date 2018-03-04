@@ -89,6 +89,17 @@ public class TestCMapParser extends TestCase
         assertEquals("Indentity-H CID 0xFFFF", 0xFFFF, cMap.toCID(0xFFFF));
     }
 
+    public void testUniJIS_UCS2_H() throws IOException
+    {
+        final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
+        File inDir = new File(resourceDir);
+
+        CMapParser parser = new CMapParser();
+        CMap cMap = parser.parse(new File(inDir, "UniJIS-UCS2-H"));
+
+        assertEquals("UniJIS-UCS2-H CID 65 -> 34", 34, cMap.toCID(65));
+    }
+
     /**
      * Test the parser against a valid, but poorly formatted CMap file.
      * @throws IOException If something went wrong
