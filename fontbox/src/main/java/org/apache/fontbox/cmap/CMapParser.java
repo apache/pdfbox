@@ -302,7 +302,15 @@ public class CMapParser
             int mappedCode = (Integer) parseNextToken(cmapStream);
             if (startCode.length <= 2 && endCode.length <= 2)
             {
-                result.addCIDRange((char) start, (char) end, mappedCode);
+                // some CMaps are using CID ranges to map single values
+                if (end == start)
+                {
+                    result.addCIDMapping(start, mappedCode);
+                }
+                else
+                {
+                    result.addCIDRange((char) start, (char) end, mappedCode);
+                }
             }
             else
             {
