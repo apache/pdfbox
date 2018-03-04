@@ -40,6 +40,7 @@ endcidchar
 2 begincidrange
 <0000> <00ff> 0
 <0100> <01ff> 256
+<0300> <0300> 300
 endcidrange
 
 endcmap

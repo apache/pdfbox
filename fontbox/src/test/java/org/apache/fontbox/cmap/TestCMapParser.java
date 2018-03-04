@@ -70,6 +70,23 @@ public class TestCMapParser extends TestCase
         int cid3 = 520;
         int strCID3 = 0x0208;
         assertEquals("CID 520 from cidchar <0208> 520", strCID3, cMap.toCID(cid3));
+
+        int cid4 = 300;
+        int strCID4 = 0x12C;
+        assertEquals("CID 300 from cidrange <0300> <0300> 300", strCID4, cMap.toCID(cid4));
+    }
+
+    public void testIdentity() throws IOException
+    {
+        final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
+        File inDir = new File(resourceDir);
+
+        CMapParser parser = new CMapParser();
+        CMap cMap = parser.parse(new File(inDir, "Identity-H"));
+
+        assertEquals("Indentity-H CID 65", 65, cMap.toCID(65));
+        assertEquals("Indentity-H CID 12345", 12345, cMap.toCID(12345));
+        assertEquals("Indentity-H CID 0xFFFF", 0xFFFF, cMap.toCID(0xFFFF));
     }
 
     /**
