@@ -218,7 +218,15 @@ public class CMap
      */
     void addCIDRange(char from, char to, int cid)
     {
-        codeToCidRanges.add(new CIDRange(from, to, cid));
+        CIDRange lastRange = null;
+        if (!codeToCidRanges.isEmpty())
+        {
+            lastRange = codeToCidRanges.get(codeToCidRanges.size() - 1);
+        }
+        if (lastRange == null || !lastRange.extend(from, to, cid))
+        {
+            codeToCidRanges.add(new CIDRange(from, to, cid));
+        }
     }
 
     /**
