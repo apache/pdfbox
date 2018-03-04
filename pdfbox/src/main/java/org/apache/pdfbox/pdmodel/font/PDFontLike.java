@@ -89,6 +89,15 @@ public interface PDFontLike
     float getWidth(int code) throws IOException;
 
     /**
+     * Returns true if the Font dictionary specifies an explicit width for the given glyph.
+     * This includes Width, W but not default widths entries.
+     * 
+     * @param code character code
+     * @throws IOException if the font could not be read
+     */
+    boolean hasExplicitWidth(int code) throws IOException;
+
+    /**
      * Returns the width of a glyph in the embedded font file.
      *
      * @param code character code
