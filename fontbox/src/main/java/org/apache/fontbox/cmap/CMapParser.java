@@ -299,7 +299,7 @@ public class CMapParser
                 // some CMaps are using CID ranges to map single values
                 if (end == start)
                 {
-                    result.addCIDMapping(start, mappedCode);
+                    result.addCIDMapping(mappedCode, start);
                 }
                 else
                 {
