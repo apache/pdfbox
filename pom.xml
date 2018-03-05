@@ -117,19 +117,13 @@
                         <include name="debugger-app/target/*-${project.version}.jar*" />
                       </fileset>
                     </copy>
-                    <checksum algorithm="MD5" fileext=".md5">
+                    <checksum algorithm="SHA-512" fileext=".sha512">
                       <fileset dir="${basedir}/target/${project.version}">
                         <include name="*.zip" />
                         <include name="*.jar" />
                       </fileset>
                     </checksum>
-                    <checksum algorithm="SHA1" fileext=".sha">
-                      <fileset dir="${basedir}/target/${project.version}">
-                        <include name="*.zip" />
-                        <include name="*.jar" />
-                      </fileset>
-                    </checksum>
-                    <checksum file="${basedir}/target/${project.version}/pdfbox-${project.version}-src.zip" algorithm="SHA1" property="checksum" />
+                    <checksum file="${basedir}/target/${project.version}/pdfbox-${project.version}-src.zip" algorithm="SHA-512" property="checksum" />
                     <echo file="${basedir}/target/vote.txt">
 From: ${username}@apache.org
 To: dev@pdfbox.apache.org
@@ -158,9 +152,9 @@ The release candidate has been prepared in:
 
     ${basedir}/target/${project.version}
 
-Please deploy it to people.apache.org like this:
+Please commit it to
 
-    scp -r ${basedir}/target/${project.version} people.apache.org:public_html/pdfbox/
+    https://dist.apache.org/repos/dist/dev/pdfbox/${project.version}/
 
 A release vote template has been generated for you:
 
