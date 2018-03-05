@@ -205,7 +205,7 @@ public class GlyfSimpleDescript extends GlyfDescript
             if ((flags[index] & REPEAT) != 0)
             {
                 int repeats = bais.readUnsignedByte();
-                for (int i = 1; i <= repeats; i++)
+                for (int i = 1; i <= repeats && index + i < flags.length; i++)
                 {
                     flags[index + i] = flags[index];
                 }
