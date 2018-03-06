@@ -34,7 +34,9 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
  * extended by a signed Timestamp (Signed Timestamp and Hash-Value of the document are signed by a
  * Time Stamp Authority (TSA)).
  *
- * @author Alexis Suter
+ * @author Thomas Chojecki
+ * @author Vakhtang Koroghlishvili
+ * @author John Hewson
  */
 public class CreateSignedTimeStamp extends CreateSignedTimestampBase
 {
