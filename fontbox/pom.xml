@@ -84,6 +84,30 @@
                       <sha512>28a044a2685fbc8da7810d9ac7b6b93a95542d504d7d8e671f009b8ebb2f5b70c974be7ea78974b188d8e6ab17d65b08f276c054927857315d5aad26f6fe36fc</sha512>
                   </configuration>
               </execution>
+              <execution>
+                  <id>PDFBOX-3997</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/12896461/NotoEmoji-Regular.ttf</url>
+                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <sha512>51b01ab0794be9f92c59679f6d56d4ce09ed959daeb9ec945bb837eb15a82ab302e83b29aab1972ac9cb648f7196a5f5ff4488a4622b36bedbc9cd0cab6dc3de</sha512>
+                  </configuration>
+              </execution>
+              <execution>
+                  <id>PDFBOX-3379</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://issues.apache.org/jira/secure/attachment/12809395/DejaVuSansMono.ttf</url>
+                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <sha512>1af1ce3e6d34a0b89c93072d8646e92cceb45b276389d2dd0d84457ec1193394d2bcc49bf3ce99c9c6b2658cd1337fc40ee5c61957f74cd45dbc3d51b6aef417</sha512>
+                  </configuration>
+              </execution>
           </executions>
       </plugin>
     </plugins>
