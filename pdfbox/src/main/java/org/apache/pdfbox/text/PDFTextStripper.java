@@ -698,7 +698,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     /**
      * Write the line separator value to the output stream.
      * 
-     * @throws IOException If there is a problem writing out the lineseparator to the document.
+     * @throws IOException If there is a problem writing out the line separator to the document.
      */
     protected void writeLineSeparator() throws IOException
     {
@@ -708,7 +708,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     /**
      * Write the word separator value to the output stream.
      * 
-     * @throws IOException If there is a problem writing out the wordseparator to the document.
+     * @throws IOException If there is a problem writing out the word separator to the document.
      */
     protected void writeWordSeparator() throws IOException
     {
