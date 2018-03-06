@@ -162,12 +162,12 @@ public class CreateVisibleSignature extends CreateSignatureBase
      *
      * @param inputFile The source pdf document file.
      * @param signedFile The file to be signed.
-     * @param tsaClient optional TSA client
+     * @param tsaUrl optional TSA url
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, TSAClient tsaClient) throws IOException
+    public void signPDF(File inputFile, File signedFile, String tsaUrl) throws IOException
     {
-        this.signPDF(inputFile, signedFile, tsaClient, null);
+        this.signPDF(inputFile, signedFile, tsaUrl, null);
     }
 
     /**
@@ -175,18 +175,18 @@ public class CreateVisibleSignature extends CreateSignatureBase
      *
      * @param inputFile The source pdf document file.
      * @param signedFile The file to be signed.
-     * @param tsaClient optional TSA client
+     * @param tsaUrl optional TSA url
      * @param signatureFieldName optional name of an existing (unsigned) signature field
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, TSAClient tsaClient, String signatureFieldName) throws IOException
+    public void signPDF(File inputFile, File signedFile, String tsaUrl, String signatureFieldName) throws IOException
     {
-        setTsaClient(tsaClient);
-
         if (inputFile == null || !inputFile.exists())
         {
             throw new IOException("Document for signing does not exist");
         }
+
+        setTsaUrl(tsaUrl);
 
         // creating output document and prepare the IO streams.
         FileOutputStream fos = new FileOutputStream(signedFile);
@@ -411,14 +411,6 @@ public class CreateVisibleSignature extends CreateSignatureBase
         char[] pin = args[1].toCharArray();
         keystore.load(new FileInputStream(ksFile), pin);
 
-        // TSA client
-        TSAClient tsaClient = null;
-        if (tsaUrl != null)
-        {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
-        }
-
         File documentFile = new File(args[2]);
 
         CreateVisibleSignature signing = new CreateVisibleSignature(keystore, pin.clone());
@@ -435,7 +427,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         imageStream.close();
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, page, true);
         signing.setExternalSigning(externalSig);
-        signing.signPDF(documentFile, signedDocumentFile, tsaClient);
+        signing.signPDF(documentFile, signedDocumentFile, tsaUrl);
     }
 
     /**
