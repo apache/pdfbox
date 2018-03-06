@@ -16,12 +16,12 @@
 package org.apache.fontbox.cff;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import static junit.framework.TestCase.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -38,7 +38,7 @@ public class CFFParserTest
     @Test
     public void testDeltaLists() throws IOException
     {
-        List<CFFFont> fonts = readFont(new FileInputStream("target/pdfs/SourceSansProBold.otf"));
+        List<CFFFont> fonts = readFont("target/pdfs/SourceSansProBold.otf");
         CFFType1Font font = (CFFType1Font) fonts.get(0);
         List<Number> blues = (List<Number>)font.getPrivateDict().get("BlueValues");
 
@@ -67,16 +67,10 @@ public class CFFParserTest
                 new int[]{146, 150}, stemSnapV);
     }
 
-    private List<CFFFont> readFont(InputStream in) throws IOException
+    private List<CFFFont> readFont(String filename) throws IOException
     {
         ByteArrayOutputStream content = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int len;
-        while ((len = in.read(buf)) > -1)
-        {
-            content.write(buf, 0, len);
-        }
-
+        Files.copy(Paths.get(filename), content);
         CFFParser parser = new CFFParser();
         return parser.parse(content.toByteArray());
     }
