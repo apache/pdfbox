@@ -1552,18 +1552,18 @@ public class COSParser extends BaseParser
         long newOffset = -1;
         long newOffsetTable = -1;
         long newOffsetStream = -1;
+
+        // initialize bfSearchXRefTablesOffsets -> not null
         bfSearchForXRefTables();
+        // initialize bfSearchXRefStreamsOffsets -> not null
         bfSearchForXRefStreams();
-        if (bfSearchXRefTablesOffsets != null)
-        {
-            // TODO to be optimized, this won't work in every case
-            newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
-        }
-        if (bfSearchXRefStreamsOffsets != null)
-        {
-            // TODO to be optimized, this won't work in every case
-            newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
-        }
+
+        // TODO to be optimized, this won't work in every case
+        newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
+        
+        // TODO to be optimized, this won't work in every case
+        newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
+
         // choose the nearest value
         if (newOffsetTable > -1 && newOffsetStream > -1)
         {
