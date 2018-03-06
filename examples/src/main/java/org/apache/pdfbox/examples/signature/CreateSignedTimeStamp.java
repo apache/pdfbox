@@ -89,6 +89,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
         PDDocument doc = PDDocument.load(inFile);
         signDetached(doc, fos);
         doc.close();
+        fos.close();
     }
 
     /**

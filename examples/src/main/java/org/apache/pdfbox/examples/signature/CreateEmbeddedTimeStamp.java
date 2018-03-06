@@ -163,7 +163,6 @@ public class CreateEmbeddedTimeStamp
             byte[] sigBlock = signature.getContents(documentBytes);
             CMSSignedData signedData = new CMSSignedData(sigBlock);
 
-            // System.out.println("INFO: Old Signature: " + Hex.getString(sigBlock));
             System.out.println("INFO: Byte Range: " + Arrays.toString(signature.getByteRange()));
 
             if (tsaUrl != null && tsaUrl.length() > 0)
