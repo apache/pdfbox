@@ -19,9 +19,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -49,8 +47,7 @@ public class TTFSubsetterTest
     @Test
     public void testEmptySubset() throws IOException
     {
-        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TrueTypeFont x = new TTFParser().parse(testFile);
+        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TTFSubsetter ttfSubsetter = new TTFSubsetter(x);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -71,8 +68,7 @@ public class TTFSubsetterTest
     @Test
     public void testEmptySubset2() throws IOException
     {
-        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TrueTypeFont x = new TTFParser().parse(testFile);
+        TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
         // List copied from TrueTypeEmbedder.java
         List<String> tables = new ArrayList<>();
         tables.add("head");
@@ -105,8 +101,7 @@ public class TTFSubsetterTest
     @Test
     public void testNonEmptySubset() throws IOException
     {
-        final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
-        TrueTypeFont full = new TTFParser().parse(testFile);
+        TrueTypeFont full = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('a');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -203,20 +198,7 @@ public class TTFSubsetterTest
     @Test
     public void testPDFBox3379() throws IOException
     {
-        InputStream is;
-        try
-        {
-            // don't want to include this font into source download (300KB)
-            System.out.println("Downloading DejaVuSansMono font...");
-            is = new URL("https://issues.apache.org/jira/secure/attachment/12809395/DejaVuSansMono.ttf").openStream();
-            System.out.println("Download finished!");
-        }
-        catch (IOException ex)
-        {
-            System.err.println("DejaVuSansMono font could not be downloaded, test skipped");
-            return;
-        }
-        TrueTypeFont full = new TTFParser().parse(is);
+        TrueTypeFont full = new TTFParser().parse("target/pdfs/DejaVuSansMono.ttf");
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
         ttfSubsetter.add('A');
         ttfSubsetter.add(' ');
