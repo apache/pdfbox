@@ -518,7 +518,12 @@ public class COSWriter implements ICOSVisitor, Closeable
             getStandardOutput().write(SPACE);
             getStandardOutput().write(OBJ);
             getStandardOutput().writeEOL();
-            obj.accept( this );
+            // null test added to please Sonar
+            // TODO: shouldn't all public methods be guarded against passing null. Passing null to most methods will
+            // fail with an NPE
+            if (obj != null) {
+                obj.accept( this );
+            }
             getStandardOutput().writeEOL();
             getStandardOutput().write(ENDOBJ);
             getStandardOutput().writeEOL();
