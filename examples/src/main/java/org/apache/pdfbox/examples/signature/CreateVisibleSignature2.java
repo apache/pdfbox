@@ -130,12 +130,12 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
      * @param inputFile The source pdf document file.
      * @param signedFile The file to be signed.
      * @param humanRect rectangle from a human viewpoint (coordinates start at top left)
-     * @param tsaClient optional TSA client
+     * @param tsaUrl optional TSA url
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, Rectangle2D humanRect, TSAClient tsaClient) throws IOException
+    public void signPDF(File inputFile, File signedFile, Rectangle2D humanRect, String tsaUrl) throws IOException
     {
-        this.signPDF(inputFile, signedFile, humanRect, tsaClient, null);
+        this.signPDF(inputFile, signedFile, humanRect, tsaUrl, null);
     }
 
     /**
@@ -144,18 +144,18 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
      * @param inputFile The source pdf document file.
      * @param signedFile The file to be signed.
      * @param humanRect rectangle from a human viewpoint (coordinates start at top left)
-     * @param tsaClient optional TSA client
+     * @param tsaUrl optional TSA url
      * @param signatureFieldName optional name of an existing (unsigned) signature field
      * @throws IOException
      */
-    public void signPDF(File inputFile, File signedFile, Rectangle2D humanRect, TSAClient tsaClient, String signatureFieldName) throws IOException
+    public void signPDF(File inputFile, File signedFile, Rectangle2D humanRect, String tsaUrl, String signatureFieldName) throws IOException
     {
         if (inputFile == null || !inputFile.exists())
         {
             throw new IOException("Document for signing does not exist");
         }
 
-        setTsaClient(tsaClient);
+        setTsaUrl(tsaUrl);
 
         // creating output document and prepare the IO streams.
         FileOutputStream fos = new FileOutputStream(signedFile);
@@ -521,14 +521,6 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         char[] pin = args[1].toCharArray();
         keystore.load(new FileInputStream(ksFile), pin);
-        
-        // TSA client
-        TSAClient tsaClient = null;
-        if (tsaUrl != null)
-        {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
-        }
 
         File documentFile = new File(args[2]);
 
@@ -550,7 +542,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         // regardless of page rotation.
         Rectangle2D humanRect = new Rectangle2D.Float(100, 200, 150, 50);
 
-        signing.signPDF(documentFile, signedDocumentFile, humanRect, tsaClient, "Signature1");
+        signing.signPDF(documentFile, signedDocumentFile, humanRect, tsaUrl, "Signature1");
     }
 
     /**

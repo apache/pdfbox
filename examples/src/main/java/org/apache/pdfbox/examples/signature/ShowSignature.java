@@ -32,12 +32,20 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
@@ -218,6 +226,7 @@ public final class ShowSignature
                         throw new IOException("Missing subfilter for cert dictionary");
                     }
                 }
+                analyseDSS(document);
             }
             catch (CMSException ex)
             {
@@ -234,6 +243,7 @@ public final class ShowSignature
                     document.close();
                 }
             }
+            System.out.println("Analyzed: " + args[1]);
         }
     }
 
@@ -283,6 +293,65 @@ public final class ShowSignature
         else
         {
             System.out.println("Signature verification failed");
+        }
+    }
+
+    /**
+     * Analyzes the DSS-Dictionary (Document security Store) of the document. Which is used for
+     * signature validation. The DSS is defined in PAdES Part 4 - Long Term Validation.
+     *
+     * @param document
+     */
+    private void analyseDSS(PDDocument document) throws IOException
+    {
+        PDDocumentCatalog catalog = document.getDocumentCatalog();
+        COSBase dssElement = catalog.getCOSObject().getDictionaryObject("DSS");
+
+        if (dssElement instanceof COSDictionary)
+        {
+            COSDictionary dss = (COSDictionary) dssElement;
+            System.out.println("DSS Dictionary: " + dss);
+            COSBase certsElement = dss.getDictionaryObject("Certs");
+            if (certsElement instanceof COSArray)
+            {
+                printStreamsFromArray((COSArray) certsElement, "Cert");
+            }
+            COSBase ocspsElement = dss.getDictionaryObject("OCSPs");
+            if (ocspsElement instanceof COSArray)
+            {
+                printStreamsFromArray((COSArray) ocspsElement, "Ocsp");
+            }
+            COSBase crlElement = dss.getDictionaryObject("CRLs");
+            if (crlElement instanceof COSArray)
+            {
+                printStreamsFromArray((COSArray) crlElement, "CRL");
+            }
+            // TODO: go through VRIs (wich indirectly point to the DSS-Data)
+        }
+    }
+
+    /**
+     * Go through the elements of a COSArray containing each an COSStream to print in Hex.
+     *
+     * @param elements COSArray of elements containing a COS Stream
+     * @param description to append on Print
+     * @throws IOException
+     */
+    private void printStreamsFromArray(COSArray elements, String description) throws IOException
+    {
+        for (COSBase baseElem : elements)
+        {
+            COSObject streamObj = (COSObject) baseElem;
+            if (streamObj.getObject() instanceof COSStream)
+            {
+                COSStream cosStream = (COSStream) streamObj.getObject();
+
+                COSInputStream input = cosStream.createInputStream();
+                byte[] streamBytes = IOUtils.toByteArray(input);
+
+                System.out.println(description + " (" + elements.indexOf(streamObj) + "): "
+                        + Hex.getString(streamBytes));
+            }
         }
     }
 

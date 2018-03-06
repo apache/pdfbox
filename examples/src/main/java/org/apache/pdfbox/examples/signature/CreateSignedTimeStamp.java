@@ -20,32 +20,42 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
 
 /**
- * An example for timestamp-singing a PDF for PADeS-Specification. The document will only be
- * extended by a signed Timestamp (Signed Timestamp and Hash-Value of the document are signed by a
- * Time Stamp Authority (TSA)).
+ * An example for timestamp-singing a PDF for PADeS-Specification. The document will be extended by
+ * a signed TimeStamp (another kind of signature) (Signed TimeStamp and Hash-Value of the document
+ * are signed by a Time Stamp Authority (TSA)).
  *
  * @author Thomas Chojecki
  * @author Vakhtang Koroghlishvili
  * @author John Hewson
+ * @author Alexis Suter
  */
-public class CreateSignedTimeStamp extends CreateSignedTimestampBase
+public class CreateSignedTimeStamp implements SignatureInterface
 {
+    private static final Log LOG = LogFactory.getLog(CreateSignedTimeStamp.class);
+    
+    private final String tsaUrl;
 
     /**
      * Initialize the signed timestamp creator
+     * 
+     * @param tsaUrl The url where TS-Request will be done.
      */
-    public CreateSignedTimeStamp()
+    public CreateSignedTimeStamp(String tsaUrl)
     {
+        this.tsaUrl = tsaUrl;
     }
 
     /**
@@ -56,7 +66,7 @@ public class CreateSignedTimeStamp extends CreateSignedTimestampBase
      */
     public void signDetached(File file) throws IOException
     {
-        signDetached(file, file, null);
+        signDetached(file, file);
     }
 
     /**
@@ -68,19 +78,6 @@ public class CreateSignedTimeStamp extends CreateSignedTimestampBase
      */
     public void signDetached(File inFile, File outFile) throws IOException
     {
-        signDetached(inFile, outFile, null);
-    }
-
-    /**
-     * Signs the given PDF file.
-     * 
-     * @param inFile input PDF file
-     * @param outFile output PDF file
-     * @param tsaClient optional TSA client
-     * @throws IOException if the input file could not be read
-     */
-    public void signDetached(File inFile, File outFile, TSAClient tsaClient) throws IOException
-    {
         if (inFile == null || !inFile.exists())
         {
             throw new FileNotFoundException("Document for signing does not exist");
@@ -90,15 +87,19 @@ public class CreateSignedTimeStamp extends CreateSignedTimestampBase
 
         // sign
         PDDocument doc = PDDocument.load(inFile);
-        signDetached(doc, fos, tsaClient);
+        signDetached(doc, fos);
         doc.close();
     }
 
-    public void signDetached(PDDocument document, OutputStream output, TSAClient tsaClient)
-            throws IOException
+    /**
+     * Prepares the TimeStamp-Signature and starts the saving-process.
+     * 
+     * @param document given Pdf
+     * @param output Where the file will be written
+     * @throws IOException
+     */
+    public void signDetached(PDDocument document, OutputStream output) throws IOException
     {
-        setTsaClient(tsaClient);
-
         int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
         {
@@ -124,6 +125,22 @@ public class CreateSignedTimeStamp extends CreateSignedTimestampBase
         document.saveIncremental(output);
     }
 
+    @Override
+    public byte[] sign(InputStream content) throws IOException
+    {
+        ValidationTimeStamp validation;
+        try
+        {
+            validation = new ValidationTimeStamp(tsaUrl);
+            return validation.getTimeStampToken(content);
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            LOG.error("Hashing-Algorithm not found for TimeStamping", e);
+        }
+        return new byte[] {};
+    }
+
     public static void main(String[] args) throws IOException, GeneralSecurityException
     {
         if (args.length != 3)
@@ -143,29 +160,21 @@ public class CreateSignedTimeStamp extends CreateSignedTimestampBase
             System.exit(1);
         }
 
-        // TSA client
-        TSAClient tsaClient = null;
-        if (tsaUrl != null)
-        {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
-        }
-
         // sign PDF
-        CreateSignedTimeStamp signing = new CreateSignedTimeStamp();
+        CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsaUrl);
 
         File inFile = new File(args[0]);
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
 
         File outFile = new File(inFile.getParent(), substring + "_timestamped.pdf");
-        signing.signDetached(inFile, outFile, tsaClient);
+        signing.signDetached(inFile, outFile);
     }
 
     private static void usage()
     {
         System.err.println("usage: java " + CreateSignedTimeStamp.class.getName() + " "
-                + "<pdf_to_sign>\n" + "options:\n"
+                + "<pdf_to_sign>\n" + "mandatory options:\n"
                 + "  -tsa <url>    sign timestamp using the given TSA server\n");
     }
 }

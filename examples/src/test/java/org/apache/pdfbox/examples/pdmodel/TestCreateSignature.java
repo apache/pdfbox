@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -42,7 +41,6 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
-import org.apache.pdfbox.examples.signature.TSAClient;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -161,10 +159,6 @@ public class TestCreateSignature
         response.setMockResponseCode(200);
         mockServer.setMockHttpServerResponses(response);
 
-        // TSA client
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        TSAClient tsaClient = new TSAClient(new URL(tsaUrl), null, null, digest);
-
         // load the keystore
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         keystore.load(new FileInputStream(keystorePath), password.toCharArray());
@@ -176,7 +170,7 @@ public class TestCreateSignature
             String outPath = outDir + getOutputFileName("signed{0}_tsa.pdf");
             CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
             signing.setExternalSigning(externallySign);
-            signing.signDetached(new File(inPath), new File(outPath), tsaClient);
+            signing.signDetached(new File(inPath), new File(outPath), tsaUrl);
         }
         catch (IOException e)
         {
