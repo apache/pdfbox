@@ -97,9 +97,9 @@ public class CreateEmbeddedTimeStamp
     }
 
     /**
-     * Processes the timestamping of the Signature.
-     * 
-     * @param output Where the new file will be written to
+     * Processes the time-stamping of the Signature.
+     *
+     * @param outFile Where the new file will be written to
      * @param fileName of the existing file containing the pdf
      * @throws IOException
      */
@@ -139,23 +139,18 @@ public class CreateEmbeddedTimeStamp
         {
             throw new IOException(e);
         }
-        catch (TSPException e)
-        {
-            throw new IOException(e);
-        }
     }
 
     /**
      * Create changed Signature with embedded TimeStamp from TSA
      * 
-     * @param documentInput Stream of the input file
+     * @param documentBytes byte[] of the input file
      * @throws IOException
      * @throws CMSException
      * @throws NoSuchAlgorithmException
-     * @throws TSPException
      */
     private void processRelevantSignatures(byte[] documentBytes)
-            throws IOException, CMSException, NoSuchAlgorithmException, TSPException
+            throws IOException, CMSException, NoSuchAlgorithmException
     {
         getRelevantSignature(document);
         if (signature != null)
@@ -190,12 +185,11 @@ public class CreateEmbeddedTimeStamp
     }
 
     /**
-     * Extracts last Document-Signature from the document
-     * 
+     * Extracts last Document-Signature from the document. The signature will be set on the
+     * signature-field.
+     *
      * @param document to get the Signature from
-     * 
-     * @return the Signature, where a TimeStamp will be added. <code>null</code> when no
-     * Document-Signature is available.
+     * @throws IOException
      */
     private void getRelevantSignature(PDDocument document) throws IOException
     {
@@ -238,7 +232,7 @@ public class CreateEmbeddedTimeStamp
         output.write(docBytes, byteRange[2] - 1, byteRange[3] + 1);
     }
 
-    public static void main(String[] args) throws IOException, GeneralSecurityException
+    public static void main(String[] args) throws IOException
     {
         if (args.length != 3)
         {

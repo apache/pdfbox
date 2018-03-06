@@ -107,11 +107,6 @@ public abstract class CreateSignatureBase implements SignatureInterface
         this.certificateChain = certificateChain;
     }
 
-    public String getTsaUrl()
-    {
-        return tsaUrl;
-    }
-
     public void setTsaUrl(String tsaUrl)
     {
         this.tsaUrl = tsaUrl;
