@@ -17,8 +17,6 @@
 package org.apache.fontbox.cmap;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
@@ -55,19 +53,7 @@ public class TestCMap extends TestCase
      */
     public void testPDFBox3997() throws IOException
     {
-        InputStream is;
-        try
-        {
-            System.out.println("Downloading Noto Emoji font...");
-            is = new URL("https://issues.apache.org/jira/secure/attachment/12896461/NotoEmoji-Regular.ttf").openStream();
-            System.out.println("Download finished!");
-        }
-        catch (IOException ex)
-        {
-            System.err.println("Noto Emoji font could not be downloaded, test skipped");
-            return;
-        }
-        try (TrueTypeFont ttf = new TTFParser().parse(is))
+        try (TrueTypeFont ttf = new TTFParser().parse("target/pdfs/NotoEmoji-Regular.ttf"))
         {
             CmapLookup cmap = ttf.getUnicodeCmapLookup(false);
             assertEquals(886, cmap.getGlyphId(0x1F681));
