@@ -32,6 +32,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -291,14 +292,11 @@ public class Overlay
         {
             for (COSStream contentStream : contentStreams)
             {
-                InputStream in = contentStream.createInputStream();
-                byte[] buf = new byte[2048];
-                int n;
-                while ((n = in.read(buf)) > 0)
+                try (InputStream in = contentStream.createInputStream())
                 {
-                    out.write(buf, 0, n);
+                    IOUtils.copy(in, out);
+                    out.flush();
                 }
-                out.flush();
             }
         }
         return concatStream;
