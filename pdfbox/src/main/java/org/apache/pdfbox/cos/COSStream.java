@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.filter.DecodeOptions;
+import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
@@ -159,6 +161,11 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public COSInputStream createInputStream() throws IOException
     {
+        return createInputStream(DecodeOptions.DEFAULT);
+    }
+
+    public COSInputStream createInputStream(DecodeOptions options) throws IOException
+    {
         checkClosed();
         if (isWriting)
         {
@@ -166,7 +173,7 @@ public class COSStream extends COSDictionary implements Closeable
         }
         ensureRandomAccessExists(true);
         InputStream input = new RandomAccessInputStream(randomAccess);
-        return COSInputStream.create(getFilterList(), this, input, scratchFile);
+        return COSInputStream.create(getFilterList(), this, input, scratchFile, options);
     }
 
     /**

@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -33,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
@@ -139,27 +141,50 @@ final class SampledImageReader
      */
     public static BufferedImage getRGBImage(PDImage pdImage, COSArray colorKey) throws IOException
     {
+        return getRGBImage(pdImage, null, 1, colorKey);
+    }
+
+    private static Rectangle clipRegion(PDImage pdImage, Rectangle region)
+    {
+        if (region == null)
+        {
+            return new Rectangle(0, 0, pdImage.getWidth(), pdImage.getHeight());
+        }
+        else
+        {
+            int x = Math.max(0, region.x);
+            int y = Math.max(0, region.y);
+            int width = Math.min(region.width, pdImage.getWidth() - x);
+            int height = Math.min(region.height, pdImage.getHeight() - y);
+            return new Rectangle(x, y, width, height);
+        }
+    }
+
+    public static BufferedImage getRGBImage(PDImage pdImage, Rectangle region, int subsampling,
+                                            COSArray colorKey) throws IOException
+    {
         if (pdImage.isEmpty())
         {
             throw new IOException("Image stream is empty");
         }
+        Rectangle clipped = clipRegion(pdImage, region);
 
         // get parameters, they must be valid or have been repaired
         final PDColorSpace colorSpace = pdImage.getColorSpace();
         final int numComponents = colorSpace.getNumberOfComponents();
-        final int width = pdImage.getWidth();
-        final int height = pdImage.getHeight();
+        final int width = (int) Math.ceil(clipped.getWidth() / subsampling);
+        final int height = (int) Math.ceil(clipped.getHeight() / subsampling);
         final int bitsPerComponent = pdImage.getBitsPerComponent();
         final float[] decode = getDecodeArray(pdImage);
 
-        if (width <= 0 || height <= 0)
+        if (width <= 0 || height <= 0 || pdImage.getWidth() <= 0 || pdImage.getHeight() <= 0)
         {
             throw new IOException("image width and height must be positive");
         }
 
         if (bitsPerComponent == 1 && colorKey == null && numComponents == 1)
         {
-            return from1Bit(pdImage);
+            return from1Bit(pdImage, clipped, subsampling, width, height);
         }
 
         //
@@ -174,41 +199,64 @@ final class SampledImageReader
         if (bitsPerComponent == 8 && Arrays.equals(decode, defaultDecode) && colorKey == null)
         {
             // convert image, faster path for non-decoded, non-colormasked 8-bit images
-            return from8bit(pdImage, raster);
+            return from8bit(pdImage, raster, clipped, subsampling, width, height);
         }
-        return fromAny(pdImage, raster, colorKey);
+        return fromAny(pdImage, raster, colorKey, clipped, subsampling, width, height);
     }
 
-    private static BufferedImage from1Bit(PDImage pdImage) throws IOException
+    private static BufferedImage from1Bit(PDImage pdImage, Rectangle clipped, int subsampling,
+                                          final int width, final int height) throws IOException
     {
         final PDColorSpace colorSpace = pdImage.getColorSpace();
-        final int width = pdImage.getWidth();
-        final int height = pdImage.getHeight();
         final float[] decode = getDecodeArray(pdImage);
         BufferedImage bim = null;
         WritableRaster raster;
         byte[] output;
-        if (colorSpace instanceof PDDeviceGray)
-        {
-            // TYPE_BYTE_GRAY and not TYPE_BYTE_BINARY because this one is handled
-            // without conversion to RGB by Graphics.drawImage
-            // this reduces the memory footprint, only one byte per pixel instead of three.
-            bim = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-            raster = bim.getRaster();
-        }
-        else
-        {
-            raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height, 1, new Point(0, 0));
-        }
-        output = ((DataBufferByte) raster.getDataBuffer()).getData();
 
+        DecodeOptions options = new DecodeOptions(subsampling);
+        options.setSourceRegion(clipped);
         // read bit stream
-        try (InputStream iis = pdImage.createInputStream())
+        try (InputStream iis = pdImage.createInputStream(options))
         {
+            final int inputWidth, inputHeight, startx, starty, scanWidth, scanHeight;
+            if (options.isFilterSubsampled())
+            {
+                // Decode options were honored, and so there is no need for additional clipping or subsampling
+                inputWidth = width;
+                inputHeight = height;
+                startx = 0;
+                starty = 0;
+                scanWidth = width;
+                scanHeight = height;
+                subsampling = 1;
+            }
+            else
+            {
+                // Decode options not honored, so we need to clip and subsample ourselves.
+                inputWidth = pdImage.getWidth();
+                inputHeight = pdImage.getHeight();
+                startx = clipped.x;
+                starty = clipped.y;
+                scanWidth = clipped.width;
+                scanHeight = clipped.height;
+            }
+            if (colorSpace instanceof PDDeviceGray)
+            {
+                // TYPE_BYTE_GRAY and not TYPE_BYTE_BINARY because this one is handled
+                // without conversion to RGB by Graphics.drawImage
+                // this reduces the memory footprint, only one byte per pixel instead of three.
+                bim = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                raster = bim.getRaster();
+            }
+            else
+            {
+                raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height, 1, new Point(0, 0));
+            }
+            output = ((DataBufferByte) raster.getDataBuffer()).getData();
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
-            int rowLen = width / 8;
-            if (width % 8 > 0)
+            int rowLen = inputWidth / 8;
+            if (inputWidth % 8 > 0)
             {
                 rowLen++;
             }
@@ -228,24 +276,31 @@ final class SampledImageReader
             }
             byte[] buff = new byte[rowLen];
             int idx = 0;
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < starty + scanHeight; y++)
             {
                 int x = 0;
                 int readLen = iis.read(buff);
+                if (y < starty || y % subsampling > 0)
+                {
+                    continue;
+                }
                 for (int r = 0; r < rowLen && r < readLen; r++)
                 {
                     int value = buff[r];
                     int mask = 128;
                     for (int i = 0; i < 8; i++)
                     {
-                        int bit = value & mask;
-                        mask >>= 1;
-                        output[idx++] = bit == 0 ? value0 : value1;
-                        x++;
-                        if (x == width)
+                        if (x >= startx + scanWidth)
                         {
                             break;
                         }
+                        int bit = value & mask;
+                        mask >>= 1;
+                        if (x >= startx && x % subsampling == 0)
+                        {
+                            output[idx++] = bit == 0 ? value0 : value1;
+                        }
+                        x++;
                     }
                 }
                 if (readLen != rowLen)
@@ -266,22 +321,44 @@ final class SampledImageReader
     }
 
     // faster, 8-bit non-decoded, non-colormasked image conversion
-    private static BufferedImage from8bit(PDImage pdImage, WritableRaster raster)
-            throws IOException
+    private static BufferedImage from8bit(PDImage pdImage, WritableRaster raster, Rectangle clipped, int subsampling,
+                                          final int width, final int height) throws IOException
     {
-        try (InputStream input = pdImage.createInputStream())
+        DecodeOptions options = new DecodeOptions(subsampling);
+        options.setSourceRegion(clipped);
+        try (InputStream input = pdImage.createInputStream(options))
         {
+            final int inputWidth, inputHeight, startx, starty, scanWidth, scanHeight;
+            if (options.isFilterSubsampled())
+            {
+                // Decode options were honored, and so there is no need for additional clipping or subsampling
+                inputWidth = width;
+                inputHeight = height;
+                startx = 0;
+                starty = 0;
+                scanWidth = width;
+                scanHeight = height;
+                subsampling = 1;
+            }
+            else
+            {
+                // Decode options not honored, so we need to clip and subsample ourselves.
+                inputWidth = pdImage.getWidth();
+                inputHeight = pdImage.getHeight();
+                startx = clipped.x;
+                starty = clipped.y;
+                scanWidth = clipped.width;
+                scanHeight = clipped.height;
+            }
+            final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
             // get the raster's underlying byte buffer
             byte[][] banks = ((DataBufferByte) raster.getDataBuffer()).getBankData();
-            final int width = pdImage.getWidth();
-            final int height = pdImage.getHeight();
-            final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
-            byte[] tempBytes = new byte[numComponents * width];
+            byte[] tempBytes = new byte[numComponents * inputWidth];
             // compromise between memory and time usage:
             // reading the whole image consumes too much memory
             // reading one pixel at a time makes it slow in our buffering infrastructure 
             int i = 0;
-            for (int y = 0; y < height; ++y)
+            for (int y = 0; y < starty + scanHeight; ++y)
             {
                 long inputResult = input.read(tempBytes);
 
@@ -290,7 +367,12 @@ final class SampledImageReader
                     LOG.debug("Tried reading " + tempBytes.length + " bytes but only " + inputResult + " bytes read");
                 }
 
-                for (int x = 0; x < width; ++x)
+                if (y < starty || y % subsampling > 0)
+                {
+                    continue;
+                }
+
+                for (int x = startx; x < startx + scanWidth; x += subsampling)
                 {
                     for (int c = 0; c < numComponents; c++)
                     {
@@ -305,19 +387,42 @@ final class SampledImageReader
     }
 
     // slower, general-purpose image conversion from any image format
-    private static BufferedImage fromAny(PDImage pdImage, WritableRaster raster, COSArray colorKey)
+    private static BufferedImage fromAny(PDImage pdImage, WritableRaster raster, COSArray colorKey, Rectangle clipped,
+                                         int subsampling, final int width, final int height)
             throws IOException
     {
         final PDColorSpace colorSpace = pdImage.getColorSpace();
         final int numComponents = colorSpace.getNumberOfComponents();
-        final int width = pdImage.getWidth();
-        final int height = pdImage.getHeight();
         final int bitsPerComponent = pdImage.getBitsPerComponent();
         final float[] decode = getDecodeArray(pdImage);
 
+        DecodeOptions options = new DecodeOptions(subsampling);
+        options.setSourceRegion(clipped);
         // read bit stream
-        try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream()))
+        try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options)))
         {
+            final int inputWidth, inputHeight, startx, starty, scanWidth, scanHeight;
+            if (options.isFilterSubsampled())
+            {
+                // Decode options were honored, and so there is no need for additional clipping or subsampling
+                inputWidth = width;
+                inputHeight = height;
+                startx = 0;
+                starty = 0;
+                scanWidth = width;
+                scanHeight = height;
+                subsampling = 1;
+            }
+            else
+            {
+                // Decode options not honored, so we need to clip and subsample ourselves.
+                inputWidth = pdImage.getWidth();
+                inputHeight = pdImage.getHeight();
+                startx = clipped.x;
+                starty = clipped.y;
+                scanWidth = clipped.width;
+                scanHeight = clipped.height;
+            }
             final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
@@ -332,17 +437,17 @@ final class SampledImageReader
 
             // calculate row padding
             int padding = 0;
-            if (width * numComponents * bitsPerComponent % 8 > 0)
+            if (inputWidth * numComponents * bitsPerComponent % 8 > 0)
             {
-                padding = 8 - (width * numComponents * bitsPerComponent % 8);
+                padding = 8 - (inputWidth * numComponents * bitsPerComponent % 8);
             }
 
             // read stream
             byte[] srcColorValues = new byte[numComponents];
             byte[] alpha = new byte[1];
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < starty + scanHeight; y++)
             {
-                for (int x = 0; x < width; x++)
+                for (int x = 0; x < startx + scanWidth; x++)
                 {
                     boolean isMasked = true;
                     for (int c = 0; c < numComponents; c++)
@@ -379,13 +484,17 @@ final class SampledImageReader
                             srcColorValues[c] = (byte)outputByte;
                         }
                     }
-                    raster.setDataElements(x, y, srcColorValues);
-
-                    // set alpha channel in color key mask, if any
-                    if (colorKeyMask != null)
+                    // only write to output if within requested region and subsample.
+                    if (x >= startx && y >= starty && x % subsampling == 0 && y % subsampling == 0)
                     {
-                        alpha[0] = (byte)(isMasked ? 255 : 0);
-                        colorKeyMask.getRaster().setDataElements(x, y, alpha);
+                        raster.setDataElements((x - startx) / subsampling, (y - starty) / subsampling, srcColorValues);
+
+                        // set alpha channel in color key mask, if any
+                        if (colorKeyMask != null)
+                        {
+                            alpha[0] = (byte)(isMasked ? 255 : 0);
+                            colorKeyMask.getRaster().setDataElements((x - startx) / subsampling, (y - starty) / subsampling, alpha);
+                        }
                     }
                 }
 

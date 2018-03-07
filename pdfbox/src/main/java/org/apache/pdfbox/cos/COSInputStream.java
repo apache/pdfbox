@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.io.RandomAccess;
@@ -51,6 +53,12 @@ public final class COSInputStream extends FilterInputStream
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
                                  ScratchFile scratchFile) throws IOException
     {
+        return create(filters, parameters, in, scratchFile, DecodeOptions.DEFAULT);
+    }
+
+    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
+                                 ScratchFile scratchFile, DecodeOptions options) throws IOException
+    {
         List<DecodeResult> results = new ArrayList<>();
         InputStream input = in;
         if (filters.isEmpty())
@@ -66,7 +74,7 @@ public final class COSInputStream extends FilterInputStream
                 {
                     // scratch file
                     final RandomAccess buffer = scratchFile.createBuffer();
-                    DecodeResult result = filters.get(i).decode(input, new RandomAccessOutputStream(buffer), parameters, i);
+                    DecodeResult result = filters.get(i).decode(input, new RandomAccessOutputStream(buffer), parameters, i, options);
                     results.add(result);
                     input = new RandomAccessInputStream(buffer)
                     {
@@ -81,7 +89,7 @@ public final class COSInputStream extends FilterInputStream
                 {
                     // in-memory
                     ByteArrayOutputStream output = new ByteArrayOutputStream();
-                    DecodeResult result = filters.get(i).decode(input, output, parameters, i);
+                    DecodeResult result = filters.get(i).decode(input, output, parameters, i, options);
                     results.add(result);
                     input = new ByteArrayInputStream(output.toByteArray());
                 }
