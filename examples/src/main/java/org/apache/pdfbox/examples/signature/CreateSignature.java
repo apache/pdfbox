@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureOptions;
 
 /**
- * An example for singing a PDF with bouncy castle.
+ * An example for signing a PDF with bouncy castle.
  * A keystore can be created with the java keytool, for example:
  *
  * {@code keytool -genkeypair -storepass 123456 -storetype pkcs12 -alias test -validity 365
