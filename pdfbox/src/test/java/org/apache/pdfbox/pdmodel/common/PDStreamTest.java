@@ -92,7 +92,7 @@ public class PDStreamTest
             PDStream pdStream = new PDStream(doc, is, new COSArray());
             Assert.assertEquals(0, pdStream.getFilters().size());
             
-            is = pdStream.createInputStream(null);
+            is = pdStream.createInputStream((List<String>) null);
             Assert.assertEquals(12, is.read());
             Assert.assertEquals(34, is.read());
             Assert.assertEquals(56, is.read());

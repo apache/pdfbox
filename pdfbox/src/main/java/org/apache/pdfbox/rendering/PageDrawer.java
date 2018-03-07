@@ -95,6 +95,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // parent document renderer - note: this is needed for not-yet-implemented resource caching
     private final PDFRenderer renderer;
     
+    private final boolean subsamplingAllowed;
+    
     // the graphics device to draw to, xform is the initial transform of the device (i.e. DPI)
     private Graphics2D graphics;
     private AffineTransform xform;
@@ -145,6 +147,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         super(parameters.getPage());
         this.renderer = parameters.getRenderer();
+        this.subsamplingAllowed = parameters.isSubsamplingAllowed();
     }
 
     /**
@@ -954,8 +957,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         else
         {
-            // draw the image
-            drawBufferedImage(pdImage.getImage(), at);
+            if (subsamplingAllowed)
+            {
+                int subsampling = getSubsampling(pdImage, at);
+                // draw the subsampled image
+                drawBufferedImage(pdImage.getImage(null, subsampling), at);
+            }
+            else
+            {
+                // subsampling not allowed, draw the image
+                drawBufferedImage(pdImage.getImage(), at);
+            }
         }
 
         if (!pdImage.getInterpolate())
@@ -964,6 +976,38 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // the setRenderingHint method, so we re-set all hints, see PDFBOX-2302
             setRenderingHints();
         }
+    }
+
+    /**
+     * Calculated the subsampling frequency for a given PDImage based on the current transformation
+     * and its calculated transform
+     *
+     * @param pdImage PDImage to be drawn
+     * @param at Transform that will be applied to the image when drawing
+     * @return The rounded-down ratio of image pixels to drawn pixels. Returned value will always be
+     * >=1.
+     */
+    private int getSubsampling(PDImage pdImage, AffineTransform at)
+    {
+        // calculate subsampling according to the resulting image size
+        double scale = Math.abs(at.getDeterminant() * xform.getDeterminant());
+
+        int subsampling = (int) Math.floor(Math.sqrt(pdImage.getWidth() * pdImage.getHeight() / scale));
+        if (subsampling > 8)
+        {
+            subsampling = 8;
+        }
+        if (subsampling < 1)
+        {
+            subsampling = 1;
+        }
+        if (subsampling > pdImage.getWidth() || subsampling > pdImage.getHeight())
+        {
+            // For very small images it is possible that the subsampling would imply 0 size.
+            // To avoid problems, the subsampling is set to no less than the smallest dimension.
+            subsampling = Math.min(pdImage.getWidth(), pdImage.getHeight());
+        }
+        return subsampling;
     }
 
     private void drawBufferedImage(BufferedImage image, AffineTransform at) throws IOException

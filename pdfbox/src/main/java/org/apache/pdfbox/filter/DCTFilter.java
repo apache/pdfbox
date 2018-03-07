@@ -26,6 +26,7 @@ import java.io.OutputStream;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
@@ -51,8 +52,8 @@ final class DCTFilter extends Filter
     private static final String ADOBE = "Adobe";
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
+            parameters, int index, DecodeOptions options) throws IOException
     {
         ImageReader reader = findImageReader("JPEG", "a suitable JAI I/O image filter is not installed");
         try (ImageInputStream iis = ImageIO.createImageInputStream(encoded))
@@ -63,9 +64,14 @@ final class DCTFilter extends Filter
             {
                 iis.seek(0);
             }
-            
+
             reader.setInput(iis);
-            
+            ImageReadParam irp = reader.getDefaultReadParam();
+            irp.setSourceSubsampling(options.getSubsamplingX(), options.getSubsamplingY(),
+                    options.getSubsamplingOffsetX(), options.getSubsamplingOffsetY());
+            irp.setSourceRegion(options.getSourceRegion());
+            options.setFilterSubsampled(true);
+
             String numChannels = getNumChannels(reader);
 
             // get the raster using horrible JAI workarounds
@@ -80,7 +86,7 @@ final class DCTFilter extends Filter
                 try
                 {
                     // I'd like to use ImageReader#readRaster but it is buggy and can't read RGB correctly
-                    BufferedImage image = reader.read(0);
+                    BufferedImage image = reader.read(0, irp);
                     raster = image.getRaster();
                 }
                 catch (IIOException e)
@@ -88,14 +94,14 @@ final class DCTFilter extends Filter
                     // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
                     // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
                     LOG.debug("Couldn't read use read() for RGB image - using readRaster() as fallback", e);
-                    raster = reader.readRaster(0, null);
+                    raster = reader.readRaster(0, irp);
                 }
             }
             else
             {
                 // JAI can't read CMYK JPEGs using ImageReader#read or ImageIO.read but
                 // fortunately ImageReader#readRaster isn't buggy when reading 4-channel files
-                raster = reader.readRaster(0, null);
+                raster = reader.readRaster(0, irp);
             }
 
             // special handling for 4-component images
@@ -145,6 +151,13 @@ final class DCTFilter extends Filter
             reader.dispose();
         }
         return new DecodeResult(parameters);
+    }
+
+    @Override
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
+                               COSDictionary parameters, int index) throws IOException
+    {
+        return decode(encoded, decoded, parameters, index, DecodeOptions.DEFAULT);
     }
 
     // reads the APP14 Adobe transform tag and returns its value, or 0 if unknown

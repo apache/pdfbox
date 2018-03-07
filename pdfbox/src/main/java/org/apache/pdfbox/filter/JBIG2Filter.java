@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.logging.Log;
@@ -61,8 +62,8 @@ final class JBIG2Filter extends Filter
     }
 
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
+            parameters, int index, DecodeOptions options) throws IOException
     {
         ImageReader reader = findImageReader("JBIG2", "jbig2-imageio is not installed");
         if (reader.getClass().getName().contains("levigo"))
@@ -72,6 +73,12 @@ final class JBIG2Filter extends Filter
 
         int bits = parameters.getInt(COSName.BITS_PER_COMPONENT, 1);
         COSDictionary params = getDecodeParams(parameters, index);
+
+        ImageReadParam irp = reader.getDefaultReadParam();
+        irp.setSourceSubsampling(options.getSubsamplingX(), options.getSubsamplingY(),
+                options.getSubsamplingOffsetX(), options.getSubsamplingOffsetY());
+        irp.setSourceRegion(options.getSourceRegion());
+        options.setFilterSubsampled(true);
 
         InputStream source = encoded;
         if (params != null)
@@ -90,7 +97,7 @@ final class JBIG2Filter extends Filter
             BufferedImage image;
             try
             {
-                image = reader.read(0, reader.getDefaultReadParam());
+                image = reader.read(0, irp);
             }
             catch (Exception e)
             {
@@ -128,7 +135,15 @@ final class JBIG2Filter extends Filter
         {
             reader.dispose();
         }
+
         return new DecodeResult(parameters);
+    }
+
+    @Override
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
+                               COSDictionary parameters, int index) throws IOException
+    {
+        return decode(encoded, decoded, parameters, index, DecodeOptions.DEFAULT);
     }
 
     @Override
