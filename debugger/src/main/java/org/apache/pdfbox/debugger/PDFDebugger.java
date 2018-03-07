@@ -107,6 +107,7 @@ import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -1181,16 +1182,11 @@ public class PDFDebugger extends JFrame
         {
             try
             {
-                COSStream stream = (COSStream)selectedNode;
-                InputStream ioStream = stream.createInputStream();
-                ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int amountRead;
-                while( (amountRead = ioStream.read( buffer, 0, buffer.length ) ) != -1 )
-                {
-                    byteArray.write( buffer, 0, amountRead );
-                }
-                data = byteArray.toString();
+                COSStream stream = (COSStream) selectedNode;
+                InputStream in = stream.createInputStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                IOUtils.copy(in, baos);
+                data = baos.toString();
             }
             catch( IOException e )
             {
