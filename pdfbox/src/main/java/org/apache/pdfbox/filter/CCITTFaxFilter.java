@@ -37,9 +37,6 @@ final class CCITTFaxFilter extends Filter
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
                                          COSDictionary parameters, int index) throws IOException
     {
-        DecodeResult result = new DecodeResult(new COSDictionary());
-        result.getParameters().addAll(parameters);
-
         // get decode parameters
         COSDictionary decodeParms = getDecodeParams(parameters, index);
 
@@ -99,12 +96,6 @@ final class CCITTFaxFilter extends Filter
             // reliably. In some cases the image wouldn't be painted for some reason.
             // So a safe but slower approach was taken.
             invertBitmap(decompressed);
-        }
-
-        // repair missing color space
-        if (!parameters.containsKey(COSName.COLORSPACE))
-        {
-            result.getParameters().setItem(COSName.COLORSPACE, COSName.DEVICEGRAY);
         }
 
         decoded.write(decompressed);
