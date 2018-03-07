@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.SortedMap;
@@ -37,10 +36,9 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.tsp.TSPException;
 
 /**
- * An example for timestamp-singing a PDF for PADeS-Specification. The document will only be changed
+ * An example for timestamp-signing a PDF for PADeS-Specification. The document will only be changed
  * in its existing signature by a signed timestamp (A timestamp and the Hash-Value of the document
  * are signed by a Time Stamp Authority (TSA)).
  *

@@ -82,7 +82,7 @@ public class TestCreateSignature
 
     /**
      * Values for {@link #externallySign} test parameter to specify if signing should be conducted
-     * using externally singing scenario ({@code true}) or SignatureInterface ({@code false}).
+     * using externally signing scenario ({@code true}) or SignatureInterface ({@code false}).
      */
     @Parameterized.Parameters
     public static Collection signingTypes()
