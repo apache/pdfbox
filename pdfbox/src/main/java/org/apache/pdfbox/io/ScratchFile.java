@@ -431,6 +431,7 @@ public class ScratchFile implements Closeable
      * data read from provided input stream (input stream is copied to buffer).
      * The buffer data pointer is reset to point to first byte.
      * 
+     * @param input The input stream that is to be copied into the buffer.
      * @return A new buffer containing data read from input stream.
      * 
      * @throws IOException If an error occurred.
