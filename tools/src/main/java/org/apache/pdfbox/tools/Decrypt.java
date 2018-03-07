@@ -20,7 +20,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -33,9 +41,9 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
  */
 public final class Decrypt
 {
-    private static final String ALIAS = "-alias";
-    private static final String PASSWORD = "-password";
-    private static final String KEYSTORE = "-keyStore";
+    private static final String ALIAS = "alias";
+    private static final String PASSWORD = "password";
+    private static final String KEYSTORE = "keyStore";
     
     private String password;
     private String infile;
@@ -58,78 +66,81 @@ public final class Decrypt
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
-
+        
         Decrypt decrypt = new Decrypt();
-        decrypt.parseCommandLineArgs(args);
+        decrypt.parseCommandLine(args);
         decrypt.decrypt();
     }
     
-    private void parseCommandLineArgs(String[] args)
+    private void parseCommandLine(String[] args)
     {
-        if( args.length < 1 || args.length > 8 )
+        Options options = defineOptions();
+        CommandLine commandLine = parseArguments(options, args);
+        
+        this.alias = commandLine.getOptionValue(ALIAS);
+        this.password = commandLine.getOptionValue(ALIAS, "");
+        this.keyStore = commandLine.getOptionValue(KEYSTORE);
+        
+        // get the additional command line parameters 
+        // and handle these as the file names being passed
+        List<String> fileNames = commandLine.getArgList();
+        if (fileNames.isEmpty() || fileNames.size() > 2 )
         {
-            usage();
+            usage(options);
+        }
+        
+        this.infile = fileNames.get(0);
+        
+        if (fileNames.size() == 1)
+        {
+            this.outfile = fileNames.get(0);
         }
         else
         {
-            for( int i=0; i<args.length; i++ )
-            {
-                if( args[i].equals( ALIAS ) )
-                {
-                    i++;
-                    if( i >= args.length )
-                    {
-                        usage();
-                    }
-                    alias = args[i];
-                }
-                else if( args[i].equals( KEYSTORE ) )
-                {
-                    i++;
-                    if( i >= args.length )
-                    {
-                        usage();
-                    }
-                    keyStore = args[i];
-                }
-                else if( args[i].equals( PASSWORD ) )
-                {
-                    i++;
-                    if( i >= args.length )
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                }
-                else if( infile == null )
-                {
-                    infile = args[i];
-                }
-                else if( outfile == null )
-                {
-                    outfile = args[i];
-                }
-                else
-                {
-                    usage();
-                }
-            }
-            if( infile == null )
-            {
-                usage();
-            }
-            if( outfile == null )
-            {
-                outfile = infile;
-            }
-            if( password == null )
-            {
-                password = "";
-            }
+            this.outfile = fileNames.get(1);
         }
+                
+    }
+    
+    private static Options defineOptions()
+    {
+        Options options = new Options();
+        
+        options.addOption(Option.builder(ALIAS)
+                    .hasArg()
+                    .desc("The alias of the key in the certificate file (mandatory if several keys are available).")
+                    .build()
+               );
+       options.addOption(Option.builder(PASSWORD)
+                   .hasArg()
+                   .desc("The password to open the certificate and extract the private key from it.")
+                   .build()
+               );
+       options.addOption(Option.builder(KEYSTORE)
+                   .hasArg()
+                   .desc("The KeyStore that holds the certificate.")
+                   .build()
+               );
+       return options;
+    }
+    
+    private static CommandLine parseArguments(Options options, String[] commandLineArguments)
+    {
+        CommandLineParser cmdLineParser = new DefaultParser();
+        CommandLine commandLine = null;
+        try
+        {
+            commandLine = cmdLineParser.parse(options, commandLineArguments);
+        }
+        catch (ParseException parseException)
+        {
+            System.out.println(parseException.getMessage());
+            usage(options);
+        }
+        return commandLine;
     }
 
-    private void decrypt() throws IOException
+   private void decrypt() throws IOException
     {
         PDDocument document = null;
         InputStream keyStoreStream = null;
@@ -173,16 +184,15 @@ public final class Decrypt
     /**
      * This will print a usage message.
      */
-    private static void usage()
+    private static void usage(Options options)
     {
+        HelpFormatter formatter = new HelpFormatter();
+        String syntax = "java -jar pdfbox-app-x.y.z.jar Decrypt [options] <inputfile> [outputfile]";
+        String header = "\nOptions";
+
+        formatter.setWidth(132);
+        formatter.printHelp(syntax, header, options, "");
         
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar Decrypt [options] <inputfile> [outputfile]\n"
-                + "\nOptions:\n"
-                + "  -alias    : The alias of the key in the certificate file (mandatory if several keys are available\n"
-                + "  -password : The password to open the certificate and extract the private key from it.\n"
-                + "  -keyStore : The KeyStore that holds the certificate.";
-        
-        System.err.println(message);
         System.exit(1);
     }
 
