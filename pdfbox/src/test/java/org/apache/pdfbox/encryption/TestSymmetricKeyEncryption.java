@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -403,6 +404,6 @@ public class TestSymmetricKeyEncryption extends TestCase
 
     private byte[] getFileAsByteArray(File f) throws IOException
     {
-        return IOUtils.toByteArray(new FileInputStream(f));
+        return Files.readAllBytes(f.toPath());
     }
 }
