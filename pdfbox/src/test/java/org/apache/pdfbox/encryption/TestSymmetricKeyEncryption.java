@@ -102,7 +102,7 @@ public class TestSymmetricKeyEncryption extends TestCase
      * Test that permissions work as intended: the user psw ("user") is enough
      * to open the PDF with possibly restricted rights, the owner psw ("owner")
      * gives full permissions. The 3 files of this test were created by Maruan
-     * Sayhoun, NOT with PDFBox, but with Adobe Acrobat to ensure "the gold
+     * Sahyoun, NOT with PDFBox, but with Adobe Acrobat to ensure "the gold
      * standard". The restricted permissions prevent printing and text
      * extraction. In the 128 and 256 bit encrypted files, AssembleDocument,
      * ExtractForAccessibility and PrintDegraded are also disabled.
