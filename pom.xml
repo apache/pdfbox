@@ -137,7 +137,7 @@ The release candidate is a zip archive of the sources in:
 
     http://svn.apache.org/repos/asf/pdfbox/tags/${project.version}/
 
-The SHA1 checksum of the archive is ${checksum}.
+The SHA-512 checksum of the archive is ${checksum}.
 
 Please vote on releasing this package as Apache PDFBox ${project.version}.
 The vote is open for the next 72 hours and passes if a majority of at
