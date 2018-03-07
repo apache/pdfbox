@@ -70,7 +70,7 @@ class RC4Cipher
     }
 
     /**
-     * Thie will ensure that the value for a byte &gt;=0.
+     * This will ensure that the value for a byte &gt;=0.
      *
      * @param aByte The byte to test against.
      *
