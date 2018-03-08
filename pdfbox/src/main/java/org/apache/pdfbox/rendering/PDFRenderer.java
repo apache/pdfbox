@@ -53,6 +53,8 @@ public class PDFRenderer
          }
      };
 
+    private boolean subsamplingAllowed = false;
+
     /**
      * Creates a new PDFRenderer.
      * @param document the document to render
@@ -82,6 +84,34 @@ public class PDFRenderer
     public void setAnnotationsFilter(AnnotationFilter annotationsFilter)
     {
         this.annotationFilter = annotationsFilter;
+    }
+
+    /**
+     * Value indicating if the renderer is allowed to subsample images before drawing, according to
+     * image dimensions and requested scale.
+     *
+     * Subsampling may be faster and less memory-intensive in some cases, but it may also lead to
+     * loss of quality, especially in images with high spatial frequency.
+     *
+     * @return true if subsampling of images is allowed, false otherwise.
+     */
+    public boolean isSubsamplingAllowed()
+    {
+        return subsamplingAllowed;
+    }
+
+    /**
+     * Sets a value instructing the renderer whether it is allowed to subsample images before
+     * drawing. The subsampling frequency is determined according to image size and requested scale.
+     *
+     * Subsampling may be faster and less memory-intensive in some cases, but it may also lead to
+     * loss of quality, especially in images with high spatial frequency.
+     *
+     * @param subsamplingAllowed The new value indicating if subsampling is allowed.
+     */
+    public void setSubsamplingAllowed(boolean subsamplingAllowed)
+    {
+        this.subsamplingAllowed = subsamplingAllowed;
     }
 
     /**
@@ -190,7 +220,7 @@ public class PDFRenderer
         transform(g, page, scale);
 
         // the end-user may provide a custom PageDrawer
-        PageDrawerParameters parameters = new PageDrawerParameters(this, page);
+        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(g, page.getCropBox());       
         
@@ -242,7 +272,7 @@ public class PDFRenderer
         graphics.clearRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
 
         // the end-user may provide a custom PageDrawer
-        PageDrawerParameters parameters = new PageDrawerParameters(this, page);
+        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
     }

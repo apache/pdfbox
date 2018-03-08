@@ -24,6 +24,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
@@ -49,12 +50,12 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
 public final class JPXFilter extends Filter
 {
     @Override
-    public DecodeResult decode(InputStream encoded, OutputStream decoded,
-                                         COSDictionary parameters, int index) throws IOException
+    public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
+            parameters, int index, DecodeOptions options) throws IOException
     {
         DecodeResult result = new DecodeResult(new COSDictionary());
         result.getParameters().addAll(parameters);
-        BufferedImage image = readJPX(encoded, result);
+        BufferedImage image = readJPX(encoded, options, result);
 
         WritableRaster raster = image.getRaster();
         switch (raster.getDataBuffer().getDataType())
@@ -75,11 +76,18 @@ public final class JPXFilter extends Filter
 
             default:
                 throw new IOException("Data type " + raster.getDataBuffer().getDataType() + " not implemented");
-        }        
+        }
+    }
+
+    @Override
+    public DecodeResult decode(InputStream encoded, OutputStream decoded,
+                               COSDictionary parameters, int index) throws IOException
+    {
+        return decode(encoded, decoded, parameters, index, DecodeOptions.DEFAULT);
     }
 
     // try to read using JAI Image I/O
-    private BufferedImage readJPX(InputStream input, DecodeResult result) throws IOException
+    private BufferedImage readJPX(InputStream input, DecodeOptions options, DecodeResult result) throws IOException
     {
         ImageReader reader = findImageReader("JPEG2000", "Java Advanced Imaging (JAI) Image I/O Tools are not installed");
         ImageInputStream iis = null;
@@ -87,12 +95,18 @@ public final class JPXFilter extends Filter
         {
             // PDFBOX-4121: ImageIO.createImageInputStream() is much slower
             iis = new MemoryCacheImageInputStream(input);
+
             reader.setInput(iis, true, true);
+            ImageReadParam irp = reader.getDefaultReadParam();
+            irp.setSourceRegion(options.getSourceRegion());
+            irp.setSourceSubsampling(options.getSubsamplingX(), options.getSubsamplingY(),
+                    options.getSubsamplingOffsetX(), options.getSubsamplingOffsetY());
+            options.setFilterSubsampled(true);
 
             BufferedImage image;
             try
             {
-                image = reader.read(0);
+                image = reader.read(0, irp);
             }
             catch (Exception e)
             {
@@ -116,8 +130,8 @@ public final class JPXFilter extends Filter
             }
 
             // override dimensions, see PDFBOX-1735
-            parameters.setInt(COSName.WIDTH, image.getWidth());
-            parameters.setInt(COSName.HEIGHT, image.getHeight());
+            parameters.setInt(COSName.WIDTH, reader.getWidth(0));
+            parameters.setInt(COSName.HEIGHT, reader.getHeight(0));
 
             // extract embedded color space
             if (!parameters.containsKey(COSName.COLORSPACE))
