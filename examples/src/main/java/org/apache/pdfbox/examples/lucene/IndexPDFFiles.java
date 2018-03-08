@@ -137,6 +137,9 @@ public final class IndexPDFFiles
                 // writer.forceMerge(1);
             }
 
+            // When done close the directory
+            dir.close();
+
             Date end = new Date();
             System.out.println(end.getTime() - start.getTime() + " total milliseconds");
 
