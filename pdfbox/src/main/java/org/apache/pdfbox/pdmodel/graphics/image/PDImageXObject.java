@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -39,6 +40,7 @@ import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -66,6 +68,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     private SoftReference<BufferedImage> cachedImage;
     private PDColorSpace colorSpace;
+
+    // initialize to MAX_VALUE as we prefer lower subsampling when keeping/replacing cache.
+    private int cachedImageSubsampling = Integer.MAX_VALUE;
 
     /**
      * current resource dictionary (has color spaces)
@@ -394,7 +399,16 @@ public final class PDImageXObject extends PDXObject implements PDImage
     @Override
     public BufferedImage getImage() throws IOException
     {
-        if (cachedImage != null)
+        return getImage(null, 1);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BufferedImage getImage(Rectangle region, int subsampling) throws IOException
+    {
+        if (region == null && subsampling == cachedImageSubsampling && cachedImage != null)
         {
             BufferedImage cached = cachedImage.get();
             if (cached != null)
@@ -404,7 +418,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
 
         // get image as RGB
-        BufferedImage image = SampledImageReader.getRGBImage(this, getColorKeyMask());
+        BufferedImage image = SampledImageReader.getRGBImage(this, region, subsampling, getColorKeyMask());
 
         // soft mask (overrides explicit mask)
         PDImageXObject softMask = getSoftMask();
@@ -422,7 +436,14 @@ public final class PDImageXObject extends PDXObject implements PDImage
             }
         }
 
-        cachedImage = new SoftReference<BufferedImage>(image);
+        if (region == null && subsampling <= cachedImageSubsampling)
+        {
+            // only cache full-image renders, and prefer lower subsampling frequency, as lower
+            // subsampling means higher quality and longer render times.
+            cachedImageSubsampling = subsampling;
+            cachedImage = new SoftReference<BufferedImage>(image);
+        }
+
         return image;
     }
 
@@ -647,6 +668,12 @@ public final class PDImageXObject extends PDXObject implements PDImage
     public InputStream createInputStream() throws IOException
     {
         return getStream().createInputStream();
+    }
+    
+    @Override
+    public InputStream createInputStream(DecodeOptions options) throws IOException
+    {
+        return getStream().createInputStream(options);
     }
 
     @Override
