@@ -43,6 +43,7 @@ public class DecodeOptions
      */
     public DecodeOptions()
     {
+        // this constructor is intentionally left empty
     }
 
     /**
