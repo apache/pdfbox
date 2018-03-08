@@ -218,12 +218,15 @@ final class SampledImageReader
         // read bit stream
         try (InputStream iis = pdImage.createInputStream(options))
         {
-            final int inputWidth, inputHeight, startx, starty, scanWidth, scanHeight;
+            final int inputWidth;
+            final int startx;
+            final int starty;
+            final int scanWidth;
+            final int scanHeight;
             if (options.isFilterSubsampled())
             {
                 // Decode options were honored, and so there is no need for additional clipping or subsampling
                 inputWidth = width;
-                inputHeight = height;
                 startx = 0;
                 starty = 0;
                 scanWidth = width;
@@ -234,7 +237,6 @@ final class SampledImageReader
             {
                 // Decode options not honored, so we need to clip and subsample ourselves.
                 inputWidth = pdImage.getWidth();
-                inputHeight = pdImage.getHeight();
                 startx = clipped.x;
                 starty = clipped.y;
                 scanWidth = clipped.width;
@@ -328,12 +330,15 @@ final class SampledImageReader
         options.setSourceRegion(clipped);
         try (InputStream input = pdImage.createInputStream(options))
         {
-            final int inputWidth, inputHeight, startx, starty, scanWidth, scanHeight;
+            final int inputWidth;
+            final int startx;
+            final int starty;
+            final int scanWidth;
+            final int scanHeight;
             if (options.isFilterSubsampled())
             {
                 // Decode options were honored, and so there is no need for additional clipping or subsampling
                 inputWidth = width;
-                inputHeight = height;
                 startx = 0;
                 starty = 0;
                 scanWidth = width;
@@ -344,7 +349,6 @@ final class SampledImageReader
             {
                 // Decode options not honored, so we need to clip and subsample ourselves.
                 inputWidth = pdImage.getWidth();
-                inputHeight = pdImage.getHeight();
                 startx = clipped.x;
                 starty = clipped.y;
                 scanWidth = clipped.width;
@@ -401,12 +405,15 @@ final class SampledImageReader
         // read bit stream
         try (ImageInputStream iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options)))
         {
-            final int inputWidth, inputHeight, startx, starty, scanWidth, scanHeight;
+            final int inputWidth;
+            final int startx;
+            final int starty;
+            final int scanWidth;
+            final int scanHeight;
             if (options.isFilterSubsampled())
             {
                 // Decode options were honored, and so there is no need for additional clipping or subsampling
                 inputWidth = width;
-                inputHeight = height;
                 startx = 0;
                 starty = 0;
                 scanWidth = width;
@@ -417,7 +424,6 @@ final class SampledImageReader
             {
                 // Decode options not honored, so we need to clip and subsample ourselves.
                 inputWidth = pdImage.getWidth();
-                inputHeight = pdImage.getHeight();
                 startx = clipped.x;
                 starty = clipped.y;
                 scanWidth = clipped.width;
