@@ -103,8 +103,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         zoomMenu = ZoomMenu.getInstance();
         zoomMenu.changeZoomSelection(zoomMenu.getPageZoomScale());
-        // render in a background thread: rendering is read-only, so this should be ok, despite
-        // the fact that PDDocument is not officially thread safe
         startRendering();
     }
 
