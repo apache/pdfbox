@@ -102,43 +102,40 @@ public final class IndexPDFFiles
         {
             System.out.println("Indexing to directory '" + indexPath + "'...");
 
-            Directory dir = FSDirectory.open(new File(indexPath).toPath());
-            Analyzer analyzer = new StandardAnalyzer();
-            IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-
-            if (create)
+            try (Directory dir = FSDirectory.open(new File(indexPath).toPath()))
             {
-                // Create a new index in the directory, removing any
-                // previously indexed documents:
-                iwc.setOpenMode(OpenMode.CREATE);
-            }
-            else
-            {
-                // Add new documents to an existing index:
-                iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
-            }
-
-            // Optional: for better indexing performance, if you
-            // are indexing many documents, increase the RAM
-            // buffer. But if you do this, increase the max heap
-            // size to the JVM (eg add -Xmx512m or -Xmx1g):
-            //
-            // iwc.setRAMBufferSizeMB(256.0);
-            try (IndexWriter writer = new IndexWriter(dir, iwc))
-            {
-                indexDocs(writer, docDir);
-                
-                // NOTE: if you want to maximize search performance,
-                // you can optionally call forceMerge here. This can be
-                // a terribly costly operation, so generally it's only
-                // worth it when your index is relatively static (ie
-                // you're done adding documents to it):
+                Analyzer analyzer = new StandardAnalyzer();
+                IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+                if (create)
+                {
+                    // Create a new index in the directory, removing any
+                    // previously indexed documents:
+                    iwc.setOpenMode(OpenMode.CREATE);
+                }
+                else
+                {
+                    // Add new documents to an existing index:
+                    iwc.setOpenMode(OpenMode.CREATE_OR_APPEND);
+                }
+                // Optional: for better indexing performance, if you
+                // are indexing many documents, increase the RAM
+                // buffer. But if you do this, increase the max heap
+                // size to the JVM (eg add -Xmx512m or -Xmx1g):
                 //
-                // writer.forceMerge(1);
+                // iwc.setRAMBufferSizeMB(256.0);
+                try (final IndexWriter writer = new IndexWriter(dir, iwc))
+                {
+                    indexDocs(writer, docDir);
+                    
+                    // NOTE: if you want to maximize search performance,
+                    // you can optionally call forceMerge here. This can be
+                    // a terribly costly operation, so generally it's only
+                    // worth it when your index is relatively static (ie
+                    // you're done adding documents to it):
+                    //
+                    // writer.forceMerge(1);
+                }
             }
-
-            // When done close the directory
-            dir.close();
 
             Date end = new Date();
             System.out.println(end.getTime() - start.getTime() + " total milliseconds");
