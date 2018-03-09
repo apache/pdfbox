@@ -105,7 +105,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         zoomMenu.changeZoomSelection(zoomMenu.getPageZoomScale());
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
-        new RenderWorker(zoomMenu.getPageZoomScale(), 0, false, false, false, false).execute();
+        startRendering();
     }
 
     /**
@@ -127,17 +127,26 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             actionEvent.getSource() == PDFDebugger.showTextStripper ||
             actionEvent.getSource() == PDFDebugger.showTextStripperBeads ||
             actionEvent.getSource() == PDFDebugger.showFontBBox ||
-            actionEvent.getSource() == PDFDebugger.showGlyphBounds)
+            actionEvent.getSource() == PDFDebugger.showGlyphBounds ||
+            actionEvent.getSource() == PDFDebugger.allowSubsampling)
         {
-            new RenderWorker(ZoomMenu.getZoomScale(),
-                             RotationMenu.getRotationDegrees(),
-                             PDFDebugger.showTextStripper.isSelected(),
-                             PDFDebugger.showTextStripperBeads.isSelected(),
-                             PDFDebugger.showFontBBox.isSelected(),
-                             PDFDebugger.showGlyphBounds.isSelected()
-                            ).execute();
-            zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
+            startRendering();
         }
+    }
+
+    private void startRendering()
+    {
+        // render in a background thread: rendering is read-only, so this should be ok, despite
+        // the fact that PDDocument is not officially thread safe
+        new RenderWorker(ZoomMenu.getZoomScale(),
+                RotationMenu.getRotationDegrees(),
+                PDFDebugger.showTextStripper.isSelected(),
+                PDFDebugger.showTextStripperBeads.isSelected(),
+                PDFDebugger.showFontBBox.isSelected(),
+                PDFDebugger.showGlyphBounds.isSelected(),
+                PDFDebugger.allowSubsampling.isSelected()
+        ).execute();
+        zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
     }
 
     @Override
@@ -162,6 +171,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         PDFDebugger.showGlyphBounds.setEnabled(true);
         PDFDebugger.showGlyphBounds.addActionListener(this);
+
+        PDFDebugger.allowSubsampling.setEnabled(true);
+        PDFDebugger.allowSubsampling.addActionListener(this);
     }
 
     @Override
@@ -171,9 +183,15 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         rotationMenu.setEnableMenu(false);
         
         PDFDebugger.showTextStripper.setEnabled(false);
+        PDFDebugger.showTextStripper.removeActionListener(this);
         PDFDebugger.showTextStripperBeads.setEnabled(false);
+        PDFDebugger.showTextStripperBeads.removeActionListener(this);
         PDFDebugger.showFontBBox.setEnabled(false);
+        PDFDebugger.showFontBBox.removeActionListener(this);
         PDFDebugger.showGlyphBounds.setEnabled(false);
+        PDFDebugger.showGlyphBounds.removeActionListener(this);
+        PDFDebugger.allowSubsampling.setEnabled(false);
+        PDFDebugger.allowSubsampling.removeActionListener(this);
     }
 
     @Override
@@ -262,10 +280,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         private final boolean showTextStripperBeads;
         private final boolean showFontBBox;
         private final boolean showGlyphBounds;
-        
+        private final boolean allowSubsampling;
+
         private RenderWorker(float scale, int rotation, boolean showTextStripper,
                              boolean showTextStripperBeads, boolean showFontBBox,
-                             boolean showGlyphBounds)
+                             boolean showGlyphBounds, boolean allowSubsampling)
         {
             this.scale = scale;
             this.rotation = rotation;
@@ -273,6 +292,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             this.showTextStripperBeads = showTextStripperBeads;
             this.showFontBBox = showFontBBox;
             this.showGlyphBounds = showGlyphBounds;
+            this.allowSubsampling = allowSubsampling;
         }
 
         @Override
@@ -283,7 +303,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             statuslabel.setText("Rendering...");
             
             PDFRenderer renderer = new DebugPDFRenderer(document, this.showGlyphBounds);
-            
+            renderer.setSubsamplingAllowed(allowSubsampling);
+
             long t0 = System.nanoTime();
             BufferedImage image = renderer.renderImage(pageIndex, scale);
             long t1 = System.nanoTime();
