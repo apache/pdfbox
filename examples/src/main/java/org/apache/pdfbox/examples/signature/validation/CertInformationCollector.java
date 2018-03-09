@@ -68,6 +68,8 @@ public class CertInformationCollector
     private static final String ID_PE_AUTHORITYINFOACCESS = "1.3.6.1.5.5.7.1.1";
 
     // As described in https://tools.ietf.org/html/rfc3280.html#section-4.2.1.14
+    // Disable false Sonar warning for "Hardcoded IP Address ..."
+    @SuppressWarnings("squid:S1313")
     private static final String ID_CE_CRLDISTRIBUTIONPOINTS = "2.5.29.31";
 
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
