@@ -157,7 +157,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         
         rotationMenu = RotationMenu.getInstance();
         rotationMenu.addMenuListeners(this);
-        rotationMenu.setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
         rotationMenu.setEnableMenu(true);
 
         PDFDebugger.showTextStripper.setEnabled(true);

@@ -1372,6 +1372,7 @@ public class PDFDebugger extends JFrame
             File file = new File(currentFilePath);
             DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
             ZoomMenu.getInstance().resetZoom();
+            RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
             tree.setModel(new PDFTreeModel(documentEntry));
             // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
             tree.setSelectionPath(tree.getPathForRow(1));
