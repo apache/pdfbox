@@ -101,9 +101,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
         zoomMenu = ZoomMenu.getInstance();
         zoomMenu.changeZoomSelection(zoomMenu.getPageZoomScale());
-        // render in a background thread: rendering is read-only, so this should be ok, despite
-        // the fact that PDDocument is not officially thread safe
-        new RenderWorker(zoomMenu.getPageZoomScale(), 0).execute();
+        startRendering();
     }
 
     /**
@@ -120,11 +118,24 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (ZoomMenu.isZoomMenu(actionCommand) || RotationMenu.isRotationMenu(actionCommand))
+        if (ZoomMenu.isZoomMenu(actionCommand) ||
+            RotationMenu.isRotationMenu(actionCommand) ||
+            actionEvent.getSource() == PDFDebugger.allowSubsampling)
         {
-            new RenderWorker(ZoomMenu.getZoomScale(), RotationMenu.getRotationDegrees()).execute();
+            startRendering();
             zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
         }
+    }
+
+    private void startRendering()
+    {
+        // render in a background thread: rendering is read-only, so this should be ok, despite
+        // the fact that PDDocument is not officially thread safe
+        new RenderWorker(ZoomMenu.getZoomScale(),
+                RotationMenu.getRotationDegrees(),
+                PDFDebugger.allowSubsampling.isSelected()
+        ).execute();
+        zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
     }
 
     @Override
@@ -136,6 +147,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         rotationMenu = RotationMenu.getInstance();
         rotationMenu.addMenuListeners(this);
         rotationMenu.setEnableMenu(true);
+        
+        PDFDebugger.allowSubsampling.setEnabled(true);
+        PDFDebugger.allowSubsampling.addActionListener(this);
     }
 
     @Override
@@ -143,6 +157,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         zoomMenu.setEnableMenu(false);
         rotationMenu.setEnableMenu(false);
+
+        PDFDebugger.allowSubsampling.setEnabled(false);
+        PDFDebugger.allowSubsampling.removeActionListener(this);
     }
 
     @Override
@@ -227,11 +244,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         private final float scale;
         private final int rotation;
+        private final boolean allowSubsampling;
 
-        private RenderWorker(float scale, int rotation)
+        private RenderWorker(float scale, int rotation, boolean allowSubsampling)
         {
             this.scale = scale;
             this.rotation = rotation;
+            this.allowSubsampling = allowSubsampling;
         }
 
         @Override
@@ -240,6 +259,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             label.setIcon(null);
             label.setText("Rendering...");
             PDFRenderer renderer = new PDFRenderer(document);
+            renderer.setSubsamplingAllowed(allowSubsampling);
             long t0 = System.currentTimeMillis();
             statuslabel.setText("Rendering...");
             BufferedImage bim = renderer.renderImage(pageIndex, scale);

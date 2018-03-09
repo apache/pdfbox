@@ -49,6 +49,7 @@ import javax.print.attribute.standard.Sides;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -166,6 +167,8 @@ public class PDFDebugger extends JFrame
 
     // view menu
     private JMenuItem viewModeItem;
+    
+    public static JCheckBoxMenuItem allowSubsampling;
     
     /**
      * Constructor.
@@ -502,6 +505,12 @@ public class PDFDebugger extends JFrame
         RotationMenu rotationMenu = RotationMenu.getInstance();
         rotationMenu.setEnableMenu(false);
         viewMenu.add(rotationMenu.getMenu());
+        
+        viewMenu.addSeparator();
+
+        allowSubsampling = new JCheckBoxMenuItem("Allow subsampling");
+        allowSubsampling.setEnabled(false);
+        viewMenu.add(allowSubsampling);
         
         return viewMenu;
     }
