@@ -169,6 +169,7 @@ public class PDFDebugger extends JFrame
     public static JCheckBoxMenuItem showTextStripperBeads;
     public static JCheckBoxMenuItem showFontBBox;
     public static JCheckBoxMenuItem showGlyphBounds;
+    public static JCheckBoxMenuItem allowSubsampling;
     
     // configuration
     public static Properties configuration = new Properties();
@@ -644,7 +645,13 @@ public class PDFDebugger extends JFrame
         showGlyphBounds = new JCheckBoxMenuItem("Show Glyph Bounds");
         showGlyphBounds.setEnabled(false);
         viewMenu.add(showGlyphBounds);
-        
+
+        viewMenu.addSeparator();
+
+        allowSubsampling = new JCheckBoxMenuItem("Allow subsampling");
+        allowSubsampling.setEnabled(false);
+        viewMenu.add(allowSubsampling);
+
         return viewMenu;
     }
 
