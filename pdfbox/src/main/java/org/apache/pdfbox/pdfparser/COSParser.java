@@ -1395,7 +1395,7 @@ public class COSParser extends BaseParser
         {
             COSObjectKey objectKey = objectEntry.getKey();
             Long objectOffset = objectEntry.getValue();
-            // a negative offset number represents a object number itself
+            // a negative offset number represents an object number itself
             // see type 2 entry in xref stream
             if (objectOffset != null && objectOffset >= 0
                     && !checkObjectKey(objectKey, objectOffset))
@@ -1449,26 +1449,26 @@ public class COSParser extends BaseParser
             return false;
         }
         boolean objectKeyFound = false;
-        long originOffset = source.getPosition();
         try 
         {
             source.seek(offset);
             // try to read the given object/generation number
-            if (objectKey.getNumber() == readObjectNumber()
-                    && objectKey.getGeneration() == readGenerationNumber())
+            if (objectKey.getNumber() == readObjectNumber())
             {
-                // finally tro to read the object marker
-                readExpectedString(OBJ_MARKER, true);
-                objectKeyFound = true;
+                int genNumber = readGenerationNumber();
+                //
+                if (genNumber == objectKey.getGeneration()
+                        || (isLenient && genNumber > objectKey.getGeneration()))
+                {
+                    // finally try to read the object marker
+                    readExpectedString(OBJ_MARKER, true);
+                    objectKeyFound = true;
+                }
             }
         }
         catch (IOException exception)
         {
             // Swallow the exception, obviously there isn't any valid object number
-        }
-        finally 
-        {
-            source.seek(originOffset);
         }
         // return resulting value
         return objectKeyFound;
