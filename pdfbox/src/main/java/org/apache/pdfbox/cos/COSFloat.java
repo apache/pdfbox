@@ -90,17 +90,16 @@ public class COSFloat extends COSNumber
         double doubleValue = value.doubleValue();
         boolean valueReplaced = false;
         // check for huge values
-        if (floatValue == Float.NEGATIVE_INFINITY  || floatValue == Float.POSITIVE_INFINITY )
-        {
-            
+        if (Float.isInfinite(floatValue))
+        {      
             if (Math.abs(doubleValue) > Float.MAX_VALUE)
             {
-                floatValue = Float.MAX_VALUE * (floatValue == Float.POSITIVE_INFINITY ? 1 : -1);
+                floatValue = Float.MAX_VALUE * (Float.compare(floatValue, Float.POSITIVE_INFINITY) == 0 ? 1 : -1);
                 valueReplaced = true;
             }
         }
         // check for very small values
-        else if (floatValue == 0 && doubleValue != 0)
+        else if (Float.compare(floatValue, 0) == 0 && Double.compare(doubleValue, 0) != 0)
         {
             if (Math.abs(doubleValue) < Float.MIN_NORMAL )
             {
@@ -111,7 +110,7 @@ public class COSFloat extends COSNumber
         }
         if (valueReplaced)
         {
-            value = new BigDecimal(floatValue);
+            value = BigDecimal.valueOf(floatValue);
             valueAsString = removeNullDigits(value.toPlainString());
         }
     }
