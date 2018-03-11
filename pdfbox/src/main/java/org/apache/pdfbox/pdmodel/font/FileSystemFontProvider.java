@@ -293,70 +293,71 @@ final class FileSystemFontProvider extends FontProvider
         try
         {
             file = getDiskCacheFile();
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
+            {
+                for (FSFontInfo fontInfo : fontInfoList)
+                {
+                    writer.write(fontInfo.postScriptName.trim());
+                    writer.write("|");
+                    writer.write(fontInfo.format.toString());
+                    writer.write("|");
+                    if (fontInfo.cidSystemInfo != null)
+                    {
+                        writer.write(fontInfo.cidSystemInfo.getRegistry() + '-' +
+                                     fontInfo.cidSystemInfo.getOrdering() + '-' +
+                                     fontInfo.cidSystemInfo.getSupplement());
+                    }
+                    writer.write("|");
+                    if (fontInfo.usWeightClass > -1)
+                    {
+                        writer.write(Integer.toHexString(fontInfo.usWeightClass));
+                    }
+                    writer.write("|");
+                    if (fontInfo.sFamilyClass > -1)
+                    {
+                        writer.write(Integer.toHexString(fontInfo.sFamilyClass));
+                    }
+                    writer.write("|");
+                    writer.write(Integer.toHexString(fontInfo.ulCodePageRange1));
+                    writer.write("|");
+                    writer.write(Integer.toHexString(fontInfo.ulCodePageRange2));
+                    writer.write("|");
+                    if (fontInfo.macStyle > -1)
+                    {
+                        writer.write(Integer.toHexString(fontInfo.macStyle));
+                    }
+                    writer.write("|");
+                    if (fontInfo.panose != null)
+                    {
+                        byte[] bytes = fontInfo.panose.getBytes();
+                        for (int i = 0; i < 10; i ++)
+                        {
+                            String str = Integer.toHexString(bytes[i]);
+                            if (str.length() == 1)
+                            {
+                                writer.write('0');
+                            }
+                            writer.write(str);
+                        }
+                    }
+                    writer.write("|");
+                    writer.write(fontInfo.file.getAbsolutePath());
+                    writer.newLine();
+                }
+            }
+            catch (IOException e)
+            {
+                LOG.warn("Could not write to font cache", e);
+                LOG.warn("Installed fonts information will have to be reloaded for each start");
+                LOG.warn("You can assign a directory to the 'pdfbox.fontcache' property");
+            }
+
         }
         catch (SecurityException e)
         {
             LOG.debug("Couldn't create writer for font cache file", e);
             return;
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
-        {
-            for (FSFontInfo fontInfo : fontInfoList)
-            {
-                writer.write(fontInfo.postScriptName.trim());
-                writer.write("|");
-                writer.write(fontInfo.format.toString());
-                writer.write("|");
-                if (fontInfo.cidSystemInfo != null)
-                {
-                    writer.write(fontInfo.cidSystemInfo.getRegistry() + '-' +
-                                 fontInfo.cidSystemInfo.getOrdering() + '-' +
-                                 fontInfo.cidSystemInfo.getSupplement());
-                }
-                writer.write("|");
-                if (fontInfo.usWeightClass > -1)
-                {
-                    writer.write(Integer.toHexString(fontInfo.usWeightClass));
-                }
-                writer.write("|");
-                if (fontInfo.sFamilyClass > -1)
-                {
-                    writer.write(Integer.toHexString(fontInfo.sFamilyClass));
-                }
-                writer.write("|");
-                writer.write(Integer.toHexString(fontInfo.ulCodePageRange1));
-                writer.write("|");
-                writer.write(Integer.toHexString(fontInfo.ulCodePageRange2));
-                writer.write("|");
-                if (fontInfo.macStyle > -1)
-                {
-                    writer.write(Integer.toHexString(fontInfo.macStyle));
-                }
-                writer.write("|");
-                if (fontInfo.panose != null)
-                {
-                    byte[] bytes = fontInfo.panose.getBytes();
-                    for (int i = 0; i < 10; i ++)
-                    {
-                        String str = Integer.toHexString(bytes[i]);
-                        if (str.length() == 1)
-                        {
-                            writer.write('0');
-                        }
-                        writer.write(str);
-                    }
-                }
-                writer.write("|");
-                writer.write(fontInfo.file.getAbsolutePath());
-                writer.newLine();
-            }
-        }
-        catch (IOException e)
-        {
-            LOG.warn("Could not write to font cache", e);
-            LOG.warn("Installed fonts information will have to be reloaded for each start");
-            LOG.warn("You can assign a directory to the 'pdfbox.fontcache' property");
         }
     }
 
