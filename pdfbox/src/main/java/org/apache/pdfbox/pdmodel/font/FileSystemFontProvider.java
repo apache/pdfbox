@@ -291,11 +291,12 @@ final class FileSystemFontProvider extends FontProvider
     private void saveDiskCache()
     {
         BufferedWriter writer = null;
+        File file = null;
         try
         {
-            File file = getDiskCacheFile();
             try
             {
+                file = getDiskCacheFile();
                 writer = new BufferedWriter(new FileWriter(file));
             }
             catch (SecurityException e)
@@ -377,15 +378,19 @@ final class FileSystemFontProvider extends FontProvider
         }
         
         List<FSFontInfo> results = new ArrayList<FSFontInfo>();
-        File file = getDiskCacheFile();
+
+        // Get the disk cache
+        File file = null;
         boolean fileExists = false;
         try
         {
+            file = getDiskCacheFile();
             fileExists = file.exists();
         }
         catch (SecurityException e)
         {
         }
+        
         if (fileExists)
         {
             BufferedReader reader = null;
