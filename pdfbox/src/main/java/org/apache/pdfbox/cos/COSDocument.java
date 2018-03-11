@@ -141,8 +141,9 @@ public class COSDocument extends COSBase implements Closeable
      * @param type The type of the object.
      *
      * @return This will return an object with the specified type.
+     * @throws IOException If there is an error getting the object
      */
-    public COSObject getObjectByType(COSName type)
+    public COSObject getObjectByType(COSName type)  throws IOException
     {
         for( COSObject object : objectPool.values() )
         {
@@ -181,8 +182,9 @@ public class COSDocument extends COSBase implements Closeable
      * @param type The type of the object.
      *
      * @return This will return an object with the specified type.
+     * @throws IOException If there is an error getting the object
      */
-    public List<COSObject> getObjectsByType( String type )
+    public List<COSObject> getObjectsByType( String type )  throws IOException
     {
         return getObjectsByType( COSName.getPDFName( type ) );
     }
@@ -193,8 +195,9 @@ public class COSDocument extends COSBase implements Closeable
      * @param type The type of the object.
      *
      * @return This will return an object with the specified type.
+     * @throws IOException If there is an error getting the object
      */
-    public List<COSObject> getObjectsByType( COSName type )
+    public List<COSObject> getObjectsByType( COSName type )  throws IOException
     {
         List<COSObject> retval = new ArrayList<>();
         for( COSObject object : objectPool.values() )
@@ -518,8 +521,9 @@ public class COSDocument extends COSBase implements Closeable
      * @param key The object key.
      *
      * @return The object in the pool or a new one if it has not been parsed yet.
+     * @throws IOException If there is an error getting the proxy object.
      */
-    public COSObject getObjectFromPool(COSObjectKey key)
+    public COSObject getObjectFromPool(COSObjectKey key)  throws IOException
     {
         COSObject obj = null;
         if( key != null )
