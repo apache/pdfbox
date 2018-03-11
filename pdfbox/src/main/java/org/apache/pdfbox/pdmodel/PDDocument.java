@@ -982,8 +982,7 @@ public class PDDocument implements Closeable
     public static PDDocument load(File file, String password, InputStream keyStore, String alias,
                                   MemoryUsageSetting memUsageSetting) throws IOException
     {
-        RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
-        try
+        try (RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file))
         {
             ScratchFile scratchFile = new ScratchFile(memUsageSetting);
             try
@@ -1000,7 +999,6 @@ public class PDDocument implements Closeable
         }
         catch (IOException ioe)
         {
-            IOUtils.closeQuietly(raFile);
             throw ioe;
         }
     }
