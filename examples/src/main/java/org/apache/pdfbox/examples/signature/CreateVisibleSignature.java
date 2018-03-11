@@ -20,11 +20,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
@@ -85,7 +84,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @throws IOException
      */
     public void setVisibleSignDesigner(String filename, int x, int y, int zoomPercent, 
-            FileInputStream imageStream, int page) 
+            InputStream imageStream, int page) 
             throws IOException
     {
         visibleSignDesigner = new PDVisibleSignDesigner(filename, imageStream, page);
@@ -99,7 +98,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param imageStream input stream of an image.
      * @throws IOException
      */
-    public void setVisibleSignDesigner(int zoomPercent, FileInputStream imageStream) 
+    public void setVisibleSignDesigner(int zoomPercent, InputStream imageStream) 
             throws IOException
     {
         visibleSignDesigner = new PDVisibleSignDesigner(imageStream);
@@ -415,7 +414,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
 
         CreateVisibleSignature signing = new CreateVisibleSignature(keystore, pin.clone());
 
-        FileInputStream imageStream = new FileInputStream(args[3]);
+        InputStream imageStream = new FileInputStream(args[3]);
 
         String name = documentFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
