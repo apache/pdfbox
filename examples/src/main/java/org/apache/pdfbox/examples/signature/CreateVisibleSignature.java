@@ -77,8 +77,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
      * @param filename
      * @param x position of the signature field
      * @param y position of the signature field
-     * @param zoomPercent
-     * @param imageStream
+     * @param zoomPercent increase (positive value) or decrease (negative value) image with x percent.
+     * @param imageStream input stream of an image.
      * @param page the signature should be placed on
      * @throws IOException
      */
@@ -93,8 +93,8 @@ public class CreateVisibleSignature extends CreateSignatureBase
     /**
      * Set visible signature designer for an existing signature field.
      * 
-     * @param zoomPercent
-     * @param imageStream
+     * @param zoomPercent increase (positive value) or decrease (negative value) image with x percent.
+     * @param imageStream input stream of an image.
      * @throws IOException
      */
     public void setVisibleSignDesigner(int zoomPercent, FileInputStream imageStream) 
