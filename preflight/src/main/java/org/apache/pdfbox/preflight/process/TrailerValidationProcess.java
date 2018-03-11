@@ -126,53 +126,46 @@ public class TrailerValidationProcess extends AbstractProcess
     protected void checkTrailersForLinearizedPDF15(PreflightContext ctx)
     {
         PDDocument pdfDoc = ctx.getDocument();
-        try
+
+        COSDocument cosDocument = pdfDoc.getDocument();
+        List<COSObject> xrefs = cosDocument.getObjectsByType(COSName.XREF);
+
+        if (xrefs.isEmpty())
         {
-            COSDocument cosDocument = pdfDoc.getDocument();
-            List<COSObject> xrefs = cosDocument.getObjectsByType(COSName.XREF);
-
-            if (xrefs.isEmpty())
-            {
-                // no XRef CosObject, may by this pdf file used the PDF 1.4 syntaxe
-                checkTrailersForLinearizedPDF14(ctx);
-            }
-            else
-            {
-                long min = Long.MAX_VALUE;
-                long max = Long.MIN_VALUE;
-                COSDictionary firstTrailer = null;
-                COSDictionary lastTrailer = null;
-
-                // Search First and Last trailers according to offset position.
-                for (COSObject co : xrefs)
-                {
-                    long offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
-                    if (offset < min)
-                    {
-                        min = offset;
-                        firstTrailer = (COSDictionary) co.getObject();
-                    }
-
-                    if (offset > max)
-                    {
-                        max = offset;
-                        lastTrailer = (COSDictionary) co.getObject();
-                    }
-
-                }
-
-                checkMainTrailer(ctx, firstTrailer);
-                if (!compareIds(firstTrailer, lastTrailer, cosDocument))
-                {
-                    addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
-                            "ID is different in the first and the last trailer"));
-                }
-            }
+            // no XRef CosObject, may by this pdf file used the PDF 1.4 syntaxe
+            checkTrailersForLinearizedPDF14(ctx);
         }
-        catch (IOException e)
+        else
         {
-            addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER,
-                    "Unable to check PDF Trailers: " + e.getMessage(), e));
+            long min = Long.MAX_VALUE;
+            long max = Long.MIN_VALUE;
+            COSDictionary firstTrailer = null;
+            COSDictionary lastTrailer = null;
+
+            // Search First and Last trailers according to offset position.
+            for (COSObject co : xrefs)
+            {
+                long offset = cosDocument.getXrefTable().get(new COSObjectKey(co));
+                if (offset < min)
+                {
+                    min = offset;
+                    firstTrailer = (COSDictionary) co.getObject();
+                }
+
+                if (offset > max)
+                {
+                    max = offset;
+                    lastTrailer = (COSDictionary) co.getObject();
+                }
+
+            }
+
+            checkMainTrailer(ctx, firstTrailer);
+            if (!compareIds(firstTrailer, lastTrailer, cosDocument))
+            {
+                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
+                        "ID is different in the first and the last trailer"));
+            }
         }
     }
 
