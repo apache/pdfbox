@@ -900,9 +900,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param embedded The embedded dictionary to get.
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
-     * @throws IOException If there is an error converting to a date.
      */
-    public Calendar getEmbeddedDate(String embedded, String key) throws IOException
+    public Calendar getEmbeddedDate(String embedded, String key)
     {
         return getEmbeddedDate(embedded, COSName.getPDFName(key), null);
     }
@@ -914,10 +913,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param embedded The embedded dictionary to get.
      * @param key The key to the item in the dictionary.
      * @return The name converted to a string.
-     *
-     * @throws IOException If there is an error converting to a date.
      */
-    public Calendar getEmbeddedDate(String embedded, COSName key) throws IOException
+    public Calendar getEmbeddedDate(String embedded, COSName key)
     {
         return getEmbeddedDate(embedded, key, null);
     }
@@ -930,10 +927,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @param defaultValue The default value to return.
      * @return The name converted to a string.
-     * @throws IOException If there is an error converting to a date.
      */
     public Calendar getEmbeddedDate(String embedded, String key, Calendar defaultValue)
-            throws IOException
     {
         return getEmbeddedDate(embedded, COSName.getPDFName(key), defaultValue);
     }
@@ -946,10 +941,8 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param key The key to the item in the dictionary.
      * @param defaultValue The default value to return.
      * @return The name converted to a string.
-     * @throws IOException If there is an error converting to a date.
      */
     public Calendar getEmbeddedDate(String embedded, COSName key, Calendar defaultValue)
-            throws IOException
     {
         Calendar retval = defaultValue;
         COSDictionary eDic = (COSDictionary) getDictionaryObject(embedded);
