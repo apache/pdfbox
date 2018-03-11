@@ -251,8 +251,6 @@ public class COSWriter implements ICOSVisitor, Closeable
 
     private void prepareIncrement(PDDocument doc)
     {
-      try
-      {
         if (doc != null)
         {
           COSDocument cosDoc = doc.getDocument();
@@ -280,11 +278,6 @@ public class COSWriter implements ICOSVisitor, Closeable
           }
           setNumber(highestNumber);
         }
-      }
-      catch (IOException e)
-      {
-          LOG.error(e,e);
-      }
     }
     
     /**

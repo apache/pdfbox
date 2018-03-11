@@ -233,10 +233,17 @@ public class TestCOSUtils
         }
 
         @Override
-        public COSObject getObjectFromPool(COSObjectKey key) throws IOException
+        public COSObject getObjectFromPool(COSObjectKey key)
         {
-            super.close();
-            throw new IOException("Exception for code coverage");
+            try
+            {
+                super.close();
+            }
+            catch (IOException ioe)
+            {
+                
+            }
+            return null;
         }
     }
 }
