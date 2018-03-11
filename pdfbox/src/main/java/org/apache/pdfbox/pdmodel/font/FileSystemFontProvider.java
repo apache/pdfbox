@@ -44,7 +44,6 @@ import org.apache.fontbox.ttf.TrueTypeCollection.TrueTypeFontProcessor;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.util.Charsets;
 
 /**
@@ -290,21 +289,19 @@ final class FileSystemFontProvider extends FontProvider
      */
     private void saveDiskCache()
     {
-        BufferedWriter writer = null;
         File file = null;
         try
         {
-            try
-            {
-                file = getDiskCacheFile();
-                writer = new BufferedWriter(new FileWriter(file));
-            }
-            catch (SecurityException e)
-            {
-                LOG.debug("Couldn't create writer for " + file.getAbsolutePath(), e);
-                return;
-            }
+            file = getDiskCacheFile();
+        }
+        catch (SecurityException e)
+        {
+            LOG.debug("Couldn't create writer for font cache file", e);
+            return;
+        }
 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
+        {
             for (FSFontInfo fontInfo : fontInfoList)
             {
                 writer.write(fontInfo.postScriptName.trim());
@@ -360,10 +357,6 @@ final class FileSystemFontProvider extends FontProvider
             LOG.warn("Could not write to font cache", e);
             LOG.warn("Installed fonts information will have to be reloaded for each start");
             LOG.warn("You can assign a directory to the 'pdfbox.fontcache' property");
-        }
-        finally
-        {
-            IOUtils.closeQuietly(writer);
         }
     }
 
