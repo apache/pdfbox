@@ -298,7 +298,27 @@ final class FileSystemFontProvider extends FontProvider
             {
                 for (FSFontInfo fontInfo : fontInfoList)
                 {
-                    writer.write(fontInfo.postScriptName.trim());
+                    writeFontInfo(writer, fontInfo);
+                }
+            }
+            catch (IOException e)
+            {
+                LOG.warn("Could not write to font cache", e);
+                LOG.warn("Installed fonts information will have to be reloaded for each start");
+                LOG.warn("You can assign a directory to the 'pdfbox.fontcache' property");
+            }
+
+        }
+        catch (SecurityException e)
+        {
+            LOG.debug("Couldn't create writer for font cache file", e);
+            return;
+        }
+    }
+
+    private void writeFontInfo(BufferedWriter writer, FSFontInfo fontInfo) throws IOException
+    {
+        writer.write(fontInfo.postScriptName.trim());
                     writer.write("|");
                     writer.write(fontInfo.format.toString());
                     writer.write("|");
@@ -344,21 +364,6 @@ final class FileSystemFontProvider extends FontProvider
                     writer.write("|");
                     writer.write(fontInfo.file.getAbsolutePath());
                     writer.newLine();
-                }
-            }
-            catch (IOException e)
-            {
-                LOG.warn("Could not write to font cache", e);
-                LOG.warn("Installed fonts information will have to be reloaded for each start");
-                LOG.warn("You can assign a directory to the 'pdfbox.fontcache' property");
-            }
-
-        }
-        catch (SecurityException e)
-        {
-            LOG.debug("Couldn't create writer for font cache file", e);
-            return;
-        }
     }
 
     /**
