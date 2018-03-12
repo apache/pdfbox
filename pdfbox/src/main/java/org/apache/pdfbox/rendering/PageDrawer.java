@@ -43,7 +43,9 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -127,8 +129,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // last clipping path
     private Area lastClip;
 
-    // buffered clipping area for text being drawn
-    private Area textClippingArea;
+    // shapes of glyphs being drawn to be used for clipping
+    private List<Shape> textClippings;
 
     // glyph cache
     private final Map<PDFont, Glyph2D> fontGlyph2D = new HashMap<PDFont, Glyph2D>();
@@ -373,8 +375,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private void beginTextClip()
     {
-        // buffer the text clip because it represents a single clipping area
-        textClippingArea = new Area();        
+        // buffer the text clippings because they represents a single clipping area
+        textClippings = new ArrayList<Shape>();
     }
 
     /**
@@ -386,10 +388,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
         
         // apply the buffered clip as one area
-        if (renderingMode.isClip() && !textClippingArea.isEmpty())
+        if (renderingMode.isClip() && !textClippings.isEmpty())
         {
-            state.intersectClippingPath(textClippingArea);
-            textClippingArea = null;
+            // PDFBOX-4150: this is much faster than using textClippingArea.add(new Area(glyph))
+            // https://stackoverflow.com/questions/21519007/fast-union-of-shapes-in-java
+            GeneralPath path = new GeneralPath();
+            for (Shape shape : textClippings)
+            {
+                path.append(shape, false);
+            }
+            state.intersectClippingPath(path);
+            textClippings = new ArrayList<Shape>();
 
             // PDFBOX-3681: lastClip needs to be reset, because after intersection it is still the same 
             // object, thus setClip() would believe that it is cached.
@@ -463,7 +472,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             if (renderingMode.isClip())
             {
-                textClippingArea.add(new Area(glyph));
+                textClippings.add(glyph);
             }
         }
     }
