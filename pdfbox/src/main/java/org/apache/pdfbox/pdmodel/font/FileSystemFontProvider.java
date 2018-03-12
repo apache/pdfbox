@@ -319,51 +319,51 @@ final class FileSystemFontProvider extends FontProvider
     private void writeFontInfo(BufferedWriter writer, FSFontInfo fontInfo) throws IOException
     {
         writer.write(fontInfo.postScriptName.trim());
-                    writer.write("|");
-                    writer.write(fontInfo.format.toString());
-                    writer.write("|");
-                    if (fontInfo.cidSystemInfo != null)
-                    {
-                        writer.write(fontInfo.cidSystemInfo.getRegistry() + '-' +
-                                     fontInfo.cidSystemInfo.getOrdering() + '-' +
-                                     fontInfo.cidSystemInfo.getSupplement());
-                    }
-                    writer.write("|");
-                    if (fontInfo.usWeightClass > -1)
-                    {
-                        writer.write(Integer.toHexString(fontInfo.usWeightClass));
-                    }
-                    writer.write("|");
-                    if (fontInfo.sFamilyClass > -1)
-                    {
-                        writer.write(Integer.toHexString(fontInfo.sFamilyClass));
-                    }
-                    writer.write("|");
-                    writer.write(Integer.toHexString(fontInfo.ulCodePageRange1));
-                    writer.write("|");
-                    writer.write(Integer.toHexString(fontInfo.ulCodePageRange2));
-                    writer.write("|");
-                    if (fontInfo.macStyle > -1)
-                    {
-                        writer.write(Integer.toHexString(fontInfo.macStyle));
-                    }
-                    writer.write("|");
-                    if (fontInfo.panose != null)
-                    {
-                        byte[] bytes = fontInfo.panose.getBytes();
-                        for (int i = 0; i < 10; i ++)
-                        {
-                            String str = Integer.toHexString(bytes[i]);
-                            if (str.length() == 1)
-                            {
-                                writer.write('0');
-                            }
-                            writer.write(str);
-                        }
-                    }
-                    writer.write("|");
-                    writer.write(fontInfo.file.getAbsolutePath());
-                    writer.newLine();
+        writer.write("|");
+        writer.write(fontInfo.format.toString());
+        writer.write("|");
+        if (fontInfo.cidSystemInfo != null)
+        {
+            writer.write(fontInfo.cidSystemInfo.getRegistry() + '-' +
+                            fontInfo.cidSystemInfo.getOrdering() + '-' +
+                            fontInfo.cidSystemInfo.getSupplement());
+        }
+        writer.write("|");
+        if (fontInfo.usWeightClass > -1)
+        {
+            writer.write(Integer.toHexString(fontInfo.usWeightClass));
+        }
+        writer.write("|");
+        if (fontInfo.sFamilyClass > -1)
+        {
+            writer.write(Integer.toHexString(fontInfo.sFamilyClass));
+        }
+        writer.write("|");
+        writer.write(Integer.toHexString(fontInfo.ulCodePageRange1));
+        writer.write("|");
+        writer.write(Integer.toHexString(fontInfo.ulCodePageRange2));
+        writer.write("|");
+        if (fontInfo.macStyle > -1)
+        {
+            writer.write(Integer.toHexString(fontInfo.macStyle));
+        }
+        writer.write("|");
+        if (fontInfo.panose != null)
+        {
+            byte[] bytes = fontInfo.panose.getBytes();
+            for (int i = 0; i < 10; i ++)
+            {
+                String str = Integer.toHexString(bytes[i]);
+                if (str.length() == 1)
+                {
+                    writer.write('0');
+                }
+                writer.write(str);
+            }
+        }
+        writer.write("|");
+        writer.write(fontInfo.file.getAbsolutePath());
+        writer.newLine();
     }
 
     /**
