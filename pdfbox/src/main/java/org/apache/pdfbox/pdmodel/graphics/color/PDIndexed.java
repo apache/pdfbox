@@ -85,7 +85,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     {
         array = indexedArray;
         // don't call getObject(1), we want to pass a reference if possible
-        // to profit of caching (PDFBOX-4149)
+        // to profit from caching (PDFBOX-4149)
         baseColorSpace = PDColorSpace.create(array.get(1), resources);
         readColorTable();
         initRgbColorTable();
