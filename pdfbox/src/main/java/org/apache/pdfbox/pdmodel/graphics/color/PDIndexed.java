@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -65,13 +66,27 @@ public final class PDIndexed extends PDSpecialColorSpace
     }
 
     /**
-     * Creates a new Indexed color space from the given PDF array.
+     * Creates a new indexed color space from the given PDF array.
      * @param indexedArray the array containing the indexed parameters
+     * @throws java.io.IOException
      */
     public PDIndexed(COSArray indexedArray) throws IOException
     {
+        this(indexedArray, null);
+    }
+
+    /**
+     * Creates a new indexed color space from the given PDF array.
+     * @param indexedArray the array containing the indexed parameters
+     * @param resources the resources, can be null. Allows to use its cache for the colorspace.
+     * @throws java.io.IOException
+     */
+    public PDIndexed(COSArray indexedArray, PDResources resources) throws IOException
+    {
         array = indexedArray;
-        baseColorSpace = PDColorSpace.create(array.getObject(1));
+        // don't call getObject(1), we want to pass a reference if possible
+        // to profit of caching (PDFBOX-4149)
+        baseColorSpace = PDColorSpace.create(array.get(1), resources);
         readColorTable();
         initRgbColorTable();
     }

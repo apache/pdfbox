@@ -32,6 +32,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 
 /**
  * A color space specifies how the colours of graphics objects will be painted on the page.
@@ -88,7 +89,7 @@ public abstract class PDColorSpace implements COSObjectable
     {
         if (colorSpace instanceof COSObject)
         {
-            return create(((COSObject) colorSpace).getObject(), resources);
+            return createFromCOSObject((COSObject) colorSpace, resources);
         }
         else if (colorSpace instanceof COSName)
         {
@@ -180,7 +181,7 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (name == COSName.INDEXED)
             {
-                return new PDIndexed(array);
+                return new PDIndexed(array, resources);
             }
             else if (name == COSName.SEPARATION)
             {
@@ -221,6 +222,28 @@ public abstract class PDColorSpace implements COSObjectable
         {
             throw new IOException("Expected a name or array but got: " + colorSpace);
         }
+    }
+
+    private static PDColorSpace createFromCOSObject(COSObject colorSpace, PDResources resources)
+            throws IOException
+    {
+        PDColorSpace cs;
+        if (resources != null && resources.getResourceCache() != null)
+        {
+            ResourceCache resourceCache = resources.getResourceCache();
+            cs = resourceCache.getColorSpace(colorSpace);
+            if (cs != null)
+            {
+                return cs;
+            }
+        }
+        cs = create(colorSpace.getObject(), resources);
+        if (resources != null && resources.getResourceCache() != null && cs != null)
+        {
+            ResourceCache resourceCache = resources.getResourceCache();
+            resourceCache.put(colorSpace, cs);
+        }
+        return cs;
     }
 
     // array for the given parameters
