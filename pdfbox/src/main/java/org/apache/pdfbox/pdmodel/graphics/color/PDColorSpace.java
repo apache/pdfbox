@@ -181,7 +181,7 @@ public abstract class PDColorSpace implements COSObjectable
             }
             else if (name == COSName.INDEXED)
             {
-                return new PDIndexed(array);
+                return new PDIndexed(array, resources);
             }
             else if (name == COSName.SEPARATION)
             {
