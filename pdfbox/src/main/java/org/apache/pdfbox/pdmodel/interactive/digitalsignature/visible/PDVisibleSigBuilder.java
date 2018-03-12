@@ -390,11 +390,11 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
                                         COSName imageName, COSName innerFormName,
                                         PDVisibleSignDesigner properties) throws IOException
     {
-        // 100 means that document width is 100% via the rectangle. if rectangle
-        // is 500px, images 100% is 500px.
-        // String imgFormContent = "q "+imageWidthSize+ " 0 0 50 0 0 cm /" +
-        // imageName + " Do Q\n" + builder.toString();
-        String imgFormContent    = "q " + 100 + " 0 0 50 0 0 cm /" + imageName.getName() + " Do Q\n";
+        // Use width and height of BBox as values for transformation matrix.
+        int width = (int) this.getStructure().getFormatterRectangle().getWidth();
+        int height = (int) this.getStructure().getFormatterRectangle().getHeight();
+
+        String imgFormContent    = "q " + width + " 0 0 " + height + " 0 0 cm /" + imageName.getName() + " Do Q\n";
         String holderFormContent = "q 1 0 0 1 0 0 cm /" + innerFormName.getName() + " Do Q\n";
         String innerFormContent  = "q 1 0 0 1 0 0 cm /n0 Do Q q 1 0 0 1 0 0 cm /" + imageFormName.getName() + " Do Q\n";
 
