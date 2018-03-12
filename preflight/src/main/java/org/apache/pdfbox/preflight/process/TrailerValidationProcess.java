@@ -36,7 +36,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_
 import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_ROOT;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_SIZE;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
