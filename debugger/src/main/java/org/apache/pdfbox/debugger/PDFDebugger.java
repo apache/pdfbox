@@ -165,11 +165,11 @@ public class PDFDebugger extends JFrame
 
     // view menu
     private JMenuItem viewModeItem;
-    public static final JCheckBoxMenuItem showTextStripper = new JCheckBoxMenuItem("Show TextStripper TextPositions");
-    public static final JCheckBoxMenuItem showTextStripperBeads = new JCheckBoxMenuItem("Show TextStripper Beads");
-    public static final JCheckBoxMenuItem showFontBBox = new JCheckBoxMenuItem("Show Approximate Text Bounds");
-    public static final JCheckBoxMenuItem showGlyphBounds = new JCheckBoxMenuItem("Show Glyph Bounds");
-    public static final JCheckBoxMenuItem allowSubsampling = new JCheckBoxMenuItem("Allow subsampling");
+    public static JCheckBoxMenuItem showTextStripper;
+    public static JCheckBoxMenuItem showTextStripperBeads;
+    public static JCheckBoxMenuItem showFontBBox;
+    public static JCheckBoxMenuItem showGlyphBounds;
+    public static JCheckBoxMenuItem allowSubsampling;
     
     // configuration
     public static Properties configuration = new Properties();
@@ -629,21 +629,26 @@ public class PDFDebugger extends JFrame
         viewMenu.add(rotationMenu.getMenu());
 
         viewMenu.addSeparator();
-        
+
+        showTextStripper = new JCheckBoxMenuItem("Show TextStripper TextPositions");        
         showTextStripper.setEnabled(false);
         viewMenu.add(showTextStripper);
 
+        showTextStripperBeads = new JCheckBoxMenuItem("Show TextStripper Beads");
         showTextStripperBeads.setEnabled(false);
         viewMenu.add(showTextStripperBeads);
         
+        showFontBBox = new JCheckBoxMenuItem("Show Approximate Text Bounds");
         showFontBBox.setEnabled(false);
         viewMenu.add(showFontBBox);
         
+        showGlyphBounds = new JCheckBoxMenuItem("Show Glyph Bounds");
         showGlyphBounds.setEnabled(false);
         viewMenu.add(showGlyphBounds);
 
         viewMenu.addSeparator();
 
+        allowSubsampling = new JCheckBoxMenuItem("Allow subsampling");
         allowSubsampling.setEnabled(false);
         viewMenu.add(allowSubsampling);
 
