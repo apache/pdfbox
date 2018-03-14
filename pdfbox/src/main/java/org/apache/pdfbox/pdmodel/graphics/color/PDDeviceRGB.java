@@ -16,11 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -116,32 +113,16 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
         init();
-        ColorModel colorModel = new ComponentColorModel(awtColorSpace,
-                false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
-
-	BufferedImage image = new BufferedImage(colorModel, raster, false, null);
 
         //
         // WARNING: this method is performance sensitive, modify with care!
         //
-        // Please read PDFBOX-3854 and look at the related commits first.
+        // Please read PDFBOX-3854 and PDFBOX-2092 and look at the related commits first.
         // The current code returns TYPE_INT_RGB images which prevents slowness due to threads
-        // blocking each other when TYPE_CUSTOM images are used. 
-        // ColorConvertOp is not used here because it has a larger memory footprint and no further
-        // performance improvement.
-        // The multiparameter setRGB() call is not used because it brings no improvement.
-
-        BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
-        int width = image.getWidth();
-        int height = image.getHeight();
-        for (int x = 0; x < width; ++x)
-        {
-            for (int y = 0; y < height; ++y)
-            {
-                dest.setRGB(x, y, image.getRGB(x, y));
-            }
-        }
-        return dest;
+        // blocking each other when TYPE_CUSTOM images are used.
+        BufferedImage image = new BufferedImage(raster.getWidth(), raster.getHeight(), BufferedImage.TYPE_INT_RGB);
+        image.setData(raster);
+        return image;
     }
 
     private static void suggestKCMS()
