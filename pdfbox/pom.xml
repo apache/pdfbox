@@ -112,7 +112,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Xmx768m</argLine>
+                    <argLine>-Xmx768m -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider</argLine>
                     <excludes>
                         <exclude>org/apache/pdfbox/rendering/TestPDFToImage.java</exclude>
                     </excludes>
