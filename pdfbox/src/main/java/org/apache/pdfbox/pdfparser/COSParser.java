@@ -1456,13 +1456,18 @@ public class COSParser extends BaseParser
             if (objectKey.getNumber() == readObjectNumber())
             {
                 int genNumber = readGenerationNumber();
-                //
-                if (genNumber == objectKey.getGeneration()
-                        || (isLenient && genNumber > objectKey.getGeneration()))
+                if (genNumber == objectKey.getGeneration())
                 {
                     // finally try to read the object marker
                     readExpectedString(OBJ_MARKER, true);
                     objectKeyFound = true;
+                }
+                else if (isLenient && genNumber > objectKey.getGeneration())
+                {
+                    // finally try to read the object marker
+                    readExpectedString(OBJ_MARKER, true);
+                    objectKeyFound = true;
+                    objectKey.fixGeneration(genNumber);
                 }
             }
         }
