@@ -19,12 +19,14 @@ package org.apache.pdfbox.debugger.colorpane;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.color.ColorSpace;
 import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 
 /**
@@ -83,6 +85,42 @@ public class CSArrayBased
             colorCountLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             colorCountLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
             panel.add(colorCountLabel);
+        }
+
+        if (colorSpace instanceof PDICCBased)
+        {
+            PDICCBased icc = (PDICCBased) colorSpace;
+            //TODO the javadoc of getColorSpaceType is incomplete?
+            int colorSpaceType = icc.getColorSpaceType();
+            String cs;
+            switch (colorSpaceType)
+            {
+                case ColorSpace.CS_LINEAR_RGB:
+                    cs = "linear RGB";
+                    break;
+                case ColorSpace.CS_CIEXYZ:
+                    cs = "CIEXYZ";
+                    break;
+                case ColorSpace.CS_GRAY:
+                    cs = "linear gray";
+                    break;
+                case ColorSpace.CS_sRGB:
+                    cs = "sRGB";
+                    break;
+                case ColorSpace.TYPE_GRAY:
+                    cs = "gray";
+                    break;
+                case ColorSpace.TYPE_CMYK:
+                    cs = "CMYK";
+                    break;
+                default:
+                    cs = "type " + colorSpaceType;
+                    break;
+            }
+            JLabel otherLabel = new JLabel("Colorspace type: " + cs);
+            otherLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            otherLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+            panel.add(otherLabel);
         }
     }
 
