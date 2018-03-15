@@ -46,7 +46,7 @@ public class FlateFilter implements Filter
      */
     private static final Log LOG = LogFactory.getLog(FlateFilter.class);
 
-    private static final int BUFFER_SIZE = 16348;
+    private static final int BUFFER_SIZE = 0x4000;
 
     /**
      * {@inheritDoc}
