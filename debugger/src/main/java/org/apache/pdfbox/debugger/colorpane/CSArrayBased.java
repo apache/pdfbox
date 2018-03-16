@@ -106,6 +106,9 @@ public class CSArrayBased
                 case ColorSpace.CS_sRGB:
                     cs = "sRGB";
                     break;
+                case ColorSpace.TYPE_RGB:
+                    cs = "RGB";
+                    break;
                 case ColorSpace.TYPE_GRAY:
                     cs = "gray";
                     break;
