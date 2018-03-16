@@ -111,6 +111,10 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 import org.apache.pdfbox.printing.PDFPageable;
 
@@ -230,7 +234,13 @@ public class PDFDebugger extends JFrame
                 new ErrorDialog(throwable).setVisible(true);
             }
         });
-        
+
+        // trigger premature initializations for more accurate rendering benchmarks
+        // See discussion in PDFBOX-3988
+        PDFont font = PDType1Font.COURIER;
+        PDDeviceCMYK.INSTANCE.toRGB(new float[]{0,0,0,0});
+        PDDeviceRGB.INSTANCE.toRGB(new float[]{0,0,0});
+
         // open file, if any
         String filename = null;
         String password = "";
