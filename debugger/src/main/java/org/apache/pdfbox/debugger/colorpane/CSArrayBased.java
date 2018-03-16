@@ -90,7 +90,6 @@ public class CSArrayBased
         if (colorSpace instanceof PDICCBased)
         {
             PDICCBased icc = (PDICCBased) colorSpace;
-            //TODO the javadoc of getColorSpaceType is incomplete?
             int colorSpaceType = icc.getColorSpaceType();
             String cs;
             switch (colorSpaceType)
