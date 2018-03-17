@@ -106,6 +106,7 @@ import org.apache.pdfbox.debugger.ui.ReaderBottomPanel;
 import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
+import org.apache.pdfbox.debugger.ui.ViewMenu;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -166,14 +167,6 @@ public class PDFDebugger extends JFrame
     private JMenuItem findMenuItem;
     private JMenuItem findNextMenuItem;
     private JMenuItem findPreviousMenuItem;
-
-    // view menu
-    private JMenuItem viewModeItem;
-    public static JCheckBoxMenuItem showTextStripper;
-    public static JCheckBoxMenuItem showTextStripperBeads;
-    public static JCheckBoxMenuItem showFontBBox;
-    public static JCheckBoxMenuItem showGlyphBounds;
-    public static JCheckBoxMenuItem allowSubsampling;
     
     // configuration
     public static Properties configuration = new Properties();
@@ -283,6 +276,21 @@ public class PDFDebugger extends JFrame
         viewer.setVisible(true);
     }
     
+    public boolean isPageMode()
+    {
+        return this.isPageMode;
+    }
+    
+    public void setPageMode(boolean isPageMode)
+    {
+        this.isPageMode = isPageMode;
+    }
+    
+    public boolean hasDocument()
+    {
+        return document != null;
+    }
+    
     /**
      * This will print out a message telling how to use this utility.
      */
@@ -390,7 +398,9 @@ public class PDFDebugger extends JFrame
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(createFileMenu());
         menuBar.add(createEditMenu());
-        menuBar.add(createViewMenu());
+        
+        ViewMenu viewMenu = ViewMenu.getInstance(this);
+        menuBar.add(viewMenu.getMenu());
         setJMenuBar(menuBar);
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -596,76 +606,6 @@ public class PDFDebugger extends JFrame
         editMenu.add(createFindMenu());
         
         return editMenu;
-    }
-
-    private JMenu createViewMenu()
-    {
-        JMenu viewMenu = new JMenu("View");
-        viewMenu.setMnemonic('V');
-        if (isPageMode)
-        {
-            viewModeItem = new JMenuItem("Show Internal Structure");
-        }
-        else
-        {
-            viewModeItem = new JMenuItem("Show Pages");
-        }
-        viewModeItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                if (isPageMode)
-                {
-                    viewModeItem.setText("Show Pages");
-                    isPageMode = false;
-                }
-                else
-                {
-                    viewModeItem.setText("Show Internal Structure");
-                    isPageMode = true;
-                }
-                if (document != null)
-                {
-                    initTree();
-                }
-            }
-        });
-        viewMenu.add(viewModeItem);
-
-        ZoomMenu zoomMenu = ZoomMenu.getInstance();
-        zoomMenu.setEnableMenu(false);
-        viewMenu.add(zoomMenu.getMenu());
-
-        RotationMenu rotationMenu = RotationMenu.getInstance();
-        rotationMenu.setEnableMenu(false);
-        viewMenu.add(rotationMenu.getMenu());
-
-        viewMenu.addSeparator();
-
-        showTextStripper = new JCheckBoxMenuItem("Show TextStripper TextPositions");        
-        showTextStripper.setEnabled(false);
-        viewMenu.add(showTextStripper);
-
-        showTextStripperBeads = new JCheckBoxMenuItem("Show TextStripper Beads");
-        showTextStripperBeads.setEnabled(false);
-        viewMenu.add(showTextStripperBeads);
-        
-        showFontBBox = new JCheckBoxMenuItem("Show Approximate Text Bounds");
-        showFontBBox.setEnabled(false);
-        viewMenu.add(showFontBBox);
-        
-        showGlyphBounds = new JCheckBoxMenuItem("Show Glyph Bounds");
-        showGlyphBounds.setEnabled(false);
-        viewMenu.add(showGlyphBounds);
-
-        viewMenu.addSeparator();
-
-        allowSubsampling = new JCheckBoxMenuItem("Allow subsampling");
-        allowSubsampling.setEnabled(false);
-        viewMenu.add(allowSubsampling);
-
-        return viewMenu;
     }
 
     private JMenu createFindMenu()
@@ -1375,7 +1315,7 @@ public class PDFDebugger extends JFrame
         addRecentFileItems();
     }
     
-    private void initTree()
+    public void initTree()
     {
         TreeStatus treeStatus = new TreeStatus(document.getDocument().getTrailer());
         statusPane.updateTreeStatus(treeStatus);

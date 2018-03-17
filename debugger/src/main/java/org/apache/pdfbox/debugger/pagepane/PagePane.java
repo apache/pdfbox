@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.ImageUtil;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
+import org.apache.pdfbox.debugger.ui.ViewMenu;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -29,6 +30,8 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.SwingWorker;
 import javax.swing.event.AncestorEvent;
@@ -64,6 +67,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private JLabel label;
     private ZoomMenu zoomMenu;
     private RotationMenu rotationMenu;
+    private ViewMenu viewMenu;
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -120,13 +124,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
+        
         if (ZoomMenu.isZoomMenu(actionCommand) ||
             RotationMenu.isRotationMenu(actionCommand) ||
-            actionEvent.getSource() == PDFDebugger.showTextStripper ||
-            actionEvent.getSource() == PDFDebugger.showTextStripperBeads ||
-            actionEvent.getSource() == PDFDebugger.showFontBBox ||
-            actionEvent.getSource() == PDFDebugger.showGlyphBounds ||
-            actionEvent.getSource() == PDFDebugger.allowSubsampling)
+            ViewMenu.isRenderingOptions(actionCommand))
         {
             startRendering();
         }
@@ -138,11 +139,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         // the fact that PDDocument is not officially thread safe
         new RenderWorker(ZoomMenu.getZoomScale(),
                 RotationMenu.getRotationDegrees(),
-                PDFDebugger.showTextStripper.isSelected(),
-                PDFDebugger.showTextStripperBeads.isSelected(),
-                PDFDebugger.showFontBBox.isSelected(),
-                PDFDebugger.showGlyphBounds.isSelected(),
-                PDFDebugger.allowSubsampling.isSelected()
+                ViewMenu.isShowTextStripper(),
+                ViewMenu.isShowTextStripperBeads(),
+                ViewMenu.isShowFontBBox(),
+                ViewMenu.isShowGlyphBounds(),
+                ViewMenu.isAllowSubsampling()
         ).execute();
         zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
     }
@@ -156,39 +157,50 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         rotationMenu = RotationMenu.getInstance();
         rotationMenu.addMenuListeners(this);
         rotationMenu.setEnableMenu(true);
+        
+        viewMenu = ViewMenu.getInstance(null);
 
-        PDFDebugger.showTextStripper.setEnabled(true);
-        PDFDebugger.showTextStripper.addActionListener(this);
-
-        PDFDebugger.showTextStripperBeads.setEnabled(true);
-        PDFDebugger.showTextStripperBeads.addActionListener(this);
-
-        PDFDebugger.showFontBBox.setEnabled(true);
-        PDFDebugger.showFontBBox.addActionListener(this);
-
-        PDFDebugger.showGlyphBounds.setEnabled(true);
-        PDFDebugger.showGlyphBounds.addActionListener(this);
-
-        PDFDebugger.allowSubsampling.setEnabled(true);
-        PDFDebugger.allowSubsampling.addActionListener(this);
+        JMenu menuInstance = viewMenu.getMenu();
+        int itemCount = menuInstance.getItemCount();
+        
+        for (int i = 0; i< itemCount; i++)
+        {
+            JMenuItem item = menuInstance.getItem(i);
+            if (item != null)
+            {
+                item.setEnabled(true);
+                item.addActionListener(this);
+            }
+        }
     }
 
     @Override
     public void ancestorRemoved(AncestorEvent ancestorEvent)
     {
+        boolean isFirstEntrySkipped = false;
         zoomMenu.setEnableMenu(false);
         rotationMenu.setEnableMenu(false);
         
-        PDFDebugger.showTextStripper.setEnabled(false);
-        PDFDebugger.showTextStripper.removeActionListener(this);
-        PDFDebugger.showTextStripperBeads.setEnabled(false);
-        PDFDebugger.showTextStripperBeads.removeActionListener(this);
-        PDFDebugger.showFontBBox.setEnabled(false);
-        PDFDebugger.showFontBBox.removeActionListener(this);
-        PDFDebugger.showGlyphBounds.setEnabled(false);
-        PDFDebugger.showGlyphBounds.removeActionListener(this);
-        PDFDebugger.allowSubsampling.setEnabled(false);
-        PDFDebugger.allowSubsampling.removeActionListener(this);
+        JMenu menuInstance = viewMenu.getMenu();
+        int itemCount = menuInstance.getItemCount();
+        
+        for (int i = 0; i< itemCount; i++)
+        {
+            JMenuItem item = menuInstance.getItem(i);
+            // skip the first JMenuItem as this shall always be shown
+            if (item != null)
+            {
+                if (!isFirstEntrySkipped)
+                {
+                    isFirstEntrySkipped = true;
+                }
+                else
+                {
+                    item.setEnabled(false);
+                    item.removeActionListener(this);
+                }
+            }
+        }
     }
 
     @Override
