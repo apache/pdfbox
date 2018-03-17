@@ -55,6 +55,7 @@ public class PDFunctionType4 extends PDFunction
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getFunctionType()
     {
         return 4;
@@ -63,6 +64,7 @@ public class PDFunctionType4 extends PDFunction
     /**
     * {@inheritDoc}
     */
+    @Override
     public float[] eval(float[] input) throws IOException
     {
         //Setup the input values
