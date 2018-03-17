@@ -237,9 +237,12 @@ public class PDFDebugger extends JFrame
 
         // trigger premature initializations for more accurate rendering benchmarks
         // See discussion in PDFBOX-3988
-        PDFont font = PDType1Font.COURIER;
-        PDDeviceCMYK.INSTANCE.toRGB(new float[]{0,0,0,0});
-        PDDeviceRGB.INSTANCE.toRGB(new float[]{0,0,0});
+        if (PDType1Font.COURIER.isStandard14())
+        {
+            // Yes this is always true
+            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
+            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
+        }
 
         // open file, if any
         String filename = null;
