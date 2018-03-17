@@ -540,7 +540,7 @@ public final class PDFontDescriptor implements COSObjectable
      */
     public float getCapHeight()
     {
-        if(capHeight==Float.NEGATIVE_INFINITY)
+        if(Float.compare(capHeight, Float.NEGATIVE_INFINITY) == 0)
         {
             /* We observed a negative value being returned with
              * the Scheherazade font. PDFBOX-429 was logged for this.
@@ -570,7 +570,7 @@ public final class PDFontDescriptor implements COSObjectable
      */
     public float getXHeight()
     {
-        if(xHeight==Float.NEGATIVE_INFINITY)
+        if(Float.compare(xHeight, Float.NEGATIVE_INFINITY) == 0)
         {
             /* We observed a negative value being returned with
              * the Scheherazade font. PDFBOX-429 was logged for this.
