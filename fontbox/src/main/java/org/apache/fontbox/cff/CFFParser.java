@@ -135,11 +135,11 @@ public class CFFParser
         // this is OpenType font containing CFF data
         // so find CFF tag
         short numTables = input.readShort();
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "squid:S1854"})
         short searchRange = input.readShort();
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "squid:S1854"})
         short entrySelector = input.readShort();
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "squid:S1854"})
         short rangeShift = input.readShort();
         for (int q = 0; q < numTables; q++)
         {
