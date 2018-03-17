@@ -28,7 +28,7 @@ class RelationalOperators
     /** Implements the "eq" operator. */
     static class Eq implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -40,7 +40,7 @@ class RelationalOperators
 
         protected boolean isEqual(Object op1, Object op2)
         {
-            boolean result = false;
+            boolean result;
             if (op1 instanceof Number && op2 instanceof Number)
             {
                 Number num1 = (Number)op1;
@@ -59,7 +59,7 @@ class RelationalOperators
     /** Abstract base class for number comparison operators. */
     private abstract static class AbstractNumberComparisonOperator implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
