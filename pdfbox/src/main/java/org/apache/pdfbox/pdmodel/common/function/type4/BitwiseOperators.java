@@ -28,7 +28,7 @@ class BitwiseOperators
     /** Abstract base class for logical operators. */
     private abstract static class AbstractLogicalOperator implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -81,7 +81,7 @@ class BitwiseOperators
     /** Implements the "bitshift" operator. */
     static class Bitshift implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -104,7 +104,7 @@ class BitwiseOperators
     /** Implements the "false" operator. */
     static class False implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -116,7 +116,7 @@ class BitwiseOperators
     /** Implements the "not" operator. */
     static class Not implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -162,7 +162,7 @@ class BitwiseOperators
     /** Implements the "true" operator. */
     static class True implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();

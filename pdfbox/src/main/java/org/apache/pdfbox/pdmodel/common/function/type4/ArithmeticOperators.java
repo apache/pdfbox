@@ -28,7 +28,7 @@ class ArithmeticOperators
     /** Implements the "abs" operator. */
     static class Abs implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -47,7 +47,7 @@ class ArithmeticOperators
     /** Implements the "add" operator. */
     static class Add implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num2 = context.popNumber();
@@ -76,7 +76,7 @@ class ArithmeticOperators
     /** Implements the "atan" operator. */
     static class Atan implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             float den = context.popReal();
@@ -95,7 +95,7 @@ class ArithmeticOperators
     /** Implements the "ceiling" operator. */
     static class Ceiling implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -114,7 +114,7 @@ class ArithmeticOperators
     /** Implements the "cos" operator. */
     static class Cos implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             float angle = context.popReal();
@@ -127,7 +127,7 @@ class ArithmeticOperators
     /** Implements the "cvi" operator. */
     static class Cvi implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -139,7 +139,7 @@ class ArithmeticOperators
     /** Implements the "cvr" operator. */
     static class Cvr implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -151,7 +151,7 @@ class ArithmeticOperators
     /** Implements the "div" operator. */
     static class Div implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num2 = context.popNumber();
@@ -164,7 +164,7 @@ class ArithmeticOperators
     /** Implements the "exp" operator. */
     static class Exp implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number exp = context.popNumber();
@@ -178,7 +178,7 @@ class ArithmeticOperators
     /** Implements the "floor" operator. */
     static class Floor implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -197,7 +197,7 @@ class ArithmeticOperators
     /** Implements the "idiv" operator. */
     static class IDiv implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             int num2 = context.popInt();
@@ -210,7 +210,7 @@ class ArithmeticOperators
     /** Implements the "ln" operator. */
     static class Ln implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -222,7 +222,7 @@ class ArithmeticOperators
     /** Implements the "log" operator. */
     static class Log implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -234,7 +234,7 @@ class ArithmeticOperators
     /** Implements the "mod" operator. */
     static class Mod implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             int int2 = context.popInt();
@@ -247,7 +247,7 @@ class ArithmeticOperators
     /** Implements the "mul" operator. */
     static class Mul implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num2 = context.popNumber();
@@ -276,7 +276,7 @@ class ArithmeticOperators
     /** Implements the "neg" operator. */
     static class Neg implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -303,7 +303,7 @@ class ArithmeticOperators
     /** Implements the "round" operator. */
     static class Round implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();
@@ -322,7 +322,7 @@ class ArithmeticOperators
     /** Implements the "sin" operator. */
     static class Sin implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             float angle = context.popReal();
@@ -335,7 +335,7 @@ class ArithmeticOperators
     /** Implements the "sqrt" operator. */
     static class Sqrt implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             float num = context.popReal();
@@ -351,7 +351,7 @@ class ArithmeticOperators
     /** Implements the "sub" operator. */
     static class Sub implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -381,7 +381,7 @@ class ArithmeticOperators
     /** Implements the "truncate" operator. */
     static class Truncate implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Number num = context.popNumber();

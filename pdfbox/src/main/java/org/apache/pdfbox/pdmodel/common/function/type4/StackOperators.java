@@ -30,7 +30,7 @@ class StackOperators
     /** Implements the "copy" operator. */
     static class Copy implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -50,7 +50,7 @@ class StackOperators
     /** Implements the "dup" operator. */
     static class Dup implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -62,7 +62,7 @@ class StackOperators
     /** Implements the "exch" operator. */
     static class Exch implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -77,7 +77,7 @@ class StackOperators
     /** Implements the "index" operator. */
     static class Index implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -95,7 +95,7 @@ class StackOperators
     /** Implements the "pop" operator. */
     static class Pop implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
@@ -107,7 +107,7 @@ class StackOperators
     /** Implements the "roll" operator. */
     static class Roll implements Operator
     {
-
+        @Override
         public void execute(ExecutionContext context)
         {
             Stack<Object> stack = context.getStack();
