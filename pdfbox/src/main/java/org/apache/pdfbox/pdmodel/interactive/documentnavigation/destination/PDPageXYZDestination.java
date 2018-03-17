@@ -138,7 +138,7 @@ public class PDPageXYZDestination extends PDPageDestination
     public void setZoom( float zoom )
     {
         array.growToSize( 5 );
-        if( zoom == -1 )
+        if( Float.compare(zoom, -1) == 0)
         {
             array.set(4, null);
         }
