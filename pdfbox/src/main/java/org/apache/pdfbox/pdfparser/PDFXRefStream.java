@@ -350,6 +350,7 @@ public class PDFXRefStream implements PDFXRef
     /**
      * {@inheritDoc}
      */
+    @Override
     public COSObject getObject(int objectNumber)
     {
         return null;

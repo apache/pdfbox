@@ -74,6 +74,7 @@ public class PDNamedDestination extends PDDestination
      *
      * @return The cos object that matches this Java object.
      */
+    @Override
     public COSBase getCOSObject()
     {
         return namedDestination;
