@@ -33,6 +33,10 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDGamma;
  */
 public abstract class PDStandardAttributeObject extends PDAttributeObject
 {
+    /**
+     * An "unspecified" default float value.
+     */
+    protected static final float UNSPECIFIED = -1.f;
 
     /**
      * Default constructor.
@@ -289,11 +293,6 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
     }
 
     /**
-     * An "unspecified" default float value.
-     */
-    protected static final float UNSPECIFIED = -1.f;
-
-    /**
      * Gets a number or an array of numbers.
      * 
      * @param name the attribute name
@@ -321,7 +320,7 @@ public abstract class PDStandardAttributeObject extends PDAttributeObject
         {
             return ((COSNumber) v).floatValue();
         }
-        if (defaultValue == UNSPECIFIED)
+        if (Float.compare(defaultValue, UNSPECIFIED) == 0)
         {
             return null;
         }

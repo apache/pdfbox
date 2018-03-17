@@ -63,6 +63,7 @@ public abstract class PDStructureNode implements COSObjectable
     /**
      * {@inheritDoc}
      */
+    @Override
     public COSDictionary getCOSObject()
     {
         return dictionary;
