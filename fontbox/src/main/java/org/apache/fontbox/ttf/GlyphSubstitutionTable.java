@@ -62,13 +62,13 @@ public class GlyphSubstitutionTable extends TTFTable
     void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         long start = data.getCurrentPosition();
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "squid:S1854"})
         int majorVersion = data.readUnsignedShort();
         int minorVersion = data.readUnsignedShort();
         int scriptListOffset = data.readUnsignedShort();
         int featureListOffset = data.readUnsignedShort();
         int lookupListOffset = data.readUnsignedShort();
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "squid:S1854"})
         long featureVariationsOffset = -1L;
         if (minorVersion == 1L)
         {
@@ -140,7 +140,7 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(offset);
         LangSysTable langSysTable = new LangSysTable();
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "squid:S1854"})
         int lookupOrder = data.readUnsignedShort();
         langSysTable.requiredFeatureIndex = data.readUnsignedShort();
         int featureIndexCount = data.readUnsignedShort();
@@ -176,7 +176,7 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(offset);
         FeatureTable featureTable = new FeatureTable();
-        @SuppressWarnings("unused")
+        @SuppressWarnings({"unused", "squid:S1854"})
         int featureParams = data.readUnsignedShort();
         int lookupIndexCount = data.readUnsignedShort();
         featureTable.lookupListIndices = new int[lookupIndexCount];
