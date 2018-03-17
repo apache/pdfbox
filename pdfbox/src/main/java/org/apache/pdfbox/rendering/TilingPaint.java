@@ -203,13 +203,13 @@ class TilingPaint implements Paint
     private Rectangle2D getAnchorRect(PDTilingPattern pattern)
     {
         float xStep = pattern.getXStep();
-        if (xStep == 0)
+        if (Float.compare(xStep, 0) == 0)
         {
             xStep = pattern.getBBox().getWidth();
         }
 
         float yStep = pattern.getYStep();
-        if (yStep == 0)
+        if (Float.compare(yStep, 0) == 0)
         {
             yStep = pattern.getBBox().getHeight();
         }
