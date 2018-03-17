@@ -137,7 +137,7 @@ public abstract class BlendMode
         public float blendChannel(float srcValue, float dstValue)
         {
             // See PDF 2.0 specification
-            if (dstValue == 0)
+            if (Float.compare(dstValue,0) == 0)
             {
                 return 0;
             }
@@ -155,7 +155,7 @@ public abstract class BlendMode
         public float blendChannel(float srcValue, float dstValue)
         {
             // See PDF 2.0 specification
-            if (dstValue == 1)
+            if (Float.compare(dstValue, 1) == 0)
             {
                 return 1;
             }
