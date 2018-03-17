@@ -601,7 +601,7 @@ public final class Matrix implements Cloneable
          * sqrt(x2) =
          * abs(x)
          */
-        if( !(single[1]==0.0f && single[3]==0.0f) )
+        if( !(Float.compare(single[1], 0.0f) == 0 && Float.compare(single[3], 0.0f) ==0) )
         {
             xScale = (float)Math.sqrt(Math.pow(single[0], 2)+
                                       Math.pow(single[1], 2));
@@ -617,7 +617,7 @@ public final class Matrix implements Cloneable
     public float getScalingFactorY()
     {
         float yScale = single[4];
-        if( !(single[1]==0.0f && single[3]==0.0f) )
+        if( !(Float.compare(single[1], 0.0f) == 0 && Float.compare(single[3], 0.0f) == 0) )
         {
             yScale = (float)Math.sqrt(Math.pow(single[3], 2)+
                                       Math.pow(single[4], 2));
