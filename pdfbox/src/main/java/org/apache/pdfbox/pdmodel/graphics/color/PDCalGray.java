@@ -85,7 +85,7 @@ public final class PDCalGray extends PDCIEDictionaryBasedColorSpace
     public float[] toRGB(float[] value)
     {
         // see implementation of toRGB in PDCalRGB, and PDFBOX-2971
-        if (wpX == 1 && wpY == 1 && wpZ == 1)
+        if (isWhitePoint())
         {
             float a = value[0];
             float[] result = map1.get(a);

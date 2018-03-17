@@ -64,6 +64,18 @@ public abstract class PDCIEDictionaryBasedColorSpace extends PDCIEBasedColorSpac
         fillWhitepointCache(getWhitepoint());
     }
 
+    /**
+     * Tests if the current point is the white point.
+     *
+     * @return true if the current point is the white point.
+     */
+    protected boolean isWhitePoint()
+    {
+        return  Float.compare(wpX, 1) == 0 &&
+                Float.compare(wpY, 1) == 0 && 
+                Float.compare(wpZ, 1)  == 0;
+    }
+
     private void fillWhitepointCache(PDTristimulus whitepoint)
     {
         wpX = whitepoint.getX();

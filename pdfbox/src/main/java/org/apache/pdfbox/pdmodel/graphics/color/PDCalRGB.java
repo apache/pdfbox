@@ -77,7 +77,7 @@ public class PDCalRGB extends PDCIEDictionaryBasedColorSpace
     @Override
     public float[] toRGB(float[] value)
     {
-        if (wpX == 1 && wpY == 1 && wpZ == 1)
+        if (isWhitePoint())
         {
             float a = value[0];
             float b = value[1];
