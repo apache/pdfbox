@@ -335,6 +335,7 @@ public class FDFDocument implements Closeable
      *
      * @throws IOException If there is an error releasing resources.
      */
+    @Override
     public void close() throws IOException
     {
         document.close();
