@@ -1541,7 +1541,7 @@ public class PDDocument implements Closeable
     {
         float currentVersion = getVersion();
         // nothing to do?
-        if (newVersion == currentVersion)
+        if (Float.compare(newVersion,currentVersion) == 0)
         {
             return;
         }
