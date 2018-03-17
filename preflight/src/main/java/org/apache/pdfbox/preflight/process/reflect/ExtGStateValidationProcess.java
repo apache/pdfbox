@@ -278,7 +278,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             COSDocument cosDocument = context.getDocument().getDocument();
             Float fca = COSUtils.getAsFloat(uCA, cosDocument);
             Integer ica = COSUtils.getAsInteger(uCA, cosDocument);
-            if (!(fca != null && fca == 1.0f) && !(ica != null && ica == 1))
+            if (!(fca != null && Float.compare(fca, 1.0f) == 0) && !(ica != null && ica == 1))
             {
                 context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_CA,
                         "CA entry in a ExtGState is invalid"));
@@ -302,7 +302,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             COSDocument cosDocument = context.getDocument().getDocument();
             Float fca = COSUtils.getAsFloat(lCA, cosDocument);
             Integer ica = COSUtils.getAsInteger(lCA, cosDocument);
-            if (!(fca != null && fca == 1.0f) && !(ica != null && ica == 1))
+            if (!(fca != null && Float.compare(fca, 1.0f) == 0) && !(ica != null && ica == 1))
             {
                 context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_CA,
                         "ca entry in a ExtGState is invalid"));
