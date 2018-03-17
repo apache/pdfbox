@@ -176,15 +176,15 @@ public class PDType3Font extends PDSimpleFont
             {
                 retval = bbox.getHeight() / 2;
             }
-            if (retval == 0)
+            if (Float.compare(retval, 0) == 0)
             {
                 retval = desc.getCapHeight();
             }
-            if (retval == 0)
+            if (Float.compare(retval, 0) == 0)
             {
                 retval = desc.getAscent();
             }
-            if (retval == 0)
+            if (Float.compare(retval, 0) == 0)
             {
                 retval = desc.getXHeight();
                 if (retval > 0)
@@ -281,8 +281,7 @@ public class PDType3Font extends PDSimpleFont
     private BoundingBox generateBoundingBox()
     {
         PDRectangle rect = getFontBBox();
-        if (rect.getLowerLeftX() == 0 && rect.getLowerLeftY() == 0
-                && rect.getUpperRightX() == 0 && rect.getUpperRightY() == 0)
+        if (!isNonZeroBoundingBox(rect))
         {
             // Plan B: get the max bounding box of the glyphs
             COSDictionary cp = getCharProcs();

@@ -27,6 +27,7 @@ import org.apache.fontbox.FontBoxFont;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
@@ -382,6 +383,16 @@ public abstract class PDSimpleFont extends PDFont
             }
         }
         return super.isStandard14();
+    }
+
+    protected boolean isNonZeroBoundingBox (PDRectangle bbox)
+    {
+        return bbox != null && (
+            Float.compare(bbox.getLowerLeftX(), 0) != 0 ||
+            Float.compare(bbox.getLowerLeftY(), 0) != 0 ||
+            Float.compare(bbox.getUpperRightX(), 0) != 0 ||
+            Float.compare(bbox.getUpperRightY(), 0) != 0
+        );
     }
 
     /**

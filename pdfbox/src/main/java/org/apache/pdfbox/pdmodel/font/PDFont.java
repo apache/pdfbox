@@ -376,7 +376,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     public float getAverageFontWidth()
     {
         float average;
-        if (avgFontWidth != 0.0f)
+        if (Float.compare(avgFontWidth, 0.0f) != 0.0f)
         {
             average = avgFontWidth;
         }
@@ -524,7 +524,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public float getSpaceWidth()
     {
-        if (fontWidthOfSpace == -1f)
+        if (Float.compare(fontWidthOfSpace, -1f) == 0)
         {
             COSBase toUnicode = dict.getDictionaryObject(COSName.TO_UNICODE);
             try

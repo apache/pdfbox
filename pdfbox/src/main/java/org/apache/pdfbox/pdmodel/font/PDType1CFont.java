@@ -212,9 +212,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     {
         if (getFontDescriptor() != null) {
             PDRectangle bbox = getFontDescriptor().getFontBoundingBox();
-            if (bbox != null
-                    && (bbox.getLowerLeftX() != 0 || bbox.getLowerLeftY() != 0
-                    || bbox.getUpperRightX() != 0 || bbox.getUpperRightY() != 0))
+            if (isNonZeroBoundingBox(bbox))
             {
                 return new BoundingBox(bbox.getLowerLeftX(), bbox.getLowerLeftY(),
                                        bbox.getUpperRightX(), bbox.getUpperRightY());
