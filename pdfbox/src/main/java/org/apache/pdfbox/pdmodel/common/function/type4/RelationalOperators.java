@@ -45,7 +45,7 @@ class RelationalOperators
             {
                 Number num1 = (Number)op1;
                 Number num2 = (Number)op2;
-                result = num1.floatValue() == num2.floatValue();
+                result = Float.compare(num1.floatValue(),num2.floatValue()) == 0;
             }
             else
             {
