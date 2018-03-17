@@ -57,6 +57,7 @@ public final class PDGamma implements COSObjectable
      * Convert this standard java object to a COS object.
      * @return the cos object that matches this Java object
      */
+    @Override
     public COSBase getCOSObject()
     {
         return values;
