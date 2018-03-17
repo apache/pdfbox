@@ -105,7 +105,7 @@ public class PDBorderStyleDictionary implements COSObjectable
     public void setWidth(float w)
     {
         // PDFBOX-3929 workaround 
-        if (w == (int) w)
+        if (Float.compare(w, (int) w) == 0)
         {
             getCOSObject().setInt("W", (int) w);
         }

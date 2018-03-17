@@ -139,7 +139,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
     private int[] calcColorTable() throws IOException
     {
         int[] map = new int[factor + 1];
-        if (factor == 0 || d1d0 == 0)
+        if (factor == 0 || Float.compare(d1d0, 0) == 0)
         {
             float[] values = axialShadingType.evalFunction(domain[0]);
             map[0] = convertToRGB(values);
@@ -185,7 +185,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                 rat.transform(values, 0, values, 0, 1);
                 double inputValue = x1x0 * (values[0] - coords[0]) + y1y0 * (values[1] - coords[1]);
                 // TODO this happens if start == end, see PDFBOX-1442
-                if (denom == 0)
+                if (Double.compare(denom, 0) == 0)
                 {
                     if (getBackground() == null)
                     {
