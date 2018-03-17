@@ -248,19 +248,19 @@ public final class TextPosition
      */
     private float getXRot(float rotation)
     {
-        if (rotation == 0)
+        if (Float.compare(rotation, 0) == 0)
         {
             return textMatrix.getTranslateX();
         }
-        else if (rotation == 90)
+        else if (Float.compare(rotation, 90) == 0)
         {
             return textMatrix.getTranslateY();
         }
-        else if (rotation == 180)
+        else if (Float.compare(rotation, 180) == 0)
         {
             return pageWidth - textMatrix.getTranslateX();
         }
-        else if (rotation == 270)
+        else if (Float.compare(rotation, 270) == 0)
         {
             return pageHeight - textMatrix.getTranslateY();
         }
@@ -299,19 +299,19 @@ public final class TextPosition
      */
     private float getYLowerLeftRot(float rotation)
     {
-        if (rotation == 0)
+        if (Float.compare(rotation, 0) == 0)
         {
             return textMatrix.getTranslateY();
         }
-        else if (rotation == 90)
+        else if (Float.compare(rotation, 90) == 0)
         {
             return pageWidth - textMatrix.getTranslateX();
         }
-        else if (rotation == 180)
+        else if (Float.compare(rotation, 180) == 0)
         {
             return pageHeight - textMatrix.getTranslateY();
         }
-        else if (rotation == 270)
+        else if (Float.compare(rotation, 270) == 0)
         {
             return textMatrix.getTranslateX();
         }
@@ -339,7 +339,7 @@ public final class TextPosition
     {
         float dir = getDir();
         // some PDFBox code assumes that the 0,0 point is in upper left, not lower left
-        if (dir == 0 || dir == 180)
+        if (Float.compare(dir, 0) == 0 || Float.compare(dir, 180) == 0)
         {
             return pageHeight - getYLowerLeftRot(dir);
         }
@@ -357,7 +357,7 @@ public final class TextPosition
      */
     private float getWidthRot(float rotation)
     {
-        if (rotation == 90 || rotation == 270)
+        if (Float.compare(rotation, 90) == 0 || Float.compare(rotation, 270) == 0)
         {
             return Math.abs(endY - textMatrix.getTranslateY());
         }

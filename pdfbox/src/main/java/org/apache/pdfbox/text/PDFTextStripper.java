@@ -388,7 +388,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
             
             // adjust for cropbox
             PDRectangle cropBox = page.getCropBox();
-            if (cropBox.getLowerLeftX() != 0 || cropBox.getLowerLeftY() != 0)
+            if (Float.compare(cropBox.getLowerLeftX(), 0) != 0 || Float.compare(cropBox.getLowerLeftY(), 0) != 0)
             {
                 rect.setLowerLeftX(rect.getLowerLeftX() - cropBox.getLowerLeftX());
                 rect.setLowerLeftY(rect.getLowerLeftY() - cropBox.getLowerLeftY());
@@ -528,9 +528,9 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
                 // Resets the average character width when we see a change in font
                 // or a change in the font size
-                if (lastPosition != null && (position.getFont() != lastPosition.getTextPosition()
-                        .getFont()
-                        || position.getFontSize() != lastPosition.getTextPosition().getFontSize()))
+                if (lastPosition != null &&
+                    (position.getFont() != lastPosition.getTextPosition().getFont() || 
+                     Float.compare(position.getFontSize(),lastPosition.getTextPosition().getFontSize()) != 0))
                 {
                     previousAveCharWidth = -1;
                 }
@@ -564,7 +564,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // space character with some margin.
                 float wordSpacing = position.getWidthOfSpace();
                 float deltaSpace;
-                if (wordSpacing == 0 || Float.isNaN(wordSpacing))
+                if (Float.compare(wordSpacing, 0) == 0 || Float.isNaN(wordSpacing))
                 {
                     deltaSpace = Float.MAX_VALUE;
                 }
@@ -598,7 +598,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 // Compares the values obtained by the average method and the wordSpacing method
                 // and picks the smaller number.
                 float expectedStartOfNextWordX = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE;
-                if (endOfLastTextX != END_OF_LAST_TEXT_X_RESET_VALUE)
+                if (Float.compare(endOfLastTextX, END_OF_LAST_TEXT_X_RESET_VALUE) != 0)
                 {
                     if (deltaCharWidth > deltaSpace)
                     {
@@ -639,7 +639,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                         minYTopForLine = MIN_Y_TOP_FOR_LINE_RESET_VALUE;
                     }
                     // test if our TextPosition starts after a new word would be expected to start
-                    if (expectedStartOfNextWordX != EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
+                    if (Float.compare(expectedStartOfNextWordX, EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE) != 0
                             && expectedStartOfNextWordX < positionX &&
                             // only bother adding a space if the last character was not a space
                             lastPosition.getTextPosition().getUnicode() != null
