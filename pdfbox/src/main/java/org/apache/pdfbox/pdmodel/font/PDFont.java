@@ -376,7 +376,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     public float getAverageFontWidth()
     {
         float average;
-        if (Float.compare(avgFontWidth, 0.0f) != 0.0f)
+        if (Float.compare(avgFontWidth, 0.0f) != 0)
         {
             average = avgFontWidth;
         }
