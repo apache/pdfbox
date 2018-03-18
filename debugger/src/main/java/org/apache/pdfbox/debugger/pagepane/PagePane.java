@@ -68,6 +68,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private ZoomMenu zoomMenu;
     private RotationMenu rotationMenu;
     private ViewMenu viewMenu;
+    private String labelText = "";
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -275,7 +276,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseExited(MouseEvent e)
     {
-        statuslabel.setText("");
+        statuslabel.setText(labelText);
     }
 
     /**
@@ -308,8 +309,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         protected BufferedImage doInBackground() throws IOException
         {
             label.setIcon(null);
-            label.setText("Rendering...");
-            statuslabel.setText("Rendering...");
+            labelText = "Rendering...";
+            label.setText(labelText);
+            statuslabel.setText(labelText);
             
             PDFRenderer renderer = new DebugPDFRenderer(document, this.showGlyphBounds);
             renderer.setSubsamplingAllowed(allowSubsampling);
@@ -319,8 +321,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             long t1 = System.nanoTime();
 
             long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
-            statuslabel.setText("Rendered in " + ms + " ms");
-            
+            labelText = "Rendered in " + ms + " ms";
+            statuslabel.setText(labelText);
+
             // debug overlays
             DebugTextOverlay debugText = new DebugTextOverlay(document, pageIndex, scale, 
                                                               showTextStripper, showTextStripperBeads,
