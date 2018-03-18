@@ -1555,8 +1555,8 @@ public class COSParser extends BaseParser
     private long bfSearchForXRef(long xrefOffset) throws IOException
     {
         long newOffset = -1;
-        long newOffsetTable = -1;
-        long newOffsetStream = -1;
+        long newOffsetTable;
+        long newOffsetStream;
 
         // initialize bfSearchXRefTablesOffsets -> not null
         bfSearchForXRefTables();
