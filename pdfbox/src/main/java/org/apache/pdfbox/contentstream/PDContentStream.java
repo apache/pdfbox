@@ -40,16 +40,22 @@ public interface PDContentStream
 
     /**
      * Returns this stream's resources, if any.
+     * 
+     * @return the resources of this stream.
      */
     PDResources getResources();
 
     /**
      * Returns the bounding box of the contents.
+     * 
+     * @return the bounding box of this stream.
      */
     PDRectangle getBBox();
 
     /**
      * Returns the matrix which transforms from the stream's space to user space.
+     * 
+     * @return the matrix of this stream.
      */
     Matrix getMatrix();
 }
