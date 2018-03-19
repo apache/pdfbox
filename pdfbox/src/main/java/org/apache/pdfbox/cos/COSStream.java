@@ -371,7 +371,7 @@ public class COSStream extends COSDictionary implements Closeable
     /**
      * Returns the contents of the stream as a PDF "text string".
      * 
-     * return the text string representation of this stream.
+     * @return the text string representation of this stream.
      */
     public String toTextString()
     {
