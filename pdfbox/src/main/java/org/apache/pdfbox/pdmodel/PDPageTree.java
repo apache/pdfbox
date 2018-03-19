@@ -203,6 +203,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      * Returns the page at the given index.
      *
      * @param index zero-based index
+     * 
+     * @return the page at the given index.
      */
     public PDPage get(int index)
     {
@@ -363,8 +365,9 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     }
 
     /**
-     * Returns the number of leaf nodes (page objects) that are descendants of this root within the
-     * page tree.
+     * Returns the number of leaf nodes (page objects) that are descendants of this root within the page tree.
+     * 
+     * @return the number of leaf nodes.
      */
     public int getCount()
     {

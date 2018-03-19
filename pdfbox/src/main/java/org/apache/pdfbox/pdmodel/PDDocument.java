@@ -1596,6 +1596,8 @@ public class PDDocument implements Closeable
 
     /**
      * Returns the resource cache associated with this document, or null if there is none.
+     * 
+     * @return the resource cache or null.
      */
     public ResourceCache getResourceCache()
     {

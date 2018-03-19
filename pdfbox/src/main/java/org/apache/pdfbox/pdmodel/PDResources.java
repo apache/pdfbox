@@ -110,6 +110,9 @@ public final class PDResources implements COSObjectable
      * Returns the font resource with the given name, or null if none exists.
      *
      * @param name Name of the font resource.
+     * 
+     * @return the font resource with the given name.
+     * 
      * @throws IOException if something went wrong.
      */
     public PDFont getFont(COSName name) throws IOException
@@ -212,6 +215,8 @@ public final class PDResources implements COSObjectable
      * Returns true if the given color space name exists in these resources.
      *
      * @param name Name of the color space resource.
+     * 
+     * @return true if the color space with the given name exists.
      */
     public boolean hasColorSpace(COSName name)
     {
@@ -219,10 +224,11 @@ public final class PDResources implements COSObjectable
     }
 
     /**
-     * Returns the extended graphics state resource with the given name, or null
-     * if none exists.
+     * Returns the extended graphics state resource with the given name, or null if none exists.
      *
      * @param name Name of the graphics state resource.
+     * 
+     * @return the extended graphics state resource with the given name.
      */
     public PDExtendedGraphicsState getExtGState(COSName name)
     {
@@ -255,6 +261,9 @@ public final class PDResources implements COSObjectable
      * Returns the shading resource with the given name, or null if none exists.
      *
      * @param name Name of the shading resource.
+     * 
+     * @return the shading resource of the given name.
+     * 
      * @throws IOException if something went wrong.
      */
     public PDShading getShading(COSName name) throws IOException
@@ -288,6 +297,9 @@ public final class PDResources implements COSObjectable
      * Returns the pattern resource with the given name, or null if none exists.
      * 
      * @param name Name of the pattern resource.
+     * 
+     * @return the pattern resource of the given name.
+     * 
      * @throws IOException if something went wrong.
      */
     public PDAbstractPattern getPattern(COSName name) throws IOException
@@ -321,6 +333,8 @@ public final class PDResources implements COSObjectable
      * Returns the property list resource with the given name, or null if none exists.
      * 
      * @param name Name of the property list resource.
+     * 
+     * @return the property list resource of the given name.
      */
     public PDPropertyList getProperties(COSName name)
     {
@@ -379,6 +393,9 @@ public final class PDResources implements COSObjectable
      * Returns the XObject resource with the given name, or null if none exists.
      * 
      * @param name Name of the XObject resource.
+     * 
+     * @return the XObject resource of the given name.
+     * 
      * @throws IOException if something went wrong.
      */
     public PDXObject getXObject(COSName name) throws IOException
@@ -478,6 +495,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the names of the color space resources, if any.
+     * 
+     * @return the names of all color space resources.
      */
     public Iterable<COSName> getColorSpaceNames()
     {
@@ -486,6 +505,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the names of the XObject resources, if any.
+     * 
+     * @return the names of all XObject resources.
      */
     public Iterable<COSName> getXObjectNames()
     {
@@ -494,6 +515,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the names of the font resources, if any.
+     * 
+     * @return the names of all font resources.
      */
     public Iterable<COSName> getFontNames()
     {
@@ -502,6 +525,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the names of the property list resources, if any.
+     * 
+     * @return the names of all property list resources.
      */
     public Iterable<COSName> getPropertiesNames()
     {
@@ -510,6 +535,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the names of the shading resources, if any.
+     * 
+     * @return the names of all shading resources.
      */
     public Iterable<COSName> getShadingNames()
     {
@@ -518,6 +545,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the names of the pattern resources, if any.
+     * 
+     * @return the names of all pattern resources.
      */
     public Iterable<COSName> getPatternNames()
     {
@@ -526,6 +555,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the names of the extended graphics state resources, if any.
+     * 
+     * @return the names of all extended graphics state resources.
      */
     public Iterable<COSName> getExtGStateNames()
     {
@@ -534,6 +565,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the resource names of the given kind.
+     * 
+     * @return the names of all resources of the given kind.
      */
     private Iterable<COSName> getNames(COSName kind)
     {
@@ -795,6 +828,8 @@ public final class PDResources implements COSObjectable
 
     /**
      * Returns the resource cache associated with the Resources, or null if there is none.
+     * 
+     * @return the resource cache associated with the resources.
      */
     public ResourceCache getResourceCache()
     {
