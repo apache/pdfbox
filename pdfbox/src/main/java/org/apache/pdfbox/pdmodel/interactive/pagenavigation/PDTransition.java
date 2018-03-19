@@ -136,6 +136,8 @@ public final class PDTransition extends PDDictionaryWrapper
      * Sets the direction in which the specified transition effect shall moves. Only for {@link PDTransitionStyle#Wipe},
      * {@link PDTransitionStyle#Glitter}, {@link PDTransitionStyle#Fly}, {@link PDTransitionStyle#Cover},
      * {@link PDTransitionStyle#Uncover} and {@link PDTransitionStyle#Push}.
+     * 
+     * @param direction the direction in which the specified transition effect shall move.
      */
     public void setDirection(PDTransitionDirection direction)
     {

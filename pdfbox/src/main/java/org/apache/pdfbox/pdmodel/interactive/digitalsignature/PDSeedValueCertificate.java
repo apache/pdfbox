@@ -545,8 +545,10 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * Returns A list of array of bytes that contain Object Identifiers (OIDs) of the certificate
-     * policies that must be present in the signing certificate
+     * Returns A list of array of bytes that contain Object Identifiers (OIDs) of the certificate policies that must be
+     * present in the signing certificate
+     * 
+     * @return an array of object identifiers.
      */
     public List<byte[]> getOID()
     {
@@ -579,7 +581,7 @@ public class PDSeedValueCertificate implements COSObjectable
     /**
      * works like {@link #setOID(List)} but for one object
      *
-     * @param oid
+     * @param oid the object identifier.
      */
     public void addOID(byte[] oid)
     {
@@ -601,7 +603,7 @@ public class PDSeedValueCertificate implements COSObjectable
     /**
      * removes an OID from the list
      *
-     * @param oid
+     * @param oid the object identifier to be removed.
      */
     public void removeOID(byte[] oid)
     {
@@ -615,6 +617,8 @@ public class PDSeedValueCertificate implements COSObjectable
 
     /**
      * returns String of the URL
+     * 
+     * @return the URL
      */
     public String getURL()
     {
