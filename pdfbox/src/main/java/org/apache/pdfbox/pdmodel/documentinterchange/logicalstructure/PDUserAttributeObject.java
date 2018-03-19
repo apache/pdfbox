@@ -117,7 +117,7 @@ public class PDUserAttributeObject extends PDAttributeObject
     }
 
     /**
-     * @param userProperty  
+     * @param userProperty the changed user property.
      */
     public void userPropertyChanged(PDUserProperty userProperty)
     {
