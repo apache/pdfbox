@@ -182,7 +182,7 @@ public class PDActionEmbeddedGoTo extends PDAction
     /**
      * Sets the target directory.
      * 
-     * @param targetDirectory
+     * @param targetDirectory the target directory.
      */
     public void setTargetDirectory(PDTargetDirectory targetDirectory)
     {

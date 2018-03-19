@@ -31,7 +31,7 @@ public interface ExternalSigningSupport
      *
      * @return content stream
      *
-     * @throws java.io.IOException
+     * @throws java.io.IOException if something went wrong
      */
     InputStream getContent() throws IOException;
 

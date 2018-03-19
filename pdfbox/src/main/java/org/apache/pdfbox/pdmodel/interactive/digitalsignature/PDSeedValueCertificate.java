@@ -214,6 +214,8 @@ public class PDSeedValueCertificate implements COSObjectable
 
     /**
      * Returns list of byte arrays that contains DER-encoded X.509v3 certificates
+     * 
+     * @return a list of bytes arrays representing the subject.
      */
     public List<byte[]> getSubject()
     {
@@ -284,9 +286,10 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * Returns list of maps that contains subject distinguished names like [(cn: John Doe, o: Doe),
-     * (cn: John Smith)] both keys are typically of the form 'cn', 'o', 'email', '2.5.4.43'; and
-     * values are text strings.
+     * Returns list of maps that contains subject distinguished names like [(cn: John Doe, o: Doe), (cn: John Smith)]
+     * both keys are typically of the form 'cn', 'o', 'email', '2.5.4.43'; and values are text strings.
+     * 
+     * @return a list of maps containing the subject distinguished names
      */
     public List<Map<String, String>> getSubjectDN()
     {
@@ -339,9 +342,9 @@ public class PDSeedValueCertificate implements COSObjectable
     }
 
     /**
-     * Returns list of key usages of certificate strings where each string is 9 characters long and
-     * each character is one of these values {0, 1, X} 0 for must not set, 1 for must set, X for
-     * don't care. each index in the string represents a key usage:
+     * Returns list of key usages of certificate strings where each string is 9 characters long and each character is
+     * one of these values {0, 1, X} 0 for must not set, 1 for must set, X for don't care. each index in the string
+     * represents a key usage:
      * <ol>
      * <li>digitalSignature</li>
      * <li>non-Repudiation</li>
@@ -353,6 +356,8 @@ public class PDSeedValueCertificate implements COSObjectable
      * <li>encipherOnly</li>
      * <li>decipherOnly</li>
      * </ol>
+     * 
+     * @return list of key usages
      */
     public List<String> getKeyUsage()
     {
@@ -469,6 +474,8 @@ public class PDSeedValueCertificate implements COSObjectable
 
     /**
      * Returns list of array of bytes of DER-encoded X.509v3 certificates
+     * 
+     * @return a list of byte arrays representing the issuer
      */
     public List<byte[]> getIssuer()
     {
