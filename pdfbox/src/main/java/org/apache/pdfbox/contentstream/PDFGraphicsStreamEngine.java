@@ -169,6 +169,9 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Returns the page.
+     * 
+     * @return the page.
+     * 
      */
     protected final PDPage getPage()
     {
@@ -177,6 +180,13 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Append a rectangle to the current path.
+     * 
+     * @param p0 point P0 of the rectangle.
+     * @param p1 point P1 of the rectangle.
+     * @param p2 point P2 of the rectangle.
+     * @param p3 point P3 of the rectangle.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void appendRectangle(Point2D p0, Point2D p1,
                                          Point2D p2, Point2D p3) throws IOException;
@@ -185,29 +195,52 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Draw the image.
      *
      * @param pdImage The image to draw.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void drawImage(PDImage pdImage) throws IOException;
 
     /**
-     * Modify the current clipping path by intersecting it with the current path.
-     * The clipping path will not be updated until the succeeding painting operator is called.
+     * Modify the current clipping path by intersecting it with the current path. The clipping path will not be updated
+     * until the succeeding painting operator is called.
      *
      * @param windingRule The winding rule which will be used for clipping.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void clip(int windingRule) throws IOException;
 
     /**
      * Starts a new path at (x,y).
+     * 
+     * @param x x-coordinate of the target point.
+     * @param y y-coordinate of the target point.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void moveTo(float x, float y) throws IOException;
 
     /**
      * Draws a line from the current point to (x,y).
+     * 
+     * @param x x-coordinate of the end point of the line.
+     * @param y y-coordinate of the end point of the line.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void lineTo(float x, float y) throws IOException;
 
     /**
      * Draws a curve from the current point to (x3,y3) using (x1,y1) and (x2,y2) as control points.
+     * 
+     * @param x1 x-coordinate of the first control point.
+     * @param y1 y-coordinate of the first control point.
+     * @param x2 x-coordinate of the second control point.
+     * @param y2 y-coordinate of the second control point.
+     * @param x3 x-coordinate of the end point of the curve.
+     * @param y3 y-coordinate of the end point of the curve.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void curveTo(float x1, float y1,
                                  float x2, float y2,
@@ -215,16 +248,24 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
 
     /**
      * Returns the current point of the current path.
+     * 
+     * @return the current point.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract Point2D getCurrentPoint() throws IOException;
 
     /**
      * Closes the current path.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void closePath() throws IOException;
 
     /**
      * Ends the current path without filling or stroking it. The clipping path is updated here.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void endPath() throws IOException;
 
@@ -239,6 +280,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Fill the path.
      *
      * @param windingRule The winding rule this path will use.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void fillPath(int windingRule) throws IOException;
 
@@ -246,6 +289,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Fills and then strokes the path.
      *
      * @param windingRule The winding rule this path will use.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void fillAndStrokePath(int windingRule) throws IOException;
 
@@ -253,6 +298,8 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
      * Fill with Shading.
      *
      * @param shadingName The name of the Shading Dictionary to use for this fill instruction.
+     * 
+     * @throws IOException if something went wrong.
      */
     public abstract void shadingFill(COSName shadingName) throws IOException;
 }
