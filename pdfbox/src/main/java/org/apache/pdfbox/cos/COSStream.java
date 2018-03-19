@@ -357,6 +357,8 @@ public class COSStream extends COSDictionary implements Closeable
 
     /**
      * Returns the contents of the stream as a text string.
+     *
+     * @return the string representation of this string.
      * 
      * @deprecated Use {@link #toTextString()} instead.
      */
@@ -368,6 +370,8 @@ public class COSStream extends COSDictionary implements Closeable
     
     /**
      * Returns the contents of the stream as a PDF "text string".
+     * 
+     * return the text string representation of this stream.
      */
     public String toTextString()
     {
