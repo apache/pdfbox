@@ -81,7 +81,7 @@ public enum PageMode
     /**
      * Returns the string value, as used in a PDF file.
      * 
-     * @param the string value.
+     * @return the string value.
      */
     public String stringValue()
     {

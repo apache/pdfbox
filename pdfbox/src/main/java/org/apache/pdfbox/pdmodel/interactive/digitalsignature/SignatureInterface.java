@@ -31,6 +31,7 @@ public interface SignatureInterface
      *
      * @param content is the content as a (Filter)InputStream
      * @return signature as a byte array
+     * @throws IOException if something went wrong
      */
     byte[] sign(InputStream content) throws IOException;
 }

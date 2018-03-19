@@ -40,6 +40,7 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the font resource of the given indirect object.
+     * @throws IOException if something went wrong.
      */
     PDFont getFont(COSObject indirect) throws IOException;
 
@@ -49,6 +50,7 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the color space resource of the given indirect object.
+     * @throws IOException if something went wrong.
      */
     PDColorSpace getColorSpace(COSObject indirect) throws IOException;
 
@@ -58,6 +60,7 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the extended graphics resource of the given indirect object.
+     * @throws IOException if something went wrong.
      */
     PDExtendedGraphicsState getExtGState(COSObject indirect);
         
@@ -67,6 +70,7 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the shading resource of the given indirect object.
+     * @throws IOException if something went wrong.
      */
     PDShading getShading(COSObject indirect) throws IOException;
     
@@ -76,6 +80,7 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the pattern resource of the given indirect object.
+     * @throws IOException if something went wrong.
      */
     PDAbstractPattern getPattern(COSObject indirect) throws IOException;
         
@@ -85,6 +90,7 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the property list resource of the given indirect object.
+     * @throws IOException if something went wrong.
      */
     PDPropertyList getProperties(COSObject indirect);
         
@@ -94,6 +100,7 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the XObject resource of the given indirect object.
+     * @throws IOException if something went wrong.
      */
     PDXObject getXObject(COSObject indirect) throws IOException;
 
@@ -111,7 +118,7 @@ public interface ResourceCache
      * Puts the given indirect color space resource in the cache.
      * 
      * @param indirect the indirect object of the resource.
-     * @param font the color space resource.
+     * @param colorSpace the color space resource.
      * 
      * @throws IOException if something went wrong.
      */
@@ -121,7 +128,7 @@ public interface ResourceCache
      * Puts the given indirect extended graphics state resource in the cache.
      * 
      * @param indirect the indirect object of the resource.
-     * @param font the extended graphics state resource.
+     * @param extGState the extended graphics state resource.
      * 
      * @throws IOException if something went wrong.
      */
@@ -131,7 +138,7 @@ public interface ResourceCache
      * Puts the given indirect shading resource in the cache.
      * 
      * @param indirect the indirect object of the resource.
-     * @param font the shading resource.
+     * @param shading the shading resource.
      * 
      * @throws IOException if something went wrong.
      */
@@ -141,7 +148,7 @@ public interface ResourceCache
      * Puts the given indirect pattern resource in the cache.
      * 
      * @param indirect the indirect object of the resource.
-     * @param font the pattern resource.
+     * @param pattern the pattern resource.
      * 
      * @throws IOException if something went wrong.
      */
@@ -151,7 +158,7 @@ public interface ResourceCache
      * Puts the given indirect property list resource in the cache.
      * 
      * @param indirect the indirect object of the resource.
-     * @param font the property list resource.
+     * @param propertyList the property list resource.
      * 
      * @throws IOException if something went wrong.
      */
@@ -161,7 +168,7 @@ public interface ResourceCache
      * Puts the given indirect XObject resource in the cache.
      * 
      * @param indirect the indirect object of the resource.
-     * @param font the XObject resource.
+     * @param xobject the XObject resource.
      * 
      * @throws IOException if something went wrong.
      */
