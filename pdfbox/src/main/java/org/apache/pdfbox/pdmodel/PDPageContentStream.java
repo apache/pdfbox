@@ -2374,10 +2374,11 @@ public final class PDPageContentStream implements Closeable
     /**
      * Write a comment line.
      *
-     * @param comment
+     * @param comment the comment to be added to the content stream.
+     * 
      * @throws IOException If the content stream could not be written.
-     * @throws IllegalArgumentException If the comment contains a newline. This is not allowed,
-     * because the next line could be ordinary PDF content.
+     * @throws IllegalArgumentException If the comment contains a newline. This is not allowed, because the next line
+     * could be ordinary PDF content.
      */
     public void addComment(String comment) throws IOException
     {
@@ -2392,6 +2393,10 @@ public final class PDPageContentStream implements Closeable
 
     /**
      * Writes a real number to the content stream.
+     * 
+     * @param real the float value to be added to the content stream.
+     * 
+     * @throws IOException if something went wrong
      */
     protected void writeOperand(float real) throws IOException
     {
