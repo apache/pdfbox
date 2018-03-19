@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.8
+Release Notes -- Apache PDFBox -- Version 2.0.9
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.7 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.8 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,72 +14,98 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-3424] - Regression from 1.8.10: IOException: XREF for 171:0 points to wrong object: 173:0
-[PDFBOX-3639] - FDF does not parse: Missing root object specification in trailer.
-[PDFBOX-3874] - /Fontinfo instead of /FontInfo in type 1 font
-[PDFBOX-3881] - Handling of Byte Order Mark with Metadata-Fields
-[PDFBOX-3884] - GlyphList registers "wrong" Adobe name for "U+02DC SMALL TILDE"
-[PDFBOX-3887] - Getting a "DataFormatException: invalid distance too far back" exception for the attached file
-[PDFBOX-3894] - NPE on org.apache.pdfbox.pdmodel.PDPageTree.isPageTreeNode
-[PDFBOX-3896] - UnsupportedOperationException
-[PDFBOX-3898] - AcroFields' PDTextField (and others?) can have kids
-[PDFBOX-3909] - End of inline image not detected
-[PDFBOX-3913] - Japanese URI improperly decoded
-[PDFBOX-3914] - LayerUtility ignores OCProperties on import
-[PDFBOX-3916] - NPE on org.apache.pdfbox.pdmodel.font.PDType0Font.readEncoding
-[PDFBOX-3919] - Infinite loop while parsing (2)
-[PDFBOX-3923] - Expected a long type at offset 52152, instead got 'xref'
-[PDFBOX-3925] - QUADDING constants no longer public
-[PDFBOX-3928] - IllegalArgumentException: root cannot be null with truncated file
-[PDFBOX-3929] - Border style dictionary width ignored by Adobe Reader when float
-[PDFBOX-3930] - replace deprecated TBSCertificateStructure
-[PDFBOX-3932] - Image with predictor 15 not rendered correctly
-[PDFBOX-3934] - Page missing
-[PDFBOX-3935] - DataFormatException: invalid stored block lengths
-[PDFBOX-3936] - IllegalArgumentException: root cannot be null with truncated file (2)
-[PDFBOX-3937] - NPE in PDCIDFontType2 constructor
-[PDFBOX-3940] - Lost metadata in 2.0.8-SNAPSHOT
-[PDFBOX-3942] - ClassCastException in getOptionalContentGroups
-[PDFBOX-3943] - /Helv entry in /DR not created if /DR exists
-[PDFBOX-3946] - NPE in PDActionURI.getURI() if URI doesn't exist
-[PDFBOX-3947] - ArrayIndexOutOfBoundsException in bfSearchForObjStreams
-[PDFBOX-3948] - NumberFormatException in bfSearchForObjStreams
-[PDFBOX-3949] - NPE in bfSearchForObjStreams
-[PDFBOX-3950] - NPE in PageIterator.enqueueKids
-[PDFBOX-3955] - new -- very slow processing on truncated PDF
-[PDFBOX-3957] - Pages lost
-[PDFBOX-3958] - UTF-16 (BE) URI improperly decoded
-[PDFBOX-3959] - DataFormatException: invalid code lengths set with truncated file
-[PDFBOX-3963] - ClassCastException in PDCIDFont.readVerticalDisplacements()
-[PDFBOX-3965] - Truetype Font glyphs not rendered
-[PDFBOX-3967] - IllegalArgumentException: Illegal Capacity: -1
-[PDFBOX-3969] - Splitting starts counting for cutting out pages wrongly
-[PDFBOX-3972] - Incorrect page after merge for OpenAction with GoTo page destination
-[PDFBOX-3976] - NPE in bfSearchForTrailer
-[PDFBOX-3977] - /Info dictionary no longer available
-[PDFBOX-3978] - IllegalStateException on saveIncrementalForExternalSigning
-[PDFBOX-3979] - NullPointerException on Type1Parser.readCharStrings(Type1Parser.java:713)
+[PDFBOX-2142] some /ICCBased colorspaces not rendered correctly
+[PDFBOX-2558] Image missing
+[PDFBOX-2917] PDF to Image, faint/dim Images
+[PDFBOX-3377] font caching never stops in AIX
+[PDFBOX-3401] PDObjectReference getReferencedObject() returns null if referenced obj is not a COSStream
+[PDFBOX-3457] Glyphs rendered in wrong width
+[PDFBOX-3956] Truncated pdf can't be repaired anymore
+[PDFBOX-3990] Rendering will never complete
+[PDFBOX-3994] ClassCastException in COSParser.bfSearchForTrailer
+[PDFBOX-3997] Cannot encode strings with of surrogate pairs
+[PDFBOX-4001] Rendering LineFeed (No Unicode mapping for .notdef (10))
+[PDFBOX-4002] Layer Utility - Text not being displayed when overlaying
+[PDFBOX-4005] Incorrect use of PDNumberTreeNode in PDPageLabels
+[PDFBOX-4006] PDFBox throws NullPointerException when parsing PDF
+[PDFBOX-4011] BBox in signature forms has wrong order
+[PDFBOX-4012] PDF with incremental save is shown blank
+[PDFBOX-4015] java.awt.color.CMMException: LCMS error 13: Couldn't link the profiles
+[PDFBOX-4018] NPE in sanitizeType in org.apache.pdfbox.pdmodel.PDPageTree
+[PDFBOX-4021] Font missing when building from source makes build fail
+[PDFBOX-4027] IndexOutOfBoundsException when XObject form matrix has only 5 elements
+[PDFBOX-4030] ClassCastException when matrix array has indirect objects
+[PDFBOX-4038] CFF font Blue values and other delta encoded lists read incorrectly
+[PDFBOX-4043] ExtractImages doesn't extract images from PDPatterns
+[PDFBOX-4044] Unable to process overlay on Cognos PDF documents
+[PDFBOX-4052] Number '------------06836305' is getting too long, stop reading at offset 36
+[PDFBOX-4053] build test fails on jdk9
+[PDFBOX-4058] High memory consumption when extracting image from PDF file
+[PDFBOX-4060] Slow rendering of PDF file with DeviceN jpeg file
+[PDFBOX-4061] ClassCastException PDActionJavaScript cannot be cast to PDDestination
+[PDFBOX-4064] cm operator has 7 numbers
+[PDFBOX-4066] Merging documents with nested fields duplicates child fields
+[PDFBOX-4083] Line annotation /LL, /LLE and /LLO have wrong default values
+[PDFBOX-4084] Can't draw PDFs while ANNOTS is COSStream instead of COSArray
+[PDFBOX-4085] COSString cannot be cast to COSDictionary error
+[PDFBOX-4088] Root/StructTreeRoot/K/S must be name, not string (merge)
+[PDFBOX-4091] Cannot analyze signatures : Wrong type of referenced length object COSObject
+[PDFBOX-4093] illegible characters in rendered image
+[PDFBOX-4103] Optional Content Groups with same names can't have different visibility
+[PDFBOX-4105] Copyright 2011 adam
+[PDFBOX-4107] NPE at PDFMergerUtility
+[PDFBOX-4108] /Length1 not needed for /CIDToGIDMap
+[PDFBOX-4113] Debugger file open dialog has incorrect filter on Mac
+[PDFBOX-4114] ICCBased color spaces wrong color output
+[PDFBOX-4115] Problem creating PDF with German text using embedded Type1 (PFB) font
+[PDFBOX-4125] FDFField.writeXML KO with String
+[PDFBOX-4129] Deleted fonts not detected when checking cache
+[PDFBOX-4140] Crash when repeating flag is outside of range.
+[PDFBOX-4146] Patch: Fix for appearance of visible signature
+[PDFBOX-4153] Outlines missing in some versions, not in others
+
+New Feature
+
+[PDFBOX-3198] Visible Signature N2 layer / Support signature with text
+[PDFBOX-4106] Vertical text creation
+[PDFBOX-4117] Implement GoToE action-type
 
 Improvement
 
-[PDFBOX-3878] - Improve and refactor RemoveAllText example
-[PDFBOX-3890] - The operator Tz is not available when creating new PDF using PDPageContentStream
-[PDFBOX-3897] - Avoid sRGB self-conversions
-[PDFBOX-3900] - Optimize PDSeparation for shadings
-[PDFBOX-3911] - Handle new line characters in single line text fields
-[PDFBOX-3920] - CIDSet should be PDF/A-2b compatible
-[PDFBOX-3927] - Support optional content in annotations
-[PDFBOX-3944] - ERROR "Can't read embedded ICC profile" is too scary
-[PDFBOX-3971] - Add Certificate Dictionary to seed value in signature field
-[PDFBOX-3982] - [Patch/RFC] Set maximum compression level on FlateFilter
-[PDFBOX-3983] - [Patch] Don't a allow a miter limit <= 0
+[PDFBOX-1848] Time Stamp Document Level Sigature
+[PDFBOX-2092] Very slow rendering of scanned document
+[PDFBOX-3340] Image decoded twice without a real need
+[PDFBOX-3984] Add validation data of signer to document
+[PDFBOX-3992] Implement show text with positioning operator (TJ)
+[PDFBOX-3998] Inform the user when not using KCMS with jdk8 or higher + set KCMS in cli
+[PDFBOX-4020] Into existing signature embedded signed timestamp for validation
+[PDFBOX-4022] Cache ColorSpace instances in PDColorSpace.java
+[PDFBOX-4024] YCbCr JPEGs not implemented
+[PDFBOX-4025] Other page sizes than US Letter should be selectable in TextToPDF
+[PDFBOX-4040] Get/set Viewports in PDPage
+[PDFBOX-4119] KCMS takes too much time
+[PDFBOX-4121] (-Dorg.apache.pdfbox.rendering.UsePureJavaCMYKConversion=true) takes much time
+[PDFBOX-4137] Allow subsampled/downscaled rendering of images, and rendering subimages
+[PDFBOX-4139] Optimize memory footprint of CID mappings within CMaps
+[PDFBOX-4142] Don't use md5 checksum due to changes to the release distribuition policy
+[PDFBOX-4150] Optimize clipping text rendering modes
+
+Wish
+
+[PDFBOX-4094] Add support for a flag disabling the rendering of PDF annotations in PDFRenderer
 
 Task
 
-[PDFBOX-3584] - Build and test PDFBox with JDK9
-[PDFBOX-3873] - Fix text comparison in PDFontTest
-[PDFBOX-3938] - Add test from PDFBOX-2079 to 2.0 and trunk
-[PDFBOX-3974] - Add more parsing regression tests
+[PDFBOX-2852] Improve code quality (2)
+[PDFBOX-3991] PDPageContentStream has sometimes float, sometimes double parameters
+[PDFBOX-4050] Check user password when decrypting with owner password in build test
+[PDFBOX-4055] Output info when PDFBox JBIG2 ImageIO is released
+[PDFBOX-4135] Modify PDFBox builds für Apache JBIG2 plugin
+[PDFBOX-4143] repository-cached download of fontbox test files
+
+Sub-task
+
+[PDFBOX-4029] Rendering transparency groups in patterns
 
 Release Contents
 ----------------
@@ -88,8 +114,8 @@ This release consists of a single source archive packaged as a zip file.
 The archive can be unpacked with the jar tool from your JDK installation.
 See the README.txt file for instructions on how to build this release.
 
-The source archive is accompanied by SHA1 and MD5 checksums and a PGP
-signature that you can use to verify the authenticity of your download.
+The source archive is accompanied by SHA512 checksums and a PGP signature
+that you can use to verify the authenticity of your download.
 The public key used for the PGP signature can be found at
 https://svn.apache.org/repos/asf/pdfbox/KEYS.
 
