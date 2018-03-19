@@ -225,11 +225,13 @@ public class PDEncryption
     }
 
     /**
-     * This will set the R entry of the encryption dictionary.<br><br>
-     * See PDF Reference 1.4 Table 3.14.  <br><br/>
+     * This will set the R entry of the encryption dictionary.<br>
+     * <br>
+     * See PDF Reference 1.4 Table 3.14. <br>
+     * <br>
      *
-     * <b>Note: This value is used to decrypt the pdf document.  If you change this when
-     * the document is encrypted then decryption will fail!.</b>
+     * <b>Note: This value is used to decrypt the pdf document. If you change this when the document is encrypted then
+     * decryption will fail!.</b>
      *
      * @param revision The new encryption version.
      */
