@@ -235,6 +235,10 @@ public abstract class PDFunction implements COSObjectable
     }
 
     /**
+     * @param input The array of input values for the function.
+     * 
+     * @return The of outputs the function returns based on those inputs.
+     * 
      * @deprecated Replaced by {@link #eval(float[] input)}
      */
     @Deprecated
