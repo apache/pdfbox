@@ -82,6 +82,7 @@ abstract class PatchMeshesShadingContext extends TriangleBasedShadingContext
      * @return the obtained patch list
      * @throws IOException when something went wrong
      */
+    @SuppressWarnings({"squid:S2583","squid:S1166"})
     final List<Patch> collectPatches(PDShadingType6 shadingType, AffineTransform xform,
             Matrix matrix, int controlPoints) throws IOException
     {
