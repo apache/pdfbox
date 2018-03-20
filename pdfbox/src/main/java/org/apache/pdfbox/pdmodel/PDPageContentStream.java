@@ -979,6 +979,11 @@ public final class PDPageContentStream implements Closeable
      */
     public void transform(Matrix matrix) throws IOException
     {
+        if (inTextMode)
+        {
+            LOG.warn("Modifying the current transformation matrix is not allowed within text objects.");
+        }
+
         writeAffineTransform(matrix.createAffineTransform());
         writeOperator("cm");
     }
