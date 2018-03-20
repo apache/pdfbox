@@ -64,6 +64,7 @@ class Type5ShadingContext extends GouraudShadingContext
         createPixelTable(deviceBounds);
     }
 
+    @SuppressWarnings("squid:S1166")
     private List<ShadedTriangle> collectTriangles(PDShadingType5 latticeTriangleShadingType,
             AffineTransform xform, Matrix matrix) throws IOException
     {
