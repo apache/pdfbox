@@ -217,15 +217,19 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      */
     public void drawShape(float lineWidth, boolean hasStroke, boolean hasFill) throws IOException
     {
+        // initial setting if stroking shall be done
+        boolean resolvedHasStroke = hasStroke;
+
+        // no stroking for very small lines
         if (lineWidth < 1e-6)
         {
-            hasStroke = false;
+            resolvedHasStroke = false;
         }
-        if (hasFill && hasStroke)
+        if (hasFill && resolvedHasStroke)
         {
             fillAndStroke();
         }
-        else if (hasStroke)
+        else if (resolvedHasStroke)
         {
             stroke();
         }
