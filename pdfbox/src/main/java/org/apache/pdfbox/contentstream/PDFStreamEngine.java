@@ -937,7 +937,7 @@ public abstract class PDFStreamEngine
     /**
      * Restores the entire graphics stack.
      * 
-     * @param the graphics state stack to be restored.
+     * @param snapshot the graphics state stack to be restored.
      */
     protected final void restoreGraphicsStack(Stack<PDGraphicsState> snapshot)
     {
