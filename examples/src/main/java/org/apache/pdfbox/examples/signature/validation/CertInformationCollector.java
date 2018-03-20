@@ -290,7 +290,7 @@ public class CertInformationCollector
                         + "\n" + issuer.getSubjectDN());
                 certInfo.issuerCertificate = issuer;
                 certInfo.certChain = new CertSignatureInformation();
-                traverseChain(issuer, certInfo.certChain, --maxDepth);
+                traverseChain(issuer, certInfo.certChain, maxDepth - 1);
                 break;
             }
         }
