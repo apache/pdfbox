@@ -60,7 +60,6 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the extended graphics resource of the given indirect object.
-     * @throws IOException if something went wrong.
      */
     PDExtendedGraphicsState getExtGState(COSObject indirect);
         
@@ -90,7 +89,6 @@ public interface ResourceCache
      * @param indirect the indirect object
      * 
      * @return the property list resource of the given indirect object.
-     * @throws IOException if something went wrong.
      */
     PDPropertyList getProperties(COSObject indirect);
         
@@ -129,8 +127,6 @@ public interface ResourceCache
      * 
      * @param indirect the indirect object of the resource.
      * @param extGState the extended graphics state resource.
-     * 
-     * @throws IOException if something went wrong.
      */
     void put(COSObject indirect, PDExtendedGraphicsState extGState);
 
@@ -159,8 +155,6 @@ public interface ResourceCache
      * 
      * @param indirect the indirect object of the resource.
      * @param propertyList the property list resource.
-     * 
-     * @throws IOException if something went wrong.
      */
     void put(COSObject indirect, PDPropertyList propertyList);
     
