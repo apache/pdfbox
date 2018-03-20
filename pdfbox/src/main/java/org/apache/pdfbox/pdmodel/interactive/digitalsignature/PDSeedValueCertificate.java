@@ -447,9 +447,18 @@ public class PDSeedValueCertificate implements COSObjectable
             char dataEncipherment, char keyAgreement, char keyCertSign, char cRLSign,
             char encipherOnly, char decipherOnly)
     {
-        String string = "" + digitalSignature + nonRepudiation + keyEncipherment + dataEncipherment
-                + keyAgreement + keyCertSign + cRLSign + encipherOnly + decipherOnly;
-        addKeyUsage(string);
+        StringBuilder builder = new StringBuilder();
+        builder.append(digitalSignature);
+        builder.append(nonRepudiation);
+        builder.append(keyEncipherment);
+        builder.append(dataEncipherment);
+        builder.append(keyAgreement);
+        builder.append(keyCertSign);
+        builder.append(cRLSign);
+        builder.append(encipherOnly);
+        builder.append(decipherOnly);
+        
+        addKeyUsage(builder.toString());
     }
 
     /**
