@@ -389,7 +389,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         boolean externalSig = false;
         for (int i = 0; i < args.length; i++)
         {
-            if (args[i].equals("-tsa"))
+            if ("-tsa".equals(args[i]))
             {
                 i++;
                 if (i >= args.length)
@@ -399,7 +399,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
                 }
                 tsaUrl = args[i];
             }
-            if (args[i].equals("-e"))
+            if ("-e".equals(args[i]))
             {
                 externalSig = true;
             }

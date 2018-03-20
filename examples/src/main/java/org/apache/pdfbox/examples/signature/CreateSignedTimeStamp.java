@@ -150,7 +150,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
         }
 
         String tsaUrl = null;
-        if (args[1].equals("-tsa"))
+        if ("-tsa".equals(args[1]))
         {
             tsaUrl = args[2];
         }
