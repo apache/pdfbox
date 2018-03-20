@@ -59,16 +59,17 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     @Override
+    @SuppressWarnings({"squid:S1854"})
     void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         long start = data.getCurrentPosition();
-        @SuppressWarnings({"unused", "squid:S1854"})
+        @SuppressWarnings({"unused"})
         int majorVersion = data.readUnsignedShort();
         int minorVersion = data.readUnsignedShort();
         int scriptListOffset = data.readUnsignedShort();
         int featureListOffset = data.readUnsignedShort();
         int lookupListOffset = data.readUnsignedShort();
-        @SuppressWarnings({"unused", "squid:S1854"})
+        @SuppressWarnings({"unused"})
         long featureVariationsOffset = -1L;
         if (minorVersion == 1L)
         {
@@ -453,6 +454,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private int applyFeature(FeatureRecord featureRecord, int gid)
     {
+        int lookupResult = gid;
         for (int lookupListIndex : featureRecord.featureTable.lookupListIndices)
         {
             LookupTable lookupTable = lookupList[lookupListIndex];
@@ -462,9 +464,9 @@ public class GlyphSubstitutionTable extends TTFTable
                         + "' because it requires unsupported lookup table type " + lookupTable.lookupType);
                 continue;
             }
-            gid = doLookup(lookupTable, gid);
+            lookupResult = doLookup(lookupTable, gid);
         }
-        return gid;
+        return lookupResult;
     }
 
     private int doLookup(LookupTable lookupTable, int gid)
