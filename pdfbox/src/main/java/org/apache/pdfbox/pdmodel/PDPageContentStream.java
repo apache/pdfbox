@@ -989,6 +989,11 @@ public final class PDPageContentStream implements Closeable
      */
     public void saveGraphicsState() throws IOException
     {
+        if (inTextMode)
+        {
+            LOG.warn("Saving the graphics state is not allowed within text objects.");
+        }
+
         if (!fontStack.isEmpty())
         {
             fontStack.push(fontStack.peek());
@@ -1010,6 +1015,11 @@ public final class PDPageContentStream implements Closeable
      */
     public void restoreGraphicsState() throws IOException
     {
+        if (inTextMode)
+        {
+            LOG.warn("Restoring the graphics state is not allowed within text objects.");
+        }
+
         if (!fontStack.isEmpty())
         {
             fontStack.pop();
