@@ -526,6 +526,11 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     public void transform(Matrix matrix) throws IOException
     {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: Modifying the current transformation matrix is not allowed within text objects.");
+        }
+
         writeAffineTransform(matrix.createAffineTransform());
         writeOperator("cm");
     }
@@ -536,6 +541,11 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     public void saveGraphicsState() throws IOException
     {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: Saving the graphics state is not allowed within text objects.");
+        }
+
         if (!fontStack.isEmpty())
         {
             fontStack.push(fontStack.peek());
@@ -557,6 +567,11 @@ public abstract class PDAbstractContentStream implements Closeable
      */
     public void restoreGraphicsState() throws IOException
     {
+        if (inTextMode)
+        {
+            throw new IllegalStateException("Error: Restoring the graphics state is not allowed within text objects.");
+        }
+
         if (!fontStack.isEmpty())
         {
             fontStack.pop();
