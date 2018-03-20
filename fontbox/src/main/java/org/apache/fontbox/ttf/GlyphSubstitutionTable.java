@@ -464,7 +464,7 @@ public class GlyphSubstitutionTable extends TTFTable
                         + "' because it requires unsupported lookup table type " + lookupTable.lookupType);
                 continue;
             }
-            lookupResult = doLookup(lookupTable, gid);
+            lookupResult = doLookup(lookupTable, lookupResult);
         }
         return lookupResult;
     }
