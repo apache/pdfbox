@@ -56,7 +56,7 @@ public class IndexToLocationTable extends TTFTable
         {
             if( head.getIndexToLocFormat() == SHORT_OFFSETS )
             {
-                offsets[i] = data.readUnsignedShort() * 2;
+                offsets[i] = data.readUnsignedShort() * 2L;
             }
             else if(  head.getIndexToLocFormat() == LONG_OFFSETS )
             {
