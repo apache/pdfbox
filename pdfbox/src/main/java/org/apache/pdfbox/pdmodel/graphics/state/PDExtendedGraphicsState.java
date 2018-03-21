@@ -274,14 +274,14 @@ public class PDExtendedGraphicsState implements COSObjectable
     {
         PDLineDashPattern retval = null;
         COSArray dp = (COSArray) dict.getDictionaryObject( COSName.D );
-        if( dp != null )
+        if( dp != null  && dp.size() == 2)
         {
-            COSArray array = new COSArray();
-            array.addAll(dp);
-            array.remove(dp.size() - 1);
-            int phase = dp.getInt(dp.size() - 1);
-
-            retval = new PDLineDashPattern( array, phase );
+            COSBase dashArray = dp.get(0);
+            COSBase phase = dp.get(1);
+            if (dashArray instanceof COSArray && phase instanceof COSNumber)
+            {
+                retval = new PDLineDashPattern((COSArray) dashArray, ((COSNumber) phase).intValue());
+            }
         }
         return retval;
     }
