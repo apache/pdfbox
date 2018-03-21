@@ -32,6 +32,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -67,6 +69,8 @@ import org.bouncycastle.util.StoreException;
  */
 public final class ShowSignature
 {
+    private static final Log LOG = LogFactory.getLog(ShowSignature.class);
+
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     private ShowSignature()
@@ -355,6 +359,7 @@ public final class ShowSignature
         }
         catch (SignatureException | InvalidKeyException sigEx)
         {
+            LOG.debug("Couldn't get signature information - returning false", sigEx);
             return false;
         }
     }

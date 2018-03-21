@@ -109,6 +109,7 @@ public class CertInformationHelper
                 }
                 catch (SignatureException se)
                 {
+                    LOG.debug("Couldn't get signature information - returning false", se);
                     return false;
                 }
             }
