@@ -22,6 +22,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -38,6 +41,9 @@ import org.apache.pdfbox.tools.imageio.ImageIOUtil;
  */
 public final class PDFToImage
 {
+
+    private static final Log LOG = LogFactory.getLog(PDFToImage.class);
+
     private static final String PASSWORD = "-password";
     private static final String START_PAGE = "-startPage";
     private static final String END_PAGE = "-endPage";
@@ -77,7 +83,7 @@ public final class PDFToImage
         }
         catch (ClassNotFoundException e)
         {
-            // do nothing
+            LOG.debug("KCMS service not found - using LCMS");
         }
 
         // suppress the Dock icon on OS X
