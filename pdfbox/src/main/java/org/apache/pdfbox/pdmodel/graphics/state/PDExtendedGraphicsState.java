@@ -277,8 +277,8 @@ public class PDExtendedGraphicsState implements COSObjectable
         if( dp != null )
         {
             COSArray array = new COSArray();
-            dp.addAll(dp);
-            dp.remove(dp.size() - 1);
+            array.addAll(dp);
+            array.remove(dp.size() - 1);
             int phase = dp.getInt(dp.size() - 1);
 
             retval = new PDLineDashPattern( array, phase );
