@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.print.PrintService;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -35,6 +38,8 @@ import org.apache.pdfbox.printing.PDFPageable;
  */
 public final class PrintPDF
 {
+    private static final Log LOG = LogFactory.getLog(PrintPDF.class);
+
     private static final String PASSWORD = "-password";
     private static final String SILENT = "-silentPrint";
     private static final String PRINTER_NAME = "-printerName";
@@ -67,7 +72,7 @@ public final class PrintPDF
         }
         catch (ClassNotFoundException e)
         {
-            // do nothing
+            LOG.debug("KCMS service not found - using LCMS");
         }
 
         // suppress the Dock icon on OS X
