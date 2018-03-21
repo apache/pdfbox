@@ -1884,13 +1884,14 @@ public class COSParser extends BaseParser
             source.read();
         }
         // add all found compressed objects to the brute force search result
-        for (Long offset : bfSearchObjStreamsOffsets.keySet())
+        for (Entry<Long, COSObjectKey> streamOffsetsEntry : bfSearchObjStreamsOffsets.entrySet())
         {
-            Long bfOffset = bfSearchCOSObjectKeyOffsets.get(bfSearchObjStreamsOffsets.get(offset));
+            Long offset = streamOffsetsEntry.getKey();
+            Long bfOffset = bfSearchCOSObjectKeyOffsets.get(streamOffsetsEntry.getValue());
             // incomplete object stream found?
             if (bfOffset == null)
             {
-                LOG.warn("Skipped incomplete object stream:" + bfSearchObjStreamsOffsets.get(offset)
+                LOG.warn("Skipped incomplete object stream:" + streamOffsetsEntry.getValue()
                         + " at " + offset);
                 continue;
             }
