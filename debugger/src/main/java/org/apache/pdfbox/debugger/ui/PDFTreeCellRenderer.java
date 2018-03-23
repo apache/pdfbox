@@ -205,13 +205,19 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             if (dict.containsKey(COSName.TYPE))
             {
                 COSName type = dict.getCOSName(COSName.TYPE);
-                sb.append("   /T:").append(type.getName());
+                if (type != null)
+                {
+                    sb.append("   /T:").append(type.getName());
+                }
             }
-            
+
             if (dict.containsKey(COSName.SUBTYPE))
             {
                 COSName subtype = dict.getCOSName(COSName.SUBTYPE);
-                sb.append("  /S:").append(subtype.getName());
+                if (subtype != null)
+                {
+                    sb.append("  /S:").append(subtype.getName());
+                }
             }
             return sb.toString();
         }
