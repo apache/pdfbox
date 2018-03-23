@@ -46,6 +46,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // A
     public static final COSName A = new COSName("A");
     public static final COSName AA = new COSName("AA");
+    public static final COSName AC = new COSName("AC");
     public static final COSName ACRO_FORM = new COSName("AcroForm");
     public static final COSName ACTUAL_TEXT = new COSName("ActualText");
     public static final COSName ADBE_PKCS7_DETACHED = new COSName("adbe.pkcs7.detached");
@@ -297,6 +298,8 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName IT = new COSName("IT");
     public static final COSName ITALIC_ANGLE = new COSName("ItalicAngle");
     public static final COSName ISSUER = new COSName("Issuer");
+    public static final COSName IX = new COSName("IX");
+
     // J
     public static final COSName JAVA_SCRIPT = new COSName("JavaScript");
     public static final COSName JBIG2_DECODE = new COSName("JBIG2Decode");
