@@ -83,7 +83,7 @@ public final class PDFToImage
         }
         catch (ClassNotFoundException e)
         {
-            LOG.debug("KCMS service not found - using LCMS");
+            LOG.debug("KCMS service not found - using LCMS", e);
         }
 
         // suppress the Dock icon on OS X
