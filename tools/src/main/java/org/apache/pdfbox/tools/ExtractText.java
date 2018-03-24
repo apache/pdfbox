@@ -261,24 +261,11 @@ public final class ExtractText
                                     {
                                         System.err.println("  is PDF (size=" + file.getSize() + ")");
                                     }
-                                    InputStream fis = file.createInputStream();
-                                    PDDocument subDoc = null;
-                                    try 
-                                    {
-                                        subDoc = PDDocument.load(fis);
-                                    } 
-                                    finally 
-                                    {
-                                        fis.close();
-                                    }
-                                    try 
+                                    try (InputStream fis = file.createInputStream();
+                                        PDDocument subDoc = PDDocument.load(fis))
                                     {
                                         stripper.writeText( subDoc, output );
                                     } 
-                                    finally 
-                                    {
-                                        IOUtils.closeQuietly(subDoc);                                       
-                                    }
                                 }
                             } 
                         }
