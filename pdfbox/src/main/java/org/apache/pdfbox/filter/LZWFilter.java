@@ -67,37 +67,15 @@ public class LZWFilter extends Filter
     public DecodeResult decode(InputStream encoded, OutputStream decoded,
             COSDictionary parameters, int index) throws IOException
     {
-        int predictor = -1;
-        int earlyChange = 1;
-
         COSDictionary decodeParams = getDecodeParams(parameters, index);
-        if (decodeParams != null)
+        int earlyChange = decodeParams.getInt(COSName.EARLY_CHANGE, 1);
+
+        if (earlyChange != 0 && earlyChange != 1)
         {
-            predictor = decodeParams.getInt(COSName.PREDICTOR);
-            earlyChange = decodeParams.getInt(COSName.EARLY_CHANGE, 1);
-            if (earlyChange != 0 && earlyChange != 1)
-            {
-                earlyChange = 1;
-            }
+            earlyChange = 1;
         }
-        if (predictor > 1)
-        {
-            @SuppressWarnings("null")
-            int colors = Math.min(decodeParams.getInt(COSName.COLORS, 1), 32);
-            int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
-            int columns = decodeParams.getInt(COSName.COLUMNS, 1);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            doLZWDecode(encoded, baos, earlyChange);
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais, decoded);
-            decoded.flush();
-            baos.reset();
-            bais.reset();
-        }
-        else
-        {
-            doLZWDecode(encoded, decoded, earlyChange);
-        }
+
+        doLZWDecode(encoded, Predictor.wrapPredictor(decoded, decodeParams), earlyChange);
         return new DecodeResult(parameters);
     }
 
