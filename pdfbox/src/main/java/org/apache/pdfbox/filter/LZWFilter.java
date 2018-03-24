@@ -15,8 +15,6 @@
  */
 package org.apache.pdfbox.filter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +66,6 @@ public class LZWFilter extends Filter
             COSDictionary parameters, int index) throws IOException
     {
         COSDictionary decodeParams = getDecodeParams(parameters, index);
-        int predictor = decodeParams.getInt(COSName.PREDICTOR);
         int earlyChange = decodeParams.getInt(COSName.EARLY_CHANGE, 1);
 
         if (earlyChange != 0 && earlyChange != 1)
@@ -76,23 +73,7 @@ public class LZWFilter extends Filter
             earlyChange = 1;
         }
 
-        if (predictor > 1)
-        {
-            int colors = Math.min(decodeParams.getInt(COSName.COLORS, 1), 32);
-            int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
-            int columns = decodeParams.getInt(COSName.COLUMNS, 1);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            doLZWDecode(encoded, baos, earlyChange);
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais, decoded);
-            decoded.flush();
-            baos.reset();
-            bais.reset();
-        }
-        else
-        {
-            doLZWDecode(encoded, decoded, earlyChange);
-        }
+        doLZWDecode(encoded, Predictor.wrapPredictor(decoded, decodeParams), earlyChange);
         return new DecodeResult(parameters);
     }
 

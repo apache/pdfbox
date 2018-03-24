@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.filter;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,7 +26,6 @@ import java.util.zip.Inflater;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSName;
 
 /**
  * Decompresses data encoded using the zlib/deflate compression method,
@@ -47,28 +44,11 @@ final class FlateFilter extends Filter
                                          COSDictionary parameters, int index) throws IOException
     {
         final COSDictionary decodeParams = getDecodeParams(parameters, index);
-        int predictor = decodeParams.getInt(COSName.PREDICTOR);
 
         try
         {
-            if (predictor > 1)
-            {
-                int colors = Math.min(decodeParams.getInt(COSName.COLORS, 1), 32);
-                int bitsPerPixel = decodeParams.getInt(COSName.BITS_PER_COMPONENT, 8);
-                int columns = decodeParams.getInt(COSName.COLUMNS, 1);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                decompress(encoded, baos);
-                ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-                Predictor.decodePredictor(predictor, colors, bitsPerPixel, columns, bais, decoded);
-                decoded.flush();
-                baos.reset();
-                bais.reset();
-            }
-            else
-            {
-                decompress(encoded, decoded);
-            }
-        } 
+            decompress(encoded, Predictor.wrapPredictor(decoded, decodeParams));
+        }
         catch (DataFormatException e)
         {
             // if the stream is corrupt a DataFormatException may occur
@@ -93,7 +73,7 @@ final class FlateFilter extends Filter
             // use nowrap mode to bypass zlib-header and checksum to avoid a DataFormatException
             Inflater inflater = new Inflater(true); 
             inflater.setInput(buf,0,read);
-            byte[] res = new byte[1024]; 
+            byte[] res = new byte[1024];
             boolean dataWritten = false;
             while (true) 
             { 
