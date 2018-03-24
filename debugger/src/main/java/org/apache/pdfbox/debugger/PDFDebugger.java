@@ -45,6 +45,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Sides;
@@ -126,6 +130,8 @@ import org.apache.pdfbox.printing.PDFPageable;
  */
 public class PDFDebugger extends JFrame
 {
+    private static final Log LOG = LogFactory.getLog(PDFDebugger.class);
+
     private static final Set<COSName> SPECIALCOLORSPACES =
             new HashSet<>(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
@@ -207,7 +213,7 @@ public class PDFDebugger extends JFrame
         }
         catch (ClassNotFoundException e)
         {
-            // do nothing. Happens with JDK7 (which has KCMS) and with JDK10 (which hasn't)
+            LOG.debug("KCMS service not found - using LCMS", e);
         }
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
