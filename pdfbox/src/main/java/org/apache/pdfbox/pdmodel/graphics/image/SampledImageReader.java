@@ -202,8 +202,8 @@ final class SampledImageReader
         // will be unpacked into a byte-backed raster. Images with 16bpc will be reduced
         // in depth to 8bpc as they will be drawn to TYPE_INT_RGB images anyway. All code
         // in PDColorSpace#toRGBImage expects an 8-bit range, i.e. 0-255.
-        //
-        WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, width, height,
+        // Interleaved raster allows chunk-copying for 8-bit images.
+        WritableRaster raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE, width, height,
                 numComponents, new Point(0, 0));
         final float[] defaultDecode = pdImage.getColorSpace().getDefaultDecode(8);
         if (bitsPerComponent == 8 && Arrays.equals(decode, defaultDecode) && colorKey == null)
@@ -378,7 +378,20 @@ final class SampledImageReader
             }
             final int numComponents = pdImage.getColorSpace().getNumberOfComponents();
             // get the raster's underlying byte buffer
-            byte[][] banks = ((DataBufferByte) raster.getDataBuffer()).getBankData();
+            byte[] bank = ((DataBufferByte) raster.getDataBuffer()).getData();
+            if (startx == 0 && starty == 0 && scanWidth == width && scanHeight == height && subsampling == 1)
+            {
+                // we just need to copy all sample data, then convert to RGB image.
+                long inputResult = input.read(bank);
+                if (inputResult != width * height * numComponents)
+                {
+                    LOG.debug("Tried reading " + width * height * numComponents + " bytes but only " + inputResult + " bytes read");
+                }
+                return pdImage.getColorSpace().toRGBImage(raster);
+            }
+
+            // either subsampling is required, or reading only part of the image, so its
+            // not possible to blindly copy all data.
             byte[] tempBytes = new byte[numComponents * inputWidth];
             // compromise between memory and time usage:
             // reading the whole image consumes too much memory
@@ -392,13 +405,22 @@ final class SampledImageReader
                     continue;
                 }
 
-                for (int x = startx; x < startx + scanWidth; x += subsampling)
+                if (subsampling == 1)
                 {
-                    for (int c = 0; c < numComponents; c++)
+                    // Not the entire region was requested, but if no subsampling should
+                    // be performed, we can still copy the entire part of this row
+                    System.arraycopy(tempBytes, startx * numComponents, bank, y * inputWidth * numComponents, scanWidth * numComponents);
+                }
+                else
+                {
+                    for (int x = startx; x < startx + scanWidth; x += subsampling)
                     {
-                        banks[c][i] = tempBytes[x * numComponents + c];
+                        for (int c = 0; c < numComponents; c++)
+                        {
+                            bank[i] = tempBytes[x * numComponents + c];
+                            ++i;
+                        }
                     }
-                    ++i;
                 }
             }
             // use the color space to convert the image to RGB
