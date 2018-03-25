@@ -342,23 +342,24 @@ public final class Predictor
         @Override
         public void write(byte[] bytes, int off, int len) throws IOException
         {
-            int maxOffset = off + len;
-            while (off < maxOffset)
+            int currentOffset = off;
+            int maxOffset = currentOffset + len;
+            while (currentOffset < maxOffset)
             {
                 if (predictorPerRow && currentRowData == 0 && !predictorRead)
                 {
                     // PNG predictor; each row starts with predictor type (0, 1, 2, 3, 4)
                     // read per line predictor, add 10 to tread value 0 as 10, 1 as 11, ...
-                    predictor = bytes[off] + 10;
-                    off++;
+                    predictor = bytes[currentOffset] + 10;
+                    currentOffset++;
                     predictorRead = true;
                 }
                 else
                 {
-                    int toRead = Math.min(rowLength - currentRowData, maxOffset - off);
-                    System.arraycopy(bytes, off, currentRow, currentRowData, toRead);
+                    int toRead = Math.min(rowLength - currentRowData, maxOffset - currentOffset);
+                    System.arraycopy(bytes, currentOffset, currentRow, currentRowData, toRead);
                     currentRowData += toRead;
-                    off += toRead;
+                    currentOffset += toRead;
 
                     // current row is filled, decode it, write it to underlying stream,
                     // and reset the state.
