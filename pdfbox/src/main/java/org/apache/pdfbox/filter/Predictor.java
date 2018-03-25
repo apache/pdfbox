@@ -308,7 +308,10 @@ public final class Predictor
         // current predictor type
         private int predictor;
         // image decode parameters
-        private final int colors, bitsPerComponent, columns, rowLength;
+        private final int colors;
+        private final int bitsPerComponent;
+        private final int columns;
+        private final int rowLength;
         // PNG predictor (predictor>=10) means every row has a (potentially different)
         // predictor value
         private final boolean predictorPerRow;
@@ -328,7 +331,7 @@ public final class Predictor
             this.bitsPerComponent = bitsPerComponent;
             this.columns = columns;
             this.rowLength = calculateRowLength(colors, bitsPerComponent, columns);
-            this.predictorPerRow = (predictor >= 10);
+            this.predictorPerRow = predictor >= 10;
             currentRow = new byte[rowLength];
             lastRow = new byte[rowLength];
         }
@@ -400,12 +403,6 @@ public final class Predictor
                 decodeAndWriteRow();
             }
             super.flush();
-        }
-
-        @Override
-        public void close() throws IOException
-        {
-            super.close();
         }
 
         @Override
