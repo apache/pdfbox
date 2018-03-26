@@ -142,5 +142,6 @@ final class FlateFilter extends Filter
         }
         out.close();
         encoded.flush();
+        deflater.end();
     }
 }
