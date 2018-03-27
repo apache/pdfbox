@@ -124,4 +124,36 @@ public final class IOUtils
             // ignore
         }
     }
+
+    /**
+     * Try to close an IO resource and log and return if there was an exception.
+     *  
+     * <p>An exception is only returned if the IOException passed in is null.
+     * 
+     * @param closeable to be closed
+     * @param logger the logger to be used so that logging appears under that log instance
+     * @param resourceName the name to appear in the log output
+     * @param initialException to be closed
+     * @return the IOException is there was any but only if initialException is null
+     */
+    public static IOException closeAndLogException(Closeable closeable, Log logger, String resourceName, IOException initialException)
+    {
+        try
+        {
+            closeable.close();
+        }
+        catch (IOException ioe)
+        {
+            logger.warn("Error closing " + resourceName, ioe);
+            if (initialException == null)
+            {
+                return ioe;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        return null;
+    }
 }
