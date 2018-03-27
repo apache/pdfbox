@@ -1126,4 +1126,18 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         writeOperand(rm.intValue());
         writeOperator("Tr");
     }
+
+    /**
+     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing
+     * superscripts or subscripts.
+     *
+     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or
+     * down from its default location. 0 restores the default location.
+     * @throws IOException
+     */
+    public void setTextRise(float rise) throws IOException
+    {
+        writeOperand(rise);
+        writeOperator("Ts");
+    }
 }
