@@ -357,7 +357,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * This will get the document catalog.
      *
-     * @return @return The catalog is the root of the document; never null.
+     * @return The catalog that is the root of the document; never null.
      *
      * @throws IOException If no catalog can be found.
      */
