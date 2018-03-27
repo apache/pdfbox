@@ -41,6 +41,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -326,33 +327,12 @@ public class PDFMergerUtility
             {
                 for (PDDocument doc : tobeclosed)
                 {
-                    try
-                    {
-                        doc.close();
-                    }
-                    catch (IOException ioe)
-                    {
-                        LOG.warn("Couldn't close PDDocument", ioe);
-                        if (firstException == null)
-                        {
-                            firstException = ioe;
-                        }
-                    }
+                    firstException = IOUtils.closeAndLogException(doc, LOG, "PDDocument", firstException);
                 }
+
                 for (FileInputStream stream : fileInputStreams)
                 {
-                    try
-                    {
-                        stream.close();
-                    }
-                    catch (IOException ioe)
-                    {
-                        LOG.warn("Couldn't close FileInputStream", ioe);
-                        if (firstException == null)
-                        {
-                            firstException = ioe;
-                        }
-                    }
+                    firstException = IOUtils.closeAndLogException(stream, LOG, "FileInputStream", firstException);
                 }
 
                 // rethrow first exception to keep method contract

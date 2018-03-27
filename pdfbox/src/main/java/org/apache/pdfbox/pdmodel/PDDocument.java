@@ -1399,49 +1399,22 @@ public class PDDocument implements Closeable
             // close resources and COSWriter
             if (signingSupport != null)
             {
-                try
-                {
-                    signingSupport.close();
-                }
-                catch (IOException ioe)
-                {
-                    LOG.warn("Error closing SigningSupport", ioe);
-                    if (firstException == null)
-                    {
-                        firstException = ioe;
-                    }
-                }
+                firstException = IOUtils.closeAndLogException(signingSupport, LOG, "SigningSupport", firstException);
             }
 
             // close all intermediate I/O streams
-            try
-            {
-                document.close();
-            }
-            catch (IOException ioe)
-            {   
-                LOG.warn("Error closing COSDocument", ioe);
-                if (firstException == null)
-                {
-                    firstException = ioe;
-                }
-            }
+            firstException = IOUtils.closeAndLogException(document, LOG, "COSDocument", firstException);
             
             // close the source PDF stream, if we read from one
             if (pdfSource != null)
             {
-                try
-                {
-                    pdfSource.close();
-                }
-                catch (IOException ioe)
-                {
-                    LOG.warn("Error closing RandomAccessRead pdfSource", ioe);
-                    if (firstException == null)
-                    {
-                        firstException = ioe;
-                    }
-                }
+                firstException = IOUtils.closeAndLogException(pdfSource, LOG, "RandomAccessRead pdfSource", firstException);
+            }
+
+            // rethrow first exception to keep method contract
+            if (firstException != null)
+            {
+                throw firstException;
             }
         }
     }
