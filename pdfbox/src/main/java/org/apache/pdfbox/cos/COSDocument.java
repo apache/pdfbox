@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 
@@ -441,53 +443,16 @@ public class COSDocument extends COSBase implements Closeable
                 COSBase cosObject = object.getObject();
                 if (cosObject instanceof COSStream)
                 {
-                    COSStream cosStream = (COSStream) cosObject;
-                    try
-                    {
-                        cosStream.close();
-                    }
-                    catch (IOException ioe)
-                    {
-                        LOG.warn("Error closing COSStream", ioe);
-                        if (firstException == null)
-                        {
-                            firstException = ioe;
-                        }
-
-                    } 
+                    firstException = IOUtils.closeAndLogException((COSStream) cosObject, LOG, "COSStream", firstException);
                 }
             }
             for (COSStream stream : streams)
             {
-                try
-                {
-                    stream.close();
-                }
-                catch (IOException ioe)
-                {
-                    LOG.warn("Error closing COSStream", ioe);
-                    if (firstException == null)
-                    {
-                        firstException = ioe;
-                    }
-
-                }
+                firstException = IOUtils.closeAndLogException(stream, LOG, "COSStream", firstException);
             }
             if (scratchFile != null)
             {
-                try
-                {
-                    scratchFile.close();
-                }
-                catch (IOException ioe)
-                {
-                    LOG.warn("Error closing ScratchFile", ioe);
-                    if (firstException == null)
-                    {
-                        firstException = ioe;
-                    }
-
-                }
+                firstException = IOUtils.closeAndLogException(scratchFile, LOG, "ScratchFile", firstException);
             }
             closed = true;
 
