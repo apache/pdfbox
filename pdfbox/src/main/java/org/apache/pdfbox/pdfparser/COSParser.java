@@ -386,7 +386,12 @@ public class COSParser extends BaseParser
     private long parseXrefObjStream(long objByteOffset, boolean isStandalone) throws IOException
     {
         // ---- parse indirect object head
-        readObjectNumber();
+        long objectNumber = readObjectNumber();
+
+        // remember the highest XRef object number to avoid it being reused in incremental saving
+        long currentHighestXRefObjectNumber = document.getHighestXRefObjectNumber();
+        document.setHighestXRefObjectNumber(Math.max(currentHighestXRefObjectNumber, objectNumber));
+
         readGenerationNumber();
         readExpectedString(OBJ_MARKER, true);
 
