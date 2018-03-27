@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -71,6 +74,11 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
  */
 public class PDFMergerUtility
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDFMergerUtility.class);
+
     private final List<InputStream> sources;
     private final List<FileInputStream> fileInputStreams;
     private String destinationFileName;
@@ -263,6 +271,14 @@ public class PDFMergerUtility
     {
         if (sources != null && !sources.isEmpty())
         {
+            // Make sure that:
+            // - first Exception is kept
+            // - all PDDocuments are closed
+            // - all FileInputStreams are closed
+            // - there's a way to see which errors occured
+
+            IOException firstException = null;
+
             List<PDDocument> tobeclosed = new ArrayList<>();
             MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
                     memUsageSetting.getPartitionedCopy(sources.size()+1) :
@@ -286,24 +302,63 @@ public class PDFMergerUtility
                     destination.getDocumentCatalog().setMetadata(destinationMetadata);
                 }
                 
-                if (destinationStream == null)
+                try
                 {
-                    destination.save(destinationFileName);
+                    if (destinationStream == null)
+                    {
+                        destination.save(destinationFileName);
+                    }
+                    else
+                    {
+                        destination.save(destinationStream);
+                    }
                 }
-                else
+                catch (IOException ioe)
                 {
-                    destination.save(destinationStream);
+                    LOG.warn("Couldn't save destination", ioe);
+                    if (firstException == null)
+                    {
+                        firstException = ioe;
+                    }
                 }
             }
             finally
             {
                 for (PDDocument doc : tobeclosed)
                 {
-                    doc.close();
+                    try
+                    {
+                        doc.close();
+                    }
+                    catch (IOException ioe)
+                    {
+                        LOG.warn("Couldn't close PDDocument", ioe);
+                        if (firstException == null)
+                        {
+                            firstException = ioe;
+                        }
+                    }
                 }
                 for (FileInputStream stream : fileInputStreams)
                 {
-                    stream.close();
+                    try
+                    {
+                        stream.close();
+                    }
+                    catch (IOException ioe)
+                    {
+                        LOG.warn("Couldn't close FileInputStream", ioe);
+                        if (firstException == null)
+                        {
+                            firstException = ioe;
+                        }
+                    }
+                }
+
+                // rethrow first exception to keep method contract
+                if (firstException != null)
+                {
+                    throw firstException;
                 }
             }
         }
