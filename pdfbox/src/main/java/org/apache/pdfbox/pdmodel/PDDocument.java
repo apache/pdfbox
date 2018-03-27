@@ -1389,19 +1389,59 @@ public class PDDocument implements Closeable
     {
         if (!document.isClosed())
         {
+             // Make sure that:
+            // - first Exception is kept
+            // - all IO resources are closed
+            // - there's a way to see which errors occured
+
+            IOException firstException = null;
+
             // close resources and COSWriter
             if (signingSupport != null)
             {
-                signingSupport.close();
+                try
+                {
+                    signingSupport.close();
+                }
+                catch (IOException ioe)
+                {
+                    LOG.warn("Error closing SigningSupport", ioe);
+                    if (firstException == null)
+                    {
+                        firstException = ioe;
+                    }
+                }
             }
 
             // close all intermediate I/O streams
-            document.close();
+            try
+            {
+                document.close();
+            }
+            catch (IOException ioe)
+            {   
+                LOG.warn("Error closing COSDocument", ioe);
+                if (firstException == null)
+                {
+                    firstException = ioe;
+                }
+            }
             
             // close the source PDF stream, if we read from one
             if (pdfSource != null)
             {
-                pdfSource.close();
+                try
+                {
+                    pdfSource.close();
+                }
+                catch (IOException ioe)
+                {
+                    LOG.warn("Error closing RandomAccessRead pdfSource", ioe);
+                    if (firstException == null)
+                    {
+                        firstException = ioe;
+                    }
+                }
             }
         }
     }
