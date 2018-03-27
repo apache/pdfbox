@@ -424,24 +424,74 @@ public class COSDocument extends COSBase implements Closeable
     {
         if (!closed)
         {
+            // Make sure that:
+            // - first Exception is kept
+            // - all COSStreams are closed
+            // - ScratchFile is closed
+            // - there's a way to see which errors occured
+
+            IOException firstException = null;
+
             // close all open I/O streams
             for (COSObject object : getObjects())
             {
                 COSBase cosObject = object.getObject();
                 if (cosObject instanceof COSStream)
                 {
-                    ((COSStream) cosObject).close();
+                    try (COSStream cosStream = (COSStream) cosObject)
+                    {
+                        cosStream.close();
+                    }
+                    catch (IOException ioe)
+                    {
+                        LOG.warn("Error closing COSStream", ioe);
+                        if (firstException == null)
+                        {
+                            firstException = ioe;
+                        }
+
+                    }
                 }
             }
             for (COSStream stream : streams)
             {
-                stream.close();
+                try
+                {
+                    stream.close();
+                }
+                catch (IOException ioe)
+                {
+                    LOG.warn("Error closing COSStream", ioe);
+                    if (firstException == null)
+                    {
+                        firstException = ioe;
+                    }
+
+                }
             }
             if (scratchFile != null)
             {
-                scratchFile.close();
+                try
+                {
+                    scratchFile.close();
+                }
+                catch (IOException ioe)
+                {
+                    LOG.warn("Error closing ScratchFile", ioe);
+                    if (firstException == null)
+                    {
+                        firstException = ioe;
+                    }
+
+                }
             }
             closed = true;
+
+            // rethrow first exception to keep method contract
+            if (firstException != null)
+            {
+                throw firstException;
+            }
         }
     }
 
