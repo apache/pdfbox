@@ -258,7 +258,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
     private void decodeRowType4() throws IOException {
         if(optionByteAligned) {
-            bufferPos = -1;  // Skip remaining bits and fetch the next byte at row start
+            resetBuffer();
         }
         eof: while (true) {
             // read till next EOL code
@@ -287,7 +287,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
 
     private void decodeRowType6() throws IOException {
         if(optionByteAligned) {
-            bufferPos = -1;  // Skip remaining bits and fetch the next byte at row start
+            resetBuffer();
         }
         decode2D();
     }
@@ -383,17 +383,7 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
     }
 
     private void resetBuffer() throws IOException {
-        for (int i = 0; i < decodedRow.length; i++) {
-            decodedRow[i] = 0;
-        }
-
-        while (true) {
-            if (bufferPos == -1) {
-                return;
-            }
-
-            readBit();
-        }
+        bufferPos = -1;
     }
 
     int buffer = -1;
