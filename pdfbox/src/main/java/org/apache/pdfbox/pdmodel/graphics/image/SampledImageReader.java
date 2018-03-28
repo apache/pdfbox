@@ -170,6 +170,19 @@ final class SampledImageReader
         }
     }
 
+    /**
+     * Returns the content of the given image as an AWT buffered image with an RGB color space.
+     * If a color key mask is provided then an ARGB image is returned instead.
+     * This method never returns null.
+     * @param pdImage the image to read
+     * @param region The region of the source image to get, or null if the entire image is needed.
+     *               The actual region will be clipped to the dimensions of the source image.
+     * @param subsampling The amount of rows and columns to advance for every output pixel, a value
+     *                  of 1 meaning every pixel will be read
+     * @param colorKey an optional color key mask
+     * @return content of this image as an (A)RGB buffered image
+     * @throws IOException if the image cannot be read
+     */
     public static BufferedImage getRGBImage(PDImage pdImage, Rectangle region, int subsampling,
                                             COSArray colorKey) throws IOException
     {
