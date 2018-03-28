@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import javax.imageio.spi.IIORegistry;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Sides;
@@ -1202,6 +1203,7 @@ public class PDFDebugger extends JFrame
             // Yes this is always true
             PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
             PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
+            IIORegistry.getDefaultInstance();
         }
 
         // open file, if any
