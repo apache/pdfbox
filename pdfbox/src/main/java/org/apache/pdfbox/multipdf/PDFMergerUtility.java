@@ -263,8 +263,6 @@ public class PDFMergerUtility
             // - all FileInputStreams are closed
             // - there's a way to see which errors occured
 
-            IOException firstException = null;
-
             List<PDDocument> tobeclosed = new ArrayList<PDDocument>();
 
             try
@@ -291,47 +289,30 @@ public class PDFMergerUtility
                     destination.getDocumentCatalog().setMetadata(destinationMetadata);
                 }
                 
-                try 
+                if (destinationStream == null)
                 {
-                    if (destinationStream == null)
-                    {
-                        destination.save(destinationFileName);
-                    }
-                    else
-                    {
-                        destination.save(destinationStream);
-                    }
+                    destination.save(destinationFileName);
                 }
-                catch (IOException ioe)
+                else
                 {
-                    LOG.warn("Couldn't save destination", ioe);
-                    if (firstException == null)
-                    {
-                        firstException = ioe;
-                    }
+                    destination.save(destinationStream);
                 }
             }
             finally
             {
                 if (destination != null)
                 {
-                    firstException = IOUtils.closeAndLogException(destination, LOG, "PDDocument", firstException);
+                    IOUtils.closeAndLogException(destination, LOG, "PDDocument", null);
                 }
 
                 for (PDDocument doc : tobeclosed)
                 {
-                    firstException = IOUtils.closeAndLogException(doc, LOG, "PDDocument", firstException);
+                    IOUtils.closeAndLogException(doc, LOG, "PDDocument", null);
                 }
 
                 for (FileInputStream stream : fileInputStreams)
                 {
-                    firstException = IOUtils.closeAndLogException(stream, LOG, "FileInputStream", firstException);
-                }
-
-                // rethrow first exception to keep method contract
-                if (firstException != null)
-                {
-                    throw firstException;
+                    IOUtils.closeAndLogException(stream, LOG, "FileInputStream", null);
                 }
             }
         }
