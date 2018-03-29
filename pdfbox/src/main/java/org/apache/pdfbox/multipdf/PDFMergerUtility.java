@@ -288,7 +288,16 @@ public class PDFMergerUtility
             {
                 for (InputStream sourceInputStream : sources)
                 {
-                    PDDocument sourceDoc = PDDocument.load(sourceInputStream, partitionedMemSetting);
+                    PDDocument sourceDoc = null;
+                    try
+                    {
+                        sourceDoc = PDDocument.load(sourceInputStream, partitionedMemSetting);
+                    }
+                    catch (IOException ioe)
+                    {
+                        LOG.error("Couldn't load source document", ioe);
+                        firstException = ioe;
+                    }
                     tobeclosed.add(sourceDoc);
                     appendDocument(destination, sourceDoc);
                 }
