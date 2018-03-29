@@ -278,8 +278,6 @@ public class PDFMergerUtility
             // - all FileInputStreams are closed
             // - there's a way to see which errors occured
 
-            IOException firstException = null;
-
             List<PDDocument> tobeclosed = new ArrayList<>();
             MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 
                     memUsageSetting.getPartitionedCopy(sources.size()+1) :
@@ -288,16 +286,7 @@ public class PDFMergerUtility
             {
                 for (InputStream sourceInputStream : sources)
                 {
-                    PDDocument sourceDoc = null;
-                    try
-                    {
-                        sourceDoc = PDDocument.load(sourceInputStream, partitionedMemSetting);
-                    }
-                    catch (IOException ioe)
-                    {
-                        LOG.error("Couldn't load source document", ioe);
-                        firstException = ioe;
-                    }
+                    PDDocument sourceDoc = PDDocument.load(sourceInputStream, partitionedMemSetting);
                     tobeclosed.add(sourceDoc);
                     appendDocument(destination, sourceDoc);
                 }
@@ -312,42 +301,25 @@ public class PDFMergerUtility
                     destination.getDocumentCatalog().setMetadata(destinationMetadata);
                 }
                 
-                try
+                if (destinationStream == null)
                 {
-                    if (destinationStream == null)
-                    {
-                        destination.save(destinationFileName);
-                    }
-                    else
-                    {
-                        destination.save(destinationStream);
-                    }
+                    destination.save(destinationFileName);
                 }
-                catch (IOException ioe)
+                else
                 {
-                    LOG.warn("Couldn't save destination", ioe);
-                    if (firstException == null)
-                    {
-                        firstException = ioe;
-                    }
+                    destination.save(destinationStream);
                 }
             }
             finally
             {
                 for (PDDocument doc : tobeclosed)
                 {
-                    firstException = IOUtils.closeAndLogException(doc, LOG, "PDDocument", firstException);
+                    IOUtils.closeAndLogException(doc, LOG, "PDDocument", null);
                 }
 
                 for (FileInputStream stream : fileInputStreams)
                 {
-                    firstException = IOUtils.closeAndLogException(stream, LOG, "FileInputStream", firstException);
-                }
-
-                // rethrow first exception to keep method contract
-                if (firstException != null)
-                {
-                    throw firstException;
+                    IOUtils.closeAndLogException(stream, LOG, "FileInputStream", null);
                 }
             }
         }
