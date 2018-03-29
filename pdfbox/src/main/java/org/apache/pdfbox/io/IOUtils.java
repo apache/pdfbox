@@ -149,10 +149,6 @@ public final class IOUtils
             {
                 return ioe;
             }
-            else
-            {
-                return null;
-            }
         }
         return null;
     }
