@@ -712,6 +712,7 @@ public final class PDAcroForm implements COSObjectable
     private boolean resolveNeedsTranslation(PDAppearanceStream appearanceStream)
     {
         boolean needsTranslation = false;
+        boolean foundFormObject = false;
         
         PDResources resources = appearanceStream.getResources();
         if (resources != null && resources.getXObjectNames().iterator().hasNext())
@@ -728,6 +729,7 @@ public final class PDAcroForm implements COSObjectable
                     PDXObject xObject = resources.getXObject(xObjectNames.next());
                     if (xObject instanceof PDFormXObject)
                     {
+                        foundFormObject = true;
                         PDRectangle bbox = ((PDFormXObject)xObject).getBBox();
                         float llX = bbox.getLowerLeftX();
                         float llY = bbox.getLowerLeftY();
@@ -744,7 +746,7 @@ public final class PDAcroForm implements COSObjectable
                     LOG.debug("Couldn't resolve possible need for translation - ignoring, content might be misplaced", e);
                 }
             }
-            return needsTranslation;
+            return needsTranslation || !foundFormObject;
         }
         
         return true;
