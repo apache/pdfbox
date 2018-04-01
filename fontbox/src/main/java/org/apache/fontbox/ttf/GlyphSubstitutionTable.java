@@ -230,12 +230,21 @@ public class GlyphSubstitutionTable extends TTFTable
                 lookupTable.subTables[i] = readLookupSubTable(data, offset + subTableOffets[i]);
             }
             break;
+        case 4: // Ligature Substitution Subtable
+            for (int i = 0; i < subTableCount; i++)
+            {
+                lookupTable.subTables[i] = readLigatureSubstitutionSubtable(data,
+                        offset + subTableOffets[i]);
+            }
+            break;
         default:
             // Other lookup types are not supported
             LOG.debug("Type " + lookupTable.lookupType + " GSUB lookup table is not supported and will be ignored");
         }
         return lookupTable;
     }
+
+
 
     LookupSubTable readLookupSubTable(TTFDataStream data, long offset) throws IOException
     {
@@ -271,6 +280,108 @@ public class GlyphSubstitutionTable extends TTFTable
         }
     }
 
+    private LookupSubTable readLigatureSubstitutionSubtable(TTFDataStream data, long offset)
+            throws IOException
+    {
+        data.seek(offset);
+        int substFormat = data.readUnsignedShort();
+
+        if (substFormat != 1)
+        {
+            throw new IllegalArgumentException(
+                    "The expected SubstFormat for LigatureSubstitutionTable is 1");
+        }
+
+        LookupTypeLigatureSubstitutionSubstFormat1 lookupSubTable = new LookupTypeLigatureSubstitutionSubstFormat1();
+        lookupSubTable.substFormat = substFormat;
+
+        int coverage = data.readUnsignedShort();
+        int ligSetCount = data.readUnsignedShort();
+
+        int[] ligatureOffsets = new int[ligSetCount];
+
+        for (int i = 0; i < ligSetCount; i++)
+        {
+            ligatureOffsets[i] = data.readUnsignedShort();
+        }
+
+        lookupSubTable.coverageTable = readCoverageTable(data, offset + coverage);
+
+        if (ligSetCount != lookupSubTable.coverageTable.getSize())
+        {
+            throw new IllegalArgumentException(
+                    "According to the OpenTypeFont specifications, the coverage count should be equal to the no. of LigatureSetTables");
+        }
+
+        lookupSubTable.ligatureSetTables = new LigatureSetTable[ligSetCount];
+
+        for (int i = 0; i < ligSetCount; i++)
+         {
+        
+            int coverageGlyphId = lookupSubTable.coverageTable.getGlyphId(i);
+
+            lookupSubTable.ligatureSetTables[i] = readLigatureSetTable(data,
+                    offset + ligatureOffsets[i],
+         coverageGlyphId);
+         }
+
+        return lookupSubTable;
+    }
+
+    private LigatureSetTable readLigatureSetTable(TTFDataStream data, long ligatureSetTableLocation,
+            int coverageGlyphId)
+            throws IOException
+    {
+        data.seek(ligatureSetTableLocation);
+
+        LigatureSetTable ligatureSetTable = new LigatureSetTable();
+
+        ligatureSetTable.ligatureCount = data.readUnsignedShort();
+        LOG.debug("ligatureCount=" + ligatureSetTable.ligatureCount);
+
+        int[] ligatureOffsets = new int[ligatureSetTable.ligatureCount];
+        ligatureSetTable.ligatureTables = new LigatureTable[ligatureSetTable.ligatureCount];
+
+        for (int i = 0; i < ligatureOffsets.length; i++)
+        {
+            ligatureOffsets[i] = data.readUnsignedShort();
+        }
+
+
+        for (int i = 0; i < ligatureOffsets.length; i++)
+        {
+            int ligatureOffset = ligatureOffsets[i];
+            ligatureSetTable.ligatureTables[i] = readLigatureTable(data,
+                    ligatureSetTableLocation + ligatureOffset, coverageGlyphId);
+        }
+
+        return ligatureSetTable;
+    }
+
+    private LigatureTable readLigatureTable(TTFDataStream data, long ligatureTableLocation,
+            int coverageGlyphId) throws IOException
+    {
+        data.seek(ligatureTableLocation);
+
+        LigatureTable ligatureTable = new LigatureTable();
+
+        ligatureTable.ligatureGlyph = data.readUnsignedShort();
+
+        ligatureTable.componentCount = data.readUnsignedShort();
+
+        ligatureTable.componentGlyphIDs = new int[ligatureTable.componentCount];
+
+        ligatureTable.componentGlyphIDs[0] = coverageGlyphId;
+
+        for (int i = 1; i <= ligatureTable.componentCount - 1; i++)
+        {
+            ligatureTable.componentGlyphIDs[i] = data.readUnsignedShort();
+        }
+
+        return ligatureTable;
+
+    }
+
     CoverageTable readCoverageTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
@@ -295,10 +406,25 @@ public class GlyphSubstitutionTable extends TTFTable
             coverageTable.coverageFormat = coverageFormat;
             int rangeCount = data.readUnsignedShort();
             coverageTable.rangeRecords = new RangeRecord[rangeCount];
+
+            List<Integer> glyphIds = new ArrayList<>();
+
             for (int i = 0; i < rangeCount; i++)
             {
                 coverageTable.rangeRecords[i] = readRangeRecord(data);
+                for (int glyphId = coverageTable.rangeRecords[i].startGlyphID; glyphId <= coverageTable.rangeRecords[i].endGlyphID; glyphId++)
+                {
+                    glyphIds.add(glyphId);
+                }
             }
+
+            coverageTable.glyphArray = new int[glyphIds.size()];
+
+            for (int i = 0; i < coverageTable.glyphArray.length; i++)
+            {
+                coverageTable.glyphArray[i] = glyphIds.get(i);
+            }
+
             return coverageTable;
 
         }
@@ -686,11 +812,33 @@ public class GlyphSubstitutionTable extends TTFTable
         }
     }
 
+    static class LookupTypeLigatureSubstitutionSubstFormat1 extends LookupSubTable
+    {
+        LigatureSetTable[] ligatureSetTables;
+
+        @Override
+        int doSubstitution(int gid, int coverageIndex)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.format("%s[substFormat=%d]",
+                    LookupTypeLigatureSubstitutionSubstFormat1.class.getSimpleName(), substFormat);
+        }
+    }
+
     static abstract class CoverageTable
     {
         int coverageFormat;
 
         abstract int getCoverageIndex(int gid);
+
+        abstract int getGlyphId(int index);
+
+        abstract int getSize();
     }
 
     static class CoverageTableFormat1 extends CoverageTable
@@ -704,29 +852,30 @@ public class GlyphSubstitutionTable extends TTFTable
         }
 
         @Override
+        int getGlyphId(int index)
+        {
+            return glyphArray[index];
+        }
+
+        @Override
+        int getSize()
+        {
+            return glyphArray.length;
+        }
+
+        @Override
         public String toString()
         {
             return String.format("CoverageTableFormat1[coverageFormat=%d,glyphArray=%s]",
                     coverageFormat, Arrays.toString(glyphArray));
         }
+
+
     }
 
-    static class CoverageTableFormat2 extends CoverageTable
+    static class CoverageTableFormat2 extends CoverageTableFormat1
     {
         RangeRecord[] rangeRecords;
-
-        @Override
-        int getCoverageIndex(int gid)
-        {
-            for (RangeRecord rangeRecord : rangeRecords)
-            {
-                if (rangeRecord.startGlyphID <= gid && gid <= rangeRecord.endGlyphID)
-                {
-                    return rangeRecord.startCoverageIndex + gid - rangeRecord.startGlyphID;
-                }
-            }
-            return -1;
-        }
 
         @Override
         public String toString()
@@ -746,6 +895,33 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             return String.format("RangeRecord[startGlyphID=%d,endGlyphID=%d,startCoverageIndex=%d]",
                     startGlyphID, endGlyphID, startCoverageIndex);
+        }
+    }
+
+    static class LigatureSetTable
+    {
+        int ligatureCount;
+        LigatureTable[] ligatureTables;
+
+        @Override
+        public String toString()
+        {
+            return String.format("%s[ligatureCount=%d]", LigatureSetTable.class.getSimpleName(),
+                    ligatureCount);
+        }
+    }
+
+    static class LigatureTable
+    {
+        int ligatureGlyph;
+        int componentCount;
+        int[] componentGlyphIDs;
+
+        @Override
+        public String toString()
+        {
+            return String.format("%s[ligatureGlyph=%d, componentCount=%d]",
+                    LigatureTable.class.getSimpleName(), ligatureGlyph, componentCount);
         }
     }
 }
