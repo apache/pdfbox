@@ -79,7 +79,7 @@ public class TestValidFiles
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);
-        if (isartor == null)
+        if (isartor == null || isartor.isEmpty())
         {
             staticLogger.warn(ISARTOR_FILES + " (where are isartor pdf files) is not defined.");
             return stopIfExpected();
