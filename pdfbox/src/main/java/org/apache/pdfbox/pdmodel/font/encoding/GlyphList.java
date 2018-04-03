@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * PostScript glyph list, maps glyph names to sequences of Unicode characters.
@@ -97,7 +98,7 @@ public final class GlyphList
     private final Map<String, String> unicodeToName;
     
     // additional read/write cache for uniXXXX names
-    private final Map<String, String> uniNameToUnicodeCache = new HashMap<>();
+    private final Map<String, String> uniNameToUnicodeCache = new ConcurrentHashMap<>();
 
     /**
      * Creates a new GlyphList from a glyph list file.
