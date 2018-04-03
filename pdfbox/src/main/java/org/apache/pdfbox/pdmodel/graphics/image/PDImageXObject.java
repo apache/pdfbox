@@ -292,14 +292,24 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         if (fileType.equals(FileType.TIFF))
         {
-            return CCITTFactory.createFromFile(doc, file);
+            try
+            {
+                return CCITTFactory.createFromFile(doc, file);
+            }
+            catch (IOException ex)
+            {
+                // Plan B: try reading with ImageIO
+                // common exception:
+                // First image in tiff is not CCITT T4 or T6 compressed
+                fileType = FileType.PNG;
+            }
         }
         if (fileType.equals(FileType.BMP) || fileType.equals(FileType.GIF) || fileType.equals(FileType.PNG))
         {
             BufferedImage bim = ImageIO.read(file);
             return LosslessFactory.createFromImage(doc, bim);
         }
-        throw new IllegalArgumentException("Image type not supported: " + file.getName());
+        throw new IllegalArgumentException("Image type " + fileType + " not supported: " + file.getName());
     }
 
     /**
@@ -340,7 +350,17 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         if (fileType.equals(FileType.TIFF))
         {
-            return CCITTFactory.createFromByteArray(document, byteArray);
+            try
+            {
+                return CCITTFactory.createFromByteArray(document, byteArray);
+            }
+            catch (IOException ex)
+            {
+                // Plan B: try reading with ImageIO
+                // common exception:
+                // First image in tiff is not CCITT T4 or T6 compressed
+                fileType = FileType.PNG;
+            }
         }
         if (fileType.equals(FileType.BMP) || fileType.equals(FileType.GIF) || fileType.equals(FileType.PNG))
         {
@@ -348,7 +368,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             BufferedImage bim = ImageIO.read(bais);
             return LosslessFactory.createFromImage(document, bim);
         }
-        throw new IllegalArgumentException("Image type not supported: " + name);
+        throw new IllegalArgumentException("Image type " + fileType + " not supported: " + name);
     }
 
     /**
