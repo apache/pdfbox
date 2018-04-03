@@ -323,9 +323,12 @@ public class TextToPDF
                             throw new IOException("Unknown argument: " + args[i]);
                     }
                 }
-                
-                app.createPDFFromText( doc, new FileReader( args[args.length-1] ) );
-                doc.save( args[args.length-2] );
+
+                try (FileReader fileReader = new FileReader(args[args.length - 1]))
+                {
+                    app.createPDFFromText(doc, fileReader);
+                }
+                doc.save(args[args.length - 2]);
             }
         }
     }
