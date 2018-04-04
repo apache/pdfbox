@@ -298,6 +298,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             }
             catch (IOException ex)
             {
+                LOG.debug("Reading as TIFF failed, setting fileType to PNG", ex);
                 // Plan B: try reading with ImageIO
                 // common exception:
                 // First image in tiff is not CCITT T4 or T6 compressed
@@ -356,6 +357,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             }
             catch (IOException ex)
             {
+                LOG.debug("Reading as TIFF failed, setting fileType to PNG", ex);
                 // Plan B: try reading with ImageIO
                 // common exception:
                 // First image in tiff is not CCITT T4 or T6 compressed
