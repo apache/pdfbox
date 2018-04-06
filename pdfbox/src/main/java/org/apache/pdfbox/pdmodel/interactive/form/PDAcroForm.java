@@ -711,6 +711,8 @@ public final class PDAcroForm implements COSObjectable
      */
     private boolean resolveNeedsTranslation(PDAppearanceStream appearanceStream)
     {
+        // a field without specific settings typically needs to be translated
+        // to the correct position
         boolean needsTranslation = true;
         
         PDResources resources = appearanceStream.getResources();
