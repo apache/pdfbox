@@ -289,6 +289,7 @@ public final class PDFToImage
             + "  -startPage <int>                 : The first page to start extraction (1-based)\n"
             + "  -endPage <int>                   : The last page to extract(inclusive)\n"
             + "  -color <int>                     : The color depth (valid: bilevel, gray, rgb (default), rgba)\n"
+            + "  -dpi <int>                       : The DPI of the output image, default: screen resolution or 96 if unknown\n"
             + "  -quality <float>                 : The quality to be used when compressing the image (0 < quality <= 1 (default))\n"
             + "  -cropbox <int> <int> <int> <int> : The page area to export\n"
             + "  -time                            : Prints timing information to stdout\n"
@@ -327,7 +328,6 @@ public final class PDFToImage
             rectangle.setUpperRightX(c);
             rectangle.setUpperRightY(d);
             page.setCropBox(rectangle);
-
         }
     }
 }
