@@ -336,7 +336,6 @@ public final class PDFToImage
             rectangle.setUpperRightX(c);
             rectangle.setUpperRightY(d);
             page.setCropBox(rectangle);
-
         }
     }
 }
