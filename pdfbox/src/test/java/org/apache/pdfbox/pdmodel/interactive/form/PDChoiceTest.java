@@ -20,7 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,12 +38,17 @@ public class PDChoiceTest
 {
     private PDDocument document;
     private PDAcroForm acroForm;
+    private List<String> options;
 
     @Before
     public void setUp()
     {
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
+        options = new ArrayList<>();
+        options.add(" ");
+        options.add("A");
+        options.add("B");
     }
 
     @Test
@@ -60,6 +70,78 @@ public class PDChoiceTest
         assertEquals(choiceField.getFieldType(), "Ch");
         assertTrue(choiceField.isCombo());
     }
+    
+    @Test
+    public void getOptionsFromStrings()
+    {
+        PDChoice choiceField = new PDComboBox(acroForm);
+        COSArray choiceFieldOptions = new COSArray();
+        choiceFieldOptions.add(new COSString(" "));
+        choiceFieldOptions.add(new COSString("A"));
+        choiceFieldOptions.add(new COSString("B"));
+        
+        // add the options using the low level COS model as the PD model will
+        // abstract the COSArray
+        choiceField.getCOSObject().setItem(COSName.OPT, choiceFieldOptions);
 
+        assertEquals(options, choiceField.getOptions());
+    }
+
+    @Test
+    public void getOptionsFromCOSArray()
+    {
+        PDChoice choiceField = new PDComboBox(acroForm);
+        COSArray choiceFieldOptions = new COSArray();
+
+        // add entry to options
+        COSArray entry = new COSArray();
+        entry.add(new COSString(" "));
+        choiceFieldOptions.add(entry);
+
+        // add entry to options
+        entry = new COSArray();
+        entry.add(new COSString("A"));
+        choiceFieldOptions.add(entry);
+
+        // add entry to options
+        entry = new COSArray();
+        entry.add(new COSString("B"));
+        choiceFieldOptions.add(entry);
+                
+        // add the options using the low level COS model as the PD model will
+        // abstract the COSArray
+        choiceField.getCOSObject().setItem(COSName.OPT, choiceFieldOptions);
+
+        assertEquals(options, choiceField.getOptions());
+    }
+    
+    /*
+     * Get the entries form a moxed values array. See PDFBOX-4185
+     */
+    @Test
+    public void getOptionsFromMixed()
+    {
+        PDChoice choiceField = new PDComboBox(acroForm);
+        COSArray choiceFieldOptions = new COSArray();
+
+        // add string entry to options
+        choiceFieldOptions.add(new COSString(" "));
+
+        // add array entry to options
+        COSArray entry = new COSArray();
+        entry.add(new COSString("A"));
+        choiceFieldOptions.add(entry);
+
+        // add array entry to options
+        entry = new COSArray();
+        entry.add(new COSString("B"));
+        choiceFieldOptions.add(entry);
+                
+        // add the options using the low level COS model as the PD model will
+        // abstract the COSArray
+        choiceField.getCOSObject().setItem(COSName.OPT, choiceFieldOptions);
+
+        assertEquals(options, choiceField.getOptions());
+    }
 }
 
