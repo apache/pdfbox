@@ -114,8 +114,8 @@ public final class ImageIOUtil
             int dpi) throws IOException
     {
         File file = new File(filename + "." + formatName);
-        try
-        (FileOutputStream output = new FileOutputStream(file)) {
+        try (FileOutputStream output = new FileOutputStream(file))
+        {
             return writeImage(image, formatName, output, dpi);
         }
     }
