@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf;
+package org.apache.fontbox.ttf.gsub;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +31,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.OpenTypeScript;
+import org.apache.fontbox.ttf.TTFDataStream;
+import org.apache.fontbox.ttf.TTFTable;
+import org.apache.fontbox.ttf.TrueTypeFont;
 
 /**
  * A glyph substitution 'GSUB' table in a TrueType or OpenType font.
@@ -53,14 +57,14 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private String lastUsedSupportedScript;
 
-    GlyphSubstitutionTable(TrueTypeFont font)
+    public GlyphSubstitutionTable(TrueTypeFont font)
     {
         super(font);
     }
 
     @Override
     @SuppressWarnings({"squid:S1854"})
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         long start = data.getCurrentPosition();
         @SuppressWarnings({"unused"})

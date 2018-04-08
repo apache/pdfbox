@@ -18,6 +18,8 @@ package org.apache.fontbox.ttf;
 
 import java.util.List;
 
+import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
+
 /**
  * A cmap lookup that performs substitution via the 'GSUB' table.
  *

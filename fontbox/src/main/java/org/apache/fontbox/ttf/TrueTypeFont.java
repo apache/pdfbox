@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.fontbox.FontBoxFont;
+import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
 import org.apache.fontbox.util.BoundingBox;
 
 import org.apache.commons.logging.Log;

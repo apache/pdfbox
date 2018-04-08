@@ -32,7 +32,7 @@ import org.apache.fontbox.util.Charsets;
  * 
  * @author Ben Litchfield
  */
-abstract class TTFDataStream implements Closeable
+public abstract class TTFDataStream implements Closeable
 {
     TTFDataStream()
     {

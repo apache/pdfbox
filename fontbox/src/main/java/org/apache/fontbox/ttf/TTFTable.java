@@ -45,7 +45,7 @@ public class TTFTable
      * 
      * @param font The font which contains this table.
      */
-    TTFTable(TrueTypeFont font)
+    protected TTFTable(TrueTypeFont font)
     {
         this.font = font;
     }
@@ -131,7 +131,7 @@ public class TTFTable
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
     }
 }
