@@ -17,6 +17,7 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -183,9 +184,11 @@ public final class LosslessFactory
         else
         {
             bpc = 8;
+            int dataType = alphaRaster.getDataBuffer().getDataType();
+            int shift = dataType == DataBuffer.TYPE_USHORT ? 8 : 0;
             for (int pixel : pixels)
             {
-                bos.write(pixel);
+                bos.write(pixel >>> shift);
             }
         }
 
