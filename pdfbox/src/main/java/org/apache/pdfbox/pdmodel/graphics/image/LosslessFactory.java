@@ -186,7 +186,7 @@ public final class LosslessFactory
         {
             bpc = 8;
             int dataType = alphaRaster.getDataBuffer().getDataType();
-            // for 16 it images we need to 
+            // for 16 bit images divide by 256 
             int shift = dataType == DataBuffer.TYPE_USHORT ? 8 : 0;
             for (int pixel : pixels)
             {
