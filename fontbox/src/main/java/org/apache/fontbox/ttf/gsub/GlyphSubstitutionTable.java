@@ -46,6 +46,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
     public static final String TAG = "GSUB";
 
+    public static final String GLYPH_ID_SEPARATOR = "_";
+
     private LinkedHashMap<String, ScriptTable> scriptList;
     // featureList and lookupList are not maps because we need to index into them
     private FeatureRecord[] featureList;
@@ -55,6 +57,9 @@ public class GlyphSubstitutionTable extends TTFTable
     private final Map<Integer, Integer> reverseLookup = new HashMap<>();
 
     private String lastUsedSupportedScript;
+
+    private Map<String, Integer> glyphSubstitutionMap;
+    private int maxGlyphsToBeSubstituted;
 
     public GlyphSubstitutionTable(TrueTypeFont font)
     {
@@ -82,6 +87,18 @@ public class GlyphSubstitutionTable extends TTFTable
         scriptList = readScriptList(data, start + scriptListOffset);
         featureList = readFeatureList(data, start + featureListOffset);
         lookupList = readLookupList(data, start + lookupListOffset);
+
+        GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
+        glyphSubstitutionDataExtractor.populateData(lookupList);
+        glyphSubstitutionMap = glyphSubstitutionDataExtractor
+                .getGlyphSubstitutionMap();
+
+        LOG.debug("glyphSubstitutionMap: " + glyphSubstitutionMap);
+
+        maxGlyphsToBeSubstituted = glyphSubstitutionDataExtractor.getMaxGlyphsToBeSubstituted();
+
+        LOG.debug("maxGlyphsToBeSubstituted: " + maxGlyphsToBeSubstituted);
+
     }
 
     LinkedHashMap<String, ScriptTable> readScriptList(TTFDataStream data, long offset) throws IOException
