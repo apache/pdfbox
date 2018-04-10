@@ -53,110 +53,116 @@ public final class LosslessFactory
     public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
             throws IOException
     {
-        int bpc;
-        PDDeviceColorSpace deviceColorSpace;
-
-        int height = image.getHeight();
-        int width = image.getWidth();
-        int[] rgbLineBuffer = new int[width];
-
         if ((image.getType() == BufferedImage.TYPE_BYTE_GRAY && image.getColorModel().getPixelSize() <= 8)
                 || (image.getType() == BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() == 1))
         {
-            // grayscale images need one color per sample
-            bpc = image.getColorModel().getPixelSize();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(((width*bpc/8)+(width*bpc%8 != 0 ? 1:0))*height);
-            MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(baos);
-            for (int y = 0; y < height; ++y)
-            {
-                for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
-                {
-                    mcios.writeBits(pixel & 0xFF, bpc);
-                }
-
-                int bitOffset = mcios.getBitOffset();
-                if (bitOffset != 0)
-                {
-                    mcios.writeBits(0, 8 - bitOffset);
-                }
-            }
-            mcios.flush();
-            mcios.close();
-
-            return prepareImageXObject(document, baos.toByteArray(), 
-                image.getWidth(), image.getHeight(), bpc, PDDeviceGray.INSTANCE);
+            return createFromGrayImage(image, document);
         }
         else
         {
-            // RGB
-            bpc = 8;
-            deviceColorSpace = PDDeviceRGB.INSTANCE;
-            byte[] imageData = new byte[width * height * 3];
-            int byteIdx = 0;
-            int alphaByteIdx = 0;
-            int alphaBitPos = 7;
-            int transparency = image.getTransparency();
-            int apbc = transparency == Transparency.BITMASK ? 1 : 8;
-            byte[] alphaImageData;
-            if (transparency != Transparency.OPAQUE)
-            {
-                alphaImageData = new byte[((width * apbc / 8) + (width * apbc % 8 != 0 ? 1 : 0)) * height];
-            }
-            else
-            {
-                alphaImageData = new byte[0];
-            }
-
-            for (int y = 0; y < height; ++y)
-            {
-                for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
-                {
-                    imageData[byteIdx++] = (byte) ((pixel >> 16) & 0xFF);
-                    imageData[byteIdx++] = (byte) ((pixel >> 8) & 0xFF);
-                    imageData[byteIdx++] = (byte) (pixel & 0xFF);
-                    if (transparency != Transparency.OPAQUE)
-                    {
-                        // we have the alpha right here, so no need to do it separately
-                        // as done prior April 2018
-                        if (transparency == Transparency.BITMASK)
-                        {
-                            // write a bit
-                            alphaImageData[alphaByteIdx] |= ((pixel >> 24) & 1) << alphaBitPos;
-                            if (--alphaBitPos < 0)
-                            {
-                                alphaBitPos = 7;
-                                ++alphaByteIdx;
-                            }
-                        }
-                        else
-                        {
-                            // write a byte
-                            alphaImageData[alphaByteIdx++] = (byte) ((pixel >> 24) & 0xFF);
-                        }
-                    }
-                }
-                if (transparency == Transparency.BITMASK)
-                {
-                    // skip boundary if needed
-                    if (alphaBitPos != 7)
-                    {
-                        alphaBitPos = 7;
-                        ++alphaByteIdx;
-                    }
-                }
-            }
-            PDImageXObject pdImage = prepareImageXObject(document, imageData,
-                    image.getWidth(), image.getHeight(), bpc, deviceColorSpace);
-
-            if (transparency != Transparency.OPAQUE)
-            {
-                PDImageXObject pdMask = prepareImageXObject(document, alphaImageData,
-                            image.getWidth(), image.getHeight(), apbc, PDDeviceGray.INSTANCE);
-                    pdImage.getCOSObject().setItem(COSName.SMASK, pdMask);
-            }
-
-            return pdImage;
+            return createFromRGBImage(image, document);
         }      
+    }
+
+    private static PDImageXObject createFromGrayImage(BufferedImage image, PDDocument document)
+            throws IOException
+    {
+        int height = image.getHeight();
+        int width = image.getWidth();
+        int[] rgbLineBuffer = new int[width];
+        int bpc;
+        // grayscale images need one color per sample
+        bpc = image.getColorModel().getPixelSize();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(((width*bpc/8)+(width*bpc%8 != 0 ? 1:0))*height);
+        MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(baos);
+        for (int y = 0; y < height; ++y)
+        {
+            for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
+            {
+                mcios.writeBits(pixel & 0xFF, bpc);
+            }
+
+            int bitOffset = mcios.getBitOffset();
+            if (bitOffset != 0)
+            {
+                mcios.writeBits(0, 8 - bitOffset);
+            }
+        }
+        mcios.flush();
+        mcios.close();
+        return prepareImageXObject(document, baos.toByteArray(),
+                image.getWidth(), image.getHeight(), bpc, PDDeviceGray.INSTANCE);
+    }
+
+    private static PDImageXObject createFromRGBImage(BufferedImage image, PDDocument document) throws IOException
+    {
+        int height = image.getHeight();
+        int width = image.getWidth();
+        int[] rgbLineBuffer = new int[width];
+        int bpc = 8;
+        PDDeviceColorSpace deviceColorSpace = PDDeviceRGB.INSTANCE;
+        byte[] imageData = new byte[width * height * 3];
+        int byteIdx = 0;
+        int alphaByteIdx = 0;
+        int alphaBitPos = 7;
+        int transparency = image.getTransparency();
+        int apbc = transparency == Transparency.BITMASK ? 1 : 8;
+        byte[] alphaImageData;
+        if (transparency != Transparency.OPAQUE)
+        {
+            alphaImageData = new byte[((width * apbc / 8) + (width * apbc % 8 != 0 ? 1 : 0)) * height];
+        }
+        else
+        {
+            alphaImageData = new byte[0];
+        }
+        for (int y = 0; y < height; ++y)
+        {
+            for (int pixel : image.getRGB(0, y, width, 1, rgbLineBuffer, 0, width))
+            {
+                imageData[byteIdx++] = (byte) ((pixel >> 16) & 0xFF);
+                imageData[byteIdx++] = (byte) ((pixel >> 8) & 0xFF);
+                imageData[byteIdx++] = (byte) (pixel & 0xFF);
+                if (transparency != Transparency.OPAQUE)
+                {
+                    // we have the alpha right here, so no need to do it separately
+                    // as done prior April 2018
+                    if (transparency == Transparency.BITMASK)
+                    {
+                        // write a bit
+                        alphaImageData[alphaByteIdx] |= ((pixel >> 24) & 1) << alphaBitPos;
+                        if (--alphaBitPos < 0)
+                        {
+                            alphaBitPos = 7;
+                            ++alphaByteIdx;
+                        }
+                    }
+                    else
+                    {
+                        // write a byte
+                        alphaImageData[alphaByteIdx++] = (byte) ((pixel >> 24) & 0xFF);
+                    }
+                }
+            }
+            if (transparency == Transparency.BITMASK)
+            {
+                // skip boundary if needed
+                if (alphaBitPos != 7)
+                {
+                    alphaBitPos = 7;
+                    ++alphaByteIdx;
+                }
+            }
+        }
+        PDImageXObject pdImage = prepareImageXObject(document, imageData,
+                image.getWidth(), image.getHeight(), bpc, deviceColorSpace);      
+        if (transparency != Transparency.OPAQUE)
+        {
+            PDImageXObject pdMask = prepareImageXObject(document, alphaImageData,
+                    image.getWidth(), image.getHeight(), apbc, PDDeviceGray.INSTANCE);
+            pdImage.getCOSObject().setItem(COSName.SMASK, pdMask);
+        }
+        return pdImage;
     }
 
     /**
