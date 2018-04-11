@@ -46,8 +46,6 @@ public class GlyphSubstitutionTable extends TTFTable
 
     public static final String TAG = "GSUB";
 
-    public static final String GLYPH_ID_SEPARATOR = "_";
-
     private LinkedHashMap<String, ScriptTable> scriptList;
     // featureList and lookupList are not maps because we need to index into them
     private FeatureRecord[] featureList;
@@ -58,7 +56,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private String lastUsedSupportedScript;
 
-    private Map<String, Integer> glyphSubstitutionMap;
+    private Map<Integer, List<Integer>> glyphSubstitutionMap;
     private int maxGlyphsToBeSubstituted;
 
     public GlyphSubstitutionTable(TrueTypeFont font)
@@ -686,6 +684,16 @@ public class GlyphSubstitutionTable extends TTFTable
             return sgid;
         }
         return gid;
+    }
+
+    public Map<Integer, List<Integer>> getGlyphSubstitutionMap()
+    {
+        return glyphSubstitutionMap;
+    }
+
+    public int getMaxGlyphsToBeSubstituted()
+    {
+        return maxGlyphsToBeSubstituted;
     }
 
     RangeRecord readRangeRecord(TTFDataStream data) throws IOException

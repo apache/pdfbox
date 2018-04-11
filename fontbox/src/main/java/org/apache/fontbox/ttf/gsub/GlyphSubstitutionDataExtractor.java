@@ -1,7 +1,10 @@
 package org.apache.fontbox.ttf.gsub;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -13,11 +16,11 @@ public class GlyphSubstitutionDataExtractor
     private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
 
 
-    private Map<String, Integer> glyphSubstitutionMap;
+    private Map<Integer, List<Integer>> glyphSubstitutionMap;
 
     private int maxGlyphsToBeSubstituted = -1;
 
-    Map<String, Integer> getGlyphSubstitutionMap()
+    Map<Integer, List<Integer>> getGlyphSubstitutionMap()
     {
         if (glyphSubstitutionMap == null || maxGlyphsToBeSubstituted == -1)
         {
@@ -74,8 +77,7 @@ public class GlyphSubstitutionDataExtractor
             }
             else
             {
-                LOG.warn("The type " + lookupSubTable.getClass()
-                        + " is not yet supported, will be ignored");
+                LOG.warn("The type " + lookupSubTable + " is not yet supported, will be ignored");
             }
         }
 
@@ -90,7 +92,7 @@ public class GlyphSubstitutionDataExtractor
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
             int substituteGlyphId = coverageGlyphId + singleSubstTableFormat1.deltaGlyphID;
-            putNewSubstitutionEntry(Integer.toString(coverageGlyphId), substituteGlyphId);
+            putNewSubstitutionEntry(substituteGlyphId, Arrays.asList(coverageGlyphId));
         }
     }
 
@@ -112,7 +114,7 @@ public class GlyphSubstitutionDataExtractor
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
             int substituteGlyphId = coverageGlyphId + singleSubstTableFormat2.substituteGlyphIDs[i];
-            putNewSubstitutionEntry(Integer.toString(coverageGlyphId), substituteGlyphId);
+            putNewSubstitutionEntry(substituteGlyphId, Arrays.asList(coverageGlyphId));
         }
     }
 
@@ -138,30 +140,27 @@ public class GlyphSubstitutionDataExtractor
 
         compareAndSetMaxGlyphsToBeSubstituted(ligatureTable.componentCount);
 
-        StringBuilder sb = new StringBuilder(100);
+        List<Integer> glyphsToBeSubstituted = new ArrayList<>();
 
         for (int componentGlyphID : ligatureTable.componentGlyphIDs)
         {
-            sb.append(componentGlyphID).append(GlyphSubstitutionTable.GLYPH_ID_SEPARATOR);
+            glyphsToBeSubstituted.add(componentGlyphID);
         }
 
-        sb.setLength(sb.length() - 1);
+        LOG.debug("glyphsToBeSubstituted: " + glyphsToBeSubstituted);
 
-        String key = sb.toString();
-
-        LOG.debug("key: " + key);
-
-        putNewSubstitutionEntry(key, ligatureTable.ligatureGlyph);
+        putNewSubstitutionEntry(ligatureTable.ligatureGlyph, glyphsToBeSubstituted);
 
     }
 
-    private void putNewSubstitutionEntry(String key, int value)
+    private void putNewSubstitutionEntry(int newGlyph, List<Integer> glyphsToBeSubstituted)
     {
-        Integer oldValue = glyphSubstitutionMap.put(key, value);
+        List<Integer> oldValue = glyphSubstitutionMap.put(newGlyph, glyphsToBeSubstituted);
 
         if (oldValue != null)
         {
-            LOG.warn("oldValue: " + oldValue + " will be overridden with newValue: " + value);
+            LOG.warn("oldValue: " + oldValue + " will be overridden with newValue: "
+                    + glyphsToBeSubstituted);
         }
     }
 
