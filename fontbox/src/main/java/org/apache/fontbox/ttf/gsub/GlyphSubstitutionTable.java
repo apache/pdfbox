@@ -57,7 +57,6 @@ public class GlyphSubstitutionTable extends TTFTable
     private String lastUsedSupportedScript;
 
     private Map<Integer, List<Integer>> glyphSubstitutionMap;
-    private int maxGlyphsToBeSubstituted;
 
     public GlyphSubstitutionTable(TrueTypeFont font)
     {
@@ -87,15 +86,9 @@ public class GlyphSubstitutionTable extends TTFTable
         lookupList = readLookupList(data, start + lookupListOffset);
 
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
-        glyphSubstitutionDataExtractor.populateData(lookupList);
-        glyphSubstitutionMap = glyphSubstitutionDataExtractor
-                .getGlyphSubstitutionMap();
+        glyphSubstitutionMap = glyphSubstitutionDataExtractor.populateData(lookupList);
 
         LOG.debug("glyphSubstitutionMap: " + glyphSubstitutionMap);
-
-        maxGlyphsToBeSubstituted = glyphSubstitutionDataExtractor.getMaxGlyphsToBeSubstituted();
-
-        LOG.debug("maxGlyphsToBeSubstituted: " + maxGlyphsToBeSubstituted);
 
     }
 
@@ -689,11 +682,6 @@ public class GlyphSubstitutionTable extends TTFTable
     public Map<Integer, List<Integer>> getGlyphSubstitutionMap()
     {
         return glyphSubstitutionMap;
-    }
-
-    public int getMaxGlyphsToBeSubstituted()
-    {
-        return maxGlyphsToBeSubstituted;
     }
 
     RangeRecord readRangeRecord(TTFDataStream data) throws IOException
