@@ -64,15 +64,14 @@ public final class LosslessFactory
         }      
     }
 
+    // grayscale images need one color per sample
     private static PDImageXObject createFromGrayImage(BufferedImage image, PDDocument document)
             throws IOException
     {
         int height = image.getHeight();
         int width = image.getWidth();
         int[] rgbLineBuffer = new int[width];
-        int bpc;
-        // grayscale images need one color per sample
-        bpc = image.getColorModel().getPixelSize();
+        int bpc = image.getColorModel().getPixelSize();
         ByteArrayOutputStream baos = new ByteArrayOutputStream(((width*bpc/8)+(width*bpc%8 != 0 ? 1:0))*height);
         try (MemoryCacheImageOutputStream mcios = new MemoryCacheImageOutputStream(baos))
         {
@@ -144,14 +143,12 @@ public final class LosslessFactory
                     }
                 }
             }
-            if (transparency == Transparency.BITMASK)
+
+            // skip boundary if needed
+            if (transparency == Transparency.BITMASK && alphaBitPos != 7)
             {
-                // skip boundary if needed
-                if (alphaBitPos != 7)
-                {
-                    alphaBitPos = 7;
-                    ++alphaByteIdx;
-                }
+                alphaBitPos = 7;
+                ++alphaByteIdx;
             }
         }
         PDImageXObject pdImage = prepareImageXObject(document, imageData,
