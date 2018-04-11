@@ -134,7 +134,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Xmx128m</argLine>
+                    <argLine>-Xmx128m -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider</argLine>
                     <includes>
                         <include>org/apache/pdfbox/TestAll.java</include>
                         <include>org/apache/pdfbox/util/TestImageIOUtils.java</include>
