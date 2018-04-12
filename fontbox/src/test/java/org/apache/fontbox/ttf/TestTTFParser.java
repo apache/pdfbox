@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
-
 import junit.framework.TestCase;
 
 /**
@@ -74,38 +72,9 @@ public class TestTTFParser extends TestCase
 
         // then
         assertNotNull(ttf);
-        
-        GlyphSubstitutionTable gsub = ttf.getGsub();
-        assertNotNull(gsub);
+        Map<Integer, List<Integer>> gsub = ttf.getGsub().getGlyphSubstitutionMap();
 
-
-        Map<Integer, List<Integer>> gsubData = gsub.getGlyphSubstitutionMap();
-        
-        for (Integer key : gsubData.keySet())
-        {
-            List<Integer> keyChars = ttf.getUnicodeCmapLookup().getCharCodes(key);
-
-            if (keyChars == null)
-            {
-                System.out.println("Chars NOT found for GlyphId: " + key);
-            }
-            else
-            {
-                System.out.println(keyChars + " found for GlyphId: " + key);
-            }
-
-            for (Integer glyphId : gsubData.get(key))
-            {
-                List<Integer> keyChars1 = ttf.getUnicodeCmapLookup().getCharCodes(key);
-                if (keyChars1 == null)
-                {
-                    throw new IllegalArgumentException();
-                }
-            }
-
-        }
-        
-        assertEquals(getExpectedGsubTableData(), new TreeMap<>(gsubData));
+        assertEquals(getExpectedGsubTableData(), new TreeMap<>(gsub));
 
     }
 
