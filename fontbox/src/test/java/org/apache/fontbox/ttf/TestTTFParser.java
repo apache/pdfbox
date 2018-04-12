@@ -22,10 +22,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.TreeMap;
 
 import junit.framework.TestCase;
 
@@ -73,17 +73,17 @@ public class TestTTFParser extends TestCase
         // then
         assertNotNull(ttf);
         Map<Integer, List<Integer>> gsub = ttf.getGsub().getRawGSubData();
-        assertEquals(getExpectedGsubTableRawData(), new TreeMap<>(gsub));
+        assertEquals(getExpectedGsubTableRawData(), gsub);
 
         Map<String, Integer> glyphSubstitutionMap = ttf.getGsub().getGlyphSubstitutionMap();
-        assertEquals(getExpectedGlyphSubstitutionMap(), new TreeMap<>(glyphSubstitutionMap));
+        assertEquals(getExpectedGlyphSubstitutionMap(), glyphSubstitutionMap);
 
     }
 
     private Map<String, Integer> getExpectedGlyphSubstitutionMap() throws IOException
     {
 
-        Map<String, Integer> map = new TreeMap<>();
+        Map<String, Integer> map = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(TestTTFParser.class
                 .getResourceAsStream("/gsub/expected_glyph_substitution_map.txt"))))
@@ -129,7 +129,7 @@ public class TestTTFParser extends TestCase
 
     private Map<Integer, List<Integer>> getExpectedGsubTableRawData() throws IOException
     {
-        Map<Integer, List<Integer>> gsubData = new TreeMap<>();
+        Map<Integer, List<Integer>> gsubData = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(TestTTFParser.class
                 .getResourceAsStream("/gsub/correct_raw_gsub_table_data_lohit_bengali.txt")));)
