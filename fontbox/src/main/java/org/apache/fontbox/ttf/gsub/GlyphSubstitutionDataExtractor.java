@@ -2,19 +2,38 @@ package org.apache.fontbox.ttf.gsub;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.CmapLookup;
 
 public class GlyphSubstitutionDataExtractor
 {
 
     private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
 
-    Map<Integer, List<Integer>> populateData(LookupTable[] lookupTables)
+    Map<String, Integer> getStringToCompoundGlyph(Map<Integer, List<Integer>> rawGSubTableData,
+            CmapLookup cmap)
+    {
+        Map<String, Integer> substitutionData = new HashMap<>();
+
+        for (Integer glyphToBeSubstituted : rawGSubTableData.keySet())
+        {
+            List<Integer> glyphIDsToBeReplaced = rawGSubTableData.get(glyphToBeSubstituted);
+
+            String unicodeText = getUnicodeString(rawGSubTableData, cmap, glyphIDsToBeReplaced);
+            substitutionData.put(unicodeText, glyphToBeSubstituted);
+        }
+
+        return Collections.unmodifiableMap(substitutionData);
+
+    }
+
+    Map<Integer, List<Integer>> extractRawGSubTableData(LookupTable[] lookupTables)
     {
 
         Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
@@ -24,7 +43,51 @@ public class GlyphSubstitutionDataExtractor
             extractData(glyphSubstitutionMap, lookupTable);
         }
 
-        return glyphSubstitutionMap;
+        return Collections.unmodifiableMap(glyphSubstitutionMap);
+    }
+
+    private String getUnicodeChar(Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap,
+            Integer glyphId)
+    {
+        List<Integer> keyChars = cmap.getCharCodes(glyphId);
+
+        // its a compound glyph
+        if (keyChars == null)
+        {
+            List<Integer> constituentGlyphs = rawGSubTableData.get(glyphId);
+
+            if (constituentGlyphs == null || constituentGlyphs.isEmpty())
+            {
+                throw new IllegalStateException("lookup for the glyphId: " + glyphId
+                        + " failed, as no corresponding Unicode char found mapped to it");
+            }
+            else
+            {
+                return getUnicodeString(rawGSubTableData, cmap, constituentGlyphs);
+            }
+
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int unicodeChar : keyChars)
+            {
+                sb.append((char) unicodeChar);
+            }
+            return sb.toString();
+        }
+
+    }
+
+    private String getUnicodeString(Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap,
+            List<Integer> glyphIDs)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (Integer glyphId : glyphIDs)
+        {
+            sb.append(getUnicodeChar(rawGSubTableData, cmap, glyphId));
+        }
+        return sb.toString();
     }
 
     private void extractData(Map<Integer, List<Integer>> glyphSubstitutionMap,

@@ -56,7 +56,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private String lastUsedSupportedScript;
 
-    private Map<Integer, List<Integer>> glyphSubstitutionMap;
+    private Map<Integer, List<Integer>> rawGSubData;
+    private Map<String, Integer> glyphSubstitutionMap;
 
     public GlyphSubstitutionTable(TrueTypeFont font)
     {
@@ -64,17 +65,17 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     @Override
-    @SuppressWarnings({"squid:S1854"})
+    @SuppressWarnings({ "squid:S1854" })
     protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         long start = data.getCurrentPosition();
-        @SuppressWarnings({"unused"})
+        @SuppressWarnings({ "unused" })
         int majorVersion = data.readUnsignedShort();
         int minorVersion = data.readUnsignedShort();
         int scriptListOffset = data.readUnsignedShort();
         int featureListOffset = data.readUnsignedShort();
         int lookupListOffset = data.readUnsignedShort();
-        @SuppressWarnings({"unused"})
+        @SuppressWarnings({ "unused" })
         long featureVariationsOffset = -1L;
         if (minorVersion == 1L)
         {
@@ -86,13 +87,18 @@ public class GlyphSubstitutionTable extends TTFTable
         lookupList = readLookupList(data, start + lookupListOffset);
 
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
-        glyphSubstitutionMap = glyphSubstitutionDataExtractor.populateData(lookupList);
 
+        rawGSubData = glyphSubstitutionDataExtractor.extractRawGSubTableData(lookupList);
+        LOG.debug("rawGSubData: " + rawGSubData);
+
+        glyphSubstitutionMap = glyphSubstitutionDataExtractor.getStringToCompoundGlyph(rawGSubData,
+                font.getUnicodeCmapLookup());
         LOG.debug("glyphSubstitutionMap: " + glyphSubstitutionMap);
 
     }
 
-    LinkedHashMap<String, ScriptTable> readScriptList(TTFDataStream data, long offset) throws IOException
+    LinkedHashMap<String, ScriptTable> readScriptList(TTFDataStream data, long offset)
+            throws IOException
     {
         data.seek(offset);
         int scriptCount = data.readUnsignedShort();
@@ -152,7 +158,7 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(offset);
         LangSysTable langSysTable = new LangSysTable();
-        @SuppressWarnings({"unused", "squid:S1854"})
+        @SuppressWarnings({ "unused", "squid:S1854" })
         int lookupOrder = data.readUnsignedShort();
         langSysTable.requiredFeatureIndex = data.readUnsignedShort();
         int featureIndexCount = data.readUnsignedShort();
@@ -188,7 +194,7 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(offset);
         FeatureTable featureTable = new FeatureTable();
-        @SuppressWarnings({"unused", "squid:S1854"})
+        @SuppressWarnings({ "unused", "squid:S1854" })
         int featureParams = data.readUnsignedShort();
         int lookupIndexCount = data.readUnsignedShort();
         featureTable.lookupListIndices = new int[lookupIndexCount];
@@ -250,12 +256,11 @@ public class GlyphSubstitutionTable extends TTFTable
             break;
         default:
             // Other lookup types are not supported
-            LOG.debug("Type " + lookupTable.lookupType + " GSUB lookup table is not supported and will be ignored");
+            LOG.debug("Type " + lookupTable.lookupType
+                    + " GSUB lookup table is not supported and will be ignored");
         }
         return lookupTable;
     }
-
-
 
     LookupSubTable readLookupSubTable(TTFDataStream data, long offset) throws IOException
     {
@@ -327,21 +332,19 @@ public class GlyphSubstitutionTable extends TTFTable
         lookupSubTable.ligatureSetTables = new LigatureSetTable[ligSetCount];
 
         for (int i = 0; i < ligSetCount; i++)
-         {
-        
+        {
+
             int coverageGlyphId = lookupSubTable.coverageTable.getGlyphId(i);
 
             lookupSubTable.ligatureSetTables[i] = readLigatureSetTable(data,
-                    offset + ligatureOffsets[i],
-         coverageGlyphId);
-         }
+                    offset + ligatureOffsets[i], coverageGlyphId);
+        }
 
         return lookupSubTable;
     }
 
     private LigatureSetTable readLigatureSetTable(TTFDataStream data, long ligatureSetTableLocation,
-            int coverageGlyphId)
-            throws IOException
+            int coverageGlyphId) throws IOException
     {
         data.seek(ligatureSetTableLocation);
 
@@ -357,7 +360,6 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             ligatureOffsets[i] = data.readUnsignedShort();
         }
-
 
         for (int i = 0; i < ligatureOffsets.length; i++)
         {
@@ -445,10 +447,9 @@ public class GlyphSubstitutionTable extends TTFTable
         }
     }
 
-
     /**
-     * Choose from one of the supplied OpenType script tags, depending on what the font supports and
-     * potentially on context.
+     * Choose from one of the supplied OpenType script tags, depending on what the font supports and potentially on
+     * context.
      *
      * @param tags
      * @return The best OpenType script tag
@@ -505,15 +506,13 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     /**
-     * Get a list of {@code FeatureRecord}s from a collection of {@code LangSysTable}s. Optionally
-     * filter the returned features by supplying a list of allowed feature tags in
-     * {@code enabledFeatures}.
+     * Get a list of {@code FeatureRecord}s from a collection of {@code LangSysTable}s. Optionally filter the returned
+     * features by supplying a list of allowed feature tags in {@code enabledFeatures}.
      *
-     * Note that features listed as required ({@code LangSysTable#requiredFeatureIndex}) will be
-     * included even if not explicitly enabled.
+     * Note that features listed as required ({@code LangSysTable#requiredFeatureIndex}) will be included even if not
+     * explicitly enabled.
      *
-     * @param langSysTables The {@code LangSysTable}s indicating {@code FeatureRecord}s to search
-     * for
+     * @param langSysTables The {@code LangSysTable}s indicating {@code FeatureRecord}s to search for
      * @param enabledFeatures An optional whitelist of feature tags ({@code null} to allow all)
      * @return The indicated {@code FeatureRecord}s
      */
@@ -598,7 +597,8 @@ public class GlyphSubstitutionTable extends TTFTable
             if (lookupTable.lookupType != 1)
             {
                 LOG.debug("Skipping GSUB feature '" + featureRecord.featureTag
-                        + "' because it requires unsupported lookup table type " + lookupTable.lookupType);
+                        + "' because it requires unsupported lookup table type "
+                        + lookupTable.lookupType);
                 continue;
             }
             lookupResult = doLookup(lookupTable, lookupResult);
@@ -620,13 +620,12 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     /**
-     * Apply glyph substitutions to the supplied gid. The applicable substitutions are determined by
-     * the {@code scriptTags} which indicate the language of the gid, and by the
-     * {@code enabledFeatures} which acts as a whitelist.
+     * Apply glyph substitutions to the supplied gid. The applicable substitutions are determined by the
+     * {@code scriptTags} which indicate the language of the gid, and by the {@code enabledFeatures} which acts as a
+     * whitelist.
      *
-     * To ensure that a single gid isn't mapped to multiple substitutions, subsequent invocations
-     * with the same gid will return the same result as the first, regardless of script or enabled
-     * features.
+     * To ensure that a single gid isn't mapped to multiple substitutions, subsequent invocations with the same gid will
+     * return the same result as the first, regardless of script or enabled features.
      *
      * @param gid GID
      * @param scriptTags Script tags applicable to the gid (see {@link OpenTypeScript})
@@ -660,11 +659,10 @@ public class GlyphSubstitutionTable extends TTFTable
     }
 
     /**
-     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}), retrieve
-     * the original gid.
+     * For a substitute-gid (obtained from {@link #getSubstitution(int, String[], List)}), retrieve the original gid.
      *
-     * Only gids previously substituted by this instance can be un-substituted. If you are trying to
-     * unsubstitute before you substitute, something is wrong.
+     * Only gids previously substituted by this instance can be un-substituted. If you are trying to unsubstitute before
+     * you substitute, something is wrong.
      *
      * @param sgid Substitute GID
      */
@@ -679,9 +677,14 @@ public class GlyphSubstitutionTable extends TTFTable
         return gid;
     }
 
-    public Map<Integer, List<Integer>> getGlyphSubstitutionMap()
+    public Map<String, Integer> getGlyphSubstitutionMap()
     {
         return glyphSubstitutionMap;
+    }
+
+    public Map<Integer, List<Integer>> getRawGSubData()
+    {
+        return rawGSubData;
     }
 
     RangeRecord readRangeRecord(TTFDataStream data) throws IOException

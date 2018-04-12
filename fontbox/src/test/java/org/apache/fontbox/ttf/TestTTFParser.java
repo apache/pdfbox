@@ -72,27 +72,77 @@ public class TestTTFParser extends TestCase
 
         // then
         assertNotNull(ttf);
-        Map<Integer, List<Integer>> gsub = ttf.getGsub().getGlyphSubstitutionMap();
+        Map<Integer, List<Integer>> gsub = ttf.getGsub().getRawGSubData();
+        assertEquals(getExpectedGsubTableRawData(), new TreeMap<>(gsub));
 
-        assertEquals(getExpectedGsubTableData(), new TreeMap<>(gsub));
+        Map<String, Integer> glyphSubstitutionMap = ttf.getGsub().getGlyphSubstitutionMap();
+        assertEquals(getExpectedGlyphSubstitutionMap(), new TreeMap<>(glyphSubstitutionMap));
 
     }
 
-    private Map<Integer, List<Integer>> getExpectedGsubTableData() throws IOException
+    private Map<String, Integer> getExpectedGlyphSubstitutionMap() throws IOException
     {
-        Map<Integer, List<Integer>> gsubData = new TreeMap<>();
+
+        Map<String, Integer> map = new TreeMap<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(TestTTFParser.class
-                .getResourceAsStream("/ttf/correct_raw_gsub_table_data_lohit_bengali.txt")));)
+                .getResourceAsStream("/gsub/expected_glyph_substitution_map.txt"))))
         {
             while (true)
             {
                 String line = br.readLine();
-                
-                if (line == null) {
+
+                if (line == null)
+                {
                     break;
                 }
-                
+
+                if (line.trim().length() == 0)
+                {
+                    continue;
+                }
+
+                String[] lineSplittedByKeyValue = line.split("=");
+
+                if (lineSplittedByKeyValue.length != 2)
+                {
+                    throw new IllegalArgumentException("invalid format");
+                }
+
+                String[] unicodeChars = lineSplittedByKeyValue[0].split(",");
+
+                StringBuilder unicodeTextBuilder = new StringBuilder();
+                for (String unicodeChar : unicodeChars)
+                {
+                    unicodeTextBuilder.append((char) Integer.parseInt(unicodeChar));
+                }
+
+                Integer glyphId = Integer.valueOf(lineSplittedByKeyValue[1]);
+
+                map.put(unicodeTextBuilder.toString(), glyphId);
+
+            }
+        }
+
+        return map;
+    }
+
+    private Map<Integer, List<Integer>> getExpectedGsubTableRawData() throws IOException
+    {
+        Map<Integer, List<Integer>> gsubData = new TreeMap<>();
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(TestTTFParser.class
+                .getResourceAsStream("/gsub/correct_raw_gsub_table_data_lohit_bengali.txt")));)
+        {
+            while (true)
+            {
+                String line = br.readLine();
+
+                if (line == null)
+                {
+                    break;
+                }
+
                 if (line.trim().length() == 0)
                 {
                     continue;
