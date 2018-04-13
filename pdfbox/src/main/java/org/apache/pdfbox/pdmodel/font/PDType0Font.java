@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
     private final PDCIDFont descendantFont;
     private final Set<Integer> noUnicode = new HashSet<>(); 
+    private final Map<String, Integer> glyphSubstitutionMap;
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
     private boolean isDescendantCJK;
@@ -70,6 +72,9 @@ public class PDType0Font extends PDFont implements PDVectorFont
     public PDType0Font(COSDictionary fontDictionary) throws IOException
     {
         super(fontDictionary);
+
+        glyphSubstitutionMap = Collections.emptyMap();
+
         COSBase base = dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
         if (!(base instanceof COSArray))
         {
@@ -96,7 +101,16 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
             boolean closeOnSubset, boolean vertical) throws IOException
     {
-        this.ttf = ttf;
+        Map<String, Integer> glyphSubstitutionMap = null;
+        GlyphSubstitutionTable gsubTable = ttf.getGsub();
+        if(gsubTable !=null) {
+            glyphSubstitutionMap = gsubTable.getGlyphSubstitutionMap();
+        }
+        if (glyphSubstitutionMap == null)
+        {
+            glyphSubstitutionMap = Collections.emptyMap();
+        }
+        this.glyphSubstitutionMap = glyphSubstitutionMap;
 
         if (vertical)
         {
@@ -108,7 +122,11 @@ public class PDType0Font extends PDFont implements PDVectorFont
         fetchCMapUCS2();
         if (closeOnSubset)
         {
-            if (!embedSubset)
+            if (embedSubset)
+            {
+                this.ttf = ttf;
+            }
+            else
             {
                 // the TTF is fully loaded and it is save to close the underlying data source
                 ttf.close();
@@ -584,21 +602,23 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     public byte[] encode(String text) throws IOException
     {
-        if (isGsubAvaialble())
+        if (glyphSubstitutionMap.isEmpty())
         {
-            return encodeForGsub(text);
+            return super.encode(text);
         }
         else
         {
-            return super.encode(text);
+            return encodeForGsub(text);
         }
     }
 
     private byte[] encodeForGsub(String text) throws IOException
     {
-        Map<String, Integer> glyphSubstitutionMap = ttf.getGsub().getGlyphSubstitutionMap();
         Set<String> uniqueCompoundWords = new TreeSet<>(new CompoundWordSorter());
         uniqueCompoundWords.addAll(glyphSubstitutionMap.keySet());
+
+        LOG.debug("uniqueCompoundWords: " + uniqueCompoundWords);
+
         List<String> tokens = new CompoundCharacterTokenizer(uniqueCompoundWords).tokenize(text);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -619,19 +639,6 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
 
         return out.toByteArray();
-    }
-
-    private boolean isGsubAvaialble() throws IOException
-    {
-        if (ttf == null)
-        {
-            return false;
-        }
-
-        GlyphSubstitutionTable gsubTable = ttf.getGsub();
-
-        return (gsubTable != null) && (gsubTable.getRawGSubData() != null)
-                && (!gsubTable.getRawGSubData().isEmpty());
     }
 
 }
