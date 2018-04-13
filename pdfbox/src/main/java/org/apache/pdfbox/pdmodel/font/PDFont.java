@@ -25,13 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.cmap.CMap;
-import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -321,22 +318,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public final byte[] encode(String text) throws IOException
     {
-        if (isGsubAvaialble())
-        {
-            return encodeWithGSub(text);
-        }
-        else
-        {
-            return encodeWithoutGSub(text);
-        }
-    }
-
-    protected abstract byte[] encodeWithGSub(String text) throws IOException;
-
-    private byte[] encodeWithoutGSub(String text) throws IOException
-    {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (int offset = 0; offset < text.length();)
+        for (int offset = 0; offset < text.length(); )
         {
             int codePoint = text.codePointAt(offset);
 
@@ -639,15 +622,5 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     public String toString()
     {
         return getClass().getSimpleName() + " " + getName();
-    }
-    
-    abstract boolean isGsubAvaialble() throws IOException;
-
-    boolean isGsubAvaialble(TrueTypeFont ttf) throws IOException
-    {
-        GlyphSubstitutionTable gsubTable = ttf.getGsub();
-
-        return (gsubTable != null) && (gsubTable.getRawGSubData() != null)
-                && (!gsubTable.getRawGSubData().isEmpty());
     }
 }

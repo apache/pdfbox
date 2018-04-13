@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
@@ -448,17 +447,5 @@ public abstract class PDSimpleFont extends PDFont
             }
         }
         return false;
-    }
-
-    @Override
-    boolean isGsubAvaialble() throws IOException
-    {
-        return false;
-    }
-
-    @Override
-    protected byte[] encodeWithGSub(String text) throws IOException
-    {
-        throw new UnsupportedOperationException();
     }
 }
