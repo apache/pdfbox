@@ -17,16 +17,24 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
+import org.apache.fontbox.ttf.gsub.CompoundWordSorter;
+import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -88,6 +96,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
             boolean closeOnSubset, boolean vertical) throws IOException
     {
+        this.ttf = ttf;
+
         if (vertical)
         {
             ttf.enableVerticalSubstitutions();
@@ -98,11 +108,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         fetchCMapUCS2();
         if (closeOnSubset)
         {
-            if (embedSubset)
-            {
-                this.ttf = ttf;
-            }
-            else
+            if (!embedSubset)
             {
                 // the TTF is fully loaded and it is save to close the underlying data source
                 ttf.close();
@@ -574,4 +580,58 @@ public class PDType0Font extends PDFont implements PDVectorFont
     {
         return descendantFont.hasGlyph(code);
     }
+
+    @Override
+    public byte[] encode(String text) throws IOException
+    {
+        if (isGsubAvaialble())
+        {
+            return encodeForGsub(text);
+        }
+        else
+        {
+            return super.encode(text);
+        }
+    }
+
+    private byte[] encodeForGsub(String text) throws IOException
+    {
+        Map<String, Integer> glyphSubstitutionMap = ttf.getGsub().getGlyphSubstitutionMap();
+        Set<String> uniqueCompoundWords = new TreeSet<>(new CompoundWordSorter());
+        uniqueCompoundWords.addAll(glyphSubstitutionMap.keySet());
+        List<String> tokens = new CompoundCharacterTokenizer(uniqueCompoundWords).tokenize(text);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        for (String chunk : tokens)
+        {
+            if (glyphSubstitutionMap.containsKey(chunk))
+            {
+                // gsub system kicks in, you get the glyphId directly
+                int glyphId = glyphSubstitutionMap.get(chunk);
+                out.write(descendantFont.encodeGlyphId(glyphId));
+            }
+            else
+            {
+                out.write(super.encode(chunk));
+            }
+        }
+
+
+        return out.toByteArray();
+    }
+
+    private boolean isGsubAvaialble() throws IOException
+    {
+        if (ttf == null)
+        {
+            return false;
+        }
+
+        GlyphSubstitutionTable gsubTable = ttf.getGsub();
+
+        return (gsubTable != null) && (gsubTable.getRawGSubData() != null)
+                && (!gsubTable.getRawGSubData().isEmpty());
+    }
+
 }

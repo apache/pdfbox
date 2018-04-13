@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
@@ -23,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
@@ -37,9 +40,6 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.util.Matrix;
-
-
-import static org.apache.pdfbox.pdmodel.font.UniUtil.getUniNameOfCodePoint;
 
 /**
  * Type 0 CIDFont (CFF).
@@ -399,6 +399,12 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         // todo: we can use a known character collection CMap for a CIDFont
         //       and an Encoding for Type 1-equivalent
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public byte[] encodeGlyphId(int glyphId)
+    {
         throw new UnsupportedOperationException();
     }
 

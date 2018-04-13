@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetrics;
@@ -316,7 +317,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @return Array of PDF content stream bytes.
      * @throws IOException If the text could not be encoded.
      */
-    public final byte[] encode(String text) throws IOException
+    public byte[] encode(String text) throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (int offset = 0; offset < text.length(); )

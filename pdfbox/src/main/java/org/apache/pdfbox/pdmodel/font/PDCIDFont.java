@@ -369,6 +369,8 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
      */
     public abstract int codeToGID(int code) throws IOException;
 
+    public abstract byte[] encodeGlyphId(int glyphId);
+
     /**
      * Encodes the given Unicode code point for use in a PDF content stream.
      * Content streams use a multi-byte encoding with 1 to 4 bytes.
@@ -404,4 +406,5 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
         }
         return cid2gid;
     }
+
 }

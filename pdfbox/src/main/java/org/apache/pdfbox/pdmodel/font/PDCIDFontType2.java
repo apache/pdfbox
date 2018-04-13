@@ -361,8 +361,14 @@ public class PDCIDFontType2 extends PDCIDFont
                     String.format("No glyph for U+%04X in font %s", unicode, getName()));
         }
 
+        return encodeGlyphId(cid);
+    }
+
+    @Override
+    public byte[] encodeGlyphId(int glyphId)
+    {
         // CID is always 2-bytes (16-bit) for TrueType
-        return new byte[] { (byte)(cid >> 8 & 0xff), (byte)(cid & 0xff) };
+        return new byte[] { (byte)(glyphId >> 8 & 0xff), (byte)(glyphId & 0xff) };
     }
 
     @Override
