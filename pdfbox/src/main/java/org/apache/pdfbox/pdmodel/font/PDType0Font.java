@@ -35,7 +35,6 @@ import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.CompoundWordSorter;
-import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -101,16 +100,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
             boolean closeOnSubset, boolean vertical) throws IOException
     {
-        Map<String, Integer> glyphSubstitutionMap = null;
-        GlyphSubstitutionTable gsubTable = ttf.getGsub();
-        if(gsubTable !=null) {
-            glyphSubstitutionMap = gsubTable.getGlyphSubstitutionMap();
-        }
-        if (glyphSubstitutionMap == null)
-        {
-            glyphSubstitutionMap = Collections.emptyMap();
-        }
-        this.glyphSubstitutionMap = glyphSubstitutionMap;
+        this.glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
 
         if (vertical)
         {

@@ -57,7 +57,6 @@ public class GlyphSubstitutionTable extends TTFTable
     private String lastUsedSupportedScript;
 
     private Map<Integer, List<Integer>> rawGSubData;
-    private Map<String, Integer> glyphSubstitutionMap;
 
     public GlyphSubstitutionTable(TrueTypeFont font)
     {
@@ -90,11 +89,6 @@ public class GlyphSubstitutionTable extends TTFTable
 
         rawGSubData = glyphSubstitutionDataExtractor.extractRawGSubTableData(lookupList);
         LOG.debug("rawGSubData: " + rawGSubData);
-
-        glyphSubstitutionMap = glyphSubstitutionDataExtractor.getStringToCompoundGlyph(rawGSubData,
-                font.getUnicodeCmapLookup());
-        LOG.debug("glyphSubstitutionMap: " + glyphSubstitutionMap);
-
     }
 
     LinkedHashMap<String, ScriptTable> readScriptList(TTFDataStream data, long offset)
@@ -675,11 +669,6 @@ public class GlyphSubstitutionTable extends TTFTable
             return sgid;
         }
         return gid;
-    }
-
-    public Map<String, Integer> getGlyphSubstitutionMap()
-    {
-        return glyphSubstitutionMap;
     }
 
     public Map<Integer, List<Integer>> getRawGSubData()

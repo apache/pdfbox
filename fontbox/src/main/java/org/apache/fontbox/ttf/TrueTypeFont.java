@@ -27,12 +27,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.fontbox.FontBoxFont;
-import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
-import org.apache.fontbox.util.BoundingBox;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.FontBoxFont;
+import org.apache.fontbox.ttf.gsub.GlyphSubstitutionDataExtractor;
+import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
+import org.apache.fontbox.util.BoundingBox;
 
 /**
  * A TrueType font file.
@@ -566,7 +567,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
             GlyphSubstitutionTable table = getGsub();
             if (table != null)
             {
-                return new SubstitutingCmapLookup(cmap, (GlyphSubstitutionTable) table,
+                return new SubstitutingCmapLookup(cmap, table,
                         Collections.unmodifiableList(enabledGsubFeatures));
             }
         }
@@ -653,6 +654,28 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         }
         
         return 0;
+    }
+
+    public Map<String, Integer> getGlyphSubstitutionMap() throws IOException
+    {
+        GlyphSubstitutionTable table = getGsub();
+        if (table == null)
+        {
+            return Collections.emptyMap();
+        }
+
+        Map<Integer, List<Integer>> rawGSubData = table.getRawGSubData();
+        if (rawGSubData == null || rawGSubData.isEmpty())
+        {
+            return Collections.emptyMap();
+        }
+
+        GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
+        Map<String, Integer> glyphSubstitutionMap = glyphSubstitutionDataExtractor
+                .getStringToCompoundGlyph(rawGSubData,
+                        getUnicodeCmapLookup());
+        LOG.debug("glyphSubstitutionMap: " + glyphSubstitutionMap);
+        return glyphSubstitutionMap;
     }
 
     /**

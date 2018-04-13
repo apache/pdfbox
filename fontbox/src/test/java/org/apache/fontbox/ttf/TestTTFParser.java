@@ -75,7 +75,7 @@ public class TestTTFParser extends TestCase
         Map<Integer, List<Integer>> gsub = ttf.getGsub().getRawGSubData();
         assertEquals(getExpectedGsubTableRawData(), gsub);
 
-        Map<String, Integer> glyphSubstitutionMap = ttf.getGsub().getGlyphSubstitutionMap();
+        Map<String, Integer> glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
         assertEquals(getExpectedGlyphSubstitutionMap(), glyphSubstitutionMap);
 
     }

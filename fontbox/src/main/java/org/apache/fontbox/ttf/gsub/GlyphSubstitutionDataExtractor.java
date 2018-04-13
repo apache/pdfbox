@@ -16,7 +16,8 @@ public class GlyphSubstitutionDataExtractor
 
     private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
 
-    Map<String, Integer> getStringToCompoundGlyph(Map<Integer, List<Integer>> rawGSubTableData,
+    public Map<String, Integer> getStringToCompoundGlyph(
+            Map<Integer, List<Integer>> rawGSubTableData,
             CmapLookup cmap)
     {
         Map<String, Integer> substitutionData = new HashMap<>();
@@ -58,8 +59,9 @@ public class GlyphSubstitutionDataExtractor
 
             if (constituentGlyphs == null || constituentGlyphs.isEmpty())
             {
-                throw new IllegalStateException("lookup for the glyphId: " + glyphId
+                LOG.warn("lookup for the glyphId: " + glyphId
                         + " failed, as no corresponding Unicode char found mapped to it");
+                return "";
             }
             else
             {
