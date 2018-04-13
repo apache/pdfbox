@@ -100,11 +100,14 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private PDType0Font(PDDocument document, TrueTypeFont ttf, boolean embedSubset,
             boolean closeOnSubset, boolean vertical) throws IOException
     {
-        this.glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
-
         if (vertical)
         {
             ttf.enableVerticalSubstitutions();
+            glyphSubstitutionMap = Collections.emptyMap();
+        }
+        else
+        {
+            glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
         }
         embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this, vertical);
         descendantFont = embedder.getCIDFont();
