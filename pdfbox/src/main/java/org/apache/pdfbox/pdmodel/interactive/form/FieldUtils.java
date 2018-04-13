@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
 /**
  * A set of utility methods to help with common AcroForm form and field related functions.
@@ -175,37 +174,24 @@ public final class FieldUtils
         }
         else if (items instanceof COSArray)
         {
-            // test if there is a single text or a two-element array 
-            COSBase entry = ((COSArray) items).get(0);
-            if (entry instanceof COSString)
+            List<String> entryList = new ArrayList<>(); 
+            for (COSBase entry : (COSArray) items)
             {
-                return COSArrayList.convertCOSStringCOSArrayToList((COSArray)items);
-            } 
-            else
-            {
-                return getItemsFromPair(items, pairIdx);
-            }            
+                if (entry instanceof COSString)
+                {
+                    entryList.add(((COSString) entry).getString());
+                }
+                else if (entry instanceof COSArray)
+                {
+                    COSArray cosArray = (COSArray) entry;
+                    if (cosArray.size() >= pairIdx +1 && cosArray.get(pairIdx) instanceof COSString)
+                    {
+                        entryList.add(((COSString) cosArray.get(pairIdx)).getString());
+                    }
+                }
+            }
+            return entryList;
         }
         return Collections.emptyList();
-    }    
-
-    /**
-     * Return either one of a list of two-element arrays entries.
-     *
-     * @param items the array of elements or two-element arrays
-     * @param pairIdx the index into the two-element array
-     * @return a List of single elements
-     */
-    private static List<String> getItemsFromPair(COSBase items, int pairIdx)
-    {
-        List<String> exportValues = new ArrayList<>();
-        int numItems = ((COSArray) items).size();
-        for (int i=0;i<numItems;i++)
-        {
-            COSArray pair = (COSArray) ((COSArray) items).get(i);
-            COSString displayValue = (COSString) pair.get(pairIdx);
-            exportValues.add(displayValue.getString());
-        }
-        return exportValues;        
     }
 }

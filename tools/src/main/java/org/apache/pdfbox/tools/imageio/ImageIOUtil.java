@@ -65,11 +65,30 @@ public final class ImageIOUtil
     public static boolean writeImage(BufferedImage image, String filename,
             int dpi) throws IOException
     {
+        return writeImage(image, filename, dpi, 1.0f);
+    }
+
+    /**
+     * Writes a buffered image to a file using the given image format.
+     * See {@link #writeImage(BufferedImage image, String formatName,
+     * OutputStream output, int dpi, float quality)} for more details.
+     *
+     * @param image the image to be written
+     * @param filename used to construct the filename for the individual image. Its suffix will be
+     * used as the image format.
+     * @param dpi the resolution in dpi (dots per inch) to be used in metadata
+     * @param quality quality to be used when compressing the image (0 &lt; quality &lt; 1.0f)
+     * @return true if the image file was produced, false if there was an error.
+     * @throws IOException if an I/O error occurs
+     */
+    public static boolean writeImage(BufferedImage image, String filename,
+            int dpi, float quality) throws IOException
+    {
         File file = new File(filename);
-        try
-        (FileOutputStream output = new FileOutputStream(file)) {
+        try (FileOutputStream output = new FileOutputStream(file))
+        {
             String formatName = filename.substring(filename.lastIndexOf('.') + 1);
-            return writeImage(image, formatName, output, dpi);
+            return writeImage(image, formatName, output, dpi, quality);
         }
     }
 
@@ -95,8 +114,8 @@ public final class ImageIOUtil
             int dpi) throws IOException
     {
         File file = new File(filename + "." + formatName);
-        try
-        (FileOutputStream output = new FileOutputStream(file)) {
+        try (FileOutputStream output = new FileOutputStream(file))
+        {
             return writeImage(image, formatName, output, dpi);
         }
     }

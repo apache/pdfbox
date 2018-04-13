@@ -55,6 +55,7 @@ public final class PDFToImage
     private static final String COLOR = "-color";
     private static final String RESOLUTION = "-resolution";
     private static final String DPI = "-dpi";
+    private static final String QUALITY = "-quality";
     private static final String CROPBOX = "-cropbox";
     private static final String TIME = "-time";
 
@@ -97,6 +98,7 @@ public final class PDFToImage
         int endPage = Integer.MAX_VALUE;
         String color = "rgb";
         int dpi;
+        float quality = 1.0f;
         float cropBoxLowerLeftX = 0;
         float cropBoxLowerLeftY = 0;
         float cropBoxUpperRightX = 0;
@@ -165,6 +167,10 @@ public final class PDFToImage
                 case DPI:
                     i++;
                     dpi = Integer.parseInt(args[i]);
+                    break;
+                case QUALITY:
+                    i++;
+                    quality = Float.parseFloat(args[i]);
                     break;
                 case CROPBOX:
                     i++;
@@ -246,7 +252,7 @@ public final class PDFToImage
                 {
                     BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
                     String fileName = outputPrefix + (i + 1) + "." + imageFormat;
-                    success &= ImageIOUtil.writeImage(image, fileName, dpi);
+                    success &= ImageIOUtil.writeImage(image, fileName, dpi, quality);
                 }
 
                 // performance stats
@@ -282,8 +288,9 @@ public final class PDFToImage
             + "  -page <number>                   : The only page to extract (1-based)\n"
             + "  -startPage <int>                 : The first page to start extraction (1-based)\n"
             + "  -endPage <int>                   : The last page to extract(inclusive)\n"
-            + "  -color <int>                     : The color depth (valid: bilevel, gray, rgb, rgba)\n"
-            + "  -dpi <int>                       : The DPI of the output image\n"
+            + "  -color <int>                     : The color depth (valid: bilevel, gray, rgb (default), rgba)\n"
+            + "  -dpi <int>                       : The DPI of the output image, default: screen resolution or 96 if unknown\n"
+            + "  -quality <float>                 : The quality to be used when compressing the image (0 < quality <= 1 (default))\n"
             + "  -cropbox <int> <int> <int> <int> : The page area to export\n"
             + "  -time                            : Prints timing information to stdout\n"
             + "  <inputfile>                      : The PDF document to use\n";
@@ -321,7 +328,6 @@ public final class PDFToImage
             rectangle.setUpperRightX(c);
             rectangle.setUpperRightY(d);
             page.setCropBox(rectangle);
-
         }
     }
 }
