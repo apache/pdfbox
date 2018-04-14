@@ -17,20 +17,32 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class LookupTypeSingleSubstFormat1 extends LookupSubTable
+public class LookupTypeSingleSubstFormat1 extends LookupSubTable
 {
-    short deltaGlyphID;
+    private final short deltaGlyphID;
+
+    public LookupTypeSingleSubstFormat1(int substFormat, CoverageTable coverageTable,
+            short deltaGlyphID)
+    {
+        super(substFormat, coverageTable);
+        this.deltaGlyphID = deltaGlyphID;
+    }
 
     @Override
-    int doSubstitution(int gid, int coverageIndex)
+    public int doSubstitution(int gid, int coverageIndex)
     {
         return coverageIndex < 0 ? gid : gid + deltaGlyphID;
+    }
+
+    public short getDeltaGlyphID()
+    {
+        return deltaGlyphID;
     }
 
     @Override
     public String toString()
     {
         return String.format("LookupTypeSingleSubstFormat1[substFormat=%d,deltaGlyphID=%d]",
-                substFormat, deltaGlyphID);
+                getSubstFormat(), deltaGlyphID);
     }
 }

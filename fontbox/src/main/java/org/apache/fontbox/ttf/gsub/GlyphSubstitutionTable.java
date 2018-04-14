@@ -263,26 +263,22 @@ public class GlyphSubstitutionTable extends TTFTable
         {
         case 1:
         {
-            LookupTypeSingleSubstFormat1 lookupSubTable = new LookupTypeSingleSubstFormat1();
-            lookupSubTable.substFormat = substFormat;
             int coverageOffset = data.readUnsignedShort();
-            lookupSubTable.deltaGlyphID = data.readSignedShort();
-            lookupSubTable.coverageTable = readCoverageTable(data, offset + coverageOffset);
-            return lookupSubTable;
+            short deltaGlyphID = data.readSignedShort();
+            CoverageTable coverageTable = readCoverageTable(data, offset + coverageOffset);
+            return new LookupTypeSingleSubstFormat1(substFormat, coverageTable, deltaGlyphID);
         }
         case 2:
         {
-            LookupTypeSingleSubstFormat2 lookupSubTable = new LookupTypeSingleSubstFormat2();
-            lookupSubTable.substFormat = substFormat;
             int coverageOffset = data.readUnsignedShort();
             int glyphCount = data.readUnsignedShort();
-            lookupSubTable.substituteGlyphIDs = new int[glyphCount];
+            int[] substituteGlyphIDs = new int[glyphCount];
             for (int i = 0; i < glyphCount; i++)
             {
-                lookupSubTable.substituteGlyphIDs[i] = data.readUnsignedShort();
+                substituteGlyphIDs[i] = data.readUnsignedShort();
             }
-            lookupSubTable.coverageTable = readCoverageTable(data, offset + coverageOffset);
-            return lookupSubTable;
+            CoverageTable coverageTable = readCoverageTable(data, offset + coverageOffset);
+            return new LookupTypeSingleSubstFormat2(substFormat, coverageTable, substituteGlyphIDs);
         }
         default:
             throw new IllegalArgumentException("Unknown substFormat: " + substFormat);
@@ -301,9 +297,6 @@ public class GlyphSubstitutionTable extends TTFTable
                     "The expected SubstFormat for LigatureSubstitutionTable is 1");
         }
 
-        LookupTypeLigatureSubstitutionSubstFormat1 lookupSubTable = new LookupTypeLigatureSubstitutionSubstFormat1();
-        lookupSubTable.substFormat = substFormat;
-
         int coverage = data.readUnsignedShort();
         int ligSetCount = data.readUnsignedShort();
 
@@ -314,26 +307,27 @@ public class GlyphSubstitutionTable extends TTFTable
             ligatureOffsets[i] = data.readUnsignedShort();
         }
 
-        lookupSubTable.coverageTable = readCoverageTable(data, offset + coverage);
+        CoverageTable coverageTable = readCoverageTable(data, offset + coverage);
 
-        if (ligSetCount != lookupSubTable.coverageTable.getSize())
+        if (ligSetCount != coverageTable.getSize())
         {
             throw new IllegalArgumentException(
                     "According to the OpenTypeFont specifications, the coverage count should be equal to the no. of LigatureSetTables");
         }
 
-        lookupSubTable.ligatureSetTables = new LigatureSetTable[ligSetCount];
+        LigatureSetTable[] ligatureSetTables = new LigatureSetTable[ligSetCount];
 
         for (int i = 0; i < ligSetCount; i++)
         {
 
-            int coverageGlyphId = lookupSubTable.coverageTable.getGlyphId(i);
+            int coverageGlyphId = coverageTable.getGlyphId(i);
 
-            lookupSubTable.ligatureSetTables[i] = readLigatureSetTable(data,
+            ligatureSetTables[i] = readLigatureSetTable(data,
                     offset + ligatureOffsets[i], coverageGlyphId);
         }
 
-        return lookupSubTable;
+        return new LookupTypeLigatureSubstitutionSubstFormat1(substFormat, coverageTable,
+                ligatureSetTables);
     }
 
     private LigatureSetTable readLigatureSetTable(TTFDataStream data, long ligatureSetTableLocation,
@@ -582,7 +576,7 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         for (LookupSubTable lookupSubtable : lookupTable.subTables)
         {
-            int coverageIndex = lookupSubtable.coverageTable.getCoverageIndex(gid);
+            int coverageIndex = lookupSubtable.getCoverageTable().getCoverageIndex(gid);
             if (coverageIndex >= 0)
             {
                 return lookupSubtable.doSubstitution(gid, coverageIndex);

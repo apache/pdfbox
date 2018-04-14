@@ -17,10 +17,26 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-abstract class LookupSubTable
+public abstract class LookupSubTable
 {
-    int substFormat;
-    CoverageTable coverageTable;
+    private final int substFormat;
+    private final CoverageTable coverageTable;
 
-    abstract int doSubstitution(int gid, int coverageIndex);
+    public LookupSubTable(int substFormat, CoverageTable coverageTable)
+    {
+        this.substFormat = substFormat;
+        this.coverageTable = coverageTable;
+    }
+
+    public abstract int doSubstitution(int gid, int coverageIndex);
+
+    public int getSubstFormat()
+    {
+        return substFormat;
+    }
+
+    public CoverageTable getCoverageTable()
+    {
+        return coverageTable;
+    }
 }

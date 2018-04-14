@@ -26,20 +26,32 @@ package org.apache.fontbox.ttf.gsub;
  * Substitution Format 1</a>.
  *
  */
-class LookupTypeLigatureSubstitutionSubstFormat1 extends LookupSubTable
+public class LookupTypeLigatureSubstitutionSubstFormat1 extends LookupSubTable
 {
-    LigatureSetTable[] ligatureSetTables;
+    private final LigatureSetTable[] ligatureSetTables;
+
+    public LookupTypeLigatureSubstitutionSubstFormat1(int substFormat, CoverageTable coverageTable,
+            LigatureSetTable[] ligatureSetTables)
+    {
+        super(substFormat, coverageTable);
+        this.ligatureSetTables = ligatureSetTables;
+    }
 
     @Override
-    int doSubstitution(int gid, int coverageIndex)
+    public int doSubstitution(int gid, int coverageIndex)
     {
         throw new UnsupportedOperationException();
+    }
+
+    public LigatureSetTable[] getLigatureSetTables()
+    {
+        return ligatureSetTables;
     }
 
     @Override
     public String toString()
     {
         return String.format("%s[substFormat=%d]",
-                LookupTypeLigatureSubstitutionSubstFormat1.class.getSimpleName(), substFormat);
+                LookupTypeLigatureSubstitutionSubstFormat1.class.getSimpleName(), getSubstFormat());
     }
 }

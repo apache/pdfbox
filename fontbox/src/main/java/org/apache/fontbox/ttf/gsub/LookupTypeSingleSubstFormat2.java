@@ -19,14 +19,26 @@ package org.apache.fontbox.ttf.gsub;
 
 import java.util.Arrays;
 
-class LookupTypeSingleSubstFormat2 extends LookupSubTable
+public class LookupTypeSingleSubstFormat2 extends LookupSubTable
 {
-    int[] substituteGlyphIDs;
+    private final int[] substituteGlyphIDs;
+
+    public LookupTypeSingleSubstFormat2(int substFormat, CoverageTable coverageTable,
+            int[] substituteGlyphIDs)
+    {
+        super(substFormat, coverageTable);
+        this.substituteGlyphIDs = substituteGlyphIDs;
+    }
 
     @Override
-    int doSubstitution(int gid, int coverageIndex)
+    public int doSubstitution(int gid, int coverageIndex)
     {
         return coverageIndex < 0 ? gid : substituteGlyphIDs[coverageIndex];
+    }
+
+    public int[] getSubstituteGlyphIDs()
+    {
+        return substituteGlyphIDs;
     }
 
     @Override
@@ -34,6 +46,6 @@ class LookupTypeSingleSubstFormat2 extends LookupSubTable
     {
         return String.format(
                 "LookupTypeSingleSubstFormat2[substFormat=%d,substituteGlyphIDs=%s]",
-                substFormat, Arrays.toString(substituteGlyphIDs));
+                getSubstFormat(), Arrays.toString(substituteGlyphIDs));
     }
 }

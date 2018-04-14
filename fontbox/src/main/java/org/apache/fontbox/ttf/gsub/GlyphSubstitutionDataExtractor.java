@@ -142,11 +142,11 @@ public class GlyphSubstitutionDataExtractor
             Map<Integer, List<Integer>> glyphSubstitutionMap,
             LookupTypeSingleSubstFormat1 singleSubstTableFormat1)
     {
-        CoverageTable coverageTable = singleSubstTableFormat1.coverageTable;
+        CoverageTable coverageTable = singleSubstTableFormat1.getCoverageTable();
         for (int i = 0; i < coverageTable.getSize(); i++)
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
-            int substituteGlyphId = coverageGlyphId + singleSubstTableFormat1.deltaGlyphID;
+            int substituteGlyphId = coverageGlyphId + singleSubstTableFormat1.getDeltaGlyphID();
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
                     Arrays.asList(coverageGlyphId));
         }
@@ -157,9 +157,9 @@ public class GlyphSubstitutionDataExtractor
             LookupTypeSingleSubstFormat2 singleSubstTableFormat2)
     {
 
-        CoverageTable coverageTable = singleSubstTableFormat2.coverageTable;
+        CoverageTable coverageTable = singleSubstTableFormat2.getCoverageTable();
 
-        if (coverageTable.getSize() != singleSubstTableFormat2.substituteGlyphIDs.length)
+        if (coverageTable.getSize() != singleSubstTableFormat2.getSubstituteGlyphIDs().length)
         {
             throw new IllegalArgumentException(
                     "The no. coverage table entries should be the same as the size of the substituteGlyphIDs");
@@ -168,7 +168,8 @@ public class GlyphSubstitutionDataExtractor
         for (int i = 0; i < coverageTable.getSize(); i++)
         {
             int coverageGlyphId = coverageTable.getGlyphId(i);
-            int substituteGlyphId = coverageGlyphId + singleSubstTableFormat2.substituteGlyphIDs[i];
+            int substituteGlyphId = coverageGlyphId
+                    + singleSubstTableFormat2.getSubstituteGlyphIDs()[i];
             putNewSubstitutionEntry(glyphSubstitutionMap, substituteGlyphId,
                     Arrays.asList(coverageGlyphId));
         }
@@ -179,7 +180,7 @@ public class GlyphSubstitutionDataExtractor
             LookupTypeLigatureSubstitutionSubstFormat1 ligatureSubstitutionTable)
     {
 
-        for (LigatureSetTable ligatureSetTable : ligatureSubstitutionTable.ligatureSetTables)
+        for (LigatureSetTable ligatureSetTable : ligatureSubstitutionTable.getLigatureSetTables())
         {
             for (LigatureTable ligatureTable : ligatureSetTable.getLigatureTables())
             {
