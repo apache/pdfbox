@@ -113,7 +113,7 @@ public class GlyphSubstitutionDataExtractor
             LookupTable lookupTable)
     {
 
-        for (LookupSubTable lookupSubTable : lookupTable.subTables)
+        for (LookupSubTable lookupSubTable : lookupTable.getSubTables())
         {
             if (lookupSubTable instanceof LookupTypeLigatureSubstitutionSubstFormat1)
             {

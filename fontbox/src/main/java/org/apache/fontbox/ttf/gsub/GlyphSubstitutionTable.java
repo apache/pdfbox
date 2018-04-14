@@ -218,41 +218,46 @@ public class GlyphSubstitutionTable extends TTFTable
     LookupTable readLookupTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
-        LookupTable lookupTable = new LookupTable();
-        lookupTable.lookupType = data.readUnsignedShort();
-        lookupTable.lookupFlag = data.readUnsignedShort();
+        int lookupType = data.readUnsignedShort();
+        int lookupFlag = data.readUnsignedShort();
         int subTableCount = data.readUnsignedShort();
         int[] subTableOffets = new int[subTableCount];
         for (int i = 0; i < subTableCount; i++)
         {
             subTableOffets[i] = data.readUnsignedShort();
         }
-        if ((lookupTable.lookupFlag & 0x0010) != 0)
+
+        int markFilteringSet;
+        if ((lookupFlag & 0x0010) != 0)
         {
-            lookupTable.markFilteringSet = data.readUnsignedShort();
+            markFilteringSet = data.readUnsignedShort();
         }
-        lookupTable.subTables = new LookupSubTable[subTableCount];
-        switch (lookupTable.lookupType)
+        else
+        {
+            markFilteringSet = 0;
+        }
+        LookupSubTable[] subTables = new LookupSubTable[subTableCount];
+        switch (lookupType)
         {
         case 1: // Single
             for (int i = 0; i < subTableCount; i++)
             {
-                lookupTable.subTables[i] = readLookupSubTable(data, offset + subTableOffets[i]);
+                subTables[i] = readLookupSubTable(data, offset + subTableOffets[i]);
             }
             break;
         case 4: // Ligature Substitution Subtable
             for (int i = 0; i < subTableCount; i++)
             {
-                lookupTable.subTables[i] = readLigatureSubstitutionSubtable(data,
+                subTables[i] = readLigatureSubstitutionSubtable(data,
                         offset + subTableOffets[i]);
             }
             break;
         default:
             // Other lookup types are not supported
-            LOG.debug("Type " + lookupTable.lookupType
+            LOG.debug("Type " + lookupType
                     + " GSUB lookup table is not supported and will be ignored");
         }
-        return lookupTable;
+        return new LookupTable(lookupType, lookupFlag, markFilteringSet, subTables);
     }
 
     LookupSubTable readLookupSubTable(TTFDataStream data, long offset) throws IOException
@@ -560,11 +565,11 @@ public class GlyphSubstitutionTable extends TTFTable
         for (int lookupListIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
             LookupTable lookupTable = lookupList[lookupListIndex];
-            if (lookupTable.lookupType != 1)
+            if (lookupTable.getLookupType() != 1)
             {
                 LOG.debug("Skipping GSUB feature '" + featureRecord.getFeatureTag()
                         + "' because it requires unsupported lookup table type "
-                        + lookupTable.lookupType);
+                        + lookupTable.getLookupType());
                 continue;
             }
             lookupResult = doLookup(lookupTable, lookupResult);
@@ -574,7 +579,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private int doLookup(LookupTable lookupTable, int gid)
     {
-        for (LookupSubTable lookupSubtable : lookupTable.subTables)
+        for (LookupSubTable lookupSubtable : lookupTable.getSubTables())
         {
             int coverageIndex = lookupSubtable.getCoverageTable().getCoverageIndex(gid);
             if (coverageIndex >= 0)

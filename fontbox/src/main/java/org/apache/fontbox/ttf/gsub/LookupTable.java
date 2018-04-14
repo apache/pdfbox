@@ -17,12 +17,47 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class LookupTable
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#lookup-table">Lookup Table</a> in the
+ * Open Type layout common tables.
+ *
+ */
+public class LookupTable
 {
-    int lookupType;
-    int lookupFlag;
-    int markFilteringSet;
-    LookupSubTable[] subTables;
+    private final int lookupType;
+    private final int lookupFlag;
+    private final int markFilteringSet;
+    private final LookupSubTable[] subTables;
+
+    public LookupTable(int lookupType, int lookupFlag, int markFilteringSet,
+            LookupSubTable[] subTables)
+    {
+        this.lookupType = lookupType;
+        this.lookupFlag = lookupFlag;
+        this.markFilteringSet = markFilteringSet;
+        this.subTables = subTables;
+    }
+
+    public int getLookupType()
+    {
+        return lookupType;
+    }
+
+    public int getLookupFlag()
+    {
+        return lookupFlag;
+    }
+
+    public int getMarkFilteringSet()
+    {
+        return markFilteringSet;
+    }
+
+    public LookupSubTable[] getSubTables()
+    {
+        return subTables;
+    }
 
     @Override
     public String toString()
