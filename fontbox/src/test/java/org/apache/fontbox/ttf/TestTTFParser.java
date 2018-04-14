@@ -76,17 +76,36 @@ public class TestTTFParser extends TestCase
         assertEquals(getExpectedGsubTableRawData(), gsub);
 
         Map<String, Integer> glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
-        assertEquals(getExpectedGlyphSubstitutionMap(), glyphSubstitutionMap);
+        Map<String, Integer> expected = getExpectedGlyphSubstitutionMap();
+        assertEquals(expected.size(), glyphSubstitutionMap.size());
+        assertEquals(expected, glyphSubstitutionMap);
 
     }
 
     private Map<String, Integer> getExpectedGlyphSubstitutionMap() throws IOException
     {
+        String testResource = "/gsub/expected_glyph_substitution_map_jdk";
+
+        String jdkVersion = System.getProperty("java.version");
+
+        if (jdkVersion.startsWith("1.7"))
+        {
+            testResource += "7";
+        }
+        else
+        {
+            testResource += "8";
+        }
+
+        testResource += ".txt";
+
+        System.out.println(
+                "using the testResource: " + testResource + " for jdk version " + jdkVersion);
 
         Map<String, Integer> map = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(TestTTFParser.class
-                .getResourceAsStream("/gsub/expected_glyph_substitution_map.txt"))))
+                .getResourceAsStream(testResource))))
         {
             while (true)
             {
