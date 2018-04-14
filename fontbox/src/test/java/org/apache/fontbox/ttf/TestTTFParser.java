@@ -121,6 +121,11 @@ public class TestTTFParser extends TestCase
                     continue;
                 }
 
+                if (line.startsWith("#"))
+                {
+                    continue;
+                }
+
                 String[] lineSplittedByKeyValue = line.split("=");
 
                 if (lineSplittedByKeyValue.length != 2)
@@ -167,6 +172,10 @@ public class TestTTFParser extends TestCase
                     continue;
                 }
 
+                if (line.startsWith("#"))
+                {
+                    continue;
+                }
                 String[] lineSplittedByKeyValue = line.split("=");
 
                 if (lineSplittedByKeyValue.length != 2)
