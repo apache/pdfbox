@@ -28,6 +28,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
 
+/**
+ * This class has utility methods to extract meaningful data from the highly obfuscated GSUB Tables. This data is then
+ * used to determine which combination of Glyphs or words have to be replaced.
+ */
 public class GlyphSubstitutionDataExtractor
 {
 
@@ -51,7 +55,7 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    Map<Integer, List<Integer>> extractRawGSubTableData(LookupTable[] lookupTables)
+    public Map<Integer, List<Integer>> extractRawGSubTableData(LookupTable[] lookupTables)
     {
 
         Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
@@ -216,7 +220,7 @@ public class GlyphSubstitutionDataExtractor
 
         if (oldValue != null)
         {
-            LOG.warn("oldValue: " + oldValue + " will be overridden with newValue: "
+            LOG.debug("oldValue: " + oldValue + " will be overridden with newValue: "
                     + glyphsToBeSubstituted);
         }
     }

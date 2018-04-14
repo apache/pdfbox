@@ -45,7 +45,7 @@ public class TTFTable
      * 
      * @param font The font which contains this table.
      */
-    protected TTFTable(TrueTypeFont font)
+    TTFTable(TrueTypeFont font)
     {
         this.font = font;
     }

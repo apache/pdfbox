@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,10 +30,24 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.ttf.OpenTypeScript;
-import org.apache.fontbox.ttf.TTFDataStream;
-import org.apache.fontbox.ttf.TTFTable;
-import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.gsub.CoverageTable;
+import org.apache.fontbox.ttf.gsub.CoverageTableFormat1;
+import org.apache.fontbox.ttf.gsub.CoverageTableFormat2;
+import org.apache.fontbox.ttf.gsub.FeatureRecord;
+import org.apache.fontbox.ttf.gsub.FeatureTable;
+import org.apache.fontbox.ttf.gsub.GlyphSubstitutionDataExtractor;
+import org.apache.fontbox.ttf.gsub.LangSysRecord;
+import org.apache.fontbox.ttf.gsub.LangSysTable;
+import org.apache.fontbox.ttf.gsub.LigatureSetTable;
+import org.apache.fontbox.ttf.gsub.LigatureTable;
+import org.apache.fontbox.ttf.gsub.LookupSubTable;
+import org.apache.fontbox.ttf.gsub.LookupTable;
+import org.apache.fontbox.ttf.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
+import org.apache.fontbox.ttf.gsub.LookupTypeSingleSubstFormat1;
+import org.apache.fontbox.ttf.gsub.LookupTypeSingleSubstFormat2;
+import org.apache.fontbox.ttf.gsub.RangeRecord;
+import org.apache.fontbox.ttf.gsub.ScriptRecord;
+import org.apache.fontbox.ttf.gsub.ScriptTable;
 
 /**
  * A glyph substitution 'GSUB' table in a TrueType or OpenType font.

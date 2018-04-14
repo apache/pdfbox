@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.ttf.gsub.GlyphSubstitutionDataExtractor;
-import org.apache.fontbox.ttf.gsub.GlyphSubstitutionTable;
 import org.apache.fontbox.util.BoundingBox;
 
 /**

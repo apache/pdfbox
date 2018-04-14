@@ -23,6 +23,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Takes in the given text having compound-glyphs to substitute, and splits it into chunks consisting of parts that
+ * should be substituted and the ones that can be processed normally.
+ */
 public class CompoundCharacterTokenizer
 {
 

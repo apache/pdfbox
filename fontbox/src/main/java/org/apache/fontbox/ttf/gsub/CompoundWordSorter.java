@@ -19,6 +19,11 @@ package org.apache.fontbox.ttf.gsub;
 
 import java.util.Comparator;
 
+/**
+ * Sorts given words according to their lengths. Words with greater length are put above others. This can affect the way
+ * Glyph-substitution happens. This is a bit of a hack, and has scope for improvement.
+ * 
+ */
 public class CompoundWordSorter implements Comparator<String>
 {
 
