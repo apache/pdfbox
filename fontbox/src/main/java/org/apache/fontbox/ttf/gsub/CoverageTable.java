@@ -19,11 +19,22 @@ package org.apache.fontbox.ttf.gsub;
 
 abstract class CoverageTable
 {
-    int coverageFormat;
+    private final int coverageFormat;
+
+    CoverageTable(int coverageFormat)
+    {
+        this.coverageFormat = coverageFormat;
+    }
 
     abstract int getCoverageIndex(int gid);
 
     abstract int getGlyphId(int index);
 
     abstract int getSize();
+
+    int getCoverageFormat()
+    {
+        return coverageFormat;
+    }
+
 }

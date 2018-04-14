@@ -397,43 +397,26 @@ public class GlyphSubstitutionTable extends TTFTable
         {
         case 1:
         {
-            CoverageTableFormat1 coverageTable = new CoverageTableFormat1();
-            coverageTable.coverageFormat = coverageFormat;
             int glyphCount = data.readUnsignedShort();
-            coverageTable.glyphArray = new int[glyphCount];
+            int[] glyphArray = new int[glyphCount];
             for (int i = 0; i < glyphCount; i++)
             {
-                coverageTable.glyphArray[i] = data.readUnsignedShort();
+                glyphArray[i] = data.readUnsignedShort();
             }
-            return coverageTable;
+            return new CoverageTableFormat1(coverageFormat, glyphArray);
         }
         case 2:
         {
-            CoverageTableFormat2 coverageTable = new CoverageTableFormat2();
-            coverageTable.coverageFormat = coverageFormat;
             int rangeCount = data.readUnsignedShort();
-            coverageTable.rangeRecords = new RangeRecord[rangeCount];
+            RangeRecord[] rangeRecords = new RangeRecord[rangeCount];
 
-            List<Integer> glyphIds = new ArrayList<>();
 
             for (int i = 0; i < rangeCount; i++)
             {
-                coverageTable.rangeRecords[i] = readRangeRecord(data);
-                for (int glyphId = coverageTable.rangeRecords[i].startGlyphID; glyphId <= coverageTable.rangeRecords[i].endGlyphID; glyphId++)
-                {
-                    glyphIds.add(glyphId);
-                }
+                rangeRecords[i] = readRangeRecord(data);
             }
 
-            coverageTable.glyphArray = new int[glyphIds.size()];
-
-            for (int i = 0; i < coverageTable.glyphArray.length; i++)
-            {
-                coverageTable.glyphArray[i] = glyphIds.get(i);
-            }
-
-            return coverageTable;
-
+            return new CoverageTableFormat2(coverageFormat, rangeRecords);
         }
         default:
             // Should not happen (the spec indicates only format 1 and format 2)

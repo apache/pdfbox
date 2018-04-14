@@ -17,13 +17,50 @@
 
 package org.apache.fontbox.ttf.gsub;
 
+import java.util.ArrayList;
+import java.util.List;
+
 class CoverageTableFormat2 extends CoverageTableFormat1
 {
-    RangeRecord[] rangeRecords;
+    private final RangeRecord[] rangeRecords;
+
+    CoverageTableFormat2(int coverageFormat, RangeRecord[] rangeRecords)
+    {
+        super(coverageFormat, getRangeRecordsAsArray(rangeRecords));
+        this.rangeRecords = rangeRecords;
+    }
+
+    RangeRecord[] getRangeRecords()
+    {
+        return rangeRecords;
+    }
+
+    private static int[] getRangeRecordsAsArray(RangeRecord[] rangeRecords)
+    {
+
+        List<Integer> glyphIds = new ArrayList<>();
+
+        for (int i = 0; i < rangeRecords.length; i++)
+        {
+            for (int glyphId = rangeRecords[i].startGlyphID; glyphId <= rangeRecords[i].endGlyphID; glyphId++)
+            {
+                glyphIds.add(glyphId);
+            }
+        }
+
+        int[] glyphArray = new int[glyphIds.size()];
+
+        for (int i = 0; i < glyphArray.length; i++)
+        {
+            glyphArray[i] = glyphIds.get(i);
+        }
+
+        return glyphArray;
+    }
 
     @Override
     public String toString()
     {
-        return String.format("CoverageTableFormat2[coverageFormat=%d]", coverageFormat);
+        return String.format("CoverageTableFormat2[coverageFormat=%d]", getCoverageFormat());
     }
 }

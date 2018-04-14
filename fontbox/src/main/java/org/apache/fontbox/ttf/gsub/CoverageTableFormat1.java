@@ -21,7 +21,14 @@ import java.util.Arrays;
 
 class CoverageTableFormat1 extends CoverageTable
 {
-    int[] glyphArray;
+
+    private final int[] glyphArray;
+
+    CoverageTableFormat1(int coverageFormat, int[] glyphArray)
+    {
+        super(coverageFormat);
+        this.glyphArray = glyphArray;
+    }
 
     @Override
     int getCoverageIndex(int gid)
@@ -41,11 +48,16 @@ class CoverageTableFormat1 extends CoverageTable
         return glyphArray.length;
     }
 
+    int[] getGlyphArray()
+    {
+        return glyphArray;
+    }
+
     @Override
     public String toString()
     {
         return String.format("CoverageTableFormat1[coverageFormat=%d,glyphArray=%s]",
-                coverageFormat, Arrays.toString(glyphArray));
+                getCoverageFormat(), Arrays.toString(glyphArray));
     }
 
 
