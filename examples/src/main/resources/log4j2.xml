@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Appenders>
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{ISO8601} %p [%t] %c{1}.%M(%L) | %m%n" />
+		</Console>
+
+		<RollingRandomAccessFile name="FILE"
+			fileName="./target/logs/pdf-box-demo.log" filePattern="./target/logs/pdf-box-demo-%d{yyyy-MM-dd-HH}-%i.log.gz"
+			immediateFlush="false" append="true">
+			<PatternLayout>
+				<pattern>%d{ISO8601} %p [%t] %c{1}.%M(%L) | %m%n</pattern>
+				<charset>utf-8</charset>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="10 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="20" />
+		</RollingRandomAccessFile>
+	</Appenders>
+
+	<Loggers>
+		<root level="trace" includeLocation="true">
+			<AppenderRef ref="CONSOLE" />
+			<AppenderRef ref="FILE" />
+		</root>
+
+		<Logger name="org.springframework" level="info" />
+
+		<Logger name="org.eclipse.jetty" level="INFO" />
+
+	</Loggers>
+
+</Configuration>
