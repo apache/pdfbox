@@ -88,6 +88,29 @@ public class PDFMergerUtility
     private PDDocumentInformation destinationDocumentInformation = null;
     private PDMetadata destinationMetadata = null;
 
+    private DocumentMergeMode documentMergeMode = DocumentMergeMode.PDFBOX_LEGACY_MODE;
+
+    /**
+     * The mode to use when merging documents.
+     * 
+     * <p><ul>
+     * <li>{@link DocumentMergeMode#OPTIMIZE_RESOURCES_MODE} Optimizes resource handling such as
+     *      closing documents early. <strong>Not all document elements are merged</strong> compared to
+     *      the PDFBOX_LEGACY_MODE. Currently supported are:
+     *      <ul>
+     *          <li>Page content and resources
+     *      </ul>  
+     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} fields with the same fully qualified name
+     *      will be renamed and treated as independent. This mode was used in versions
+     *      of PDFBox up to 2.x.
+     * </ul>
+     */
+    public enum DocumentMergeMode
+    {
+        OPTIMIZE_RESOURCES_MODE,
+        PDFBOX_LEGACY_MODE
+    }
+
     /**
      * Instantiate a new PDFMergerUtility.
      */
@@ -250,6 +273,84 @@ public class PDFMergerUtility
      * @throws IOException If there is an error saving the document.
      */
     public void mergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
+    {
+        if (documentMergeMode == DocumentMergeMode.PDFBOX_LEGACY_MODE)
+        {
+            legacyMergeDocuments(memUsageSetting);
+        }
+        else if (documentMergeMode == DocumentMergeMode.OPTIMIZE_RESOURCES_MODE)
+        {
+            optimizedMergeDocuments(memUsageSetting, sources);
+        }
+    }
+
+    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting, List<InputStream> sourceDocuments) throws IOException
+    {
+        PDDocument destination = null;
+        try
+        {
+            destination = new PDDocument(memUsageSetting);
+            PDFCloneUtility cloner = new PDFCloneUtility(destination);
+
+            for (InputStream sourceInputStream : sources)
+            {
+                PDDocument sourceDoc = null;
+                try
+                {
+                    sourceDoc = PDDocument.load(sourceInputStream, memUsageSetting);
+
+                    for (PDPage page : sourceDoc.getPages())
+                    {
+                        PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
+                        newPage.setCropBox(page.getCropBox());
+                        newPage.setMediaBox(page.getMediaBox());
+                        newPage.setRotation(page.getRotation());
+                        PDResources resources = page.getResources();
+                        if (resources != null)
+                        {
+                            // this is smart enough to just create references for resources that are used on multiple pages
+                            newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(resources)));
+                        }
+                        else
+                        {
+                            newPage.setResources(new PDResources());
+                        }
+                        destination.addPage(newPage);
+                    }
+                    sourceDoc.close();
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(sourceDoc);
+                }
+                sourceInputStream.close();
+            }
+            
+            if (destinationStream == null)
+            {
+                destination.save(destinationFileName);
+            }
+            else
+            {
+                destination.save(destinationStream);
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(destination);
+        }
+    }
+
+    /**
+     * Merge the list of source documents, saving the result in the destination
+     * file.
+     *
+     * @param memUsageSetting defines how memory is used for buffering PDF streams;
+     *                        in case of <code>null</code> unrestricted main memory is used 
+     * 
+     * @throws IOException If there is an error saving the document.
+     */
+    private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
         PDDocument destination = null;
         InputStream sourceFile;
