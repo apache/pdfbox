@@ -17,11 +17,42 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class LigatureTable
+/**
+ * This class is a part of the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/gsub">GSUB — Glyph
+ * Substitution Table</a> system of tables in the Open Type Font specs. This is a part of the <a href=
+ * "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-4-ligature-substitution-subtable">LookupType
+ * 4: Ligature Substitution Subtable</a>. It specifically models the
+ * <a href= "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#41-ligature-substitution-format-1">Ligature
+ * table: Glyph components for one ligature</a>.
+ *
+ */
+public class LigatureTable
 {
-    int ligatureGlyph;
-    int componentCount;
-    int[] componentGlyphIDs;
+    private final int ligatureGlyph;
+    private final int componentCount;
+    private final int[] componentGlyphIDs;
+
+    public LigatureTable(int ligatureGlyph, int componentCount, int[] componentGlyphIDs)
+    {
+        this.ligatureGlyph = ligatureGlyph;
+        this.componentCount = componentCount;
+        this.componentGlyphIDs = componentGlyphIDs;
+    }
+
+    public int getLigatureGlyph()
+    {
+        return ligatureGlyph;
+    }
+
+    public int getComponentCount()
+    {
+        return componentCount;
+    }
+
+    public int[] getComponentGlyphIDs()
+    {
+        return componentGlyphIDs;
+    }
 
     @Override
     public String toString()

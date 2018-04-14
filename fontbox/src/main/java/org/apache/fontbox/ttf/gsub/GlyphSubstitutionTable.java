@@ -369,22 +369,20 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(ligatureTableLocation);
 
-        LigatureTable ligatureTable = new LigatureTable();
+        int ligatureGlyph = data.readUnsignedShort();
 
-        ligatureTable.ligatureGlyph = data.readUnsignedShort();
+        int componentCount = data.readUnsignedShort();
 
-        ligatureTable.componentCount = data.readUnsignedShort();
+        int[] componentGlyphIDs = new int[componentCount];
 
-        ligatureTable.componentGlyphIDs = new int[ligatureTable.componentCount];
+        componentGlyphIDs[0] = coverageGlyphId;
 
-        ligatureTable.componentGlyphIDs[0] = coverageGlyphId;
-
-        for (int i = 1; i <= ligatureTable.componentCount - 1; i++)
+        for (int i = 1; i <= componentCount - 1; i++)
         {
-            ligatureTable.componentGlyphIDs[i] = data.readUnsignedShort();
+            componentGlyphIDs[i] = data.readUnsignedShort();
         }
 
-        return ligatureTable;
+        return new LigatureTable(ligatureGlyph, componentCount, componentGlyphIDs);
 
     }
 

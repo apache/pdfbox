@@ -196,14 +196,14 @@ public class GlyphSubstitutionDataExtractor
 
         List<Integer> glyphsToBeSubstituted = new ArrayList<>();
 
-        for (int componentGlyphID : ligatureTable.componentGlyphIDs)
+        for (int componentGlyphID : ligatureTable.getComponentGlyphIDs())
         {
             glyphsToBeSubstituted.add(componentGlyphID);
         }
 
         LOG.debug("glyphsToBeSubstituted: " + glyphsToBeSubstituted);
 
-        putNewSubstitutionEntry(glyphSubstitutionMap, ligatureTable.ligatureGlyph,
+        putNewSubstitutionEntry(glyphSubstitutionMap, ligatureTable.getLigatureGlyph(),
                 glyphsToBeSubstituted);
 
     }
