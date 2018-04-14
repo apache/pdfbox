@@ -17,14 +17,29 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class FeatureTable
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#feature-table">Feature table</a> in the
+ * Open Type layout common tables.
+ *
+ */
+public class FeatureTable
 {
-    int[] lookupListIndices;
+    private final int[] lookupListIndices;
+
+    public FeatureTable(int[] lookupListIndices)
+    {
+        this.lookupListIndices = lookupListIndices;
+    }
+
+    public int[] getLookupListIndices()
+    {
+        return lookupListIndices;
+    }
 
     @Override
     public String toString()
     {
-        return String.format("FeatureTable[lookupListIndiciesCount=%d]",
-                lookupListIndices.length);
+        return String.format("FeatureTable[lookupListIndiciesCount=%d]", lookupListIndices.length);
     }
 }

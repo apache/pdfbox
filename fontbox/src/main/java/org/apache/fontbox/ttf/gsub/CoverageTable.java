@@ -17,22 +17,28 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-abstract class CoverageTable
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#coverage-table">Coverage Table</a> in the
+ * Open Type layout common tables.
+ *
+ */
+public abstract class CoverageTable
 {
     private final int coverageFormat;
 
-    CoverageTable(int coverageFormat)
+    public CoverageTable(int coverageFormat)
     {
         this.coverageFormat = coverageFormat;
     }
 
-    abstract int getCoverageIndex(int gid);
+    public abstract int getCoverageIndex(int gid);
 
-    abstract int getGlyphId(int index);
+    public abstract int getGlyphId(int index);
 
-    abstract int getSize();
+    public abstract int getSize();
 
-    int getCoverageFormat()
+    public int getCoverageFormat()
     {
         return coverageFormat;
     }

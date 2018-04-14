@@ -17,10 +17,32 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class FeatureRecord
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#features-and-lookups">Features and
+ * lookups</a> in the Open Type layout common tables.
+ *
+ */
+public class FeatureRecord
 {
-    String featureTag;
-    FeatureTable featureTable;
+    private final String featureTag;
+    private final FeatureTable featureTable;
+
+    public FeatureRecord(String featureTag, FeatureTable featureTable)
+    {
+        this.featureTag = featureTag;
+        this.featureTable = featureTable;
+    }
+
+    public String getFeatureTag()
+    {
+        return featureTag;
+    }
+
+    public FeatureTable getFeatureTable()
+    {
+        return featureTable;
+    }
 
     @Override
     public String toString()

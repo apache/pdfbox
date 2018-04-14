@@ -170,16 +170,16 @@ public class GlyphSubstitutionTable extends TTFTable
         int featureCount = data.readUnsignedShort();
         FeatureRecord[] featureRecords = new FeatureRecord[featureCount];
         int[] featureOffsets = new int[featureCount];
+        String[] featureTags = new String[featureCount];
         for (int i = 0; i < featureCount; i++)
         {
-            FeatureRecord featureRecord = new FeatureRecord();
-            featureRecord.featureTag = data.readString(4);
+            featureTags[i] = data.readString(4);
             featureOffsets[i] = data.readUnsignedShort();
-            featureRecords[i] = featureRecord;
         }
         for (int i = 0; i < featureCount; i++)
         {
-            featureRecords[i].featureTable = readFeatureTable(data, offset + featureOffsets[i]);
+            FeatureTable featureTable = readFeatureTable(data, offset + featureOffsets[i]);
+            featureRecords[i] = new FeatureRecord(featureTags[i], featureTable);
         }
         return featureRecords;
     }
@@ -187,16 +187,15 @@ public class GlyphSubstitutionTable extends TTFTable
     FeatureTable readFeatureTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
-        FeatureTable featureTable = new FeatureTable();
         @SuppressWarnings({ "unused", "squid:S1854" })
         int featureParams = data.readUnsignedShort();
         int lookupIndexCount = data.readUnsignedShort();
-        featureTable.lookupListIndices = new int[lookupIndexCount];
+        int[] lookupListIndices = new int[lookupIndexCount];
         for (int i = 0; i < lookupIndexCount; i++)
         {
-            featureTable.lookupListIndices[i] = data.readUnsignedShort();
+            lookupListIndices[i] = data.readUnsignedShort();
         }
-        return featureTable;
+        return new FeatureTable(lookupListIndices);
     }
 
     LookupTable[] readLookupList(TTFDataStream data, long offset) throws IOException
@@ -511,7 +510,7 @@ public class GlyphSubstitutionTable extends TTFTable
             for (int featureIndex : langSysTable.featureIndices)
             {
                 if (enabledFeatures == null
-                        || enabledFeatures.contains(featureList[featureIndex].featureTag))
+                        || enabledFeatures.contains(featureList[featureIndex].getFeatureTag()))
                 {
                     result.add(featureList[featureIndex]);
                 }
@@ -532,8 +531,8 @@ public class GlyphSubstitutionTable extends TTFTable
                 @Override
                 public int compare(FeatureRecord o1, FeatureRecord o2)
                 {
-                    return Integer.compare(enabledFeatures.indexOf(o1.featureTag),
-                            enabledFeatures.indexOf(o2.featureTag));
+                    return Integer.compare(enabledFeatures.indexOf(o1.getFeatureTag()),
+                            enabledFeatures.indexOf(o2.getFeatureTag()));
                 }
             });
         }
@@ -545,7 +544,7 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         for (FeatureRecord featureRecord : featureRecords)
         {
-            if (featureRecord.featureTag.equals(featureTag))
+            if (featureRecord.getFeatureTag().equals(featureTag))
             {
                 return true;
             }
@@ -558,7 +557,7 @@ public class GlyphSubstitutionTable extends TTFTable
         Iterator<FeatureRecord> iter = featureRecords.iterator();
         while (iter.hasNext())
         {
-            if (iter.next().featureTag.equals(featureTag))
+            if (iter.next().getFeatureTag().equals(featureTag))
             {
                 iter.remove();
             }
@@ -568,12 +567,12 @@ public class GlyphSubstitutionTable extends TTFTable
     private int applyFeature(FeatureRecord featureRecord, int gid)
     {
         int lookupResult = gid;
-        for (int lookupListIndex : featureRecord.featureTable.lookupListIndices)
+        for (int lookupListIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
             LookupTable lookupTable = lookupList[lookupListIndex];
             if (lookupTable.lookupType != 1)
             {
-                LOG.debug("Skipping GSUB feature '" + featureRecord.featureTag
+                LOG.debug("Skipping GSUB feature '" + featureRecord.getFeatureTag()
                         + "' because it requires unsupported lookup table type "
                         + lookupTable.lookupType);
                 continue;
@@ -661,10 +660,9 @@ public class GlyphSubstitutionTable extends TTFTable
 
     RangeRecord readRangeRecord(TTFDataStream data) throws IOException
     {
-        RangeRecord rangeRecord = new RangeRecord();
-        rangeRecord.startGlyphID = data.readUnsignedShort();
-        rangeRecord.endGlyphID = data.readUnsignedShort();
-        rangeRecord.startCoverageIndex = data.readUnsignedShort();
-        return rangeRecord;
+        int startGlyphID = data.readUnsignedShort();
+        int endGlyphID = data.readUnsignedShort();
+        int startCoverageIndex = data.readUnsignedShort();
+        return new RangeRecord(startGlyphID, endGlyphID, startCoverageIndex);
     }
 }

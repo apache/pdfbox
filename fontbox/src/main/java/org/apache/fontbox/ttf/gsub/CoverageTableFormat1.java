@@ -19,36 +19,42 @@ package org.apache.fontbox.ttf.gsub;
 
 import java.util.Arrays;
 
-class CoverageTableFormat1 extends CoverageTable
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#coverage-format-1">Coverage format 1</a>
+ * in the Open Type layout common tables.
+ *
+ */
+public class CoverageTableFormat1 extends CoverageTable
 {
 
     private final int[] glyphArray;
 
-    CoverageTableFormat1(int coverageFormat, int[] glyphArray)
+    public CoverageTableFormat1(int coverageFormat, int[] glyphArray)
     {
         super(coverageFormat);
         this.glyphArray = glyphArray;
     }
 
     @Override
-    int getCoverageIndex(int gid)
+    public int getCoverageIndex(int gid)
     {
         return Arrays.binarySearch(glyphArray, gid);
     }
 
     @Override
-    int getGlyphId(int index)
+    public int getGlyphId(int index)
     {
         return glyphArray[index];
     }
 
     @Override
-    int getSize()
+    public int getSize()
     {
         return glyphArray.length;
     }
 
-    int[] getGlyphArray()
+    public int[] getGlyphArray()
     {
         return glyphArray;
     }

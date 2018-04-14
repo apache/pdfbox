@@ -17,11 +17,39 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class RangeRecord
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#coverage-format-2">Range Record in the
+ * Coverage format 2</a> in the Open Type layout common tables.
+ *
+ */
+public class RangeRecord
 {
-    int startGlyphID;
-    int endGlyphID;
-    int startCoverageIndex;
+    private final int startGlyphID;
+    private final int endGlyphID;
+    private final int startCoverageIndex;
+
+    public RangeRecord(int startGlyphID, int endGlyphID, int startCoverageIndex)
+    {
+        this.startGlyphID = startGlyphID;
+        this.endGlyphID = endGlyphID;
+        this.startCoverageIndex = startCoverageIndex;
+    }
+
+    public int getStartGlyphID()
+    {
+        return startGlyphID;
+    }
+
+    public int getEndGlyphID()
+    {
+        return endGlyphID;
+    }
+
+    public int getStartCoverageIndex()
+    {
+        return startCoverageIndex;
+    }
 
     @Override
     public String toString()

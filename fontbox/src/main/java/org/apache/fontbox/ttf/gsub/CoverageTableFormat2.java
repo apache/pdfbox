@@ -20,17 +20,23 @@ package org.apache.fontbox.ttf.gsub;
 import java.util.ArrayList;
 import java.util.List;
 
-class CoverageTableFormat2 extends CoverageTableFormat1
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#coverage-format-2">Coverage format 2</a>
+ * in the Open Type layout common tables.
+ *
+ */
+public class CoverageTableFormat2 extends CoverageTableFormat1
 {
     private final RangeRecord[] rangeRecords;
 
-    CoverageTableFormat2(int coverageFormat, RangeRecord[] rangeRecords)
+    public CoverageTableFormat2(int coverageFormat, RangeRecord[] rangeRecords)
     {
         super(coverageFormat, getRangeRecordsAsArray(rangeRecords));
         this.rangeRecords = rangeRecords;
     }
 
-    RangeRecord[] getRangeRecords()
+    public RangeRecord[] getRangeRecords()
     {
         return rangeRecords;
     }
@@ -42,7 +48,8 @@ class CoverageTableFormat2 extends CoverageTableFormat1
 
         for (int i = 0; i < rangeRecords.length; i++)
         {
-            for (int glyphId = rangeRecords[i].startGlyphID; glyphId <= rangeRecords[i].endGlyphID; glyphId++)
+            for (int glyphId = rangeRecords[i].getStartGlyphID(); glyphId <= rangeRecords[i]
+                    .getEndGlyphID(); glyphId++)
             {
                 glyphIds.add(glyphId);
             }
