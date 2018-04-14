@@ -17,6 +17,12 @@
 
 package org.apache.fontbox.ttf.gsub;
 
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#lookup-table">Lookup Sub-Table</a> in the
+ * Open Type layout common tables.
+ *
+ */
 public abstract class LookupSubTable
 {
     private final int substFormat;
