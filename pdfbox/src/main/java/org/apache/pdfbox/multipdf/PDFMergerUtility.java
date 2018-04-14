@@ -101,9 +101,9 @@ public class PDFMergerUtility
      *      <ul>
      *          <li>Page content and resources
      *      </ul>  
-     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} fields with the same fully qualified name
-     *      will be renamed and treated as independent. This mode was used in versions
-     *      of PDFBox up to 2.x.
+     * <li>{@link DocumentMergeMode#PDFBOX_LEGACY_MODE} Keeps all files open until the
+     *      merge has been completed. This is  currently necessary to merge documents
+     *      containing a Structure Tree.
      * </ul>
      */
     public enum DocumentMergeMode
