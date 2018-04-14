@@ -124,13 +124,12 @@ public class GlyphSubstitutionTable extends TTFTable
         int defaultLangSys = data.readUnsignedShort();
         int langSysCount = data.readUnsignedShort();
         LangSysRecord[] langSysRecords = new LangSysRecord[langSysCount];
+        String[] langSysTags = new String[langSysCount];
         int[] langSysOffsets = new int[langSysCount];
         for (int i = 0; i < langSysCount; i++)
         {
-            LangSysRecord langSysRecord = new LangSysRecord();
-            langSysRecord.langSysTag = data.readString(4);
+            langSysTags[i] = data.readString(4);
             langSysOffsets[i] = data.readUnsignedShort();
-            langSysRecords[i] = langSysRecord;
         }
         if (defaultLangSys != 0)
         {
@@ -138,12 +137,14 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         for (int i = 0; i < langSysCount; i++)
         {
-            langSysRecords[i].langSysTable = readLangSysTable(data, offset + langSysOffsets[i]);
+            LangSysTable langSysTable = readLangSysTable(data, offset + langSysOffsets[i]);
+            langSysRecords[i] = new LangSysRecord(langSysTags[i], langSysTable);
         }
         scriptTable.langSysTables = new LinkedHashMap<>(langSysCount);
         for (LangSysRecord langSysRecord : langSysRecords)
         {
-            scriptTable.langSysTables.put(langSysRecord.langSysTag, langSysRecord.langSysTable);
+            scriptTable.langSysTables.put(langSysRecord.getLangSysTag(),
+                    langSysRecord.getLangSysTable());
         }
         return scriptTable;
     }
@@ -151,17 +152,16 @@ public class GlyphSubstitutionTable extends TTFTable
     LangSysTable readLangSysTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
-        LangSysTable langSysTable = new LangSysTable();
         @SuppressWarnings({ "unused", "squid:S1854" })
         int lookupOrder = data.readUnsignedShort();
-        langSysTable.requiredFeatureIndex = data.readUnsignedShort();
+        int requiredFeatureIndex = data.readUnsignedShort();
         int featureIndexCount = data.readUnsignedShort();
-        langSysTable.featureIndices = new int[featureIndexCount];
+        int[] featureIndices = new int[featureIndexCount];
         for (int i = 0; i < featureIndexCount; i++)
         {
-            langSysTable.featureIndices[i] = data.readUnsignedShort();
+            featureIndices[i] = data.readUnsignedShort();
         }
-        return langSysTable;
+        return new LangSysTable(requiredFeatureIndex, featureIndices);
     }
 
     FeatureRecord[] readFeatureList(TTFDataStream data, long offset) throws IOException
@@ -502,12 +502,12 @@ public class GlyphSubstitutionTable extends TTFTable
         List<FeatureRecord> result = new ArrayList<>();
         for (LangSysTable langSysTable : langSysTables)
         {
-            int required = langSysTable.requiredFeatureIndex;
+            int required = langSysTable.getRequiredFeatureIndex();
             if (required != 0xffff) // if no required features = 0xFFFF
             {
                 result.add(featureList[required]);
             }
-            for (int featureIndex : langSysTable.featureIndices)
+            for (int featureIndex : langSysTable.getFeatureIndices())
             {
                 if (enabledFeatures == null
                         || enabledFeatures.contains(featureList[featureIndex].getFeatureTag()))

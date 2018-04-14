@@ -17,11 +17,31 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class LangSysRecord
+/**
+ * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/languagetags">Language
+ * system tags</a> in the Open Type Font specs.
+ *
+ */
+public class LangSysRecord
 {
-    // https://www.microsoft.com/typography/otspec/languagetags.htm
-    String langSysTag;
-    LangSysTable langSysTable;
+    private final String langSysTag;
+    private final LangSysTable langSysTable;
+
+    public LangSysRecord(String langSysTag, LangSysTable langSysTable)
+    {
+        this.langSysTag = langSysTag;
+        this.langSysTable = langSysTable;
+    }
+
+    public String getLangSysTag()
+    {
+        return langSysTag;
+    }
+
+    public LangSysTable getLangSysTable()
+    {
+        return langSysTable;
+    }
 
     @Override
     public String toString()

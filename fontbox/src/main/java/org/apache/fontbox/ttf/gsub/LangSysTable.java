@@ -17,10 +17,31 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class LangSysTable
+/**
+ * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/languagetags">Language
+ * system tags</a> in the Open Type Font specs.
+ *
+ */
+public class LangSysTable
 {
-    int requiredFeatureIndex;
-    int[] featureIndices;
+    private final int requiredFeatureIndex;
+    private final int[] featureIndices;
+
+    public LangSysTable(int requiredFeatureIndex, int[] featureIndices)
+    {
+        this.requiredFeatureIndex = requiredFeatureIndex;
+        this.featureIndices = featureIndices;
+    }
+
+    public int getRequiredFeatureIndex()
+    {
+        return requiredFeatureIndex;
+    }
+
+    public int[] getFeatureIndices()
+    {
+        return featureIndices;
+    }
 
     @Override
     public String toString()
