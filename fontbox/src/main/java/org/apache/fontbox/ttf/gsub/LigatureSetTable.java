@@ -26,10 +26,26 @@ package org.apache.fontbox.ttf.gsub;
  * All ligatures beginning with the same glyph</a>.
  *
  */
-class LigatureSetTable
+public class LigatureSetTable
 {
-    int ligatureCount;
-    LigatureTable[] ligatureTables;
+    private final int ligatureCount;
+    private final LigatureTable[] ligatureTables;
+
+    public LigatureSetTable(int ligatureCount, LigatureTable[] ligatureTables)
+    {
+        this.ligatureCount = ligatureCount;
+        this.ligatureTables = ligatureTables;
+    }
+
+    public int getLigatureCount()
+    {
+        return ligatureCount;
+    }
+
+    public LigatureTable[] getLigatureTables()
+    {
+        return ligatureTables;
+    }
 
     @Override
     public String toString()

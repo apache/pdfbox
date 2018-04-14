@@ -181,7 +181,7 @@ public class GlyphSubstitutionDataExtractor
 
         for (LigatureSetTable ligatureSetTable : ligatureSubstitutionTable.ligatureSetTables)
         {
-            for (LigatureTable ligatureTable : ligatureSetTable.ligatureTables)
+            for (LigatureTable ligatureTable : ligatureSetTable.getLigatureTables())
             {
                 extractDataFromLigatureTable(glyphSubstitutionMap, ligatureTable);
             }

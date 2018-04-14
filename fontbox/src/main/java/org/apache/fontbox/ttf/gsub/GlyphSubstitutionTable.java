@@ -341,13 +341,11 @@ public class GlyphSubstitutionTable extends TTFTable
     {
         data.seek(ligatureSetTableLocation);
 
-        LigatureSetTable ligatureSetTable = new LigatureSetTable();
+        int ligatureCount = data.readUnsignedShort();
+        LOG.debug("ligatureCount=" + ligatureCount);
 
-        ligatureSetTable.ligatureCount = data.readUnsignedShort();
-        LOG.debug("ligatureCount=" + ligatureSetTable.ligatureCount);
-
-        int[] ligatureOffsets = new int[ligatureSetTable.ligatureCount];
-        ligatureSetTable.ligatureTables = new LigatureTable[ligatureSetTable.ligatureCount];
+        int[] ligatureOffsets = new int[ligatureCount];
+        LigatureTable[] ligatureTables = new LigatureTable[ligatureCount];
 
         for (int i = 0; i < ligatureOffsets.length; i++)
         {
@@ -357,11 +355,11 @@ public class GlyphSubstitutionTable extends TTFTable
         for (int i = 0; i < ligatureOffsets.length; i++)
         {
             int ligatureOffset = ligatureOffsets[i];
-            ligatureSetTable.ligatureTables[i] = readLigatureTable(data,
+            ligatureTables[i] = readLigatureTable(data,
                     ligatureSetTableLocation + ligatureOffset, coverageGlyphId);
         }
 
-        return ligatureSetTable;
+        return new LigatureSetTable(ligatureCount, ligatureTables);
     }
 
     private LigatureTable readLigatureTable(TTFDataStream data, long ligatureTableLocation,
