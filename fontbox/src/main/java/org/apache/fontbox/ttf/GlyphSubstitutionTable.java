@@ -72,14 +72,14 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private Map<Integer, List<Integer>> rawGSubData;
 
-    public GlyphSubstitutionTable(TrueTypeFont font)
+    GlyphSubstitutionTable(TrueTypeFont font)
     {
         super(font);
     }
 
     @Override
     @SuppressWarnings({ "squid:S1854" })
-    protected void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         long start = data.getCurrentPosition();
         @SuppressWarnings({ "unused" })
