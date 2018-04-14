@@ -17,11 +17,31 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-class ScriptRecord
+/**
+ * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/scripttags">Script tags</a>
+ * in the Open Type Font specs.
+ *
+ */
+public class ScriptRecord
 {
-    // https://www.microsoft.com/typography/otspec/scripttags.htm
-    String scriptTag;
-    ScriptTable scriptTable;
+    private final String scriptTag;
+    private final ScriptTable scriptTable;
+
+    public ScriptRecord(String scriptTag, ScriptTable scriptTable)
+    {
+        this.scriptTag = scriptTag;
+        this.scriptTable = scriptTable;
+    }
+
+    public String getScriptTag()
+    {
+        return scriptTag;
+    }
+
+    public ScriptTable getScriptTable()
+    {
+        return scriptTable;
+    }
 
     @Override
     public String toString()

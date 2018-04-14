@@ -17,12 +17,33 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-import java.util.LinkedHashMap;
+import java.util.Map;
 
-class ScriptTable
+/**
+ * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/scripttags">Script tags</a>
+ * in the Open Type Font specs.
+ *
+ */
+public class ScriptTable
 {
-    LangSysTable defaultLangSysTable;
-    LinkedHashMap<String, LangSysTable> langSysTables;
+    private final LangSysTable defaultLangSysTable;
+    private final Map<String, LangSysTable> langSysTables;
+
+    public ScriptTable(LangSysTable defaultLangSysTable, Map<String, LangSysTable> langSysTables)
+    {
+        this.defaultLangSysTable = defaultLangSysTable;
+        this.langSysTables = langSysTables;
+    }
+
+    public LangSysTable getDefaultLangSysTable()
+    {
+        return defaultLangSysTable;
+    }
+
+    public Map<String, LangSysTable> getLangSysTables()
+    {
+        return langSysTables;
+    }
 
     @Override
     public String toString()
