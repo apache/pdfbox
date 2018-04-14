@@ -803,7 +803,10 @@ public final class PDAcroForm implements COSObjectable
         // TODO: if there is a widget with a missing page reference 
         // we'd need to build the map reverse i.e. form the annotations to the 
         // widget. But this will be much slower so will be omitted for now.
-        LOG.warn("There has been a widget with a missing page reference. Please report to the PDFBox project");
+        if (hasMissingPageRef)
+        {
+            LOG.warn("There has been a widget with a missing page reference. Please report to the PDFBox project");
+        }
         
         return pagesAnnotationsMap;
     }
