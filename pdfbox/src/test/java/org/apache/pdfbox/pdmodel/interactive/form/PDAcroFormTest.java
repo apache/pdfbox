@@ -150,8 +150,7 @@ public class PDAcroFormTest
         File file = new File(OUT_DIR, "AlignmentTests-flattened-specificFields.pdf");
         
         List<PDField> fieldsToFlatten = new ArrayList<>();
-        
-        
+                
         try (PDDocument testPdf = PDDocument.load(new File(IN_DIR, "AlignmentTests.pdf")))
         {
             PDAcroForm acroFormToFlatten = testPdf.getDocumentCatalog().getAcroForm();
@@ -172,14 +171,6 @@ public class PDAcroFormTest
             
             testPdf.save(file);
         }
-        // compare rendering
-        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
-        if (!testPDFToImage.doTestFile(file, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
-        {
-            // don't fail, rendering is different on different systems, result must be viewed manually
-            System.out.println("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
-        }
-        
     }    
     
     /*

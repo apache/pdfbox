@@ -250,6 +250,11 @@ public final class PDAcroForm implements COSObjectable
      */
     public void flatten(List<PDField> fields, boolean refreshAppearances) throws IOException
     {
+        // Nothing to flatten if there are no fields provided
+        if (fields.isEmpty()) {
+            return;
+        }
+        
         // for dynamic XFA forms there is no flatten as this would mean to do a rendering
         // from the XFA content into a static PDF.
         if (xfaIsDynamic())
@@ -282,7 +287,7 @@ public final class PDAcroForm implements COSObjectable
             List<PDAnnotation> annotations = new ArrayList<>();
                        
             for (PDAnnotation annotation: page.getAnnotations())
-            {   
+            {                
                 if (widgetsForPageMap != null && widgetsForPageMap.get(annotation.getCOSObject()) == null)
                 {
                     annotations.add(annotation);                 
@@ -803,7 +808,10 @@ public final class PDAcroForm implements COSObjectable
         // TODO: if there is a widget with a missing page reference 
         // we'd need to build the map reverse i.e. form the annotations to the 
         // widget. But this will be much slower so will be omitted for now.
-        LOG.warn("There has been a widget with a missing page reference. Please report to the PDFBox project");
+        if (hasMissingPageRef)
+        {
+            LOG.warn("There has been a widget with a missing page reference. Please report to the PDFBox project");
+        }
         
         return pagesAnnotationsMap;
     }
