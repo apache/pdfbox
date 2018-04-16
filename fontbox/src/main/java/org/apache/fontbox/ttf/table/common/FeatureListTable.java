@@ -19,41 +19,36 @@ package org.apache.fontbox.ttf.table.common;
 
 /**
  * This class models the
- * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#feature-table">Feature table</a> in the
- * Open Type layout common tables.
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#feature-list-table">Feature List
+ * table</a> in the Open Type layout common tables.
  *
  */
-public class FeatureTable
+public class FeatureListTable
 {
-    private final int featureParams;
-    private final int lookupIndexCount;
-    private final int[] lookupListIndices;
+    private final int featureCount;
+    private final FeatureRecord[] featureRecords;
 
-    public FeatureTable(int featureParams, int lookupIndexCount, int[] lookupListIndices)
+    public FeatureListTable(int featureCount, FeatureRecord[] featureRecords)
     {
-        this.featureParams = featureParams;
-        this.lookupIndexCount = lookupIndexCount;
-        this.lookupListIndices = lookupListIndices;
+        this.featureCount = featureCount;
+        this.featureRecords = featureRecords;
     }
 
-    public int getFeatureParams()
+    public int getFeatureCount()
     {
-        return featureParams;
+        return featureCount;
     }
 
-    public int getLookupIndexCount()
+    public FeatureRecord[] getFeatureRecords()
     {
-        return lookupIndexCount;
+        return featureRecords;
     }
 
-    public int[] getLookupListIndices()
-    {
-        return lookupListIndices;
-    }
 
     @Override
     public String toString()
     {
-        return String.format("FeatureTable[lookupListIndiciesCount=%d]", lookupListIndices.length);
+        return String.format("%s[featureCount=%d]", FeatureListTable.class.getSimpleName(),
+                featureCount);
     }
 }
