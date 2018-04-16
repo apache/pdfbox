@@ -104,7 +104,7 @@ public class GlyphSubstitutionTable extends TTFTable
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
 
         rawGSubData = glyphSubstitutionDataExtractor
-                .extractRawGSubTableData(lookupListTable.getLookups());
+                .extractRawGSubTableData(lookupListTable);
         LOG.debug("rawGSubData: " + rawGSubData);
     }
 

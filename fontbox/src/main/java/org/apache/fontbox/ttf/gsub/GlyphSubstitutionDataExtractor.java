@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
+import org.apache.fontbox.ttf.table.common.LookupListTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
 import org.apache.fontbox.ttf.table.common.LookupTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
@@ -63,8 +64,10 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    public Map<Integer, List<Integer>> extractRawGSubTableData(LookupTable[] lookupTables)
+    public Map<Integer, List<Integer>> extractRawGSubTableData(LookupListTable lookupListTable)
     {
+
+        LookupTable[] lookupTables = lookupListTable.getLookups();
 
         Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
 
