@@ -39,6 +39,7 @@ import org.apache.fontbox.ttf.table.common.FeatureRecord;
 import org.apache.fontbox.ttf.table.common.FeatureTable;
 import org.apache.fontbox.ttf.table.common.LangSysRecord;
 import org.apache.fontbox.ttf.table.common.LangSysTable;
+import org.apache.fontbox.ttf.table.common.LookupListTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
 import org.apache.fontbox.ttf.table.common.LookupTable;
 import org.apache.fontbox.ttf.table.common.RangeRecord;
@@ -64,7 +65,7 @@ public class GlyphSubstitutionTable extends TTFTable
     private Map<String, ScriptTable> scriptList;
     // featureList and lookupList are not maps because we need to index into them
     private FeatureListTable featureListTable;
-    private LookupTable[] lookupList;
+    private LookupListTable lookupListTable;
 
     private final Map<Integer, Integer> lookupCache = new HashMap<>();
     private final Map<Integer, Integer> reverseLookup = new HashMap<>();
@@ -98,11 +99,12 @@ public class GlyphSubstitutionTable extends TTFTable
 
         scriptList = readScriptList(data, start + scriptListOffset);
         featureListTable = readFeatureList(data, start + featureListOffset);
-        lookupList = readLookupList(data, start + lookupListOffset);
+        lookupListTable = readLookupList(data, start + lookupListOffset);
 
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
 
-        rawGSubData = glyphSubstitutionDataExtractor.extractRawGSubTableData(lookupList);
+        rawGSubData = glyphSubstitutionDataExtractor
+                .extractRawGSubTableData(lookupListTable.getLookups());
         LOG.debug("rawGSubData: " + rawGSubData);
     }
 
@@ -214,7 +216,7 @@ public class GlyphSubstitutionTable extends TTFTable
         return new FeatureTable(featureParams, lookupIndexCount, lookupListIndices);
     }
 
-    private LookupTable[] readLookupList(TTFDataStream data, long offset) throws IOException
+    private LookupListTable readLookupList(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
         int lookupCount = data.readUnsignedShort();
@@ -228,7 +230,7 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             lookupTables[i] = readLookupTable(data, offset + lookups[i]);
         }
-        return lookupTables;
+        return new LookupListTable(lookupCount, lookupTables);
     }
 
     private LookupTable readLookupTable(TTFDataStream data, long offset) throws IOException
@@ -581,7 +583,7 @@ public class GlyphSubstitutionTable extends TTFTable
         int lookupResult = gid;
         for (int lookupListIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
-            LookupTable lookupTable = lookupList[lookupListIndex];
+            LookupTable lookupTable = lookupListTable.getLookups()[lookupListIndex];
             if (lookupTable.getLookupType() != 1)
             {
                 LOG.debug("Skipping GSUB feature '" + featureRecord.getFeatureTag()
