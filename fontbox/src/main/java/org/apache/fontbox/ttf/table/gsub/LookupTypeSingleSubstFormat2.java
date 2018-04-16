@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.gsub;
 
 import java.util.Arrays;
+
+import org.apache.fontbox.ttf.table.common.CoverageTable;
+import org.apache.fontbox.ttf.table.common.LookupSubTable;
 
 public class LookupTypeSingleSubstFormat2 extends LookupSubTable
 {

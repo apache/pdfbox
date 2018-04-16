@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.common;
 
 /**
  * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/scripttags">Script tags</a>

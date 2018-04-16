@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.gsub;
 
 /**
  * This class is a part of the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/gsub">GSUB — Glyph

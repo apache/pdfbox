@@ -15,40 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.gsub;
 
-import java.util.Map;
+import org.apache.fontbox.ttf.table.common.CoverageTable;
+import org.apache.fontbox.ttf.table.common.LookupSubTable;
 
-/**
- * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/scripttags">Script tags</a>
- * in the Open Type Font specs.
- *
- */
-public class ScriptTable
+public class LookupTypeSingleSubstFormat1 extends LookupSubTable
 {
-    private final LangSysTable defaultLangSysTable;
-    private final Map<String, LangSysTable> langSysTables;
+    private final short deltaGlyphID;
 
-    public ScriptTable(LangSysTable defaultLangSysTable, Map<String, LangSysTable> langSysTables)
+    public LookupTypeSingleSubstFormat1(int substFormat, CoverageTable coverageTable,
+            short deltaGlyphID)
     {
-        this.defaultLangSysTable = defaultLangSysTable;
-        this.langSysTables = langSysTables;
+        super(substFormat, coverageTable);
+        this.deltaGlyphID = deltaGlyphID;
     }
 
-    public LangSysTable getDefaultLangSysTable()
+    @Override
+    public int doSubstitution(int gid, int coverageIndex)
     {
-        return defaultLangSysTable;
+        return coverageIndex < 0 ? gid : gid + deltaGlyphID;
     }
 
-    public Map<String, LangSysTable> getLangSysTables()
+    public short getDeltaGlyphID()
     {
-        return langSysTables;
+        return deltaGlyphID;
     }
 
     @Override
     public String toString()
     {
-        return String.format("ScriptTable[hasDefault=%s,langSysRecordsCount=%d]",
-                defaultLangSysTable != null, langSysTables.size());
+        return String.format("LookupTypeSingleSubstFormat1[substFormat=%d,deltaGlyphID=%d]",
+                getSubstFormat(), deltaGlyphID);
     }
 }

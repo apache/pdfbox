@@ -30,24 +30,24 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.ttf.gsub.CoverageTable;
-import org.apache.fontbox.ttf.gsub.CoverageTableFormat1;
-import org.apache.fontbox.ttf.gsub.CoverageTableFormat2;
-import org.apache.fontbox.ttf.gsub.FeatureRecord;
-import org.apache.fontbox.ttf.gsub.FeatureTable;
 import org.apache.fontbox.ttf.gsub.GlyphSubstitutionDataExtractor;
-import org.apache.fontbox.ttf.gsub.LangSysRecord;
-import org.apache.fontbox.ttf.gsub.LangSysTable;
-import org.apache.fontbox.ttf.gsub.LigatureSetTable;
-import org.apache.fontbox.ttf.gsub.LigatureTable;
-import org.apache.fontbox.ttf.gsub.LookupSubTable;
-import org.apache.fontbox.ttf.gsub.LookupTable;
-import org.apache.fontbox.ttf.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
-import org.apache.fontbox.ttf.gsub.LookupTypeSingleSubstFormat1;
-import org.apache.fontbox.ttf.gsub.LookupTypeSingleSubstFormat2;
-import org.apache.fontbox.ttf.gsub.RangeRecord;
-import org.apache.fontbox.ttf.gsub.ScriptRecord;
-import org.apache.fontbox.ttf.gsub.ScriptTable;
+import org.apache.fontbox.ttf.table.common.CoverageTable;
+import org.apache.fontbox.ttf.table.common.CoverageTableFormat1;
+import org.apache.fontbox.ttf.table.common.CoverageTableFormat2;
+import org.apache.fontbox.ttf.table.common.FeatureRecord;
+import org.apache.fontbox.ttf.table.common.FeatureTable;
+import org.apache.fontbox.ttf.table.common.LangSysRecord;
+import org.apache.fontbox.ttf.table.common.LangSysTable;
+import org.apache.fontbox.ttf.table.common.LookupSubTable;
+import org.apache.fontbox.ttf.table.common.LookupTable;
+import org.apache.fontbox.ttf.table.common.RangeRecord;
+import org.apache.fontbox.ttf.table.common.ScriptRecord;
+import org.apache.fontbox.ttf.table.common.ScriptTable;
+import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
+import org.apache.fontbox.ttf.table.gsub.LigatureTable;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat2;
 
 /**
  * A glyph substitution 'GSUB' table in a TrueType or OpenType font.

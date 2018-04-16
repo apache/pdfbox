@@ -27,6 +27,14 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.table.common.CoverageTable;
+import org.apache.fontbox.ttf.table.common.LookupSubTable;
+import org.apache.fontbox.ttf.table.common.LookupTable;
+import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
+import org.apache.fontbox.ttf.table.gsub.LigatureTable;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
+import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat2;
 
 /**
  * This class has utility methods to extract meaningful data from the highly obfuscated GSUB Tables. This data is then

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.common;
 
 import java.util.ArrayList;
 import java.util.List;

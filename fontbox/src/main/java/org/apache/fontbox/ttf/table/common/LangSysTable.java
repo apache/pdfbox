@@ -15,31 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.common;
 
 /**
- * This class models the
- * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#feature-table">Feature table</a> in the
- * Open Type layout common tables.
+ * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/languagetags">Language
+ * system tags</a> in the Open Type Font specs.
  *
  */
-public class FeatureTable
+public class LangSysTable
 {
-    private final int[] lookupListIndices;
+    private final int requiredFeatureIndex;
+    private final int[] featureIndices;
 
-    public FeatureTable(int[] lookupListIndices)
+    public LangSysTable(int requiredFeatureIndex, int[] featureIndices)
     {
-        this.lookupListIndices = lookupListIndices;
+        this.requiredFeatureIndex = requiredFeatureIndex;
+        this.featureIndices = featureIndices;
     }
 
-    public int[] getLookupListIndices()
+    public int getRequiredFeatureIndex()
     {
-        return lookupListIndices;
+        return requiredFeatureIndex;
+    }
+
+    public int[] getFeatureIndices()
+    {
+        return featureIndices;
     }
 
     @Override
     public String toString()
     {
-        return String.format("FeatureTable[lookupListIndiciesCount=%d]", lookupListIndices.length);
+        return String.format("LangSysTable[requiredFeatureIndex=%d]", requiredFeatureIndex);
     }
 }

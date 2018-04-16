@@ -15,38 +15,40 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.common;
+
+import java.util.Map;
 
 /**
- * This class models the
- * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#features-and-lookups">Features and
- * lookups</a> in the Open Type layout common tables.
+ * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/scripttags">Script tags</a>
+ * in the Open Type Font specs.
  *
  */
-public class FeatureRecord
+public class ScriptTable
 {
-    private final String featureTag;
-    private final FeatureTable featureTable;
+    private final LangSysTable defaultLangSysTable;
+    private final Map<String, LangSysTable> langSysTables;
 
-    public FeatureRecord(String featureTag, FeatureTable featureTable)
+    public ScriptTable(LangSysTable defaultLangSysTable, Map<String, LangSysTable> langSysTables)
     {
-        this.featureTag = featureTag;
-        this.featureTable = featureTable;
+        this.defaultLangSysTable = defaultLangSysTable;
+        this.langSysTables = langSysTables;
     }
 
-    public String getFeatureTag()
+    public LangSysTable getDefaultLangSysTable()
     {
-        return featureTag;
+        return defaultLangSysTable;
     }
 
-    public FeatureTable getFeatureTable()
+    public Map<String, LangSysTable> getLangSysTables()
     {
-        return featureTable;
+        return langSysTables;
     }
 
     @Override
     public String toString()
     {
-        return String.format("FeatureRecord[featureTag=%s]", featureTag);
+        return String.format("ScriptTable[hasDefault=%s,langSysRecordsCount=%d]",
+                defaultLangSysTable != null, langSysTables.size());
     }
 }

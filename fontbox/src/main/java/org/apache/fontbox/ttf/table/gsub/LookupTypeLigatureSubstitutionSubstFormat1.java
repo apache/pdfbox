@@ -15,42 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.gsub;
+
+import org.apache.fontbox.ttf.table.common.CoverageTable;
+import org.apache.fontbox.ttf.table.common.LookupSubTable;
 
 /**
  * This class is a part of the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/gsub">GSUB — Glyph
  * Substitution Table</a> system of tables in the Open Type Font specs. This is a part of the <a href=
  * "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-4-ligature-substitution-subtable">LookupType
- * 4: Ligature Substitution Subtable</a>. It specifically models the <a href=
- * "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#41-ligature-substitution-format-1">LigatureSet table:
- * All ligatures beginning with the same glyph</a>.
+ * 4: Ligature Substitution Subtable</a>. It specifically models the
+ * <a href= "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#41-ligature-substitution-format-1">Ligature
+ * Substitution Format 1</a>.
  *
  */
-public class LigatureSetTable
+public class LookupTypeLigatureSubstitutionSubstFormat1 extends LookupSubTable
 {
-    private final int ligatureCount;
-    private final LigatureTable[] ligatureTables;
+    private final LigatureSetTable[] ligatureSetTables;
 
-    public LigatureSetTable(int ligatureCount, LigatureTable[] ligatureTables)
+    public LookupTypeLigatureSubstitutionSubstFormat1(int substFormat, CoverageTable coverageTable,
+            LigatureSetTable[] ligatureSetTables)
     {
-        this.ligatureCount = ligatureCount;
-        this.ligatureTables = ligatureTables;
+        super(substFormat, coverageTable);
+        this.ligatureSetTables = ligatureSetTables;
     }
 
-    public int getLigatureCount()
+    @Override
+    public int doSubstitution(int gid, int coverageIndex)
     {
-        return ligatureCount;
+        throw new UnsupportedOperationException();
     }
 
-    public LigatureTable[] getLigatureTables()
+    public LigatureSetTable[] getLigatureSetTables()
     {
-        return ligatureTables;
+        return ligatureSetTables;
     }
 
     @Override
     public String toString()
     {
-        return String.format("%s[ligatureCount=%d]", LigatureSetTable.class.getSimpleName(),
-                ligatureCount);
+        return String.format("%s[substFormat=%d]",
+                LookupTypeLigatureSubstitutionSubstFormat1.class.getSimpleName(), getSubstFormat());
     }
 }

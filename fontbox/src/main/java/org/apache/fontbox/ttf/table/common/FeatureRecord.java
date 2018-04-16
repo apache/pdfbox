@@ -15,34 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.table.common;
 
-public class LookupTypeSingleSubstFormat1 extends LookupSubTable
+/**
+ * This class models the
+ * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#features-and-lookups">Features and
+ * lookups</a> in the Open Type layout common tables.
+ *
+ */
+public class FeatureRecord
 {
-    private final short deltaGlyphID;
+    private final String featureTag;
+    private final FeatureTable featureTable;
 
-    public LookupTypeSingleSubstFormat1(int substFormat, CoverageTable coverageTable,
-            short deltaGlyphID)
+    public FeatureRecord(String featureTag, FeatureTable featureTable)
     {
-        super(substFormat, coverageTable);
-        this.deltaGlyphID = deltaGlyphID;
+        this.featureTag = featureTag;
+        this.featureTable = featureTable;
     }
 
-    @Override
-    public int doSubstitution(int gid, int coverageIndex)
+    public String getFeatureTag()
     {
-        return coverageIndex < 0 ? gid : gid + deltaGlyphID;
+        return featureTag;
     }
 
-    public short getDeltaGlyphID()
+    public FeatureTable getFeatureTable()
     {
-        return deltaGlyphID;
+        return featureTable;
     }
 
     @Override
     public String toString()
     {
-        return String.format("LookupTypeSingleSubstFormat1[substFormat=%d,deltaGlyphID=%d]",
-                getSubstFormat(), deltaGlyphID);
+        return String.format("FeatureRecord[featureTag=%s]", featureTag);
     }
 }
