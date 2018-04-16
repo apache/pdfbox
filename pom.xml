@@ -114,19 +114,13 @@
                         <include name="preflight-app/target/*-${project.version}.jar*" />
                       </fileset>
                     </copy>
-                    <checksum algorithm="MD5" fileext=".md5">
+                    <checksum algorithm="SHA-512" fileext=".sha512">
                       <fileset dir="${basedir}/target/${project.version}">
                         <include name="*.zip" />
                         <include name="*.jar" />
                       </fileset>
                     </checksum>
-                    <checksum algorithm="SHA1" fileext=".sha">
-                      <fileset dir="${basedir}/target/${project.version}">
-                        <include name="*.zip" />
-                        <include name="*.jar" />
-                      </fileset>
-                    </checksum>
-                    <checksum file="${basedir}/target/${project.version}/pdfbox-${project.version}-src.zip" algorithm="SHA1" property="checksum" />
+                    <checksum file="${basedir}/target/${project.version}/pdfbox-${project.version}-src.zip" algorithm="SHA-512" property="checksum" />
                     <echo file="${basedir}/target/vote.txt">
 From: ${username}@apache.org
 To: dev@pdfbox.apache.org
@@ -140,7 +134,7 @@ The release candidate is a zip archive of the sources in:
 
     http://svn.apache.org/repos/asf/pdfbox/tags/${project.version}/
 
-The SHA1 checksum of the archive is ${checksum}.
+The SHA-512 checksum of the archive is ${checksum}.
 
 Please vote on releasing this package as Apache PDFBox ${project.version}.
 The vote is open for the next 72 hours and passes if a majority of at
@@ -154,6 +148,10 @@ least three +1 PDFBox PMC votes are cast.
 The release candidate has been prepared in:
 
     ${basedir}/target/${project.version}
+
+Please commit it to
+
+    https://dist.apache.org/repos/dist/dev/pdfbox/${project.version}/
 
 A release vote template has been generated for you:
 
