@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.13
+Release Notes -- Apache PDFBox -- Version 1.8.14
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.12 release. It 
+This is an incremental bugfix release based on the earlier 1.8.13 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,50 +13,34 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-2420] - DateConverter doesn't handle time zones outside -12 to +12 range properly
-[PDFBOX-2919] - org.apache.fontbox.cff.CFFParser.readEntry sometimes throws java.lang.IllegalArgumentException
-[PDFBOX-3315] - Dates falsely detected as different by preflight
-[PDFBOX-3335] - Issue while Merging PDF with Hidden Layers
-[PDFBOX-3341] - currentAccessPermission.setReadOnly() not set in StandardSecurityHandler
-[PDFBOX-3355] - PDPageLabels.getLabelsByPageIndices() returns Uppercase letters for style a
-[PDFBOX-3368] - ContainsKey don't work for the Map<String, Object> returned by PDStructureTreeRoot.getRoleMap
-[PDFBOX-3369] - Error expected floating point number actual='0.00-35095424'
-[PDFBOX-3409] - TextToPDF drops leading spaces
-[PDFBOX-3420] - Can't sign pdf with a particular attachment
-[PDFBOX-3446] - Infinite loop while parsing
-[PDFBOX-3448] - NullPointerException at org.apache.pdfbox.pdmodel.common.COSArrayList.convertFloatCOSArrayToList
-[PDFBOX-3450] - ArrayIndexOutOfBoundsException at org.apache.fontbox.cmap.CMapParser.increment
-[PDFBOX-3463] - XMPSchemaBasic.getLabel() always returns null
-[PDFBOX-3466] - Java 9 warnings
-[PDFBOX-3472] - NPE when PDF/A identification metadata does not contain ID
-[PDFBOX-3477] - CA and ca values should be clipped
-[PDFBOX-3481] - Localization in XRef generation results in unusable PDFs
-[PDFBOX-3487] - ClassCastException in COSWriter.write() when saving PDF
-[PDFBOX-3491] - NumberFormatException in CFFParser.readRealNumber
-[PDFBOX-3500] - Error expected floating point number actual='0.-262'
-[PDFBOX-3532] - Java 6 errors
-[PDFBOX-3546] - IOException over DataFormatException, "invalid stored block lengths" on a valid PDF
-[PDFBOX-3551] - CLI Decrypt broken, only allows 1 argument
-[PDFBOX-3555] - FlateFilter.decode cause native memory leaks
-[PDFBOX-3558] - NPE in JBig2Filter if BitsPerComponent is missing
-[PDFBOX-3570] - JDK-8054565 Java 8 close contract issue
-[PDFBOX-3571] - sRGB Color Space Profile is subject to 3rd party copyright
-[PDFBOX-3578] - java.lang.IllegalArgumentException: dash lengths all zero
-[PDFBOX-3590] - AccessPermission not applied
-[PDFBOX-3594] - Use PDOutlineItem#findDestinationPage() cannot get PDPage, return was null
-[PDFBOX-3609] - ClassCastException in PDCIDFont.readWidths()
+[PDFBOX-3625] - Use correct file encoding when saving fdf data
+[PDFBOX-3724] - Wrong size in rendering of some artifacts
+[PDFBOX-3733] - image added to pdf by tool AddImageToPDF is turn-overed
+[PDFBOX-3739] - ImageWriterIterator.next() and ImageReaderIterator.next() can return null
+[PDFBOX-3742] - Unknown dir object c='>' cInt=62 peek='>' peekInt=62
+[PDFBOX-3813] - PDF Box crash when using PDFToImage or PDFDebug
+[PDFBOX-3843] - Rect of Annotation contains indirect elements + Patch
+[PDFBOX-3889] - javax.crypto.BadPaddingException: Given final block not properly padded
+[PDFBOX-3909] - End of inline image not detected
+[PDFBOX-3919] - Infinite loop while parsing (2)
+[PDFBOX-3933] - PDFParser swallows a CR at the end of a stream
+[PDFBOX-3942] - ClassCastException in getOptionalContentGroups
+[PDFBOX-4005] - Incorrect use of PDNumberTreeNode in PDPageLabels
+[PDFBOX-4011] - BBox in signature forms has wrong order
+[PDFBOX-4027] - IndexOutOfBoundsException when XObject form matrix has only 5 elements
+[PDFBOX-4030] - ClassCastException when matrix array has indirect objects
+[PDFBOX-4064] - cm operator has 7 numbers
+[PDFBOX-4083] - Line annotation /LL, /LLE and /LLO have wrong default values
+[PDFBOX-4088] - Root/StructTreeRoot/K/S must be name, not string (merge)
 
 Improvement
 
-[PDFBOX-3352] - Calendar values are parsed with unknown timezones
-
-New Feature
-
-[PDFBOX-3410] - TextToPDF needs orientation control
+[PDFBOX-3635] - Remove workaround to avoid SSLHandshakeException
 
 Task
 
-[PDFBOX-3577] - remove mygrid repository in 1.8
+[PDFBOX-3865] - Add OWASP dependency-check to build
+[PDFBOX-4055] - Output info when PDFBox JBIG2 ImageIO is released
 
 Release Contents
 ----------------
