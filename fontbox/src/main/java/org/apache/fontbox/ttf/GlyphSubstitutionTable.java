@@ -171,7 +171,6 @@ public class GlyphSubstitutionTable extends TTFTable
     private LangSysTable readLangSysTable(TTFDataStream data, long offset) throws IOException
     {
         data.seek(offset);
-        @SuppressWarnings({ "unused", "squid:S1854" })
         int lookupOrder = data.readUnsignedShort();
         int requiredFeatureIndex = data.readUnsignedShort();
         int featureIndexCount = data.readUnsignedShort();
@@ -180,7 +179,8 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             featureIndices[i] = data.readUnsignedShort();
         }
-        return new LangSysTable(requiredFeatureIndex, featureIndices);
+        return new LangSysTable(lookupOrder, requiredFeatureIndex, featureIndexCount,
+                featureIndices);
     }
 
     private FeatureListTable readFeatureList(TTFDataStream data, long offset) throws IOException
