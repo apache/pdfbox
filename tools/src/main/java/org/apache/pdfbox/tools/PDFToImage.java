@@ -52,6 +52,7 @@ public final class PDFToImage
     private static final String QUALITY = "-quality";
     private static final String CROPBOX = "-cropbox";
     private static final String TIME = "-time";
+    private static final String SUBSAMPLING = "-subsampling";
 
     /**
      * private constructor.
@@ -98,6 +99,7 @@ public final class PDFToImage
         float cropBoxUpperRightX = 0;
         float cropBoxUpperRightY = 0;
         boolean showTime = false;
+        boolean subsampling = false;
         try
         {
             dpi = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -185,6 +187,10 @@ public final class PDFToImage
             {
                 showTime = true;
             }
+            else if( args[i].equals( SUBSAMPLING ) )
+            {
+                subsampling = true;
+            }
             else
             {
                 if( pdfFile == null )
@@ -249,6 +255,7 @@ public final class PDFToImage
                 boolean success = true;
                 endPage = Math.min(endPage, document.getNumberOfPages());
                 PDFRenderer renderer = new PDFRenderer(document);
+                renderer.setSubsamplingAllowed(subsampling);
                 for (int i = startPage - 1; i < endPage; i++)
                 {
                     BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
@@ -301,6 +308,7 @@ public final class PDFToImage
             + "  -quality <float>                 : The quality to be used when compressing the image (0 < quality <= 1 (default))\n"
             + "  -cropbox <int> <int> <int> <int> : The page area to export\n"
             + "  -time                            : Prints timing information to stdout\n"
+            + "  -subsampling                     : Activate subsampling (for PDFs with huge images)\n"
             + "  <inputfile>                      : The PDF document to use\n";
         
         System.err.println(message);
