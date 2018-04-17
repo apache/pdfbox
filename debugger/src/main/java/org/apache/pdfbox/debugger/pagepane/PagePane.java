@@ -61,6 +61,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private RotationMenu rotationMenu;
     private final JLabel statuslabel;
     private final PDPage page;
+    private String labelText = "";
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -234,7 +235,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseExited(MouseEvent e)
     {
-        statuslabel.setText("");
+        statuslabel.setText(labelText);
     }
 
     /**
@@ -257,14 +258,16 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         protected BufferedImage doInBackground() throws IOException
         {
             label.setIcon(null);
-            label.setText("Rendering...");
+            labelText = "Rendering...";
+            label.setText(labelText);
             PDFRenderer renderer = new PDFRenderer(document);
             renderer.setSubsamplingAllowed(allowSubsampling);
             long t0 = System.currentTimeMillis();
-            statuslabel.setText("Rendering...");
+            statuslabel.setText(labelText);
             BufferedImage bim = renderer.renderImage(pageIndex, scale);
             float t = (System.currentTimeMillis() - t0) / 1000f;
-            statuslabel.setText("Rendered in " + t + " second" + (t > 1 ? "s" : ""));
+            labelText = "Rendered in " + t + " second" + (t > 1 ? "s" : "");
+            statuslabel.setText(labelText);
             return ImageUtil.getRotatedImage(bim, rotation);
         }
 
