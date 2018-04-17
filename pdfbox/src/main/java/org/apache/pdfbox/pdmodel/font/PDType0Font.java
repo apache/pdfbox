@@ -17,24 +17,19 @@
 package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
-import org.apache.fontbox.ttf.gsub.CompoundWordSorter;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -103,12 +98,10 @@ public class PDType0Font extends PDFont implements PDVectorFont
         if (vertical)
         {
             ttf.enableVerticalSubstitutions();
-            glyphSubstitutionMap = Collections.emptyMap();
         }
-        else
-        {
-            glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
-        }
+
+        glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
+
         embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this, vertical);
         descendantFont = embedder.getCIDFont();
         readEncoding();
@@ -592,46 +585,14 @@ public class PDType0Font extends PDFont implements PDVectorFont
         return descendantFont.hasGlyph(code);
     }
 
-    @Override
-    public byte[] encode(String text) throws IOException
+    public Map<String, Integer> getGlyphSubstitutionMap()
     {
-        if (glyphSubstitutionMap.isEmpty())
-        {
-            return super.encode(text);
-        }
-        else
-        {
-            return encodeForGsub(text);
-        }
+        return glyphSubstitutionMap;
     }
 
-    private byte[] encodeForGsub(String text) throws IOException
+    public byte[] encodeGlyphId(int glyphId)
     {
-        Set<String> uniqueCompoundWords = new TreeSet<>(new CompoundWordSorter());
-        uniqueCompoundWords.addAll(glyphSubstitutionMap.keySet());
-
-        LOG.debug("uniqueCompoundWords: " + uniqueCompoundWords);
-
-        List<String> tokens = new CompoundCharacterTokenizer(uniqueCompoundWords).tokenize(text);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        for (String chunk : tokens)
-        {
-            if (glyphSubstitutionMap.containsKey(chunk))
-            {
-                // gsub system kicks in, you get the glyphId directly
-                int glyphId = glyphSubstitutionMap.get(chunk);
-                out.write(descendantFont.encodeGlyphId(glyphId));
-            }
-            else
-            {
-                out.write(super.encode(chunk));
-            }
-        }
-
-
-        return out.toByteArray();
+        return descendantFont.encodeGlyphId(glyphId);
     }
 
 }

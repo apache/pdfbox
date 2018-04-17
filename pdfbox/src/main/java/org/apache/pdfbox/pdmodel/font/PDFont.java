@@ -317,7 +317,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @return Array of PDF content stream bytes.
      * @throws IOException If the text could not be encoded.
      */
-    public byte[] encode(String text) throws IOException
+    public final byte[] encode(String text) throws IOException
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         for (int offset = 0; offset < text.length(); )

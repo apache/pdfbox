@@ -18,13 +18,20 @@ package org.apache.pdfbox.pdmodel;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
+import org.apache.fontbox.ttf.gsub.CompoundWordSorter;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -33,12 +40,14 @@ import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -311,6 +320,23 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         }
 
         PDFont font = fontStack.peek();
+        
+        byte[] encodedText = null;
+
+        if(font instanceof PDType0Font) {
+            Map<String, Integer> glyphSubstitutionMap = ((PDType0Font) font)
+                    .getGlyphSubstitutionMap();
+            if (!glyphSubstitutionMap.isEmpty())
+            {
+                encodedText = encodeForGsub(glyphSubstitutionMap, (PDType0Font) font, text);
+                // TODO: take care of sub-setting
+            }
+        }
+        
+        if (encodedText == null)
+        {
+            encodedText = font.encode(text);
+        }
 
         // Unicode code points to keep when subsetting
         if (font.willBeSubset())
@@ -323,7 +349,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
-        COSWriter.writeString(font.encode(text), getOutputStream());
+        COSWriter.writeString(encodedText, getOutputStream());
     }
 
     /**
@@ -1140,4 +1166,34 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         writeOperand(rise);
         writeOperator("Ts");
     }
+
+    private byte[] encodeForGsub(Map<String, Integer> glyphSubstitutionMap, PDType0Font font,
+            String text) throws IOException
+    {
+        Set<String> uniqueCompoundWords = new TreeSet<>(new CompoundWordSorter());
+        uniqueCompoundWords.addAll(glyphSubstitutionMap.keySet());
+
+        LOG.debug("uniqueCompoundWords: " + uniqueCompoundWords);
+
+        List<String> tokens = new CompoundCharacterTokenizer(uniqueCompoundWords).tokenize(text);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        for (String chunk : tokens)
+        {
+            if (glyphSubstitutionMap.containsKey(chunk))
+            {
+                // gsub system kicks in, you get the glyphId directly
+                int glyphId = glyphSubstitutionMap.get(chunk);
+                out.write(font.encodeGlyphId(glyphId));
+            }
+            else
+            {
+                out.write(font.encode(chunk));
+            }
+        }
+
+        return out.toByteArray();
+    }
+
 }
