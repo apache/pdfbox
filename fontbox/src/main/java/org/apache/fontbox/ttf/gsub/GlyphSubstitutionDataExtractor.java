@@ -28,9 +28,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
+import org.apache.fontbox.ttf.table.common.FeatureListTable;
+import org.apache.fontbox.ttf.table.common.FeatureRecord;
+import org.apache.fontbox.ttf.table.common.LangSysTable;
 import org.apache.fontbox.ttf.table.common.LookupListTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
 import org.apache.fontbox.ttf.table.common.LookupTable;
+import org.apache.fontbox.ttf.table.common.ScriptTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureSetTable;
 import org.apache.fontbox.ttf.table.gsub.LigatureTable;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeLigatureSubstitutionSubstFormat1;
@@ -46,9 +50,53 @@ public class GlyphSubstitutionDataExtractor
 
     private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
 
+    public Map<String, Map<Integer, List<Integer>>> getGsubData(ScriptTable scriptTable,
+            FeatureListTable featureListTable, LookupListTable lookupListTable)
+    {
+        Map<String, Map<Integer, List<Integer>>> gsubData = new HashMap<>();
+        // the starting point is really the scriptTags
+        if (scriptTable.getDefaultLangSysTable() != null)
+        {
+            populateGsubData(gsubData, scriptTable.getDefaultLangSysTable(), featureListTable,
+                    lookupListTable);
+        }
+        for (LangSysTable langSysTable : scriptTable.getLangSysTables().values())
+        {
+            populateGsubData(gsubData, langSysTable, featureListTable, lookupListTable);
+        }
+        return Collections.unmodifiableMap(gsubData);
+    }
+
+    private void populateGsubData(Map<String, Map<Integer, List<Integer>>> gsubData,
+            LangSysTable langSysTable, FeatureListTable featureListTable,
+            LookupListTable lookupListTable)
+    {
+        for (int featureIndex : langSysTable.getFeatureIndices())
+        {
+            FeatureRecord featureRecord = featureListTable.getFeatureRecords()[featureIndex];
+            populateGsubData(gsubData, featureRecord, lookupListTable);
+        }
+    }
+
+    private void populateGsubData(Map<String, Map<Integer, List<Integer>>> gsubData,
+            FeatureRecord featureRecord, LookupListTable lookupListTable)
+    {
+
+        LOG.debug("*********** extracting GSUB data for the feature: "
+                + featureRecord.getFeatureTag());
+
+        Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
+        for (int lookupIndex : featureRecord.getFeatureTable().getLookupListIndices())
+        {
+            LookupTable lookupTable = lookupListTable.getLookups()[lookupIndex];
+            extractData(glyphSubstitutionMap, lookupTable);
+        }
+        gsubData.put(featureRecord.getFeatureTag(),
+                Collections.unmodifiableMap(glyphSubstitutionMap));
+    }
+
     public Map<String, Integer> getStringToCompoundGlyph(
-            Map<Integer, List<Integer>> rawGSubTableData,
-            CmapLookup cmap)
+            Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap)
     {
         Map<String, Integer> substitutionData = new HashMap<>();
 
@@ -64,16 +112,19 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    public Map<Integer, List<Integer>> extractRawGSubTableData(LookupListTable lookupListTable)
+    @Deprecated
+    public Map<Integer, List<Integer>> extractRawGSubTableData(ScriptTable scriptTable,
+            FeatureListTable featureListTable, LookupListTable lookupListTable)
     {
-
-        LookupTable[] lookupTables = lookupListTable.getLookups();
 
         Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
 
-        for (LookupTable lookupTable : lookupTables)
+        Map<String, Map<Integer, List<Integer>>> dataByFeatures = getGsubData(scriptTable,
+                featureListTable, lookupListTable);
+
+        for (Map<Integer, List<Integer>> values : dataByFeatures.values())
         {
-            extractData(glyphSubstitutionMap, lookupTable);
+            glyphSubstitutionMap.putAll(values);
         }
 
         return Collections.unmodifiableMap(glyphSubstitutionMap);
@@ -119,7 +170,9 @@ public class GlyphSubstitutionDataExtractor
         StringBuilder sb = new StringBuilder();
         for (Integer glyphId : glyphIDs)
         {
-            sb.append(getUnicodeChar(rawGSubTableData, cmap, glyphId));
+            String unicodeText = getUnicodeChar(rawGSubTableData, cmap, glyphId);
+            LOG.debug("glyphId: " + glyphId + ", unicodeText: " + unicodeText);
+            sb.append(unicodeText);
         }
         return sb.toString();
     }
@@ -231,8 +284,8 @@ public class GlyphSubstitutionDataExtractor
 
         if (oldValue != null)
         {
-            LOG.debug("oldValue: " + oldValue + " will be overridden with newValue: "
-                    + glyphsToBeSubstituted);
+            LOG.debug("!!!!!!!!!!! for the newGlyph: " + newGlyph + " oldValue: " + oldValue
+                    + " will be overridden with newValue: " + glyphsToBeSubstituted);
         }
     }
 
