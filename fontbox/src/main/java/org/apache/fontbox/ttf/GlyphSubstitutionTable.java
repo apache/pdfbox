@@ -105,7 +105,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
         // hard-coding language
         rawGSubData = glyphSubstitutionDataExtractor
-                .extractRawGSubTableData(scriptList.get("beng"), featureListTable, lookupListTable);
+                .extractRawGSubTableData(scriptList, featureListTable, lookupListTable);
         LOG.debug("rawGSubData: " + rawGSubData);
     }
 

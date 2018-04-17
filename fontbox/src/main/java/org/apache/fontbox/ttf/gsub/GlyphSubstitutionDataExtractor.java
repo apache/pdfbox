@@ -50,9 +50,19 @@ public class GlyphSubstitutionDataExtractor
 
     private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
 
-    public Map<String, Map<Integer, List<Integer>>> getGsubData(ScriptTable scriptTable,
+    private static final String[] SUPPORTED_LANGUAGES = { "bng2", "beng" };
+
+    public Map<String, Map<Integer, List<Integer>>> getGsubData(Map<String, ScriptTable> scriptList,
             FeatureListTable featureListTable, LookupListTable lookupListTable)
     {
+
+        ScriptTable scriptTable = getSupportedLanguage(scriptList);
+
+        if (scriptTable == null)
+        {
+            return Collections.emptyMap();
+        }
+
         Map<String, Map<Integer, List<Integer>>> gsubData = new HashMap<>();
         // the starting point is really the scriptTags
         if (scriptTable.getDefaultLangSysTable() != null)
@@ -65,6 +75,18 @@ public class GlyphSubstitutionDataExtractor
             populateGsubData(gsubData, langSysTable, featureListTable, lookupListTable);
         }
         return Collections.unmodifiableMap(gsubData);
+    }
+
+    private ScriptTable getSupportedLanguage(Map<String, ScriptTable> scriptList)
+    {
+        for (String supportedLanguage : SUPPORTED_LANGUAGES)
+        {
+            if (scriptList.containsKey(supportedLanguage))
+            {
+                return scriptList.get(supportedLanguage);
+            }
+        }
+        return null;
     }
 
     private void populateGsubData(Map<String, Map<Integer, List<Integer>>> gsubData,
@@ -113,13 +135,13 @@ public class GlyphSubstitutionDataExtractor
     }
 
     @Deprecated
-    public Map<Integer, List<Integer>> extractRawGSubTableData(ScriptTable scriptTable,
+    public Map<Integer, List<Integer>> extractRawGSubTableData(Map<String, ScriptTable> scriptList,
             FeatureListTable featureListTable, LookupListTable lookupListTable)
     {
 
         Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
 
-        Map<String, Map<Integer, List<Integer>>> dataByFeatures = getGsubData(scriptTable,
+        Map<String, Map<Integer, List<Integer>>> dataByFeatures = getGsubData(scriptList,
                 featureListTable, lookupListTable);
 
         for (Map<Integer, List<Integer>> values : dataByFeatures.values())
