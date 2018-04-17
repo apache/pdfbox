@@ -106,11 +106,11 @@ import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
+import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
-import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -1204,6 +1204,7 @@ public class PDFDebugger extends JFrame
             PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
             PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
             IIORegistry.getDefaultInstance();
+            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
         }
 
         // open file, if any
