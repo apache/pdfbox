@@ -18,6 +18,7 @@ package org.apache.pdfbox.debugger;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Toolkit;
@@ -1128,7 +1129,15 @@ public class PDFDebugger extends JFrame
             }
             if (job.printDialog(pras))
             {
-                job.print(pras);
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                try
+                {
+                    job.print(pras);
+                }
+                finally
+                {
+                    setCursor(Cursor.getDefaultCursor());
+                }
             }
         }
         catch (PrinterException e)
