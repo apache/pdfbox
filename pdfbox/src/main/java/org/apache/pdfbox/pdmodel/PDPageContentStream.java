@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
+import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -1201,17 +1203,20 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             else
             {
-                applyGSUBRules(out, font, word);
+                applyGSUBRules(out, font, glyphSubstitutionMap, word);
             }
         }
 
         return out.toByteArray();
     }
 
-    private void applyGSUBRules(ByteArrayOutputStream out, PDType0Font font, String word)
+    private void applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
+            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap, String word)
             throws IOException
     {
-        // covert characters into glyphIds
+        List<Integer> originalGlyphIds = new ArrayList<>();
+
+        // convert characters into glyphIds
         for (char unicodeChar : word.toCharArray())
         {
             int glyphId = font.getCmapLookup().getGlyphId(unicodeChar);
@@ -1220,9 +1225,18 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                 throw new IllegalStateException(
                         "could not find the glyphId for the character: " + unicodeChar);
             }
-            LOG.debug("glyphId: " + glyphId);
+            originalGlyphIds.add(glyphId);
+        }
+
+        // TODO: figure out how to get this language-specific detail up here
+        List<Integer> glyphIdsAfterGsub = new GsubWorkerForBengali(glyphSubstitutionMap)
+                .substituteGlyphs(originalGlyphIds);
+
+        for (Integer glyphId : glyphIdsAfterGsub)
+        {
             out.write(font.encodeGlyphId(glyphId));
         }
+
     }
 
 }
