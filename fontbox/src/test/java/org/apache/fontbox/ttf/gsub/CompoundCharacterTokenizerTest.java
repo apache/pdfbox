@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CompoundCharacterTokenizerTest
@@ -99,6 +100,53 @@ public class CompoundCharacterTokenizerTest
         assertEquals(text, sb.toString());
         assertEquals(tokens,
                 Arrays.asList("67_112_96", "_103_93_108_93"));
+    }
+
+    @Test
+    public void testTokenize_happyPath_4()
+    {
+
+        // given
+        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+                new HashSet<>(Arrays.asList(new String[] { "67_112_96", "74_112_76" })));
+        String text = "94_67_112_96_112_91_103";
+
+        // when
+        List<String> tokens = tokenizer.tokenize(text);
+
+        // then
+        StringBuilder sb = new StringBuilder();
+        for (String token : tokens)
+        {
+            sb.append(token);
+        }
+
+        assertEquals(text, sb.toString());
+        assertEquals(tokens, Arrays.asList("94_", "67_112_96", "_112_91_103"));
+    }
+
+    @Ignore
+    @Test
+    public void testTokenize_happyPath_5()
+    {
+
+        // given
+        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
+                new HashSet<>(Arrays.asList(new String[] { "67_112", "76_112" })));
+        String text = "94_167_112_91_103";
+
+        // when
+        List<String> tokens = tokenizer.tokenize(text);
+
+        // then
+        StringBuilder sb = new StringBuilder();
+        for (String token : tokens)
+        {
+            sb.append(token);
+        }
+
+        assertEquals(text, sb.toString());
+        assertEquals(Arrays.asList("94_167_112_91_103"), tokens);
     }
 
     @Test

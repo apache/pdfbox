@@ -104,7 +104,8 @@ public class GsubWorkerForBengali implements GsubWorker
             }
         }
 
-        LOG.debug("gsubProcessedGlyphs: " + gsubProcessedGlyphs);
+        LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
+                + gsubProcessedGlyphs);
 
         return convertGlyphIdsToString(convertGlyphIdsToList(gsubProcessedGlyphs.toString()));
     }
