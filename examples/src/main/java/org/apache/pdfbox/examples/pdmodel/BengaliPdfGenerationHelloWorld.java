@@ -73,8 +73,7 @@ public class BengaliPdfGenerationHelloWorld
 
             PDFont font = PDType0Font.load(doc,
                     BengaliPdfGenerationHelloWorld.class.getResourceAsStream(
-                            "/org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf"),
-                    false);
+                            "/org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf"));
 
             PDPageContentStream contents = new PDPageContentStream(doc, page);
             contents.beginText();

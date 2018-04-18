@@ -20,13 +20,12 @@ package org.apache.fontbox.ttf.gsub;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
 import org.apache.fontbox.ttf.table.common.FeatureListTable;
 import org.apache.fontbox.ttf.table.common.FeatureRecord;
@@ -52,7 +51,7 @@ public class GlyphSubstitutionDataExtractor
 
     private static final String[] SUPPORTED_LANGUAGES = { "bng2", "beng" };
 
-    public Map<String, Map<Integer, List<Integer>>> getGsubData(Map<String, ScriptTable> scriptList,
+    public Map<String, Map<List<Integer>, Integer>> getGsubData(Map<String, ScriptTable> scriptList,
             FeatureListTable featureListTable, LookupListTable lookupListTable)
     {
 
@@ -63,7 +62,7 @@ public class GlyphSubstitutionDataExtractor
             return Collections.emptyMap();
         }
 
-        Map<String, Map<Integer, List<Integer>>> gsubData = new HashMap<>();
+        Map<String, Map<List<Integer>, Integer>> gsubData = new LinkedHashMap<>();
         // the starting point is really the scriptTags
         if (scriptTable.getDefaultLangSysTable() != null)
         {
@@ -89,7 +88,7 @@ public class GlyphSubstitutionDataExtractor
         return null;
     }
 
-    private void populateGsubData(Map<String, Map<Integer, List<Integer>>> gsubData,
+    private void populateGsubData(Map<String, Map<List<Integer>, Integer>> gsubData,
             LangSysTable langSysTable, FeatureListTable featureListTable,
             LookupListTable lookupListTable)
     {
@@ -100,14 +99,14 @@ public class GlyphSubstitutionDataExtractor
         }
     }
 
-    private void populateGsubData(Map<String, Map<Integer, List<Integer>>> gsubData,
+    private void populateGsubData(Map<String, Map<List<Integer>, Integer>> gsubData,
             FeatureRecord featureRecord, LookupListTable lookupListTable)
     {
 
         LOG.debug("*********** extracting GSUB data for the feature: "
                 + featureRecord.getFeatureTag());
 
-        Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
+        Map<List<Integer>, Integer> glyphSubstitutionMap = new LinkedHashMap<>();
         for (int lookupIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
             LookupTable lookupTable = lookupListTable.getLookups()[lookupIndex];
@@ -117,89 +116,7 @@ public class GlyphSubstitutionDataExtractor
                 Collections.unmodifiableMap(glyphSubstitutionMap));
     }
 
-    public Map<String, Integer> getStringToCompoundGlyph(
-            Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap)
-    {
-        Map<String, Integer> substitutionData = new HashMap<>();
-
-        for (Integer glyphToBeSubstituted : rawGSubTableData.keySet())
-        {
-            List<Integer> glyphIDsToBeReplaced = rawGSubTableData.get(glyphToBeSubstituted);
-
-            String unicodeText = getUnicodeString(rawGSubTableData, cmap, glyphIDsToBeReplaced);
-            substitutionData.put(unicodeText, glyphToBeSubstituted);
-        }
-
-        return Collections.unmodifiableMap(substitutionData);
-
-    }
-
-    @Deprecated
-    public Map<Integer, List<Integer>> extractRawGSubTableData(Map<String, ScriptTable> scriptList,
-            FeatureListTable featureListTable, LookupListTable lookupListTable)
-    {
-
-        Map<Integer, List<Integer>> glyphSubstitutionMap = new HashMap<>();
-
-        Map<String, Map<Integer, List<Integer>>> dataByFeatures = getGsubData(scriptList,
-                featureListTable, lookupListTable);
-
-        for (Map<Integer, List<Integer>> values : dataByFeatures.values())
-        {
-            glyphSubstitutionMap.putAll(values);
-        }
-
-        return Collections.unmodifiableMap(glyphSubstitutionMap);
-    }
-
-    private String getUnicodeChar(Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap,
-            Integer glyphId)
-    {
-        List<Integer> keyChars = cmap.getCharCodes(glyphId);
-
-        // its a compound glyph
-        if (keyChars == null)
-        {
-            List<Integer> constituentGlyphs = rawGSubTableData.get(glyphId);
-
-            if (constituentGlyphs == null || constituentGlyphs.isEmpty())
-            {
-                LOG.warn("lookup for the glyphId: " + glyphId
-                        + " failed, as no corresponding Unicode char found mapped to it");
-                return "";
-            }
-            else
-            {
-                return getUnicodeString(rawGSubTableData, cmap, constituentGlyphs);
-            }
-
-        }
-        else
-        {
-            StringBuilder sb = new StringBuilder();
-            for (int unicodeChar : keyChars)
-            {
-                sb.append((char) unicodeChar);
-            }
-            return sb.toString();
-        }
-
-    }
-
-    private String getUnicodeString(Map<Integer, List<Integer>> rawGSubTableData, CmapLookup cmap,
-            List<Integer> glyphIDs)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (Integer glyphId : glyphIDs)
-        {
-            String unicodeText = getUnicodeChar(rawGSubTableData, cmap, glyphId);
-            LOG.debug("glyphId: " + glyphId + ", unicodeText: " + unicodeText);
-            sb.append(unicodeText);
-        }
-        return sb.toString();
-    }
-
-    private void extractData(Map<Integer, List<Integer>> glyphSubstitutionMap,
+    private void extractData(Map<List<Integer>, Integer> glyphSubstitutionMap,
             LookupTable lookupTable)
     {
 
@@ -229,7 +146,7 @@ public class GlyphSubstitutionDataExtractor
     }
 
     private void extractDataFromSingleSubstTableFormat1Table(
-            Map<Integer, List<Integer>> glyphSubstitutionMap,
+            Map<List<Integer>, Integer> glyphSubstitutionMap,
             LookupTypeSingleSubstFormat1 singleSubstTableFormat1)
     {
         CoverageTable coverageTable = singleSubstTableFormat1.getCoverageTable();
@@ -243,7 +160,7 @@ public class GlyphSubstitutionDataExtractor
     }
 
     private void extractDataFromSingleSubstTableFormat2Table(
-            Map<Integer, List<Integer>> glyphSubstitutionMap,
+            Map<List<Integer>, Integer> glyphSubstitutionMap,
             LookupTypeSingleSubstFormat2 singleSubstTableFormat2)
     {
 
@@ -266,7 +183,7 @@ public class GlyphSubstitutionDataExtractor
     }
 
     private void extractDataFromLigatureSubstitutionSubstFormat1Table(
-            Map<Integer, List<Integer>> glyphSubstitutionMap,
+            Map<List<Integer>, Integer> glyphSubstitutionMap,
             LookupTypeLigatureSubstitutionSubstFormat1 ligatureSubstitutionTable)
     {
 
@@ -281,7 +198,7 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    private void extractDataFromLigatureTable(Map<Integer, List<Integer>> glyphSubstitutionMap,
+    private void extractDataFromLigatureTable(Map<List<Integer>, Integer> glyphSubstitutionMap,
             LigatureTable ligatureTable)
     {
 
@@ -299,15 +216,16 @@ public class GlyphSubstitutionDataExtractor
 
     }
 
-    private void putNewSubstitutionEntry(Map<Integer, List<Integer>> glyphSubstitutionMap,
+    private void putNewSubstitutionEntry(Map<List<Integer>, Integer> glyphSubstitutionMap,
             int newGlyph, List<Integer> glyphsToBeSubstituted)
     {
-        List<Integer> oldValue = glyphSubstitutionMap.put(newGlyph, glyphsToBeSubstituted);
+        Integer oldValue = glyphSubstitutionMap.put(glyphsToBeSubstituted, newGlyph);
 
         if (oldValue != null)
         {
-            LOG.debug("!!!!!!!!!!! for the newGlyph: " + newGlyph + " oldValue: " + oldValue
-                    + " will be overridden with newValue: " + glyphsToBeSubstituted);
+            String message = "For the newGlyph: " + newGlyph + ", newValue: "
+                    + glyphsToBeSubstituted + " is trying to override the oldValue: " + oldValue;
+            throw new IllegalStateException(message);
         }
     }
 

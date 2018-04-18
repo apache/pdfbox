@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
     private final PDCIDFont descendantFont;
     private final Set<Integer> noUnicode = new HashSet<>(); 
-    private final Map<String, Integer> glyphSubstitutionMap;
+    private final Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap;
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
     private boolean isDescendantCJK;
@@ -585,7 +586,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         return descendantFont.hasGlyph(code);
     }
 
-    public Map<String, Integer> getGlyphSubstitutionMap()
+    public Map<String, Map<List<Integer>, Integer>> getGlyphSubstitutionMap()
     {
         return glyphSubstitutionMap;
     }

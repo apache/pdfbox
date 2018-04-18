@@ -72,7 +72,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private String lastUsedSupportedScript;
 
-    private Map<Integer, List<Integer>> rawGSubData;
+    private Map<String, Map<List<Integer>, Integer>> rawGSubData;
 
     GlyphSubstitutionTable(TrueTypeFont font)
     {
@@ -103,9 +103,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
 
-        // hard-coding language
         rawGSubData = glyphSubstitutionDataExtractor
-                .extractRawGSubTableData(scriptList, featureListTable, lookupListTable);
+                .getGsubData(scriptList, featureListTable, lookupListTable);
         LOG.debug("rawGSubData: " + rawGSubData);
     }
 
@@ -668,7 +667,7 @@ public class GlyphSubstitutionTable extends TTFTable
         return gid;
     }
 
-    public Map<Integer, List<Integer>> getRawGSubData()
+    public Map<String, Map<List<Integer>, Integer>> getRawGSubData()
     {
         return rawGSubData;
     }
