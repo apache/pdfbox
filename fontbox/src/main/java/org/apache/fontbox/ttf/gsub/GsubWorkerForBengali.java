@@ -33,6 +33,10 @@ public class GsubWorkerForBengali implements GsubWorker
 
     private static final String GLYPH_ID_SEPARATOR = "_";
 
+    /**
+     * This sequence is very important. This has been taken from <a href=
+     * "https://docs.microsoft.com/en-us/typography/script-development/bengali">https://docs.microsoft.com/en-us/typography/script-development/bengali</a>
+     */
     private static final List<String> FEATURES_IN_ORDER = Arrays.asList("locl", "nukt", "akhn",
             "rphf", "blwf", "half", "pstf", "vatu", "cjct", "init", "pres", "abvs", "blws", "psts",
             "haln", "calt");
@@ -57,7 +61,7 @@ public class GsubWorkerForBengali implements GsubWorker
         {
             if (!glyphSubstitutionMap.containsKey(feature))
             {
-                LOG.warn("the feature " + feature + " was not found");
+                LOG.debug("the feature " + feature + " was not found");
                 continue;
             }
 
@@ -70,8 +74,7 @@ public class GsubWorkerForBengali implements GsubWorker
         return convertGlyphIdsToList(intermediateGlyphsFromGsub);
     }
 
-    private String applyGsubFeature(Map<List<Integer>, Integer> featureMap,
-            String originalGlyphs)
+    private String applyGsubFeature(Map<List<Integer>, Integer> featureMap, String originalGlyphs)
     {
         Map<String, Integer> modifiedFeatureMap = new HashMap<>();
 
