@@ -47,9 +47,11 @@ public class GlyphSubstitutionTableTest
         Set<String> featureNames = rawGsubData.keySet();
         assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), featureNames);
 
-        String templatePathToFile = "/gsub/lohit_bengali/%s.txt";
-        
-        for (String featureName:EXPECTED_FEATURE_NAMES) {
+        String templatePathToFile = "/gsub/lohit_bengali/bng2/%s.txt";
+
+        for (String featureName : EXPECTED_FEATURE_NAMES)
+        {
+            System.out.println("******* Testing feature: " + featureName);
             Map<List<Integer>, Integer> expectedGsubTableRawData = getExpectedGsubTableRawData(
                     String.format(templatePathToFile, featureName));
             assertEquals(expectedGsubTableRawData, rawGsubData.get(featureName));
@@ -62,8 +64,8 @@ public class GlyphSubstitutionTableTest
     {
         Map<List<Integer>, Integer> gsubData = new HashMap<>();
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(TestTTFParser.class
-                .getResourceAsStream(pathToResource)));)
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(TestTTFParser.class.getResourceAsStream(pathToResource)));)
         {
             while (true)
             {
@@ -90,12 +92,13 @@ public class GlyphSubstitutionTableTest
                     throw new IllegalArgumentException("invalid format");
                 }
 
-                Integer newGlyphId = Integer.valueOf(lineSplittedByKeyValue[1]);
                 List<Integer> oldGlyphIds = new ArrayList<>();
                 for (String value : lineSplittedByKeyValue[0].split(","))
                 {
                     oldGlyphIds.add(Integer.valueOf(value));
                 }
+
+                Integer newGlyphId = Integer.valueOf(lineSplittedByKeyValue[1]);
 
                 gsubData.put(oldGlyphIds, newGlyphId);
 
