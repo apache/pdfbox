@@ -24,6 +24,7 @@ import java.util.Comparator;
  * Glyph-substitution happens. This is a bit of a hack, and has scope for improvement.
  * 
  */
+@Deprecated
 public class CompoundWordSorter implements Comparator<String>
 {
 
