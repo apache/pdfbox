@@ -41,23 +41,27 @@ public class TestFontEmbedding extends TestCase
     private static final File OUT_DIR = new File("target/test-output");
 
     @Override
-    protected void setUp() throws Exception
+    protected void setUp()
     {
         OUT_DIR.mkdirs();
     }
 
     /**
      * Embed a TTF as CIDFontType2.
+     * 
+     * @throws IOException
      */
-    public void testCIDFontType2() throws Exception
+    public void testCIDFontType2() throws IOException
     {
         validateCIDFontType2(false);
     }
 
     /**
      * Embed a TTF as CIDFontType2 with subsetting.
+     * 
+     * @throws IOException
      */
-    public void testCIDFontType2Subset() throws Exception
+    public void testCIDFontType2Subset() throws IOException
     {
         validateCIDFontType2(true);
     }
@@ -166,31 +170,29 @@ public class TestFontEmbedding extends TestCase
         assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
-    private void validateCIDFontType2(boolean useSubset) throws Exception
+    private void validateCIDFontType2(boolean useSubset) throws IOException
     {
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage(PDRectangle.A4);
-        document.addPage(page);
-
-        InputStream input = PDFont.class.getClassLoader().getResourceAsStream(
-                "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
-        PDType0Font font = PDType0Font.load(document, input, useSubset);
-
-        PDPageContentStream stream = new PDPageContentStream(document, page);
-
-        stream.beginText();
-        stream.setFont(font, 12);
-
-        String text = "Unicode русский язык Tiếng Việt";
-        stream.newLineAtOffset(50, 600);
-        stream.showText(text);
-
-        stream.endText();
-        stream.close();
-        
-        File file = new File(OUT_DIR, "CIDFontType2.pdf");
-        document.save(file);
-        document.close();
+        String text;
+        File file;
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            InputStream input = PDFont.class.getClassLoader().getResourceAsStream(
+                    "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
+            PDType0Font font = PDType0Font.load(document, input, useSubset);
+            try (PDPageContentStream stream = new PDPageContentStream(document, page))
+            {
+                stream.beginText();
+                stream.setFont(font, 12);
+                text = "Unicode русский язык Tiếng Việt";
+                stream.newLineAtOffset(50, 600);
+                stream.showText(text);
+                stream.endText();
+            }
+            file = new File(OUT_DIR, "CIDFontType2.pdf");
+            document.save(file);
+        }
 
         // check that the extracted text matches what we wrote
         String extracted = getUnicodeText(file);
