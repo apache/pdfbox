@@ -120,8 +120,8 @@ public class PDFontTest
     @Test
     public void testPDFBox3826() throws IOException, URISyntaxException
     {
-        URL url = PDFontTest.class.getClassLoader().getResource(
-                "org/apache/pdfbox/ttf/LiberationSans-Regular.ttf");
+        URL url = PDFont.class.getClassLoader().getResource(
+                "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
         File fontFile = new File(url.toURI());
 
         try (TrueTypeFont ttf1 = new TTFParser().parse(fontFile))
