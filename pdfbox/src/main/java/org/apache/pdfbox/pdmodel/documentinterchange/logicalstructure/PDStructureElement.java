@@ -175,6 +175,10 @@ public class PDStructureElement extends PDStructureNode
             while (it.hasNext())
             {
                 COSBase item = it.next();
+                if (item instanceof COSObject)
+                {
+                    item = ((COSObject) item).getObject();
+                }
                 if (item instanceof COSDictionary)
                 {
                     ao = PDAttributeObject.create((COSDictionary) item);
@@ -345,6 +349,10 @@ public class PDStructureElement extends PDStructureNode
             while (it.hasNext())
             {
                 COSBase item = it.next();
+                if (item instanceof COSObject)
+                {
+                    item = ((COSObject) item).getObject();
+                }
                 if (item instanceof COSName)
                 {
                     className = ((COSName) item).getName();
