@@ -719,6 +719,8 @@ public class PDFMergerUtility
             }
             if (mergeStructTree)
             {
+                // add the value of the destination ParentTreeNextKey to every source element 
+                // StructParent(s) value so that these don't overlap with the existing values
                 updateStructParentEntries(newPage, destParentTreeNextKey);
                 objMapping.put(page.getCOSObject(), newPage.getCOSObject());
                 List<PDAnnotation> oldAnnots = page.getAnnotations();
