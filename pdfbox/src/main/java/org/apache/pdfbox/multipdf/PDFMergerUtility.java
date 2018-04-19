@@ -40,6 +40,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
@@ -738,7 +739,7 @@ public class PDFMergerUtility
         }
         if (mergeStructTree)
         {
-            updatePageReferences(srcNumbersArray, objMapping);
+            updatePageReferences(cloner, srcNumbersArray, objMapping);
             for (int i = 0; i < srcNumbersArray.size() / 2; i++)
             {
                 destNumbersArray.add(COSInteger.get(destParentTreeNextKey + i));
@@ -964,7 +965,9 @@ public class PDFMergerUtility
      * @param parentTreeEntry
      * @param objMapping mapping between old and new references
      */
-    private void updatePageReferences(COSDictionary parentTreeEntry, Map<COSDictionary, COSDictionary> objMapping)
+    private void updatePageReferences(PDFCloneUtility cloner,
+            COSDictionary parentTreeEntry, Map<COSDictionary, COSDictionary> objMapping)
+            throws IOException
     {
         COSBase page = parentTreeEntry.getDictionaryObject(COSName.PG);
         if (page instanceof COSDictionary && objMapping.containsKey(page))
@@ -972,33 +975,56 @@ public class PDFMergerUtility
             parentTreeEntry.setItem(COSName.PG, objMapping.get(page));
         }
         COSBase obj = parentTreeEntry.getDictionaryObject(COSName.OBJ);
-        if (obj instanceof COSDictionary && objMapping.containsKey(obj))
+        if (obj instanceof COSDictionary)
         {
-            parentTreeEntry.setItem(COSName.OBJ, objMapping.get(obj));
+            if (objMapping.containsKey(obj))
+            {
+                parentTreeEntry.setItem(COSName.OBJ, objMapping.get(obj));
+            }
+            else
+            {
+                // PDFBOX-3999: clone objects that are not in mapping to make sure that
+                // these don't remain attached to the source document
+                COSBase item = parentTreeEntry.getItem(COSName.OBJ);
+                if (item instanceof COSObject)
+                {
+                    LOG.debug("clone potential orphan object in structure tree: " + item +
+                            ", type: " + ((COSDictionary) obj).getNameAsString(COSName.TYPE));
+                }
+                else
+                {
+                    // don't display because of stack overflow
+                    LOG.debug("clone potential orphan object in structure tree, type: " +
+                            ((COSDictionary) obj).getNameAsString(COSName.TYPE));
+                }
+                parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(obj));
+            }
         }
         COSBase kSubEntry = parentTreeEntry.getDictionaryObject(COSName.K);
         if (kSubEntry instanceof COSArray)
         {
-            updatePageReferences((COSArray) kSubEntry, objMapping);
+            updatePageReferences(cloner, (COSArray) kSubEntry, objMapping);
         }
         else if (kSubEntry instanceof COSDictionary)
         {
-            updatePageReferences((COSDictionary) kSubEntry, objMapping);
+            updatePageReferences(cloner, (COSDictionary) kSubEntry, objMapping);
         }
     }
 
-    private void updatePageReferences(COSArray parentTreeEntry, Map<COSDictionary, COSDictionary> objMapping)
+    private void updatePageReferences(PDFCloneUtility cloner,
+            COSArray parentTreeEntry, Map<COSDictionary, COSDictionary> objMapping)
+            throws IOException
     {
         for (int i = 0; i < parentTreeEntry.size(); i++)
         {
             COSBase subEntry = parentTreeEntry.getObject(i);
             if (subEntry instanceof COSArray)
             {
-                updatePageReferences((COSArray) subEntry, objMapping);
+                updatePageReferences(cloner, (COSArray) subEntry, objMapping);
             }
             else if (subEntry instanceof COSDictionary)
             {
-                updatePageReferences((COSDictionary) subEntry, objMapping);
+                updatePageReferences(cloner, (COSDictionary) subEntry, objMapping);
             }
         }
     }
