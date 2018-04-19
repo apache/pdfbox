@@ -529,24 +529,6 @@ public class PDFMergerUtility
             }
             else
             {
-//                System.out.println(srcNames);
-//                System.out.println(srcNames.getDests());
-//                System.out.println(srcNames.getDests().getNames());
-//                Map<String, PDPageDestination> names1 = srcNames.getDests().getNames();
-//                Map<String, PDPageDestination> names2 = destNames.getDests().getNames();
-//                if (names1 != null)
-//                    System.out.println(names1.keySet());
-//                else
-//                {
-//                    List<PDNameTreeNode<PDPageDestination>> kids = srcNames.getDests().getKids();
-//                    for (PDNameTreeNode<PDPageDestination> kid : kids)
-//                    {
-//                       
-//                    System.out.println(kid.getNames().keySet());
-//                    }
-//                    
-//                }
-//                System.out.println(names2.keySet());
                 cloner.cloneMerge(srcNames, destNames);
             }
         }
@@ -1001,24 +983,24 @@ public class PDFMergerUtility
             {
                 parentTreeEntry.setItem(COSName.OBJ, objMapping.get(obj));
             }
-//            else
-//            {
-//                // PDFBOX-3999: clone objects that are not in mapping to make sure that
-//                // these don't remain attached to the source document
-//                COSBase item = parentTreeEntry.getItem(COSName.OBJ);
-//                if (item instanceof COSObject)
-//                {
-//                    LOG.warn("clone potential orphan object in structure tree: " + item +
-//                            ", type: " + ((COSDictionary) obj).getNameAsString(COSName.TYPE));
-//                }
-//                else
-//                {
-//                    // don't display because of stack overflow
-//                    LOG.warn("clone potential orphan object in structure tree, type: " +
-//                            ((COSDictionary) obj).getNameAsString(COSName.TYPE));
-//                }
-//                parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(obj));
-//            }
+            else
+            {
+                // PDFBOX-3999: clone objects that are not in mapping to make sure that
+                // these don't remain attached to the source document
+                COSBase item = parentTreeEntry.getItem(COSName.OBJ);
+                if (item instanceof COSObject)
+                {
+                    LOG.debug("clone potential orphan object in structure tree: " + item +
+                            ", type: " + ((COSDictionary) obj).getNameAsString(COSName.TYPE));
+                }
+                else
+                {
+                    // don't display because of stack overflow
+                    LOG.debug("clone potential orphan object in structure tree, type: " +
+                            ((COSDictionary) obj).getNameAsString(COSName.TYPE));
+                }
+                parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(obj));
+            }
         }
         COSBase kSubEntry = parentTreeEntry.getDictionaryObject(COSName.K);
         if (kSubEntry instanceof COSArray)
