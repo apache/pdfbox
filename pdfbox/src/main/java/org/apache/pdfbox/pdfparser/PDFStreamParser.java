@@ -306,7 +306,8 @@ public class PDFStreamParser extends BaseParser
                 String id = "" + (char) seqSource.read() + (char) seqSource.read();
                 if( !id.equals( "ID" ) )
                 {
-                    throw new IOException( "Error: Expected operator 'ID' actual='" + id + "'" );
+                    throw new IOException( "Error: Expected operator 'ID' actual='" + id +
+                                           "' at stream offset " + seqSource.getPosition());
                 }
                 ByteArrayOutputStream imageData = new ByteArrayOutputStream();
                 if( isWhitespace() )
