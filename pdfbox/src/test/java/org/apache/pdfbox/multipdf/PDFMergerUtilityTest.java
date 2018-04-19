@@ -197,7 +197,7 @@ public class PDFMergerUtilityTest extends TestCase
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
         doc.getDocumentCatalog().getAcroForm().flatten();
-        doc.save(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-Flattened.pdf"));
+        doc.save(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened.pdf"));
         doc.close();
 
         PDDocument src = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened.pdf"));
