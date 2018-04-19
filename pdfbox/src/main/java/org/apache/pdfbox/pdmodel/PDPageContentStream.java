@@ -23,8 +23,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
@@ -327,8 +329,13 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                     .getGlyphSubstitutionMap();
             if (!glyphSubstitutionMap.isEmpty())
             {
-                encodedText = encodeForGsub(glyphSubstitutionMap, (PDType0Font) font, text);
-                // TODO: take care of sub-setting
+                Set<Integer> glyphIds = new HashSet<>();
+                encodedText = encodeForGsub(glyphSubstitutionMap, glyphIds, (PDType0Font) font,
+                        text);
+                if (font.willBeSubset())
+                {
+                    ((PDType0Font) font).addGlyphsToSubset(glyphIds);
+                }
             }
         }
 
@@ -1184,7 +1191,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     private byte[] encodeForGsub(Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap,
-            PDType0Font font, String text) throws IOException
+            Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
 
         String spaceRegexPattern = "\\s";
@@ -1203,14 +1210,14 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             else
             {
-                applyGSUBRules(out, font, glyphSubstitutionMap, word);
+                glyphIds.addAll(applyGSUBRules(out, font, glyphSubstitutionMap, word));
             }
         }
 
         return out.toByteArray();
     }
 
-    private void applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
+    private List<Integer> applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
             Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap, String word)
             throws IOException
     {
@@ -1236,6 +1243,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         {
             out.write(font.encodeGlyphId(glyphId));
         }
+
+        return glyphIdsAfterGsub;
 
     }
 

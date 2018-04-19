@@ -247,6 +247,15 @@ public class PDType0Font extends PDFont implements PDVectorFont
         embedder.addToSubset(codePoint);
     }
     
+    public void addGlyphsToSubset(Set<Integer> glyphIds)
+    {
+        if (!willBeSubset())
+        {
+            throw new IllegalStateException("This font was created with subsetting disabled");
+        }
+        embedder.addGlyphIds(glyphIds);
+    }
+
     @Override
     public void subset() throws IOException
     {
