@@ -178,10 +178,42 @@ public class PDFMergerUtilityTest extends TestCase
         PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
-        dst.save(new File(TARGETTESTDIR, "PDFBOX-3999-GovFormPreFlattened-merged.pdf"));
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-merged.pdf"));
         dst.close();
 
-        PDDocument doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GovFormPreFlattened-merged.pdf"));
+        PDDocument doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-merged.pdf"));
+        PDPageTree pageTree = doc.getPages();
+
+        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
+        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
+        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
+        checkElement(pageTree, structureTreeRoot.getK());
+    }
+
+    /**
+     * PDFBOX-3999: check that no streams are kept from the source document by the destination
+     * document, despite orphan annotations remaining in the structure tree.
+     *
+     * @throws IOException
+     */
+    public void testStructureTreeMerge2() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
+        doc.getDocumentCatalog().getAcroForm().flatten();
+        doc.save(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-Flattened.pdf"));
+        doc.close();
+
+        PDDocument src = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened.pdf"));
+        PDDocument dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened.pdf"));
+        pdfMergerUtility.appendDocument(dst, src);
+        // before solving PDFBOX-3999, the close() below brought
+        // IOException: COSStream has been closed and cannot be read.
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened-merged.pdf"));
+        dst.close();
+
+        doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened-merged.pdf"));
         PDPageTree pageTree = doc.getPages();
 
         // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
