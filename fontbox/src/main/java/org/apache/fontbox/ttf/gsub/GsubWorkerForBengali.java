@@ -19,7 +19,6 @@ package org.apache.fontbox.ttf.gsub;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +29,6 @@ public class GsubWorkerForBengali implements GsubWorker
 {
 
     private static final Log LOG = LogFactory.getLog(GsubWorkerForBengali.class);
-
-    private static final String GLYPH_ID_SEPARATOR = "_";
 
     /**
      * This sequence is very important. This has been taken from <a href=
@@ -51,11 +48,7 @@ public class GsubWorkerForBengali implements GsubWorker
     @Override
     public List<Integer> substituteGlyphs(List<Integer> originalGlyphIds)
     {
-        String originalGlyphsAsString = convertGlyphIdsToString(originalGlyphIds);
-
-        LOG.debug("originalGlyphsAsString " + originalGlyphsAsString);
-
-        String intermediateGlyphsFromGsub = originalGlyphsAsString;
+        List<Integer> intermediateGlyphsFromGsub = originalGlyphIds;
 
         for (String feature : FEATURES_IN_ORDER)
         {
@@ -67,74 +60,41 @@ public class GsubWorkerForBengali implements GsubWorker
 
             LOG.debug("applying the feature " + feature);
 
-            intermediateGlyphsFromGsub = applyGsubFeature(glyphSubstitutionMap.get(feature),
-                    intermediateGlyphsFromGsub);
+            Map<List<Integer>, Integer> featureMap = glyphSubstitutionMap.get(feature);
+
+            intermediateGlyphsFromGsub = applyGsubFeature(featureMap, intermediateGlyphsFromGsub);
         }
 
-        return convertGlyphIdsToList(intermediateGlyphsFromGsub);
+        return intermediateGlyphsFromGsub;
     }
 
-    private String applyGsubFeature(Map<List<Integer>, Integer> featureMap, String originalGlyphs)
+    private List<Integer> applyGsubFeature(Map<List<Integer>, Integer> featureMap,
+            List<Integer> originalGlyphs)
     {
-        Map<String, Integer> modifiedFeatureMap = new HashMap<>();
 
-        for (List<Integer> glyphs : featureMap.keySet())
-        {
-            modifiedFeatureMap.put(convertGlyphIdsToString(glyphs), featureMap.get(glyphs));
-        }
-
-        LOG.debug("modifiedFeatureMap: " + modifiedFeatureMap);
-
-        List<String> tokens = new CompoundCharacterTokenizer(modifiedFeatureMap.keySet())
+        List<List<Integer>> tokens = new GsubProcessor(featureMap.keySet())
                 .tokenize(originalGlyphs);
 
-        StringBuilder gsubProcessedGlyphs = new StringBuilder(100);
+        List<Integer> gsubProcessedGlyphs = new ArrayList<>();
 
-        for (String chunk : tokens)
+        for (List<Integer> chunk : tokens)
         {
-            if (modifiedFeatureMap.containsKey(chunk))
+            if (featureMap.containsKey(chunk))
             {
                 // gsub system kicks in, you get the glyphId directly
-                int glyphId = modifiedFeatureMap.get(chunk);
-                gsubProcessedGlyphs.append(glyphId).append(GLYPH_ID_SEPARATOR);
+                int glyphId = featureMap.get(chunk);
+                gsubProcessedGlyphs.add(glyphId);
             }
             else
             {
-                gsubProcessedGlyphs.append(chunk);
+                gsubProcessedGlyphs.addAll(chunk);
             }
         }
 
         LOG.debug("originalGlyphs: " + originalGlyphs + ", gsubProcessedGlyphs: "
                 + gsubProcessedGlyphs);
 
-        return convertGlyphIdsToString(convertGlyphIdsToList(gsubProcessedGlyphs.toString()));
-    }
-
-    private String convertGlyphIdsToString(List<Integer> glyphIds)
-    {
-        StringBuilder sb = new StringBuilder(20);
-        for (Integer glyphId : glyphIds)
-        {
-            sb.append(glyphId).append(GLYPH_ID_SEPARATOR);
-        }
-        sb.setLength(sb.length() - GLYPH_ID_SEPARATOR.length());
-        return sb.toString();
-    }
-
-    private List<Integer> convertGlyphIdsToList(String glyphIdsAsString)
-    {
-        List<Integer> gsubProcessedGlyphsIds = new ArrayList<>();
-
-        for (String glyphId : glyphIdsAsString.split(GLYPH_ID_SEPARATOR))
-        {
-            if (glyphId.trim().length() == 0)
-            {
-                continue;
-            }
-            gsubProcessedGlyphsIds.add(Integer.valueOf(glyphId));
-        }
-
-        return gsubProcessedGlyphsIds;
+        return gsubProcessedGlyphs;
     }
 
 }
