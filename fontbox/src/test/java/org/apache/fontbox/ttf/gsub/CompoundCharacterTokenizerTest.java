@@ -50,8 +50,8 @@ public class CompoundCharacterTokenizerTest
         }
 
         assertEquals(text, sb.toString());
-        assertEquals(tokens, Arrays.asList("12345", "HrkJj", "xabbcc", "68RetP", "xxxcfb1245678",
-                "Yx!23uyt", "889000"));
+        assertEquals(Arrays.asList("12345", "HrkJj", "xabbcc", "68RetP", "xxxcfb1245678",
+                "Yx!23uyt", "889000"), tokens);
     }
 
     @Test
@@ -74,8 +74,8 @@ public class CompoundCharacterTokenizerTest
         }
 
         assertEquals(text, sb.toString());
-        assertEquals(tokens,
-                Arrays.asList("84_112_93_", "104_82", "_61_96_102_93_", "104_87", "_110"));
+        assertEquals(Arrays.asList("84_112_93_", "104_82", "_61_96_102_93_", "104_87", "_110"),
+                tokens);
     }
 
     @Test
@@ -98,8 +98,7 @@ public class CompoundCharacterTokenizerTest
         }
 
         assertEquals(text, sb.toString());
-        assertEquals(tokens,
-                Arrays.asList("67_112_96", "_103_93_108_93"));
+        assertEquals(Arrays.asList("67_112_96", "_103_93_108_93"), tokens);
     }
 
     @Test
@@ -122,7 +121,7 @@ public class CompoundCharacterTokenizerTest
         }
 
         assertEquals(text, sb.toString());
-        assertEquals(tokens, Arrays.asList("94_", "67_112_96", "_112_91_103"));
+        assertEquals(Arrays.asList("94_", "67_112_96", "_112_91_103"), tokens);
     }
 
     @Ignore
@@ -202,9 +201,8 @@ public class CompoundCharacterTokenizerTest
     public void testTokenize_Bangla()
     {
         // given
-        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
-                new HashSet<>(Arrays.asList(
-                        new String[] { "\u0995\u09cd\u09b7", "\u09aa\u09c1\u09a4\u09c1" })));
+        CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(new HashSet<>(
+                Arrays.asList(new String[] { "\u0995\u09cd\u09b7", "\u09aa\u09c1\u09a4\u09c1" })));
         String text = "\u0986\u09ae\u09bf \u0995\u09cb\u09a8 \u09aa\u09a5\u09c7  \u0995\u09cd\u09b7\u09c0\u09b0\u09c7\u09b0 \u09b7\u09a8\u09cd\u09a1  \u09aa\u09c1\u09a4\u09c1\u09b2 \u09b0\u09c1\u09aa\u09cb  \u0997\u0999\u09cd\u0997\u09be \u098b\u09b7\u09bf";
 
         // when
