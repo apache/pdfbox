@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class GsubProcessorTest
@@ -83,7 +82,6 @@ public class GsubProcessorTest
                 Arrays.asList(112, 91, 103)), tokens);
     }
 
-    @Ignore
     @Test
     public void testTokenize_4()
     {

@@ -65,11 +65,11 @@ public class GsubProcessor
     private String convertGlyphIdsToString(List<Integer> glyphIds)
     {
         StringBuilder sb = new StringBuilder(20);
+        sb.append(GLYPH_ID_SEPARATOR);
         for (Integer glyphId : glyphIds)
         {
             sb.append(glyphId).append(GLYPH_ID_SEPARATOR);
         }
-        sb.setLength(sb.length() - GLYPH_ID_SEPARATOR.length());
         return sb.toString();
     }
 

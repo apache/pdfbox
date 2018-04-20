@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class CompoundCharacterTokenizerTest
@@ -124,7 +123,6 @@ public class CompoundCharacterTokenizerTest
         assertEquals(Arrays.asList("94_", "67_112_96", "_112_91_103"), tokens);
     }
 
-    @Ignore
     @Test
     public void testTokenize_happyPath_5()
     {
@@ -145,7 +143,7 @@ public class CompoundCharacterTokenizerTest
         }
 
         assertEquals(text, sb.toString());
-        assertEquals(Arrays.asList("94_167_112_91_103"), tokens);
+        assertEquals(Arrays.asList("94_1", "67_112", "_91_103"), tokens);
     }
 
     @Test
