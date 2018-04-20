@@ -18,6 +18,8 @@ package org.apache.pdfbox.multipdf;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSArray;
@@ -198,6 +200,12 @@ public class PDFMergerUtilityTest extends TestCase
         PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
         doc.getDocumentCatalog().getAcroForm().flatten();
         doc.save(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened.pdf"));
+
+        ElementCounter elementCounter = new ElementCounter();
+        elementCounter.walk(doc.getDocumentCatalog().getStructureTreeRoot().getK());
+        int singleCnt = elementCounter.cnt;
+        int singleSetSize = elementCounter.set.size();
+
         doc.close();
 
         PDDocument src = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened.pdf"));
@@ -216,6 +224,48 @@ public class PDFMergerUtilityTest extends TestCase
         PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
         checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
         checkElement(pageTree, structureTreeRoot.getK());
+
+        // Assume that the merged tree has double element count
+        elementCounter = new ElementCounter();
+        elementCounter.walk(structureTreeRoot.getK());
+        assertEquals(singleCnt * 2, elementCounter.cnt);
+        assertEquals(singleSetSize * 2, elementCounter.set.size());
+
+        doc.close();
+    }
+
+    private class ElementCounter
+    {
+        int cnt = 0;
+        Set<COSBase> set = new HashSet<COSBase>();
+
+        void walk(COSBase base)
+        {
+            if (base instanceof COSArray)
+            {
+                for (COSBase base2 : (COSArray) base)
+                {
+                    if (base2 instanceof COSObject)
+                    {
+                        base2 = ((COSObject) base2).getObject();
+                    }
+                    walk(base2);
+                }
+            }
+            else if (base instanceof COSDictionary)
+            {
+                COSDictionary kdict = (COSDictionary) base;
+                if (kdict.containsKey(COSName.PG))
+                {
+                    ++cnt;
+                    set.add(kdict);
+                }
+                if (kdict.containsKey(COSName.K))
+                {
+                    walk(kdict.getDictionaryObject(COSName.K));
+                }
+            }
+        }
     }
 
     // Each element can be an array, a dictionary or a number.
