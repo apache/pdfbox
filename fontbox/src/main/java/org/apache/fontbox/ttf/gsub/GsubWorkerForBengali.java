@@ -79,8 +79,10 @@ public class GsubWorkerForBengali implements GsubWorker
             List<Integer> originalGlyphs)
     {
 
-        List<List<Integer>> tokens = new GsubProcessor(featureMap.keySet())
-                .tokenize(originalGlyphs);
+        GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
+                featureMap.keySet());
+
+        List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
 
         List<Integer> gsubProcessedGlyphs = new ArrayList<>();
 

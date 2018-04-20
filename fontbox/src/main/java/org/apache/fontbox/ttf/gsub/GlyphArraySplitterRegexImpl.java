@@ -23,23 +23,24 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class splits an array of GlyphIds with a prospective match.
+ * This is an in-efficient implementation based on regex, which helps split the array.
  * 
  * @author Palash Ray
  *
  */
-public class GsubProcessor
+public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
 {
     private static final String GLYPH_ID_SEPARATOR = "_";
 
     private final CompoundCharacterTokenizer compoundCharacterTokenizer;
 
-    public GsubProcessor(Set<List<Integer>> matchers)
+    public GlyphArraySplitterRegexImpl(Set<List<Integer>> matchers)
     {
         compoundCharacterTokenizer = new CompoundCharacterTokenizer(getMatchersAsStrings(matchers));
     }
 
-    public List<List<Integer>> tokenize(List<Integer> glyphIds)
+    @Override
+    public List<List<Integer>> split(List<Integer> glyphIds)
     {
         String originalGlyphsAsText = convertGlyphIdsToString(glyphIds);
         List<String> tokens = compoundCharacterTokenizer.tokenize(originalGlyphsAsText);
