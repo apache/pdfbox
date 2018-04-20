@@ -23,6 +23,8 @@ import java.util.Arrays;
  * This class models the
  * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#coverage-format-1">Coverage format 1</a>
  * in the Open Type layout common tables.
+ * 
+ * @author Palash Ray
  *
  */
 public class CoverageTableFormat1 extends CoverageTable

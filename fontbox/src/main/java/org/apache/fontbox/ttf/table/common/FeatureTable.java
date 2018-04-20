@@ -21,6 +21,8 @@ package org.apache.fontbox.ttf.table.common;
  * This class models the
  * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#feature-table">Feature table</a> in the
  * Open Type layout common tables.
+ * 
+ * @author Palash Ray
  *
  */
 public class FeatureTable

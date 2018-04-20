@@ -24,6 +24,8 @@ import java.util.List;
  * This class models the
  * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#coverage-format-2">Coverage format 2</a>
  * in the Open Type layout common tables.
+ * 
+ * @author Palash Ray
  *
  */
 public class CoverageTableFormat2 extends CoverageTableFormat1

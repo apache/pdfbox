@@ -43,6 +43,9 @@ import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat2;
 /**
  * This class has utility methods to extract meaningful data from the highly obfuscated GSUB Tables. This data is then
  * used to determine which combination of Glyphs or words have to be replaced.
+ * 
+ * @author Palash Ray
+ * 
  */
 public class GlyphSubstitutionDataExtractor
 {

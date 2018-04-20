@@ -23,6 +23,8 @@ import java.util.List;
  * This class is responsible for replacing GlyphIDs with new ones according to the GSUB tables. Each language should
  * have an implementation of this.
  * 
+ * @author Palash Ray
+ * 
  */
 public interface GsubWorker
 {

@@ -21,6 +21,8 @@ package org.apache.fontbox.ttf.table.common;
  * This class models the
  * <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#lookup-table">Lookup Sub-Table</a> in the
  * Open Type layout common tables.
+ * 
+ * @author Palash Ray
  *
  */
 public abstract class LookupSubTable

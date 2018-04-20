@@ -24,6 +24,8 @@ package org.apache.fontbox.ttf.table.gsub;
  * 4: Ligature Substitution Subtable</a>. It specifically models the <a href=
  * "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#41-ligature-substitution-format-1">LigatureSet table:
  * All ligatures beginning with the same glyph</a>.
+ * 
+ * @author Palash Ray
  *
  */
 public class LigatureSetTable

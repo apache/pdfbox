@@ -20,6 +20,17 @@ package org.apache.fontbox.ttf.table.gsub;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
 
+/**
+ * This class is a part of the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/gsub">GSUB — Glyph
+ * Substitution Table</a> system of tables in the Open Type Font specs. This is a part of the <a href=
+ * "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#lookuptype-1-single-substitution-subtable">LookupType
+ * 1: Single Substitution Subtable</a>. It specifically models the
+ * <a href= "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#11-single-substitution-format-1">Single
+ * Substitution Format 1</a>.
+ * 
+ * @author Palash Ray
+ *
+ */
 public class LookupTypeSingleSubstFormat1 extends LookupSubTable
 {
     private final short deltaGlyphID;

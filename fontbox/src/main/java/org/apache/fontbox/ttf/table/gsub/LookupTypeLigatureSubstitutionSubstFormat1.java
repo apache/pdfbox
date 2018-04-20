@@ -27,6 +27,8 @@ import org.apache.fontbox.ttf.table.common.LookupSubTable;
  * 4: Ligature Substitution Subtable</a>. It specifically models the
  * <a href= "https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#41-ligature-substitution-format-1">Ligature
  * Substitution Format 1</a>.
+ * 
+ * @author Palash Ray
  *
  */
 public class LookupTypeLigatureSubstitutionSubstFormat1 extends LookupSubTable

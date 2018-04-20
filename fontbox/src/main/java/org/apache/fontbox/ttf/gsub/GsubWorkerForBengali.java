@@ -25,6 +25,13 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * 
+ * Bengali-specific implementation of GSUB system
+ * 
+ * @author Palash Ray
+ *
+ */
 public class GsubWorkerForBengali implements GsubWorker
 {
 

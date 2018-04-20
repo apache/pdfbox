@@ -20,6 +20,8 @@ package org.apache.fontbox.ttf.table.common;
 /**
  * This class models the <a href="https://docs.microsoft.com/en-us/typography/opentype/spec/scripttags">Script tags</a>
  * in the Open Type Font specs.
+ * 
+ * @author Palash Ray
  *
  */
 public class ScriptRecord
