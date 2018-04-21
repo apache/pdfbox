@@ -92,9 +92,10 @@ public class PDStructureTreeRoot extends PDStructureNode
     }
 
     /**
-     * Returns the K entry.
-     * 
-     * @return the K entry
+     * Returns the K entry. This can be a dictionary representing a structure element, or an array
+     * of them.
+     *
+     * @return the K entry.
      */
     public COSBase getK()
     {
