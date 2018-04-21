@@ -19,11 +19,13 @@ package org.apache.fontbox.ttf.gsub;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.CmapLookup;
 
 /**
  * 
@@ -45,11 +47,17 @@ public class GsubWorkerForBengali implements GsubWorker
             "rphf", "blwf", "half", "pstf", "vatu", "cjct", "init", "pres", "abvs", "blws", "psts",
             "haln", "calt");
 
+    private static final char[] BEFORE_HALF_CHARS = new char[] { '\u09BF', '\u09C7', '\u09C8' };
+
     private final Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap;
 
-    public GsubWorkerForBengali(Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap)
+    private final List<Integer> beforeHalfGlyphIds;
+
+    public GsubWorkerForBengali(CmapLookup cmapLookup,
+            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap)
     {
         this.glyphSubstitutionMap = glyphSubstitutionMap;
+        beforeHalfGlyphIds = getBeforeHalfGlyphIds(cmapLookup);
     }
 
     @Override
@@ -73,6 +81,24 @@ public class GsubWorkerForBengali implements GsubWorker
         }
 
         return intermediateGlyphsFromGsub;
+    }
+
+    @Override
+    public List<Integer> repositionGlyphs(List<Integer> originalGlyphIds)
+    {
+        List<Integer> repositionedGlyphIds = new ArrayList<>(originalGlyphIds);
+
+        for (int index = 1; index < originalGlyphIds.size(); index++)
+        {
+            int glyphId = originalGlyphIds.get(index);
+            if (beforeHalfGlyphIds.contains(glyphId))
+            {
+                int previousGlyphId = originalGlyphIds.get(index - 1);
+                repositionedGlyphIds.set(index, previousGlyphId);
+                repositionedGlyphIds.set(index - 1, glyphId);
+            }
+        }
+        return repositionedGlyphIds;
     }
 
     private List<Integer> applyGsubFeature(Map<List<Integer>, Integer> featureMap,
@@ -104,6 +130,19 @@ public class GsubWorkerForBengali implements GsubWorker
                 + gsubProcessedGlyphs);
 
         return gsubProcessedGlyphs;
+    }
+
+    private static List<Integer> getBeforeHalfGlyphIds(CmapLookup cmapLookup)
+    {
+        List<Integer> beforeHalfGlyphIds = new ArrayList<>();
+
+        for (char beforeHalfChar : BEFORE_HALF_CHARS)
+        {
+            beforeHalfGlyphIds.add(cmapLookup.getGlyphId(beforeHalfChar));
+        }
+
+        return Collections.unmodifiableList(beforeHalfGlyphIds);
+
     }
 
 }

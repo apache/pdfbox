@@ -32,7 +32,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
+import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
@@ -1222,11 +1224,12 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             throws IOException
     {
         List<Integer> originalGlyphIds = new ArrayList<>();
+        CmapLookup cmapLookup = font.getCmapLookup();
 
         // convert characters into glyphIds
         for (char unicodeChar : word.toCharArray())
         {
-            int glyphId = font.getCmapLookup().getGlyphId(unicodeChar);
+            int glyphId = cmapLookup.getGlyphId(unicodeChar);
             if (glyphId <= 0)
             {
                 throw new IllegalStateException(
@@ -1236,8 +1239,10 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         }
 
         // TODO: figure out how to get this language-specific detail up here
-        List<Integer> glyphIdsAfterGsub = new GsubWorkerForBengali(glyphSubstitutionMap)
-                .substituteGlyphs(originalGlyphIds);
+        GsubWorker gsubWorker = new GsubWorkerForBengali(cmapLookup, glyphSubstitutionMap);
+
+        List<Integer> repositionedGlyphIds = gsubWorker.repositionGlyphs(originalGlyphIds);
+        List<Integer> glyphIdsAfterGsub = gsubWorker.substituteGlyphs(repositionedGlyphIds);
 
         for (Integer glyphId : glyphIdsAfterGsub)
         {
