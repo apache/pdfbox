@@ -325,16 +325,16 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         if (font instanceof PDType0Font)
         {
-            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap = ((PDType0Font) font)
+            PDType0Font pdType0Font = (PDType0Font) font;
+            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap = pdType0Font
                     .getGlyphSubstitutionMap();
             if (!glyphSubstitutionMap.isEmpty())
             {
                 Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(glyphSubstitutionMap, glyphIds, (PDType0Font) font,
-                        text);
-                if (font.willBeSubset())
+                encodedText = encodeForGsub(glyphSubstitutionMap, glyphIds, pdType0Font, text);
+                if (pdType0Font.willBeSubset())
                 {
-                    ((PDType0Font) font).addGlyphsToSubset(glyphIds);
+                    pdType0Font.addGlyphsToSubset(glyphIds);
                 }
             }
         }
