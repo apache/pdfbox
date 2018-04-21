@@ -359,7 +359,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
-        COSWriter.writeString(font.encode(text), getOutputStream());
+        COSWriter.writeString(encodedText, getOutputStream());
     }
 
     /**
