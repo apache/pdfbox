@@ -565,7 +565,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
             GlyphSubstitutionTable table = getGsub();
             if (table != null)
             {
-                return new SubstitutingCmapLookup(cmap, (GlyphSubstitutionTable) table,
+                return new SubstitutingCmapLookup(cmap, table,
                         Collections.unmodifiableList(enabledGsubFeatures));
             }
         }
@@ -652,6 +652,17 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         }
         
         return 0;
+    }
+
+    public Map<String, Map<List<Integer>, Integer>> getGlyphSubstitutionMap() throws IOException
+    {
+        GlyphSubstitutionTable table = getGsub();
+        if (table == null)
+        {
+            return Collections.emptyMap();
+        }
+
+        return table.getRawGSubData();
     }
 
     /**

@@ -18,13 +18,24 @@ package org.apache.pdfbox.pdmodel;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
+import org.apache.fontbox.ttf.gsub.GsubWorker;
+import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -33,12 +44,14 @@ import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -311,6 +324,29 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         }
 
         PDFont font = fontStack.peek();
+
+        byte[] encodedText = null;
+
+        if (font instanceof PDType0Font)
+        {
+            PDType0Font pdType0Font = (PDType0Font) font;
+            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap = pdType0Font
+                    .getGlyphSubstitutionMap();
+            if (!glyphSubstitutionMap.isEmpty())
+            {
+                Set<Integer> glyphIds = new HashSet<>();
+                encodedText = encodeForGsub(glyphSubstitutionMap, glyphIds, pdType0Font, text);
+                if (pdType0Font.willBeSubset())
+                {
+                    pdType0Font.addGlyphsToSubset(glyphIds);
+                }
+            }
+        }
+
+        if (encodedText == null)
+        {
+            encodedText = font.encode(text);
+        }
 
         // Unicode code points to keep when subsetting
         if (font.willBeSubset())
@@ -1140,4 +1176,66 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         writeOperand(rise);
         writeOperator("Ts");
     }
+
+    private byte[] encodeForGsub(Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap,
+            Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
+    {
+
+        String spaceRegexPattern = "\\s";
+        Pattern spaceRegex = Pattern.compile(spaceRegexPattern);
+
+        // break the entire chunk of text into words by splitting it with space
+        List<String> words = new CompoundCharacterTokenizer("\\s").tokenize(text);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        for (String word : words)
+        {
+            if (spaceRegex.matcher(word).matches())
+            {
+                out.write(font.encode(word));
+            }
+            else
+            {
+                glyphIds.addAll(applyGSUBRules(out, font, glyphSubstitutionMap, word));
+            }
+        }
+
+        return out.toByteArray();
+    }
+
+    private List<Integer> applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
+            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap, String word)
+            throws IOException
+    {
+        List<Integer> originalGlyphIds = new ArrayList<>();
+        CmapLookup cmapLookup = font.getCmapLookup();
+
+        // convert characters into glyphIds
+        for (char unicodeChar : word.toCharArray())
+        {
+            int glyphId = cmapLookup.getGlyphId(unicodeChar);
+            if (glyphId <= 0)
+            {
+                throw new IllegalStateException(
+                        "could not find the glyphId for the character: " + unicodeChar);
+            }
+            originalGlyphIds.add(glyphId);
+        }
+
+        // TODO: figure out how to get this language-specific detail up here
+        GsubWorker gsubWorker = new GsubWorkerForBengali(cmapLookup, glyphSubstitutionMap);
+
+        List<Integer> repositionedGlyphIds = gsubWorker.repositionGlyphs(originalGlyphIds);
+        List<Integer> glyphIdsAfterGsub = gsubWorker.substituteGlyphs(repositionedGlyphIds);
+
+        for (Integer glyphId : glyphIdsAfterGsub)
+        {
+            out.write(font.encodeGlyphId(glyphId));
+        }
+
+        return glyphIdsAfterGsub;
+
+    }
+
 }
