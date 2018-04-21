@@ -1128,4 +1128,10 @@ public final class TTFSubsetter
     {
         return (int)Math.round(Math.log(num) / Math.log(2));
     }
+
+    public void addGlyphIds(Set<Integer> allGlyphIds)
+    {
+        glyphIds.addAll(allGlyphIds);
+    }
+
 }

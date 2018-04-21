@@ -403,6 +403,12 @@ public class PDCIDFontType0 extends PDCIDFont
     }
 
     @Override
+    public byte[] encodeGlyphId(int glyphId)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public float getWidthFromFont(int code) throws IOException
     {
         int cid = codeToCID(code);
