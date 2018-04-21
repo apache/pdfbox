@@ -39,6 +39,9 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 public class BengaliPdfGenerationHelloWorld
 {
+    private BengaliPdfGenerationHelloWorld()
+    {        
+    }
 
     /**
      * The unicode of this is given below:
@@ -73,10 +76,8 @@ public class BengaliPdfGenerationHelloWorld
 
         System.out.println("The generated pdf filename is: " + filename);
 
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
-
             PDPage page1 = new PDPage();
             doc.addPage(page1);
 
@@ -84,31 +85,28 @@ public class BengaliPdfGenerationHelloWorld
                     .getResourceAsStream("/org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf"),
                     true);
 
-            PDPageContentStream contents = new PDPageContentStream(doc, page1);
-            contents.beginText();
-            contents.setFont(font, 12);
-            contents.newLineAtOffset(10, 750);
-            contents.showText(BANGLA_TEXT_1);
-            contents.newLineAtOffset(0, -50);
-            contents.showText(BANGLA_TEXT_2);
-            contents.newLineAtOffset(0, -30);
-            contents.showText(BANGLA_TEXT_3);
-            contents.endText();
-
-            PDImageXObject pdImage = PDImageXObject
-                    .createFromFile(BengaliPdfGenerationHelloWorld.class
-                            .getResource(
-                                    "/org/apache/pdfbox/resources/ttf/bengali-correct-text.png")
-                            // getFile() doesn't work if there is a space in the path
-                            .toURI().getPath(), doc);
-            contents.drawImage(pdImage, 0, 300, pdImage.getWidth(), pdImage.getHeight());
-            contents.close();
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page1))
+            {
+                contents.beginText();
+                contents.setFont(font, 12);
+                contents.newLineAtOffset(10, 750);
+                contents.showText(BANGLA_TEXT_1);
+                contents.newLineAtOffset(0, -50);
+                contents.showText(BANGLA_TEXT_2);
+                contents.newLineAtOffset(0, -30);
+                contents.showText(BANGLA_TEXT_3);
+                contents.endText();
+                
+                PDImageXObject pdImage = PDImageXObject
+                        .createFromFile(BengaliPdfGenerationHelloWorld.class
+                                .getResource(
+                                        "/org/apache/pdfbox/resources/ttf/bengali-correct-text.png")
+                                // getFile() doesn't work if there is a space in the path
+                                .toURI().getPath(), doc);
+                contents.drawImage(pdImage, 0, 300, pdImage.getWidth(), pdImage.getHeight());
+            }
 
             doc.save(filename);
-        }
-        finally
-        {
-            doc.close();
         }
     }
 

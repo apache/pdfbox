@@ -47,7 +47,7 @@ public class CompoundCharacterTokenizer
 
     public List<String> tokenize(String text)
     {
-        List<String> tokens = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
 
         Matcher regexMatcher = regexExpression.matcher(text);
 
