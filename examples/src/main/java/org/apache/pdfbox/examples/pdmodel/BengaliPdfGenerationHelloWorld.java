@@ -24,9 +24,15 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
- * https://svn.apache.org/viewvc/pdfbox/trunk/examples/src/main/java/org/apache/pdfbox/examples/pdmodel/HelloWorldTTF.java?view=markup
+ * Inspired from <a href=
+ * "https://svn.apache.org/viewvc/pdfbox/trunk/examples/src/main/java/org/apache/pdfbox/examples/pdmodel/HelloWorldTTF.java?view=markup">PdfBox
+ * Example</a>. This attempts to correctly demonstrate to what extent Bengali text rendering is supported. First, we
+ * render some text, and then embed an image with the correct text displayed on the next page.
+ * 
+ * @author Palash Ray
  * 
  */
 public class BengaliPdfGenerationHelloWorld
@@ -41,7 +47,7 @@ public class BengaliPdfGenerationHelloWorld
      * 
      */
     private static final String BANGLA_TEXT_1 = "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
-    private static final String BANGLA_TEXT_2 = "দ্রুত গাঢ় শেয়াল অলস কুকুর জুড়ে জাম্প";
+    private static final String BANGLA_TEXT_2 = "দ্রুত গাঢ় শেয়াল অলস কুকুর জুড়ে জাম্প ধুর্ত  হঠাৎ ভাঙেনি মৌলিক ঐশি দৈ   ঋষি কল্লোল ব্যাস নির্ভয় ";
 
     static
     {
@@ -68,20 +74,38 @@ public class BengaliPdfGenerationHelloWorld
         PDDocument doc = new PDDocument();
         try
         {
-            PDPage page = new PDPage();
-            doc.addPage(page);
 
-            PDFont font = PDType0Font.load(doc,
-                    BengaliPdfGenerationHelloWorld.class.getResourceAsStream(
-                            "/org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf"));
+            PDPage page1 = new PDPage();
+            doc.addPage(page1);
 
-            PDPageContentStream contents = new PDPageContentStream(doc, page);
-            contents.beginText();
-            contents.setFont(font, 12);
-            contents.newLineAtOffset(100, 700);
-            contents.showText(BANGLA_TEXT_1 + "  " + BANGLA_TEXT_2);
-            contents.endText();
-            contents.close();
+            // PDFont font = PDType0Font.load(doc, BanglaPdfGenerationTest.class
+            // .getResourceAsStream("/SOLAIMANLIPI_22-02-2012.TTF"), true);
+
+            PDFont font = PDType0Font.load(doc, BengaliPdfGenerationHelloWorld.class
+                    .getResourceAsStream("/org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf"),
+                    true);
+
+            PDPageContentStream contents1 = new PDPageContentStream(doc, page1);
+            contents1.setLineWidth(400);
+            contents1.beginText();
+            contents1.setFont(font, 12);
+            contents1.newLineAtOffset(10, 700);
+            contents1.showText(BANGLA_TEXT_1);
+            contents1.newLineAtOffset(0, -30);
+            contents1.showText(BANGLA_TEXT_2);
+            contents1.endText();
+            contents1.close();
+
+            PDPage page2 = new PDPage();
+            doc.addPage(page2);
+            PDPageContentStream contents2 = new PDPageContentStream(doc, page2);
+            PDImageXObject pdImage = PDImageXObject
+                    .createFromFile(BengaliPdfGenerationHelloWorld.class
+                            .getResource(
+                                    "/org/apache/pdfbox/resources/ttf/bengali-correct-text.png")
+                            .getFile(), doc);
+            contents2.drawImage(pdImage, 20, 20, pdImage.getWidth(), pdImage.getHeight());
+            contents2.close();
 
             doc.save(filename);
         }
