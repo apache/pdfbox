@@ -68,6 +68,17 @@ public class Validator_A1b
             System.exit(1);
         }
 
+        try
+        {
+            // force KCMS (faster than LCMS) if available
+            Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
+            System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
+        }
+        catch (ClassNotFoundException e)
+        {
+            // ignore
+        }
+
         // is output xml ?
         int posFile = 0;
         boolean outputXml = "xml".equals(args[posFile]);
