@@ -2109,7 +2109,7 @@ public final class PDPageContentStream implements Closeable
     /**
      * Set line width to the given value.
      *
-     * @param lineWidth The width which is used for drwaing.
+     * @param lineWidth The width which is used for drawing.
      * @throws IOException If the content stream could not be written
      * @throws IllegalStateException If the method was called within a text block.
      */
