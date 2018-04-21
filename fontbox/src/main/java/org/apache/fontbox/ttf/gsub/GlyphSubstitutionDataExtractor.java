@@ -228,7 +228,7 @@ public class GlyphSubstitutionDataExtractor
         {
             String message = "For the newGlyph: " + newGlyph + ", newValue: "
                     + glyphsToBeSubstituted + " is trying to override the oldValue: " + oldValue;
-            throw new IllegalStateException(message);
+            LOG.warn(message);
         }
     }
 
