@@ -266,8 +266,7 @@ public class GlyphSubstitutionTable extends TTFTable
         case 4: // Ligature Substitution Subtable
             for (int i = 0; i < subTableCount; i++)
             {
-                subTables[i] = readLigatureSubstitutionSubtable(data,
-                        offset + subTableOffets[i]);
+                subTables[i] = readLigatureSubstitutionSubtable(data, offset + subTableOffets[i]);
             }
             break;
         default:
