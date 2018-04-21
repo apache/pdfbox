@@ -37,6 +37,7 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -1128,4 +1129,10 @@ public final class TTFSubsetter
     {
         return (int)Math.round(Math.log(num) / Math.log(2));
     }
+
+    public void addGlyphIds(Set<Integer> allGlyphIds)
+    {
+        glyphIds.addAll(allGlyphIds);
+    }
+
 }

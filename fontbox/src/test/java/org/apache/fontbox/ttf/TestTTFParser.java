@@ -39,8 +39,8 @@ public class TestTTFParser extends TestCase
     {
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TimeZone utc = TimeZone.getTimeZone("UTC");
-        //Before PDFBOX-2122, TTFDataStream was using the default TimeZone
-        //Set the default to something not UTC and see if a UTC timeZone is returned
+        // Before PDFBOX-2122, TTFDataStream was using the default TimeZone
+        // Set the default to something not UTC and see if a UTC timeZone is returned
         TimeZone.setDefault(TimeZone.getTimeZone("America/Los Angeles"));
         TTFParser parser = new TTFParser();
         TrueTypeFont ttf = parser.parse(testFile);

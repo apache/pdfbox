@@ -18,13 +18,24 @@ package org.apache.pdfbox.pdmodel;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
+import org.apache.fontbox.ttf.gsub.GsubWorker;
+import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -33,12 +44,14 @@ import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
@@ -53,7 +66,7 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class PDPageContentStream extends PDAbstractContentStream implements Closeable
 {
-    
+
     /**
      * This is to choose what to do with the stream: overwrite, append or prepend.
      */
@@ -62,11 +75,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         /**
          * Overwrite the existing page content streams.
          */
-        OVERWRITE, 
+        OVERWRITE,
         /**
          * Append the content stream after all existing page content streams.
          */
-        APPEND, 
+        APPEND,
         /**
          * Insert before all other page content streams.
          */
@@ -82,7 +95,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             return this == PREPEND;
         }
     }
-  
+
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
 
     private final PDDocument document;
@@ -93,8 +106,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
 
     /**
-     * Create a new PDPage content stream. This constructor overwrites all existing content streams
-     * of this page.
+     * Create a new PDPage content stream. This constructor overwrites all existing content streams of this page.
      *
      * @param document The document the page is part of.
      * @param sourcePage The page to write the contents to.
@@ -106,9 +118,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Create a new PDPage content stream. If the appendContent parameter is set to
-     * {@link AppendMode#APPEND}, you may want to use
-     * {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean, boolean)}
+     * Create a new PDPage content stream. If the appendContent parameter is set to {@link AppendMode#APPEND}, you may
+     * want to use {@link #PDPageContentStream(PDDocument, PDPage, PDPageContentStream.AppendMode, boolean, boolean)}
      * instead, with the fifth parameter set to true.
      *
      * @param document The document the page is part of.
@@ -118,11 +129,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @throws IOException If there is an error writing to the page contents.
      */
     public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
-                               boolean compress) throws IOException
+            boolean compress) throws IOException
     {
         this(document, sourcePage, appendContent, compress, false);
     }
-    
+
     /**
      * Create a new PDPage content stream.
      *
@@ -130,25 +141,24 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param sourcePage The page to write the contents to.
      * @param appendContent Indicates whether content will be overwritten, appended or prepended.
      * @param compress Tell if the content stream should compress the page contents.
-     * @param resetContext Tell if the graphic context should be reset. This is only relevant when
-     * the appendContent parameter is set to {@link AppendMode#APPEND}. You should use this when
-     * appending to an existing stream, because the existing stream may have changed graphic
-     * properties (e.g. scaling, rotation).
+     * @param resetContext Tell if the graphic context should be reset. This is only relevant when the appendContent
+     * parameter is set to {@link AppendMode#APPEND}. You should use this when appending to an existing stream, because
+     * the existing stream may have changed graphic properties (e.g. scaling, rotation).
      * @throws IOException If there is an error writing to the page contents.
      */
     public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
-                               boolean compress, boolean resetContext) throws IOException
+            boolean compress, boolean resetContext) throws IOException
     {
         super();
         this.document = document;
         COSName filter = compress ? COSName.FLATE_DECODE : null;
-        
+
         // If request specifies the need to append/prepend to the document
         if (!appendContent.isOverwrite() && sourcePage.hasContents())
         {
             // Create a stream to append new content
             PDStream contentsToAppend = new PDStream(document);
-            
+
             // Add new stream to contents array
             COSBase contents = sourcePage.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             COSArray array;
@@ -178,11 +188,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                 // create a new stream to encapsulate the existing stream
                 PDStream saveGraphics = new PDStream(document);
                 setOutputStream(saveGraphics.createOutputStream(filter));
-                
+
                 // save the initial/unmodified graphics context
                 saveGraphicsState();
                 close();
-                
+
                 // insert the new stream at the beginning
                 array.add(0, saveGraphics.getCOSObject());
             }
@@ -207,7 +217,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             sourcePage.setContents(contents);
             setOutputStream(contents.createOutputStream(filter));
         }
-        
+
         // this has to be done here, as the resources will be set to null when resetting the content
         // stream
         PDResources resources = sourcePage.getResources();
@@ -230,9 +240,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      */
     public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance) throws IOException
     {
-        this (doc, appearance, appearance.getStream().createOutputStream()); 
+        this(doc, appearance, appearance.getStream().createOutputStream());
     }
-    
+
     /**
      * Create a new appearance stream. Note that this is not actually a "page" content stream.
      *
@@ -240,11 +250,12 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param appearance The appearance stream to add to.
      * @param outputStream The appearances output stream to write to.
      */
-    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream)
+    public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance,
+            OutputStream outputStream)
     {
         super(outputStream);
         this.document = doc;
-        
+
         setResources(appearance.getResources());
     }
 
@@ -266,12 +277,12 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         {
             fontStack.setElementAt(font, fontStack.size() - 1);
         }
-        
+
         if (font.willBeSubset())
         {
             document.getFontsToSubset().add(font);
         }
-        
+
         writeOperand(getResources().add(font));
         writeOperand(fontSize);
         writeOperator("Tf");
@@ -312,10 +323,33 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         PDFont font = fontStack.peek();
 
+        byte[] encodedText = null;
+
+        if (font instanceof PDType0Font)
+        {
+            PDType0Font pdType0Font = (PDType0Font) font;
+            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap = pdType0Font
+                    .getGlyphSubstitutionMap();
+            if (!glyphSubstitutionMap.isEmpty())
+            {
+                Set<Integer> glyphIds = new HashSet<>();
+                encodedText = encodeForGsub(glyphSubstitutionMap, glyphIds, pdType0Font, text);
+                if (pdType0Font.willBeSubset())
+                {
+                    pdType0Font.addGlyphsToSubset(glyphIds);
+                }
+            }
+        }
+
+        if (encodedText == null)
+        {
+            encodedText = font.encode(text);
+        }
+
         // Unicode code points to keep when subsetting
         if (font.willBeSubset())
         {
-            for (int offset = 0; offset < text.length(); )
+            for (int offset = 0; offset < text.length();)
             {
                 int codePoint = text.codePointAt(offset);
                 font.addToSubset(codePoint);
@@ -323,12 +357,12 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
-        COSWriter.writeString(font.encode(text), getOutputStream());
+        COSWriter.writeString(encodedText, getOutputStream());
     }
 
     /**
-     * The Td operator.
-     * A current text matrix will be replaced with a new one (1 0 0 1 x y).
+     * The Td operator. A current text matrix will be replaced with a new one (1 0 0 1 x y).
+     * 
      * @param tx The x translation.
      * @param ty The y translation.
      * @throws IOException If there is an error writing to the stream.
@@ -341,8 +375,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * The Tm operator. Sets the text matrix to the given values.
-     * A current text matrix will be replaced with the new one.
+     * The Tm operator. Sets the text matrix to the given values. A current text matrix will be replaced with the new
+     * one.
+     * 
      * @param a The a value of the matrix.
      * @param b The b value of the matrix.
      * @param c The c value of the matrix.
@@ -353,14 +388,16 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
      */
     @Deprecated
-    public void setTextMatrix(double a, double b, double c, double d, double e, double f) throws IOException
+    public void setTextMatrix(double a, double b, double c, double d, double e, double f)
+            throws IOException
     {
-        setTextMatrix(new Matrix((float)a, (float)b, (float)c, (float)d, (float)e, (float)f));
+        setTextMatrix(new Matrix((float) a, (float) b, (float) c, (float) d, (float) e, (float) f));
     }
 
     /**
-     * The Tm operator. Sets the text matrix to the given values.
-     * A current text matrix will be replaced with the new one.
+     * The Tm operator. Sets the text matrix to the given values. A current text matrix will be replaced with the new
+     * one.
+     * 
      * @param matrix the transformation matrix
      * @throws IOException If there is an error writing to the stream.
      * @deprecated Use {@link #setTextMatrix(Matrix)} instead.
@@ -372,8 +409,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * The Tm operator. Sets the text matrix to the given scaling and translation values.
-     * A current text matrix will be replaced with the new one.
+     * The Tm operator. Sets the text matrix to the given scaling and translation values. A current text matrix will be
+     * replaced with the new one.
+     * 
      * @param sx The scaling factor in x-direction.
      * @param sy The scaling factor in y-direction.
      * @param tx The translation value in x-direction.
@@ -388,8 +426,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * The Tm operator. Sets the text matrix to the given translation values.
-     * A current text matrix will be replaced with the new one.
+     * The Tm operator. Sets the text matrix to the given translation values. A current text matrix will be replaced
+     * with the new one.
+     * 
      * @param tx The translation value in x-direction.
      * @param ty The translation value in y-direction.
      * @throws IOException If there is an error writing to the stream.
@@ -402,8 +441,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * The Tm operator. Sets the text matrix to the given rotation and translation values.
-     * A current text matrix will be replaced with the new one.
+     * The Tm operator. Sets the text matrix to the given rotation and translation values. A current text matrix will be
+     * replaced with the new one.
+     * 
      * @param angle The angle used for the counterclockwise rotation in radians.
      * @param tx The translation value in x-direction.
      * @param ty The translation value in y-direction.
@@ -445,7 +485,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #drawImage(PDInlineImage, float, float, float, float)} instead.
      */
     @Deprecated
-    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width, float height) throws IOException
+    public void drawInlineImage(PDInlineImage inlineImage, float x, float y, float width,
+            float height) throws IOException
     {
         drawImage(inlineImage, x, y, width, height);
     }
@@ -463,30 +504,31 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #drawImage} instead.
      */
     @Deprecated
-    public void drawXObject(PDXObject xobject, float x, float y, float width, float height) throws IOException
+    public void drawXObject(PDXObject xobject, float x, float y, float width, float height)
+            throws IOException
     {
         AffineTransform transform = new AffineTransform(width, 0, 0, height, x, y);
         drawXObject(xobject, transform);
     }
 
     /**
-     * Draw an xobject(form or image) using the given {@link AffineTransform} to position
-     * the xobject.
+     * Draw an xobject(form or image) using the given {@link AffineTransform} to position the xobject.
      *
      * @param xobject The xobject to draw.
      * @param transform the transformation matrix
      * @throws IOException If there is an error writing to the stream.
      * @throws IllegalStateException If the method was called within a text block.
-     * @deprecated Use {@link #drawImage(PDImageXObject, Matrix) drawImage(PDImageXObject, Matrix)}
-     * or {@link #drawForm(PDFormXObject) drawForm(PDFormXObject)} with
-     * {@link #transform(Matrix) transform(Matrix)} instead.
+     * @deprecated Use {@link #drawImage(PDImageXObject, Matrix) drawImage(PDImageXObject, Matrix)} or
+     * {@link #drawForm(PDFormXObject) drawForm(PDFormXObject)} with {@link #transform(Matrix) transform(Matrix)}
+     * instead.
      */
     @Deprecated
     public void drawXObject(PDXObject xobject, AffineTransform transform) throws IOException
     {
         if (isInTextMode())
         {
-            throw new IllegalStateException("Error: drawXObject is not allowed within a text block.");
+            throw new IllegalStateException(
+                    "Error: drawXObject is not allowed within a text block.");
         }
 
         String xObjectPrefix;
@@ -511,6 +553,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     /**
      * The cm operator. Concatenates the current transformation matrix with the given values.
+     * 
      * @param a The a value of the matrix.
      * @param b The b value of the matrix.
      * @param c The c value of the matrix.
@@ -521,14 +564,15 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #transform} instead.
      */
     @Deprecated
-    public void concatenate2CTM(double a, double b, double c, double d, double e, double f) throws IOException
+    public void concatenate2CTM(double a, double b, double c, double d, double e, double f)
+            throws IOException
     {
         transform(new Matrix((float) a, (float) b, (float) c, (float) d, (float) e, (float) f));
     }
 
     /**
-     * The cm operator. Concatenates the current transformation matrix with the given
-     * {@link AffineTransform}.
+     * The cm operator. Concatenates the current transformation matrix with the given {@link AffineTransform}.
+     * 
      * @param at the transformation matrix
      * @throws IOException If there is an error writing to the stream.
      * @deprecated Use {@link #transform} instead.
@@ -541,6 +585,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     /**
      * q operator. Saves the current graphics state.
+     * 
      * @throws IOException If an error occurs while writing to the stream.
      */
     @Override
@@ -563,6 +608,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     /**
      * Q operator. Restores the current graphics state.
+     * 
      * @throws IOException If an error occurs while writing to the stream.
      */
     @Override
@@ -584,8 +630,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Set the stroking color space.  This will add the colorspace to the PDResources
-     * if necessary.
+     * Set the stroking color space. This will add the colorspace to the PDResources if necessary.
      *
      * @param colorSpace The colorspace to write.
      * @throws IOException If there is an error writing the colorspace.
@@ -600,8 +645,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Set the stroking color space.  This will add the colorspace to the PDResources
-     * if necessary.
+     * Set the stroking color space. This will add the colorspace to the PDResources if necessary.
      *
      * @param colorSpace The colorspace to write.
      * @throws IOException If there is an error writing the colorspace.
@@ -637,9 +681,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         PDColorSpace currentStrokingColorSpace = strokingColorSpaceStack.peek();
 
-        if (currentStrokingColorSpace instanceof PDSeparation ||
-            currentStrokingColorSpace instanceof PDPattern ||
-            currentStrokingColorSpace instanceof PDICCBased)
+        if (currentStrokingColorSpace instanceof PDSeparation
+                || currentStrokingColorSpace instanceof PDPattern
+                || currentStrokingColorSpace instanceof PDICCBased)
         {
             writeOperator("SCN");
         }
@@ -663,7 +707,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void setStrokingColor(int c, int m, int y, int k) throws IOException
     {
-        if (isOutside255Interval(c) || isOutside255Interval(m) || isOutside255Interval(y) || isOutside255Interval(k))
+        if (isOutside255Interval(c) || isOutside255Interval(m) || isOutside255Interval(y)
+                || isOutside255Interval(k))
         {
             throw new IllegalArgumentException("Parameters must be within 0..255, but are "
                     + String.format("(%d,%d,%d,%d)", c, m, y, k));
@@ -711,9 +756,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         PDColorSpace currentNonStrokingColorSpace = nonStrokingColorSpaceStack.peek();
 
-        if (currentNonStrokingColorSpace instanceof PDSeparation ||
-            currentNonStrokingColorSpace instanceof PDPattern ||
-            currentNonStrokingColorSpace instanceof PDICCBased)
+        if (currentNonStrokingColorSpace instanceof PDSeparation
+                || currentNonStrokingColorSpace instanceof PDPattern
+                || currentNonStrokingColorSpace instanceof PDICCBased)
         {
             writeOperator("scn");
         }
@@ -746,8 +791,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Append a cubic Bézier curve to the current path. The curve extends from the current
-     * point to the point (x3 , y3 ), using (x1 , y1 ) and (x2 , y2 ) as the Bézier control points
+     * Append a cubic Bézier curve to the current path. The curve extends from the current point to the point (x3 , y3
+     * ), using (x1 , y1 ) and (x2 , y2 ) as the Bézier control points
+     * 
      * @param x1 x coordinate of the point 1
      * @param y1 y coordinate of the point 1
      * @param x2 x coordinate of the point 2
@@ -758,14 +804,15 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @deprecated Use {@link #curveTo} instead.
      */
     @Deprecated
-    public void addBezier312(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
+    public void addBezier312(float x1, float y1, float x2, float y2, float x3, float y3)
+            throws IOException
     {
         curveTo(x1, y1, x2, y2, x3, y3);
     }
 
     /**
-     * Append a cubic Bézier curve to the current path. The curve extends from the current
-     * point to the point (x3 , y3 ), using the current point and (x2 , y2 ) as the Bézier control points/
+     * Append a cubic Bézier curve to the current path. The curve extends from the current point to the point (x3 , y3
+     * ), using the current point and (x2 , y2 ) as the Bézier control points/
      *
      * @param x2 x coordinate of the point 2
      * @param y2 y coordinate of the point 2
@@ -781,8 +828,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Append a cubic Bézier curve to the current path. The curve extends from the current
-     * point to the point (x3 , y3 ), using (x1 , y1 ) and (x3 , y3 ) as the Bézier control points/
+     * Append a cubic Bézier curve to the current path. The curve extends from the current point to the point (x3 , y3
+     * ), using (x1 , y1 ) and (x3 , y3 ) as the Bézier control points/
      *
      * @param x1 x coordinate of the point 1
      * @param y1 y coordinate of the point 1
@@ -806,8 +853,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param yEnd The end y coordinate.
      * @throws IOException If there is an error while adding the line.
      * @throws IllegalStateException If the method was called within a text block.
-     * @deprecated Use {@link #moveTo moveto(xStart,yStart)} followed by
-     * {@link #lineTo lineTo(xEnd,yEnd)}.
+     * @deprecated Use {@link #moveTo moveto(xStart,yStart)} followed by {@link #lineTo lineTo(xEnd,yEnd)}.
      */
     @Deprecated
     public void addLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
@@ -829,8 +875,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      * @param yEnd The end y coordinate.
      * @throws IOException If there is an error while drawing on the screen.
      * @throws IllegalStateException If the method was called within a text block.
-     * @deprecated Use {@link #moveTo moveto(xStart,yStart)} followed by
-     * {@link #lineTo lineTo(xEnd,yEnd)} followed by {@link #stroke stroke()}.
+     * @deprecated Use {@link #moveTo moveto(xStart,yStart)} followed by {@link #lineTo lineTo(xEnd,yEnd)} followed by
+     * {@link #stroke stroke()}.
      */
     @Deprecated
     public void drawLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
@@ -846,6 +892,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     /**
      * Add a polygon to the current path.
+     * 
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
@@ -858,7 +905,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         if (isInTextMode())
         {
-            throw new IllegalStateException("Error: addPolygon is not allowed within a text block.");
+            throw new IllegalStateException(
+                    "Error: addPolygon is not allowed within a text block.");
         }
         if (x.length != y.length)
         {
@@ -880,6 +928,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     /**
      * Draw a polygon on the page using the current stroking color.
+     * 
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
@@ -891,7 +940,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         if (isInTextMode())
         {
-            throw new IllegalStateException("Error: drawPolygon is not allowed within a text block.");
+            throw new IllegalStateException(
+                    "Error: drawPolygon is not allowed within a text block.");
         }
         addPolygon(x, y);
         stroke();
@@ -899,6 +949,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     /**
      * Draw and fill a polygon on the page using the current stroking / non stroking colors.
+     * 
      * @param x x coordinate of each points
      * @param y y coordinate of each points
      * @throws IOException If there is an error while drawing on the screen.
@@ -910,7 +961,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         if (isInTextMode())
         {
-            throw new IllegalStateException("Error: fillPolygon is not allowed within a text block.");
+            throw new IllegalStateException(
+                    "Error: fillPolygon is not allowed within a text block.");
         }
         addPolygon(x, y);
         fill();
@@ -929,14 +981,14 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         switch (windingRule)
         {
-            case PathIterator.WIND_NON_ZERO:
-                fill();
-                break;
-            case PathIterator.WIND_EVEN_ODD:
-                fillEvenOdd();
-                break;
-            default:
-                throw new IllegalArgumentException("Error: unknown value for winding rule");
+        case PathIterator.WIND_NON_ZERO:
+            fill();
+            break;
+        case PathIterator.WIND_EVEN_ODD:
+            fillEvenOdd();
+            break;
+        default:
+            throw new IllegalArgumentException("Error: unknown value for winding rule");
         }
     }
 
@@ -969,14 +1021,14 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         }
         switch (windingRule)
         {
-            case PathIterator.WIND_NON_ZERO:
-                writeOperator("W");
-                break;
-            case PathIterator.WIND_EVEN_ODD:
-                writeOperator("W*");
-                break;
-            default:
-                throw new IllegalArgumentException("Error: unknown value for winding rule");
+        case PathIterator.WIND_NON_ZERO:
+            writeOperator("W");
+            break;
+        case PathIterator.WIND_EVEN_ODD:
+            writeOperator("W*");
+            break;
+        default:
+            throw new IllegalArgumentException("Error: unknown value for winding rule");
         }
         writeOperator("n");
     }
@@ -995,8 +1047,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Begin a marked content sequence with a reference to an entry in the page resources'
-     * Properties dictionary.
+     * Begin a marked content sequence with a reference to an entry in the page resources' Properties dictionary.
      *
      * @param tag the tag
      * @param propsName the properties reference
@@ -1100,7 +1151,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         writeOperand(name);
     }
-    
+
     /**
      * Set an extended graphics state.
      * 
@@ -1115,8 +1166,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Set the text rendering mode. This determines whether showing text shall cause glyph outlines
-     * to be stroked, filled, used as a clipping boundary, or some combination of the three.
+     * Set the text rendering mode. This determines whether showing text shall cause glyph outlines to be stroked,
+     * filled, used as a clipping boundary, or some combination of the three.
      *
      * @param rm The text rendering mode.
      * @throws IOException If the content stream could not be written.
@@ -1128,11 +1179,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     /**
-     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing
-     * superscripts or subscripts.
+     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing superscripts or
+     * subscripts.
      *
-     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or
-     * down from its default location. 0 restores the default location.
+     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or down from its
+     * default location. 0 restores the default location.
      * @throws IOException
      */
     public void setTextRise(float rise) throws IOException
@@ -1140,4 +1191,66 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         writeOperand(rise);
         writeOperator("Ts");
     }
+
+    private byte[] encodeForGsub(Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap,
+            Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
+    {
+
+        String spaceRegexPattern = "\\s";
+        Pattern spaceRegex = Pattern.compile(spaceRegexPattern);
+
+        // break the entire chunk of text into words by splitting it with space
+        List<String> words = new CompoundCharacterTokenizer("\\s").tokenize(text);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        for (String word : words)
+        {
+            if (spaceRegex.matcher(word).matches())
+            {
+                out.write(font.encode(word));
+            }
+            else
+            {
+                glyphIds.addAll(applyGSUBRules(out, font, glyphSubstitutionMap, word));
+            }
+        }
+
+        return out.toByteArray();
+    }
+
+    private List<Integer> applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
+            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap, String word)
+            throws IOException
+    {
+        List<Integer> originalGlyphIds = new ArrayList<>();
+        CmapLookup cmapLookup = font.getCmapLookup();
+
+        // convert characters into glyphIds
+        for (char unicodeChar : word.toCharArray())
+        {
+            int glyphId = cmapLookup.getGlyphId(unicodeChar);
+            if (glyphId <= 0)
+            {
+                throw new IllegalStateException(
+                        "could not find the glyphId for the character: " + unicodeChar);
+            }
+            originalGlyphIds.add(glyphId);
+        }
+
+        // TODO: figure out how to get this language-specific detail up here
+        GsubWorker gsubWorker = new GsubWorkerForBengali(cmapLookup, glyphSubstitutionMap);
+
+        List<Integer> repositionedGlyphIds = gsubWorker.repositionGlyphs(originalGlyphIds);
+        List<Integer> glyphIdsAfterGsub = gsubWorker.substituteGlyphs(repositionedGlyphIds);
+
+        for (Integer glyphId : glyphIdsAfterGsub)
+        {
+            out.write(font.encodeGlyphId(glyphId));
+        }
+
+        return glyphIdsAfterGsub;
+
+    }
+
 }

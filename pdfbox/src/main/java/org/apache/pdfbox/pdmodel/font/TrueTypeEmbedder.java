@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.HeaderTable;
@@ -69,6 +70,8 @@ abstract class TrueTypeEmbedder implements Subsetter
     protected final CmapLookup cmapLookup;
     private final Set<Integer> subsetCodePoints = new HashSet<>();
     private final boolean embedSubset;
+
+    private final Set<Integer> allGlyphIds = new HashSet<>();
 
     /**
      * Creates a new TrueType font for embedding.
@@ -283,6 +286,11 @@ abstract class TrueTypeEmbedder implements Subsetter
         subsetCodePoints.add(codePoint);
     }
     
+    public void addGlyphIds(Set<Integer> glyphIds)
+    {
+        allGlyphIds.addAll(glyphIds);
+    }
+
     @Override
     public void subset() throws IOException
     {
@@ -313,6 +321,11 @@ abstract class TrueTypeEmbedder implements Subsetter
         // set the GIDs to subset
         TTFSubsetter subsetter = new TTFSubsetter(ttf, tables);
         subsetter.addAll(subsetCodePoints);
+
+        if (!allGlyphIds.isEmpty())
+        {
+            subsetter.addGlyphIds(allGlyphIds);
+        }
 
         // calculate deterministic tag based on the chosen subset
         Map<Integer, Integer> gidToCid = subsetter.getGIDMap();
