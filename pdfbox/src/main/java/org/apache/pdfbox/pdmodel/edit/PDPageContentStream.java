@@ -1343,7 +1343,7 @@ public class PDPageContentStream implements Closeable
     /**
      * Set linewidth to the given value.
      *
-     * @param lineWidth The width which is used for drwaing.
+     * @param lineWidth The width which is used for drawing.
      * @throws IOException If there is an error while drawing on the screen.
      */
     public void setLineWidth(float lineWidth) throws IOException
