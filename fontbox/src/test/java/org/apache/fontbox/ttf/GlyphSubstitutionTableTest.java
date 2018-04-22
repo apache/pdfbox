@@ -46,7 +46,7 @@ public class GlyphSubstitutionTableTest
             "blwf", "blws", "half", "haln", "init", "nukt", "pres", "pstf", "rphf", "vatu");
 
     @Test
-    public void testGetRawGSubData() throws IOException
+    public void testGetGsubData() throws IOException
     {
         // given
         MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
