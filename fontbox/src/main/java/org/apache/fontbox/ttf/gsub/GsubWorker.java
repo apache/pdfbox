@@ -29,7 +29,7 @@ import java.util.List;
 public interface GsubWorker
 {
     /**
-     * Applis language-specific transforms including GSUB and any other pre or post-processing necessary for displaying
+     * Applies language-specific transforms including GSUB and any other pre or post-processing necessary for displaying
      * Glyphs correctly.
      * 
      */
