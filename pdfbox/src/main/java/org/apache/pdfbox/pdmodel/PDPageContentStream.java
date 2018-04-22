@@ -1225,8 +1225,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(cmapLookup, gsubData);
 
-        List<Integer> repositionedGlyphIds = gsubWorker.repositionGlyphs(originalGlyphIds);
-        List<Integer> glyphIdsAfterGsub = gsubWorker.substituteGlyphs(repositionedGlyphIds);
+        List<Integer> glyphIdsAfterGsub = gsubWorker
+                .preProcessAndApplyGsubTransfs(originalGlyphIds);
 
         for (Integer glyphId : glyphIdsAfterGsub)
         {

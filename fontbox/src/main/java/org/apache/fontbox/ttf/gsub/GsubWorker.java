@@ -28,8 +28,6 @@ import java.util.List;
  */
 public interface GsubWorker
 {
-    List<Integer> substituteGlyphs(List<Integer> originalGlyphIds);
-
-    List<Integer> repositionGlyphs(List<Integer> originalGlyphIds);
+    List<Integer> preProcessAndApplyGsubTransfs(List<Integer> originalGlyphIds);
 
 }
