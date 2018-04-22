@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.Language;
 import org.apache.fontbox.ttf.model.MapBackedScriptFeature;
 import org.apache.fontbox.ttf.model.ScriptFeature;
 import org.junit.Test;
@@ -58,11 +59,13 @@ public class GlyphSubstitutionTableTest
         testClass.read(null, memoryTTFDataStream);
 
         // then
-        GsubData rawGsubData = testClass.getGsubData();
-        assertNotNull(rawGsubData);
-        assertNotEquals(GsubData.NO_DATA_FOUND, rawGsubData);
+        GsubData gsubData = testClass.getGsubData();
+        assertNotNull(gsubData);
+        assertNotEquals(GsubData.NO_DATA_FOUND, gsubData);
+        assertEquals(Language.BENGALI, gsubData.getLanguage());
+        assertEquals("bng2", gsubData.getActiveScriptName());
 
-        assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), rawGsubData.getSupportedFeatures());
+        assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), gsubData.getSupportedFeatures());
 
         String templatePathToFile = "/gsub/lohit_bengali/bng2/%s.txt";
 
@@ -73,7 +76,7 @@ public class GlyphSubstitutionTableTest
                     String.format(templatePathToFile, featureName));
             ScriptFeature scriptFeature = new MapBackedScriptFeature(featureName,
                     expectedGsubTableRawData);
-            assertEquals(scriptFeature, rawGsubData.getFeature(featureName));
+            assertEquals(scriptFeature, gsubData.getFeature(featureName));
         }
 
     }
