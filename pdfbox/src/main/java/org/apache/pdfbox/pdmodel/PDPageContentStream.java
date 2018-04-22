@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
-import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
+import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
@@ -1221,8 +1221,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             originalGlyphIds.add(glyphId);
         }
 
-        // TODO: figure out how to get this language-specific detail up here
-        GsubWorker gsubWorker = new GsubWorkerForBengali(cmapLookup, gsubData);
+        GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
+
+        GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(cmapLookup, gsubData);
 
         List<Integer> repositionedGlyphIds = gsubWorker.repositionGlyphs(originalGlyphIds);
         List<Integer> glyphIdsAfterGsub = gsubWorker.substituteGlyphs(repositionedGlyphIds);

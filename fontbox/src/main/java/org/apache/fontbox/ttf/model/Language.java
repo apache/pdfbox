@@ -17,10 +17,14 @@
 
 package org.apache.fontbox.ttf.model;
 
+import org.apache.fontbox.ttf.gsub.GsubWorker;
+import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.table.common.ScriptRecord;
 
 /**
- * Enumerates the languages supported for GSUB operation
+ * Enumerates the languages supported for GSUB operation. In order to support a new language, you need to add it here
+ * and then implement the {@link GsubWorker} for the given language and return the same from the
+ * {@link GsubWorkerFactory#getGsubWorker(org.apache.fontbox.ttf.CmapLookup, GsubData)}
  * 
  * @author Palash Ray
  *

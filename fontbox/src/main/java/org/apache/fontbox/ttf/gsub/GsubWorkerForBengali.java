@@ -54,7 +54,7 @@ public class GsubWorkerForBengali implements GsubWorker
 
     private final List<Integer> beforeHalfGlyphIds;
 
-    public GsubWorkerForBengali(CmapLookup cmapLookup, GsubData gsubData)
+    GsubWorkerForBengali(CmapLookup cmapLookup, GsubData gsubData)
     {
         this.gsubData = gsubData;
         beforeHalfGlyphIds = getBeforeHalfGlyphIds(cmapLookup);
