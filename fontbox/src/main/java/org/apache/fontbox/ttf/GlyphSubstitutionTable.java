@@ -31,6 +31,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.gsub.GlyphSubstitutionDataExtractor;
+import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
 import org.apache.fontbox.ttf.table.common.CoverageTableFormat1;
 import org.apache.fontbox.ttf.table.common.CoverageTableFormat2;
@@ -72,7 +73,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private String lastUsedSupportedScript;
 
-    private Map<String, Map<List<Integer>, Integer>> rawGSubData;
+    private GsubData gsubData;
 
     GlyphSubstitutionTable(TrueTypeFont font)
     {
@@ -103,9 +104,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
         GlyphSubstitutionDataExtractor glyphSubstitutionDataExtractor = new GlyphSubstitutionDataExtractor();
 
-        rawGSubData = glyphSubstitutionDataExtractor
+        gsubData = glyphSubstitutionDataExtractor
                 .getGsubData(scriptList, featureListTable, lookupListTable);
-        LOG.debug("rawGSubData: " + rawGSubData);
     }
 
     private Map<String, ScriptTable> readScriptList(TTFDataStream data, long offset)
@@ -670,9 +670,9 @@ public class GlyphSubstitutionTable extends TTFTable
         return gid;
     }
 
-    public Map<String, Map<List<Integer>, Integer>> getRawGSubData()
+    public GsubData getGsubData()
     {
-        return rawGSubData;
+        return gsubData;
     }
 
     private RangeRecord readRangeRecord(TTFDataStream data) throws IOException

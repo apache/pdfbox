@@ -26,6 +26,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.Language;
+import org.apache.fontbox.ttf.model.MapBackedGsubData;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
 import org.apache.fontbox.ttf.table.common.FeatureListTable;
 import org.apache.fontbox.ttf.table.common.FeatureRecord;
@@ -52,18 +55,18 @@ public class GlyphSubstitutionDataExtractor
 
     private static final Log LOG = LogFactory.getLog(GlyphSubstitutionDataExtractor.class);
 
-    private static final String[] SUPPORTED_LANGUAGES = { "bng2", "beng" };
-
-    public Map<String, Map<List<Integer>, Integer>> getGsubData(Map<String, ScriptTable> scriptList,
+    public GsubData getGsubData(Map<String, ScriptTable> scriptList,
             FeatureListTable featureListTable, LookupListTable lookupListTable)
     {
 
-        ScriptTable scriptTable = getSupportedLanguage(scriptList);
+        ScriptTableDetails scriptTableDetails = getSupportedLanguage(scriptList);
 
-        if (scriptTable == null)
+        if (scriptTableDetails == null)
         {
-            return Collections.emptyMap();
+            return GsubData.NO_DATA_FOUND;
         }
+
+        ScriptTable scriptTable = scriptTableDetails.getScriptTable();
 
         Map<String, Map<List<Integer>, Integer>> gsubData = new LinkedHashMap<>();
         // the starting point is really the scriptTags
@@ -76,16 +79,21 @@ public class GlyphSubstitutionDataExtractor
         {
             populateGsubData(gsubData, langSysTable, featureListTable, lookupListTable);
         }
-        return Collections.unmodifiableMap(gsubData);
+
+        return new MapBackedGsubData(scriptTableDetails.getLanguage(),
+                scriptTableDetails.getFeatureName(), gsubData);
     }
 
-    private ScriptTable getSupportedLanguage(Map<String, ScriptTable> scriptList)
+    private ScriptTableDetails getSupportedLanguage(Map<String, ScriptTable> scriptList)
     {
-        for (String supportedLanguage : SUPPORTED_LANGUAGES)
+        for (Language lang : Language.values())
         {
-            if (scriptList.containsKey(supportedLanguage))
+            for (String scriptName : lang.getScriptNames())
             {
-                return scriptList.get(supportedLanguage);
+                if (scriptList.containsKey(scriptName))
+                {
+                    return new ScriptTableDetails(lang, scriptName, scriptList.get(scriptName));
+                }
             }
         }
         return null;
@@ -230,6 +238,36 @@ public class GlyphSubstitutionDataExtractor
                     + glyphsToBeSubstituted + " is trying to override the oldValue: " + oldValue;
             LOG.warn(message);
         }
+    }
+
+    private static class ScriptTableDetails
+    {
+        private final Language language;
+        private final String featureName;
+        private final ScriptTable scriptTable;
+
+        private ScriptTableDetails(Language language, String featureName, ScriptTable scriptTable)
+        {
+            this.language = language;
+            this.featureName = featureName;
+            this.scriptTable = scriptTable;
+        }
+
+        public Language getLanguage()
+        {
+            return language;
+        }
+
+        public String getFeatureName()
+        {
+            return featureName;
+        }
+
+        public ScriptTable getScriptTable()
+        {
+            return scriptTable;
+        }
+
     }
 
 }

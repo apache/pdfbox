@@ -21,11 +21,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.ScriptFeature;
 
 /**
  * 
@@ -49,14 +50,13 @@ public class GsubWorkerForBengali implements GsubWorker
 
     private static final char[] BEFORE_HALF_CHARS = new char[] { '\u09BF', '\u09C7', '\u09C8' };
 
-    private final Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap;
+    private final GsubData gsubData;
 
     private final List<Integer> beforeHalfGlyphIds;
 
-    public GsubWorkerForBengali(CmapLookup cmapLookup,
-            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap)
+    public GsubWorkerForBengali(CmapLookup cmapLookup, GsubData gsubData)
     {
-        this.glyphSubstitutionMap = glyphSubstitutionMap;
+        this.gsubData = gsubData;
         beforeHalfGlyphIds = getBeforeHalfGlyphIds(cmapLookup);
     }
 
@@ -67,7 +67,7 @@ public class GsubWorkerForBengali implements GsubWorker
 
         for (String feature : FEATURES_IN_ORDER)
         {
-            if (!glyphSubstitutionMap.containsKey(feature))
+            if (!gsubData.isFeatureSupported(feature))
             {
                 LOG.debug("the feature " + feature + " was not found");
                 continue;
@@ -75,9 +75,10 @@ public class GsubWorkerForBengali implements GsubWorker
 
             LOG.debug("applying the feature " + feature);
 
-            Map<List<Integer>, Integer> featureMap = glyphSubstitutionMap.get(feature);
+            ScriptFeature scriptFeature = gsubData.getFeature(feature);
 
-            intermediateGlyphsFromGsub = applyGsubFeature(featureMap, intermediateGlyphsFromGsub);
+            intermediateGlyphsFromGsub = applyGsubFeature(scriptFeature,
+                    intermediateGlyphsFromGsub);
         }
 
         return intermediateGlyphsFromGsub;
@@ -101,12 +102,12 @@ public class GsubWorkerForBengali implements GsubWorker
         return repositionedGlyphIds;
     }
 
-    private List<Integer> applyGsubFeature(Map<List<Integer>, Integer> featureMap,
+    private List<Integer> applyGsubFeature(ScriptFeature scriptFeature,
             List<Integer> originalGlyphs)
     {
 
         GlyphArraySplitter glyphArraySplitter = new GlyphArraySplitterRegexImpl(
-                featureMap.keySet());
+                scriptFeature.getAllGlyphIdsForSubstitution());
 
         List<List<Integer>> tokens = glyphArraySplitter.split(originalGlyphs);
 
@@ -114,10 +115,10 @@ public class GsubWorkerForBengali implements GsubWorker
 
         for (List<Integer> chunk : tokens)
         {
-            if (featureMap.containsKey(chunk))
+            if (scriptFeature.canReplaceGlyphs(chunk))
             {
                 // gsub system kicks in, you get the glyphId directly
-                int glyphId = featureMap.get(chunk);
+                int glyphId = scriptFeature.getReplacementForGlyphs(chunk);
                 gsubProcessedGlyphs.add(glyphId);
             }
             else
