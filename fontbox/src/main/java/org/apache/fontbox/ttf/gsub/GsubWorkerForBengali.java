@@ -20,7 +20,9 @@ package org.apache.fontbox.ttf.gsub;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,15 +51,23 @@ public class GsubWorkerForBengali implements GsubWorker
             "haln", "calt");
 
     private static final char[] BEFORE_HALF_CHARS = new char[] { '\u09BF', '\u09C7', '\u09C8' };
+    private static final BeforeAndAfterSpanComponent[] BEFORE_AND_AFTER_SPAN_CHARS = new BeforeAndAfterSpanComponent[] {
+            new BeforeAndAfterSpanComponent('\u09CB', '\u09C7', '\u09BE'),
+            new BeforeAndAfterSpanComponent('\u09CC', '\u09C7', '\u09D7') };
 
+    private final CmapLookup cmapLookup;
     private final GsubData gsubData;
 
     private final List<Integer> beforeHalfGlyphIds;
+    private final Map<Integer, BeforeAndAfterSpanComponent> beforeAndAfterSpanGlyphIds;
+
 
     GsubWorkerForBengali(CmapLookup cmapLookup, GsubData gsubData)
     {
+        this.cmapLookup = cmapLookup;
         this.gsubData = gsubData;
-        beforeHalfGlyphIds = getBeforeHalfGlyphIds(cmapLookup);
+        beforeHalfGlyphIds = getBeforeHalfGlyphIds();
+        beforeAndAfterSpanGlyphIds = getBeforeAndAfterSpanGlyphIds();
     }
 
     @Override
@@ -87,6 +97,13 @@ public class GsubWorkerForBengali implements GsubWorker
     @Override
     public List<Integer> repositionGlyphs(List<Integer> originalGlyphIds)
     {
+        List<Integer> glyphsRepositionedByBeforeHalf = repositionBeforeHalfGlyphIds(
+                originalGlyphIds);
+        return repositionBeforeAndAfterSpanGlyphIds(glyphsRepositionedByBeforeHalf);
+    }
+
+    private List<Integer> repositionBeforeHalfGlyphIds(List<Integer> originalGlyphIds)
+    {
         List<Integer> repositionedGlyphIds = new ArrayList<>(originalGlyphIds);
 
         for (int index = 1; index < originalGlyphIds.size(); index++)
@@ -97,6 +114,28 @@ public class GsubWorkerForBengali implements GsubWorker
                 int previousGlyphId = originalGlyphIds.get(index - 1);
                 repositionedGlyphIds.set(index, previousGlyphId);
                 repositionedGlyphIds.set(index - 1, glyphId);
+            }
+        }
+        return repositionedGlyphIds;
+    }
+
+    private List<Integer> repositionBeforeAndAfterSpanGlyphIds(List<Integer> originalGlyphIds)
+    {
+        List<Integer> repositionedGlyphIds = new ArrayList<>(originalGlyphIds);
+
+        for (int index = 1; index < originalGlyphIds.size(); index++)
+        {
+            int glyphId = originalGlyphIds.get(index);
+            if (beforeAndAfterSpanGlyphIds.containsKey(glyphId))
+            {
+                BeforeAndAfterSpanComponent beforeAndAfterSpanComponent = beforeAndAfterSpanGlyphIds
+                        .get(glyphId);
+                int previousGlyphId = originalGlyphIds.get(index - 1);
+                repositionedGlyphIds.set(index, previousGlyphId);
+                repositionedGlyphIds.set(index - 1,
+                        getGlyphId(beforeAndAfterSpanComponent.beforeComponentCharacter));
+                repositionedGlyphIds.add(index + 1,
+                        getGlyphId(beforeAndAfterSpanComponent.afterComponentCharacter));
             }
         }
         return repositionedGlyphIds;
@@ -133,16 +172,57 @@ public class GsubWorkerForBengali implements GsubWorker
         return gsubProcessedGlyphs;
     }
 
-    private static List<Integer> getBeforeHalfGlyphIds(CmapLookup cmapLookup)
+    private List<Integer> getBeforeHalfGlyphIds()
     {
-        List<Integer> beforeHalfGlyphIds = new ArrayList<>();
+        List<Integer> glyphIds = new ArrayList<>();
 
-        for (char beforeHalfChar : BEFORE_HALF_CHARS)
+        for (char character : BEFORE_HALF_CHARS)
         {
-            beforeHalfGlyphIds.add(cmapLookup.getGlyphId(beforeHalfChar));
+            glyphIds.add(getGlyphId(character));
         }
 
-        return Collections.unmodifiableList(beforeHalfGlyphIds);
+        return Collections.unmodifiableList(glyphIds);
+
+    }
+
+    private Integer getGlyphId(char character)
+    {
+        return cmapLookup.getGlyphId(character);
+    }
+
+    private Map<Integer, BeforeAndAfterSpanComponent> getBeforeAndAfterSpanGlyphIds()
+    {
+        Map<Integer, BeforeAndAfterSpanComponent> beforeAndAfterSpanGlyphIds = new HashMap<>();
+
+        for (BeforeAndAfterSpanComponent beforeAndAfterSpanComponent : BEFORE_AND_AFTER_SPAN_CHARS)
+        {
+            beforeAndAfterSpanGlyphIds.put(
+                    getGlyphId(beforeAndAfterSpanComponent.originalCharacter),
+                    beforeAndAfterSpanComponent);
+        }
+
+        return Collections.unmodifiableMap(beforeAndAfterSpanGlyphIds);
+    }
+
+    /**
+     * Models characters like O-kar (\u09CB) and OU-kar (\u09CC). Since these 2 characters is represented by 2
+     * components, one before and one after the Vyanjan Varna on which this is used, this glyph has to be replaced by
+     * these 2 glyphs. For O-kar, it has to be replaced by E-kar (\u09C7) and AA-kar (\u09BE). For OU-kar, it has be
+     * replaced by E-kar (\u09C7) and \u09D7.
+     *
+     */
+    private static class BeforeAndAfterSpanComponent {
+        private final char originalCharacter;
+        private final char beforeComponentCharacter;
+        private final char afterComponentCharacter;
+
+        BeforeAndAfterSpanComponent(char originalCharacter, char beforeComponentCharacter,
+                char afterComponentCharacter)
+        {
+            this.originalCharacter = originalCharacter;
+            this.beforeComponentCharacter = beforeComponentCharacter;
+            this.afterComponentCharacter = afterComponentCharacter;
+        }
 
     }
 
