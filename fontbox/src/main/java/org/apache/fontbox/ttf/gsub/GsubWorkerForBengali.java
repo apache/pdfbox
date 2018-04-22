@@ -73,7 +73,7 @@ public class GsubWorkerForBengali implements GsubWorker
     }
 
     @Override
-    public List<Integer> preProcessAndApplyGsubTransfs(List<Integer> originalGlyphIds)
+    public List<Integer> applyTransforms(List<Integer> originalGlyphIds)
     {
         List<Integer> intermediateGlyphsFromGsub = originalGlyphIds;
 

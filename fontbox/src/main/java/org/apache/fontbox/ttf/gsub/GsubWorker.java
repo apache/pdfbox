@@ -28,6 +28,11 @@ import java.util.List;
  */
 public interface GsubWorker
 {
-    List<Integer> preProcessAndApplyGsubTransfs(List<Integer> originalGlyphIds);
+    /**
+     * Applis language-specific transforms including GSUB and any other pre or post-processing necessary for displaying
+     * Glyphs correctly.
+     * 
+     */
+    List<Integer> applyTransforms(List<Integer> originalGlyphIds);
 
 }
