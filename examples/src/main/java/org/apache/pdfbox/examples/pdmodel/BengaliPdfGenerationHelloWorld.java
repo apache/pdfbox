@@ -39,10 +39,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 public class BengaliPdfGenerationHelloWorld
 {
-    private BengaliPdfGenerationHelloWorld()
-    {        
-    }
-
     /**
      * The unicode of this is given below:
      * 
@@ -57,10 +53,20 @@ public class BengaliPdfGenerationHelloWorld
 
     static
     {
-        if (System.getProperty("java.version").startsWith("1.8"))
+        try
         {
+            // turns off log info about using KCMS (faster than LCMS) if available
+            Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
             System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
         }
+        catch (ClassNotFoundException e)
+        {
+            // ignore
+        }
+    }
+
+    private BengaliPdfGenerationHelloWorld()
+    {        
     }
 
     public static void main(String[] args) throws IOException, URISyntaxException
