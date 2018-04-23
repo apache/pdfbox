@@ -157,29 +157,24 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                                         Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
             }
         }
-        catch (RuntimeException e)
+        catch (ProfileDataException | CMMException | IllegalArgumentException |
+               ArrayIndexOutOfBoundsException | IOException e)
         {
-            if (e instanceof ProfileDataException ||
-                e instanceof CMMException ||
-                e instanceof IllegalArgumentException ||
-                e instanceof ArrayIndexOutOfBoundsException)
-            {
-                // fall back to alternateColorSpace color space
-                awtColorSpace = null;
-                alternateColorSpace = getAlternateColorSpace();
-                if (alternateColorSpace.equals(PDDeviceRGB.INSTANCE))
-                {
-                    isRGB = true;
-                }
-                LOG.warn("Can't read embedded ICC profile (" + e.getLocalizedMessage() + 
-                         "), using alternate color space: " + alternateColorSpace.getName());
-                initialColor = alternateColorSpace.getInitialColor();
-            }
-            else
-            {
-                throw e;
-            }
+            fallbackToAlternateColorSpace(e);
         }
+    }
+
+    private void fallbackToAlternateColorSpace(Exception e) throws IOException
+    {
+        awtColorSpace = null;
+        alternateColorSpace = getAlternateColorSpace();
+        if (alternateColorSpace.equals(PDDeviceRGB.INSTANCE))
+        {
+            isRGB = true;
+        }
+        LOG.warn("Can't read embedded ICC profile (" + e.getLocalizedMessage() +
+                "), using alternate color space: " + alternateColorSpace.getName());
+        initialColor = alternateColorSpace.getInitialColor();
     }
 
     /**
