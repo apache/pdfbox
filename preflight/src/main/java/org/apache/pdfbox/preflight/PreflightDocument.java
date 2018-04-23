@@ -156,6 +156,9 @@ public class PreflightDocument extends PDDocument
      */
     public void validate() throws ValidationException
     {
+        // force early class loading to check if people forgot to use --add-modules javax.xml.bind
+        // on java 9 or later
+        javax.xml.bind.DatatypeConverter.parseInt("0");
         context.setConfig(config);
         Collection<String> processes = config.getProcessNames();
         for (String name : processes)
