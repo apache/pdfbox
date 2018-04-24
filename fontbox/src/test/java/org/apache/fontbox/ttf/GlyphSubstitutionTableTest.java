@@ -17,7 +17,7 @@
 package org.apache.fontbox.ttf;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedReader;
@@ -30,8 +30,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.Language;
+import org.apache.fontbox.ttf.model.MapBackedScriptFeature;
+import org.apache.fontbox.ttf.model.ScriptFeature;
 import org.junit.Test;
 
 public class GlyphSubstitutionTableTest
@@ -43,7 +46,7 @@ public class GlyphSubstitutionTableTest
             "blwf", "blws", "half", "haln", "init", "nukt", "pres", "pstf", "rphf", "vatu");
 
     @Test
-    public void testGetRawGSubData() throws IOException
+    public void testGetGsubData() throws IOException
     {
         // given
         MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
@@ -56,12 +59,13 @@ public class GlyphSubstitutionTableTest
         testClass.read(null, memoryTTFDataStream);
 
         // then
-        Map<String, Map<List<Integer>, Integer>> rawGsubData = testClass.getRawGSubData();
-        assertNotNull(rawGsubData);
-        assertFalse(rawGsubData.isEmpty());
+        GsubData gsubData = testClass.getGsubData();
+        assertNotNull(gsubData);
+        assertNotEquals(GsubData.NO_DATA_FOUND, gsubData);
+        assertEquals(Language.BENGALI, gsubData.getLanguage());
+        assertEquals("bng2", gsubData.getActiveScriptName());
 
-        Set<String> featureNames = rawGsubData.keySet();
-        assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), featureNames);
+        assertEquals(new HashSet<>(EXPECTED_FEATURE_NAMES), gsubData.getSupportedFeatures());
 
         String templatePathToFile = "/gsub/lohit_bengali/bng2/%s.txt";
 
@@ -70,7 +74,9 @@ public class GlyphSubstitutionTableTest
             System.out.println("******* Testing feature: " + featureName);
             Map<List<Integer>, Integer> expectedGsubTableRawData = getExpectedGsubTableRawData(
                     String.format(templatePathToFile, featureName));
-            assertEquals(expectedGsubTableRawData, rawGsubData.get(featureName));
+            ScriptFeature scriptFeature = new MapBackedScriptFeature(featureName,
+                    expectedGsubTableRawData);
+            assertEquals(scriptFeature, gsubData.getFeature(featureName));
         }
 
     }
