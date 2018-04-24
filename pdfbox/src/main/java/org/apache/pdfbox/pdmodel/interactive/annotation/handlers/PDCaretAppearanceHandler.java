@@ -48,10 +48,12 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        float lineWidth = 1f;
-        //TODO Adobe creates the /RD entry, but it is unclear how it
-        // gets the (identical) numbers. The numbers from there are then substracted/added from /BBox
-        // and used in the translation in the matrix and also for the line width.
+        //TODO Adobe creates the /RD entry with a number that is decided by dividing the height by 10,
+        // with a maximum result of 5. That number is then substracted from the /BBox
+        // values and used in the translation values in the matrix and also for the line width
+        // (not used here because it has no effect).
+        // Currently, the rendering difference between our content stream and the one from Adobe
+        // is minimal, about one pixel line at the bottom.
 
         try
         {
@@ -59,7 +61,6 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
             try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
             {
                 contentStream.setStrokingColor(getColor());
-                contentStream.setLineWidth(lineWidth);
                 contentStream.setNonStrokingColor(getColor());
                 
                 handleOpacity(annotation.getConstantOpacity());
@@ -77,11 +78,10 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 contentStream.curveTo(halfX, halfY, 
                                       halfX, 0,
                                       rect.getWidth(), 0);
-                // closeAndFillAndStroke() would bring a thicker "thin top" shape.
                 contentStream.closePath();
                 contentStream.fill();
-                contentStream.stroke();
-                //TODO test whether the stroke() and setLineWidth() calls have any effect at all.
+                // Adobe has an additional stroke, but it has no effect
+                // because fill "consumes" the path.
             }
         }
         catch (IOException e)
