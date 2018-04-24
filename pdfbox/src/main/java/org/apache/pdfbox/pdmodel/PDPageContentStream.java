@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -35,7 +34,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
-import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
+import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
+import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -330,12 +330,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         if (font instanceof PDType0Font)
         {
             PDType0Font pdType0Font = (PDType0Font) font;
-            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap = pdType0Font
-                    .getGlyphSubstitutionMap();
-            if (!glyphSubstitutionMap.isEmpty())
+            GsubData gsubData = pdType0Font.getGsubData();
+            if (gsubData != GsubData.NO_DATA_FOUND)
             {
                 Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(glyphSubstitutionMap, glyphIds, pdType0Font, text);
+                encodedText = encodeForGsub(gsubData, glyphIds, pdType0Font, text);
                 if (pdType0Font.willBeSubset())
                 {
                     pdType0Font.addGlyphsToSubset(glyphIds);
@@ -1177,7 +1176,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         writeOperator("Ts");
     }
 
-    private byte[] encodeForGsub(Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap,
+    private byte[] encodeForGsub(GsubData gsubData,
             Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
 
@@ -1197,7 +1196,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             else
             {
-                glyphIds.addAll(applyGSUBRules(out, font, glyphSubstitutionMap, word));
+                glyphIds.addAll(applyGSUBRules(out, font, gsubData, word));
             }
         }
 
@@ -1205,8 +1204,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
 
     private List<Integer> applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
-            Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap, String word)
-            throws IOException
+            GsubData gsubData, String word) throws IOException
     {
         List<Integer> originalGlyphIds = new ArrayList<>();
         CmapLookup cmapLookup = font.getCmapLookup();
@@ -1223,11 +1221,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             originalGlyphIds.add(glyphId);
         }
 
-        // TODO: figure out how to get this language-specific detail up here
-        GsubWorker gsubWorker = new GsubWorkerForBengali(cmapLookup, glyphSubstitutionMap);
+        GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
 
-        List<Integer> repositionedGlyphIds = gsubWorker.repositionGlyphs(originalGlyphIds);
-        List<Integer> glyphIdsAfterGsub = gsubWorker.substituteGlyphs(repositionedGlyphIds);
+        GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(cmapLookup, gsubData);
+
+        List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
 
         for (Integer glyphId : glyphIdsAfterGsub)
         {

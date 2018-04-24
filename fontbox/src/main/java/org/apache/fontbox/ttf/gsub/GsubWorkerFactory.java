@@ -17,22 +17,30 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-import java.util.List;
+import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.model.GsubData;
+import org.apache.fontbox.ttf.model.Language;
 
 /**
- * This class is responsible for replacing GlyphIDs with new ones according to the GSUB tables. Each language should
- * have an implementation of this.
+ * Gets a {@link Language} specific instance of a {@link GsubWorker}
  * 
  * @author Palash Ray
- * 
+ *
  */
-public interface GsubWorker
+public class GsubWorkerFactory
 {
-    /**
-     * Applies language-specific transforms including GSUB and any other pre or post-processing necessary for displaying
-     * Glyphs correctly.
-     * 
-     */
-    List<Integer> applyTransforms(List<Integer> originalGlyphIds);
+
+    public GsubWorker getGsubWorker(CmapLookup cmapLookup, GsubData gsubData)
+    {
+        switch (gsubData.getLanguage())
+        {
+        case BENGALI:
+            return new GsubWorkerForBengali(cmapLookup, gsubData);
+        default:
+            throw new UnsupportedOperationException(
+                    "The language " + gsubData.getLanguage() + " is not yet supported");
+        }
+
+    }
 
 }

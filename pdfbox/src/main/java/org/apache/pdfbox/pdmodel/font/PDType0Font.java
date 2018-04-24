@@ -20,10 +20,7 @@ import java.awt.geom.GeneralPath;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -32,6 +29,7 @@ import org.apache.fontbox.cmap.CMap;
 import org.apache.fontbox.ttf.CmapLookup;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -52,7 +50,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
 
     private final PDCIDFont descendantFont;
     private final Set<Integer> noUnicode = new HashSet<>(); 
-    private final Map<String, Map<List<Integer>, Integer>> glyphSubstitutionMap;
+    private final GsubData gsubData;
     private final CmapLookup cmapLookup;
     private CMap cMap, cMapUCS2;
     private boolean isCMapPredefined;
@@ -70,7 +68,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     {
         super(fontDictionary);
 
-        glyphSubstitutionMap = Collections.emptyMap();
+        gsubData = GsubData.NO_DATA_FOUND;
         cmapLookup = null;
 
         COSBase base = dict.getDictionaryObject(COSName.DESCENDANT_FONTS);
@@ -104,7 +102,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
             ttf.enableVerticalSubstitutions();
         }
 
-        glyphSubstitutionMap = ttf.getGlyphSubstitutionMap();
+        gsubData = ttf.getGsubData();
         cmapLookup = ttf.getUnicodeCmapLookup();
 
         embedder = new PDCIDFontType2Embedder(document, dict, ttf, embedSubset, this, vertical);
@@ -599,9 +597,9 @@ public class PDType0Font extends PDFont implements PDVectorFont
         return descendantFont.hasGlyph(code);
     }
 
-    public Map<String, Map<List<Integer>, Integer>> getGlyphSubstitutionMap()
+    public GsubData getGsubData()
     {
-        return glyphSubstitutionMap;
+        return gsubData;
     }
 
     public byte[] encodeGlyphId(int glyphId)

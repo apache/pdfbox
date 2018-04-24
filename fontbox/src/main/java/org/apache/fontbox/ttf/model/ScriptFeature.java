@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.fontbox.ttf.gsub;
+package org.apache.fontbox.ttf.model;
 
 import java.util.List;
+import java.util.Set;
+
+import org.apache.fontbox.ttf.table.common.FeatureRecord;
 
 /**
- * This class is responsible for replacing GlyphIDs with new ones according to the GSUB tables. Each language should
- * have an implementation of this.
+ * Models a {@link FeatureRecord}
  * 
  * @author Palash Ray
- * 
+ *
  */
-public interface GsubWorker
+public interface ScriptFeature
 {
-    /**
-     * Applies language-specific transforms including GSUB and any other pre or post-processing necessary for displaying
-     * Glyphs correctly.
-     * 
-     */
-    List<Integer> applyTransforms(List<Integer> originalGlyphIds);
+
+    String getName();
+
+    Set<List<Integer>> getAllGlyphIdsForSubstitution();
+
+    boolean canReplaceGlyphs(List<Integer> glyphIds);
+
+    Integer getReplacementForGlyphs(List<Integer> glyphIds);
 
 }
