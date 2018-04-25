@@ -113,10 +113,8 @@ public abstract class AbstractActionManager
     }
 
     /**
-     * Call the valid(boolean, List) method with the additonalActionAuth set to false.
+     * Call the valid(boolean, List) method with the additionalActionAuth set to false.
      * 
-     * @param error
-     *            the validation error list to updated if the validation fails.
      * @return
      * @throws ValidationException
      */
@@ -129,21 +127,21 @@ public abstract class AbstractActionManager
      * Validate an Action dictionary.
      * 
      * Return false if the dictionary is invalid (ex : missing key). If the ActionManager represents an
-     * AdditionalAction, this method returns false and updates the error list when the additonalActionAuth parameter is
+     * AdditionalAction, this method returns false and updates the error list when the additionalActionAuth parameter is
      * set to false.
      * 
      * This method call the innerValid method to process specific checks according to the action type.
      * 
      * If innerValid successes, all actions contained in the Next entry of the Action dictionary are validated.
      * 
-     * @param additonalActionAuth
+     * @param additionalActionAuth
      *            boolean to know if an additional action is authorized.
      * @return
      * @throws ValidationException
      */
-    public boolean valid(boolean additonalActionAuth) throws ValidationException
+    public boolean valid(boolean additionalActionAuth) throws ValidationException
     {
-        if (isAdditionalAction() && !additonalActionAuth)
+        if (isAdditionalAction() && !additionalActionAuth)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTION,
                     "Additional Action are forbidden"));
