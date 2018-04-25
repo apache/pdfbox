@@ -27,7 +27,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 
 /**
  * Handler to generate the circle annotations appearance.
@@ -66,10 +68,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
                 handleOpacity(annotation.getConstantOpacity());
                 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
-                
-                // the differences rectangle
-                // TODO: this only works for border effect solid. Cloudy needs a different approach.
-                setRectDifference(lineWidth);
+                PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
                 
                 // Acrobat applies a padding to each side of the bbox so the line is completely within
                 // the bbox.
@@ -78,29 +77,47 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
                 PDRectangle bbox = getRectangle();
                 PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth/2);
                 
-                // lower left corner
-                float x0 = borderEdge.getLowerLeftX();
-                float y0 = borderEdge.getLowerLeftY();
-                // upper right corner
-                float x1 = borderEdge.getUpperRightX();
-                float y1 = borderEdge.getUpperRightY();
-                // mid points
-                float xm = x0 + borderEdge.getWidth() / 2;
-                float ym = y0 + borderEdge.getHeight() / 2;
-                // see http://spencermortensen.com/articles/bezier-circle/
-                // the below number was calculated from sampling content streams
-                // generated using Adobe Reader
-                float magic = 0.55555417f;
-                // control point offsets
-                float vOffset = borderEdge.getHeight() / 2 * magic;
-                float hOffset = borderEdge.getWidth() / 2 * magic;
+                if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
+                {
+                    CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                        borderEffect.getIntensity(), lineWidth, getRectangle());
+                    cloudyBorder.createCloudyEllipse(annotation.getRectDifference());
+                    annotation.setRectangle(cloudyBorder.getRectangle());
+                    annotation.setRectDifference(cloudyBorder.getRectDifference());
+                    PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                    appearanceStream.setBBox(cloudyBorder.getBBox());
+                    appearanceStream.setMatrix(cloudyBorder.getMatrix());
+                }
+                else
+                {
+                    // the differences rectangle
+                    setRectDifference(lineWidth);
+                    
+                    // lower left corner
+                    float x0 = borderEdge.getLowerLeftX();
+                    float y0 = borderEdge.getLowerLeftY();
+                    // upper right corner
+                    float x1 = borderEdge.getUpperRightX();
+                    float y1 = borderEdge.getUpperRightY();
+                    // mid points
+                    float xm = x0 + borderEdge.getWidth() / 2;
+                    float ym = y0 + borderEdge.getHeight() / 2;
+                    // see http://spencermortensen.com/articles/bezier-circle/
+                    // the below number was calculated from sampling content streams
+                    // generated using Adobe Reader
+                    float magic = 0.55555417f;
+                    // control point offsets
+                    float vOffset = borderEdge.getHeight() / 2 * magic;
+                    float hOffset = borderEdge.getWidth() / 2 * magic;
+                    
+                    contentStream.moveTo(xm, y1);
+                    contentStream.curveTo((xm + hOffset), y1, x1, (ym + vOffset), x1, ym);
+                    contentStream.curveTo(x1, (ym - vOffset), (xm + hOffset), y0, xm, y0);
+                    contentStream.curveTo((xm - hOffset), y0, x0, (ym - vOffset), x0, ym);
+                    contentStream.curveTo(x0, (ym + vOffset), (xm - hOffset), y1, xm, y1);
+                    contentStream.closePath();
+                }
                 
-                contentStream.moveTo(xm, y1);
-                contentStream.curveTo((xm + hOffset), y1, x1, (ym + vOffset), x1, ym);
-                contentStream.curveTo(x1, (ym - vOffset), (xm + hOffset), y0, xm, y0);
-                contentStream.curveTo((xm - hOffset), y0, x0, (ym - vOffset), x0, ym);
-                contentStream.curveTo(x0, (ym + vOffset), (xm - hOffset), y1, xm, y1);
-                contentStream.closePath();
                 contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
         }
