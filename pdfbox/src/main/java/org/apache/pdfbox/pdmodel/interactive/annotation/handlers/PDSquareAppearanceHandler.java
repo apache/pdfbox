@@ -29,6 +29,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
@@ -68,43 +70,57 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                 handleOpacity(annotation.getConstantOpacity());
                 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());                
+                PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
                 
-                // handle the border box
-                // 
-                // There are two options. The handling is not part of the PDF specification but
-                // implementation specific to Adobe Reader
-                // - if /RD is set the border box is the /Rect entry inset by the respective
-                //   border difference.
-                // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
-                //   be set to be the line width and the /Rect is enlarged by the /RD amount
-
-                PDRectangle borderBox = null;
-                float[] rectDifferences = annotation.getRectDifferences();
-                
-                if (rectDifferences.length == 0)
+                if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
                 {
-                    borderBox = getPaddedRectangle(getRectangle(), lineWidth/2);
-                    // the differences rectangle
-                    // TODO: this only works for border effect solid. Cloudy needs a different approach.
-                    annotation.setRectDifferences(lineWidth/2);
-                    annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
-                    
-                    // when the normal appearance stream was generated BBox and Matrix have been set to the
-                    // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
-                    annotation.getNormalAppearanceStream().setBBox(getRectangle());
-                    AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
-                            -getRectangle().getLowerLeftY());
-                    annotation.getNormalAppearanceStream().setMatrix(transform);
+                    CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                        borderEffect.getIntensity(), lineWidth, getRectangle());
+                    cloudyBorder.createCloudyRectangle(annotation.getRectDifference());
+                    annotation.setRectangle(cloudyBorder.getRectangle());
+                    annotation.setRectDifference(cloudyBorder.getRectDifference());
+                    PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                    appearanceStream.setBBox(cloudyBorder.getBBox());
+                    appearanceStream.setMatrix(cloudyBorder.getMatrix());
                 }
                 else
                 {
-                    borderBox = applyRectDifferences(getRectangle(), rectDifferences);
-                    borderBox = getPaddedRectangle(borderBox, lineWidth/2);
+                    // handle the border box
+                    //
+                    // There are two options. The handling is not part of the PDF specification but
+                    // implementation specific to Adobe Reader
+                    // - if /RD is set the border box is the /Rect entry inset by the respective
+                    //   border difference.
+                    // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
+                    //   be set to be the line width and the /Rect is enlarged by the /RD amount
+                
+                    PDRectangle borderBox = null;
+                    float[] rectDifferences = annotation.getRectDifferences();
+                
+                    if (rectDifferences.length == 0)
+                    {
+                        borderBox = getPaddedRectangle(getRectangle(), lineWidth/2);
+                        // the differences rectangle
+                        annotation.setRectDifferences(lineWidth/2);
+                        annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+
+                        // when the normal appearance stream was generated BBox and Matrix have been set to the
+                        // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
+                        annotation.getNormalAppearanceStream().setBBox(getRectangle());
+                        AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
+                                -getRectangle().getLowerLeftY());
+                        annotation.getNormalAppearanceStream().setMatrix(transform);
+                    }
+                    else
+                    {
+                        borderBox = applyRectDifferences(getRectangle(), rectDifferences);
+                        borderBox = getPaddedRectangle(borderBox, lineWidth/2);
+                    }
+
+                    contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
+                            borderBox.getWidth(), borderBox.getHeight());
                 }
-                
-                contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
-                        borderBox.getWidth(), borderBox.getHeight());
-                
+
                 contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
         }
