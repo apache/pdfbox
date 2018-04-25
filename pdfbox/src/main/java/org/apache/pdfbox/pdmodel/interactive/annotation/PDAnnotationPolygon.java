@@ -78,6 +78,37 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
     }
 
     /**
+     * This will set the border effect dictionary, specifying effects to be applied when drawing the
+     * line.
+     *
+     * @param be The border effect dictionary to set.
+     *
+     */
+    public void setBorderEffect(PDBorderEffectDictionary be)
+    {
+        getCOSObject().setItem(COSName.BE, be);
+    }
+
+    /**
+     * This will retrieve the border effect dictionary, specifying effects to be applied used in
+     * drawing the line.
+     *
+     * @return The border effect dictionary
+     */
+    public PDBorderEffectDictionary getBorderEffect()
+    {
+        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
+        if (be != null)
+        {
+            return new PDBorderEffectDictionary(be);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
      * This will retrieve the numbers that shall represent the alternating horizontal and vertical
      * coordinates.
      *
