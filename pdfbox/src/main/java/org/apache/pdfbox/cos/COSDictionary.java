@@ -647,7 +647,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * a string.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -662,7 +662,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * a string.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -714,7 +714,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * a string.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -729,7 +729,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * a string.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -779,7 +779,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * a string.
      *
      * @param embedded
      *            The embedded dictionary.
@@ -796,7 +796,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be a name and convert it to
-     * a string. Null is returned if the entry does not exist in the dictionary.
+     * a string.
      *
      * @param embedded
      *            The embedded dictionary.
@@ -850,13 +850,12 @@ public class COSDictionary extends COSBase
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a date. Null is returned
-     * if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a date.
      *
      * @param key
      *            The key to the item in the dictionary.
      * @param defaultValue
-     *            The default value to return.
+     *            The default value to return if the entry does not exist in the dictionary or if the date was invalid.
      * @return The name converted to a string.
      * @throws IOException
      *             If there is an error converting to a date.
@@ -867,13 +866,12 @@ public class COSDictionary extends COSBase
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a date. Null is returned
-     * if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a date.
      *
      * @param key
      *            The key to the item in the dictionary.
      * @param defaultValue
-     *            The default value to return.
+     *            The default value to return if the entry does not exist in the dictionary or if the date was invalid.
      * @return The name converted to a string.
      * @throws IOException
      *             If there is an error converting to a date.
@@ -924,15 +922,14 @@ public class COSDictionary extends COSBase
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a date. Null is returned
-     * if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a date.
      *
      * @param embedded
      *            The embedded dictionary to get.
      * @param key
      *            The key to the item in the dictionary.
      * @param defaultValue
-     *            The default value to return.
+     *            The default value to return if the entry does not exist in the dictionary.
      * @return The name converted to a string.
      * @throws IOException
      *             If there is an error converting to a date.
@@ -943,15 +940,14 @@ public class COSDictionary extends COSBase
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a date. Null is returned
-     * if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a date.
      *
      * @param embedded
      *            The embedded dictionary to get.
      * @param key
      *            The key to the item in the dictionary.
      * @param defaultValue
-     *            The default value to return.
+     *            The default value to return if the entry does not exist in the dictionary or if the date was invalid.
      * @return The name converted to a string.
      * @throws IOException
      *             If there is an error converting to a date.
@@ -1121,7 +1117,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param keyList
      *            The key to the item in the dictionary.
@@ -1142,7 +1138,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -1157,7 +1153,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -1172,7 +1168,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default Value -1 will be returned.
+     * dictionary value is null then the default value -1 will be returned.
      *
      * @param firstKey
      *            The first key to the item in the dictionary.
@@ -1187,7 +1183,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param firstKey
      *            The first key to the item in the dictionary.
@@ -1237,7 +1233,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an long. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param keyList
      *            The key to the item in the dictionary.
@@ -1258,7 +1254,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -1273,7 +1269,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -1320,7 +1316,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be a float. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param key
      *            The key to the item in the dictionary.
@@ -1335,7 +1331,7 @@ public class COSDictionary extends COSBase
 
     /**
      * This is a convenience method that will get the dictionary object that is expected to be an float. If the
-     * dictionary value is null then the default Value will be returned.
+     * dictionary value is null then the default value will be returned.
      *
      * @param key
      *            The key to the item in the dictionary.
