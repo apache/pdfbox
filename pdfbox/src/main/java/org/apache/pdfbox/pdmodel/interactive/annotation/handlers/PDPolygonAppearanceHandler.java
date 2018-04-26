@@ -28,6 +28,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolygon;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
@@ -111,35 +113,47 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
                         contentStream.setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
                     }
                 }
-
-                // the differences rectangle
-                // TODO: this only works for border effect solid. Cloudy needs a
-                // different approach.
-                setRectDifference(lineWidth);
-
-                // Acrobat applies a padding to each side of the bbox so the line is
-                // completely within the bbox.
-
-                for (int i = 0; i < pathArray.length; i++)
+                
+                PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
+                if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
                 {
-                    float[] pointsArray = pathArray[i];
-                    // first array shall be of size 2 and specify the moveto operator
-                    if (i == 0 && pointsArray.length == 2)
+                    CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                        borderEffect.getIntensity(), lineWidth, getRectangle());
+                    cloudyBorder.createCloudyPolygon(pathArray);
+                    annotation.setRectangle(cloudyBorder.getRectangle());
+                    PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                    appearanceStream.setBBox(cloudyBorder.getBBox());
+                    appearanceStream.setMatrix(cloudyBorder.getMatrix());
+                }
+                else
+                {
+                    // the differences rectangle
+                    setRectDifference(lineWidth);
+    
+                    // Acrobat applies a padding to each side of the bbox so the line is
+                    // completely within the bbox.
+    
+                    for (int i = 0; i < pathArray.length; i++)
                     {
-                        contentStream.moveTo(pointsArray[0], pointsArray[1]);
-                    }
-                    else
-                    {
-                        // entries of length 2 shall be treated as lineto operator
-                        if (pointsArray.length == 2)
+                        float[] pointsArray = pathArray[i];
+                        // first array shall be of size 2 and specify the moveto operator
+                        if (i == 0 && pointsArray.length == 2)
                         {
-                            contentStream.lineTo(pointsArray[0], pointsArray[1]);
+                            contentStream.moveTo(pointsArray[0], pointsArray[1]);
                         }
-                        else if (pointsArray.length == 6)
+                        else
                         {
-                            contentStream.curveTo(pointsArray[0], pointsArray[1],
-                                    pointsArray[2], pointsArray[3],
-                                    pointsArray[4], pointsArray[5]);
+                            // entries of length 2 shall be treated as lineto operator
+                            if (pointsArray.length == 2)
+                            {
+                                contentStream.lineTo(pointsArray[0], pointsArray[1]);
+                            }
+                            else if (pointsArray.length == 6)
+                            {
+                                contentStream.curveTo(pointsArray[0], pointsArray[1],
+                                        pointsArray[2], pointsArray[3],
+                                        pointsArray[4], pointsArray[5]);
+                            }
                         }
                     }
                 }

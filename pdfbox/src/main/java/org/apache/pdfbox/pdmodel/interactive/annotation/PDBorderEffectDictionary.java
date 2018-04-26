@@ -106,7 +106,7 @@ public class PDBorderEffectDictionary implements COSObjectable
     /**
      * This will retrieve the border effect, see the STYLE_* constants for valid values.
      *
-     * @return the effect of the border
+     * @return the effect of the border or {@link #STYLE_SOLID} if none is found.
      */
     public String getStyle()
     {
