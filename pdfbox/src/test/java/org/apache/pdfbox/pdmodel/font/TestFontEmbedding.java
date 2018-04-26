@@ -169,33 +169,6 @@ public class TestFontEmbedding extends TestCase
         String extracted = getUnicodeText(pdf);
         assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
-    
-    public void testTrueTypeFontPDType0FontForBengaliUnicode() throws IOException
-    {
-        final String text = "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
-        File file = new File(OUT_DIR, "TrueTypeFontPDType0FontForBengaliUnicode.pdf");
-        try (PDDocument document = new PDDocument())
-        {
-            PDPage page = new PDPage(PDRectangle.A4);
-            document.addPage(page);
-            InputStream input = PDFont.class.getClassLoader().getResourceAsStream(
-                    "org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf");
-            PDType0Font font = PDType0Font.load(document, input, true);
-            try (PDPageContentStream stream = new PDPageContentStream(document, page))
-            {
-                stream.beginText();
-                stream.setFont(font, 12);
-                stream.newLineAtOffset(50, 600);
-                stream.showText(text);
-                stream.endText();
-            }
-            document.save(file);
-        }
-
-        // check that the extracted text matches what we wrote
-        String extracted = getUnicodeText(file);
-        assertEquals(text, extracted.trim());
-    }
 
     private void validateCIDFontType2(boolean useSubset) throws IOException
     {
