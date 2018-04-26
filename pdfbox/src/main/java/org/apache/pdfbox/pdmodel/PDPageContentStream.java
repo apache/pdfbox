@@ -333,11 +333,8 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             GsubData gsubData = pdType0Font.getGsubData();
             if (gsubData != GsubData.NO_DATA_FOUND)
             {
-        	 GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
-        	 GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(), gsubData);
-        	
                 Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
+                encodedText = encodeForGsub(gsubData, glyphIds, pdType0Font, text);
                 if (pdType0Font.willBeSubset())
                 {
                     pdType0Font.addGlyphsToSubset(glyphIds);
@@ -1179,7 +1176,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         writeOperator("Ts");
     }
 
-    private byte[] encodeForGsub(GsubWorker gsubWorker,
+    private byte[] encodeForGsub(GsubData gsubData,
             Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
 
@@ -1199,14 +1196,15 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             else
             {
-                glyphIds.addAll(applyGSUBRules(gsubWorker, out, font, word));
+                glyphIds.addAll(applyGSUBRules(out, font, gsubData, word));
             }
         }
 
         return out.toByteArray();
     }
 
-    private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
+    private List<Integer> applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
+            GsubData gsubData, String word) throws IOException
     {
         List<Integer> originalGlyphIds = new ArrayList<>();
         CmapLookup cmapLookup = font.getCmapLookup();
@@ -1222,6 +1220,10 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             originalGlyphIds.add(glyphId);
         }
+
+        GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
+
+        GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(cmapLookup, gsubData);
 
         List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
 
