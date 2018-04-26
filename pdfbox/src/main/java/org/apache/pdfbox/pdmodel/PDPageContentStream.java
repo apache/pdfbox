@@ -23,8 +23,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -104,6 +106,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<>();
     private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
+
+    private final Map<String, GsubWorker> gsubWorkers = new HashMap<>();
+    private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
 
     /**
      * Create a new PDPage content stream. This constructor overwrites all existing content streams
@@ -285,6 +290,18 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             document.getFontsToSubset().add(font);
         }
         
+        if (font instanceof PDType0Font)
+        {
+            PDType0Font pdType0Font = (PDType0Font) font;
+            GsubData gsubData = pdType0Font.getGsubData();
+            if (gsubData != GsubData.NO_DATA_FOUND)
+            {
+                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
+                        gsubData);
+                gsubWorkers.put(font.getName(), gsubWorker);
+            }
+        }
+
         writeOperand(getResources().add(font));
         writeOperand(fontSize);
         writeOperator("Tf");
@@ -329,13 +346,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         if (font instanceof PDType0Font)
         {
-            PDType0Font pdType0Font = (PDType0Font) font;
-            GsubData gsubData = pdType0Font.getGsubData();
-            if (gsubData != GsubData.NO_DATA_FOUND)
+
+            GsubWorker gsubWorker = gsubWorkers.get(font.getName());
+            if (gsubWorker != null)
             {
-        	 GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
-        	 GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(), gsubData);
-        	
+                PDType0Font pdType0Font = (PDType0Font) font;
                 Set<Integer> glyphIds = new HashSet<>();
                 encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
                 if (pdType0Font.willBeSubset())
