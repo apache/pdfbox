@@ -202,16 +202,16 @@ public class GsubWorkerForBengali implements GsubWorker
 
     private Map<Integer, BeforeAndAfterSpanComponent> getBeforeAndAfterSpanGlyphIds()
     {
-        Map<Integer, BeforeAndAfterSpanComponent> beforeAndAfterSpanGlyphIds = new HashMap<>();
+        Map<Integer, BeforeAndAfterSpanComponent> result = new HashMap<>();
 
         for (BeforeAndAfterSpanComponent beforeAndAfterSpanComponent : BEFORE_AND_AFTER_SPAN_CHARS)
         {
-            beforeAndAfterSpanGlyphIds.put(
+            result.put(
                     getGlyphId(beforeAndAfterSpanComponent.originalCharacter),
                     beforeAndAfterSpanComponent);
         }
 
-        return Collections.unmodifiableMap(beforeAndAfterSpanGlyphIds);
+        return Collections.unmodifiableMap(result);
     }
 
     /**
