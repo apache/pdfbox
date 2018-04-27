@@ -23,8 +23,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Pattern;
@@ -104,6 +106,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
     private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<>();
     private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
+
+    private final Map<PDType0Font, GsubWorker> gsubWorkers = new HashMap<>();
+    private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
 
     /**
      * Create a new PDPage content stream. This constructor overwrites all existing content streams
@@ -285,6 +290,18 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             document.getFontsToSubset().add(font);
         }
         
+        if (font instanceof PDType0Font)
+        {
+            PDType0Font pdType0Font = (PDType0Font) font;
+            GsubData gsubData = pdType0Font.getGsubData();
+            if (gsubData != GsubData.NO_DATA_FOUND)
+            {
+                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
+                        gsubData);
+                gsubWorkers.put((PDType0Font) font, gsubWorker);
+            }
+        }
+
         writeOperand(getResources().add(font));
         writeOperand(fontSize);
         writeOperator("Tf");
@@ -329,12 +346,13 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
 
         if (font instanceof PDType0Font)
         {
-            PDType0Font pdType0Font = (PDType0Font) font;
-            GsubData gsubData = pdType0Font.getGsubData();
-            if (gsubData != GsubData.NO_DATA_FOUND)
+
+            GsubWorker gsubWorker = gsubWorkers.get(font.getName());
+            if (gsubWorker != null)
             {
+                PDType0Font pdType0Font = (PDType0Font) font;
                 Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(gsubData, glyphIds, pdType0Font, text);
+                encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
                 if (pdType0Font.willBeSubset())
                 {
                     pdType0Font.addGlyphsToSubset(glyphIds);
@@ -1176,7 +1194,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         writeOperator("Ts");
     }
 
-    private byte[] encodeForGsub(GsubData gsubData,
+    private byte[] encodeForGsub(GsubWorker gsubWorker,
             Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
     {
 
@@ -1196,15 +1214,14 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             else
             {
-                glyphIds.addAll(applyGSUBRules(out, font, gsubData, word));
+                glyphIds.addAll(applyGSUBRules(gsubWorker, out, font, word));
             }
         }
 
         return out.toByteArray();
     }
 
-    private List<Integer> applyGSUBRules(ByteArrayOutputStream out, PDType0Font font,
-            GsubData gsubData, String word) throws IOException
+    private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
     {
         List<Integer> originalGlyphIds = new ArrayList<>();
         CmapLookup cmapLookup = font.getCmapLookup();
@@ -1220,10 +1237,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
             originalGlyphIds.add(glyphId);
         }
-
-        GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
-
-        GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(cmapLookup, gsubData);
 
         List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
 
