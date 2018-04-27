@@ -28,6 +28,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -44,6 +46,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 /**
  * Display the page number and a page rendering.
@@ -62,6 +68,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private final JLabel statuslabel;
     private final PDPage page;
     private String labelText = "";
+    private final Map<PDRectangle, String> rectMap = new HashMap<PDRectangle, String>();
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -70,6 +77,27 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         this.document = document;
         this.statuslabel = statuslabel;
         initUI();
+        initRectMap();
+    }
+
+    private void initRectMap()
+    {
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+        if (acroForm == null)
+        {
+            return;
+        }
+        for (PDField field : acroForm.getFieldTree())
+        {
+            String fullyQualifiedName = field.getFullyQualifiedName();
+            for (PDAnnotationWidget widget : field.getWidgets())
+            {
+                if (page.equals(widget.getPage()))
+                {
+                    rectMap.put(widget.getRectangle(), fullyQualifiedName);
+                }
+            }
+        }
     }
 
     private void initUI()
@@ -209,7 +237,19 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 y1 = (int) (height - y + offsetY);
                 break;
         }
-        statuslabel.setText(x1 + "," + y1);
+        String text = "x: " + x1 + ", y: " + y1;
+
+        // are we in a field widget?
+        for (Map.Entry<PDRectangle, String> entry : rectMap.entrySet())
+        {
+            if (entry.getKey().contains(x1, y1))
+            {
+                text += ", field: " + rectMap.get(entry.getKey());
+                break;
+            }
+        }
+
+        statuslabel.setText(text);
     }
 
     @Override
