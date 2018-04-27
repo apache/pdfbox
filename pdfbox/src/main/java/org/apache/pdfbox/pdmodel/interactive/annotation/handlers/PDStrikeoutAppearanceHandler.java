@@ -113,16 +113,24 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
                     // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
                     float len0 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8] - pathsArray[i * 8 + 4], 2) + 
                                           Math.pow(pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5], 2)));
-                    float x0 = pathsArray[i * 8 + 4] + (pathsArray[i * 8] - 
-                               pathsArray[i * 8 + 4]) / len0 * (len0 / 2 - ab.width);
-                    float y0 = pathsArray[i * 8 + 5] + (pathsArray[i * 8 + 1] - 
-                               pathsArray[i * 8 + 5]) / len0 * (len0 / 2 - ab.width);
+                    float x0 = pathsArray[i * 8 + 4];
+                    float y0 = pathsArray[i * 8 + 5];
+                    if (Float.compare(len0, 0) != 0)
+                    {
+                        // only if both coordinates are not identical to avoid divide by zero
+                        x0 += (pathsArray[i * 8] - pathsArray[i * 8 + 4]) / len0 * (len0 / 2 - ab.width);
+                        y0 += (pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5]) / len0 * (len0 / 2 - ab.width);
+                    }
                     float len1 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8 + 2] - pathsArray[i * 8 + 6], 2) + 
                                           Math.pow(pathsArray[i * 8 + 3] - pathsArray[i * 8 + 7], 2)));
-                    float x1 = pathsArray[i * 8 + 6] + (pathsArray[i * 8 + 2] - 
-                               pathsArray[i * 8 + 6]) / len1 * (len1 / 2 - ab.width);
-                    float y1 = pathsArray[i * 8 + 7] + (pathsArray[i * 8 + 3] - 
-                               pathsArray[i * 8 + 7]) / len1 * (len1 / 2 - ab.width);
+                    float x1 = pathsArray[i * 8 + 6];
+                    float y1 = pathsArray[i * 8 + 7];
+                    if (Float.compare(len1, 0) != 0)
+                    {
+                        // only if both coordinates are not identical to avoid divide by zero
+                        x1 += (pathsArray[i * 8 + 2] - pathsArray[i * 8 + 6]) / len1 * (len1 / 2 - ab.width);
+                        y1 += (pathsArray[i * 8 + 3] - pathsArray[i * 8 + 7]) / len1 * (len1 / 2 - ab.width);
+                    }
                     cs.moveTo(x0, y0);
                     cs.lineTo(x1, y1);
                 }
