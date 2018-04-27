@@ -40,6 +40,7 @@ class CloudyBorder
     private static final double ANGLE_180_DEG = Math.PI;
     private static final double ANGLE_90_DEG = Math.PI / 2;
     private static final double ANGLE_34_DEG = Math.toRadians(34);
+    private static final double ANGLE_30_DEG = Math.toRadians(30);
     private static final double ANGLE_12_DEG = Math.toRadians(12);
 
     private final PDAppearanceContentStream output;
@@ -224,7 +225,8 @@ class CloudyBorder
     private void cloudyRectangleImpl(double left, double bottom,
     double right, double top, boolean isEllipse) throws IOException
     {
-        double w = right - left, h = top - bottom;
+        double w = right - left;
+        double h = top - bottom;
 
         if (intensity <= 0.0)
         {
@@ -344,7 +346,9 @@ class CloudyBorder
                 continue;
             }
 
-            double alpha = array[0], dx = array[1];
+            double alpha = array[0];
+            double dx = array[1];
+
             double angleCur = Math.atan2(ptNext.y - pt.y, ptNext.x - pt.x);
             if (j == 0)
             {
@@ -440,11 +444,10 @@ class CloudyBorder
     private void addFirstIntermediateCurl(double angleCur, double r, double alpha,
     double cx, double cy) throws IOException
     {
-        final double D = Math.toRadians(30);
         double a = angleCur + ANGLE_180_DEG;
 
-        getArcSegment(a + alpha, a + alpha - D, cx, cy, r, r, null, false);
-        getArcSegment(a + alpha - D, a + ANGLE_90_DEG, cx, cy, r, r, null, false);
+        getArcSegment(a + alpha, a + alpha - ANGLE_30_DEG, cx, cy, r, r, null, false);
+        getArcSegment(a + alpha - ANGLE_30_DEG, a + ANGLE_90_DEG, cx, cy, r, r, null, false);
         getArcSegment(a + ANGLE_90_DEG, a + ANGLE_180_DEG - ANGLE_34_DEG,
             cx, cy, r, r, null, false);
     }
@@ -472,7 +475,9 @@ class CloudyBorder
     private void outputCurlTemplate(Point2D.Double[] template, double x, double y)
     throws IOException
     {
-        int n = template.length, i = 0;
+        int n = template.length;
+        int i = 0;
+
         if ((n % 3) == 1)
         {
             Point2D.Double a = template[0];
@@ -501,7 +506,10 @@ class CloudyBorder
         rectRight = Math.max(rectLeft, rectRight);
         rectTop = Math.max(rectBottom, rectTop);
 
-        double rdLeft, rdBottom, rdRight, rdTop;
+        double rdLeft;
+        double rdBottom;
+        double rdRight;
+        double rdTop;
 
         if (rd != null)
         {
@@ -575,7 +583,7 @@ class CloudyBorder
     }
 
     /**
-     * Creates one or more Bezier curves that represent an elliptical arc.
+     * Creates one or more Bézier curves that represent an elliptical arc.
      * Angles are in radians.
      * The arc will always proceed in the positive angle direction.
      * If the argument `out` is null, this writes the results to the instance
@@ -593,7 +601,8 @@ class CloudyBorder
         {
             angleTodo += 2 * Math.PI;
         }
-        double sweep = angleTodo, angleDone = 0;
+        double sweep = angleTodo;
+        double angleDone = 0;
 
         if (addMoveTo)
         {
@@ -622,7 +631,7 @@ class CloudyBorder
     }
 
     /**
-     * Creates a single Bezier curve that represents a section of an elliptical
+     * Creates a single Bézier curve that represents a section of an elliptical
      * arc. The sweep angle of the section must not be larger than 90 degrees.
      * If argument `out` is null, this writes the results to the instance
      * variable `output`.
@@ -632,10 +641,10 @@ class CloudyBorder
     {
         // Algorithm is from the FAQ of the news group comp.text.pdf
 
-        double cos_a = Math.cos(startAng);
-        double sin_a = Math.sin(startAng);
-        double cos_b = Math.cos(endAng);
-        double sin_b = Math.sin(endAng);
+        double cosA = Math.cos(startAng);
+        double sinA = Math.sin(startAng);
+        double cosB = Math.cos(endAng);
+        double sinB = Math.sin(endAng);
         double denom = Math.sin((endAng - startAng) / 2.0);
         if (Double.compare(denom, 0.0) == 0)
         {
@@ -643,8 +652,8 @@ class CloudyBorder
             // The arc sweep angle is zero, so we create no arc at all.
             if (addMoveTo)
             {
-                double xs = cx + rx * cos_a;
-                double ys = cy + ry * sin_a;
+                double xs = cx + rx * cosA;
+                double ys = cy + ry * sinA;
                 if (out != null)
                 {
                     out.add(new Point2D.Double(xs, ys));
@@ -657,17 +666,17 @@ class CloudyBorder
             return;
         }
         double bcp = 1.333333333 * (1 - Math.cos((endAng - startAng) / 2.0)) / denom;
-        double p1x = cx + rx * (cos_a - bcp * sin_a);
-        double p1y = cy + ry * (sin_a + bcp * cos_a);
-        double p2x = cx + rx * (cos_b + bcp * sin_b);
-        double p2y = cy + ry * (sin_b - bcp * cos_b);
-        double p3x = cx + rx * cos_b;
-        double p3y = cy + ry * sin_b;
+        double p1x = cx + rx * (cosA - bcp * sinA);
+        double p1y = cy + ry * (sinA + bcp * cosA);
+        double p2x = cx + rx * (cosB + bcp * sinB);
+        double p2y = cy + ry * (sinB - bcp * cosB);
+        double p3x = cx + rx * cosB;
+        double p3y = cy + ry * sinB;
 
         if (addMoveTo)
         {
-            double xs = cx + rx * cos_a;
-            double ys = cy + ry * sin_a;
+            double xs = cx + rx * cosA;
+            double ys = cy + ry * sinA;
             if (out != null)
             {
                 out.add(new Point2D.Double(xs, ys));
@@ -712,6 +721,8 @@ class CloudyBorder
                     break;
                 // Curve segments are not expected because the path iterator is
                 // flattened. SEG_CLOSE can be ignored.
+                default:
+                    break;
             }
             iterator.next();
         }
@@ -738,8 +749,12 @@ class CloudyBorder
             return;
         }
 
-        double left = leftOrig, bottom = bottomOrig, right = rightOrig, top = topOrig;
-        double width = right - left, height = top - bottom;
+        double left = leftOrig;
+        double bottom = bottomOrig;
+        double right = rightOrig;
+        double top = topOrig;
+        double width = right - left;
+        double height = top - bottom;
         double cloudRadius = getEllipseCloudRadius();
 
         // Omit cloudy border if the ellipse is very small.
@@ -841,7 +856,8 @@ class CloudyBorder
         {
             Point2D.Double p1 = flatPolygon[i];
             Point2D.Double p2 = flatPolygon[i + 1];
-            double dx = p2.x - p1.x, dy = p2.y - p1.y;
+            double dx = p2.x - p1.x;
+            double dy = p2.y - p1.y;
             double length = p1.distance(p2);
             if (Double.compare(length, 0.0) == 0)
             {
@@ -850,7 +866,8 @@ class CloudyBorder
             double lengthTodo = length + lengthRemain;
             if (lengthTodo >= curlAdvance - comparisonToler || i == numPoints - 2)
             {
-                double cos = cosine(dx, length), sin = sine(dy, length);
+                double cos = cosine(dx, length);
+                double sin = sine(dy, length);
                 double d = curlAdvance - lengthRemain;
                 do
                 {
@@ -886,7 +903,8 @@ class CloudyBorder
         // again compute arc adjustments like in cloudy polygons.
 
         numPoints = centerPointsIndex;
-        double anglePrev = 0, alphaPrev = 0;
+        double anglePrev = 0;
+        double alphaPrev = 0;
 
         for (int i = 0; i < numPoints; i++)
         {
