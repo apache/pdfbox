@@ -347,7 +347,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         if (font instanceof PDType0Font)
         {
 
-            GsubWorker gsubWorker = gsubWorkers.get(font.getName());
+            GsubWorker gsubWorker = gsubWorkers.get(font);
             if (gsubWorker != null)
             {
                 PDType0Font pdType0Font = (PDType0Font) font;
