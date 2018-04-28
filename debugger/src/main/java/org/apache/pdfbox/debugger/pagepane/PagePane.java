@@ -69,6 +69,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private final PDPage page;
     private String labelText = "";
     private final Map<PDRectangle, String> rectMap = new HashMap<PDRectangle, String>();
+    private final AffineTransform defaultTransform = GraphicsEnvironment.getLocalGraphicsEnvironment().
+                        getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -214,8 +216,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         float offsetX = page.getCropBox().getLowerLeftX();
         float offsetY = page.getCropBox().getLowerLeftY();
         float zoomScale = zoomMenu.getPageZoomScale();
-        float x = e.getX() / zoomScale;
-        float y = e.getY() / zoomScale;
+        float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
+        float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();
         int x1, y1;
         switch ((RotationMenu.getRotationDegrees() + page.getRotation()) % 360)
         {
@@ -323,10 +325,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 // a smaller size than the image to compensate that the
                 // image is scaled up with some screen configurations (e.g. 125% on windows).
                 // See PDFBOX-3665 for more sample code and discussion.
-                AffineTransform tx = GraphicsEnvironment.getLocalGraphicsEnvironment().
-                        getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
-                label.setSize((int) Math.ceil(image.getWidth() / tx.getScaleX()), 
-                              (int) Math.ceil(image.getHeight() / tx.getScaleY()));
+                label.setSize((int) Math.ceil(image.getWidth() / defaultTransform.getScaleX()), 
+                              (int) Math.ceil(image.getHeight() / defaultTransform.getScaleY()));
                 label.setIcon(new HighResolutionImageIcon(image, label.getWidth(), label.getHeight()));
                 label.setText(null);
             }
