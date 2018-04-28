@@ -170,6 +170,43 @@ public class TestFontEmbedding extends TestCase
         assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
+    public void testBengali() throws IOException
+    {
+        String BANGLA_TEXT_1 = "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
+        String BANGLA_TEXT_2 = "দ্রুত গাঢ় শেয়াল অলস কুকুর জুড়ে জাম্প ধুর্ত  হঠাৎ ভাঙেনি মৌলিক ঐশি দৈ";
+        String BANGLA_TEXT_3 = "ঋষি কল্লোল ব্যাস নির্ভয় ";
+
+        String expectedExtractedtext = BANGLA_TEXT_1 + "\n" + BANGLA_TEXT_2 + "\n" + BANGLA_TEXT_3;
+        File pdf = new File(OUT_DIR, "Bengali.pdf");
+
+        try (PDDocument document = new PDDocument())
+        {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDFont font = PDType0Font.load(document, 
+                    this.getClass().getResourceAsStream("/org/apache/pdfbox/ttf/Lohit-Bengali.ttf"));
+
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
+            {
+                contentStream.beginText();
+                contentStream.setFont(font, 12);
+                contentStream.newLineAtOffset(10, 750);
+                contentStream.showText(BANGLA_TEXT_1);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(BANGLA_TEXT_2);
+                contentStream.newLineAtOffset(0, -30);
+                contentStream.showText(BANGLA_TEXT_3);
+                contentStream.endText();
+            }
+
+            document.save(pdf);
+        }
+
+        // Check text extraction
+        String extracted = getUnicodeText(pdf);
+        //assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
+    }
+
     private void validateCIDFontType2(boolean useSubset) throws IOException
     {
         String text;
