@@ -47,9 +47,16 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 
 /**
  * Display the page number and a page rendering.
@@ -69,6 +76,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private RotationMenu rotationMenu;
     private ViewMenu viewMenu;
     private String labelText = "";
+    private final Map<PDRectangle,String> rectMap = new HashMap<>();
+    private final AffineTransform defaultTransform = GraphicsEnvironment.getLocalGraphicsEnvironment().
+                        getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -77,6 +87,27 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         this.document = document;
         this.statuslabel = statuslabel;
         initUI();
+        initRectMap();
+    }
+
+    private void initRectMap()
+    {
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+        if (acroForm == null)
+        {
+            return;
+        }
+        for (PDField field : acroForm.getFieldTree())
+        {
+            String fullyQualifiedName = field.getFullyQualifiedName();
+            for (PDAnnotationWidget widget : field.getWidgets())
+            {
+                if (page.equals(widget.getPage()))
+                {
+                    rectMap.put(widget.getRectangle(), fullyQualifiedName);
+                }
+            }
+        }
     }
 
     private void initUI()
@@ -227,8 +258,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         float offsetX = page.getCropBox().getLowerLeftX();
         float offsetY = page.getCropBox().getLowerLeftY();
         float zoomScale = zoomMenu.getPageZoomScale();
-        float x = e.getX() / zoomScale;
-        float y = e.getY() / zoomScale;
+        float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
+        float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();
         int x1, y1;
         switch ((RotationMenu.getRotationDegrees() + page.getRotation()) % 360)
         {
@@ -250,7 +281,19 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 y1 = (int) (height - y + offsetY);
                 break;
         }
-        statuslabel.setText("x: " + x1 + ", y: " + y1);
+        String text = "x: " + x1 + ", y: " + y1;
+        
+        // are we in a field widget?
+        for (Entry<PDRectangle,String> entry : rectMap.entrySet())
+        {
+            if (entry.getKey().contains(x1, y1))
+            {
+                text += ", field: " + rectMap.get(entry.getKey());
+                break;
+            }
+        }
+
+        statuslabel.setText(text);
     }
 
     @Override
@@ -347,10 +390,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 // a smaller size than the image to compensate that the
                 // image is scaled up with some screen configurations (e.g. 125% on windows).
                 // See PDFBOX-3665 for more sample code and discussion.
-                AffineTransform tx = GraphicsEnvironment.getLocalGraphicsEnvironment().
-                        getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
-                label.setSize((int) Math.ceil(image.getWidth() / tx.getScaleX()), 
-                              (int) Math.ceil(image.getHeight() / tx.getScaleY()));
+                label.setSize((int) Math.ceil(image.getWidth() / defaultTransform.getScaleX()), 
+                              (int) Math.ceil(image.getHeight() / defaultTransform.getScaleY()));
                 label.setIcon(new HighResolutionImageIcon(image, label.getWidth(), label.getHeight()));
                 label.setText(null);
             }
