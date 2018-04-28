@@ -675,6 +675,14 @@ public class GlyphSubstitutionTable extends TTFTable
         return gsubData;
     }
 
+    /**
+     * Method added for testing only
+     */
+    public LookupListTable getLookupListTable()
+    {
+        return lookupListTable;
+    }
+
     private RangeRecord readRangeRecord(TTFDataStream data) throws IOException
     {
         int startGlyphID = data.readUnsignedShort();
