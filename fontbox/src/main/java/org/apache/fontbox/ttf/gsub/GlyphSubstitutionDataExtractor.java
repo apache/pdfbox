@@ -114,15 +114,17 @@ public class GlyphSubstitutionDataExtractor
             FeatureRecord featureRecord, LookupListTable lookupListTable)
     {
 
-        LOG.debug("*********** extracting GSUB data for the feature: "
-                + featureRecord.getFeatureTag());
-
         Map<List<Integer>, Integer> glyphSubstitutionMap = new LinkedHashMap<>();
         for (int lookupIndex : featureRecord.getFeatureTable().getLookupListIndices())
         {
             LookupTable lookupTable = lookupListTable.getLookups()[lookupIndex];
             extractData(glyphSubstitutionMap, lookupTable);
         }
+
+        LOG.debug("*********** extracting GSUB data for the feature: "
+                + featureRecord.getFeatureTag() + ", glyphSubstitutionMap: "
+                + glyphSubstitutionMap);
+
         gsubData.put(featureRecord.getFeatureTag(),
                 Collections.unmodifiableMap(glyphSubstitutionMap));
     }
