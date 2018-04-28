@@ -678,7 +678,7 @@ public class GlyphSubstitutionTable extends TTFTable
     /**
      * Method added for testing only
      */
-    public LookupListTable getLookupListTable()
+    LookupListTable getLookupListTable()
     {
         return lookupListTable;
     }

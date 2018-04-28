@@ -40,7 +40,7 @@ import org.junit.Test;
 public class GlyphSubstitutionTableTest
 {
 
-    private static final int DATA_POSITION_FOR_GSUB_TABLE = 120544;
+    static final int DATA_POSITION_FOR_GSUB_TABLE = 120544;
 
     private static final Collection<String> EXPECTED_FEATURE_NAMES = Arrays.asList("abvs", "akhn",
             "blwf", "blws", "half", "haln", "init", "nukt", "pres", "pstf", "rphf", "vatu");
@@ -49,12 +49,17 @@ public class GlyphSubstitutionTableTest
     public void testGetGsubData() throws IOException
     {
         // given
-        GlyphSubstitutionTable testClass = initGlyphSubstitutionTableWithLohitBengali();
+        MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
+                GlyphSubstitutionTableTest.class.getResourceAsStream("/ttf/Lohit-Bengali.ttf"));
+        memoryTTFDataStream.seek(DATA_POSITION_FOR_GSUB_TABLE);
+
+        GlyphSubstitutionTable testClass = new GlyphSubstitutionTable(null);
 
         // when
-        GsubData gsubData = testClass.getGsubData();
+        testClass.read(null, memoryTTFDataStream);
 
         // then
+        GsubData gsubData = testClass.getGsubData();
         assertNotNull(gsubData);
         assertNotEquals(GsubData.NO_DATA_FOUND, gsubData);
         assertEquals(Language.BENGALI, gsubData.getLanguage());
@@ -74,19 +79,6 @@ public class GlyphSubstitutionTableTest
             assertEquals(scriptFeature, gsubData.getFeature(featureName));
         }
 
-    }
-
-    public static GlyphSubstitutionTable initGlyphSubstitutionTableWithLohitBengali() throws IOException
-    {
-        MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
-                GlyphSubstitutionTableTest.class.getResourceAsStream("/ttf/Lohit-Bengali.ttf"));
-        memoryTTFDataStream.seek(DATA_POSITION_FOR_GSUB_TABLE);
-
-        GlyphSubstitutionTable testClass = new GlyphSubstitutionTable(null);
-
-        testClass.read(null, memoryTTFDataStream);
-
-        return testClass;
     }
 
     private Map<List<Integer>, Integer> getExpectedGsubTableRawData(String pathToResource)
