@@ -34,6 +34,8 @@ import org.apache.fontbox.ttf.model.ScriptFeature;
  * representation of each character to be replaced in hexadecimal&gt;] : &lt;The compound character&gt; : &lt;The
  * GlyphId with which these characters are replaced&gt;
  * 
+ * @author Palash Ray
+ * 
  */
 public class GSUBTablePrintUtil
 {

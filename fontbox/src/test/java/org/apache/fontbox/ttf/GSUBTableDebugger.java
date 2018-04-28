@@ -25,6 +25,8 @@ import org.junit.Test;
 
 /**
  * This class is to be used mainly for debugging purposes. Prints the GSUB Feature table for debugging.
+ * 
+ * @author Palash Ray
  */
 public class GSUBTableDebugger
 {
