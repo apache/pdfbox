@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
@@ -189,7 +190,7 @@ public class TestFontEmbedding extends TestCase
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
-                contentStream.setFont(font, 12);
+                contentStream.setFont(font, 18);
                 contentStream.newLineAtOffset(10, 750);
                 contentStream.showText(BANGLA_TEXT_1);
                 contentStream.newLineAtOffset(0, -30);
@@ -200,6 +201,16 @@ public class TestFontEmbedding extends TestCase
             }
 
             document.save(pdf);
+        }
+
+        File IN_DIR = new File("src/test/resources/org/apache/pdfbox/ttf");
+ 
+        // compare rendering
+        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        if (!testPDFToImage.doTestFile(pdf, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
+        {
+            // don't fail, rendering is different on different systems, result must be viewed manually
+            System.err.println("Rendering of " + pdf + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
         }
 
         // Check text extraction
