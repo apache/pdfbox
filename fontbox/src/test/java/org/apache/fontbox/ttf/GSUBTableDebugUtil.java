@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.ttf.CmapLookup;
+import org.apache.fontbox.ttf.gsub.GlyphSubstitutionDataExtractor;
 import org.apache.fontbox.ttf.table.common.CoverageTable;
 import org.apache.fontbox.ttf.table.common.LookupListTable;
 import org.apache.fontbox.ttf.table.common.LookupSubTable;
@@ -38,7 +38,8 @@ import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat1;
 import org.apache.fontbox.ttf.table.gsub.LookupTypeSingleSubstFormat2;
 
 /**
- * This class is to be used mainly for debugging purposes
+ * This class is to be used mainly for debugging purposes. It is used in {@link GSUBTableDebugger}. In its function, it
+ * is a proto-version of the {@link GlyphSubstitutionDataExtractor}.
  */
 public class GSUBTableDebugUtil
 {

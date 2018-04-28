@@ -24,6 +24,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * This class is to be used mainly for debugging purposes
+ */
 public class GSUBTableDebugger
 {
 
