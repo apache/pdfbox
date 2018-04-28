@@ -24,7 +24,7 @@ import org.apache.fontbox.ttf.model.GsubData;
 import org.junit.Test;
 
 /**
- * This class is to be used mainly for debugging purposes
+ * This class is to be used mainly for debugging purposes. Prints the GSUB Feature table for debugging.
  */
 public class GSUBTableDebugger
 {
