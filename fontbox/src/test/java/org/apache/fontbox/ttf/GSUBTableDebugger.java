@@ -18,10 +18,9 @@
 package org.apache.fontbox.ttf;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
-import org.junit.Before;
+import org.apache.fontbox.ttf.gsub.GSUBTablePrintUtil;
+import org.apache.fontbox.ttf.model.GsubData;
 import org.junit.Test;
 
 /**
@@ -32,37 +31,24 @@ public class GSUBTableDebugger
 
     private static final String LOHIT_BENGALI_FONT_FILE = "/ttf/Lohit-Bengali.ttf";
 
-    private GlyphSubstitutionTable glyphSubstitutionTable;
-    private TrueTypeFont trueTypeFont;
-
-    @Before
-    public void init() throws IOException
+    @Test
+    public void printLohitBengaliTTF() throws IOException
     {
         MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
                 GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
 
         memoryTTFDataStream.seek(GlyphSubstitutionTableTest.DATA_POSITION_FOR_GSUB_TABLE);
 
-        glyphSubstitutionTable = new GlyphSubstitutionTable(null);
+        GlyphSubstitutionTable glyphSubstitutionTable = new GlyphSubstitutionTable(null);
 
         glyphSubstitutionTable.read(null, memoryTTFDataStream);
 
-        trueTypeFont = new TTFParser()
+        TrueTypeFont trueTypeFont = new TTFParser()
                 .parse(GSUBTableDebugger.class.getResourceAsStream(LOHIT_BENGALI_FONT_FILE));
 
-    }
-
-    @Test
-    public void print() throws IOException
-    {
-        GSUBTableDebugUtil gsubTableDebugUtil = new GSUBTableDebugUtil();
-        Map<Integer, List<Integer>> rawGsubData = gsubTableDebugUtil
-                .extractRawGSubTableData(glyphSubstitutionTable.getLookupListTable());
-        System.out.println("----------------------rawGsubData:\n" + rawGsubData);
-        Map<String, Integer> substitutionData = gsubTableDebugUtil
-                .getStringToCompoundGlyph(rawGsubData, trueTypeFont.getUnicodeCmapLookup());
-        System.out.println("----------------------substitutionData:\n" + substitutionData);
-
+        GsubData gsubData = glyphSubstitutionTable.getGsubData();
+        new GSUBTablePrintUtil().printCharacterToGlyph(gsubData,
+                trueTypeFont.getUnicodeCmapLookup());
     }
 
 }
