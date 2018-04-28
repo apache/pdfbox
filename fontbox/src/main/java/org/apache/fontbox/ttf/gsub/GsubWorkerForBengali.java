@@ -49,7 +49,7 @@ public class GsubWorkerForBengali implements GsubWorker
      * "https://docs.microsoft.com/en-us/typography/script-development/bengali">https://docs.microsoft.com/en-us/typography/script-development/bengali</a>
      */
     private static final List<String> FEATURES_IN_ORDER = Arrays.asList("locl", "nukt", "akhn",
-            "rphf", "blwf", "half", "pstf", "vatu", "cjct", INIT_FEATURE, "pres", "abvs", "blws",
+            "rphf", "blwf", "pstf", "half", "vatu", "cjct", INIT_FEATURE, "pres", "abvs", "blws",
             "psts", "haln", "calt");
 
     private static final char[] BEFORE_HALF_CHARS = new char[] { '\u09BF', '\u09C7', '\u09C8' };
