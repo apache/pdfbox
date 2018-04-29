@@ -40,7 +40,7 @@ import org.junit.Test;
 public class GlyphSubstitutionTableTest
 {
 
-    private static final int DATA_POSITION_FOR_GSUB_TABLE = 120544;
+    static final int DATA_POSITION_FOR_GSUB_TABLE = 120544;
 
     private static final Collection<String> EXPECTED_FEATURE_NAMES = Arrays.asList("abvs", "akhn",
             "blwf", "blws", "half", "haln", "init", "nukt", "pres", "pstf", "rphf", "vatu");

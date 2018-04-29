@@ -17,39 +17,37 @@
 
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 /**
  * Inspired from <a href=
  * "https://svn.apache.org/viewvc/pdfbox/trunk/examples/src/main/java/org/apache/pdfbox/examples/pdmodel/HelloWorldTTF.java?view=markup">PdfBox
- * Example</a>. This attempts to correctly demonstrate to what extent Bengali text rendering is
- * supported. First, we render some text, and then embed an image with the correct text displayed on
- * the next page.
+ * Example</a>. This attempts to correctly demonstrate to what extent Bengali text rendering is supported. First, we
+ * render some text, and then embed an image with the correct text displayed on the next page.
  *
  * @author Palash Ray
  *
  */
 public class BengaliPdfGenerationHelloWorld
 {
-    /**
-     * The unicode of this is given below:
-     * 
-     * <pre>
-     * \u0986\u09ae\u09bf  \u0995\u09cb\u09a8 \u09aa\u09a5\u09c7  \u0995\u09cd\u09b7\u09c0\u09b0\u09c7\u09b0 \u09b7\u09a8\u09cd\u09a1  \u09aa\u09c1\u09a4\u09c1\u09b2 \u09b0\u09c1\u09aa\u09cb  \u0997\u0999\u09cd\u0997\u09be \u098b\u09b7\u09bf
-     * </pre>
-     * 
-     */
-    private static final String BANGLA_TEXT_1 = "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
-    private static final String BANGLA_TEXT_2 = "দ্রুত গাঢ় শেয়াল অলস কুকুর জুড়ে জাম্প ধুর্ত  হঠাৎ ভাঙেনি মৌলিক ঐশি দৈ";
-    private static final String BANGLA_TEXT_3 = "ঋষি কল্লোল ব্যাস নির্ভয় ";
+    private static final int LINE_GAP = 5;
+    private static final String LOHIT_BENGALI_TTF = "/org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf";
+    private static final String TEXT_SOURCE_FILE = "/org/apache/pdfbox/resources/ttf/bengali-samples.txt";
+    private static final int FONT_SIZE = 20;
+    private static final int MARGIN = 20;
 
     static
     {
@@ -66,7 +64,7 @@ public class BengaliPdfGenerationHelloWorld
     }
 
     private BengaliPdfGenerationHelloWorld()
-    {        
+    {
     }
 
     public static void main(String[] args) throws IOException, URISyntaxException
@@ -84,36 +82,139 @@ public class BengaliPdfGenerationHelloWorld
 
         try (PDDocument doc = new PDDocument())
         {
-            PDPage page1 = new PDPage();
-            doc.addPage(page1);
-
-            PDFont font = PDType0Font.load(doc, BengaliPdfGenerationHelloWorld.class
-                    .getResourceAsStream("/org/apache/pdfbox/resources/ttf/Lohit-Bengali.ttf"),
+            PDFont font = PDType0Font.load(doc,
+                    BengaliPdfGenerationHelloWorld.class.getResourceAsStream(LOHIT_BENGALI_TTF),
                     true);
+            PDRectangle rectangle = getPageSize();
+            float workablePageWidth = rectangle.getWidth() - 2 * MARGIN;
+            float workablePageHeight = rectangle.getHeight() - 2 * MARGIN;
 
-            try (PDPageContentStream contents = new PDPageContentStream(doc, page1))
+            List<List<String>> pagedTexts = getReAlignedTextBasedOnPageHeight(
+                    getReAlignedTextBasedOnPageWidth(getBengaliTextFromFile(), font,
+                            workablePageWidth),
+                    font, workablePageHeight);
+
+            for (List<String> linesForPage : pagedTexts)
             {
-                contents.beginText();
-                contents.setFont(font, 12);
-                contents.newLineAtOffset(10, 750);
-                contents.showText(BANGLA_TEXT_1);
-                contents.newLineAtOffset(0, -50);
-                contents.showText(BANGLA_TEXT_2);
-                contents.newLineAtOffset(0, -30);
-                contents.showText(BANGLA_TEXT_3);
-                contents.endText();
-                
-                PDImageXObject pdImage = PDImageXObject
-                        .createFromFile(BengaliPdfGenerationHelloWorld.class
-                                .getResource(
-                                        "/org/apache/pdfbox/resources/ttf/bengali-correct-text.png")
-                                // getFile() doesn't work if there is a space in the path
-                                .toURI().getPath(), doc);
-                contents.drawImage(pdImage, 0, 300, pdImage.getWidth(), pdImage.getHeight());
+                PDPage page = new PDPage(getPageSize());
+                doc.addPage(page);
+
+                try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+                {
+                    contents.beginText();
+                    contents.setFont(font, FONT_SIZE);
+                    contents.newLineAtOffset(rectangle.getLowerLeftX() + MARGIN,
+                            rectangle.getUpperRightY() - MARGIN);
+
+                    for (String line : linesForPage)
+                    {
+                        contents.showText(line);
+                        contents.newLineAtOffset(0, -(FONT_SIZE + LINE_GAP));
+                    }
+
+                    contents.endText();
+
+                }
             }
 
             doc.save(filename);
         }
+    }
+
+    private static List<List<String>> getReAlignedTextBasedOnPageHeight(List<String> originalLines,
+            PDFont font, float workablePageHeight)
+    {
+        final float newLineHeight = font.getFontDescriptor().getFontBoundingBox().getHeight() / 1000
+                * FONT_SIZE + LINE_GAP;
+        List<List<String>> realignedTexts = new ArrayList<>();
+        float consumedHeight = 0;
+        List<String> linesInAPage = new ArrayList<>();
+        for (String line : originalLines)
+        {
+            if (newLineHeight + consumedHeight < workablePageHeight)
+            {
+                consumedHeight += newLineHeight;
+            }
+            else
+            {
+                consumedHeight = newLineHeight;
+                realignedTexts.add(linesInAPage);
+                linesInAPage = new ArrayList<>();
+            }
+
+            linesInAPage.add(line);
+        }
+        return realignedTexts;
+    }
+
+    private static List<String> getReAlignedTextBasedOnPageWidth(List<String> originalLines,
+            PDFont font, float workablePageWidth) throws IOException
+    {
+        List<String> uniformlyWideTexts = new ArrayList<>();
+        float consumedWidth = 0;
+        StringBuilder sb = new StringBuilder();
+        for (String line : originalLines)
+        {
+            float newTokenWidth = 0;
+            StringTokenizer st = new StringTokenizer(line, " ", true);
+            while (st.hasMoreElements())
+            {
+                String token = st.nextToken();
+                newTokenWidth = font.getStringWidth(token) / 1000 * FONT_SIZE;
+                if (newTokenWidth + consumedWidth < workablePageWidth)
+                {
+                    consumedWidth += newTokenWidth;
+                }
+                else
+                {
+                    // add a new text chunk
+                    uniformlyWideTexts.add(sb.toString());
+                    consumedWidth = newTokenWidth;
+                    sb = new StringBuilder();
+                }
+
+                sb.append(token);
+            }
+
+            // add a new text chunk
+            uniformlyWideTexts.add(sb.toString());
+            consumedWidth = newTokenWidth;
+            sb = new StringBuilder();
+        }
+
+        return uniformlyWideTexts;
+    }
+
+    private static PDRectangle getPageSize()
+    {
+        return PDRectangle.A4;
+    }
+
+    private static List<String> getBengaliTextFromFile() throws IOException
+    {
+        List<String> lines = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                BengaliPdfGenerationHelloWorld.class.getResourceAsStream(TEXT_SOURCE_FILE)));)
+        {
+            while (true)
+            {
+                String line = br.readLine();
+
+                if (line == null)
+                {
+                    break;
+                }
+
+                if (line.startsWith("#"))
+                {
+                    continue;
+                }
+                lines.add(line);
+            }
+        }
+
+        return lines;
     }
 
 }
