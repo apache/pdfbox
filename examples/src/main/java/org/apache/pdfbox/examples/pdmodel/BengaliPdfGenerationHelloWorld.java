@@ -35,8 +35,8 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 /**
  * Inspired from <a href=
  * "https://svn.apache.org/viewvc/pdfbox/trunk/examples/src/main/java/org/apache/pdfbox/examples/pdmodel/HelloWorldTTF.java?view=markup">PdfBox
- * Example</a>. This attempts to correctly demonstrate to what extent Bengali text rendering is supported. First, we
- * render some text, and then embed an image with the correct text displayed on the next page.
+ * Example</a>. This attempts to correctly demonstrate to what extent Bengali text rendering is supported. We read large
+ * amount of text from a file and try to render it properly.
  *
  * @author Palash Ray
  *
