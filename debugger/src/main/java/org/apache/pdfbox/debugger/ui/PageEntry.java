@@ -65,6 +65,10 @@ public class PageEntry
         {
             COSDictionary parent = (COSDictionary)node.getDictionaryObject(COSName.PARENT);
             COSArray kids = (COSArray)parent.getDictionaryObject(COSName.KIDS);
+            if (kids == null)
+            {
+                return "";
+            }
             int idx = kids.indexOfObject(node);
             sb.append("/Kids/[").append(idx).append("]");
             node = parent;
