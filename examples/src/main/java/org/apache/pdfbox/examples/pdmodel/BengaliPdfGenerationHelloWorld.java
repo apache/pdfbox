@@ -144,6 +144,7 @@ public class BengaliPdfGenerationHelloWorld
 
             linesInAPage.add(line);
         }
+        realignedTexts.add(linesInAPage);
         return realignedTexts;
     }
 
