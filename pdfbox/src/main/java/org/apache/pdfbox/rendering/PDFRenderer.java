@@ -217,7 +217,7 @@ public class PDFRenderer
         }
         g.clearRect(0, 0, image.getWidth(), image.getHeight());
         
-        transform(g, page, scale);
+        transform(g, page, scale, scale);
 
         // the end-user may provide a custom PageDrawer
         PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed);
@@ -263,10 +263,25 @@ public class PDFRenderer
     public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scale)
             throws IOException
     {
+        renderPageToGraphics(pageIndex, graphics, scale, scale);
+    }
+
+    /**
+     * Renders a given page to an AWT Graphics2D instance.
+     * 
+     * @param pageIndex the zero-based index of the page to be converted
+     * @param graphics the Graphics2D on which to draw the page
+     * @param scaleX the scale to draw the page at for the x-axis
+     * @param scaleY the scale to draw the page at for the y-axis
+     * @throws IOException if the PDF cannot be read
+     */
+    public void renderPageToGraphics(int pageIndex, Graphics2D graphics, float scaleX, float scaleY)
+            throws IOException
+    {
         PDPage page = document.getPage(pageIndex);
         // TODO need width/wight calculations? should these be in PageDrawer?
 
-        transform(graphics, page, scale);
+        transform(graphics, page, scaleX, scaleY);
 
         PDRectangle cropBox = page.getCropBox();
         graphics.clearRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
@@ -278,9 +293,9 @@ public class PDFRenderer
     }
 
     // scale rotate translate
-    private void transform(Graphics2D graphics, PDPage page, float scale)
+    private void transform(Graphics2D graphics, PDPage page, float scaleX, float scaleY)
     {
-        graphics.scale(scale, scale);
+        graphics.scale(scaleX, scaleY);
 
         // TODO should we be passing the scale to PageDrawer rather than messing with Graphics?
         int rotationAngle = page.getRotation();
