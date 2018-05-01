@@ -1008,7 +1008,8 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * @return the stream' resources.
+     * @return the stream' resources. This is mainly to be used by the {@link OperatorProcessor}
+     * classes.
      */
     public PDResources getResources()
     {
