@@ -23,14 +23,15 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.NumberFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -81,10 +82,10 @@ abstract class PDAbstractContentStream implements Closeable
     protected final PDResources resources;
 
     protected boolean inTextMode = false;
-    protected final Stack<PDFont> fontStack = new Stack<>();
+    protected final Deque<PDFont> fontStack = new ArrayDeque<>();
 
-    protected final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<>();
-    protected final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
+    protected final Deque<PDColorSpace> nonStrokingColorSpaceStack = new ArrayDeque<>();
+    protected final Deque<PDColorSpace> strokingColorSpaceStack = new ArrayDeque<>();
 
     // number format
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
@@ -170,7 +171,8 @@ abstract class PDAbstractContentStream implements Closeable
         }
         else
         {
-            fontStack.setElementAt(font, fontStack.size() - 1);
+            fontStack.pop();
+            fontStack.push(font);
         }
 
         // keep track of fonts which are configured for subsetting
@@ -1551,7 +1553,8 @@ abstract class PDAbstractContentStream implements Closeable
         }
         else
         {
-            strokingColorSpaceStack.setElementAt(colorSpace, strokingColorSpaceStack.size() - 1);
+            strokingColorSpaceStack.pop();
+            strokingColorSpaceStack.push(colorSpace);
         }
     }
 
@@ -1563,7 +1566,8 @@ abstract class PDAbstractContentStream implements Closeable
         }
         else
         {
-            nonStrokingColorSpaceStack.setElementAt(colorSpace, nonStrokingColorSpaceStack.size() - 1);
+            nonStrokingColorSpaceStack.pop();
+            nonStrokingColorSpaceStack.push(colorSpace);
         }
     }
 
