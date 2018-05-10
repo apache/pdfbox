@@ -67,7 +67,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                 boolean hasBackground = contentStream
                         .setNonStrokingColorOnDemand(annotation.getInteriorColor());
                 
-                handleOpacity(annotation.getConstantOpacity());
+                setOpacity(contentStream, annotation.getConstantOpacity());
                 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());                
                 PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();

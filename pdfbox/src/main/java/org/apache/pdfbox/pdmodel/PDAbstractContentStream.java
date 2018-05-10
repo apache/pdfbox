@@ -56,7 +56,7 @@ import org.apache.pdfbox.util.NumberFormatUtil;
 abstract class PDAbstractContentStream implements Closeable
 {
     protected final OutputStream outputStream;
-    private PDResources resources;
+    protected final PDResources resources;
 
     protected boolean inTextMode = false;
     protected final Stack<PDFont> fontStack = new Stack<>();
@@ -73,10 +73,10 @@ abstract class PDAbstractContentStream implements Closeable
      * 
      * @param outputStream The appearances output stream to write to.
      */
-    PDAbstractContentStream(OutputStream outputStream)
+    PDAbstractContentStream(OutputStream outputStream, PDResources resources)
     {
         this.outputStream = outputStream;
-        this.resources = null;
+        this.resources = resources;
 
         formatDecimal.setMaximumFractionDigits(4);
         formatDecimal.setGroupingUsed(false);
@@ -91,16 +91,6 @@ abstract class PDAbstractContentStream implements Closeable
     protected void setMaximumFractionDigits(int fractionDigitsNumber)
     {
         formatDecimal.setMaximumFractionDigits(fractionDigitsNumber);
-    }
-
-    public PDResources getResources()
-    {
-        return resources;
-    }
-    
-    public final void setResources(PDResources resources)
-    {
-        this.resources = resources;
     }
 
     /**

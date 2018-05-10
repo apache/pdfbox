@@ -63,7 +63,7 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
                 contentStream.setStrokingColor(getColor());
                 contentStream.setNonStrokingColor(getColor());
                 
-                handleOpacity(annotation.getConstantOpacity());
+                setOpacity(contentStream, annotation.getConstantOpacity());
 
                 PDRectangle rect = getRectangle();
                 PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());

@@ -93,7 +93,7 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
         {
             try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
             {
-                handleOpacity(annotation.getConstantOpacity());
+                setOpacity(cs, annotation.getConstantOpacity());
 
                 cs.setStrokingColor(color);
                 if (ab.dashArray != null)

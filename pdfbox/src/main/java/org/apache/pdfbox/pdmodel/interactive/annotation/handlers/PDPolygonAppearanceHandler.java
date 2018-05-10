@@ -100,7 +100,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
                 boolean hasBackground = contentStream
                         .setNonStrokingColorOnDemand(annotation.getInteriorColor());
 
-                handleOpacity(annotation.getConstantOpacity());
+                setOpacity(contentStream, annotation.getConstantOpacity());
 
                 contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
                 //TODO find better way to do this. Either pass border array to

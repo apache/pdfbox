@@ -135,7 +135,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
         {
             try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
             {
-                handleOpacity(annotation.getConstantOpacity());
+                setOpacity(cs, annotation.getConstantOpacity());
 
                 // Tested with Adobe Reader:
                 // text is written first (TODO)
@@ -241,7 +241,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // check contentLength so we don't show if there was trouble before
                     if (contentLength > 0)
                     {
-                        prepareResources();
+                        //prepareResources(cs);
 
                         cs.beginText();
                         cs.setFont(font, FONT_SIZE);
