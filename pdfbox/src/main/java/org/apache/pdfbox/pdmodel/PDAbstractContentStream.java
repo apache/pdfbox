@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.contentstream;
+package org.apache.pdfbox.pdmodel;
 
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
@@ -28,7 +28,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -54,9 +53,8 @@ import org.apache.pdfbox.util.NumberFormatUtil;
  *
  * @author Ben Litchfield
  */
-public abstract class PDAbstractContentStream implements Closeable
+abstract class PDAbstractContentStream implements Closeable
 {
-    
     private OutputStream outputStream;
     private PDResources resources;
 

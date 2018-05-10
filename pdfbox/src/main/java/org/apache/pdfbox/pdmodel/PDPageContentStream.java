@@ -38,7 +38,6 @@ import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
 import org.apache.fontbox.ttf.gsub.GsubWorker;
 import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.model.GsubData;
-import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -68,7 +67,6 @@ import org.apache.pdfbox.util.Matrix;
  */
 public final class PDPageContentStream extends PDAbstractContentStream implements Closeable
 {
-    
     /**
      * This is to choose what to do with the stream: overwrite, append or prepend.
      */
