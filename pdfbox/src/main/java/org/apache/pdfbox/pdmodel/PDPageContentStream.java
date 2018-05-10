@@ -497,7 +497,8 @@ public final class PDPageContentStream implements Closeable
         // Unicode code points to keep when subsetting
         if (font.willBeSubset())
         {
-            for (int offset = 0; offset < text.length(); )
+            int offset = 0;
+            while (offset < text.length())
             {
                 int codePoint = text.codePointAt(offset);
                 font.addToSubset(codePoint);
