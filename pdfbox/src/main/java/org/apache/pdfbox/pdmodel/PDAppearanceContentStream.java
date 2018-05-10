@@ -56,8 +56,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      */
     public PDAppearanceContentStream(PDAppearanceStream appearance, OutputStream outputStream)
     {
-        super(outputStream);
-        setResources(appearance.getResources());
+        super(outputStream, appearance.getResources());
     }
 
     /**

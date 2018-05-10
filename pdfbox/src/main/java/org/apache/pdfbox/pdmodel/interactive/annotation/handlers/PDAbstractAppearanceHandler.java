@@ -42,8 +42,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 {
     private final PDAnnotation annotation;
-    private PDAppearanceEntry appearanceEntry;
-    private PDAppearanceContentStream contentStream;
     
     public PDAbstractAppearanceHandler(PDAnnotation annotation)
     {
@@ -106,9 +104,8 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     PDAppearanceContentStream getNormalAppearanceAsContentStream() throws IOException
     {
-        appearanceEntry = getNormalAppearance();
-        contentStream = getAppearanceEntryAsContentStream(appearanceEntry);
-        return contentStream;
+        PDAppearanceEntry appearanceEntry = getNormalAppearance();
+        return getAppearanceEntryAsContentStream(appearanceEntry);
     }
     
     /**
@@ -192,7 +189,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * <p>Creates a new rectangle with differences added to each side.
      * .
      * @param rectangle the rectangle.
-     * @param diifferences the differences to apply.
+     * @param differences the differences to apply.
      * @return the padded rectangle.
      */
     PDRectangle addRectDifferences(PDRectangle rectangle, float[] differences)
@@ -214,7 +211,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * <p>Creates a new rectangle with differences added to each side.
      * .
      * @param rectangle the rectangle.
-     * @param diifferences the differences to apply.
+     * @param differences the differences to apply.
      * @return the padded rectangle.
      */
     PDRectangle applyRectDifferences(PDRectangle rectangle, float[] differences)
@@ -229,34 +226,15 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 rectangle.getHeight() - differences[1] - differences[3]);
     }
 
-    void handleOpacity(float opacity) throws IOException
+    void setOpacity(PDAppearanceContentStream contentStream, float opacity) throws IOException
     {
         if (opacity < 1)
         {
             PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
             gs.setStrokingAlphaConstant(opacity);
             gs.setNonStrokingAlphaConstant(opacity);
-            
-            prepareResources();
 
             contentStream.setGraphicsStateParameters(gs);
-        }
-    }
-
-    /**
-     * Assign the resources dictionary from the appearance entry to the content stream and create
-     * the resources if needed.
-     */
-    void prepareResources()
-    {
-        PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
-        
-        PDResources resources = appearanceStream.getResources();
-        if (resources == null)
-        {
-            resources = new PDResources();
-            appearanceStream.setResources(resources);
-            contentStream.setResources(resources);
         }
     }
     
@@ -285,10 +263,19 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     }
     
     
-    private PDAppearanceContentStream getAppearanceEntryAsContentStream(PDAppearanceEntry appearanceEntryToStream) throws IOException
+    private PDAppearanceContentStream getAppearanceEntryAsContentStream(PDAppearanceEntry appearanceEntry) throws IOException
     {
-        PDAppearanceStream appearanceStream = appearanceEntryToStream.getAppearanceStream();
+        PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
         setTransformationMatrix(appearanceStream);
+
+        // ensure there are resources
+        PDResources resources = appearanceStream.getResources();
+        if (resources == null)
+        {
+            resources = new PDResources();
+            appearanceStream.setResources(resources);
+        }
+
         return new PDAppearanceContentStream(appearanceStream);
     }
     

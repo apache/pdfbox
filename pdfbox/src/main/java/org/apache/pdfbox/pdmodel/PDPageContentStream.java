@@ -150,13 +150,22 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
                                boolean compress, boolean resetContext) throws IOException
     {
-        this(document, sourcePage, appendContent, compress, resetContext, new PDStream(document));
+        this(document, sourcePage, appendContent, compress, resetContext, new PDStream(document),
+                sourcePage.getResources() != null ? sourcePage.getResources() : new PDResources());
     }
 
     private PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
-                                boolean compress, boolean resetContext, PDStream stream) throws IOException
+                                boolean compress, boolean resetContext,PDStream stream,
+                                PDResources resources) throws IOException
     {
-        super(stream.createOutputStream(compress ? COSName.FLATE_DECODE : null));
+        super(stream.createOutputStream(compress ? COSName.FLATE_DECODE : null), resources);
+
+        // propagate resources to the page
+        if (sourcePage.getResources() == null)
+        {
+            sourcePage.setResources(resources);
+        }
+
         this.document = document;
 
         // If request specifies the need to append/prepend to the document
@@ -220,16 +229,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             sourcePage.setContents(stream);
         }
 
-        // this has to be done here, as the resources will be set to null when resetting the content
-        // stream
-        PDResources resources = sourcePage.getResources();
-        if (resources == null)
-        {
-            resources = new PDResources();
-            sourcePage.setResources(resources);
-        }
-        setResources(resources);
-
         // configure NumberFormat
         setMaximumFractionDigits(5);
     }
@@ -255,10 +254,10 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      */
     public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream)
     {
-        super(outputStream);
+        super(outputStream, appearance.getResources());
         this.document = doc;
         
-        setResources(appearance.getResources());
+        //setResources(appearance.getResources());
     }
 
     /**
@@ -297,7 +296,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
-        writeOperand(getResources().add(font));
+        writeOperand(resources.add(font));
         writeOperand(fontSize);
         writeOperator("Tf");
     }
@@ -546,7 +545,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         {
             xObjectPrefix = "Form";
         }
-        COSName objMapping = getResources().add(xobject, xObjectPrefix);
+        COSName objMapping = resources.add(xobject, xObjectPrefix);
 
         saveGraphicsState();
         transform(new Matrix(transform));
@@ -1158,7 +1157,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Override
     public void setGraphicsStateParameters(PDExtendedGraphicsState state) throws IOException
     {
-        writeOperand(getResources().add(state));
+        writeOperand(resources.add(state));
         writeOperator("gs");
     }
 

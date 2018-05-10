@@ -34,7 +34,6 @@ public final class PDPatternContentStream extends PDAbstractContentStream
      */
     public PDPatternContentStream(PDTilingPattern pattern) throws IOException
     {
-        super(pattern.getContentStream().createOutputStream());
-        setResources(pattern.getResources());
+        super(pattern.getContentStream().createOutputStream(), pattern.getResources());
     }
 }
