@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -99,11 +98,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
 
     private final PDDocument document;
-
-    private final Stack<PDFont> fontStack = new Stack<>();
-
-    private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<>();
-    private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
 
     private final Map<PDType0Font, GsubWorker> gsubWorkers = new HashMap<>();
     private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
@@ -328,7 +322,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Override
     protected void showTextInternal(String text) throws IOException
     {
-        if (!isInTextMode())
+        if (!inTextMode)
         {
             throw new IllegalStateException("Must call beginText() before showText()");
         }
@@ -535,7 +529,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void drawXObject(PDXObject xobject, AffineTransform transform) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: drawXObject is not allowed within a text block.");
         }
@@ -788,7 +782,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void fillRect(float x, float y, float width, float height) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: fillRect is not allowed within a text block.");
         }
@@ -863,7 +857,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void addLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: addLine is not allowed within a text block.");
         }
@@ -886,7 +880,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void drawLine(float xStart, float yStart, float xEnd, float yEnd) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: drawLine is not allowed within a text block.");
         }
@@ -907,7 +901,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void addPolygon(float[] x, float[] y) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: addPolygon is not allowed within a text block.");
         }
@@ -940,7 +934,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void drawPolygon(float[] x, float[] y) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: drawPolygon is not allowed within a text block.");
         }
@@ -959,7 +953,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void fillPolygon(float[] x, float[] y) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: fillPolygon is not allowed within a text block.");
         }
@@ -1014,7 +1008,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     @Deprecated
     public void clipPath(int windingRule) throws IOException
     {
-        if (isInTextMode())
+        if (inTextMode)
         {
             throw new IllegalStateException("Error: clipPath is not allowed within a text block.");
         }

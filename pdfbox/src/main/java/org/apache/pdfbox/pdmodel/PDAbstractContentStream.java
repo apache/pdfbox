@@ -58,11 +58,11 @@ abstract class PDAbstractContentStream implements Closeable
     private OutputStream outputStream;
     private PDResources resources;
 
-    private boolean inTextMode = false;
-    private final Stack<PDFont> fontStack = new Stack<>();
+    protected boolean inTextMode = false;
+    protected final Stack<PDFont> fontStack = new Stack<>();
 
-    private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<>();
-    private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
+    protected final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<>();
+    protected final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<>();
 
     // number format
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
@@ -102,7 +102,7 @@ abstract class PDAbstractContentStream implements Closeable
     {
         formatDecimal.setMaximumFractionDigits(fractionDigitsNumber);
     }
-    
+
     public OutputStream getOutputStream()
     {
         return outputStream;
@@ -112,7 +112,7 @@ abstract class PDAbstractContentStream implements Closeable
     {
         this.outputStream = outputStream;
     }
-    
+
     public PDResources getResources()
     {
         return resources;
@@ -121,22 +121,6 @@ abstract class PDAbstractContentStream implements Closeable
     public final void setResources(PDResources resources)
     {
         this.resources = resources;
-    }
-    
-    public Stack<PDColorSpace> getStrokingColorSpaceStack()
-    {
-        return strokingColorSpaceStack;
-    }
-
-    public Stack<PDColorSpace> getNonStrokingColorSpaceStack()
-    {
-        return nonStrokingColorSpaceStack;
-    }
-
-    
-    public boolean isInTextMode()
-    {
-        return inTextMode;
     }
 
     /**
