@@ -241,8 +241,6 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // check contentLength so we don't show if there was trouble before
                     if (contentLength > 0)
                     {
-                        //prepareResources(cs);
-
                         cs.beginText();
                         cs.setFont(font, FONT_SIZE);
                         cs.newLineAtOffset(xOffset + captionHorizontalOffset, 
