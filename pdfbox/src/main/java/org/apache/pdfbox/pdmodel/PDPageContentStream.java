@@ -18,33 +18,17 @@ package org.apache.pdfbox.pdmodel;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.ttf.CmapLookup;
-import org.apache.fontbox.ttf.gsub.CompoundCharacterTokenizer;
-import org.apache.fontbox.ttf.gsub.GsubWorker;
-import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
-import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
-import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -54,8 +38,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
-import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
-import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
@@ -97,11 +79,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     }
   
     private static final Log LOG = LogFactory.getLog(PDPageContentStream.class);
-
-    private final PDDocument document;
-
-    private final Map<PDType0Font, GsubWorker> gsubWorkers = new HashMap<>();
-    private final GsubWorkerFactory gsubWorkerFactory = new GsubWorkerFactory();
 
     /**
      * Create a new PDPage content stream. This constructor overwrites all existing content streams
@@ -158,15 +135,13 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                                 boolean compress, boolean resetContext,PDStream stream,
                                 PDResources resources) throws IOException
     {
-        super(stream.createOutputStream(compress ? COSName.FLATE_DECODE : null), resources);
+        super(document, stream.createOutputStream(compress ? COSName.FLATE_DECODE : null), resources);
 
         // propagate resources to the page
         if (sourcePage.getResources() == null)
         {
             sourcePage.setResources(resources);
         }
-
-        this.document = document;
 
         // If request specifies the need to append/prepend to the document
         if (!appendContent.isOverwrite() && sourcePage.hasContents())
@@ -254,51 +229,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
      */
     public PDPageContentStream(PDDocument doc, PDAppearanceStream appearance, OutputStream outputStream)
     {
-        super(outputStream, appearance.getResources());
-        this.document = doc;
-        
-        //setResources(appearance.getResources());
-    }
-
-    /**
-     * Set the font and font size to draw text with.
-     *
-     * @param font The font to use.
-     * @param fontSize The font size to draw the text.
-     * @throws IOException If there is an error writing the font information.
-     */
-    @Override
-    public void setFont(PDFont font, float fontSize) throws IOException
-    {
-        if (fontStack.isEmpty())
-        {
-            fontStack.add(font);
-        }
-        else
-        {
-            fontStack.setElementAt(font, fontStack.size() - 1);
-        }
-        
-        if (font.willBeSubset())
-        {
-            document.getFontsToSubset().add(font);
-        }
-        
-        if (font instanceof PDType0Font)
-        {
-            PDType0Font pdType0Font = (PDType0Font) font;
-            GsubData gsubData = pdType0Font.getGsubData();
-            if (gsubData != GsubData.NO_DATA_FOUND)
-            {
-                GsubWorker gsubWorker = gsubWorkerFactory.getGsubWorker(pdType0Font.getCmapLookup(),
-                        gsubData);
-                gsubWorkers.put((PDType0Font) font, gsubWorker);
-            }
-        }
-
-        writeOperand(resources.add(font));
-        writeOperand(fontSize);
-        writeOperator("Tf");
+        super(doc, outputStream, appearance.getResources());
     }
 
     /**
@@ -312,65 +243,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     public void drawString(String text) throws IOException
     {
         showText(text);
-    }
-
-    /**
-     * Outputs a string using the correct encoding and subsetting as required.
-     *
-     * @param text The Unicode text to show.
-     * 
-     * @throws IOException If an io exception occurs.
-     */
-    @Override
-    protected void showTextInternal(String text) throws IOException
-    {
-        if (!inTextMode)
-        {
-            throw new IllegalStateException("Must call beginText() before showText()");
-        }
-
-        if (fontStack.isEmpty())
-        {
-            throw new IllegalStateException("Must call setFont() before showText()");
-        }
-
-        PDFont font = fontStack.peek();
-
-        byte[] encodedText = null;
-
-        if (font instanceof PDType0Font)
-        {
-
-            GsubWorker gsubWorker = gsubWorkers.get(font);
-            if (gsubWorker != null)
-            {
-                PDType0Font pdType0Font = (PDType0Font) font;
-                Set<Integer> glyphIds = new HashSet<>();
-                encodedText = encodeForGsub(gsubWorker, glyphIds, pdType0Font, text);
-                if (pdType0Font.willBeSubset())
-                {
-                    pdType0Font.addGlyphsToSubset(glyphIds);
-                }
-            }
-        }
-
-        if (encodedText == null)
-        {
-            encodedText = font.encode(text);
-        }
-
-        // Unicode code points to keep when subsetting
-        if (font.willBeSubset())
-        {
-            for (int offset = 0; offset < text.length(); )
-            {
-                int codePoint = text.codePointAt(offset);
-                font.addToSubset(codePoint);
-                offset += Character.charCount(codePoint);
-            }
-        }
-
-        COSWriter.writeString(encodedText, outputStream);
     }
 
     /**
@@ -584,50 +456,6 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     public void concatenate2CTM(AffineTransform at) throws IOException
     {
         transform(new Matrix(at));
-    }
-
-    /**
-     * q operator. Saves the current graphics state.
-     * @throws IOException If an error occurs while writing to the stream.
-     */
-    @Override
-    public void saveGraphicsState() throws IOException
-    {
-        if (!fontStack.isEmpty())
-        {
-            fontStack.push(fontStack.peek());
-        }
-        if (!strokingColorSpaceStack.isEmpty())
-        {
-            strokingColorSpaceStack.push(strokingColorSpaceStack.peek());
-        }
-        if (!nonStrokingColorSpaceStack.isEmpty())
-        {
-            nonStrokingColorSpaceStack.push(nonStrokingColorSpaceStack.peek());
-        }
-        writeOperator("q");
-    }
-
-    /**
-     * Q operator. Restores the current graphics state.
-     * @throws IOException If an error occurs while writing to the stream.
-     */
-    @Override
-    public void restoreGraphicsState() throws IOException
-    {
-        if (!fontStack.isEmpty())
-        {
-            fontStack.pop();
-        }
-        if (!strokingColorSpaceStack.isEmpty())
-        {
-            strokingColorSpaceStack.pop();
-        }
-        if (!nonStrokingColorSpaceStack.isEmpty())
-        {
-            nonStrokingColorSpaceStack.pop();
-        }
-        writeOperator("Q");
     }
 
     /**
@@ -1147,100 +975,4 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         writeOperand(name);
     }
-    
-    /**
-     * Set an extended graphics state.
-     * 
-     * @param state The extended graphics state.
-     * @throws IOException If the content stream could not be written.
-     */
-    @Override
-    public void setGraphicsStateParameters(PDExtendedGraphicsState state) throws IOException
-    {
-        writeOperand(resources.add(state));
-        writeOperator("gs");
-    }
-
-    /**
-     * Set the text rendering mode. This determines whether showing text shall cause glyph outlines
-     * to be stroked, filled, used as a clipping boundary, or some combination of the three.
-     *
-     * @param rm The text rendering mode.
-     * @throws IOException If the content stream could not be written.
-     */
-    public void setRenderingMode(RenderingMode rm) throws IOException
-    {
-        writeOperand(rm.intValue());
-        writeOperator("Tr");
-    }
-
-    /**
-     * Set the text rise value, i.e. move the baseline up or down. This is useful for drawing
-     * superscripts or subscripts.
-     *
-     * @param rise Specifies the distance, in unscaled text space units, to move the baseline up or
-     * down from its default location. 0 restores the default location.
-     * @throws IOException
-     */
-    public void setTextRise(float rise) throws IOException
-    {
-        writeOperand(rise);
-        writeOperator("Ts");
-    }
-
-    private byte[] encodeForGsub(GsubWorker gsubWorker,
-            Set<Integer> glyphIds, PDType0Font font, String text) throws IOException
-    {
-
-        String spaceRegexPattern = "\\s";
-        Pattern spaceRegex = Pattern.compile(spaceRegexPattern);
-
-        // break the entire chunk of text into words by splitting it with space
-        List<String> words = new CompoundCharacterTokenizer("\\s").tokenize(text);
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-        for (String word : words)
-        {
-            if (spaceRegex.matcher(word).matches())
-            {
-                out.write(font.encode(word));
-            }
-            else
-            {
-                glyphIds.addAll(applyGSUBRules(gsubWorker, out, font, word));
-            }
-        }
-
-        return out.toByteArray();
-    }
-
-    private List<Integer> applyGSUBRules(GsubWorker gsubWorker, ByteArrayOutputStream out, PDType0Font font, String word) throws IOException
-    {
-        List<Integer> originalGlyphIds = new ArrayList<>();
-        CmapLookup cmapLookup = font.getCmapLookup();
-
-        // convert characters into glyphIds
-        for (char unicodeChar : word.toCharArray())
-        {
-            int glyphId = cmapLookup.getGlyphId(unicodeChar);
-            if (glyphId <= 0)
-            {
-                throw new IllegalStateException(
-                        "could not find the glyphId for the character: " + unicodeChar);
-            }
-            originalGlyphIds.add(glyphId);
-        }
-
-        List<Integer> glyphIdsAfterGsub = gsubWorker.applyTransforms(originalGlyphIds);
-
-        for (Integer glyphId : glyphIdsAfterGsub)
-        {
-            out.write(font.encodeGlyphId(glyphId));
-        }
-
-        return glyphIdsAfterGsub;
-
-    }
-
 }
