@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**

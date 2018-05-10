@@ -36,7 +36,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**

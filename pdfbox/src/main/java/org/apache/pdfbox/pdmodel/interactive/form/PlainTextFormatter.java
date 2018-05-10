@@ -19,7 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Line;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.Paragraph;
 import org.apache.pdfbox.pdmodel.interactive.form.PlainText.TextAttribute;

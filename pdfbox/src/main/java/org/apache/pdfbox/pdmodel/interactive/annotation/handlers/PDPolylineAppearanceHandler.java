@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolyline;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**

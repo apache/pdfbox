@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 
 /**
  * Generates annotation appearances with a cloudy border.

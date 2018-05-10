@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.interactive.annotation;
+package org.apache.pdfbox.pdmodel;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.pdfbox.contentstream.PDAbstractContentStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
  * Provides the ability to write to a page content stream.
@@ -31,7 +32,6 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
  */
 public final class PDAppearanceContentStream extends PDAbstractContentStream implements Closeable
 {
-
     /**
      * Create a new appearance stream.
      *
