@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.pdmodel.PDAbstractContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -403,7 +402,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
      * 
      * @throws IOException If the content stream could not be written
      */
-    private void drawArrow(PDAbstractContentStream cs, float x, float y, float len) throws IOException
+    private void drawArrow(PDAppearanceContentStream cs, float x, float y, float len) throws IOException
     {
         // strategy for arrows: angle 30°, arrow arm length = 9 * line width
         // cos(angle) = x position
@@ -424,7 +423,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
      * 
      * @throws IOException If the content stream could not be written
      */
-    private void drawDiamond(PDAbstractContentStream cs, float x, float y, float r) throws IOException
+    private void drawDiamond(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
     {
         cs.moveTo(x - r, y);
         cs.lineTo(x, y + r);
@@ -443,7 +442,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
      * 
      * @throws IOException If the content stream could not be written
      */
-    private void addCircle(PDAbstractContentStream cs, float x, float y, float r) throws IOException
+    private void addCircle(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
     {
         // http://stackoverflow.com/a/2007782/535646
         float magic = r * 0.551784f;
