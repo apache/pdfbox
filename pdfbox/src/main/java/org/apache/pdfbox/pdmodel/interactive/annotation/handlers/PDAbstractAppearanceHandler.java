@@ -250,16 +250,16 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     private PDAppearanceEntry getNormalAppearance()
     {
         PDAppearanceDictionary appearanceDictionary = getAppearance();
-        PDAppearanceEntry normalAappearanceEntry = appearanceDictionary.getNormalAppearance();
+        PDAppearanceEntry normalAppearanceEntry = appearanceDictionary.getNormalAppearance();
 
-        if (normalAappearanceEntry.isSubDictionary())
+        if (normalAppearanceEntry.isSubDictionary())
         {
             //TODO replace with "document.getDocument().createCOSStream()" 
-            normalAappearanceEntry = new PDAppearanceEntry(new COSStream());
-            appearanceDictionary.setNormalAppearance(normalAappearanceEntry);
+            normalAppearanceEntry = new PDAppearanceEntry(new COSStream());
+            appearanceDictionary.setNormalAppearance(normalAppearanceEntry);
         }
 
-        return normalAappearanceEntry;
+        return normalAppearanceEntry;
     }
     
     
