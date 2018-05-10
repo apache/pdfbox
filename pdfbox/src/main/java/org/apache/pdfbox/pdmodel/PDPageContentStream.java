@@ -57,6 +57,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -149,16 +150,18 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     public PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
                                boolean compress, boolean resetContext) throws IOException
     {
-        super();
+        this(document, sourcePage, appendContent, compress, resetContext, new PDStream(document));
+    }
+
+    private PDPageContentStream(PDDocument document, PDPage sourcePage, AppendMode appendContent,
+                                boolean compress, boolean resetContext, PDStream stream) throws IOException
+    {
+        super(stream.createOutputStream(compress ? COSName.FLATE_DECODE : null));
         this.document = document;
-        COSName filter = compress ? COSName.FLATE_DECODE : null;
-        
+
         // If request specifies the need to append/prepend to the document
         if (!appendContent.isOverwrite() && sourcePage.hasContents())
         {
-            // Create a stream to append new content
-            PDStream contentsToAppend = new PDStream(document);
-            
             // Add new stream to contents array
             COSBase contents = sourcePage.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             COSArray array;
@@ -173,35 +176,36 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                 array = new COSArray();
                 array.add(contents);
             }
+
             if (appendContent.isPrepend())
             {
-                array.add(0, contentsToAppend.getCOSObject());
+                array.add(0, stream.getCOSObject());
             }
             else
             {
-                array.add(contentsToAppend);
+                array.add(stream);
             }
 
             // save the initial/unmodified graphics context
             if (resetContext)
             {
-                // create a new stream to encapsulate the existing stream
-                PDStream saveGraphics = new PDStream(document);
-                setOutputStream(saveGraphics.createOutputStream(filter));
-                
-                // save the initial/unmodified graphics context
-                saveGraphicsState();
-                close();
-                
+                // create a new stream to prefix existing stream
+                PDStream prefixStream = new PDStream(document);
+
+                // save the pre-append graphics state
+                OutputStream prefixOut = prefixStream.createOutputStream();
+                prefixOut.write("q".getBytes(Charsets.US_ASCII));
+                prefixOut.write('\n');
+                prefixOut.close();
+
                 // insert the new stream at the beginning
-                array.add(0, saveGraphics.getCOSObject());
+                array.add(0, prefixStream.getCOSObject());
             }
 
             // Sets the compoundStream as page contents
             sourcePage.getCOSObject().setItem(COSName.CONTENTS, array);
-            setOutputStream(contentsToAppend.createOutputStream(filter));
 
-            // restore the initial/unmodified graphics context
+            // restore the pre-append graphics state
             if (resetContext)
             {
                 restoreGraphicsState();
@@ -213,11 +217,9 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             {
                 LOG.warn("You are overwriting an existing content, you should use the append mode");
             }
-            PDStream contents = new PDStream(document);
-            sourcePage.setContents(contents);
-            setOutputStream(contents.createOutputStream(filter));
+            sourcePage.setContents(stream);
         }
-        
+
         // this has to be done here, as the resources will be set to null when resetting the content
         // stream
         PDResources resources = sourcePage.getResources();
@@ -227,6 +229,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             sourcePage.setResources(resources);
         }
         setResources(resources);
+
         // configure NumberFormat
         setMaximumFractionDigits(5);
     }
@@ -368,7 +371,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             }
         }
 
-        COSWriter.writeString(encodedText, getOutputStream());
+        COSWriter.writeString(encodedText, outputStream);
     }
 
     /**

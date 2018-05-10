@@ -55,7 +55,7 @@ import org.apache.pdfbox.util.NumberFormatUtil;
  */
 abstract class PDAbstractContentStream implements Closeable
 {
-    private OutputStream outputStream;
+    protected final OutputStream outputStream;
     private PDResources resources;
 
     protected boolean inTextMode = false;
@@ -70,20 +70,10 @@ abstract class PDAbstractContentStream implements Closeable
 
     /**
      * Create a new appearance stream.
-     *
-     */
-    public PDAbstractContentStream()
-    {
-        formatDecimal.setMaximumFractionDigits(4);
-        formatDecimal.setGroupingUsed(false);
-    }
-
-    /**
-     * Create a new appearance stream.
      * 
      * @param outputStream The appearances output stream to write to.
      */
-    public PDAbstractContentStream(OutputStream outputStream)
+    PDAbstractContentStream(OutputStream outputStream)
     {
         this.outputStream = outputStream;
         this.resources = null;
@@ -101,16 +91,6 @@ abstract class PDAbstractContentStream implements Closeable
     protected void setMaximumFractionDigits(int fractionDigitsNumber)
     {
         formatDecimal.setMaximumFractionDigits(fractionDigitsNumber);
-    }
-
-    public OutputStream getOutputStream()
-    {
-        return outputStream;
-    }
-
-    public void setOutputStream(OutputStream outputStream)
-    {
-        this.outputStream = outputStream;
     }
 
     public PDResources getResources()
@@ -1483,11 +1463,7 @@ abstract class PDAbstractContentStream implements Closeable
     @Override
     public void close() throws IOException
     {
-        if (outputStream != null)
-        {
-            outputStream.close();
-            outputStream = null;
-        }
+        outputStream.close();
     }
 
     protected boolean isOutside255Interval(int val)
