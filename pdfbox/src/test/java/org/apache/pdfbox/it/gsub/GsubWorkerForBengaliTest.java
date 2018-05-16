@@ -114,6 +114,32 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
+    public void testApplyTransforms_o_kar_repeated_1()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(108, 96, 108, 94, 101, 110);
+
+        // when
+        List<Integer> result = gsubWorkerForBengali.applyTransforms(getGlyphIds("ষোলো"));
+
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+
+    @Test
+    public void testApplyTransforms_o_kar_repeated_2()
+    {
+        // given
+        List<Integer> glyphsAfterGsub = Arrays.asList(86, 108, 91, 101, 108, 91, 101, 110);
+
+        // when
+        List<Integer> result = gsubWorkerForBengali.applyTransforms(getGlyphIds("নমোনমো"));
+
+        // then
+        assertEquals(glyphsAfterGsub, result);
+    }
+
+    @Test
     public void testApplyTransforms_ou_kar()
     {
         // given
