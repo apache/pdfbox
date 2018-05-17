@@ -25,7 +25,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
@@ -252,22 +251,7 @@ public class PDDocumentCatalog implements COSObjectable
     public PDDestinationOrAction getOpenAction() throws IOException
     {
         COSBase openAction = root.getDictionaryObject(COSName.OPEN_ACTION);
-        if (openAction == null)
-        {
-            return null;
-        }
-        else if (openAction instanceof COSBoolean)
-        {
-            if (((COSBoolean) openAction).getValue() == false)
-            {
-                return null;
-            }
-            else
-            {
-                throw new IOException("Can't create OpenAction from COSBoolean");
-            }
-        }
-        else if (openAction instanceof COSDictionary)
+        if (openAction instanceof COSDictionary)
         {
             return PDActionFactory.createAction((COSDictionary)openAction);
         }
@@ -277,7 +261,7 @@ public class PDDocumentCatalog implements COSObjectable
         }
         else
         {
-            throw new IOException("Unknown OpenAction " + openAction);
+            return null;
         }
     }
     /**
