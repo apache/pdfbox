@@ -621,7 +621,13 @@ public class PDFMergerUtility
             {
                 for (int i = 0; i < srcNums.size(); i += 2)
                 {
-                    COSNumber labelIndex = (COSNumber) srcNums.getObject(i);
+                    COSBase base = srcNums.getObject(i);
+                    if (!(base instanceof COSNumber))
+                    {
+                        LOG.warn("page labels skipped at index " + i + ", should be a number, but is " + base);
+                        break;
+                    }
+                    COSNumber labelIndex = (COSNumber) base;
                     long labelIndexValue = labelIndex.intValue();
                     destNums.add(COSInteger.get(labelIndexValue + destPageCount));
                     destNums.add(cloner.cloneForNewDocument(srcNums.getObject(i + 1)));
