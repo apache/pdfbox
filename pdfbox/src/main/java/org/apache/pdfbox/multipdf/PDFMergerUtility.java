@@ -509,7 +509,7 @@ public class PDFMergerUtility
                 }
             }
 
-            destCatalog.setOpenAction(srcCatalog.getOpenAction());
+            destCatalog.setOpenAction(openAction);
         }
 
         PDFCloneUtility cloner = new PDFCloneUtility(destination);
