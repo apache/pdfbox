@@ -619,12 +619,18 @@ public class PDFMergerUtility
             COSArray srcNums = (COSArray) srcLabels.getDictionaryObject(COSName.NUMS);
             if (srcNums != null)
             {
+                int startSize = destNums.size();
                 for (int i = 0; i < srcNums.size(); i += 2)
                 {
                     COSBase base = srcNums.getObject(i);
                     if (!(base instanceof COSNumber))
                     {
-                        LOG.warn("page labels skipped at index " + i + ", should be a number, but is " + base);
+                        LOG.error("page labels ignored, index " + i + " should be a number, but is " + base);
+                        // remove what we added
+                        while (destNums.size() > startSize)
+                        {
+                            destNums.remove(startSize);
+                        }
                         break;
                     }
                     COSNumber labelIndex = (COSNumber) base;
