@@ -465,7 +465,16 @@ public class PDFMergerUtility
         if (destCatalog.getOpenAction() == null)
         {
             // PDFBOX-3972: get local dest page index, it must be reassigned after the page cloning
-            PDDestinationOrAction openAction = srcCatalog.getOpenAction();
+            PDDestinationOrAction openAction = null;
+            try
+            {
+                openAction = srcCatalog.getOpenAction();
+            }
+            catch (IOException ex)
+            {
+                // PDFBOX-4223
+                LOG.error("Invalid OpenAction ignored", ex);
+            }
             PDDestination openActionDestination = null;
             if (openAction instanceof PDActionGoTo)
             {
