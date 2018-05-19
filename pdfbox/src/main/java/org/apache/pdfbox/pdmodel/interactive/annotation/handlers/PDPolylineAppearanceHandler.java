@@ -28,11 +28,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolyline;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.LE_NONE;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
-import static org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAbstractAppearanceHandler.INTERIOR_COLOR_STYLES;
-import static org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDLineAppearanceHandler.ARROW_ANGLE;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -157,7 +154,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 // the alternative would be to apply the transform to the LE shapes directly,
                 // which would be more work and produce code difficult to understand
 
-                // this must be done after polyline draw, to avoid line crossing a filled shape
+                // paint the styles here and after polyline draw, to avoid line crossing a filled shape
                 if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
                 {
                     // check only needed to avoid q cm Q if LE_NONE
@@ -246,143 +243,5 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         }
 
         return 1;
-    }
-
-    //TODO refactor to remove double code drawStyle and related
-    // (100% copied from line handler)
-
-    private void drawStyle(String style, final PDAppearanceContentStream cs, float x, float y,
-                           float width, boolean hasStroke, boolean hasBackground) throws IOException
-    {
-        switch (style)
-        {
-            case PDAnnotationLine.LE_OPEN_ARROW:
-            case PDAnnotationLine.LE_CLOSED_ARROW:
-                if (Float.compare(x, 0) != 0)
-                {
-                    // ending
-                    drawArrow(cs, x - width, y, -width * 9);
-                }
-                else
-                {
-                    // start
-                    drawArrow(cs, width, y, width * 9);
-                }
-                if (PDAnnotationLine.LE_CLOSED_ARROW.equals(style))
-                {
-                    cs.closePath();
-                }
-                break;
-            case PDAnnotationLine.LE_BUTT:
-                cs.moveTo(x, y - width * 3);
-                cs.lineTo(x, y + width * 3);
-                break;
-            case PDAnnotationLine.LE_DIAMOND:
-                drawDiamond(cs, x, y, width * 3);
-                break;
-            case PDAnnotationLine.LE_SQUARE:
-                cs.addRect(x - width * 3, y - width * 3, width * 6, width * 6);
-                break;
-            case PDAnnotationLine.LE_CIRCLE:
-                addCircle(cs, x, y, width * 3);
-                break;
-            case PDAnnotationLine.LE_R_OPEN_ARROW:
-            case PDAnnotationLine.LE_R_CLOSED_ARROW:
-                if (Float.compare(x, 0) != 0)
-                {
-                    // ending
-                    drawArrow(cs, x + width, y, width * 9);
-                }
-                else
-                {
-                    // start
-                    drawArrow(cs, -width, y, -width * 9);
-                }
-                if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(style))
-                {
-                    cs.closePath();
-                }
-                break;
-            case PDAnnotationLine.LE_SLASH:
-                // the line is 18 x linewidth at an angle of 60°
-                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(60)) * width * 9));
-                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width * 9),
-                          y + (float) (Math.sin(Math.toRadians(240)) * width * 9));
-                break;
-            default:
-                break;
-        }
-        if (INTERIOR_COLOR_STYLES.contains(style))
-        {
-            cs.drawShape(width, hasStroke, hasBackground);
-        }
-        else if (!PDAnnotationLine.LE_NONE.equals(style))
-        {
-            // need to do this separately, because sometimes /IC is set anyway
-            cs.drawShape(width, hasStroke, false);
-        }
-    }
-
-    /**
-     * Add the two arms of a horizontal arrow.
-     * 
-     * @param cs Content stream
-     * @param x
-     * @param y
-     * @param len The arm length. Positive goes to the right, negative goes to the left.
-     * 
-     * @throws IOException If the content stream could not be written
-     */
-    private void drawArrow(PDAppearanceContentStream cs, float x, float y, float len) throws IOException
-    {
-        // strategy for arrows: angle 30°, arrow arm length = 9 * line width
-        // cos(angle) = x position
-        // sin(angle) = y position
-        // this comes very close to what Adobe is doing
-        cs.moveTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y + (float) (Math.sin(ARROW_ANGLE) * len));
-        cs.lineTo(x, y);
-        cs.lineTo(x + (float) (Math.cos(ARROW_ANGLE) * len), y - (float) (Math.sin(ARROW_ANGLE) * len));
-    }
-
-    /**
-     * Add a square diamond shape (corner on top) to the path.
-     *
-     * @param cs Content stream
-     * @param x
-     * @param y
-     * @param r Radius (to a corner)
-     * 
-     * @throws IOException If the content stream could not be written
-     */
-    private void drawDiamond(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
-    {
-        cs.moveTo(x - r, y);
-        cs.lineTo(x, y + r);
-        cs.lineTo(x + r, y);
-        cs.lineTo(x, y - r);
-        cs.closePath();
-    }
-
-    /**
-     * Add a circle shape to the path.
-     *
-     * @param cs Content stream
-     * @param x
-     * @param y
-     * @param r Radius
-     * 
-     * @throws IOException If the content stream could not be written
-     */
-    private void addCircle(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
-    {
-        // http://stackoverflow.com/a/2007782/535646
-        float magic = r * 0.551784f;
-        cs.moveTo(x, y + r);
-        cs.curveTo(x + magic, y + r, x + r, y + magic, x + r, y);
-        cs.curveTo(x + r, y - magic, x + magic, y - r, x, y - r);
-        cs.curveTo(x - magic, y - r, x - r, y - magic, x - r, y);
-        cs.curveTo(x - r, y + magic, x - magic, y + r, x, y + r);
-        cs.closePath();
     }
 }
