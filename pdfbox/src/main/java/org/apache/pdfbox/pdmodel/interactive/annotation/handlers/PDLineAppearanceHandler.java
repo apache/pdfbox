@@ -254,12 +254,13 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // do this here and not before showing the text, or the text would appear in the
                 // interior color
                 boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
-                switch (annotation.getStartPointEndingStyle())
+                String startPointEndingStyle = annotation.getStartPointEndingStyle();
+                switch (startPointEndingStyle)
                 {
                     case PDAnnotationLine.LE_OPEN_ARROW:
                     case PDAnnotationLine.LE_CLOSED_ARROW:
                         drawArrow(cs, ab.width, y, ab.width * 9);
-                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
+                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(startPointEndingStyle))
                         {
                             cs.closePath();
                         }
@@ -280,7 +281,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     case PDAnnotationLine.LE_R_OPEN_ARROW:
                     case PDAnnotationLine.LE_R_CLOSED_ARROW:
                         drawArrow(cs, -ab.width, y, -ab.width * 9);
-                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getStartPointEndingStyle()))
+                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(startPointEndingStyle))
                         {
                             cs.closePath();
                         }
@@ -295,22 +296,23 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     default:
                         break;
                 }
-                if (INTERIOR_COLOR_STYLES.contains(annotation.getStartPointEndingStyle()))
+                if (INTERIOR_COLOR_STYLES.contains(startPointEndingStyle))
                 {
                     cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
-                else if (!PDAnnotationLine.LE_NONE.equals(annotation.getStartPointEndingStyle()))
+                else if (!PDAnnotationLine.LE_NONE.equals(startPointEndingStyle))
                 {
                     // need to do this separately, because sometimes /IC is set anyway
                     cs.drawShape(ab.width, hasStroke, false);
                 }
 
-                switch (annotation.getEndPointEndingStyle())
+                String endPointEndingStyle = annotation.getEndPointEndingStyle();
+                switch (endPointEndingStyle)
                 {
                     case PDAnnotationLine.LE_OPEN_ARROW:
                     case PDAnnotationLine.LE_CLOSED_ARROW:
                         drawArrow(cs, lineLength - ab.width, y, -ab.width * 9);
-                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(endPointEndingStyle))
                         {
                             cs.closePath();
                         }
@@ -331,7 +333,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     case PDAnnotationLine.LE_R_OPEN_ARROW:
                     case PDAnnotationLine.LE_R_CLOSED_ARROW:
                         drawArrow(cs, lineLength + ab.width, y, ab.width * 9);
-                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(annotation.getEndPointEndingStyle()))
+                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(endPointEndingStyle))
                         {
                             cs.closePath();
                         }
@@ -346,11 +348,11 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     default:
                         break;
                 }
-                if (INTERIOR_COLOR_STYLES.contains(annotation.getEndPointEndingStyle()))
+                if (INTERIOR_COLOR_STYLES.contains(endPointEndingStyle))
                 {
                     cs.drawShape(ab.width, hasStroke, hasBackground);
                 }
-                else if (!PDAnnotationLine.LE_NONE.equals(annotation.getEndPointEndingStyle()))
+                else if (!PDAnnotationLine.LE_NONE.equals(endPointEndingStyle))
                 {
                     // need to do this separately, because sometimes /IC is set anyway
                     cs.drawShape(ab.width, hasStroke, false);
