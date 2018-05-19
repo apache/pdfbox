@@ -157,19 +157,6 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
                         }
                     }
                 }
-
-                //TODO line endings (LE) are missing
-                // How it could be done by reusing some of the code from 
-                // the Line and StrikeOut handlers
-                // 1) if the LE is contained in SHORT_STYLES, 
-                // shorten the first + last arms with "this weird old trick"
-                // used in the StrikeOut handler
-                // and paint
-                // 2) do a transform so that first and last arms are imagined flat
-                // (like in Line handler)
-                // 3) refactor + reuse the line handler code that draws the ending shapes
-                // the alternative would be to apply the transform to the LE shapes directly,
-                // which would be more work and produce code difficult to understand
                 contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
         }
