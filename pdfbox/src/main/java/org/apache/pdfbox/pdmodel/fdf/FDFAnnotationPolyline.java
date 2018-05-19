@@ -162,21 +162,18 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      */
     public void setStartPointEndingStyle(String style)
     {
-        if (style == null)
-        {
-            style = PDAnnotationLine.LE_NONE;
-        }
+        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array == null)
         {
             array = new COSArray();
-            array.add(COSName.getPDFName(style));
+            array.add(COSName.getPDFName(actualStyle));
             array.add(COSName.getPDFName(PDAnnotationLine.LE_NONE));
             annot.setItem(COSName.LE, array);
         }
         else
         {
-            array.setName(0, style);
+            array.setName(0, actualStyle);
         }
     }
 
@@ -204,21 +201,18 @@ public class FDFAnnotationPolyline extends FDFAnnotation
      */
     public void setEndPointEndingStyle(String style)
     {
-        if (style == null)
-        {
-            style = PDAnnotationLine.LE_NONE;
-        }
+        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
         COSArray array = (COSArray) annot.getDictionaryObject(COSName.LE);
         if (array == null)
         {
             array = new COSArray();
             array.add(COSName.getPDFName(PDAnnotationLine.LE_NONE));
-            array.add(COSName.getPDFName(style));
+            array.add(COSName.getPDFName(actualStyle));
             annot.setItem(COSName.LE, array);
         }
         else
         {
-            array.setName(1, style);
+            array.setName(1, actualStyle);
         }
     }
 
