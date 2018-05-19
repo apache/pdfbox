@@ -17,8 +17,6 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -38,31 +36,6 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
     static final double ARROW_ANGLE = Math.toRadians(30);
     static final int FONT_SIZE = 9;
-
-    /**
-     * styles where the line has to be drawn shorter (minus line width).
-     */
-    private static final Set<String> SHORT_STYLES = new HashSet<>();
-
-    /**
-     * styles where there is an interior color.
-     */
-    private static final Set<String> INTERIOR_COLOR_STYLES = new HashSet<>();
-
-    static
-    {
-        SHORT_STYLES.add(PDAnnotationLine.LE_OPEN_ARROW);
-        SHORT_STYLES.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        SHORT_STYLES.add(PDAnnotationLine.LE_SQUARE);
-        SHORT_STYLES.add(PDAnnotationLine.LE_CIRCLE);
-        SHORT_STYLES.add(PDAnnotationLine.LE_DIAMOND);
-
-        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_CIRCLE);
-        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_DIAMOND);
-        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
-        INTERIOR_COLOR_STYLES.add(PDAnnotationLine.LE_SQUARE);
-    }
 
     public PDLineAppearanceHandler(PDAnnotation annotation)
     {

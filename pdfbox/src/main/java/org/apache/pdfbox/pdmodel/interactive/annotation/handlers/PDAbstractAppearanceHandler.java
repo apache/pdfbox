@@ -19,6 +19,9 @@ package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -28,6 +31,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
@@ -42,7 +46,39 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 {
     private final PDAnnotation annotation;
-    
+
+    /**
+     * Line ending styles where the line has to be drawn shorter (minus line width).
+     */
+    protected static final Set<String> SHORT_STYLES = createShortStyles();
+
+    /**
+     * Line ending styles where there is an interior color.
+     */
+    protected static final Set<String> INTERIOR_COLOR_STYLES = createInteriorColorStyles();
+
+    private static Set<String> createShortStyles()
+    {
+        Set<String> shortStyles = new HashSet<>();
+        shortStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
+        shortStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
+        shortStyles.add(PDAnnotationLine.LE_SQUARE);
+        shortStyles.add(PDAnnotationLine.LE_CIRCLE);
+        shortStyles.add(PDAnnotationLine.LE_DIAMOND);
+        return Collections.unmodifiableSet(shortStyles);
+    }
+
+    private static Set<String> createInteriorColorStyles()
+    {
+        Set<String> interiorColorStyles = new HashSet<>();
+        interiorColorStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
+        interiorColorStyles.add(PDAnnotationLine.LE_CIRCLE);
+        interiorColorStyles.add(PDAnnotationLine.LE_DIAMOND);
+        interiorColorStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
+        interiorColorStyles.add(PDAnnotationLine.LE_SQUARE);
+        return Collections.unmodifiableSet(interiorColorStyles);
+    }
+
     public PDAbstractAppearanceHandler(PDAnnotation annotation)
     {
         this.annotation = annotation;
