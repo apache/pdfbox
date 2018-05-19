@@ -254,114 +254,87 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // do this here and not before showing the text, or the text would appear in the
                 // interior color
                 boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
-                String startPointEndingStyle = annotation.getStartPointEndingStyle();
-                switch (startPointEndingStyle)
-                {
-                    case PDAnnotationLine.LE_OPEN_ARROW:
-                    case PDAnnotationLine.LE_CLOSED_ARROW:
-                        drawArrow(cs, ab.width, y, ab.width * 9);
-                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(startPointEndingStyle))
-                        {
-                            cs.closePath();
-                        }
-                        break;
-                    case PDAnnotationLine.LE_BUTT:
-                        cs.moveTo(0, y - ab.width * 3);
-                        cs.lineTo(0, y + ab.width * 3);
-                        break;
-                    case PDAnnotationLine.LE_DIAMOND:
-                        drawDiamond(cs, 0, y, ab.width * 3);
-                        break;
-                    case PDAnnotationLine.LE_SQUARE:
-                        cs.addRect(0 - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
-                        break;
-                    case PDAnnotationLine.LE_CIRCLE:
-                        addCircle(cs, 0, y, ab.width * 3);
-                        break;
-                    case PDAnnotationLine.LE_R_OPEN_ARROW:
-                    case PDAnnotationLine.LE_R_CLOSED_ARROW:
-                        drawArrow(cs, -ab.width, y, -ab.width * 9);
-                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(startPointEndingStyle))
-                        {
-                            cs.closePath();
-                        }
-                        break;
-                    case PDAnnotationLine.LE_SLASH:
-                        // the line is 18 x linewidth at an angle of 60°
-                        cs.moveTo((float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
-                              y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
-                        cs.lineTo((float) (Math.cos(Math.toRadians(240)) * ab.width * 9),
-                              y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
-                        break;
-                    default:
-                        break;
-                }
-                if (INTERIOR_COLOR_STYLES.contains(startPointEndingStyle))
-                {
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
-                }
-                else if (!PDAnnotationLine.LE_NONE.equals(startPointEndingStyle))
-                {
-                    // need to do this separately, because sometimes /IC is set anyway
-                    cs.drawShape(ab.width, hasStroke, false);
-                }
-
-                String endPointEndingStyle = annotation.getEndPointEndingStyle();
-                switch (endPointEndingStyle)
-                {
-                    case PDAnnotationLine.LE_OPEN_ARROW:
-                    case PDAnnotationLine.LE_CLOSED_ARROW:
-                        drawArrow(cs, lineLength - ab.width, y, -ab.width * 9);
-                        if (PDAnnotationLine.LE_CLOSED_ARROW.equals(endPointEndingStyle))
-                        {
-                            cs.closePath();
-                        }
-                        break;
-                    case PDAnnotationLine.LE_BUTT:
-                        cs.moveTo(lineLength, y - ab.width * 3);
-                        cs.lineTo(lineLength, y + ab.width * 3);
-                        break;
-                    case PDAnnotationLine.LE_DIAMOND:
-                        drawDiamond(cs, lineLength, y, ab.width * 3);
-                        break;
-                    case PDAnnotationLine.LE_SQUARE:
-                        cs.addRect(lineLength - ab.width * 3, y - ab.width * 3, ab.width * 6, ab.width * 6);
-                        break;
-                    case PDAnnotationLine.LE_CIRCLE:
-                        addCircle(cs, lineLength, y, ab.width * 3);
-                        break;
-                    case PDAnnotationLine.LE_R_OPEN_ARROW:
-                    case PDAnnotationLine.LE_R_CLOSED_ARROW:
-                        drawArrow(cs, lineLength + ab.width, y, ab.width * 9);
-                        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(endPointEndingStyle))
-                        {
-                            cs.closePath();
-                        }
-                        break;
-                    case PDAnnotationLine.LE_SLASH:
-                        // the line is 18 x linewidth at an angle of 60°
-                        cs.moveTo(lineLength + (float) (Math.cos(Math.toRadians(60)) * ab.width * 9),
-                                           y + (float) (Math.sin(Math.toRadians(60)) * ab.width * 9));
-                        cs.lineTo(lineLength + (float) (Math.cos(Math.toRadians(240)) * ab.width * 9),
-                                           y + (float) (Math.sin(Math.toRadians(240)) * ab.width * 9));
-                        break;
-                    default:
-                        break;
-                }
-                if (INTERIOR_COLOR_STYLES.contains(endPointEndingStyle))
-                {
-                    cs.drawShape(ab.width, hasStroke, hasBackground);
-                }
-                else if (!PDAnnotationLine.LE_NONE.equals(endPointEndingStyle))
-                {
-                    // need to do this separately, because sometimes /IC is set anyway
-                    cs.drawShape(ab.width, hasStroke, false);
-                }
+                
+                drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, ab.width, hasStroke, hasBackground);
+                drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, ab.width, hasStroke, hasBackground);
             }
         }
         catch (IOException ex)
         {
             LOG.error(ex);
+        }
+    }
+
+    private void drawStyle(String style, final PDAppearanceContentStream cs, float x, float y,
+                           float width, boolean hasStroke, boolean hasBackground) throws IOException
+    {
+        switch (style)
+        {
+            case PDAnnotationLine.LE_OPEN_ARROW:
+            case PDAnnotationLine.LE_CLOSED_ARROW:
+                if (Float.compare(x, 0) != 0)
+                {
+                    // ending
+                    drawArrow(cs, x - width, y, -width * 9);
+                }
+                else
+                {
+                    // start
+                    drawArrow(cs, width, y, width * 9);
+                }
+                if (PDAnnotationLine.LE_CLOSED_ARROW.equals(style))
+                {
+                    cs.closePath();
+                }
+                break;
+            case PDAnnotationLine.LE_BUTT:
+                cs.moveTo(x, y - width * 3);
+                cs.lineTo(x, y + width * 3);
+                break;
+            case PDAnnotationLine.LE_DIAMOND:
+                drawDiamond(cs, x, y, width * 3);
+                break;
+            case PDAnnotationLine.LE_SQUARE:
+                cs.addRect(x - width * 3, y - width * 3, width * 6, width * 6);
+                break;
+            case PDAnnotationLine.LE_CIRCLE:
+                addCircle(cs, x, y, width * 3);
+                break;
+            case PDAnnotationLine.LE_R_OPEN_ARROW:
+            case PDAnnotationLine.LE_R_CLOSED_ARROW:
+                if (Float.compare(x, 0) != 0)
+                {
+                    // ending
+                    drawArrow(cs, x + width, y, width * 9);
+                }
+                else
+                {
+                    // start
+                    drawArrow(cs, -width, y, -width * 9);
+                }
+                if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(style))
+                {
+                    cs.closePath();
+                }
+                break;
+            case PDAnnotationLine.LE_SLASH:
+                // the line is 18 x linewidth at an angle of 60°
+                cs.moveTo(x + (float) (Math.cos(Math.toRadians(60)) * width * 9),
+                          y + (float) (Math.sin(Math.toRadians(60)) * width * 9));
+                cs.lineTo(x + (float) (Math.cos(Math.toRadians(240)) * width * 9),
+                          y + (float) (Math.sin(Math.toRadians(240)) * width * 9));
+                break;
+            default:
+                break;
+        }
+        if (INTERIOR_COLOR_STYLES.contains(style))
+        {
+            cs.drawShape(width, hasStroke, hasBackground);
+        }
+        else if (!PDAnnotationLine.LE_NONE.equals(style))
+        {
+            // need to do this separately, because sometimes /IC is set anyway
+            cs.drawShape(width, hasStroke, false);
         }
     }
 
