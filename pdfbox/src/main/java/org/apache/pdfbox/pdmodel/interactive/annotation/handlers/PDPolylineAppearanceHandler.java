@@ -57,7 +57,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         PDAnnotationPolyline annotation = (PDAnnotationPolyline) getAnnotation();
         PDRectangle rect = annotation.getRectangle();
         float[] pathsArray = annotation.getVertices();
-        if (pathsArray == null)
+        if (pathsArray == null || pathsArray.length < 4)
         {
             return;
         }
@@ -109,7 +109,39 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                     float y = pathsArray[i * 2 + 1];
                     if (i == 0)
                     {
+                        if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
+                        {
+                            // modify coordinate to shorten the segment
+                            float x1 = pathsArray[2];
+                            float y1 = pathsArray[3];
+
+                            // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
+                            float len = (float) (Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)));
+                            if (Float.compare(len, 0) != 0)
+                            {
+                                x += (x1 - x) / len * ab.width;
+                                y += (y1 - y) / len * ab.width;
+                            }
+                        }
                         cs.moveTo(x, y);
+                    }
+                    else if (i == pathsArray.length / 2 - 1)
+                    {
+                        if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
+                        {
+                            // modify coordinate to shorten the segment
+                            float x0 = pathsArray[pathsArray.length - 4];
+                            float y0 = pathsArray[pathsArray.length - 3];
+
+                            // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
+                            float len = (float) (Math.sqrt(Math.pow(x0 - x, 2) + Math.pow(y0 - y, 2)));
+                            if (Float.compare(len, 0) != 0)
+                            {
+                                x -= (x - x0) / len * ab.width;
+                                y -= (y - y0) / len * ab.width;
+                            }
+                        }
+                        cs.lineTo(x, y);
                     }
                     else
                     {
