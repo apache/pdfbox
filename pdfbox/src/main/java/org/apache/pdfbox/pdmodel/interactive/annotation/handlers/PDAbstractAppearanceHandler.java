@@ -59,28 +59,6 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      */
     protected static final Set<String> INTERIOR_COLOR_STYLES = createInteriorColorStyles();
 
-    private static Set<String> createShortStyles()
-    {
-        Set<String> shortStyles = new HashSet<>();
-        shortStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
-        shortStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        shortStyles.add(PDAnnotationLine.LE_SQUARE);
-        shortStyles.add(PDAnnotationLine.LE_CIRCLE);
-        shortStyles.add(PDAnnotationLine.LE_DIAMOND);
-        return Collections.unmodifiableSet(shortStyles);
-    }
-
-    private static Set<String> createInteriorColorStyles()
-    {
-        Set<String> interiorColorStyles = new HashSet<>();
-        interiorColorStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
-        interiorColorStyles.add(PDAnnotationLine.LE_CIRCLE);
-        interiorColorStyles.add(PDAnnotationLine.LE_DIAMOND);
-        interiorColorStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
-        interiorColorStyles.add(PDAnnotationLine.LE_SQUARE);
-        return Collections.unmodifiableSet(interiorColorStyles);
-    }
-
     public PDAbstractAppearanceHandler(PDAnnotation annotation)
     {
         this.annotation = annotation;
@@ -409,6 +387,28 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         cs.curveTo(x - magic, y - r, x - r, y - magic, x - r, y);
         cs.curveTo(x - r, y + magic, x - magic, y + r, x, y + r);
         cs.closePath();
+    }
+
+    private static Set<String> createShortStyles()
+    {
+        Set<String> shortStyles = new HashSet<>();
+        shortStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
+        shortStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
+        shortStyles.add(PDAnnotationLine.LE_SQUARE);
+        shortStyles.add(PDAnnotationLine.LE_CIRCLE);
+        shortStyles.add(PDAnnotationLine.LE_DIAMOND);
+        return Collections.unmodifiableSet(shortStyles);
+    }
+
+    private static Set<String> createInteriorColorStyles()
+    {
+        Set<String> interiorColorStyles = new HashSet<>();
+        interiorColorStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
+        interiorColorStyles.add(PDAnnotationLine.LE_CIRCLE);
+        interiorColorStyles.add(PDAnnotationLine.LE_DIAMOND);
+        interiorColorStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
+        interiorColorStyles.add(PDAnnotationLine.LE_SQUARE);
+        return Collections.unmodifiableSet(interiorColorStyles);
     }
 
     /**
