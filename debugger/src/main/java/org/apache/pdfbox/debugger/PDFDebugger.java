@@ -1272,7 +1272,7 @@ public class PDFDebugger extends JFrame
         readPDFFile(file, password);
     }
     
-    private void readPDFFile(File file, String password) throws IOException
+    private void readPDFFile(final File file, String password) throws IOException
     {
         if( document != null )
         {
@@ -1286,7 +1286,17 @@ public class PDFDebugger extends JFrame
         recentFiles.removeFile(file.getPath());
         LogDialog.instance().clear();
         
-        parseDocument( file, password );
+        DocumentOpener documentOpener = new DocumentOpener(password)
+        {
+            @Override
+            PDDocument open() throws IOException
+            {
+                return PDDocument.load(file, password);
+            }
+        };
+        document = documentOpener.parse();
+        printMenuItem.setEnabled(true);
+        reopenMenuItem.setEnabled(true);
         
         initTree();
         
@@ -1302,7 +1312,7 @@ public class PDFDebugger extends JFrame
         addRecentFileItems();
     }
     
-    private void readPDFurl(String urlString, String password) throws IOException
+    private void readPDFurl(final String urlString, String password) throws IOException
     {
         if (document != null)
         {
@@ -1313,9 +1323,16 @@ public class PDFDebugger extends JFrame
             }
         }
         currentFilePath = urlString;
-        URL url = new URL(urlString);
         LogDialog.instance().clear();
-        document = PDDocument.load(url.openStream(), password);
+        DocumentOpener documentOpener = new DocumentOpener(password)
+        {
+            @Override
+            PDDocument open() throws IOException
+            {
+                return PDDocument.load(new URL(urlString).openStream(), password);
+            }
+        };
+        document = documentOpener.parse();
         printMenuItem.setEnabled(true);
         reopenMenuItem.setEnabled(true);
 
@@ -1355,43 +1372,66 @@ public class PDFDebugger extends JFrame
     }
 
     /**
-     * This will parse a document.
-     *
-     * @param file The file addressing the document.
-     *
-     * @throws IOException If there is an error parsing the document.
+     * Internal class to avoid double code in password entry loop.
      */
-    private void parseDocument( File file, String password )throws IOException
+    abstract class DocumentOpener
     {
-        while (true)
+        String password;
+
+        DocumentOpener(String password)
         {
-            try
+            this.password = password;
+        }
+
+        /**
+         * Override to load the actual input type (File, URL, stream), don't call it directly!
+         * 
+         * @return
+         * @throws IOException 
+         */
+        abstract PDDocument open() throws IOException;
+
+        /**
+         * Call this!
+         * 
+         * @return
+         * @throws IOException 
+         */
+        final PDDocument parse() throws IOException 
+        {
+            PDDocument document;
+            while (true)
             {
-                document = PDDocument.load(file, password);
-            }
-            catch (InvalidPasswordException ipe)
-            {
-                // https://stackoverflow.com/questions/8881213/joptionpane-to-get-password
-                JPanel panel = new JPanel();
-                JLabel label = new JLabel("Password:");
-                JPasswordField pass = new JPasswordField(10);
-                panel.add(label);
-                panel.add(pass);
-                String[] options = new String[] {"OK", "Cancel"};
-                int option = JOptionPane.showOptionDialog(null, panel, "Enter password",
-                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
-                         null, options, "");
-                if (option == 0)
+                try
                 {
-                    password = new String(pass.getPassword());
-                    continue;
+                    document = open();
                 }
-                throw ipe;
+                catch (InvalidPasswordException ipe)
+                {
+                    // https://stackoverflow.com/questions/8881213/joptionpane-to-get-password
+                    JPanel panel = new JPanel();
+                    JLabel label = new JLabel("Password:");
+                    JPasswordField pass = new JPasswordField(10);
+                    panel.add(label);
+                    panel.add(pass);
+                    String[] options = new String[]
+                    {
+                        "OK", "Cancel"
+                    };
+                    int option = JOptionPane.showOptionDialog(null, panel, "Enter password",
+                            JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+                            null, options, "");
+                    if (option == 0)
+                    {
+                        password = new String(pass.getPassword());
+                        continue;
+                    }
+                    throw ipe;
+                }
+                break;
             }
-            break;
-        }        
-        printMenuItem.setEnabled(true);
-        reopenMenuItem.setEnabled(true);
+            return document;
+        }
     }
 
     private void addRecentFileItems()
