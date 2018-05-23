@@ -202,6 +202,169 @@ public abstract class BlendMode
         }
     };
 
+    public static final NonSeparableBlendMode HUE = new NonSeparableBlendMode()
+    {
+        @Override
+        public void blend(float[] srcValues, float[] dstValues, float[] result)
+        {
+            float[] temp = new float[3];
+            getSaturationRGB(dstValues, srcValues, temp);
+            getLuminosityRGB(dstValues, temp, result);
+        }
+    };
+
+    public static final NonSeparableBlendMode SATURATION = new NonSeparableBlendMode()
+    {
+        @Override
+        public void blend(float[] srcValues, float[] dstValues, float[] result)
+        {
+            getSaturationRGB(srcValues, dstValues, result);
+        }
+    };
+
+    public static final NonSeparableBlendMode COLOR = new NonSeparableBlendMode()
+    {
+        @Override
+        public void blend(float[] srcValues, float[] dstValues, float[] result)
+        {
+            getLuminosityRGB(dstValues, srcValues, result);
+        }
+    };
+
+    public static final NonSeparableBlendMode LUMINOSITY = new NonSeparableBlendMode()
+    {
+        @Override
+        public void blend(float[] srcValues, float[] dstValues, float[] result)
+        {
+            getLuminosityRGB(srcValues, dstValues, result);
+        }
+    };
+
+    private static int get255Value(float val)
+    {
+        return (int) Math.floor(val >= 1.0 ? 255 : val * 255.0);
+    }
+
+    private static void getSaturationRGB(float[] srcValues, float[] dstValues, float[] result)
+    {
+        int minb;
+        int maxb;
+        int mins;
+        int maxs;
+        int y;
+        int scale;
+        int r;
+        int g;
+        int b;
+
+        int rd = get255Value(dstValues[0]);
+        int gd = get255Value(dstValues[1]);
+        int bd = get255Value(dstValues[2]);
+        int rs = get255Value(srcValues[0]);
+        int gs = get255Value(srcValues[1]);
+        int bs = get255Value(srcValues[2]);
+
+        minb = Math.min(rd, Math.min(gd, bd));
+        maxb = Math.max(rd, Math.max(gd, bd));
+        if (minb == maxb)
+        {
+            /* backdrop has zero saturation, avoid divide by 0 */
+            result[0] = gd / 255.0f;
+            result[1] = gd / 255.0f;
+            result[2] = gd / 255.0f;
+            return;
+        }
+
+        mins = Math.min(rs, Math.min(gs, bs));
+        maxs = Math.max(rs, Math.max(gs, bs));
+
+        scale = ((maxs - mins) << 16) / (maxb - minb);
+        y = (rd * 77 + gd * 151 + bd * 28 + 0x80) >> 8;
+        r = y + ((((rd - y) * scale) + 0x8000) >> 16);
+        g = y + ((((gd - y) * scale) + 0x8000) >> 16);
+        b = y + ((((bd - y) * scale) + 0x8000) >> 16);
+
+        if (((r | g | b) & 0x100) == 0x100)
+        {
+            int scalemin;
+            int scalemax;
+            int min;
+            int max;
+
+            min = Math.min(r, Math.min(g, b));
+            max = Math.max(r, Math.max(g, b));
+
+            if (min < 0)
+            {
+                scalemin = (y << 16) / (y - min);
+            }
+            else
+            {
+                scalemin = 0x10000;
+            }
+
+            if (max > 255)
+            {
+                scalemax = ((255 - y) << 16) / (max - y);
+            }
+            else
+            {
+                scalemax = 0x10000;
+            }
+
+            scale = Math.min(scalemin, scalemax);
+            r = y + (((r - y) * scale + 0x8000) >> 16);
+            g = y + (((g - y) * scale + 0x8000) >> 16);
+            b = y + (((b - y) * scale + 0x8000) >> 16);
+        }
+        result[0] = r / 255.0f;
+        result[1] = g / 255.0f;
+        result[2] = b / 255.0f;
+    }
+
+    private static void getLuminosityRGB(float[] srcValues, float[] dstValues, float[] result)
+    {
+        int delta;
+        int scale;
+        int r;
+        int g;
+        int b;
+        int y;
+        int rd = get255Value(dstValues[0]);
+        int gd = get255Value(dstValues[1]);
+        int bd = get255Value(dstValues[2]);
+        int rs = get255Value(srcValues[0]);
+        int gs = get255Value(srcValues[1]);
+        int bs = get255Value(srcValues[2]);
+        delta = ((rs - rd) * 77 + (gs - gd) * 151 + (bs - bd) * 28 + 0x80) >> 8;
+        r = (rd + delta);
+        g = (gd + delta);
+        b = (bd + delta);
+
+        if (((r | g | b) & 0x100) == 0x100)
+        {
+            y = (rs * 77 + gs * 151 + bs * 28 + 0x80) >> 8;
+            if (delta > 0)
+            {
+                int max;
+                max = Math.max(r, Math.max(g, b));
+                scale = (max == y ? 0 : ((255 - y) << 16) / (max - y));
+            }
+            else
+            {
+                int min;
+                min = Math.min(r, Math.min(g, b));
+                scale = (y == min ? 0 : (y << 16) / (y - min));
+            }
+            r = y + (((r - y) * scale + 0x8000) >> 16);
+            g = y + (((g - y) * scale + 0x8000) >> 16);
+            b = y + (((b - y) * scale + 0x8000) >> 16);
+        }
+        result[0] = r / 255.0f;
+        result[1] = g / 255.0f;
+        result[2] = b / 255.0f;
+    }
+
     // this map *must* come after the declarations above, otherwise its values will be null
     private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
 
@@ -221,7 +384,10 @@ public abstract class BlendMode
         map.put(COSName.SOFT_LIGHT, BlendMode.SOFT_LIGHT);
         map.put(COSName.DIFFERENCE, BlendMode.DIFFERENCE);
         map.put(COSName.EXCLUSION, BlendMode.EXCLUSION);
-        // TODO - non-separable blending modes
+        map.put(COSName.HUE, BlendMode.HUE);
+        map.put(COSName.SATURATION, BlendMode.SATURATION);
+        map.put(COSName.LUMINOSITY, BlendMode.LUMINOSITY);
+        map.put(COSName.COLOR, BlendMode.COLOR);
         return map;
     }
 
