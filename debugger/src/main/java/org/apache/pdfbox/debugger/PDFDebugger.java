@@ -1399,12 +1399,11 @@ public class PDFDebugger extends JFrame
          */
         final PDDocument parse() throws IOException 
         {
-            PDDocument document;
             while (true)
             {
                 try
                 {
-                    document = open();
+                    return open();
                 }
                 catch (InvalidPasswordException ipe)
                 {
@@ -1428,9 +1427,7 @@ public class PDFDebugger extends JFrame
                     }
                     throw ipe;
                 }
-                break;
             }
-            return document;
         }
     }
 
