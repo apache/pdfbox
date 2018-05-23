@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel.font;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
@@ -41,6 +43,11 @@ import org.apache.pdfbox.util.Vector;
  */
 public class PDType3Font extends PDSimpleFont
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(PDType3Font.class);
+
     private PDResources resources;
     private COSDictionary charProcs;
     private Matrix fontMatrix;
@@ -66,8 +73,20 @@ public class PDType3Font extends PDSimpleFont
     @Override
     protected final void readEncoding() throws IOException
     {
-        COSDictionary encodingDict = (COSDictionary)dict.getDictionaryObject(COSName.ENCODING);
-        encoding = new DictionaryEncoding(encodingDict);
+        COSBase encodingBase = dict.getDictionaryObject(COSName.ENCODING);
+        if (encodingBase instanceof COSName)
+        {
+            COSName encodingName = (COSName) encodingBase;
+            encoding = Encoding.getInstance(encodingName);
+            if (encoding == null)
+            {
+                LOG.warn("Unknown encoding: " + encodingName.getName());
+            }
+        }
+        else if (encodingBase instanceof COSDictionary)
+        {
+            encoding = new DictionaryEncoding((COSDictionary) encodingBase);
+        }
         glyphList = GlyphList.getAdobeGlyphList();
     }
     
