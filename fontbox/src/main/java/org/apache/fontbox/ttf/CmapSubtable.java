@@ -45,7 +45,7 @@ public class CmapSubtable implements CmapLookup
     private long subTableOffset;
     private int[] glyphIdToCharacterCode;
     private final Map<Integer, List<Integer>> glyphIdToCharacterCodeMultiple = new HashMap<Integer, List<Integer>>();
-    private Map<Integer, Integer> characterCodeToGlyphId;
+    private Map<Integer, Integer> characterCodeToGlyphId= new HashMap<Integer, Integer>();
 
     /**
      * This will read the required data from the stream.
