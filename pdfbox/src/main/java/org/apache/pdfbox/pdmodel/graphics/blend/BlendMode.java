@@ -348,9 +348,9 @@ public abstract class BlendMode
         int gs = get255Value(srcValues[1]);
         int bs = get255Value(srcValues[2]);
         delta = ((rs - rd) * 77 + (gs - gd) * 151 + (bs - bd) * 28 + 0x80) >> 8;
-        r = (rd + delta);
-        g = (gd + delta);
-        b = (bd + delta);
+        r = rd + delta;
+        g = gd + delta;
+        b = bd + delta;
 
         if (((r | g | b) & 0x100) == 0x100)
         {
@@ -359,13 +359,13 @@ public abstract class BlendMode
             {
                 int max;
                 max = Math.max(r, Math.max(g, b));
-                scale = (max == y ? 0 : ((255 - y) << 16) / (max - y));
+                scale = max == y ? 0 : ((255 - y) << 16) / (max - y);
             }
             else
             {
                 int min;
                 min = Math.min(r, Math.min(g, b));
-                scale = (y == min ? 0 : (y << 16) / (y - min));
+                scale = y == min ? 0 : (y << 16) / (y - min);
             }
             r = y + (((r - y) * scale + 0x8000) >> 16);
             g = y + (((g - y) * scale + 0x8000) >> 16);
