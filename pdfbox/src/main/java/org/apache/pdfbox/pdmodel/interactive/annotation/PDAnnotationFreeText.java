@@ -169,7 +169,61 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
         }
         return new float[]{};
     }
-    
+
+    /**
+     * This will set the coordinates of the callout line.
+     *
+     * @param callout An array of four or six numbers specifying a callout line attached to the free
+     * text annotation. Six numbers [ x1 y1 x2 y2 x3 y3 ] represent the starting, knee point, and
+     * ending coordinates of the line in default user space, four numbers [ x1 y1 x2 y2 ] represent
+     * the starting and ending coordinates of the line.
+     */
+    public final void setCallout(float[] callout)
+    {
+        COSArray newCallout = new COSArray();
+        newCallout.setFloatArray(callout);
+        getCOSObject().setItem(COSName.CL, newCallout);
+    }
+
+    /**
+     * This will get the coordinates of the callout line.
+     *
+     * @return An array of four or six numbers specifying a callout line attached to the free text
+     * annotation. Six numbers [ x1 y1 x2 y2 x3 y3 ] represent the starting, knee point, and ending
+     * coordinates of the line in default user space, four numbers [ x1 y1 x2 y2 ] represent the
+     * starting and ending coordinates of the line.
+     */
+    public float[] getCallout()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.CL);
+        if (base instanceof COSArray)
+        {
+            return ((COSArray) base).toFloatArray();
+        }
+        return null;
+    }
+
+    /**
+     * This will set the line ending style.
+     *
+     * @param style The new style.
+     */
+    public final void setLineEndingStyle(String style)
+    {
+        getCOSObject().setName(COSName.LE, style);
+    }
+
+    /**
+     * This will retrieve the line ending style.
+     *
+     * @return The line ending style, possible values shown in the LE_ constants section, LE_NONE if
+     * missing, never null.
+     */
+    public String getLineEndingStyle()
+    {
+        return getCOSObject().getNameAsString(COSName.LE, PDAnnotationLine.LE_NONE);
+    }    
+
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
      * 
