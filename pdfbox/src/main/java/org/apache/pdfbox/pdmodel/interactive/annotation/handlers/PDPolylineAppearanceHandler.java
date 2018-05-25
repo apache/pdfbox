@@ -93,94 +93,91 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         rect.setUpperRightY(Math.max(maxY + ab.width * 10, rect.getUpperRightY()));
         annotation.setRectangle(rect);
 
-        try
+        try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
-            try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
+            boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
+            setOpacity(cs, annotation.getConstantOpacity());
+            boolean hasStroke = cs.setStrokingColorOnDemand(color);
+
+            if (ab.dashArray != null)
             {
-                boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
-                setOpacity(cs, annotation.getConstantOpacity());
-                boolean hasStroke = cs.setStrokingColorOnDemand(color);
+                cs.setLineDashPattern(ab.dashArray, 0);
+            }
+            cs.setLineWidth(ab.width);
 
-                if (ab.dashArray != null)
+            for (int i = 0; i < pathsArray.length / 2; ++i)
+            {
+                float x = pathsArray[i * 2];
+                float y = pathsArray[i * 2 + 1];
+                if (i == 0)
                 {
-                    cs.setLineDashPattern(ab.dashArray, 0);
-                }
-                cs.setLineWidth(ab.width);
-
-                for (int i = 0; i < pathsArray.length / 2; ++i)
-                {
-                    float x = pathsArray[i * 2];
-                    float y = pathsArray[i * 2 + 1];
-                    if (i == 0)
+                    if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
                     {
-                        if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
+                        // modify coordinate to shorten the segment
+                        // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
+                        float x1 = pathsArray[2];
+                        float y1 = pathsArray[3];
+                        float len = (float) (Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)));
+                        if (Float.compare(len, 0) != 0)
                         {
-                            // modify coordinate to shorten the segment
-                            // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
-                            float x1 = pathsArray[2];
-                            float y1 = pathsArray[3];
-                            float len = (float) (Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)));
-                            if (Float.compare(len, 0) != 0)
-                            {
-                                x += (x1 - x) / len * ab.width;
-                                y += (y1 - y) / len * ab.width;
-                            }
+                            x += (x1 - x) / len * ab.width;
+                            y += (y1 - y) / len * ab.width;
                         }
-                        cs.moveTo(x, y);
                     }
-                    else
+                    cs.moveTo(x, y);
+                }
+                else
+                {
+                    if (i == pathsArray.length / 2 - 1 &&
+                        SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
                     {
-                        if (i == pathsArray.length / 2 - 1 &&
-                            SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
+                        // modify coordinate to shorten the segment
+                        // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
+                        float x0 = pathsArray[pathsArray.length - 4];
+                        float y0 = pathsArray[pathsArray.length - 3];
+                        float len = (float) (Math.sqrt(Math.pow(x0 - x, 2) + Math.pow(y0 - y, 2)));
+                        if (Float.compare(len, 0) != 0)
                         {
-                            // modify coordinate to shorten the segment
-                            // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
-                            float x0 = pathsArray[pathsArray.length - 4];
-                            float y0 = pathsArray[pathsArray.length - 3];
-                            float len = (float) (Math.sqrt(Math.pow(x0 - x, 2) + Math.pow(y0 - y, 2)));
-                            if (Float.compare(len, 0) != 0)
-                            {
-                                x -= (x - x0) / len * ab.width;
-                                y -= (y - y0) / len * ab.width;
-                            }
+                            x -= (x - x0) / len * ab.width;
+                            y -= (y - y0) / len * ab.width;
                         }
-                        cs.lineTo(x, y);
                     }
+                    cs.lineTo(x, y);
                 }
-                cs.stroke();
+            }
+            cs.stroke();
 
-                // do a transform so that first and last "arms" are imagined flat, like in line handler
-                // the alternative would be to apply the transform to the LE shapes directly,
-                // which would be more work and produce code difficult to understand
+            // do a transform so that first and last "arms" are imagined flat, like in line handler
+            // the alternative would be to apply the transform to the LE shapes directly,
+            // which would be more work and produce code difficult to understand
 
-                // paint the styles here and after polyline draw, to avoid line crossing a filled shape
-                if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
-                {
-                    // check only needed to avoid q cm Q if LE_NONE
-                    float x2 = pathsArray[2];
-                    float y2 = pathsArray[3];
-                    float x1 = pathsArray[0];
-                    float y1 = pathsArray[1];
-                    cs.saveGraphicsState();
-                    double angle = Math.atan2(y2 - y1, x2 - x1);
-                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
-                    cs.restoreGraphicsState();
-                }
+            // paint the styles here and after polyline draw, to avoid line crossing a filled shape
+            if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
+            {
+                // check only needed to avoid q cm Q if LE_NONE
+                float x2 = pathsArray[2];
+                float y2 = pathsArray[3];
+                float x1 = pathsArray[0];
+                float y1 = pathsArray[1];
+                cs.saveGraphicsState();
+                double angle = Math.atan2(y2 - y1, x2 - x1);
+                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                cs.restoreGraphicsState();
+            }
 
-                if (!LE_NONE.equals(annotation.getEndPointEndingStyle()))
-                {
-                    // check only needed to avoid q cm Q if LE_NONE
-                    float x1 = pathsArray[pathsArray.length - 4];
-                    float y1 = pathsArray[pathsArray.length - 3];
-                    float x2 = pathsArray[pathsArray.length - 2];
-                    float y2 = pathsArray[pathsArray.length - 1];
-                    // save / restore not needed because it's the last one
-                    double angle = Math.atan2(y2 - y1, x2 - x1);
-                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, 0, ab.width, hasStroke, hasBackground);
-                }
+            if (!LE_NONE.equals(annotation.getEndPointEndingStyle()))
+            {
+                // check only needed to avoid q cm Q if LE_NONE
+                float x1 = pathsArray[pathsArray.length - 4];
+                float y1 = pathsArray[pathsArray.length - 3];
+                float x2 = pathsArray[pathsArray.length - 2];
+                float y2 = pathsArray[pathsArray.length - 1];
+                // save / restore not needed because it's the last one
+                double angle = Math.atan2(y2 - y1, x2 - x1);
+                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
+                drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, 0, ab.width, hasStroke, hasBackground);
             }
         }
         catch (IOException ex)
