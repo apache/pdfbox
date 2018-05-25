@@ -208,11 +208,10 @@ public class BengaliPdfGenerationHelloWorld
                     break;
                 }
 
-                if (line.startsWith("#"))
+                if (!line.startsWith("#"))
                 {
-                    continue;
+                    lines.add(line);
                 }
-                lines.add(line);
             }
         }
 
