@@ -654,10 +654,18 @@ public class PDFMergerUtility
         COSStream srcMetadata = (COSStream) srcCatalog.getCOSObject().getDictionaryObject(COSName.METADATA);
         if (destMetadata == null && srcMetadata != null)
         {
-            PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);           
-            mergeInto(srcMetadata, newStream.getCOSObject(), 
-                    new HashSet<COSName>(Arrays.asList(COSName.FILTER, COSName.LENGTH)));           
-            destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
+            try
+            {
+                PDStream newStream = new PDStream(destination, srcMetadata.createInputStream(), (COSName) null);           
+                mergeInto(srcMetadata, newStream.getCOSObject(), 
+                        new HashSet<COSName>(Arrays.asList(COSName.FILTER, COSName.LENGTH)));           
+                destCatalog.getCOSObject().setItem(COSName.METADATA, newStream);
+            }
+            catch (IOException ex)
+            {
+                // PDFBOX-4227 cleartext XMP stream with /Flate 
+                LOG.error("Metadata skipped because it could not be read", ex);
+            }
         }
 
         COSDictionary destOCP = (COSDictionary) destCatalog.getCOSObject().getDictionaryObject(COSName.OCPROPERTIES);
