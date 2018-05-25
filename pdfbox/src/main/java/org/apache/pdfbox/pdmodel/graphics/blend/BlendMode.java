@@ -60,7 +60,7 @@ public abstract class BlendMode
         {
             return result;
         }
-        return BlendMode.COMPATIBLE;
+        return BlendMode.NORMAL;
     }
 
     public static final SeparableBlendMode NORMAL = new SeparableBlendMode()
@@ -240,6 +240,10 @@ public abstract class BlendMode
         }
     };
 
+    BlendMode()
+    {
+    }
+
     private static int get255Value(float val)
     {
         return (int) Math.floor(val >= 1.0 ? 255 : val * 255.0);
@@ -365,14 +369,15 @@ public abstract class BlendMode
         result[2] = b / 255.0f;
     }
 
-    // this map *must* come after the declarations above, otherwise its values will be null
+    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
     private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
 
     private static Map<COSName, BlendMode> createBlendModeMap()
     {
         Map<COSName, BlendMode> map = new HashMap<COSName, BlendMode>(13);
         map.put(COSName.NORMAL, BlendMode.NORMAL);
-        map.put(COSName.COMPATIBLE, BlendMode.COMPATIBLE);
+        // BlendMode.COMPATIBLE should not be used
+        map.put(COSName.COMPATIBLE, BlendMode.NORMAL);
         map.put(COSName.MULTIPLY, BlendMode.MULTIPLY);
         map.put(COSName.SCREEN, BlendMode.SCREEN);
         map.put(COSName.OVERLAY, BlendMode.OVERLAY);
@@ -389,9 +394,5 @@ public abstract class BlendMode
         map.put(COSName.LUMINOSITY, BlendMode.LUMINOSITY);
         map.put(COSName.COLOR, BlendMode.COLOR);
         return map;
-    }
-
-    BlendMode()
-    {
     }
 }
