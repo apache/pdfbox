@@ -90,29 +90,26 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
         rect.setUpperRightY(Math.max(maxY + ab.width, rect.getUpperRightY()));
         annotation.setRectangle(rect);
 
-        try
+        try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
-            try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
+            setOpacity(cs, annotation.getConstantOpacity());
+
+            cs.setStrokingColor(color);
+            if (ab.dashArray != null)
             {
-                setOpacity(cs, annotation.getConstantOpacity());
-
-                cs.setStrokingColor(color);
-                if (ab.dashArray != null)
-                {
-                    cs.setLineDashPattern(ab.dashArray, 0);
-                }
-                cs.setLineWidth(ab.width);
-
-                // spec is incorrect
-                // https://stackoverflow.com/questions/9855814/pdf-spec-vs-acrobat-creation-quadpoints
-                for (int i = 0; i < pathsArray.length / 8; ++i)
-                {
-                    // only lower coords are used
-                    cs.moveTo(pathsArray[i * 8 + 4], pathsArray[i * 8 + 5]);
-                    cs.lineTo(pathsArray[i * 8 + 6], pathsArray[i * 8 + 7]);
-                }
-                cs.stroke();
+                cs.setLineDashPattern(ab.dashArray, 0);
             }
+            cs.setLineWidth(ab.width);
+
+            // spec is incorrect
+            // https://stackoverflow.com/questions/9855814/pdf-spec-vs-acrobat-creation-quadpoints
+            for (int i = 0; i < pathsArray.length / 8; ++i)
+            {
+                // only lower coords are used
+                cs.moveTo(pathsArray[i * 8 + 4], pathsArray[i * 8 + 5]);
+                cs.lineTo(pathsArray[i * 8 + 6], pathsArray[i * 8 + 7]);
+            }
+            cs.stroke();
         }
         catch (IOException ex)
         {

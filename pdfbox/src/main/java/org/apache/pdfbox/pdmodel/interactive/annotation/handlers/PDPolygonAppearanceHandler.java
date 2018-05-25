@@ -91,74 +91,71 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
         rect.setUpperRightY(Math.max(maxY + lineWidth, rect.getUpperRightY()));
         annotation.setRectangle(rect);
 
-        try
+        try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
+            boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
+
+            boolean hasBackground = contentStream
+                    .setNonStrokingColorOnDemand(annotation.getInteriorColor());
+
+            setOpacity(contentStream, annotation.getConstantOpacity());
+
+            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
+            //TODO find better way to do this. Either pass border array to
+            // setBorderLine(), or use AnnotationBorder class
+            if (annotation.getBorderStyle() == null)
             {
-                boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
-
-                boolean hasBackground = contentStream
-                        .setNonStrokingColorOnDemand(annotation.getInteriorColor());
-
-                setOpacity(contentStream, annotation.getConstantOpacity());
-
-                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
-                //TODO find better way to do this. Either pass border array to
-                // setBorderLine(), or use AnnotationBorder class
-                if (annotation.getBorderStyle() == null)
+                COSArray border = annotation.getBorder();
+                if (border.size() > 3 && border.getObject(3) instanceof COSArray)
                 {
-                    COSArray border = annotation.getBorder();
-                    if (border.size() > 3 && border.getObject(3) instanceof COSArray)
-                    {
-                        contentStream.setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
-                    }
+                    contentStream.setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
                 }
-                
-                PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
-                if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
-                {
-                    CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
-                        borderEffect.getIntensity(), lineWidth, getRectangle());
-                    cloudyBorder.createCloudyPolygon(pathArray);
-                    annotation.setRectangle(cloudyBorder.getRectangle());
-                    PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-                    appearanceStream.setBBox(cloudyBorder.getBBox());
-                    appearanceStream.setMatrix(cloudyBorder.getMatrix());
-                }
-                else
-                {
-                    // the differences rectangle
-                    setRectDifference(lineWidth);
-    
-                    // Acrobat applies a padding to each side of the bbox so the line is
-                    // completely within the bbox.
-    
-                    for (int i = 0; i < pathArray.length; i++)
-                    {
-                        float[] pointsArray = pathArray[i];
-                        // first array shall be of size 2 and specify the moveto operator
-                        if (i == 0 && pointsArray.length == 2)
-                        {
-                            contentStream.moveTo(pointsArray[0], pointsArray[1]);
-                        }
-                        else
-                        {
-                            // entries of length 2 shall be treated as lineto operator
-                            if (pointsArray.length == 2)
-                            {
-                                contentStream.lineTo(pointsArray[0], pointsArray[1]);
-                            }
-                            else if (pointsArray.length == 6)
-                            {
-                                contentStream.curveTo(pointsArray[0], pointsArray[1],
-                                        pointsArray[2], pointsArray[3],
-                                        pointsArray[4], pointsArray[5]);
-                            }
-                        }
-                    }
-                }
-                contentStream.drawShape(lineWidth, hasStroke, hasBackground);
             }
+
+            PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
+            if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
+            {
+                CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                    borderEffect.getIntensity(), lineWidth, getRectangle());
+                cloudyBorder.createCloudyPolygon(pathArray);
+                annotation.setRectangle(cloudyBorder.getRectangle());
+                PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                appearanceStream.setBBox(cloudyBorder.getBBox());
+                appearanceStream.setMatrix(cloudyBorder.getMatrix());
+            }
+            else
+            {
+                // the differences rectangle
+                setRectDifference(lineWidth);
+
+                // Acrobat applies a padding to each side of the bbox so the line is
+                // completely within the bbox.
+
+                for (int i = 0; i < pathArray.length; i++)
+                {
+                    float[] pointsArray = pathArray[i];
+                    // first array shall be of size 2 and specify the moveto operator
+                    if (i == 0 && pointsArray.length == 2)
+                    {
+                        contentStream.moveTo(pointsArray[0], pointsArray[1]);
+                    }
+                    else
+                    {
+                        // entries of length 2 shall be treated as lineto operator
+                        if (pointsArray.length == 2)
+                        {
+                            contentStream.lineTo(pointsArray[0], pointsArray[1]);
+                        }
+                        else if (pointsArray.length == 6)
+                        {
+                            contentStream.curveTo(pointsArray[0], pointsArray[1],
+                                    pointsArray[2], pointsArray[3],
+                                    pointsArray[4], pointsArray[5]);
+                        }
+                    }
+                }
+            }
+            contentStream.drawShape(lineWidth, hasStroke, hasBackground);
         }
         catch (IOException e)
         {

@@ -58,71 +58,68 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         float lineWidth = getLineWidth();
-        try
+        PDAnnotationSquare annotation = (PDAnnotationSquare) getAnnotation();
+        try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            PDAnnotationSquare annotation = (PDAnnotationSquare) getAnnotation();
-            try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
+            boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
+            boolean hasBackground = contentStream
+                    .setNonStrokingColorOnDemand(annotation.getInteriorColor());
+
+            setOpacity(contentStream, annotation.getConstantOpacity());
+
+            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());                
+            PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
+
+            if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
-                boolean hasStroke = contentStream.setStrokingColorOnDemand(getColor());
-                boolean hasBackground = contentStream
-                        .setNonStrokingColorOnDemand(annotation.getInteriorColor());
-                
-                setOpacity(contentStream, annotation.getConstantOpacity());
-                
-                contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());                
-                PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
-                
-                if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
+                CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
+                    borderEffect.getIntensity(), lineWidth, getRectangle());
+                cloudyBorder.createCloudyRectangle(annotation.getRectDifference());
+                annotation.setRectangle(cloudyBorder.getRectangle());
+                annotation.setRectDifference(cloudyBorder.getRectDifference());
+                PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                appearanceStream.setBBox(cloudyBorder.getBBox());
+                appearanceStream.setMatrix(cloudyBorder.getMatrix());
+            }
+            else
+            {
+                // handle the border box
+                //
+                // There are two options. The handling is not part of the PDF specification but
+                // implementation specific to Adobe Reader
+                // - if /RD is set the border box is the /Rect entry inset by the respective
+                //   border difference.
+                // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
+                //   be set to be the line width and the /Rect is enlarged by the /RD amount
+
+                PDRectangle borderBox = null;
+                float[] rectDifferences = annotation.getRectDifferences();
+
+                if (rectDifferences.length == 0)
                 {
-                    CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
-                        borderEffect.getIntensity(), lineWidth, getRectangle());
-                    cloudyBorder.createCloudyRectangle(annotation.getRectDifference());
-                    annotation.setRectangle(cloudyBorder.getRectangle());
-                    annotation.setRectDifference(cloudyBorder.getRectDifference());
-                    PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-                    appearanceStream.setBBox(cloudyBorder.getBBox());
-                    appearanceStream.setMatrix(cloudyBorder.getMatrix());
+                    borderBox = getPaddedRectangle(getRectangle(), lineWidth/2);
+                    // the differences rectangle
+                    annotation.setRectDifferences(lineWidth/2);
+                    annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+
+                    // when the normal appearance stream was generated BBox and Matrix have been set to the
+                    // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
+                    annotation.getNormalAppearanceStream().setBBox(getRectangle());
+                    AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
+                            -getRectangle().getLowerLeftY());
+                    annotation.getNormalAppearanceStream().setMatrix(transform);
                 }
                 else
                 {
-                    // handle the border box
-                    //
-                    // There are two options. The handling is not part of the PDF specification but
-                    // implementation specific to Adobe Reader
-                    // - if /RD is set the border box is the /Rect entry inset by the respective
-                    //   border difference.
-                    // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
-                    //   be set to be the line width and the /Rect is enlarged by the /RD amount
-                
-                    PDRectangle borderBox = null;
-                    float[] rectDifferences = annotation.getRectDifferences();
-                
-                    if (rectDifferences.length == 0)
-                    {
-                        borderBox = getPaddedRectangle(getRectangle(), lineWidth/2);
-                        // the differences rectangle
-                        annotation.setRectDifferences(lineWidth/2);
-                        annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
-
-                        // when the normal appearance stream was generated BBox and Matrix have been set to the
-                        // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
-                        annotation.getNormalAppearanceStream().setBBox(getRectangle());
-                        AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
-                                -getRectangle().getLowerLeftY());
-                        annotation.getNormalAppearanceStream().setMatrix(transform);
-                    }
-                    else
-                    {
-                        borderBox = applyRectDifferences(getRectangle(), rectDifferences);
-                        borderBox = getPaddedRectangle(borderBox, lineWidth/2);
-                    }
-
-                    contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
-                            borderBox.getWidth(), borderBox.getHeight());
+                    borderBox = applyRectDifferences(getRectangle(), rectDifferences);
+                    borderBox = getPaddedRectangle(borderBox, lineWidth/2);
                 }
 
-                contentStream.drawShape(lineWidth, hasStroke, hasBackground);
+                contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
+                        borderBox.getWidth(), borderBox.getHeight());
             }
+
+            contentStream.drawShape(lineWidth, hasStroke, hasBackground);
         }
         catch (IOException e)
         {

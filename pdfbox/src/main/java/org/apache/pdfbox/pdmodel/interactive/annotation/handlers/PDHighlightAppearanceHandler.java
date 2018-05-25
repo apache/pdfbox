@@ -107,108 +107,105 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
         rect.setUpperRightY(Math.max(maxY + ab.width + maxDelta, rect.getUpperRightY()));
         annotation.setRectangle(rect);
 
-        try
+        try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
-            try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
+            PDExtendedGraphicsState r0 = new PDExtendedGraphicsState();
+            PDExtendedGraphicsState r1 = new PDExtendedGraphicsState();
+            r0.setAlphaSourceFlag(false);
+            r0.setStrokingAlphaConstant(annotation.getConstantOpacity());
+            r0.setNonStrokingAlphaConstant(annotation.getConstantOpacity());
+            r1.setAlphaSourceFlag(false);
+            r1.setBlendMode(BlendMode.MULTIPLY);
+            cs.setGraphicsStateParameters(r0);
+            cs.setGraphicsStateParameters(r1);
+            //TODO replace with document.getDocument().createCOSStream()
+            //     or call new PDFormXObject(document)
+            PDFormXObject frm1 = new PDFormXObject(new COSStream());
+            PDFormXObject frm2 = new PDFormXObject(new COSStream());
+            frm1.setResources(new PDResources());
+            try (PDFormContentStream mwfofrmCS = new PDFormContentStream(frm1))
             {
-                PDExtendedGraphicsState r0 = new PDExtendedGraphicsState();
-                PDExtendedGraphicsState r1 = new PDExtendedGraphicsState();
-                r0.setAlphaSourceFlag(false);
-                r0.setStrokingAlphaConstant(annotation.getConstantOpacity());
-                r0.setNonStrokingAlphaConstant(annotation.getConstantOpacity());
-                r1.setAlphaSourceFlag(false);
-                r1.setBlendMode(BlendMode.MULTIPLY);
-                cs.setGraphicsStateParameters(r0);
-                cs.setGraphicsStateParameters(r1);
-                //TODO replace with document.getDocument().createCOSStream()
-                //     or call new PDFormXObject(document)
-                PDFormXObject frm1 = new PDFormXObject(new COSStream());
-                PDFormXObject frm2 = new PDFormXObject(new COSStream());
-                frm1.setResources(new PDResources());
-                try (PDFormContentStream mwfofrmCS = new PDFormContentStream(frm1))
+                mwfofrmCS.drawForm(frm2);
+            }
+            frm1.setBBox(annotation.getRectangle());
+            COSDictionary groupDict = new COSDictionary();
+            groupDict.setItem(COSName.S, COSName.TRANSPARENCY);
+            //TODO PDFormXObject.setGroup() is missing
+            frm1.getCOSObject().setItem(COSName.GROUP, groupDict);
+            cs.drawForm(frm1);
+            frm2.setBBox(annotation.getRectangle());
+            try (PDFormContentStream frm2CS = new PDFormContentStream(frm2))
+            {
+                frm2CS.setNonStrokingColor(color);
+                int of = 0;
+                while (of + 7 < pathsArray.length)
                 {
-                    mwfofrmCS.drawForm(frm2);
-                }
-                frm1.setBBox(annotation.getRectangle());
-                COSDictionary groupDict = new COSDictionary();
-                groupDict.setItem(COSName.S, COSName.TRANSPARENCY);
-                //TODO PDFormXObject.setGroup() is missing
-                frm1.getCOSObject().setItem(COSName.GROUP, groupDict);
-                cs.drawForm(frm1);
-                frm2.setBBox(annotation.getRectangle());
-                try (PDFormContentStream frm2CS = new PDFormContentStream(frm2))
-                {
-                    frm2CS.setNonStrokingColor(color);
-                    int of = 0;
-                    while (of + 7 < pathsArray.length)
+                    // quadpoints spec sequence is incorrect, correct one is (4,5 0,1 2,3 6,7)
+                    // https://stackoverflow.com/questions/9855814/pdf-spec-vs-acrobat-creation-quadpoints
+
+                    // for "curvy" highlighting, two Bézier control points are used that seem to have a
+                    // distance of about 1/4 of the height.
+                    // note that curves won't appear if outside of the rectangle
+                    float delta = 0;
+                    if (Float.compare(pathsArray[of + 0], pathsArray[of + 4]) == 0 &&
+                        Float.compare(pathsArray[of + 1], pathsArray[of + 3]) == 0 &&
+                        Float.compare(pathsArray[of + 2], pathsArray[of + 6]) == 0 &&
+                        Float.compare(pathsArray[of + 5], pathsArray[of + 7]) == 0)
                     {
-                        // quadpoints spec sequence is incorrect, correct one is (4,5 0,1 2,3 6,7)
-                        // https://stackoverflow.com/questions/9855814/pdf-spec-vs-acrobat-creation-quadpoints
-
-                        // for "curvy" highlighting, two Bézier control points are used that seem to have a
-                        // distance of about 1/4 of the height.
-                        // note that curves won't appear if outside of the rectangle
-                        float delta = 0;
-                        if (Float.compare(pathsArray[of + 0], pathsArray[of + 4]) == 0 &&
-                            Float.compare(pathsArray[of + 1], pathsArray[of + 3]) == 0 &&
-                            Float.compare(pathsArray[of + 2], pathsArray[of + 6]) == 0 &&
-                            Float.compare(pathsArray[of + 5], pathsArray[of + 7]) == 0)
-                        {
-                            // horizontal highlight
-                            delta = (pathsArray[of + 1] - pathsArray[of + 5]) / 4;
-                        }
-                        else if (Float.compare(pathsArray[of + 1], pathsArray[of + 5]) == 0 &&
-                                 Float.compare(pathsArray[of + 0], pathsArray[of + 2]) == 0 &&
-                                 Float.compare(pathsArray[of + 3], pathsArray[of + 7]) == 0 &&
-                                 Float.compare(pathsArray[of + 4], pathsArray[of + 6]) == 0)
-                        {
-                            // vertical highlight
-                            delta = (pathsArray[of + 0] - pathsArray[of + 4]) / 4;
-                        }
-
-                        frm2CS.moveTo(pathsArray[of + 4], pathsArray[of + 5]);
-
-                        if (Float.compare(pathsArray[of + 0], pathsArray[of + 4]) == 0)
-                        {
-                            // horizontal highlight
-                            frm2CS.curveTo(pathsArray[of + 4] - delta, pathsArray[of + 5] + delta,
-                                           pathsArray[of + 0] - delta, pathsArray[of + 1] - delta,
-                                           pathsArray[of + 0], pathsArray[of + 1]);
-                        }
-                        else if (Float.compare(pathsArray[of + 5], pathsArray[of + 1]) == 0)
-                        {
-                            // vertical highlight
-                            frm2CS.curveTo(pathsArray[of + 4] + delta, pathsArray[of + 5] + delta,
-                                           pathsArray[of + 0] - delta, pathsArray[of + 1] + delta,
-                                           pathsArray[of + 0], pathsArray[of + 1]);
-                        }
-                        else
-                        {
-                            frm2CS.lineTo(pathsArray[of + 0], pathsArray[of + 1]);
-                        }
-                        frm2CS.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
-                        if (Float.compare(pathsArray[of + 2], pathsArray[of + 6]) == 0)
-                        {
-                            // horizontal highlight
-                            frm2CS.curveTo(pathsArray[of + 2] + delta, pathsArray[of + 3] - delta,
-                                           pathsArray[of + 6] + delta, pathsArray[of + 7] + delta,
-                                           pathsArray[of + 6], pathsArray[of + 7]);
-                        }
-                        else if (Float.compare(pathsArray[of + 3], pathsArray[of + 7]) == 0)
-                        {
-                            // vertical highlight
-                            frm2CS.curveTo(pathsArray[of + 2] - delta, pathsArray[of + 3] - delta,
-                                           pathsArray[of + 6] + delta, pathsArray[of + 7] - delta,
-                                           pathsArray[of + 6], pathsArray[of + 7]);
-                        }
-                        else
-                        {
-                            frm2CS.lineTo(pathsArray[of + 6], pathsArray[of + 7]);
-                        }
-
-                        frm2CS.fill();
-                        of += 8;
+                        // horizontal highlight
+                        delta = (pathsArray[of + 1] - pathsArray[of + 5]) / 4;
                     }
+                    else if (Float.compare(pathsArray[of + 1], pathsArray[of + 5]) == 0 &&
+                             Float.compare(pathsArray[of + 0], pathsArray[of + 2]) == 0 &&
+                             Float.compare(pathsArray[of + 3], pathsArray[of + 7]) == 0 &&
+                             Float.compare(pathsArray[of + 4], pathsArray[of + 6]) == 0)
+                    {
+                        // vertical highlight
+                        delta = (pathsArray[of + 0] - pathsArray[of + 4]) / 4;
+                    }
+
+                    frm2CS.moveTo(pathsArray[of + 4], pathsArray[of + 5]);
+
+                    if (Float.compare(pathsArray[of + 0], pathsArray[of + 4]) == 0)
+                    {
+                        // horizontal highlight
+                        frm2CS.curveTo(pathsArray[of + 4] - delta, pathsArray[of + 5] + delta,
+                                       pathsArray[of + 0] - delta, pathsArray[of + 1] - delta,
+                                       pathsArray[of + 0], pathsArray[of + 1]);
+                    }
+                    else if (Float.compare(pathsArray[of + 5], pathsArray[of + 1]) == 0)
+                    {
+                        // vertical highlight
+                        frm2CS.curveTo(pathsArray[of + 4] + delta, pathsArray[of + 5] + delta,
+                                       pathsArray[of + 0] - delta, pathsArray[of + 1] + delta,
+                                       pathsArray[of + 0], pathsArray[of + 1]);
+                    }
+                    else
+                    {
+                        frm2CS.lineTo(pathsArray[of + 0], pathsArray[of + 1]);
+                    }
+                    frm2CS.lineTo(pathsArray[of + 2], pathsArray[of + 3]);
+                    if (Float.compare(pathsArray[of + 2], pathsArray[of + 6]) == 0)
+                    {
+                        // horizontal highlight
+                        frm2CS.curveTo(pathsArray[of + 2] + delta, pathsArray[of + 3] - delta,
+                                       pathsArray[of + 6] + delta, pathsArray[of + 7] + delta,
+                                       pathsArray[of + 6], pathsArray[of + 7]);
+                    }
+                    else if (Float.compare(pathsArray[of + 3], pathsArray[of + 7]) == 0)
+                    {
+                        // vertical highlight
+                        frm2CS.curveTo(pathsArray[of + 2] - delta, pathsArray[of + 3] - delta,
+                                       pathsArray[of + 6] + delta, pathsArray[of + 7] - delta,
+                                       pathsArray[of + 6], pathsArray[of + 7]);
+                    }
+                    else
+                    {
+                        frm2CS.lineTo(pathsArray[of + 6], pathsArray[of + 7]);
+                    }
+
+                    frm2CS.fill();
+                    of += 8;
                 }
             }
         }

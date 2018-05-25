@@ -55,34 +55,31 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
         // Currently, the rendering difference between our content stream and the one from Adobe
         // is minimal, about one pixel line at the bottom.
 
-        try
+        PDAnnotationCaret annotation = (PDAnnotationCaret) getAnnotation();
+        try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            PDAnnotationCaret annotation = (PDAnnotationCaret) getAnnotation();
-            try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
-            {
-                contentStream.setStrokingColor(getColor());
-                contentStream.setNonStrokingColor(getColor());
-                
-                setOpacity(contentStream, annotation.getConstantOpacity());
+            contentStream.setStrokingColor(getColor());
+            contentStream.setNonStrokingColor(getColor());
 
-                PDRectangle rect = getRectangle();
-                PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
-                annotation.getNormalAppearanceStream().setBBox(bbox);
+            setOpacity(contentStream, annotation.getConstantOpacity());
 
-                float halfX = rect.getWidth() / 2;
-                float halfY = rect.getHeight() / 2;
-                contentStream.moveTo(0, 0);
-                contentStream.curveTo(halfX, 0,
-                                      halfX, halfY, 
-                                      halfX, rect.getHeight());
-                contentStream.curveTo(halfX, halfY, 
-                                      halfX, 0,
-                                      rect.getWidth(), 0);
-                contentStream.closePath();
-                contentStream.fill();
-                // Adobe has an additional stroke, but it has no effect
-                // because fill "consumes" the path.
-            }
+            PDRectangle rect = getRectangle();
+            PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
+            annotation.getNormalAppearanceStream().setBBox(bbox);
+
+            float halfX = rect.getWidth() / 2;
+            float halfY = rect.getHeight() / 2;
+            contentStream.moveTo(0, 0);
+            contentStream.curveTo(halfX, 0,
+                                  halfX, halfY, 
+                                  halfX, rect.getHeight());
+            contentStream.curveTo(halfX, halfY, 
+                                  halfX, 0,
+                                  rect.getWidth(), 0);
+            contentStream.closePath();
+            contentStream.fill();
+            // Adobe has an additional stroke, but it has no effect
+            // because fill "consumes" the path.
         }
         catch (IOException e)
         {

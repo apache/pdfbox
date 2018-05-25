@@ -103,159 +103,156 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
 
         annotation.setRectangle(rect);
 
-        try
+        try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
-            try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
+            setOpacity(cs, annotation.getConstantOpacity());
+
+            // Tested with Adobe Reader:
+            // text is written first (TODO)
+            // width 0 is used by Adobe as such (but results in a visible line in rendering)
+            // empty color array results in an invisible line ("n" operator) but the rest is visible
+            // empty content is like no caption
+
+            boolean hasStroke = cs.setStrokingColorOnDemand(color);
+
+            if (ab.dashArray != null)
             {
-                setOpacity(cs, annotation.getConstantOpacity());
+                cs.setLineDashPattern(ab.dashArray, 0);
+            }
+            cs.setLineWidth(ab.width);
 
-                // Tested with Adobe Reader:
-                // text is written first (TODO)
-                // width 0 is used by Adobe as such (but results in a visible line in rendering)
-                // empty color array results in an invisible line ("n" operator) but the rest is visible
-                // empty content is like no caption
+            float x1 = pathsArray[0];
+            float y1 = pathsArray[1];
+            float x2 = pathsArray[2];
+            float y2 = pathsArray[3];
 
-                boolean hasStroke = cs.setStrokingColorOnDemand(color);
+            // if there are leader lines, then the /L coordinates represent
+            // the endpoints of the leader lines rather than the endpoints of the line itself.
+            // so for us, llo + ll is the vertical offset for the line.
+            float y = llo + ll;
 
-                if (ab.dashArray != null)
+            String contents = annotation.getContents();
+            if (contents == null)
+            {
+                contents = "";
+            }
+
+            double angle = Math.atan2(y2 - y1, x2 - x1);
+            cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+            float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
+            if (annotation.hasCaption() && !contents.isEmpty())
+            {
+                PDType1Font font = PDType1Font.HELVETICA;
+                // TODO: support newlines!!!!!
+                // see https://www.pdfill.com/example/pdf_commenting_new.pdf
+                float contentLength = 0;
+                try
                 {
-                    cs.setLineDashPattern(ab.dashArray, 0);
+                    contentLength = font.getStringWidth(annotation.getContents()) / 1000 * FONT_SIZE;
+
+                    //TODO How to decide the size of the font?
+                    // 9 seems to be standard, but if the text doesn't fit, a scaling is done
+                    // see AnnotationSample.Standard.pdf, diagonal line
                 }
-                cs.setLineWidth(ab.width);
-
-                float x1 = pathsArray[0];
-                float y1 = pathsArray[1];
-                float x2 = pathsArray[2];
-                float y2 = pathsArray[3];
-
-                // if there are leader lines, then the /L coordinates represent
-                // the endpoints of the leader lines rather than the endpoints of the line itself.
-                // so for us, llo + ll is the vertical offset for the line.
-                float y = llo + ll;
-
-                String contents = annotation.getContents();
-                if (contents == null)
+                catch (IllegalArgumentException ex)
                 {
-                    contents = "";
+                    // Adobe Reader displays placeholders instead
+                    LOG.error("line text '" + annotation.getContents() + "' can't be shown", ex);
                 }
+                float xOffset = (lineLength - contentLength) / 2;
+                float yOffset;
 
-                double angle = Math.atan2(y2 - y1, x2 - x1);
-                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-                if (annotation.hasCaption() && !contents.isEmpty())
+                // Leader lines
+                cs.moveTo(0, llo);
+                cs.lineTo(0, llo + ll + lle);
+                cs.moveTo(lineLength, llo);
+                cs.lineTo(lineLength, llo + ll + lle);
+
+                String captionPositioning = annotation.getCaptionPositioning();
+
+                // draw the line horizontally, using the rotation CTM to get to correct final position
+                // that's the easiest way to calculate the positions for the line before and after inline caption
+                if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
                 {
-                    PDType1Font font = PDType1Font.HELVETICA;
-                    // TODO: support newlines!!!!!
-                    // see https://www.pdfill.com/example/pdf_commenting_new.pdf
-                    float contentLength = 0;
-                    try
-                    {
-                        contentLength = font.getStringWidth(annotation.getContents()) / 1000 * FONT_SIZE;
-
-                        //TODO How to decide the size of the font?
-                        // 9 seems to be standard, but if the text doesn't fit, a scaling is done
-                        // see AnnotationSample.Standard.pdf, diagonal line
-                    }
-                    catch (IllegalArgumentException ex)
-                    {
-                        // Adobe Reader displays placeholders instead
-                        LOG.error("line text '" + annotation.getContents() + "' can't be shown", ex);
-                    }
-                    float xOffset = (lineLength - contentLength) / 2;
-                    float yOffset;
-                    
-                    // Leader lines
-                    cs.moveTo(0, llo);
-                    cs.lineTo(0, llo + ll + lle);
-                    cs.moveTo(lineLength, llo);
-                    cs.lineTo(lineLength, llo + ll + lle);
-
-                    String captionPositioning = annotation.getCaptionPositioning();
-
-                    // draw the line horizontally, using the rotation CTM to get to correct final position
-                    // that's the easiest way to calculate the positions for the line before and after inline caption
-                    if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
-                    {
-                        cs.moveTo(ab.width, y);
-                    }
-                    else
-                    {
-                        cs.moveTo(0, y);
-                    }
-                    if ("Top".equals(captionPositioning))
-                    {
-                        // this arbitrary number is from Adobe
-                        yOffset = 1.908f;
-                    }
-                    else
-                    {
-                        // Inline
-                        // this arbitrary number is from Adobe
-                        yOffset = -2.6f;
-
-                        cs.lineTo(xOffset - ab.width, y);
-                        cs.moveTo(lineLength - xOffset + ab.width, y);
-                    }
-                    if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
-                    {
-                        cs.lineTo(lineLength - ab.width, y);
-                    }
-                    else
-                    {
-                        cs.lineTo(lineLength, y);
-                    }
-                    cs.drawShape(ab.width, hasStroke, false);
-
-                    // /CO entry (caption offset)
-                    float captionHorizontalOffset = annotation.getCaptionHorizontalOffset();
-                    float captionVerticalOffset = annotation.getCaptionVerticalOffset();
-
-                    // check contentLength so we don't show if there was trouble before
-                    if (contentLength > 0)
-                    {
-                        cs.beginText();
-                        cs.setFont(font, FONT_SIZE);
-                        cs.newLineAtOffset(xOffset + captionHorizontalOffset, 
-                                           y + yOffset + captionVerticalOffset);
-                        cs.showText(annotation.getContents());
-                        cs.endText();
-                    }
-
-                    if (Float.compare(captionVerticalOffset, 0) != 0)
-                    {
-                        // Adobe paints vertical bar to the caption
-                        cs.moveTo(0 + lineLength / 2, y);
-                        cs.lineTo(0 + lineLength / 2, y + captionVerticalOffset);
-                        cs.drawShape(ab.width, hasStroke, false);
-                    }
+                    cs.moveTo(ab.width, y);
                 }
                 else
                 {
-                    if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
-                    {
-                        cs.moveTo(ab.width, y);
-                    }
-                    else
-                    {
-                        cs.moveTo(0, y);
-                    }
-                    if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
-                    {
-                        cs.lineTo(lineLength - ab.width, y);
-                    }
-                    else
-                    {
-                        cs.lineTo(lineLength, y);
-                    }
-                    cs.drawShape(ab.width, hasStroke, false);
+                    cs.moveTo(0, y);
+                }
+                if ("Top".equals(captionPositioning))
+                {
+                    // this arbitrary number is from Adobe
+                    yOffset = 1.908f;
+                }
+                else
+                {
+                    // Inline
+                    // this arbitrary number is from Adobe
+                    yOffset = -2.6f;
+
+                    cs.lineTo(xOffset - ab.width, y);
+                    cs.moveTo(lineLength - xOffset + ab.width, y);
+                }
+                if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
+                {
+                    cs.lineTo(lineLength - ab.width, y);
+                }
+                else
+                {
+                    cs.lineTo(lineLength, y);
+                }
+                cs.drawShape(ab.width, hasStroke, false);
+
+                // /CO entry (caption offset)
+                float captionHorizontalOffset = annotation.getCaptionHorizontalOffset();
+                float captionVerticalOffset = annotation.getCaptionVerticalOffset();
+
+                // check contentLength so we don't show if there was trouble before
+                if (contentLength > 0)
+                {
+                    cs.beginText();
+                    cs.setFont(font, FONT_SIZE);
+                    cs.newLineAtOffset(xOffset + captionHorizontalOffset, 
+                                       y + yOffset + captionVerticalOffset);
+                    cs.showText(annotation.getContents());
+                    cs.endText();
                 }
 
-                // paint the styles here and not before showing the text, or the text would appear
-                // with the interior color
-                boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
-                drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, ab.width, hasStroke, hasBackground);
-                drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, ab.width, hasStroke, hasBackground);
+                if (Float.compare(captionVerticalOffset, 0) != 0)
+                {
+                    // Adobe paints vertical bar to the caption
+                    cs.moveTo(0 + lineLength / 2, y);
+                    cs.lineTo(0 + lineLength / 2, y + captionVerticalOffset);
+                    cs.drawShape(ab.width, hasStroke, false);
+                }
             }
+            else
+            {
+                if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
+                {
+                    cs.moveTo(ab.width, y);
+                }
+                else
+                {
+                    cs.moveTo(0, y);
+                }
+                if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
+                {
+                    cs.lineTo(lineLength - ab.width, y);
+                }
+                else
+                {
+                    cs.lineTo(lineLength, y);
+                }
+                cs.drawShape(ab.width, hasStroke, false);
+            }
+
+            // paint the styles here and not before showing the text, or the text would appear
+            // with the interior color
+            boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
+            drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, ab.width, hasStroke, hasBackground);
+            drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, ab.width, hasStroke, hasBackground);
         }
         catch (IOException ex)
         {
