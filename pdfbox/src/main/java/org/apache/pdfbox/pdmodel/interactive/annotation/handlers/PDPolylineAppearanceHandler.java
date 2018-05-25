@@ -101,7 +101,6 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 setOpacity(cs, annotation.getConstantOpacity());
                 boolean hasStroke = cs.setStrokingColorOnDemand(color);
 
-                cs.setStrokingColor(color);
                 if (ab.dashArray != null)
                 {
                     cs.setLineDashPattern(ab.dashArray, 0);
