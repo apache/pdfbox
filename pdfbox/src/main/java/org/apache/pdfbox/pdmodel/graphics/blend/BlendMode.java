@@ -60,7 +60,7 @@ public abstract class BlendMode
         {
             return result;
         }
-        return BlendMode.COMPATIBLE;
+        return BlendMode.NORMAL;
     }
     
     /**
@@ -251,6 +251,10 @@ public abstract class BlendMode
         }
     };
 
+    BlendMode()
+    {
+    }
+
     private static int get255Value(float val)
     {
         return (int) Math.floor(val >= 1.0 ? 255 : val * 255.0);
@@ -376,7 +380,7 @@ public abstract class BlendMode
         result[2] = b / 255.0f;
     }
     
-    // these maps *must* come after the declarations above, otherwise its values will be null
+    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
     private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
     private static final Map<BlendMode, COSName> BLEND_MODE_NAMES = createBlendModeNamesMap();
 
@@ -384,7 +388,8 @@ public abstract class BlendMode
     {
         Map<COSName, BlendMode> map = new HashMap<>(13);
         map.put(COSName.NORMAL, BlendMode.NORMAL);
-        map.put(COSName.COMPATIBLE, BlendMode.COMPATIBLE);
+        // BlendMode.COMPATIBLE should not be used
+        map.put(COSName.COMPATIBLE, BlendMode.NORMAL);
         map.put(COSName.MULTIPLY, BlendMode.MULTIPLY);
         map.put(COSName.SCREEN, BlendMode.SCREEN);
         map.put(COSName.OVERLAY, BlendMode.OVERLAY);
@@ -407,7 +412,8 @@ public abstract class BlendMode
     {
         Map<BlendMode, COSName> map = new HashMap<>(13);
         map.put(BlendMode.NORMAL, COSName.NORMAL);
-        map.put(BlendMode.COMPATIBLE, COSName.COMPATIBLE);
+        // BlendMode.COMPATIBLE should not be used
+        map.put(BlendMode.COMPATIBLE, COSName.NORMAL);
         map.put(BlendMode.MULTIPLY, COSName.MULTIPLY);
         map.put(BlendMode.SCREEN, COSName.SCREEN);
         map.put(BlendMode.OVERLAY, COSName.OVERLAY);
@@ -424,9 +430,5 @@ public abstract class BlendMode
         map.put(BlendMode.LUMINOSITY, COSName.LUMINOSITY);
         map.put(BlendMode.COLOR, COSName.COLOR);
         return map;
-    }
-
-    BlendMode()
-    {
     }
 }
