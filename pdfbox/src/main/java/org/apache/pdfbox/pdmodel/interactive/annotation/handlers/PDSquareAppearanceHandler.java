@@ -92,7 +92,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
                 // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
                 //   be set to be the line width and the /Rect is enlarged by the /RD amount
 
-                PDRectangle borderBox = null;
+                PDRectangle borderBox;
                 float[] rectDifferences = annotation.getRectDifferences();
 
                 if (rectDifferences.length == 0)
