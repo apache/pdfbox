@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFreeTextAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.form.PDVariableText;
@@ -223,6 +224,64 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
     {
         return getCOSObject().getNameAsString(COSName.LE, PDAnnotationLine.LE_NONE);
     }    
+
+    /**
+     * This will set the border effect dictionary, specifying effects to be applied when drawing the
+     * line.
+     *
+     * @param be The border effect dictionary to set.
+     *
+     */
+    public void setBorderEffect(PDBorderEffectDictionary be)
+    {
+        getCOSObject().setItem(COSName.BE, be);
+    }
+
+    /**
+     * This will retrieve the border effect dictionary, specifying effects to be applied used in
+     * drawing the line.
+     *
+     * @return The border effect dictionary
+     */
+    public PDBorderEffectDictionary getBorderEffect()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
+        if (base instanceof COSDictionary)
+        {
+            return new PDBorderEffectDictionary((COSDictionary) base);
+        }
+        return null;
+    }
+
+    /**
+     * This will set the rectangle difference rectangle. Giving the difference between the
+     * annotations rectangle and where the drawing occurs. (To take account of any effects applied
+     * through the BE entry for example)
+     *
+     * @param rd the rectangle difference
+     *
+     */
+    public void setRectDifference(PDRectangle rd)
+    {
+        getCOSObject().setItem(COSName.RD, rd);
+    }
+
+    /**
+     * This will get the rectangle difference rectangle. Giving the difference between the
+     * annotations rectangle and where the drawing occurs. (To take account of any effects applied
+     * through the BE entry for example)
+     *
+     * @return the rectangle difference
+     */
+    public PDRectangle getRectDifference()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
+        if (base instanceof COSArray)
+        {
+            return new PDRectangle((COSArray) base);
+        }
+        return null;
+    }
 
     /**
      * Set a custom appearance handler for generating the annotations appearance streams.
