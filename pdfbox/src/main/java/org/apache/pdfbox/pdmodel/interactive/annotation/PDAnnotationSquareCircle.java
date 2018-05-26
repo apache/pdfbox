@@ -25,7 +25,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 
 /**
- * This is the class that represents a rectangular or elliptical annotation introduced in PDF 1.3 specification .
+ * This is the class that represents a rectangular or elliptical annotation introduced in PDF 1.3
+ * specification .
  *
  * @author Paul King
  */
@@ -76,7 +77,8 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
     }
 
     /**
-     * This will set the border effect dictionary, specifying effects to be applied when drawing the line.
+     * This will set the border effect dictionary, specifying effects to be applied when drawing the
+     * line.
      *
      * @param be The border effect dictionary to set.
      *
@@ -87,26 +89,25 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
     }
 
     /**
-     * This will retrieve the border effect dictionary, specifying effects to be applied used in drawing the line.
+     * This will retrieve the border effect dictionary, specifying effects to be applied used in
+     * drawing the line.
      *
      * @return The border effect dictionary
      */
     public PDBorderEffectDictionary getBorderEffect()
     {
-        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
-        if (be != null)
+        COSBase base = getCOSObject().getDictionaryObject(COSName.BE);
+        if (base instanceof COSDictionary)
         {
-            return new PDBorderEffectDictionary(be);
+            return new PDBorderEffectDictionary((COSDictionary) base);
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     /**
-     * This will set the rectangle difference rectangle. Giving the difference between the annotations rectangle and
-     * where the drawing occurs. (To take account of any effects applied through the BE entry forexample)
+     * This will set the rectangle difference rectangle. Giving the difference between the
+     * annotations rectangle and where the drawing occurs. (To take account of any effects applied
+     * through the BE entry for example)
      *
      * @param rd the rectangle difference
      *
@@ -117,26 +118,25 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
     }
 
     /**
-     * This will get the rectangle difference rectangle. Giving the difference between the annotations rectangle and
-     * where the drawing occurs. (To take account of any effects applied through the BE entry forexample)
+     * This will get the rectangle difference rectangle. Giving the difference between the
+     * annotations rectangle and where the drawing occurs. (To take account of any effects applied
+     * through the BE entry for example)
      *
      * @return the rectangle difference
      */
     public PDRectangle getRectDifference()
     {
-        COSArray rd = (COSArray) getCOSObject().getDictionaryObject(COSName.RD);
-        if (rd != null)
+        COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
+        if (base instanceof COSArray)
         {
-            return new PDRectangle(rd);
+            return new PDRectangle((COSArray) base);
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     /**
-     * This will set the border style dictionary, specifying the width and dash pattern used in drawing the line.
+     * This will set the border style dictionary, specifying the width and dash pattern used in
+     * drawing the line.
      *
      * @param bs the border style dictionary to set. TODO not all annotations may have a BS entry
      *
@@ -148,7 +148,8 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
     }
 
     /**
-     * This will retrieve the border style dictionary, specifying the width and dash pattern used in drawing the line.
+     * This will retrieve the border style dictionary, specifying the width and dash pattern used in
+     * drawing the line.
      *
      * @return the border style dictionary. TODO not all annotations may have a BS entry
      */
@@ -162,16 +163,18 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
         }
         return null;
     }
-    
+
     /**
-     * This will set the difference between the annotations "outer" rectangle defined by
-     * /Rect and the border.
-     * 
-     * <p>This will set an equal difference for all sides</p>
-     * 
+     * This will set the difference between the annotations "outer" rectangle defined by /Rect and
+     * the border.
+     *
+     * <p>
+     * This will set an equal difference for all sides</p>
+     *
      * @param difference from the annotations /Rect entry
      */
-    public void setRectDifferences(float difference) {
+    public void setRectDifferences(float difference)
+    {
         setRectDifferences(difference, difference, difference, difference);
     }
     
