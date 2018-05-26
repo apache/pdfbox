@@ -15,15 +15,19 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFreeText;
 import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.LE_NONE;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import static org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAbstractAppearanceHandler.SHORT_STYLES;
 import org.apache.pdfbox.util.Matrix;
 
@@ -48,7 +52,6 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationFreeText annotation = (PDAnnotationFreeText) getAnnotation();
-        PDRectangle rect = annotation.getRectangle();
         float[] pathsArray = new float[0];
         if ("FreeTextCallout".equals(annotation.getIntent()))
         {
@@ -60,36 +63,25 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
         PDColor color = annotation.getColor();
-        if (color == null || color.getComponents().length == 0 || Float.compare(ab.width, 0) == 0)
+
+        // width 0 = no border
+        // pdf_commenting_new.pdf page 3
+        // Root/Pages/Kids/[2]/Kids/[0]/Annots/[5]/BS/W
+        if (Float.compare(ab.width, 0) == 0)
         {
+            //TODO what happens if there is a callout?
+            //TODO skip, don't return when we know how to make text
+            // (maybe refactor the rectangle drawing segment)
             return;
         }
-
-        if (pathsArray.length > 0)
+        if (color == null || color.getComponents().length == 0)
         {
-            // Adjust rectangle even if not empty
-            // CTAN-example-Annotations.pdf p1
-            //TODO in a class structure this should be overridable
-            float minX = Float.MAX_VALUE;
-            float minY = Float.MAX_VALUE;
-            float maxX = Float.MIN_VALUE;
-            float maxY = Float.MIN_VALUE;
-            for (int i = 0; i < pathsArray.length / 2; ++i)
-            {
-                float x = pathsArray[i * 2];
-                float y = pathsArray[i * 2 + 1];
-                minX = Math.min(minX, x);
-                minY = Math.min(minY, y);
-                maxX = Math.max(maxX, x);
-                maxY = Math.max(maxY, y);
-            }
-            // arrow length is 9 * width at about 30Â° => 10 * width seems to be enough
-            rect.setLowerLeftX(Math.min(minX - ab.width * 10, rect.getLowerLeftX()));
-            rect.setLowerLeftY(Math.min(minY - ab.width * 10, rect.getLowerLeftY()));
-            rect.setUpperRightX(Math.max(maxX + ab.width * 10, rect.getUpperRightX()));
-            rect.setUpperRightY(Math.max(maxY + ab.width * 10, rect.getUpperRightY()));
-            annotation.setRectangle(rect);
+            //TODO remove this when we've managed to parse /DA
+            color = new PDColor(new float[]{0}, PDDeviceGray.INSTANCE);
         }
+
+        //TODO how to set the text color? Apparently red is the default????
+
 
         try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
@@ -97,7 +89,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getColor());
             setOpacity(cs, annotation.getConstantOpacity());
 
-            // in reality, Adobe uses the non stroking color from /DA as stroking color. WTF?
+            //TODO Adobe uses the last non stroking color from /DA as stroking color. WTF????
             boolean hasStroke = cs.setStrokingColorOnDemand(color);
             if (ab.dashArray != null)
             {
@@ -105,6 +97,94 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             }
             cs.setLineWidth(ab.width);
 
+
+
+            //TODO this segment was copied from square handler. Refactor?
+            PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
+            if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
+            {
+                CloudyBorder cloudyBorder = new CloudyBorder(cs,
+                    borderEffect.getIntensity(), ab.width, getRectangle());
+                cloudyBorder.createCloudyRectangle(annotation.getRectDifference());
+                annotation.setRectangle(cloudyBorder.getRectangle());
+                annotation.setRectDifference(cloudyBorder.getRectDifference());
+                PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
+                appearanceStream.setBBox(cloudyBorder.getBBox());
+                appearanceStream.setMatrix(cloudyBorder.getMatrix());
+            }
+            else
+            {
+                // handle the border box
+                //
+                // There are two options. The handling is not part of the PDF specification but
+                // implementation specific to Adobe Reader
+                // - if /RD is set the border box is the /Rect entry inset by the respective
+                //   border difference.
+                // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
+                //   be set to be the line width and the /Rect is enlarged by the /RD amount
+
+                PDRectangle borderBox;
+                float[] rectDifferences = annotation.getRectDifferences();
+                if (rectDifferences.length == 0)
+                {
+                    borderBox = getPaddedRectangle(getRectangle(), ab.width/2);
+                    // the differences rectangle
+                    annotation.setRectDifferences(ab.width/2);
+                    annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+
+                    // when the normal appearance stream was generated BBox and Matrix have been set to the
+                    // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
+                    annotation.getNormalAppearanceStream().setBBox(getRectangle());
+                    AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
+                            -getRectangle().getLowerLeftY());
+                    annotation.getNormalAppearanceStream().setMatrix(transform);
+                }
+                else
+                {
+                    borderBox = applyRectDifferences(getRectangle(), rectDifferences);
+                    borderBox = getPaddedRectangle(borderBox, ab.width/2);
+                }
+                cs.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
+                        borderBox.getWidth(), borderBox.getHeight());
+            }
+            cs.drawShape(ab.width, hasStroke, hasBackground);
+
+
+
+            if (pathsArray.length > 0)
+            {
+                PDRectangle rect = getRectangle();
+
+                // Adjust rectangle
+                // important to do this after the rectangle has been painted, because the
+                // final rectangle will be bigger due to callout
+                // CTAN-example-Annotations.pdf p1
+                //TODO in a class structure this should be overridable
+                float minX = Float.MAX_VALUE;
+                float minY = Float.MAX_VALUE;
+                float maxX = Float.MIN_VALUE;
+                float maxY = Float.MIN_VALUE;
+                for (int i = 0; i < pathsArray.length / 2; ++i)
+                {
+                    float x = pathsArray[i * 2];
+                    float y = pathsArray[i * 2 + 1];
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                }
+                // arrow length is 9 * width at about 30Â° => 10 * width seems to be enough
+                rect.setLowerLeftX(Math.min(minX - ab.width * 10, rect.getLowerLeftX()));
+                rect.setLowerLeftY(Math.min(minY - ab.width * 10, rect.getLowerLeftY()));
+                rect.setUpperRightX(Math.max(maxX + ab.width * 10, rect.getUpperRightX()));
+                rect.setUpperRightY(Math.max(maxY + ab.width * 10, rect.getUpperRightY()));
+                annotation.setRectangle(rect);
+                
+                // need to set the BBox too, because rectangle modification came later
+                annotation.getNormalAppearanceStream().setBBox(getRectangle());
+            }
+
+            // draw callout line(s)
             for (int i = 0; i < pathsArray.length / 2; ++i)
             {
                 float x = pathsArray[i * 2];
@@ -150,9 +230,6 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 cs.transform(Matrix.getRotateInstance(angle, x1, y1));
                 drawStyle(annotation.getLineEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
             }
-            
-            //TODO display border and text
-            // how to set the text color? Apparently red is the default.
         }
         catch (IOException ex)
         {
