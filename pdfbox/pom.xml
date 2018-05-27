@@ -405,6 +405,21 @@
                             <sha512>6fefc869dff9db8cd539db177d35beeacc62304173245742eaee8882dab330860a31cbbd4c4ec6cc724603cc453afc07ec61361fbc1e80a47f44b04ccfbaf40d</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4184</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>http://www.crh.noaa.gov/Image/gjt/images/ImageGallery/Uncompahgre_small.jpg</url>
+                            <!-- file is also 032163.jpg
+                            from http://downloads.digitalcorpora.org/corpora/files/govdocs1/zipfiles/032.zip -->
+                            <outputDirectory>${project.build.directory}/imgs</outputDirectory>
+                            <outputFileName>PDFBOX-4184-032163.jpg</outputFileName>
+                            <sha512>35241c979d3808ca9d2641b5ec5e40637132b313f75070faca8b8f6d00ddce394070414236db3993f1092fe3bc16995750d528b6d803a7851423c14c308ccdde</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
