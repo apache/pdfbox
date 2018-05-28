@@ -19,10 +19,19 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.util.Charsets;
+import org.apache.pdfbox.contentstream.PDFStreamEngine;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFreeText;
 import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.LE_NONE;
@@ -62,7 +71,6 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             }
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
-        PDColor color = annotation.getColor();
 
         // width 0 = no border
         // pdf_commenting_new.pdf page 3
@@ -74,14 +82,8 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             // (maybe refactor the rectangle drawing segment)
             return;
         }
-        if (color == null || color.getComponents().length == 0)
-        {
-            //TODO remove this when we've managed to parse /DA
-            color = new PDColor(new float[]{0}, PDDeviceGray.INSTANCE);
-        }
 
         //TODO how to set the text color? Apparently red is the default????
-
 
         try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
@@ -89,13 +91,66 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getColor());
             setOpacity(cs, annotation.getConstantOpacity());
 
-            //TODO Adobe uses the last non stroking color from /DA as stroking color. WTF????
-            boolean hasStroke = cs.setStrokingColorOnDemand(color);
+            // Adobe uses the last non stroking color from /DA as stroking color!
+            PDColor strokingColor = extractNonStrokingColor(annotation);
+            boolean hasStroke = cs.setStrokingColorOnDemand(strokingColor);
+
             if (ab.dashArray != null)
             {
                 cs.setLineDashPattern(ab.dashArray, 0);
             }
             cs.setLineWidth(ab.width);
+
+            // draw callout line(s)
+            // must be done before retangle paint to avoid a line cutting through cloud
+            // see CTAN-example-Annotations.pdf
+            for (int i = 0; i < pathsArray.length / 2; ++i)
+            {
+                float x = pathsArray[i * 2];
+                float y = pathsArray[i * 2 + 1];
+                if (i == 0)
+                {
+                    if (SHORT_STYLES.contains(annotation.getLineEndingStyle()))
+                    {
+                        // modify coordinate to shorten the segment
+                        // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
+                        float x1 = pathsArray[2];
+                        float y1 = pathsArray[3];
+                        float len = (float) (Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)));
+                        if (Float.compare(len, 0) != 0)
+                        {
+                            x += (x1 - x) / len * ab.width;
+                            y += (y1 - y) / len * ab.width;
+                        }
+                    }
+                    cs.moveTo(x, y);
+                }
+                else
+                {
+                    cs.lineTo(x, y);
+                }
+            }
+            cs.stroke();
+
+            // do a transform so that first "arm" is imagined flat, like in line handler
+            // the alternative would be to apply the transform to the LE shapes directly,
+            // which would be more work and produce code difficult to understand
+            // paint the styles here and after line(s) draw, to avoid line crossing a filled shape
+            if ("FreeTextCallout".equals(annotation.getIntent())
+                    && !LE_NONE.equals(annotation.getLineEndingStyle())
+                    && pathsArray.length >= 4)
+            {
+                // check only needed to avoid q cm Q if LE_NONE
+                float x2 = pathsArray[2];
+                float y2 = pathsArray[3];
+                float x1 = pathsArray[0];
+                float y1 = pathsArray[1];
+                double angle = Math.atan2(y2 - y1, x2 - x1);
+                cs.saveGraphicsState();
+                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                drawStyle(annotation.getLineEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                cs.restoreGraphicsState();
+            }
 
 
 
@@ -183,58 +238,80 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 // need to set the BBox too, because rectangle modification came later
                 annotation.getNormalAppearanceStream().setBBox(getRectangle());
             }
-
-            // draw callout line(s)
-            for (int i = 0; i < pathsArray.length / 2; ++i)
-            {
-                float x = pathsArray[i * 2];
-                float y = pathsArray[i * 2 + 1];
-                if (i == 0)
-                {
-                    if (SHORT_STYLES.contains(annotation.getLineEndingStyle()))
-                    {
-                        // modify coordinate to shorten the segment
-                        // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
-                        float x1 = pathsArray[2];
-                        float y1 = pathsArray[3];
-                        float len = (float) (Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)));
-                        if (Float.compare(len, 0) != 0)
-                        {
-                            x += (x1 - x) / len * ab.width;
-                            y += (y1 - y) / len * ab.width;
-                        }
-                    }
-                    cs.moveTo(x, y);
-                }
-                else
-                {
-                    cs.lineTo(x, y);
-                }
-            }
-            cs.stroke();
-
-            // do a transform so that first "arm" is imagined flat, like in line handler
-            // the alternative would be to apply the transform to the LE shapes directly,
-            // which would be more work and produce code difficult to understand
-            // paint the styles here and after line(s) draw, to avoid line crossing a filled shape
-            if ("FreeTextCallout".equals(annotation.getIntent())
-                    && !LE_NONE.equals(annotation.getLineEndingStyle())
-                    && pathsArray.length >= 4)
-            {
-                // check only needed to avoid q cm Q if LE_NONE
-                float x2 = pathsArray[2];
-                float y2 = pathsArray[3];
-                float x1 = pathsArray[0];
-                float y1 = pathsArray[1];
-                double angle = Math.atan2(y2 - y1, x2 - x1);
-                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                drawStyle(annotation.getLineEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
-            }
         }
         catch (IOException ex)
         {
             LOG.error(ex);
         }
+    }
+
+    // get the last non stroking color from the /DA entry
+    private PDColor extractNonStrokingColor(PDAnnotationFreeText annotation)
+    {
+        // It could also work with a regular expression, but that should be written so that
+        // "/LucidaConsole 13.94766 Tf .392 .585 .93 rg" does not produce "2 .585 .93 rg" as result
+        // Another alternative might be to create a PDDocument and a PDPage with /DA content as /Content,
+        // process the whole thing and then get the non stroking color.
+
+        PDColor strokingColor = new PDColor(new float[]{0}, PDDeviceGray.INSTANCE);
+        String defaultAppearance = annotation.getDefaultAppearance();
+        if (defaultAppearance == null)
+        {
+            return strokingColor;
+        }
+
+        try
+        {
+            // not sure if charset is correct, but we only need numbers and simple characters
+            PDFStreamParser parser = new PDFStreamParser(defaultAppearance.getBytes(Charsets.US_ASCII));
+            COSArray arguments = new COSArray();
+            COSArray colors = null;
+            Operator graphicOp = null;
+            for (Object token = parser.parseNextToken(); token != null; token = parser.parseNextToken())
+            {
+                if (token instanceof COSObject)
+                {
+                    arguments.add(((COSObject) token).getObject());
+                }
+                else if (token instanceof Operator)
+                {
+                    Operator op = (Operator) token;
+                    String name = op.getName();
+                    if ("g".equals(name) || "rg".equals(name) || "k".equals(name))
+                    {
+                        graphicOp = op;
+                        colors = arguments;
+                    }
+                    arguments = new COSArray();
+                }
+                else
+                {
+                    arguments.add((COSBase) token);
+                }
+            }
+            if (graphicOp != null)
+            {
+                switch (graphicOp.getName())
+                {
+                    case "g":
+                        strokingColor = new PDColor(colors, PDDeviceGray.INSTANCE);
+                        break;
+                    case "rg":
+                        strokingColor = new PDColor(colors, PDDeviceRGB.INSTANCE);
+                        break;
+                    case "k":
+                        strokingColor = new PDColor(colors, PDDeviceCMYK.INSTANCE);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        catch (IOException ex)
+        {
+            LOG.warn("Problem parsing /DA, will use default black", ex);
+        }
+        return strokingColor;
     }
 
     @Override
