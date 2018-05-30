@@ -36,9 +36,8 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
  * Utility class used to clone PDF objects. It keeps track of objects it has already cloned.
  *
  */
-public class PDFCloneUtility
+class PDFCloneUtility
 {
-
     private final PDDocument destination;
     private final Map<Object,COSBase> clonedVersion = new HashMap<>();
 
