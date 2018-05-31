@@ -39,6 +39,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.After;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -243,7 +244,54 @@ public class PDAcroFormTest
             return;
         }
     }
-    
+
+    /**
+     * PDFBOX-4235: a bad /DA string should not result in an NPE.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testBadDA() throws IOException
+    {
+        PDDocument doc = new PDDocument();
+
+        PDPage page = new PDPage();
+        doc.addPage(page);
+
+        PDAcroForm acroForm = new PDAcroForm(document);
+        doc.getDocumentCatalog().setAcroForm(acroForm);
+        acroForm.setDefaultResources(new PDResources());
+
+        PDTextField textBox = new PDTextField(acroForm);
+        textBox.setPartialName("SampleField");
+
+        // https://stackoverflow.com/questions/50609478/
+        // "tf" is a typo, should have been "Tf" and this results that no font is chosen
+        textBox.setDefaultAppearance("/Helv 0 tf 0 g");
+        acroForm.getFields().add(textBox);
+
+        PDAnnotationWidget widget = textBox.getWidgets().get(0);
+        PDRectangle rect = new PDRectangle(50, 750, 200, 20);
+        widget.setRectangle(rect);
+        widget.setPage(page);
+
+        page.getAnnotations().add(widget);
+
+        try
+        {
+            textBox.setValue("huhu");
+        }
+        catch (IllegalArgumentException ex)
+        {
+            return;
+        }
+        finally
+        {
+            doc.close();
+        }
+        fail("IllegalArgumentException should have been thrown");
+    }
+
     @After
     public void tearDown() throws IOException
     {
