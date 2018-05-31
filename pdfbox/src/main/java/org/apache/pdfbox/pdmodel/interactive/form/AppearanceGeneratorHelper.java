@@ -413,7 +413,7 @@ class AppearanceGeneratorHelper
         PDFont font = defaultAppearance.getFont();
         if (font == null)
         {
-            throw new IllegalStateException("font is null, check whether /DA entry is incomplete or incorrect");
+            throw new IllegalArgumentException("font is null, check whether /DA entry is incomplete or incorrect");
         }
         
         // calculate the fontSize (because 0 = autosize)
