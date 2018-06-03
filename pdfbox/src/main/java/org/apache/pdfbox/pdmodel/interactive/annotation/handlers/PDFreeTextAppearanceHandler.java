@@ -23,10 +23,13 @@ import org.apache.fontbox.util.Charsets;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -37,6 +40,9 @@ import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import static org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAbstractAppearanceHandler.SHORT_STYLES;
+import org.apache.pdfbox.pdmodel.interactive.annotation.layout.AppearanceStyle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText;
+import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainTextFormatter;
 import org.apache.pdfbox.util.Matrix;
 
 public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
@@ -191,6 +197,35 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             cs.drawShape(ab.width, hasStroke, hasBackground);
 
 
+            // somewhat inspired by AppearanceGeneratorHelper.insertGeneratedAppearance()
+            cs.beginText();
+            PDFont font = PDType1Font.HELVETICA;
+            int factor = 1;
+            if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
+            {
+                factor = 2;
+            }
+            float fontSize = extractFontSize(annotation);
+            cs.setFont(font, fontSize);
+            cs.setNonStrokingColor(strokingColor);
+            AppearanceStyle appearanceStyle = new AppearanceStyle();
+            appearanceStyle.setFont(font);
+            appearanceStyle.setFontSize(fontSize);
+            PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
+                    .style(appearanceStyle)
+                    .text(new PlainText(annotation.getContents()))
+                    .width(getRectangle().getWidth())
+                    .wrapLines(true)
+                    //TODO some reverse engineering needed to find out padding
+                    //TODO fat cloudy rectangle in CTAN file has "the" incomplete
+                    .initialOffset(getRectangle().getLowerLeftX() + fontSize / 2 * factor, 
+                                   getRectangle().getUpperRightY() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor)
+                    // Adobe ignores the /Q
+                    //.textAlign(annotation.getQ())
+                    .build();
+            formatter.format();
+            cs.endText();
+
 
             if (pathsArray.length > 0)
             {
@@ -298,6 +333,60 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             LOG.warn("Problem parsing /DA, will use default black", ex);
         }
         return strokingColor;
+    }
+
+    //TODO extractNonStrokingColor and extractFontSize
+    // might somehow be replaced with PDDefaultAppearanceString,
+    // which is quite similar.
+    private float extractFontSize(PDAnnotationFreeText annotation)
+    {
+        String defaultAppearance = annotation.getDefaultAppearance();
+        if (defaultAppearance == null)
+        {
+            return 10;
+        }
+
+        try
+        {
+            // not sure if charset is correct, but we only need numbers and simple characters
+            PDFStreamParser parser = new PDFStreamParser(defaultAppearance.getBytes(Charsets.US_ASCII));
+            COSArray arguments = new COSArray();
+            COSArray fontArguments = new COSArray();
+            for (Object token = parser.parseNextToken(); token != null; token = parser.parseNextToken())
+            {
+                if (token instanceof COSObject)
+                {
+                    arguments.add(((COSObject) token).getObject());
+                }
+                else if (token instanceof Operator)
+                {
+                    Operator op = (Operator) token;
+                    String name = op.getName();
+                    if ("Tf".equals(name))
+                    {
+                        fontArguments = arguments;
+                    }
+                    arguments = new COSArray();
+                }
+                else
+                {
+                    arguments.add((COSBase) token);
+                }
+            }
+            if (fontArguments.size() >= 2)
+            {
+                COSBase base = fontArguments.get(1);
+                if (base instanceof COSNumber)
+                {
+                    return ((COSNumber) base).floatValue();
+                }
+            }
+        }
+        catch (IOException ex)
+        {
+            LOG.warn("Problem parsing /DA, will use default 10", ex);
+        }
+        return 10;
     }
 
     @Override
