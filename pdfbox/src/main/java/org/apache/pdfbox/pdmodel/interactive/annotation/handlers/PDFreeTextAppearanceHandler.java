@@ -71,19 +71,6 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
 
-        // width 0 = no border
-        // pdf_commenting_new.pdf page 3
-        // Root/Pages/Kids/[2]/Kids/[0]/Annots/[5]/BS/W
-        if (Float.compare(ab.width, 0) == 0)
-        {
-            //TODO what happens if there is a callout?
-            //TODO skip, don't return when we know how to make text
-            // (maybe refactor the rectangle drawing segment)
-            return;
-        }
-
-        //TODO how to set the text color? Apparently red is the default????
-
         try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
         {
             // The fill color is the /C entry, there is no /IC entry defined
