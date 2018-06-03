@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  * </p>
  * 
  */
-class PlainText
+public class PlainText
 {
     private static final float FONTSCALE = 1000f;
     
@@ -49,7 +49,7 @@ class PlainText
      * 
      * @param textValue the text block string.
      */
-    PlainText(String textValue)
+    public PlainText(String textValue)
     {
         List<String> parts = Arrays.asList(textValue.replaceAll("\t", " ").split("\\r\\n|\\n|\\r|\\u2028|\\u2029"));
         paragraphs = new ArrayList<>();
@@ -72,7 +72,7 @@ class PlainText
      * 
      * @param listValue the text block string.
      */
-    PlainText(List<String> listValue)
+    public PlainText(List<String> listValue)
     {
         paragraphs = new ArrayList<>();
         for (String part : listValue)

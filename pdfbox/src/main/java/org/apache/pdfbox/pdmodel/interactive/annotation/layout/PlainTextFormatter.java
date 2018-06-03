@@ -26,13 +26,13 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.TextAtt
 import org.apache.pdfbox.pdmodel.interactive.annotation.layout.PlainText.Word;
 
 /**
- * TextFormatter to handle plain text formatting.
+ * TextFormatter to handle plain text formatting for annotation rectangles.
  * 
  * The text formatter will take a single value or an array of values which
  * are treated as paragraphs.
  */
 
-class PlainTextFormatter
+public class PlainTextFormatter
 {
     
     enum TextAlign
@@ -80,7 +80,7 @@ class PlainTextFormatter
     private float horizontalOffset;
     private float verticalOffset;
     
-    static class Builder
+    public static class Builder
     {
 
         // required parameters
@@ -98,56 +98,56 @@ class PlainTextFormatter
         private float horizontalOffset = 0f;
         private float verticalOffset = 0f;
         
-        Builder(PDAppearanceContentStream contents)
+        public Builder(PDAppearanceContentStream contents)
         {
             this.contents = contents;
         }
 
-        Builder style(AppearanceStyle appearanceStyle)
+        public Builder style(AppearanceStyle appearanceStyle)
         {
             this.appearanceStyle = appearanceStyle;
             return this;
         }
         
-        Builder wrapLines(boolean wrapLines)
+        public Builder wrapLines(boolean wrapLines)
         {
             this.wrapLines = wrapLines;
             return this;
         }
 
-        Builder width(float width)
+        public Builder width(float width)
         {
             this.width = width;
             return this;
         }
 
-        Builder textAlign(int alignment)
+        public Builder textAlign(int alignment)
         {
             this.textAlignment  = TextAlign.valueOf(alignment);
             return this;
         }
         
-        Builder textAlign(TextAlign alignment)
+        public Builder textAlign(TextAlign alignment)
         {
             this.textAlignment  = alignment;
             return this;
         }
         
         
-        Builder text(PlainText textContent)
+        public Builder text(PlainText textContent)
         {
             this.textContent  = textContent;
             return this;
         }
         
-        Builder initialOffset(float horizontalOffset, float verticalOffset)
+        public Builder initialOffset(float horizontalOffset, float verticalOffset)
         {
             this.horizontalOffset = horizontalOffset;
             this.verticalOffset = verticalOffset;
             return this;
         }
         
-        PlainTextFormatter build()
+        public PlainTextFormatter build()
         {
             return new PlainTextFormatter(this);
         }

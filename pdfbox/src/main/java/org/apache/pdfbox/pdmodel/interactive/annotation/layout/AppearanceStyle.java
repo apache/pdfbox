@@ -22,7 +22,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  * Define styling attributes to be used for text formatting.
  * 
  */
-class AppearanceStyle
+public class AppearanceStyle
 {
     private PDFont font;
     /**
@@ -54,7 +54,7 @@ class AppearanceStyle
      * 
      * @param font the font to be used.
      */
-    void setFont(PDFont font)
+    public void setFont(PDFont font)
     {
         this.font = font;
     }
@@ -74,7 +74,7 @@ class AppearanceStyle
      * 
      * @param fontSize the font size.
      */
-    void setFontSize(float fontSize)
+    public void setFontSize(float fontSize)
     {
         this.fontSize = fontSize;
         leading = fontSize * 1.2f;
