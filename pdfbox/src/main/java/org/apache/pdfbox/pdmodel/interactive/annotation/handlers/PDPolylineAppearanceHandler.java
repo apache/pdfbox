@@ -160,8 +160,15 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 float x1 = pathsArray[0];
                 float y1 = pathsArray[1];
                 cs.saveGraphicsState();
-                double angle = Math.atan2(y2 - y1, x2 - x1);
-                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                if (ANGLED_STYLES.contains(annotation.getStartPointEndingStyle()))
+                {
+                    double angle = Math.atan2(y2 - y1, x2 - x1);
+                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                }
+                else
+                {
+                    cs.transform(Matrix.getTranslateInstance(x1, y1));
+                }
                 drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
                 cs.restoreGraphicsState();
             }
@@ -174,10 +181,24 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 float x2 = pathsArray[pathsArray.length - 2];
                 float y2 = pathsArray[pathsArray.length - 1];
                 // save / restore not needed because it's the last one
-                double angle = Math.atan2(y2 - y1, x2 - x1);
-                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-                drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, 0, ab.width, hasStroke, hasBackground);
+                if (ANGLED_STYLES.contains(annotation.getEndPointEndingStyle()))
+                {
+                    // we're transforming to (x1,y1) instead of to (x2,y2) position
+                    // because drawStyle needs to be aware
+                    // by the non zero x parameter that this is "right ending" side
+                    // of a line. This is important for arrows styles.
+                    //TODO this is not really good and should be improved,
+                    // maybe by an additional parameter for drawStyle?
+                    double angle = Math.atan2(y2 - y1, x2 - x1);
+                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                    float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, 0, ab.width, hasStroke, hasBackground);
+                }
+                else
+                {
+                    cs.transform(Matrix.getTranslateInstance(x2, y2));
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                }
             }
         }
         catch (IOException ex)
