@@ -229,7 +229,7 @@ public class PlainTextFormatter
      */
     private void processLines(List<Line> lines, boolean isFirstParagraph) throws IOException
     {
-        float wordWidth = 0f;
+        float wordWidth;
 
         float lastPos = 0f;
         float startOffset = 0f;
