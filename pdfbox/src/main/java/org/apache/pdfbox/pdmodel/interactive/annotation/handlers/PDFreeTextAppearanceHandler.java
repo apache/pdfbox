@@ -124,22 +124,31 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             }
             cs.stroke();
 
-            // do a transform so that first "arm" is imagined flat, like in line handler
-            // the alternative would be to apply the transform to the LE shapes directly,
-            // which would be more work and produce code difficult to understand
-            // paint the styles here and after line(s) draw, to avoid line crossing a filled shape
+            // paint the styles here and after line(s) draw, to avoid line crossing a filled shape       
             if ("FreeTextCallout".equals(annotation.getIntent())
+                    // check only needed to avoid q cm Q if LE_NONE
                     && !LE_NONE.equals(annotation.getLineEndingStyle())
                     && pathsArray.length >= 4)
             {
-                // check only needed to avoid q cm Q if LE_NONE
                 float x2 = pathsArray[2];
                 float y2 = pathsArray[3];
                 float x1 = pathsArray[0];
                 float y1 = pathsArray[1];
-                double angle = Math.atan2(y2 - y1, x2 - x1);
                 cs.saveGraphicsState();
-                cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                if (ANGLED_STYLES.contains(annotation.getLineEndingStyle()))
+                {
+                    // do a transform so that first "arm" is imagined flat,
+                    // like in line handler.
+                    // The alternative would be to apply the transform to the 
+                    // LE shape coordinates directly, which would be more work 
+                    // and produce code difficult to understand
+                    double angle = Math.atan2(y2 - y1, x2 - x1);
+                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                }
+                else
+                {
+                    cs.transform(Matrix.getTranslateInstance(x1, y1));
+                }
                 drawStyle(annotation.getLineEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
                 cs.restoreGraphicsState();
             }
