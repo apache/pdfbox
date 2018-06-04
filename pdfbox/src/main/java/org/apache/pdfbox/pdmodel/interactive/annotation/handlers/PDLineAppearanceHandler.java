@@ -251,6 +251,9 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             // paint the styles here and not before showing the text, or the text would appear
             // with the interior color
             boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
+            //TODO support non-angled styles. This is more difficult than in the other handlers
+            // because the lines do not always go from (x1,y1) to (x2,y2) due to the leader lines
+            // when the "y" value above is not 0.
             drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, ab.width, hasStroke, hasBackground);
             drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, ab.width, hasStroke, hasBackground);
         }
