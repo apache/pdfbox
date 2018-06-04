@@ -58,6 +58,11 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * Line ending styles where there is an interior color.
      */
     protected static final Set<String> INTERIOR_COLOR_STYLES = createInteriorColorStyles();
+    
+    /**
+     * Line ending styles where the shape changes its angle, e.g. arrows.
+     */
+    protected static final Set<String> ANGLED_STYLES = createAngledStyles();
 
     public PDAbstractAppearanceHandler(PDAnnotation annotation)
     {
@@ -401,6 +406,18 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         interiorColorStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
         interiorColorStyles.add(PDAnnotationLine.LE_SQUARE);
         return Collections.unmodifiableSet(interiorColorStyles);
+    }
+
+    private static Set<String> createAngledStyles()
+    {
+        Set<String> angledStyles = new HashSet<>();
+        angledStyles.add(PDAnnotationLine.LE_CLOSED_ARROW);
+        angledStyles.add(PDAnnotationLine.LE_OPEN_ARROW);
+        angledStyles.add(PDAnnotationLine.LE_R_CLOSED_ARROW);
+        angledStyles.add(PDAnnotationLine.LE_R_OPEN_ARROW);
+        angledStyles.add(PDAnnotationLine.LE_BUTT);
+        angledStyles.add(PDAnnotationLine.LE_SLASH);
+        return Collections.unmodifiableSet(angledStyles);
     }
 
     /**
