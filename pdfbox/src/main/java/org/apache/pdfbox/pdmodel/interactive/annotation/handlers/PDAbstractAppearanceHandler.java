@@ -255,7 +255,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     }
 
     void drawStyle(String style, final PDAppearanceContentStream cs, float x, float y,
-                           float width, boolean hasStroke, boolean hasBackground) throws IOException
+                   float width, boolean hasStroke, boolean hasBackground) throws IOException
     {
         switch (style)
         {
@@ -270,10 +270,6 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 {
                     // start
                     drawArrow(cs, width, y, width * 9);
-                }
-                if (PDAnnotationLine.LE_CLOSED_ARROW.equals(style))
-                {
-                    cs.closePath();
                 }
                 break;
             case PDAnnotationLine.LE_BUTT:
@@ -301,10 +297,6 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                     // start
                     drawArrow(cs, -width, y, -width * 9);
                 }
-                if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(style))
-                {
-                    cs.closePath();
-                }
                 break;
             case PDAnnotationLine.LE_SLASH:
                 // the line is 18 x linewidth at an angle of 60°
@@ -314,17 +306,17 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                           y + (float) (Math.sin(Math.toRadians(240)) * width * 9));
                 break;
             default:
-                break;
+                return;
         }
-        if (INTERIOR_COLOR_STYLES.contains(style))
+        if (PDAnnotationLine.LE_R_CLOSED_ARROW.equals(style) || 
+            PDAnnotationLine.LE_CLOSED_ARROW.equals(style))
         {
-            cs.drawShape(width, hasStroke, hasBackground);
+            cs.closePath();
         }
-        else if (!PDAnnotationLine.LE_NONE.equals(style))
-        {
-            // need to do this separately, because sometimes /IC is set anyway
-            cs.drawShape(width, hasStroke, false);
-        }
+        cs.drawShape(width, hasStroke, 
+                     // make sure to only paint a background color (/IC value) 
+                     // for interior color styles, even if an /IC value is set.
+                     INTERIOR_COLOR_STYLES.contains(style) ? hasBackground : false);
     }
 
     /**
