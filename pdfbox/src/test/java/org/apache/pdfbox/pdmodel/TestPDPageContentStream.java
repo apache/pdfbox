@@ -44,7 +44,7 @@ public class TestPDPageContentStream extends TestCase
             }
 
                 // now read the PDF stream and verify that the CMYK values are correct
-            PDFStreamParser parser = new PDFStreamParser(page);
+            PDFStreamParser parser = new PDFStreamParser(page.getContents());
             parser.parse();
             java.util.List<Object>  pageTokens = parser.getTokens();
             // expected five tokens :
@@ -71,7 +71,7 @@ public class TestPDPageContentStream extends TestCase
             }
 
             // now read the PDF stream and verify that the CMYK values are correct
-            parser = new PDFStreamParser(page);
+            parser = new PDFStreamParser(page.getContents());
             parser.parse();
             pageTokens = parser.getTokens();
             // expected five tokens  :
@@ -96,7 +96,7 @@ public class TestPDPageContentStream extends TestCase
     public void testMissingContentStream() throws IOException
     {
         PDPage page = new PDPage();
-        PDFStreamParser parser = new PDFStreamParser(page);
+        PDFStreamParser parser = new PDFStreamParser(page.getContents());
         parser.parse();
         List<Object> tokens = parser.getTokens();
         assertEquals(0, tokens.size());
