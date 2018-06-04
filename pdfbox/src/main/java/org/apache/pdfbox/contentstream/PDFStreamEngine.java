@@ -485,7 +485,7 @@ public abstract class PDFStreamEngine
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
         List<COSBase> arguments = new ArrayList<>();
-        PDFStreamParser parser = new PDFStreamParser(contentStream);
+        PDFStreamParser parser = new PDFStreamParser(contentStream.getContents());
         Object token = parser.parseNextToken();
         while (token != null)
         {

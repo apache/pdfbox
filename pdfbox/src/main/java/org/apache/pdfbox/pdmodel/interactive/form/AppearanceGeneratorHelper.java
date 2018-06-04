@@ -327,7 +327,7 @@ class AppearanceGeneratorHelper
      */
     private List<Object> tokenize(PDAppearanceStream appearanceStream) throws IOException
     {
-        PDFStreamParser parser = new PDFStreamParser(appearanceStream);
+        PDFStreamParser parser = new PDFStreamParser(appearanceStream.getContents());
         parser.parse();
         return parser.getTokens();
     }

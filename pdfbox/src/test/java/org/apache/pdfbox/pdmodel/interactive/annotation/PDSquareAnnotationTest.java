@@ -137,7 +137,7 @@ public class PDSquareAnnotationTest
             // test the content of the appearance stream
             PDStream contentStream = appearanceStream.getContentStream();
             assertNotNull("Content stream shall not be null", contentStream);
-            PDFStreamParser parser = new PDFStreamParser(appearanceStream);
+            PDFStreamParser parser = new PDFStreamParser(appearanceStream.getContents());
             parser.parse();
             List<Object> tokens = parser.getTokens();
             

@@ -175,7 +175,8 @@ public class ControlCharacterTest {
     private List<String> getStringsFromStream(PDField field) throws IOException
     {
     	PDAnnotationWidget widget = field.getWidgets().get(0);
-    	PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
+        PDFStreamParser parser = new PDFStreamParser(
+                widget.getNormalAppearanceStream().getContents());
     	
     	Object token = parser.parseNextToken();
     	
