@@ -53,7 +53,7 @@ public class PDFStreamParser extends BaseParser
     /**
      * Constructor.
      *
-     * @param contentStream The content stream to parse.
+     * @param stream The content stream to parse.
      * @throws IOException If there is an error initializing the stream.
      */
     public PDFStreamParser(InputStream stream) throws IOException
