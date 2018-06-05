@@ -25,6 +25,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.LE_NONE;
+import static org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAbstractAppearanceHandler.ANGLED_STYLES;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -137,11 +139,16 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 contents = "";
             }
 
+            cs.saveGraphicsState();
             double angle = Math.atan2(y2 - y1, x2 - x1);
             cs.transform(Matrix.getRotateInstance(angle, x1, y1));
             float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
             if (annotation.hasCaption() && !contents.isEmpty())
             {
+                // Note that Adobe places the text as a caption even if /CP is not set
+                // when the text is so long that it would cross arrows, but we ignore this for now
+                // and stick to the specification.
+
                 PDType1Font font = PDType1Font.HELVETICA;
                 // TODO: support newlines!!!!!
                 // see https://www.pdfill.com/example/pdf_commenting_new.pdf
@@ -247,15 +254,60 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 cs.drawShape(ab.width, hasStroke, false);
             }
+            cs.restoreGraphicsState();
 
             // paint the styles here and not before showing the text, or the text would appear
             // with the interior color
             boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
-            //TODO support non-angled styles. This is more difficult than in the other handlers
-            // because the lines do not always go from (x1,y1) to (x2,y2) due to the leader lines
-            // when the "y" value above is not 0.
-            drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, ab.width, hasStroke, hasBackground);
-            drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, ab.width, hasStroke, hasBackground);
+
+            // check for LE_NONE only needed to avoid q cm Q for that case
+            if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
+            {
+                cs.saveGraphicsState();
+                if (ANGLED_STYLES.contains(annotation.getStartPointEndingStyle()))
+                {
+                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, ab.width, hasStroke, hasBackground);
+                }
+                else
+                {
+                    // Support of non-angled styles is more difficult than in the other handlers
+                    // because the lines do not always go from (x1,y1) to (x2,y2) due to the leader lines
+                    // when the "y" value above is not 0.
+                    // We use the angle we already know and the distance y to translate to the new coordinate.
+                    float xx1 = x1 - (float) (y * Math.sin(angle));
+                    float yy1 = y1 + (float) (y * Math.cos(angle));
+                    cs.transform(Matrix.getTranslateInstance(xx1, yy1));
+                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                }
+                cs.restoreGraphicsState();
+            }
+
+            // check for LE_NONE only needed to avoid q cm Q for that case
+            if (!LE_NONE.equals(annotation.getEndPointEndingStyle()))
+            {
+                // save / restore not needed because it's the last one
+                if (ANGLED_STYLES.contains(annotation.getEndPointEndingStyle()))
+                {
+                    // we're transforming to (x1,y1) instead of to (x2,y2) position
+                    // because drawStyle needs to be aware
+                    // by the non zero x parameter that this is "right ending" side
+                    // of a line. This is important for arrows styles.
+                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, ab.width, hasStroke, hasBackground);
+                }
+                else
+                {
+                    // Support of non-angled styles is more difficult than in the other handlers
+                    // because the lines do not always go from (x1,y1) to (x2,y2) due to the leader lines
+                    // when the "y" value above is not 0.
+                    // We use the angle we already know and the distance y to translate to the new coordinate.
+                    float xx2 = x2 - (float) (y * Math.sin(angle));
+                    float yy2 = y2 + (float) (y * Math.cos(angle));
+                    cs.transform(Matrix.getTranslateInstance(xx2, yy2));
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                }
+            }
         }
         catch (IOException ex)
         {
