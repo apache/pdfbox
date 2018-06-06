@@ -23,6 +23,7 @@ import org.apache.fontbox.util.Charsets;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -205,7 +206,13 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             }
             cs.drawShape(ab.width, hasStroke, hasBackground);
 
-
+            // rotation is an undocumented feature, but Adobe uses it. Examples can be found
+            // in pdf_commenting_new.pdf file.
+            int rotation = annotation.getCOSObject().getInt(COSName.ROTATE, 0);
+            cs.transform(Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0));
+            float xOffset;
+            float yOffset;
+            float width = rotation == 90 || rotation == 270 ? getRectangle().getHeight(): getRectangle().getWidth();
             // somewhat inspired by AppearanceGeneratorHelper.insertGeneratedAppearance()
             cs.beginText();
             PDFont font = PDType1Font.HELVETICA;
@@ -215,6 +222,26 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 factor = 2;
             }
             float fontSize = extractFontSize(annotation);
+            switch (rotation)
+            {
+                case 180:
+                    xOffset = - getRectangle().getUpperRightX() + fontSize / 2 * factor; 
+                    yOffset = - getRectangle().getLowerLeftY() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    break;
+                case 90:
+                    xOffset = getRectangle().getLowerLeftY() + fontSize / 2 * factor;
+                    yOffset = - getRectangle().getLowerLeftX() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    break;
+                case 270:
+                    xOffset = - getRectangle().getUpperRightY() + fontSize / 2 * factor;
+                    yOffset = getRectangle().getUpperRightX() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    break;
+                case 0:
+                default:
+                    xOffset = getRectangle().getLowerLeftX() + fontSize / 2 * factor;
+                    yOffset = getRectangle().getUpperRightY() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    break;
+            }
             cs.setFont(font, fontSize);
             cs.setNonStrokingColor(strokingColor);
             AppearanceStyle appearanceStyle = new AppearanceStyle();
@@ -223,12 +250,10 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
                     .style(appearanceStyle)
                     .text(new PlainText(annotation.getContents()))
-                    .width(getRectangle().getWidth())
+                    .width(width - fontSize / factor)
                     .wrapLines(true)
                     //TODO some reverse engineering needed to find out padding
-                    //TODO fat cloudy rectangle in CTAN file has "the" incomplete
-                    .initialOffset(getRectangle().getLowerLeftX() + fontSize / 2 * factor, 
-                                   getRectangle().getUpperRightY() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor)
+                    .initialOffset(xOffset, yOffset)
                     // Adobe ignores the /Q
                     //.textAlign(annotation.getQ())
                     .build();
