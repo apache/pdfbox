@@ -18,12 +18,10 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.FileOutputStream;
 
 import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.multipdf.Splitter;
 
 /**
@@ -170,8 +168,7 @@ public final class PDFSplit
                 {
                     try (PDDocument doc = documents.get(i))
                     {
-                        String fileName = outputPrefix + "-" + (i + 1) + ".pdf";
-                        writeDocument(doc, fileName);
+                        doc.save(outputPrefix + "-" + (i + 1) + ".pdf");
                     }
                 }
 
@@ -188,15 +185,6 @@ public final class PDFSplit
                     doc.close();
                 }
             }
-        }
-    }
-
-    private static void writeDocument( PDDocument doc, String fileName ) throws IOException
-    {
-        try (FileOutputStream output = new FileOutputStream(fileName);
-             COSWriter writer = new COSWriter(output))
-        {
-            writer.write(doc);
         }
     }
 
