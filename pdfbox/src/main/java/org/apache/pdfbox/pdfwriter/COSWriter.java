@@ -309,10 +309,6 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             getStandardOutput().close();
         }
-        if (getOutput() != null)
-        {
-            getOutput().close();
-        }
         if (incrementalOutput != null)
         {
             incrementalOutput.close();
