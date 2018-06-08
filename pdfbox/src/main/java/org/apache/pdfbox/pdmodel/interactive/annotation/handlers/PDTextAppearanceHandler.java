@@ -146,13 +146,13 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         gs.setBlendMode(BlendMode.NORMAL);
         contentStream.setGraphicsStateParameters(gs);
         contentStream.setNonStrokingColor(1f);
-        addCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
+        drawCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
         contentStream.fill();
         contentStream.restoreGraphicsState();
 
         contentStream.setLineWidth(0.59f); // value from Adobe
-        addCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
-        addCircle2(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, largeR);
+        drawCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
+        drawCircle2(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, largeR);
         contentStream.fillAndStroke();
     }
 

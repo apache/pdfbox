@@ -288,7 +288,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 cs.addRect(x - width * 3, y - width * 3, width * 6, width * 6);
                 break;
             case PDAnnotationLine.LE_CIRCLE:
-                addCircle(cs, x, y, width * 3);
+                drawCircle(cs, x, y, width * 3);
                 break;
             case PDAnnotationLine.LE_R_OPEN_ARROW:
             case PDAnnotationLine.LE_R_CLOSED_ARROW:
@@ -374,7 +374,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * 
      * @throws IOException If the content stream could not be written.
      */
-    void addCircle(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
+    void drawCircle(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
     {
         // http://stackoverflow.com/a/2007782/535646
         float magic = r * 0.551784f;
@@ -397,7 +397,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      *
      * @throws IOException If the content stream could not be written.
      */
-    void addCircle2(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
+    void drawCircle2(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
     {
         // http://stackoverflow.com/a/2007782/535646
         float magic = r * 0.551784f;
