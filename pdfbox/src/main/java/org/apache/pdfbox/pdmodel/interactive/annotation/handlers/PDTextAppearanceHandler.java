@@ -20,9 +20,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**
  *
@@ -49,47 +51,62 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationText annotation = (PDAnnotationText) getAnnotation();
-        if (!PDAnnotationText.NAME_NOTE.equals(annotation.getName()))
+        if (!PDAnnotationText.NAME_NOTE.equals(annotation.getName()) &&
+                !PDAnnotationText.NAME_INSERT.equals(annotation.getName()) &&
+                !"Circle".equals(annotation.getName()))
         {
-            //TODO Comment, Key, Help, NewParagraph, Paragraph, Insert
+            //TODO Comment, Key, Help, NewParagraph, Paragraph
             return;
         }
 
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
-            boolean hasBackground = contentStream.setNonStrokingColorOnDemand(getColor());
+            PDColor bgColor = getColor();
+            if (bgColor == null)
+            {
+                // White is used by Adobe when /C entry is missing
+                contentStream.setNonStrokingColor(1f);
+            }
+            else
+            {
+                contentStream.setNonStrokingColor(bgColor);
+            }
+            // stroking color is always black which is the PDF default
+
             setOpacity(contentStream, annotation.getConstantOpacity());
             
-            //TODO find out what Adobe chooses if color is missing
-
             PDRectangle rect = getRectangle();
-            PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
             PDRectangle bbox = rect.createRetranslatedRectangle();
-            appearanceStream.setBBox(bbox);
+            annotation.getNormalAppearanceStream().setBBox(bbox);
 
             switch (annotation.getName())
             {
                 case PDAnnotationText.NAME_NOTE:
-                    drawNote(contentStream, bbox, hasBackground);
+                    drawNote(contentStream, bbox);
+                    break;
+                case "Circle": //TODO constant
+                    drawCircles(contentStream, bbox);
+                    break;
+                case PDAnnotationText.NAME_INSERT:
+                    drawInsert(contentStream, bbox);
                     break;
 
                 default:
                     break;
             }
-
         }
         catch (IOException e)
         {
             LOG.error(e);
         }
-
     }
 
-    private void drawNote(final PDAppearanceContentStream contentStream, PDRectangle bbox, boolean hasBackground)
+    private void drawNote(final PDAppearanceContentStream contentStream, PDRectangle bbox)
             throws IOException
     {
-        contentStream.setLineJoinStyle(1); // round edge
-        contentStream.addRect(1, 1, bbox.getWidth() - 2,  bbox.getHeight() - 2);
+        contentStream.setLineJoinStyle(1); // get round edge the easy way
+        contentStream.setLineWidth(0.61f); // value from Adobe
+        contentStream.addRect(1, 1, bbox.getWidth() - 2, bbox.getHeight() - 2);
         contentStream.moveTo(bbox.getWidth() / 4,         bbox.getHeight() / 7 * 2);
         contentStream.lineTo(bbox.getWidth() * 3 / 4 - 1, bbox.getHeight() / 7 * 2);
         contentStream.moveTo(bbox.getWidth() / 4,         bbox.getHeight() / 7 * 3);
@@ -98,7 +115,58 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.lineTo(bbox.getWidth() * 3 / 4 - 1, bbox.getHeight() / 7 * 4);
         contentStream.moveTo(bbox.getWidth() / 4,         bbox.getHeight() / 7 * 5);
         contentStream.lineTo(bbox.getWidth() * 3 / 4 - 1, bbox.getHeight() / 7 * 5);
-        contentStream.drawShape(1, true, hasBackground);
+        contentStream.fillAndStroke();
+    }
+
+    private void drawCircles(final PDAppearanceContentStream contentStream, PDRectangle bbox)
+            throws IOException
+    {
+        // strategy used by Adobe:
+        // 1) add small circle in white using /ca /CA 0.6 and width 1
+        // 2) fill
+        // 3) add small circle in one direction
+        // 4) add large circle in other direction
+        // 5) stroke + fill
+        // with square width 20 small r = 6.36, large r = 9.756
+
+        // should be a square, but who knows...
+        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+        float smallR = min / 20 * 6.36f;
+        float largeR = min / 20 * 9.756f;
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(1);
+        contentStream.setLineCapStyle(0);
+        contentStream.saveGraphicsState();
+        contentStream.setLineWidth(1);
+        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        gs.setAlphaSourceFlag(false);
+        gs.setStrokingAlphaConstant(0.6f);
+        gs.setNonStrokingAlphaConstant(0.6f);
+        gs.setBlendMode(BlendMode.NORMAL);
+        contentStream.setGraphicsStateParameters(gs);
+        contentStream.setNonStrokingColor(1f);
+        addCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
+        contentStream.fill();
+        contentStream.restoreGraphicsState();
+
+        contentStream.setLineWidth(0.59f); // value from Adobe
+        addCircle(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, smallR);
+        addCircle2(contentStream, bbox.getWidth() / 2, bbox.getHeight() / 2, largeR);
+        contentStream.fillAndStroke();
+    }
+
+    private void drawInsert(final PDAppearanceContentStream contentStream, PDRectangle bbox)
+            throws IOException
+    {
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(0);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(0.59f); // value from Adobe
+        contentStream.moveTo(bbox.getWidth() / 2 - 1, bbox.getHeight() - 2);
+        contentStream.lineTo(1, 1);
+        contentStream.lineTo(bbox.getWidth() - 2, 1);
+        contentStream.closeAndFillAndStroke();
     }
 
     @Override

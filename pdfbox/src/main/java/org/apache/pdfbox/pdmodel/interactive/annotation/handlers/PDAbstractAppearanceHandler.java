@@ -365,14 +365,14 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     }
 
     /**
-     * Add a circle shape to the path.
+     * Add a circle shape to the path in clockwise direction.
      *
      * @param cs Content stream
      * @param x
      * @param y
      * @param r Radius
      * 
-     * @throws IOException If the content stream could not be written
+     * @throws IOException If the content stream could not be written.
      */
     void addCircle(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
     {
@@ -383,6 +383,29 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         cs.curveTo(x + r, y - magic, x + magic, y - r, x, y - r);
         cs.curveTo(x - magic, y - r, x - r, y - magic, x - r, y);
         cs.curveTo(x - r, y + magic, x - magic, y + r, x, y + r);
+        cs.closePath();
+    }
+
+    /**
+     * Add a circle shape to the path in counterclockwise direction. You'll need this e.g. when
+     * drawing a doughnut shape. See "Nonzero Winding Number Rule" for more information.
+     *
+     * @param cs Content stream
+     * @param x
+     * @param y
+     * @param r Radius
+     *
+     * @throws IOException If the content stream could not be written.
+     */
+    void addCircle2(PDAppearanceContentStream cs, float x, float y, float r) throws IOException
+    {
+        // http://stackoverflow.com/a/2007782/535646
+        float magic = r * 0.551784f;
+        cs.moveTo(x, y + r);
+        cs.curveTo(x - magic, y + r, x - r, y + magic, x - r, y);
+        cs.curveTo(x - r, y - magic, x - magic, y - r, x, y - r);
+        cs.curveTo(x + magic, y - r, x + r, y - magic, x + r, y);
+        cs.curveTo(x + r, y + magic, x + magic, y + r, x, y + r);
         cs.closePath();
     }
 
