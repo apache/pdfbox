@@ -70,6 +70,11 @@ public class PDAnnotationText extends PDAnnotationMarkup
     public static final String NAME_INSERT = "Insert";
 
     /**
+     * Constant for the name of a circle annotation.
+     */
+    public static final String NAME_CIRCLE = "Circle";
+
+    /**
      * The type of annotation.
      */
     public static final String SUB_TYPE = "Text";

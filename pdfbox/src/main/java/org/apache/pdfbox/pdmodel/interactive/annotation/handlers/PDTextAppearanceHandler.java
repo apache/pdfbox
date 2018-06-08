@@ -53,7 +53,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         PDAnnotationText annotation = (PDAnnotationText) getAnnotation();
         if (!PDAnnotationText.NAME_NOTE.equals(annotation.getName()) &&
                 !PDAnnotationText.NAME_INSERT.equals(annotation.getName()) &&
-                !"Circle".equals(annotation.getName()))
+                !PDAnnotationText.NAME_CIRCLE.equals(annotation.getName()))
         {
             //TODO Comment, Key, Help, NewParagraph, Paragraph
             return;
@@ -84,7 +84,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                 case PDAnnotationText.NAME_NOTE:
                     drawNote(contentStream, bbox);
                     break;
-                case "Circle": //TODO constant
+                case PDAnnotationText.NAME_CIRCLE:
                     drawCircles(contentStream, bbox);
                     break;
                 case PDAnnotationText.NAME_INSERT:
