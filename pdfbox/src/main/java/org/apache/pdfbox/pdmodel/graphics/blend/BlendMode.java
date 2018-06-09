@@ -30,39 +30,6 @@ import java.util.Map;
  */
 public abstract class BlendMode
 {
-    /**
-     * Determines the blend mode from the BM entry in the COS ExtGState.
-     *
-     * @param cosBlendMode name or array
-     * @return blending mode
-     */
-    public static BlendMode getInstance(COSBase cosBlendMode)
-    {
-        BlendMode result = null;
-        if (cosBlendMode instanceof COSName)
-        {
-            result = BLEND_MODES.get(cosBlendMode);
-        }
-        else if (cosBlendMode instanceof COSArray)
-        {
-            COSArray cosBlendModeArray = (COSArray) cosBlendMode;
-            for (int i = 0; i < cosBlendModeArray.size(); i++)
-            {
-                result = BLEND_MODES.get(cosBlendModeArray.getObject(i));
-                if (result != null)
-                {
-                    break;
-                }
-            }
-        }
-
-        if (result != null)
-        {
-            return result;
-        }
-        return BlendMode.NORMAL;
-    }
-
     public static final SeparableBlendMode NORMAL = new SeparableBlendMode()
     {
         @Override
@@ -240,8 +207,44 @@ public abstract class BlendMode
         }
     };
 
+    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
+    private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
+
     BlendMode()
     {
+    }
+
+     /**
+     * Determines the blend mode from the BM entry in the COS ExtGState.
+     *
+     * @param cosBlendMode name or array
+     * @return blending mode
+     */
+    public static BlendMode getInstance(COSBase cosBlendMode)
+    {
+        BlendMode result = null;
+        if (cosBlendMode instanceof COSName)
+        {
+            result = BLEND_MODES.get(cosBlendMode);
+        }
+        else if (cosBlendMode instanceof COSArray)
+        {
+            COSArray cosBlendModeArray = (COSArray) cosBlendMode;
+            for (int i = 0; i < cosBlendModeArray.size(); i++)
+            {
+                result = BLEND_MODES.get(cosBlendModeArray.getObject(i));
+                if (result != null)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (result != null)
+        {
+            return result;
+        }
+        return BlendMode.NORMAL;
     }
 
     private static int get255Value(float val)
@@ -368,9 +371,6 @@ public abstract class BlendMode
         result[1] = g / 255.0f;
         result[2] = b / 255.0f;
     }
-
-    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
-    private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
 
     private static Map<COSName, BlendMode> createBlendModeMap()
     {
