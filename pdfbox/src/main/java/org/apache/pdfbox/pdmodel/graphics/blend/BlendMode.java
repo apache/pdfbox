@@ -207,6 +207,10 @@ public abstract class BlendMode
         }
     };
 
+    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
+    private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
+    private static final Map<BlendMode, COSName> BLEND_MODE_NAMES = createBlendModeNamesMap();
+
     BlendMode()
     {
     }
@@ -380,10 +384,6 @@ public abstract class BlendMode
         result[2] = b / 255.0f;
     }
     
-    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
-    private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
-    private static final Map<BlendMode, COSName> BLEND_MODE_NAMES = createBlendModeNamesMap();
-
     private static Map<COSName, BlendMode> createBlendModeMap()
     {
         Map<COSName, BlendMode> map = new HashMap<>(13);
