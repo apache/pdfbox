@@ -30,50 +30,6 @@ import java.util.Map;
  */
 public abstract class BlendMode
 {
-    /**
-     * Determines the blend mode from the BM entry in the COS ExtGState.
-     *
-     * @param cosBlendMode name or array
-     * @return blending mode
-     */
-    public static BlendMode getInstance(COSBase cosBlendMode)
-    {
-        BlendMode result = null;
-        if (cosBlendMode instanceof COSName)
-        {
-            result = BLEND_MODES.get(cosBlendMode);
-        }
-        else if (cosBlendMode instanceof COSArray)
-        {
-            COSArray cosBlendModeArray = (COSArray) cosBlendMode;
-            for (int i = 0; i < cosBlendModeArray.size(); i++)
-            {
-                result = BLEND_MODES.get(cosBlendModeArray.getObject(i));
-                if (result != null)
-                {
-                    break;
-                }
-            }
-        }
-
-        if (result != null)
-        {
-            return result;
-        }
-        return BlendMode.NORMAL;
-    }
-    
-    /**
-     * Determines the blend mode name from the BM object.
-     *
-     * @param bm Blend mode.
-     * @return name of blend mode.
-     */
-    public static COSName getCOSName(BlendMode bm)
-    {
-        return BLEND_MODE_NAMES.get(bm);
-    }
-
     public static final SeparableBlendMode NORMAL = new SeparableBlendMode()
     {
         @Override
@@ -253,6 +209,50 @@ public abstract class BlendMode
 
     BlendMode()
     {
+    }
+
+    /**
+     * Determines the blend mode from the BM entry in the COS ExtGState.
+     *
+     * @param cosBlendMode name or array
+     * @return blending mode
+     */
+    public static BlendMode getInstance(COSBase cosBlendMode)
+    {
+        BlendMode result = null;
+        if (cosBlendMode instanceof COSName)
+        {
+            result = BLEND_MODES.get(cosBlendMode);
+        }
+        else if (cosBlendMode instanceof COSArray)
+        {
+            COSArray cosBlendModeArray = (COSArray) cosBlendMode;
+            for (int i = 0; i < cosBlendModeArray.size(); i++)
+            {
+                result = BLEND_MODES.get(cosBlendModeArray.getObject(i));
+                if (result != null)
+                {
+                    break;
+                }
+            }
+        }
+
+        if (result != null)
+        {
+            return result;
+        }
+        return BlendMode.NORMAL;
+    }
+    
+    /**
+     * Determines the blend mode name from the BM object.
+     *
+     * @param bm Blend mode.
+     * @return name of blend mode.
+     */
+    public static COSName getCOSName(BlendMode bm)
+    {
+        return BLEND_MODE_NAMES.get(bm);
     }
 
     private static int get255Value(float val)
