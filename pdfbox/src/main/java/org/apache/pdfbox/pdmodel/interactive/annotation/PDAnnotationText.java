@@ -75,6 +75,11 @@ public class PDAnnotationText extends PDAnnotationMarkup
     public static final String NAME_CIRCLE = "Circle";
 
     /**
+     * Constant for the name of a cross annotation.
+     */
+    public static final String NAME_CROSS = "Cross";
+
+    /**
      * The type of annotation.
      */
     public static final String SUB_TYPE = "Text";

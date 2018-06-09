@@ -53,6 +53,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         PDAnnotationText annotation = (PDAnnotationText) getAnnotation();
         if (!PDAnnotationText.NAME_NOTE.equals(annotation.getName()) &&
                 !PDAnnotationText.NAME_INSERT.equals(annotation.getName()) &&
+                !PDAnnotationText.NAME_CROSS.equals(annotation.getName()) &&
                 !PDAnnotationText.NAME_CIRCLE.equals(annotation.getName()))
         {
             //TODO Comment, Key, Help, NewParagraph, Paragraph
@@ -83,6 +84,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
             {
                 case PDAnnotationText.NAME_NOTE:
                     drawNote(contentStream, bbox);
+                    break;
+                case PDAnnotationText.NAME_CROSS:
+                    drawCross(contentStream, bbox);
                     break;
                 case PDAnnotationText.NAME_CIRCLE:
                     drawCircles(contentStream, bbox);
@@ -166,6 +170,37 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.moveTo(bbox.getWidth() / 2 - 1, bbox.getHeight() - 2);
         contentStream.lineTo(1, 1);
         contentStream.lineTo(bbox.getWidth() - 2, 1);
+        contentStream.closeAndFillAndStroke();
+    }
+
+    private void drawCross(final PDAppearanceContentStream contentStream, PDRectangle bbox)
+            throws IOException
+    {
+        // should be a square, but who knows...
+        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+
+        // small = offset nearest bbox edge
+        // large = offset second nearest bbox edge
+        float small = min / 10;
+        float large = min / 5;
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(1);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(0.59f); // value from Adobe
+
+        contentStream.moveTo(small, large);
+        contentStream.lineTo(large, small);
+        contentStream.lineTo(min / 2, min / 2 - small);
+        contentStream.lineTo(min - large, small);
+        contentStream.lineTo(min - small, large);
+        contentStream.lineTo(min / 2 + small, min / 2);
+        contentStream.lineTo(min - small, min - large);
+        contentStream.lineTo(min - large, min - small);
+        contentStream.lineTo(min / 2, min / 2 + small);
+        contentStream.lineTo(large, min - small);
+        contentStream.lineTo(small, min - large);
+        contentStream.lineTo(min / 2 - small, min / 2);
         contentStream.closeAndFillAndStroke();
     }
 
