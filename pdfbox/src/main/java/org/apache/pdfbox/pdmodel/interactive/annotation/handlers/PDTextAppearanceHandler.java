@@ -15,16 +15,23 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  *
@@ -33,6 +40,17 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
 public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDTextAppearanceHandler.class);
+
+    private static final Set<String> SUPPORTED_NAMES = new HashSet<>();
+
+    static
+    {
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_NOTE);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_INSERT);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_CROSS);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_HELP);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_CIRCLE);
+    }
 
     public PDTextAppearanceHandler(PDAnnotation annotation)
     {
@@ -51,12 +69,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
     public void generateNormalAppearance()
     {
         PDAnnotationText annotation = (PDAnnotationText) getAnnotation();
-        if (!PDAnnotationText.NAME_NOTE.equals(annotation.getName()) &&
-                !PDAnnotationText.NAME_INSERT.equals(annotation.getName()) &&
-                !PDAnnotationText.NAME_CROSS.equals(annotation.getName()) &&
-                !PDAnnotationText.NAME_CIRCLE.equals(annotation.getName()))
+        if (!SUPPORTED_NAMES.contains(annotation.getName()))
         {
-            //TODO Comment, Key, Help, NewParagraph, Paragraph
+            //TODO Comment, Key, NewParagraph, Paragraph
             return;
         }
 
@@ -75,7 +90,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
             // stroking color is always black which is the PDF default
 
             setOpacity(contentStream, annotation.getConstantOpacity());
-            
+
             PDRectangle rect = getRectangle();
             PDRectangle bbox = rect.createRetranslatedRectangle();
             annotation.getNormalAppearanceStream().setBBox(bbox);
@@ -94,7 +109,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                 case PDAnnotationText.NAME_INSERT:
                     drawInsert(contentStream, bbox);
                     break;
-
+                case PDAnnotationText.NAME_HELP:
+                    drawHelp(contentStream, bbox);
+                    break;
                 default:
                     break;
             }
@@ -202,6 +219,74 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.lineTo(small, min - large);
         contentStream.lineTo(min / 2 - small, min / 2);
         contentStream.closeAndFillAndStroke();
+    }
+
+    private void drawHelp(final PDAppearanceContentStream contentStream, PDRectangle bbox)
+            throws IOException
+    {
+        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(1);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(0.59f); // value from Adobe
+
+        // Adobe first fills a white circle with CA ca 0.6, so do we
+        contentStream.saveGraphicsState();
+        contentStream.setLineWidth(1);
+        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        gs.setAlphaSourceFlag(false);
+        gs.setStrokingAlphaConstant(0.6f);
+        gs.setNonStrokingAlphaConstant(0.6f);
+        gs.setBlendMode(BlendMode.NORMAL);
+        contentStream.setGraphicsStateParameters(gs);
+        contentStream.setNonStrokingColor(1f);
+        drawCircle2(contentStream, min / 2, min / 2, min / 2 - 1);
+        contentStream.fill();
+        contentStream.restoreGraphicsState();
+
+        contentStream.saveGraphicsState();
+        // rescale so that "?" fits into circle and move "?" to circle center
+        // values gathered by trial and error
+        contentStream.transform(Matrix.getScaleInstance(0.001f * min / 2.25f, 0.001f * min / 2.25f));
+        contentStream.transform(Matrix.getTranslateInstance(540, 375));
+
+        // we get the shape of an Helvetica "?" and use that one.
+        // Adobe uses a different font (which one?), or created the shape from scratch.
+        GeneralPath path = PDType1Font.HELVETICA.getPath("question");
+        PathIterator it = path.getPathIterator(new AffineTransform());
+        double[] coords = new double[6];
+        while (!it.isDone())
+        {
+            int type = it.currentSegment(coords);
+            switch (type)
+            {
+                case PathIterator.SEG_CLOSE:
+                    contentStream.closePath();
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    contentStream.curveTo((float) coords[0], (float) coords[1], (float) coords[2],
+                                          (float) coords[3], (float) coords[4], (float) coords[5]);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    contentStream.curveTo1((float) coords[0], (float) coords[1], (float) coords[2], (float) coords[3]);
+                    // not sure whether curveTo1 or curveTo2 is to be used here
+                    break;
+                case PathIterator.SEG_LINETO:
+                    contentStream.lineTo((float) coords[0], (float) coords[1]);
+                    break;
+                case PathIterator.SEG_MOVETO:
+                    contentStream.moveTo((float) coords[0], (float) coords[1]);
+                    break;
+                default:
+                    break;
+            }
+            it.next();
+        }
+        contentStream.restoreGraphicsState();
+        // draw the outer circle counterclockwise to fill area between circle and "?"
+        drawCircle2(contentStream, min / 2, min / 2, min / 2 - 1);
+        contentStream.fillAndStroke();
     }
 
     @Override
