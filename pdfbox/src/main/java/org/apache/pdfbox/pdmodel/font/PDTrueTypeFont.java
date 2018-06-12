@@ -309,7 +309,7 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
         glyphList = GlyphList.getAdobeGlyphList();
         if (closeTTF)
         {
-            // the TTF is fully loaded and it is save to close the underlying data source
+            // the TTF is fully loaded and it is safe to close the underlying data source
             ttf.close();
         }
     }
