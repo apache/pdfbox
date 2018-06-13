@@ -78,7 +78,7 @@ public final class Decrypt
         CommandLine commandLine = parseArguments(options, args);
         
         this.alias = commandLine.getOptionValue(ALIAS);
-        this.password = commandLine.getOptionValue(ALIAS, "");
+        this.password = commandLine.getOptionValue(PASSWORD, "");
         this.keyStore = commandLine.getOptionValue(KEYSTORE);
         
         // get the additional command line parameters 
