@@ -48,6 +48,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- for jdk10. Can be removed when Apache parent pom has been updated
+        See https://maven.apache.org/pom/asf/ , 
+        https://issues.apache.org/jira/browse/MPOM-185
+        current version is 19. -->
+        <surefire.version>2.21.0</surefire.version>
     </properties>
     
     <prerequisites>
