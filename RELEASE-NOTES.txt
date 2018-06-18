@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.9
+Release Notes -- Apache PDFBox -- Version 2.0.10
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.8 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.9 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,98 +14,58 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-2142] some /ICCBased colorspaces not rendered correctly
-[PDFBOX-2558] Image missing
-[PDFBOX-2917] PDF to Image, faint/dim Images
-[PDFBOX-3377] font caching never stops in AIX
-[PDFBOX-3401] PDObjectReference getReferencedObject() returns null if referenced obj is not a COSStream
-[PDFBOX-3457] Glyphs rendered in wrong width
-[PDFBOX-3956] Truncated pdf can't be repaired anymore
-[PDFBOX-3990] Rendering will never complete
-[PDFBOX-3994] ClassCastException in COSParser.bfSearchForTrailer
-[PDFBOX-3997] Cannot encode strings with of surrogate pairs
-[PDFBOX-4001] Rendering LineFeed (No Unicode mapping for .notdef (10))
-[PDFBOX-4002] Layer Utility - Text not being displayed when overlaying
-[PDFBOX-4005] Incorrect use of PDNumberTreeNode in PDPageLabels
-[PDFBOX-4006] PDFBox throws NullPointerException when parsing PDF
-[PDFBOX-4011] BBox in signature forms has wrong order
-[PDFBOX-4012] PDF with incremental save is shown blank
-[PDFBOX-4015] java.awt.color.CMMException: LCMS error 13: Couldn't link the profiles
-[PDFBOX-4018] NPE in sanitizeType in org.apache.pdfbox.pdmodel.PDPageTree
-[PDFBOX-4021] Font missing when building from source makes build fail
-[PDFBOX-4027] IndexOutOfBoundsException when XObject form matrix has only 5 elements
-[PDFBOX-4030] ClassCastException when matrix array has indirect objects
-[PDFBOX-4038] CFF font Blue values and other delta encoded lists read incorrectly
-[PDFBOX-4043] ExtractImages doesn't extract images from PDPatterns
-[PDFBOX-4044] Unable to process overlay on Cognos PDF documents
-[PDFBOX-4052] Number '------------06836305' is getting too long, stop reading at offset 36
-[PDFBOX-4053] build test fails on jdk9
-[PDFBOX-4058] High memory consumption when extracting image from PDF file
-[PDFBOX-4060] Slow rendering of PDF file with DeviceN jpeg file
-[PDFBOX-4061] ClassCastException PDActionJavaScript cannot be cast to PDDestination
-[PDFBOX-4064] cm operator has 7 numbers
-[PDFBOX-4066] Merging documents with nested fields duplicates child fields
-[PDFBOX-4083] Line annotation /LL, /LLE and /LLO have wrong default values
-[PDFBOX-4084] Can't draw PDFs while ANNOTS is COSStream instead of COSArray
-[PDFBOX-4085] COSString cannot be cast to COSDictionary error
-[PDFBOX-4088] Root/StructTreeRoot/K/S must be name, not string (merge)
-[PDFBOX-4091] Cannot analyze signatures : Wrong type of referenced length object COSObject
-[PDFBOX-4093] illegible characters in rendered image
-[PDFBOX-4103] Optional Content Groups with same names can't have different visibility
-[PDFBOX-4105] Copyright 2011 adam
-[PDFBOX-4107] NPE at PDFMergerUtility
-[PDFBOX-4108] /Length1 not needed for /CIDToGIDMap
-[PDFBOX-4113] Debugger file open dialog has incorrect filter on Mac
-[PDFBOX-4114] ICCBased color spaces wrong color output
-[PDFBOX-4115] Problem creating PDF with German text using embedded Type1 (PFB) font
-[PDFBOX-4125] FDFField.writeXML KO with String
-[PDFBOX-4129] Deleted fonts not detected when checking cache
-[PDFBOX-4140] Crash when repeating flag is outside of range.
-[PDFBOX-4146] Patch: Fix for appearance of visible signature
-[PDFBOX-4153] Outlines missing in some versions, not in others
-
-New Feature
-
-[PDFBOX-3198] Visible Signature N2 layer / Support signature with text
-[PDFBOX-4106] Vertical text creation
-[PDFBOX-4117] Implement GoToE action-type
+[PDFBOX-3585] - National characters not correctly displayed in text form field
+[PDFBOX-3631] - Signature interoperability issue / visible signature not visible on some viewers
+[PDFBOX-3999] - Merge failed to clone tags
+[PDFBOX-4097] - Compressed object will lost when brute force search failed to handle compressed streams
+[PDFBOX-4151] - FlateFilter, LZWFilter with predictor causes double memory usage
+[PDFBOX-4157] - Flatten ne positonne pas bien le 1er champs si Image avant
+[PDFBOX-4158] - COSDocument and PDFMerger may not close all IO resources if closing of one fails
+[PDFBOX-4162] - OutOfMemoryError in PDExtendedGraphicsState#getLineDashPattern
+[PDFBOX-4164] - NPE in PDFDebugger when expanding page subtree
+[PDFBOX-4167] - OutOfMemoryError on FlateFilter - Deflater.end() is missing
+[PDFBOX-4169] - PDFPrintable has subsampling but it can not be used
+[PDFBOX-4172] - Flatten fails on first form element only
+[PDFBOX-4176] - PDImageXObject doesn't support TIFF although JavaDoc says it does
+[PDFBOX-4179] - Preflight test fails: Parameter 'directory' is not a directory
+[PDFBOX-4180] - TextToPDF Does Not Explicitly Close Reader objects
+[PDFBOX-4181] - GlyphList.toUnicode not secured for concurrent access
+[PDFBOX-4185] - Fetching options for PDChoice causes ClassCastException
+[PDFBOX-4195] - Valid XMP Metadata TimeZone not accepted
+[PDFBOX-4197] - PDStructureElement.getAttributes() ignores reference objects
+[PDFBOX-4200] - DataFormatException: invalid code lengths set when rendering image
+[PDFBOX-4204] - Problem when merging PDF 1.4 and PDF 1.1 Documents
+[PDFBOX-4207] - Coordinates shown in PDFDebugger are incorrect on HiDPI displays
+[PDFBOX-4218] - image with stencil mask appears interpolated
+[PDFBOX-4222] - PDFMergerUtility: java.lang.ClassCastException: org.apache.pdfbox.cos.COSDictionary cannot be cast to org.apache.pdfbox.cos.COSNumber
+[PDFBOX-4223] - PDFMergerUtility: java.io.IOException: Error: can't convert to Destination COSArray{[COSName{XYZ}]}
+[PDFBOX-4227] - java.util.zip.DataFormatException: invalid distance too far back
+[PDFBOX-4228] - PDFBox crashes when a Type3 font don't have an embedded encoding.
+[PDFBOX-4230] - NullpointerException in CmapSubtable
+[PDFBOX-4235] - NPE when setting the DA of a PDTextField
 
 Improvement
 
-[PDFBOX-1848] Time Stamp Document Level Sigature
-[PDFBOX-2092] Very slow rendering of scanned document
-[PDFBOX-3340] Image decoded twice without a real need
-[PDFBOX-3984] Add validation data of signer to document
-[PDFBOX-3992] Implement show text with positioning operator (TJ)
-[PDFBOX-3998] Inform the user when not using KCMS with jdk8 or higher + set KCMS in cli
-[PDFBOX-4020] Into existing signature embedded signed timestamp for validation
-[PDFBOX-4022] Cache ColorSpace instances in PDColorSpace.java
-[PDFBOX-4024] YCbCr JPEGs not implemented
-[PDFBOX-4025] Other page sizes than US Letter should be selectable in TextToPDF
-[PDFBOX-4040] Get/set Viewports in PDPage
-[PDFBOX-4119] KCMS takes too much time
-[PDFBOX-4121] (-Dorg.apache.pdfbox.rendering.UsePureJavaCMYKConversion=true) takes much time
-[PDFBOX-4137] Allow subsampled/downscaled rendering of images, and rendering subimages
-[PDFBOX-4139] Optimize memory footprint of CID mappings within CMaps
-[PDFBOX-4142] Don't use md5 checksum due to changes to the release distribuition policy
-[PDFBOX-4150] Optimize clipping text rendering modes
-
-Wish
-
-[PDFBOX-4094] Add support for a flag disabling the rendering of PDF annotations in PDFRenderer
+[PDFBOX-3809] - PDAcroForm.flatten(PDField list, refreshAppearances boolean) flattens all form fields instead of specified ones.
+[PDFBOX-4057] - Allow rendering with different X and Y scale
+[PDFBOX-4095] - Non Separable Blend Modes implementation(HUE, SATURATION, COLOR, LUMINOSITY)
+[PDFBOX-4156] - Possible optimization of SampledImageReader.from8bit by using InterleavedRaster
+[PDFBOX-4159] - PDFBox doesn't warn if Special graphics state operators are used in text mode
+[PDFBOX-4161] - Overlay class should allow user to influence transform
+[PDFBOX-4165] - Support IBM OS/400 font locations
+[PDFBOX-4168] - Add a setTextRise() method to PDPageContentStream
+[PDFBOX-4171] - getColorKeyMask() not needed for inline images
+[PDFBOX-4175] - Update apache parent pom
+[PDFBOX-4186] - Add quality option for compressed images to pdfbox-app
+[PDFBOX-4187] - Refactor LosslessFactory alpha
+[PDFBOX-4192] - Support subsampling in PDFToImage command line tool
+[PDFBOX-4198] - Remove one of three LiberationSans-Regular.ttf
 
 Task
 
-[PDFBOX-2852] Improve code quality (2)
-[PDFBOX-3991] PDPageContentStream has sometimes float, sometimes double parameters
-[PDFBOX-4050] Check user password when decrypting with owner password in build test
-[PDFBOX-4055] Output info when PDFBox JBIG2 ImageIO is released
-[PDFBOX-4135] Modify PDFBox builds für Apache JBIG2 plugin
-[PDFBOX-4143] repository-cached download of fontbox test files
-
-Sub-task
-
-[PDFBOX-4029] Rendering transparency groups in patterns
+[PDFBOX-4170] - Update CCITTFaxDecoderStream.java from twelvemonkeys (2)
+[PDFBOX-4173] - New OOM getting LineDashPattern
+[PDFBOX-4224] - Update jbig2 plugin usage to 3.0.1
 
 Release Contents
 ----------------
