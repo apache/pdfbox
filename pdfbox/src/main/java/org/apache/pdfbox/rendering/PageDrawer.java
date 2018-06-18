@@ -1466,9 +1466,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
             size = dpiTransform.transform(size, size);
             // Flip y
-            // PDFBOX-4245 also consider translation in xform
-            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * m.getScalingFactorX() + xform.getTranslateX(),
-                   size.getY() - minY - height + pageSize.getLowerLeftY() * m.getScalingFactorY() + xform.getTranslateY(),
+            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * m.getScalingFactorX(),
+                    size.getY() - minY - height + pageSize.getLowerLeftY() * m.getScalingFactorY(),
                     width, height);
         }
     }
