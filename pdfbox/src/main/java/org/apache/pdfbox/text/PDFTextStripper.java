@@ -83,7 +83,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         {
             // PDFBOX-1946 when run in an applet
             // ignore and use default
-            LOG.debug("Couldn't read system properties - using defauults", e);
+            LOG.debug("Couldn't read system properties - using defaults", e);
         }
         if (strIndent != null && strIndent.length() > 0)
         {
