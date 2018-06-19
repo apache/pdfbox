@@ -96,8 +96,11 @@ class RAFDataStream extends TTFDataStream
     @Override
     public void close() throws IOException
     {
-        raf.close();
-        raf = null;
+        if (raf != null)
+        {
+            raf.close();
+            raf = null;
+        }
     }
     
     /**
