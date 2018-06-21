@@ -908,9 +908,11 @@ public class AFMParser
         buf.append( (char)nextByte );
 
         //now read the data
-        while( !isEOL(nextByte = input.read()) )
+        nextByte = input.read();
+        while (nextByte != -1 && !isEOL(nextByte))
         {
-            buf.append( (char)nextByte );
+            buf.append((char) nextByte);
+            nextByte = input.read();
         }
         return buf.toString();
     }
@@ -935,9 +937,11 @@ public class AFMParser
         buf.append( (char)nextByte );
 
         //now read the data
-        while( !isWhitespace(nextByte = input.read()) )
+        nextByte = input.read();
+        while (nextByte != -1 && !isWhitespace(nextByte))
         {
-            buf.append( (char)nextByte );
+            buf.append((char) nextByte);
+            nextByte = input.read();
         }
         return buf.toString();
     }
