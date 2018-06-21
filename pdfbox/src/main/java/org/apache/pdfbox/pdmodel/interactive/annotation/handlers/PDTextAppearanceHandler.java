@@ -299,9 +299,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.transform(Matrix.getScaleInstance(0.001f * min / 2.25f, 0.001f * min / 2.25f));
         contentStream.transform(Matrix.getTranslateInstance(555, 375));
 
-        // we get the shape of an Helvetica "?" and use that one.
+        // we get the shape of an Helvetica bold "?" and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
-        GeneralPath path = PDType1Font.HELVETICA.getPath("question");
+        GeneralPath path = PDType1Font.HELVETICA_BOLD.getPath("question");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
         // draw the outer circle counterclockwise to fill area between circle and "?"
