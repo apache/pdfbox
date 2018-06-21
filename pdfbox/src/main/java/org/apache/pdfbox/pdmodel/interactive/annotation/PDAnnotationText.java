@@ -78,6 +78,26 @@ public class PDAnnotationText extends PDAnnotationMarkup
      * Constant for the name of a cross annotation.
      */
     public static final String NAME_CROSS = "Cross";
+    
+    /**
+     * Constant for the name of a star annotation.
+     */
+    public static final String NAME_STAR = "Star";
+
+    /**
+     * Constant for the name of a check annotation.
+     */
+    public static final String NAME_CHECK = "Check";
+
+    /**
+     * Constant for the name of a right arrow annotation.
+     */
+    public static final String NAME_RIGHT_ARROW = "RightArrow";
+
+    /**
+     * Constant for the name of a right pointer annotation.
+     */
+    public static final String NAME_RIGHT_POINTER = "RightPointer";        
 
     /**
      * The type of annotation.
