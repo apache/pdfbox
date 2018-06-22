@@ -57,6 +57,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_STAR);
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_RIGHT_ARROW);
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_RIGHT_POINTER);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_CROSS_HAIRS);
     }
 
     public PDTextAppearanceHandler(PDAnnotation annotation)
@@ -135,6 +136,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                     break;
                 case PDAnnotationText.NAME_RIGHT_POINTER:
                     drawRightPointer(annotation, contentStream);
+                    break;
+                case PDAnnotationText.NAME_CROSS_HAIRS:
+                    drawCrossHairs(annotation, contentStream);
                     break;
                 default:
                     break;
@@ -281,6 +285,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.lineTo(small, min - large);
         contentStream.lineTo(min / 2 - small, min / 2);
         contentStream.closeAndFillAndStroke();
+        
+        // alternatively, this could also be drawn with Zapf Dingbats "a21"
+        // see DrawStar()
     }
 
     private void drawHelp(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
@@ -457,6 +464,28 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         // we get the shape of a Zapf Dingbats right pointer (0x27A4) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
         GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a174");
+        addPath(contentStream, path);
+        contentStream.fillAndStroke();
+    }
+
+    private void drawCrossHairs(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+            throws IOException
+    {
+        PDRectangle bbox = adjustRectAndBBox(annotation, 20, 20);
+
+        float min = Math.min(bbox.getWidth(), bbox.getHeight());
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(0);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(0.61f); // value from Adobe
+
+        contentStream.transform(Matrix.getScaleInstance(0.001f * min / 1.5f, 0.001f * min / 1.5f));
+        contentStream.transform(Matrix.getTranslateInstance(0, 50));
+
+        // we get the shape of a Zapf Dingbats right pointer (0x27A4) and use that one.
+        // Adobe uses a different font (which one?), or created the shape from scratch.
+        GeneralPath path = PDType1Font.SYMBOL.getPath("circleplus");
         addPath(contentStream, path);
         contentStream.fillAndStroke();
     }
