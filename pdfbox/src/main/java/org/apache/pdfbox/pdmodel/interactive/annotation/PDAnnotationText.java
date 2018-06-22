@@ -97,7 +97,22 @@ public class PDAnnotationText extends PDAnnotationMarkup
     /**
      * Constant for the name of a right pointer annotation.
      */
-    public static final String NAME_RIGHT_POINTER = "RightPointer";        
+    public static final String NAME_RIGHT_POINTER = "RightPointer";
+
+    /**
+     * Constant for the name of a crosshairs annotation.
+     */
+    public static final String NAME_UP_ARROW = "UpArrow";        
+
+    /**
+     * Constant for the name of a crosshairs annotation.
+     */
+    public static final String NAME_UP_LEFT_ARROW = "UpLeftArrow";        
+
+    /**
+     * Constant for the name of a crosshairs annotation.
+     */
+    public static final String NAME_CROSS_HAIRS = "CrossHairs";        
 
     /**
      * The type of annotation.
