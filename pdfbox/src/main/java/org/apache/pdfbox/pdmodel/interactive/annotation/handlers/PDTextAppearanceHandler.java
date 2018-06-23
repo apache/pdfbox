@@ -423,6 +423,8 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
     }
 
     //TODO this is mostly identical to drawStar, except for scale, translation and symbol
+    // maybe use a table with all values and draw from there
+    // this could also optionally use outer circle
     private void drawCheck(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
@@ -483,7 +485,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.transform(Matrix.getScaleInstance(0.001f * min / 1.5f, 0.001f * min / 1.5f));
         contentStream.transform(Matrix.getTranslateInstance(0, 50));
 
-        // we get the shape of a Zapf Dingbats right pointer (0x27A4) and use that one.
+        // we get the shape of a Symbol crosshair (0x2295) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
         GeneralPath path = PDType1Font.SYMBOL.getPath("circleplus");
         addPath(contentStream, path);
@@ -522,7 +524,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.transform(Matrix.getScaleInstance(0.001f * min / 1.3f, 0.001f * min / 1.3f));
         contentStream.transform(Matrix.getTranslateInstance(200, 300));
 
-        // we get the shape of a Zapf Dingbats right arrow and use that one.
+        // we get the shape of a Zapf Dingbats right arrow (0x2794) and use that one.
         // Adobe uses a different font (which one?), or created the shape from scratch.
         GeneralPath path = PDType1Font.ZAPF_DINGBATS.getPath("a160");
         addPath(contentStream, path);
