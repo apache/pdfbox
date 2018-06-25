@@ -1252,9 +1252,9 @@ public class PDDocument implements Closeable
 
     /**
      * This will save the document to an output stream.
-     * 
-     * @param output The stream to write to. It is recommended to wrap it in a
-     * {@link java.io.BufferedOutputStream}, unless it is already buffered.
+     *
+     * @param output The stream to write to. It will be closed when done. It is recommended to wrap
+     * it in a {@link java.io.BufferedOutputStream}, unless it is already buffered.
      *
      * @throws IOException if the output could not be written
      */
@@ -1288,7 +1288,8 @@ public class PDDocument implements Closeable
      * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
      * file or a stream, not if the document was created in PDFBox itself.
      *
-     * @param output stream to write. It should <i><b>not</b></i> point to the source file.
+     * @param output stream to write to. It will be closed when done. It should <i><b>not</b></i>
+     * point to the source file.
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */
@@ -1344,7 +1345,8 @@ public class PDDocument implements Closeable
      * {@code PDDocument} instance and only AFTER {@link ExternalSigningSupport} instance is used.
      * </p>
      *
-     * @param output stream to write final PDF. It should <i><b>not</b></i> point to the source file.
+     * @param output stream to write the final PDF. It should <i><b>not</b></i> point to the source
+     * file. It will be closed when the document is closed.
      * @return instance to be used for external signing and setting CMS signature
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream or
