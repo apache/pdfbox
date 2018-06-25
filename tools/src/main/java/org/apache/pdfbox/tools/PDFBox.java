@@ -116,7 +116,6 @@ public final class PDFBox
         String message = "PDFBox version: \""+ Version.getVersion()+ "\""
                 + "\nUsage: java -jar pdfbox-app-x.y.z.jar <command> <args..>\n"
                 + "\nPossible commands are:\n"
-                + "  ConvertColorspace\n"
                 + "  Decrypt\n"
                 + "  Encrypt\n"
                 + "  ExtractText\n"
