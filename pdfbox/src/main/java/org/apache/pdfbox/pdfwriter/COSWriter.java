@@ -220,9 +220,10 @@ public class COSWriter implements ICOSVisitor, Closeable
     private COSArray byteRangeArray;
 
     /**
-     * COSWriter constructor comment.
+     * COSWriter constructor.
      *
-     * @param outputStream The wrapped output stream.
+     * @param outputStream The output stream to write the PDF. It will be closed when this object is
+     * closed.
      */
     public COSWriter(OutputStream outputStream)
     {
@@ -231,11 +232,12 @@ public class COSWriter implements ICOSVisitor, Closeable
     }
 
     /**
-     * COSWriter constructor for incremental updates. 
+     * COSWriter constructor for incremental updates.
      *
-     * @param outputStream output stream where the new PDF data will be written
+     * @param outputStream output stream where the new PDF data will be written. It will be closed
+     * when this object is closed.
      * @param inputData random access read containing source PDF data
-     * 
+     *
      * @throws IOException if something went wrong
      */
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData) throws IOException
