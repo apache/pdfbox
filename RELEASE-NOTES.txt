@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 1.8.14
+Release Notes -- Apache PDFBox -- Version 1.8.15
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 1.8.13 release. It 
+This is an incremental bugfix release based on the earlier 1.8.14 release. It 
 contains a couple of fixes and small improvements.
 
 For more details on all fixes included in this release, please refer to the following
@@ -13,34 +13,11 @@ issues on the PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFB
 
 Bug
 
-[PDFBOX-3625] - Use correct file encoding when saving fdf data
-[PDFBOX-3724] - Wrong size in rendering of some artifacts
-[PDFBOX-3733] - image added to pdf by tool AddImageToPDF is turn-overed
-[PDFBOX-3739] - ImageWriterIterator.next() and ImageReaderIterator.next() can return null
-[PDFBOX-3742] - Unknown dir object c='>' cInt=62 peek='>' peekInt=62
-[PDFBOX-3813] - PDF Box crash when using PDFToImage or PDFDebug
-[PDFBOX-3843] - Rect of Annotation contains indirect elements + Patch
-[PDFBOX-3889] - javax.crypto.BadPaddingException: Given final block not properly padded
-[PDFBOX-3909] - End of inline image not detected
-[PDFBOX-3919] - Infinite loop while parsing (2)
-[PDFBOX-3933] - PDFParser swallows a CR at the end of a stream
-[PDFBOX-3942] - ClassCastException in getOptionalContentGroups
-[PDFBOX-4005] - Incorrect use of PDNumberTreeNode in PDPageLabels
-[PDFBOX-4011] - BBox in signature forms has wrong order
-[PDFBOX-4027] - IndexOutOfBoundsException when XObject form matrix has only 5 elements
-[PDFBOX-4030] - ClassCastException when matrix array has indirect objects
-[PDFBOX-4064] - cm operator has 7 numbers
-[PDFBOX-4083] - Line annotation /LL, /LLE and /LLO have wrong default values
-[PDFBOX-4088] - Root/StructTreeRoot/K/S must be name, not string (merge)
+[PDFBOX-4197] - PDStructureElement.getAttributes() ignores reference objects
 
 Improvement
 
-[PDFBOX-3635] - Remove workaround to avoid SSLHandshakeException
-
-Task
-
-[PDFBOX-3865] - Add OWASP dependency-check to build
-[PDFBOX-4055] - Output info when PDFBox JBIG2 ImageIO is released
+[PDFBOX-4251] - Optimize AFMParser
 
 Release Contents
 ----------------
@@ -49,9 +26,9 @@ This release consists of a single source archive packaged as a zip file.
 The archive can be unpacked with the jar tool from your JDK installation.
 See the README.txt file for instructions on how to build this release.
 
-The source archive is accompanied by SHA1 and MD5 checksums and a PGP
-signature that you can use to verify the authenticity of your download.
-The public key used for the PGP signature can be found at
+The source archive is accompanied by SHA512 checksum and a PGP signature
+that you can use to verify the authenticity of your download. The public
+key used for the PGP signature can be found at 
 https://svn.apache.org/repos/asf/pdfbox/KEYS.
 
 About Apache PDFBox
