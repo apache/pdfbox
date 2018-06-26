@@ -34,6 +34,7 @@ public class PDFunctionType3 extends PDFunction
     private COSArray encode = null;
     private COSArray bounds = null;
     private PDFunction[] functionsArray = null;
+    private float[] boundsValues = null;
     
     /**
      * Constructor.
@@ -88,7 +89,10 @@ public class PDFunctionType3 extends PDFunction
         }
         else 
         {
-            float[] boundsValues = getBounds().toFloatArray();
+            if (boundsValues == null)
+            {
+                boundsValues = getBounds().toFloatArray();
+            }
             int boundsSize = boundsValues.length;
             // create a combined array containing the domain and the bounds values
             // domain.min, bounds[0], bounds[1], ...., bounds[boundsSize-1], domain.max
