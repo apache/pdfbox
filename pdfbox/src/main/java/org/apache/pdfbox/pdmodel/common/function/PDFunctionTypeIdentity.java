@@ -36,6 +36,7 @@ public class PDFunctionTypeIdentity extends PDFunction
     {
         // shouldn't be called
         throw new UnsupportedOperationException();
+        //TODO this is a violation of the interface segregation principle
     }
 
     @Override
