@@ -340,7 +340,6 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
-    //TODO this is mostly identical to drawHelp, except for scale, translation and symbol
     private void drawParagraph(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
@@ -378,9 +377,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         GeneralPath path = PDType1Font.HELVETICA.getPath("paragraph");
         addPath(contentStream, path);
         contentStream.restoreGraphicsState();
-        // draw the outer circle counterclockwise to fill area between circle and "?"
-        drawCircle2(contentStream, min / 2, min / 2, min / 2 - 1);
         contentStream.fillAndStroke();
+        drawCircle(contentStream, min / 2, min / 2, min / 2 - 1);
+        contentStream.stroke();
     }
 
     private void drawNewParagraph(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
