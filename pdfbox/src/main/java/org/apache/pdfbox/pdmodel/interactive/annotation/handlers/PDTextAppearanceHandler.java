@@ -534,9 +534,10 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
-
     private void addPath(final PDAppearanceContentStream contentStream, GeneralPath path) throws IOException
     {
+        double curX = 0;
+        double curY = 0;
         PathIterator it = path.getPathIterator(new AffineTransform());
         double[] coords = new double[6];
         while (!it.isDone())
@@ -550,16 +551,33 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                 case PathIterator.SEG_CUBICTO:
                     contentStream.curveTo((float) coords[0], (float) coords[1], (float) coords[2],
                                           (float) coords[3], (float) coords[4], (float) coords[5]);
+                    curX = coords[4];
+                    curY = coords[5];
                     break;
                 case PathIterator.SEG_QUADTO:
-                    contentStream.curveTo1((float) coords[0], (float) coords[1], (float) coords[2], (float) coords[3]);
-                    // not sure whether curveTo1 or curveTo2 is to be used here
+                    // Convert quadratic Bézier curve to cubic
+                    // https://fontforge.github.io/bezier.html
+                    // CP1 = QP0 + 2/3 *(QP1-QP0)
+                    // CP2 = QP2 + 2/3 *(QP1-QP2)
+                    double cp1x = curX + 2d / 3d * (coords[0] - curX);
+                    double cp1y = curY + 2d / 3d * (coords[1] - curY);
+                    double cp2x = coords[2] + 2d / 3d * (coords[0] - coords[2]);
+                    double cp2y = coords[3] + 2d / 3d * (coords[1] - coords[3]);
+                    contentStream.curveTo((float) cp1x, (float) cp1y,
+                                          (float) cp2x, (float) cp2y,
+                                          (float) coords[2], (float) coords[3]);
+                    curX = coords[2];
+                    curY = coords[3];
                     break;
                 case PathIterator.SEG_LINETO:
                     contentStream.lineTo((float) coords[0], (float) coords[1]);
+                    curX = coords[0];
+                    curY = coords[1];
                     break;
                 case PathIterator.SEG_MOVETO:
                     contentStream.moveTo((float) coords[0], (float) coords[1]);
+                    curX = coords[0];
+                    curY = coords[1];
                     break;
                 default:
                     break;
