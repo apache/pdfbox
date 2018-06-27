@@ -58,6 +58,8 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_RIGHT_ARROW);
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_RIGHT_POINTER);
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_CROSS_HAIRS);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_UP_ARROW);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_UP_LEFT_ARROW);
     }
 
     public PDTextAppearanceHandler(PDAnnotation annotation)
@@ -81,7 +83,7 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         {
             //TODO Comment, Key
             // BBox values:
-            // key 18 18
+            // Key 13 18
             // Comment 18 18
             return;
         }
@@ -139,6 +141,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                     break;
                 case PDAnnotationText.NAME_CROSS_HAIRS:
                     drawCrossHairs(annotation, contentStream);
+                    break;
+                case PDAnnotationText.NAME_UP_ARROW:
+                    drawUpArrow(annotation, contentStream);
+                    break;
+                case PDAnnotationText.NAME_UP_LEFT_ARROW:
+                    drawUpLeftArrow(annotation, contentStream);
                     break;
                 default:
                     break;
@@ -492,6 +500,48 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
+    private void drawUpArrow(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+                 throws IOException
+    {
+        adjustRectAndBBox(annotation, 17, 20);
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(1);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(0.59f); // value from Adobe
+
+        contentStream.moveTo(1, 7);
+        contentStream.lineTo(5, 7);
+        contentStream.lineTo(5, 1);
+        contentStream.lineTo(12, 1);
+        contentStream.lineTo(12, 7);
+        contentStream.lineTo(16, 7);
+        contentStream.lineTo(8.5f, 19);
+        contentStream.closeAndFillAndStroke();
+    }
+
+    private void drawUpLeftArrow(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+                 throws IOException
+    {
+        adjustRectAndBBox(annotation, 17, 17);
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(1);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(0.59f); // value from Adobe
+        
+        contentStream.transform(Matrix.getRotateInstance(Math.toRadians(45), 8, -4));
+
+        contentStream.moveTo(1, 7);
+        contentStream.lineTo(5, 7);
+        contentStream.lineTo(5, 1);
+        contentStream.lineTo(12, 1);
+        contentStream.lineTo(12, 7);
+        contentStream.lineTo(16, 7);
+        contentStream.lineTo(8.5f, 19);
+        contentStream.closeAndFillAndStroke();
+    }
+    
     private void drawRightArrow(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
             throws IOException
     {
