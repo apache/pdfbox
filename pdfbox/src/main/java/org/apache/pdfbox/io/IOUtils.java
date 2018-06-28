@@ -143,6 +143,6 @@ public final class IOUtils
                 return ioe;
             }
         }
-        return null;
+        return initialException;
     }
 }
