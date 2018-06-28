@@ -595,16 +595,26 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.setMiterLimit(4);
         contentStream.setLineJoinStyle(1);
         contentStream.setLineCapStyle(0);
-        contentStream.setLineWidth(0.59f); // value from Adobe
+        contentStream.setLineWidth(200);
 
+        // Adobe first fills a white rectangle with CA ca 0.6, so do we
+        contentStream.saveGraphicsState();
+        contentStream.setLineWidth(1);
+        PDExtendedGraphicsState gs = new PDExtendedGraphicsState();
+        gs.setAlphaSourceFlag(false);
+        gs.setStrokingAlphaConstant(0.6f);
+        gs.setNonStrokingAlphaConstant(0.6f);
+        gs.setBlendMode(BlendMode.NORMAL);
+        contentStream.setGraphicsStateParameters(gs);
+        contentStream.setNonStrokingColor(1f);
         contentStream.addRect(0.3f, 0.3f, 18-0.6f, 18-0.6f);
-        contentStream.stroke();
+        contentStream.fill();
+        contentStream.restoreGraphicsState();
 
-        contentStream.setNonStrokingColor(0);
         contentStream.transform(Matrix.getScaleInstance(0.003f, 0.003f));
         contentStream.transform(Matrix.getTranslateInstance(500, -300));
         
-        // shape from Font Awesome by "printing" comment.svg into a PDF
+        // outer shape from Font Awesome by "printing" comment.svg into a PDF
         contentStream.moveTo(2549, 5269);
         contentStream.curveTo(1307, 5269, 300, 4451, 300, 3441);
         contentStream.curveTo(300, 3023, 474, 2640, 764, 2331);
@@ -616,19 +626,14 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.curveTo(3792, 1613, 4799, 2431, 4799, 3441);
         contentStream.curveTo(4799, 4451, 3792, 5269, 2549, 5269);
         contentStream.closePath();
-        contentStream.moveTo(2549, 2035);
-        contentStream.curveTo(2315, 2035, 2083, 2071, 1860, 2141);
-        contentStream.lineTo(1661, 2204);
-        contentStream.lineTo(1490, 2083);
-        contentStream.curveTo(1364, 1994, 1192, 1895, 984, 1828);
-        contentStream.curveTo(1048, 1935, 1111, 2054, 1159, 2182);
-        contentStream.lineTo(1252, 2429);
-        contentStream.lineTo(1071, 2620);
-        contentStream.curveTo(912, 2790, 721, 3070, 721, 3441);
-        contentStream.curveTo(721, 4216, 1541, 4847, 2549, 4847);
-        contentStream.curveTo(3558, 4847, 4378, 4216, 4378, 3441);
-        contentStream.curveTo(4378, 2666, 3558, 2035, 2549, 2035);
-        contentStream.fill();
+
+        // can't use addRect: if we did that, we wouldn't get the donut effect
+        contentStream.moveTo(0.3f / 0.003f - 500, 0.3f / 0.003f + 300);
+        contentStream.lineTo(0.3f / 0.003f - 500, 0.3f / 0.003f + 300 + 17.4f / 0.003f);
+        contentStream.lineTo(0.3f / 0.003f - 500 + 17.4f / 0.003f, 0.3f / 0.003f + 300 + 17.4f / 0.003f);
+        contentStream.lineTo(0.3f / 0.003f - 500 + 17.4f / 0.003f, 0.3f / 0.003f + 300);
+
+        contentStream.closeAndFillAndStroke();
     }
     
     private void drawKey(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
