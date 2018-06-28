@@ -60,6 +60,8 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_CROSS_HAIRS);
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_UP_ARROW);
         SUPPORTED_NAMES.add(PDAnnotationText.NAME_UP_LEFT_ARROW);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_COMMENT);
+        SUPPORTED_NAMES.add(PDAnnotationText.NAME_KEY);
     }
 
     public PDTextAppearanceHandler(PDAnnotation annotation)
@@ -81,10 +83,6 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         PDAnnotationText annotation = (PDAnnotationText) getAnnotation();
         if (!SUPPORTED_NAMES.contains(annotation.getName()))
         {
-            //TODO Comment, Key
-            // BBox values:
-            // Key 13 18
-            // Comment 18 18
             return;
         }
 
@@ -147,6 +145,12 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
                     break;
                 case PDAnnotationText.NAME_UP_LEFT_ARROW:
                     drawUpLeftArrow(annotation, contentStream);
+                    break;
+                case PDAnnotationText.NAME_COMMENT:
+                    drawComment(annotation, contentStream);
+                    break;
+                case PDAnnotationText.NAME_KEY:
+                    drawKey(annotation, contentStream);
                     break;
                 default:
                     break;
@@ -583,6 +587,92 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.fillAndStroke();
     }
 
+    private void drawComment(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+                 throws IOException
+    {
+        adjustRectAndBBox(annotation, 18, 18);
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(1);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(0.59f); // value from Adobe
+
+        contentStream.addRect(0.3f, 0.3f, 18-0.6f, 18-0.6f);
+        contentStream.stroke();
+
+        contentStream.setNonStrokingColor(0);
+        contentStream.transform(Matrix.getScaleInstance(0.003f, 0.003f));
+        contentStream.transform(Matrix.getTranslateInstance(500, -300));
+        
+        // shape from Font Awesome by "printing" comment.svg into a PDF
+        contentStream.moveTo(2549, 5269);
+        contentStream.curveTo(1307, 5269, 300, 4451, 300, 3441);
+        contentStream.curveTo(300, 3023, 474, 2640, 764, 2331);
+        contentStream.curveTo(633, 1985, 361, 1691, 357, 1688);
+        contentStream.curveTo(299, 1626, 283, 1537, 316, 1459);
+        contentStream.curveTo(350, 1382, 426, 1332, 510, 1332);
+        contentStream.curveTo(1051, 1332, 1477, 1558, 1733, 1739);
+        contentStream.curveTo(1987, 1659, 2261, 1613, 2549, 1613);
+        contentStream.curveTo(3792, 1613, 4799, 2431, 4799, 3441);
+        contentStream.curveTo(4799, 4451, 3792, 5269, 2549, 5269);
+        contentStream.closePath();
+        contentStream.moveTo(2549, 2035);
+        contentStream.curveTo(2315, 2035, 2083, 2071, 1860, 2141);
+        contentStream.lineTo(1661, 2204);
+        contentStream.lineTo(1490, 2083);
+        contentStream.curveTo(1364, 1994, 1192, 1895, 984, 1828);
+        contentStream.curveTo(1048, 1935, 1111, 2054, 1159, 2182);
+        contentStream.lineTo(1252, 2429);
+        contentStream.lineTo(1071, 2620);
+        contentStream.curveTo(912, 2790, 721, 3070, 721, 3441);
+        contentStream.curveTo(721, 4216, 1541, 4847, 2549, 4847);
+        contentStream.curveTo(3558, 4847, 4378, 4216, 4378, 3441);
+        contentStream.curveTo(4378, 2666, 3558, 2035, 2549, 2035);
+        contentStream.fill();
+    }
+    
+    private void drawKey(PDAnnotationText annotation, final PDAppearanceContentStream contentStream)
+                 throws IOException
+    {
+        adjustRectAndBBox(annotation, 13, 18);
+
+        contentStream.setMiterLimit(4);
+        contentStream.setLineJoinStyle(1);
+        contentStream.setLineCapStyle(0);
+        contentStream.setLineWidth(200);
+
+        contentStream.transform(Matrix.getScaleInstance(0.003f, 0.003f));
+        contentStream.transform(Matrix.getRotateInstance(Math.toRadians(45), 2500, -800));
+
+        // shape from Font Awesome by "printing" key.svg into a PDF
+        contentStream.moveTo(4799, 4004);
+        contentStream.curveTo(4799, 3149, 4107, 2457, 3253, 2457);
+        contentStream.curveTo(3154, 2457, 3058, 2466, 2964, 2484);
+        contentStream.lineTo(2753, 2246);
+        contentStream.curveTo(2713, 2201, 2656, 2175, 2595, 2175);
+        contentStream.lineTo(2268, 2175);
+        contentStream.lineTo(2268, 1824);
+        contentStream.curveTo(2268, 1707, 2174, 1613, 2057, 1613);
+        contentStream.lineTo(1706, 1613);
+        contentStream.lineTo(1706, 1261);
+        contentStream.curveTo(1706, 1145, 1611, 1050, 1495, 1050);
+        contentStream.lineTo(510, 1050);
+        contentStream.curveTo(394, 1050, 300, 1145, 300, 1261);
+        contentStream.lineTo(300, 1947);
+        contentStream.curveTo(300, 2003, 322, 2057, 361, 2097);
+        contentStream.lineTo(1783, 3519);
+        contentStream.curveTo(1733, 3671, 1706, 3834, 1706, 4004);
+        contentStream.curveTo(1706, 4858, 2398, 5550, 3253, 5550);
+        contentStream.curveTo(4109, 5550, 4799, 4860, 4799, 4004);
+        contentStream.closePath();
+        contentStream.moveTo(3253, 4425);
+        contentStream.curveTo(3253, 4192, 3441, 4004, 3674, 4004);
+        contentStream.curveTo(3907, 4004, 4096, 4192, 4096, 4425);
+        contentStream.curveTo(4096, 4658, 3907, 4847, 3674, 4847);
+        contentStream.curveTo(3441, 4847, 3253, 4658, 3253, 4425);
+        contentStream.fillAndStroke();
+    }
+    
     private void addPath(final PDAppearanceContentStream contentStream, GeneralPath path) throws IOException
     {
         double curX = 0;
