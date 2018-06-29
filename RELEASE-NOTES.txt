@@ -1219,10 +1219,10 @@ This release consists of a single source archive packaged as a zip file.
 The archive can be unpacked with the jar tool from your JDK installation.
 See the README.txt file for instructions on how to build this release.
 
-The source archive is accompanied by SHA1 and MD5 checksums and a PGP
-signature that you can use to verify the authenticity of your download.
-The public key used for the PGP signature can be found at
-https://svn.apache.org/repos/asf/pdfbox/KEYS.
+The source archive is accompanied by SHA512 checksums and a PGP signature
+that you can use to verify the authenticity of your download.
+he public key used for the PGP signature can be found at
+https://www.apache.org/dist/pdfbox/KEYS.
 
 About Apache PDFBox
 -------------------
