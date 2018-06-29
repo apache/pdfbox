@@ -29,7 +29,7 @@ See the README.txt file for instructions on how to build this release.
 The source archive is accompanied by SHA512 checksum and a PGP signature
 that you can use to verify the authenticity of your download. The public
 key used for the PGP signature can be found at 
-https://svn.apache.org/repos/asf/pdfbox/KEYS.
+https://www.apache.org/dist/pdfbox/KEYS.
 
 About Apache PDFBox
 -------------------
