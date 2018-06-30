@@ -55,6 +55,8 @@ public class PDFRenderer
 
     private boolean subsamplingAllowed = false;
 
+    private BufferedImage pageImage;
+
     /**
      * Creates a new PDFRenderer.
      * @param document the document to render
@@ -204,6 +206,8 @@ public class PDFRenderer
         {
             image = new BufferedImage(widthPx, heightPx, bimType);
         }
+
+        pageImage = image;
 
         // use a transparent background if the image type supports alpha
         Graphics2D g = image.createGraphics();
@@ -359,5 +363,15 @@ public class PDFRenderer
             }
         }
         return false;
+    }
+
+    /**
+     * Returns the image to which the current page is being rendered.
+     * May be null if the page is rendered to a Graphics2D object
+     * instead of a BufferedImage.
+     */
+    BufferedImage getPageImage()
+    {
+        return pageImage;
     }
 }
