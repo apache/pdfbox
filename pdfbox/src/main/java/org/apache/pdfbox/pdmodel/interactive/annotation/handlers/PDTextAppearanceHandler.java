@@ -613,8 +613,9 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
 
         contentStream.transform(Matrix.getScaleInstance(0.003f, 0.003f));
         contentStream.transform(Matrix.getTranslateInstance(500, -300));
-        
-        // outer shape from Font Awesome by "printing" comment.svg into a PDF
+
+        // outer shape was gathered from Font Awesome by "printing" comment.svg
+        // into a PDF and looking at the content stream
         contentStream.moveTo(2549, 5269);
         contentStream.curveTo(1307, 5269, 300, 4451, 300, 3441);
         contentStream.curveTo(300, 3023, 474, 2640, 764, 2331);
@@ -649,7 +650,8 @@ public class PDTextAppearanceHandler extends PDAbstractAppearanceHandler
         contentStream.transform(Matrix.getScaleInstance(0.003f, 0.003f));
         contentStream.transform(Matrix.getRotateInstance(Math.toRadians(45), 2500, -800));
 
-        // shape from Font Awesome by "printing" key.svg into a PDF
+        // shape was gathered from Font Awesome by "printing" key.svg into a PDF
+        // and looking at the content stream
         contentStream.moveTo(4799, 4004);
         contentStream.curveTo(4799, 3149, 4107, 2457, 3253, 2457);
         contentStream.curveTo(3154, 2457, 3058, 2466, 2964, 2484);
