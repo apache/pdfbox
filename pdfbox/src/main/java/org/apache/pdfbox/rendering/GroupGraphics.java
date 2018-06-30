@@ -66,53 +66,53 @@ class GroupGraphics extends Graphics2D
 {
     private final BufferedImage groupImage;
     private final BufferedImage groupAlphaImage;
-    private final Graphics2D groupGraphics;
-    private final Graphics2D alphaGraphics;
+    private final Graphics2D groupG2D;
+    private final Graphics2D alphaG2D;
 
     GroupGraphics(BufferedImage groupImage, Graphics2D groupGraphics)
     {
         this.groupImage = groupImage;
-        this.groupGraphics = groupGraphics;
+        this.groupG2D = groupGraphics;
         this.groupAlphaImage = new BufferedImage(groupImage.getWidth(), groupImage.getHeight(),
             BufferedImage.TYPE_INT_ARGB);
-        this.alphaGraphics = groupAlphaImage.createGraphics();
+        this.alphaG2D = groupAlphaImage.createGraphics();
     }
 
     private GroupGraphics(BufferedImage groupImage, Graphics2D groupGraphics,
         BufferedImage groupAlphaImage, Graphics2D alphaGraphics)
     {
         this.groupImage = groupImage;
-        this.groupGraphics = groupGraphics;
+        this.groupG2D = groupGraphics;
         this.groupAlphaImage = groupAlphaImage;
-        this.alphaGraphics = alphaGraphics;
+        this.alphaG2D = alphaGraphics;
     }
 
     @Override
     public void clearRect(int x, int y, int width, int height)
     {
-        groupGraphics.clearRect(x, y, width, height);
-        alphaGraphics.clearRect(x, y, width, height);
+        groupG2D.clearRect(x, y, width, height);
+        alphaG2D.clearRect(x, y, width, height);
     }
 
     @Override
     public void clipRect(int x, int y, int width, int height)
     {
-        groupGraphics.clipRect(x, y, width, height);
-        alphaGraphics.clipRect(x, y, width, height);
+        groupG2D.clipRect(x, y, width, height);
+        alphaG2D.clipRect(x, y, width, height);
     }
 
     @Override
     public void copyArea(int x, int y, int width, int height, int dx, int dy)
     {
-        groupGraphics.copyArea(x, y, width, height, dx, dy);
-        alphaGraphics.copyArea(x, y, width, height, dx, dy);
+        groupG2D.copyArea(x, y, width, height, dx, dy);
+        alphaG2D.copyArea(x, y, width, height, dx, dy);
     }
 
     @Override
     public Graphics create()
     {
-        Graphics g = groupGraphics.create();
-        Graphics a = alphaGraphics.create();
+        Graphics g = groupG2D.create();
+        Graphics a = alphaG2D.create();
         if (g instanceof Graphics2D && a instanceof Graphics2D)
         {
             return new GroupGraphics(groupImage, (Graphics2D)g, groupAlphaImage, (Graphics2D)a);
@@ -123,451 +123,451 @@ class GroupGraphics extends Graphics2D
     @Override
     public void dispose()
     {
-        groupGraphics.dispose();
-        alphaGraphics.dispose();
+        groupG2D.dispose();
+        alphaG2D.dispose();
     }
 
     @Override
     public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle)
     {
-        groupGraphics.drawArc(x, y, width, height, startAngle, arcAngle);
-        alphaGraphics.drawArc(x, y, width, height, startAngle, arcAngle);
+        groupG2D.drawArc(x, y, width, height, startAngle, arcAngle);
+        alphaG2D.drawArc(x, y, width, height, startAngle, arcAngle);
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer)
     {
-        groupGraphics.drawImage(img, x, y, bgcolor, observer);
-        return alphaGraphics.drawImage(img, x, y, bgcolor, observer);
+        groupG2D.drawImage(img, x, y, bgcolor, observer);
+        return alphaG2D.drawImage(img, x, y, bgcolor, observer);
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, ImageObserver observer)
     {
-        groupGraphics.drawImage(img, x, y, observer);
-        return alphaGraphics.drawImage(img, x, y, observer);
+        groupG2D.drawImage(img, x, y, observer);
+        return alphaG2D.drawImage(img, x, y, observer);
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height,
         Color bgcolor, ImageObserver observer)
     {
-        groupGraphics.drawImage(img, x, y, width, height, bgcolor, observer);
-        return alphaGraphics.drawImage(img, x, y, width, height, bgcolor, observer);
+        groupG2D.drawImage(img, x, y, width, height, bgcolor, observer);
+        return alphaG2D.drawImage(img, x, y, width, height, bgcolor, observer);
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer)
     {
-        groupGraphics.drawImage(img, x, y, width, height, observer);
-        return alphaGraphics.drawImage(img, x, y, width, height, observer);
+        groupG2D.drawImage(img, x, y, width, height, observer);
+        return alphaG2D.drawImage(img, x, y, width, height, observer);
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1,
         int sy1, int sx2, int sy2, Color bgcolor, ImageObserver observer)
     {
-        groupGraphics.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
-        return alphaGraphics.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
+        groupG2D.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
+        return alphaG2D.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, bgcolor, observer);
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1,
             int sy1, int sx2, int sy2, ImageObserver observer)
     {
-        groupGraphics.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
-        return alphaGraphics.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
+        groupG2D.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
+        return alphaG2D.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer);
     }
 
     @Override
     public void drawLine(int x1, int y1, int x2, int y2)
     {
-        groupGraphics.drawLine(x1, y1, x2, y2);
-        alphaGraphics.drawLine(x1, y1, x2, y2);
+        groupG2D.drawLine(x1, y1, x2, y2);
+        alphaG2D.drawLine(x1, y1, x2, y2);
     }
 
     @Override
     public void drawOval(int x, int y, int width, int height)
     {
-        groupGraphics.drawOval(x, y, width, height);
-        alphaGraphics.drawOval(x, y, width, height);
+        groupG2D.drawOval(x, y, width, height);
+        alphaG2D.drawOval(x, y, width, height);
     }
 
     @Override
     public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints)
     {
-        groupGraphics.drawPolygon(xPoints, yPoints, nPoints);
-        alphaGraphics.drawPolygon(xPoints, yPoints, nPoints);
+        groupG2D.drawPolygon(xPoints, yPoints, nPoints);
+        alphaG2D.drawPolygon(xPoints, yPoints, nPoints);
     }
 
     @Override
     public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints)
     {
-        groupGraphics.drawPolyline(xPoints, yPoints, nPoints);
-        alphaGraphics.drawPolyline(xPoints, yPoints, nPoints);
+        groupG2D.drawPolyline(xPoints, yPoints, nPoints);
+        alphaG2D.drawPolyline(xPoints, yPoints, nPoints);
     }
 
     @Override
     public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight)
     {
-        groupGraphics.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
-        alphaGraphics.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
+        groupG2D.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
+        alphaG2D.drawRoundRect(x, y, width, height, arcWidth, arcHeight);
     }
 
     @Override
     public void drawString(AttributedCharacterIterator iterator, int x, int y)
     {
-        groupGraphics.drawString(iterator, x, y);
-        alphaGraphics.drawString(iterator, x, y);
+        groupG2D.drawString(iterator, x, y);
+        alphaG2D.drawString(iterator, x, y);
     }
 
     @Override
     public void drawString(String str, int x, int y)
     {
-        groupGraphics.drawString(str, x, y);
-        alphaGraphics.drawString(str, x, y);
+        groupG2D.drawString(str, x, y);
+        alphaG2D.drawString(str, x, y);
     }
 
     @Override
     public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle)
     {
-        groupGraphics.fillArc(x, y, width, height, startAngle, arcAngle);
-        alphaGraphics.fillArc(x, y, width, height, startAngle, arcAngle);
+        groupG2D.fillArc(x, y, width, height, startAngle, arcAngle);
+        alphaG2D.fillArc(x, y, width, height, startAngle, arcAngle);
     }
 
     @Override
     public void fillOval(int x, int y, int width, int height)
     {
-        groupGraphics.fillOval(x, y, width, height);
-        alphaGraphics.fillOval(x, y, width, height);
+        groupG2D.fillOval(x, y, width, height);
+        alphaG2D.fillOval(x, y, width, height);
     }
 
     @Override
     public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints)
     {
-        groupGraphics.fillPolygon(xPoints, yPoints, nPoints);
-        alphaGraphics.fillPolygon(xPoints, yPoints, nPoints);
+        groupG2D.fillPolygon(xPoints, yPoints, nPoints);
+        alphaG2D.fillPolygon(xPoints, yPoints, nPoints);
     }
 
     @Override
     public void fillRect(int x, int y, int width, int height)
     {
-        groupGraphics.fillRect(x, y, width, height);
-        alphaGraphics.fillRect(x, y, width, height);
+        groupG2D.fillRect(x, y, width, height);
+        alphaG2D.fillRect(x, y, width, height);
     }
 
     @Override
     public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight)
     {
-        groupGraphics.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
-        alphaGraphics.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+        groupG2D.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
+        alphaG2D.fillRoundRect(x, y, width, height, arcWidth, arcHeight);
     }
 
     @Override
     public Shape getClip()
     {
-        return groupGraphics.getClip();
+        return groupG2D.getClip();
     }
 
     @Override
     public Rectangle getClipBounds()
     {
-        return groupGraphics.getClipBounds();
+        return groupG2D.getClipBounds();
     }
 
     @Override
     public Color getColor()
     {
-        return groupGraphics.getColor();
+        return groupG2D.getColor();
     }
 
     @Override
     public Font getFont()
     {
-        return groupGraphics.getFont();
+        return groupG2D.getFont();
     }
 
     @Override
     public FontMetrics getFontMetrics(Font f)
     {
-        return groupGraphics.getFontMetrics(f);
+        return groupG2D.getFontMetrics(f);
     }
 
     @Override
     public void setClip(int x, int y, int width, int height)
     {
-        groupGraphics.setClip(x, y, width, height);
-        alphaGraphics.setClip(x, y, width, height);
+        groupG2D.setClip(x, y, width, height);
+        alphaG2D.setClip(x, y, width, height);
     }
 
     @Override
     public void setClip(Shape clip)
     {
-        groupGraphics.setClip(clip);
-        alphaGraphics.setClip(clip);
+        groupG2D.setClip(clip);
+        alphaG2D.setClip(clip);
     }
 
     @Override
     public void setColor(Color c)
     {
-        groupGraphics.setColor(c);
-        alphaGraphics.setColor(c);
+        groupG2D.setColor(c);
+        alphaG2D.setColor(c);
     }
 
     @Override
     public void setFont(Font font)
     {
-        groupGraphics.setFont(font);
-        alphaGraphics.setFont(font);
+        groupG2D.setFont(font);
+        alphaG2D.setFont(font);
     }
 
     @Override
     public void setPaintMode()
     {
-        groupGraphics.setPaintMode();
-        alphaGraphics.setPaintMode();
+        groupG2D.setPaintMode();
+        alphaG2D.setPaintMode();
     }
 
     @Override
     public void setXORMode(Color c1)
     {
-        groupGraphics.setXORMode(c1);
-        alphaGraphics.setXORMode(c1);
+        groupG2D.setXORMode(c1);
+        alphaG2D.setXORMode(c1);
     }
 
     @Override
     public void translate(int x, int y)
     {
-        groupGraphics.translate(x, y);
-        alphaGraphics.translate(x, y);
+        groupG2D.translate(x, y);
+        alphaG2D.translate(x, y);
     }
 
     @Override
     public void addRenderingHints(Map<?,?> hints)
     {
-        groupGraphics.addRenderingHints(hints);
-        alphaGraphics.addRenderingHints(hints);
+        groupG2D.addRenderingHints(hints);
+        alphaG2D.addRenderingHints(hints);
     }
 
     @Override
     public void clip(Shape s)
     {
-        groupGraphics.clip(s);
-        alphaGraphics.clip(s);
+        groupG2D.clip(s);
+        alphaG2D.clip(s);
     }
 
     @Override
     public void draw(Shape s)
     {
-        groupGraphics.draw(s);
-        alphaGraphics.draw(s);
+        groupG2D.draw(s);
+        alphaG2D.draw(s);
     }
 
     @Override
     public void drawGlyphVector(GlyphVector g, float x, float y)
     {
-        groupGraphics.drawGlyphVector(g, x, y);
-        alphaGraphics.drawGlyphVector(g, x, y);
+        groupG2D.drawGlyphVector(g, x, y);
+        alphaG2D.drawGlyphVector(g, x, y);
     }
 
     @Override
     public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y)
     {
-        groupGraphics.drawImage(img, op, x, y);
-        alphaGraphics.drawImage(img, op, x, y);
+        groupG2D.drawImage(img, op, x, y);
+        alphaG2D.drawImage(img, op, x, y);
     }
 
     @Override
     public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs)
     {
-        groupGraphics.drawImage(img, xform, obs);
-        return alphaGraphics.drawImage(img, xform, obs);
+        groupG2D.drawImage(img, xform, obs);
+        return alphaG2D.drawImage(img, xform, obs);
     }
 
     @Override
     public void drawRenderableImage(RenderableImage img, AffineTransform xform)
     {
-        groupGraphics.drawRenderableImage(img, xform);
-        alphaGraphics.drawRenderableImage(img, xform);
+        groupG2D.drawRenderableImage(img, xform);
+        alphaG2D.drawRenderableImage(img, xform);
     }
 
     @Override
     public void drawRenderedImage(RenderedImage img, AffineTransform xform)
     {
-        groupGraphics.drawRenderedImage(img, xform);
-        alphaGraphics.drawRenderedImage(img, xform);
+        groupG2D.drawRenderedImage(img, xform);
+        alphaG2D.drawRenderedImage(img, xform);
     }
 
     @Override
     public void drawString(AttributedCharacterIterator iterator, float x, float y)
     {
-        groupGraphics.drawString(iterator, x, y);
-        alphaGraphics.drawString(iterator, x, y);
+        groupG2D.drawString(iterator, x, y);
+        alphaG2D.drawString(iterator, x, y);
     }
 
     @Override
     public void drawString(String str, float x, float y)
     {
-        groupGraphics.drawString(str, x, y);
-        alphaGraphics.drawString(str, x, y);
+        groupG2D.drawString(str, x, y);
+        alphaG2D.drawString(str, x, y);
     }
 
     @Override
     public void fill(Shape s)
     {
-        groupGraphics.fill(s);
-        alphaGraphics.fill(s);
+        groupG2D.fill(s);
+        alphaG2D.fill(s);
     }
 
     @Override
     public Color getBackground()
     {
-        return groupGraphics.getBackground();
+        return groupG2D.getBackground();
     }
 
     @Override
     public Composite getComposite()
     {
-        return groupGraphics.getComposite();
+        return groupG2D.getComposite();
     }
 
     @Override
     public GraphicsConfiguration getDeviceConfiguration()
     {
-        return groupGraphics.getDeviceConfiguration();
+        return groupG2D.getDeviceConfiguration();
     }
 
     @Override
     public FontRenderContext getFontRenderContext()
     {
-        return groupGraphics.getFontRenderContext();
+        return groupG2D.getFontRenderContext();
     }
 
     @Override
     public Paint getPaint()
     {
-        return groupGraphics.getPaint();
+        return groupG2D.getPaint();
     }
 
     @Override
     public Object getRenderingHint(RenderingHints.Key hintKey)
     {
-        return groupGraphics.getRenderingHint(hintKey);
+        return groupG2D.getRenderingHint(hintKey);
     }
 
     @Override
     public RenderingHints getRenderingHints()
     {
-        return groupGraphics.getRenderingHints();
+        return groupG2D.getRenderingHints();
     }
 
     @Override
     public Stroke getStroke()
     {
-        return groupGraphics.getStroke();
+        return groupG2D.getStroke();
     }
 
     @Override
     public AffineTransform getTransform()
     {
-        return groupGraphics.getTransform();
+        return groupG2D.getTransform();
     }
 
     @Override
     public boolean hit(Rectangle rect, Shape s, boolean onStroke)
     {
-        return groupGraphics.hit(rect, s, onStroke);
+        return groupG2D.hit(rect, s, onStroke);
     }
 
     @Override
     public void rotate(double theta)
     {
-        groupGraphics.rotate(theta);
-        alphaGraphics.rotate(theta);
+        groupG2D.rotate(theta);
+        alphaG2D.rotate(theta);
     }
 
     @Override
     public void rotate(double theta, double x, double y)
     {
-        groupGraphics.rotate(theta, x, y);
-        alphaGraphics.rotate(theta, x, y);
+        groupG2D.rotate(theta, x, y);
+        alphaG2D.rotate(theta, x, y);
     }
 
     @Override
     public void scale(double sx, double sy)
     {
-        groupGraphics.scale(sx, sy);
-        alphaGraphics.scale(sx, sy);
+        groupG2D.scale(sx, sy);
+        alphaG2D.scale(sx, sy);
     }
 
     @Override
     public void setBackground(Color color)
     {
-        groupGraphics.setBackground(color);
-        alphaGraphics.setBackground(color);
+        groupG2D.setBackground(color);
+        alphaG2D.setBackground(color);
     }
 
     @Override
     public void setComposite(Composite comp)
     {
-        groupGraphics.setComposite(comp);
-        alphaGraphics.setComposite(comp);
+        groupG2D.setComposite(comp);
+        alphaG2D.setComposite(comp);
     }
 
     @Override
     public void setPaint(Paint paint)
     {
-        groupGraphics.setPaint(paint);
-        alphaGraphics.setPaint(paint);
+        groupG2D.setPaint(paint);
+        alphaG2D.setPaint(paint);
     }
 
     @Override
     public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue)
     {
-        groupGraphics.setRenderingHint(hintKey, hintValue);
-        alphaGraphics.setRenderingHint(hintKey, hintValue);
+        groupG2D.setRenderingHint(hintKey, hintValue);
+        alphaG2D.setRenderingHint(hintKey, hintValue);
     }
 
     @Override
     public void setRenderingHints(Map<?, ?> hints)
     {
-        groupGraphics.setRenderingHints(hints);
-        alphaGraphics.setRenderingHints(hints);
+        groupG2D.setRenderingHints(hints);
+        alphaG2D.setRenderingHints(hints);
     }
 
     @Override
     public void setStroke(Stroke s)
     {
-        groupGraphics.setStroke(s);
-        alphaGraphics.setStroke(s);
+        groupG2D.setStroke(s);
+        alphaG2D.setStroke(s);
     }
 
     @Override
     public void setTransform(AffineTransform tx)
     {
-        groupGraphics.setTransform(tx);
-        alphaGraphics.setTransform(tx);
+        groupG2D.setTransform(tx);
+        alphaG2D.setTransform(tx);
     }
 
     @Override
     public void shear(double shx, double shy)
     {
-        groupGraphics.shear(shx, shy);
-        alphaGraphics.shear(shx, shy);
+        groupG2D.shear(shx, shy);
+        alphaG2D.shear(shx, shy);
     }
 
     @Override
     public void transform(AffineTransform tx)
     {
-        groupGraphics.transform(tx);
-        alphaGraphics.transform(tx);
+        groupG2D.transform(tx);
+        alphaG2D.transform(tx);
     }
 
     @Override
     public void translate(double tx, double ty)
     {
-        groupGraphics.translate(tx, ty);
-        alphaGraphics.translate(tx, ty);
+        groupG2D.translate(tx, ty);
+        alphaG2D.translate(tx, ty);
     }
 
     /**
