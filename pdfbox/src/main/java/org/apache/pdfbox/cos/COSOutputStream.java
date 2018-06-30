@@ -93,7 +93,7 @@ public final class COSOutputStream extends FilterOutputStream
             filters.get(i).encode(input, buffer, parameters, i);
         }
         // flush the entire stream
-        out.write(buffer.toByteArray());
+        buffer.writeTo(out);
         super.close();
         buffer = null;
     }
