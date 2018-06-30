@@ -96,10 +96,11 @@ public class ValidateXImage
 
         PDPage page = new PDPage();
         document.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false);
-        contentStream.drawImage(ximage, 150, 300);
-        contentStream.drawImage(ximage, 200, 350);
-        contentStream.close();
+        try (PDPageContentStream contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, false))
+        {
+            contentStream.drawImage(ximage, 150, 300);
+            contentStream.drawImage(ximage, 200, 350);
+        }
         
         // check that the resource map is up-to-date
         assertEquals(1, count(document.getPage(0).getResources().getXObjectNames()));
@@ -143,13 +144,10 @@ public class ValidateXImage
             {
                 if (expectedImage.getRGB(x, y) != actualImage.getRGB(x, y))
                 {
-                    errMsg = String.format("(%d,%d) %08X != %08X", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+                    errMsg = String.format("(%d,%d) expected: <%08X> but was: <%08X>; ", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
                 }
                 assertEquals(errMsg, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
             }
         }
     }
-
-    
-
 }
