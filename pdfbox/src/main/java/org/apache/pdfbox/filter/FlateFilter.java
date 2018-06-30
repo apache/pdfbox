@@ -118,16 +118,7 @@ final class FlateFilter extends Filter
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
     {
-        int compressionLevel = Deflater.DEFAULT_COMPRESSION;
-        try
-        {
-            compressionLevel = Integer.parseInt(System.getProperty(Filter.SYSPROP_DEFLATELEVEL, "-1"));
-        }
-        catch (NumberFormatException ex)
-        {
-            LOG.warn(ex.getMessage(), ex);
-        }
-        compressionLevel = Math.max(-1, Math.min(Deflater.BEST_COMPRESSION, compressionLevel));
+        int compressionLevel = getCompressionLevel();
         Deflater deflater = new Deflater(compressionLevel);
         DeflaterOutputStream out = new DeflaterOutputStream(encoded, deflater);
         int amountRead;
