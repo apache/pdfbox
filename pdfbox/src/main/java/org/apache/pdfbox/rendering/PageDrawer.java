@@ -44,8 +44,11 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
@@ -53,11 +56,14 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
+import org.apache.pdfbox.pdmodel.graphics.PDXObject;
+import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -69,6 +75,7 @@ import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
@@ -127,6 +134,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private final TilingPaintFactory tilingPaintFactory = new TilingPaintFactory(this);
     
+    private final Stack<TransparencyGroup> transparencyGroupStack = new Stack<>();
+
     /**
     * Default annotations filter, returns all annotations
     */
@@ -1272,6 +1281,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         private final int minX;
         private final int minY;
+        private final int maxX;
+        private final int maxY;
         private final int width;
         private final int height;
 
@@ -1309,6 +1320,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 bbox = null;
                 minX = 0;
                 minY = 0;
+                maxX = 0;
+                maxY = 0;
                 width = 0;
                 height = 0;
                 return;
@@ -1323,8 +1336,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             minX = (int) Math.floor(bounds.getMinX());
             minY = (int) Math.floor(bounds.getMinY());
-            int maxX = (int) Math.floor(bounds.getMaxX()) + 1;
-            int maxY = (int) Math.floor(bounds.getMaxY()) + 1;
+            maxX = (int) Math.floor(bounds.getMaxX()) + 1;
+            maxY = (int) Math.floor(bounds.getMaxY()) + 1;
 
             width = maxX - minX;
             height = maxY - minY;
@@ -1338,7 +1351,40 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             }
+
+            boolean needsBackdrop = !isSoftMask && !form.getGroup().isIsolated() &&
+                hasBlendMode(form, new HashSet<COSBase>());
+            BufferedImage backdropImage = null;
+            // Position of this group in parent group's coordinates
+            int backdropX = 0;
+            int backdropY = 0;
+            if (needsBackdrop)
+            {
+                if (transparencyGroupStack.isEmpty())
+                {
+                    // Use the current page as the parent group.
+                    backdropImage = renderer.getPageImage();
+                    needsBackdrop = backdropImage != null;
+                    backdropX = minX;
+                    backdropY = (backdropImage != null) ? (backdropImage.getHeight() - maxY) : 0;
+                }
+                else
+                {
+                    TransparencyGroup parentGroup = transparencyGroupStack.peek();
+                    backdropImage = parentGroup.image;
+                    backdropX = minX - parentGroup.minX;
+                    backdropY = parentGroup.maxY - maxY;
+                }
+            }
+
             Graphics2D g = image.createGraphics();
+            if (needsBackdrop)
+            {
+                // backdropImage must be included in group image but not in group alpha.
+                g.drawImage(backdropImage, 0, 0, width, height,
+                    backdropX, backdropY, backdropX + width, backdropY + height, null);
+                g = new GroupGraphics(image, g);
+            }
             if (isSoftMask && backdropColor != null)
             {
                 // "If the subtype is Luminosity, the transparency group XObject G shall be 
@@ -1386,7 +1432,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
                 else
                 {
+                    transparencyGroupStack.push(this);
                     processTransparencyGroup(form);
+                    if (!transparencyGroupStack.isEmpty())
+                    {
+                        transparencyGroupStack.pop();
+                    }
                 }
             }
             finally 
@@ -1400,6 +1451,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 pageSize = pageSizeOriginal;
                 xform = xformOriginal;
                 pageRotation = pageRotationOriginal;
+            }
+
+            if (needsBackdrop)
+            {
+                ((GroupGraphics) g).removeBackdrop(backdropImage, backdropX, backdropY);
             }
         }
 
@@ -1475,5 +1531,55 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     size.getY() - minY - height + pageSize.getLowerLeftY() * m.getScalingFactorY(),
                     width, height);
         }
+    }
+
+    private boolean hasBlendMode(PDTransparencyGroup group, Set<COSBase> groupsDone)
+    {
+        if (groupsDone.contains(group.getCOSObject()))
+        {
+            // The group was already processed. Avoid endless recursion.
+            return false;
+        }
+        groupsDone.add(group.getCOSObject());
+
+        PDResources resources = group.getResources();
+        if (resources == null)
+        {
+            return false;
+        }
+        for (COSName name : resources.getExtGStateNames())
+        {
+            PDExtendedGraphicsState extGState = resources.getExtGState(name);
+            if (extGState == null)
+            {
+                continue;
+            }
+            BlendMode blendMode = extGState.getBlendMode();
+            if (blendMode != BlendMode.NORMAL)
+            {
+                return true;
+            }
+        }
+
+        // Recursively process nested transparency groups
+        for (COSName name : resources.getXObjectNames())
+        {
+            PDXObject xObject;
+            try
+            {
+                xObject = resources.getXObject(name);
+            }
+            catch (IOException ex)
+            {
+                continue;
+            }
+            if (xObject instanceof PDTransparencyGroup &&
+                hasBlendMode((PDTransparencyGroup)xObject, groupsDone))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
