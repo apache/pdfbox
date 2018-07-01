@@ -19,17 +19,33 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Point;
 import java.awt.Transparency;
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
+import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
@@ -169,7 +185,7 @@ public class LosslessFactoryTest extends TestCase
      */
     public void testCreateLosslessFromImageBITMASK4BYTE_ABGR() throws IOException
     {
-        doBitmaskTransparencyTest(BufferedImage.TYPE_INT_ARGB, "bitmask4babgr.pdf");
+        doBitmaskTransparencyTest(BufferedImage.TYPE_4BYTE_ABGR, "bitmask4babgr.pdf");
     }
 
     /**
@@ -399,4 +415,123 @@ public class LosslessFactoryTest extends TestCase
         document.close();
     }
 
+    /**
+     * Test lossless encoding of CMYK images
+     */
+    public void testCreateLosslessFromImageCMYK() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
+        final ColorSpace targetCS = new ICC_ColorSpace(ICC_Profile
+                .getInstance(this.getClass().getResourceAsStream("/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc")));
+        ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
+        BufferedImage imageCMYK = op.filter(image, null);
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, imageCMYK);
+        validate(ximage, 8, imageCMYK.getWidth(), imageCMYK.getHeight(), "png", PDDeviceCMYK.INSTANCE.getName());
+
+        doWritePDF(document, ximage, testResultsDir, "cmyk.pdf");
+
+        // The image in CMYK got color-truncated because the ISO_Coated colorspace is way smaller 
+        // than the sRGB colorspace. The image is converted back to sRGB when calling PDImageXObject.getImage().
+        // So to be able to check the image data we must also convert our CMYK Image back to sRGB
+        //BufferedImage compareImageRGB = new BufferedImage(imageCMYK.getWidth(), imageCMYK.getHeight(),
+        //BufferedImage.TYPE_INT_BGR);
+        //Graphics2D graphics = compareImageRGB.createGraphics();
+        //graphics.drawImage(imageCMYK, 0, 0, null);
+        //graphics.dispose();
+        //ImageIO.write(compareImageRGB, "TIFF", new File("/tmp/compare.tiff"));
+        //ImageIO.write(ximage.getImage(), "TIFF", new File("/tmp/compare2.tiff"));
+        //checkIdent(compareImageRGB, ximage.getImage());
+    }
+
+    public void testCreateLosslessFrom16Bit() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
+        ColorSpace targetCS = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        int dataBufferType = DataBuffer.TYPE_USHORT;
+        final ColorModel colorModel = new ComponentColorModel(targetCS, false, false,
+                ColorModel.OPAQUE, dataBufferType);
+        WritableRaster targetRaster = Raster.createInterleavedRaster(dataBufferType, image.getWidth(), image.getHeight(),
+                targetCS.getNumComponents(), new Point(0, 0));
+        BufferedImage img16Bit = new BufferedImage(colorModel, targetRaster, false, new Hashtable());
+        ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
+        op.filter(image, img16Bit);
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, img16Bit);
+        validate(ximage, 16, img16Bit.getWidth(), img16Bit.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(image, ximage.getImage());
+        doWritePDF(document, ximage, testResultsDir, "misc-16bit.pdf");
+    }
+
+    public void testCreateLosslessFromImageINT_BGR() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
+        BufferedImage imgBgr = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_BGR);
+        Graphics2D graphics = imgBgr.createGraphics();
+        graphics.drawImage(image, 0, 0, null);
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgBgr);
+        validate(ximage, 8, imgBgr.getWidth(), imgBgr.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(image, ximage.getImage());
+    }
+
+    public void testCreateLosslessFromImageINT_RGB() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
+        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = imgRgb.createGraphics();
+        graphics.drawImage(image, 0, 0, null);
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(image, ximage.getImage());
+    }
+
+    public void testCreateLosslessFromImageBYTE_3BGR() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
+        BufferedImage imgRgb = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        Graphics2D graphics = imgRgb.createGraphics();
+        graphics.drawImage(image, 0, 0, null);
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, imgRgb);
+        validate(ximage, 8, imgRgb.getWidth(), imgRgb.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(image, ximage.getImage());
+    }
+
+    public void testCreateLosslessFrom16BitPNG() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(new File("target/imgs", "PDFBOX-4184-16bit.png"));
+
+        assertEquals(64, image.getColorModel().getPixelSize());
+        assertEquals(Transparency.TRANSLUCENT, image.getColorModel().getTransparency());
+        assertEquals(4, image.getRaster().getNumDataElements());
+        assertEquals(java.awt.image.DataBuffer.TYPE_USHORT, image.getRaster().getDataBuffer().getDataType());
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
+
+        int w = image.getWidth();
+        int h = image.getHeight();
+        validate(ximage, 16, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+        System.out.println(ximage.getImage());
+        checkIdent(image, ximage.getImage());
+        checkIdentRGB(image, ximage.getOpaqueImage());
+
+        assertNotNull(ximage.getSoftMask());
+        validate(ximage.getSoftMask(), 16, w, h, "png", PDDeviceGray.INSTANCE.getName());
+        assertEquals(35, colorCount(ximage.getSoftMask().getImage()));
+
+        doWritePDF(document, ximage, testResultsDir, "png16bit.pdf");
+    }
 }
