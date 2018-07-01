@@ -420,6 +420,25 @@
                             <sha512>35241c979d3808ca9d2641b5ec5e40637132b313f75070faca8b8f6d00ddce394070414236db3993f1092fe3bc16995750d528b6d803a7851423c14c308ccdde</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4184-2</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12929821/16bit.png</url>
+                            <!--
+                            originally from
+                            https://github.com/danfickle/openhtmltopdf/issues/173
+                            see "blurred" image link
+                            https://user-images.githubusercontent.com/29379074/36145630-f304cd0e-10d7-11e8-942c-66eb8040be70.png
+                            -->
+                            <outputDirectory>${project.build.directory}/imgs</outputDirectory>
+                            <outputFileName>PDFBOX-4184-16bit.png</outputFileName>
+                            <sha512>45f148913590ea1a94c3ac17080969b74e579fe51967a5bf535caa3f7104ea81ee222b99deb8ee528b0a53640f97d87cf668633a1bdd61a62092246df1807471</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
