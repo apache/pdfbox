@@ -524,7 +524,6 @@ public class LosslessFactoryTest extends TestCase
         int w = image.getWidth();
         int h = image.getHeight();
         validate(ximage, 16, w, h, "png", PDDeviceRGB.INSTANCE.getName());
-        System.out.println(ximage.getImage());
         checkIdent(image, ximage.getImage());
         checkIdentRGB(image, ximage.getOpaqueImage());
 
