@@ -277,6 +277,8 @@ public class LosslessFactoryTest extends TestCase
         PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
         validate(ximage, 8, image.getWidth(), image.getHeight(), "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage.getImage());
+
+        doWritePDF(document, ximage, testResultsDir, "PDFBOX-4184-032163.pdf");
     }
 
     /**
