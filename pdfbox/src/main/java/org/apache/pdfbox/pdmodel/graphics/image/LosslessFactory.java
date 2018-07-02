@@ -308,9 +308,10 @@ public final class LosslessFactory
             Raster imageRaster = image.getRaster();
             final int elementsInRowPerPixel;
 
-            // This variable store a row of the image each, the exact type depends
+            // These variables store a row of the image each, the exact type depends
             // on the image encoding. Can be a int[], short[] or byte[]
-            Object prevRow, transferRow;
+            Object prevRow;
+            Object transferRow;
 
             switch (imageType)
             {
@@ -456,12 +457,10 @@ public final class LosslessFactory
                 // Write and compress the row as long it is hot (CPU cache wise)
                 zip.write(rowToWrite, 0, rowToWrite.length);
 
-                {
-                    // We swap prev and transfer row, so that we have the prev row for the next row.
-                    Object temp = prevRow;
-                    prevRow = transferRow;
-                    transferRow = temp;
-                }
+                // We swap prev and transfer row, so that we have the prev row for the next row.
+                Object temp = prevRow;
+                prevRow = transferRow;
+                transferRow = temp;
             }
             zip.close();
             deflater.end();
@@ -473,21 +472,18 @@ public final class LosslessFactory
                 byte[] alphaImageData, int alphaPtr)
         {
             int val = transferRow[indexInTranferRow];
-            byte b0 = (byte) ((val & 0xFF));
+            byte b0 = (byte) (val & 0xFF);
             byte b1 = (byte) ((val >> 8) & 0xFF);
             byte b2 = (byte) ((val >> 16) & 0xFF);
 
             switch (imageType)
             {
                 case BufferedImage.TYPE_INT_BGR:
-                {
                     targetValues[0] = b0;
                     targetValues[1] = b1;
                     targetValues[2] = b2;
                     break;
-                }
                 case BufferedImage.TYPE_INT_ARGB:
-                {
                     targetValues[0] = b2;
                     targetValues[1] = b1;
                     targetValues[2] = b0;
@@ -497,7 +493,6 @@ public final class LosslessFactory
                         alphaImageData[alphaPtr] = b3;
                     }
                     break;
-                }
                 case BufferedImage.TYPE_INT_RGB:
                     targetValues[0] = b2;
                     targetValues[1] = b1;
@@ -519,15 +514,16 @@ public final class LosslessFactory
         private static void copyShortsToBytes(short[] transferRow, int indexInTranferRow,
                 byte[] targetValues, byte[] alphaImageData, int alphaPtr)
         {
-            for (int i = 0; i < targetValues.length;)
+            int itr = indexInTranferRow;
+            for (int i = 0; i < targetValues.length; i += 2)
             {
-                short val = transferRow[indexInTranferRow++];
-                targetValues[i++] = (byte) ((val >> 8) & 0xFF);
-                targetValues[i++] = (byte) (val & 0xFF);
+                short val = transferRow[itr++];
+                targetValues[i] = (byte) ((val >> 8) & 0xFF);
+                targetValues[i + 1] = (byte) (val & 0xFF);
             }
             if (alphaImageData != null)
             {
-                short alpha = transferRow[indexInTranferRow];
+                short alpha = transferRow[itr];
                 alphaImageData[alphaPtr] = (byte) ((alpha >> 8) & 0xFF);
                 alphaImageData[alphaPtr + 1] = (byte) (alpha & 0xFF);
             }
@@ -546,8 +542,7 @@ public final class LosslessFactory
             // Encode the image profile if the image has one
             if (srcCspace instanceof ICC_ColorSpace)
             {
-                ICC_ColorSpace icc_colorSpace = (ICC_ColorSpace) srcCspace;
-                ICC_Profile profile = icc_colorSpace.getProfile();
+                ICC_Profile profile = ((ICC_ColorSpace) srcCspace).getProfile();
                 // We only encode a color profile if it is not sRGB
                 if (profile != ICC_Profile.getInstance(ColorSpace.CS_sRGB))
                 {
@@ -645,21 +640,21 @@ public final class LosslessFactory
             int pa = Math.abs(p - a);
             int pb = Math.abs(p - b);
             int pc = Math.abs(p - c);
-            final int Pr;
+            final int pr;
             if (pa <= pb && pa <= pc)
             {
-                Pr = a;
+                pr = a;
             }
             else if (pb <= pc)
             {
-                Pr = b;
+                pr = b;
             }
             else
             {
-                Pr = c;
+                pr = c;
             }
 
-            int r = x - Pr;
+            int r = x - pr;
             return (byte) (r);
         }
 
