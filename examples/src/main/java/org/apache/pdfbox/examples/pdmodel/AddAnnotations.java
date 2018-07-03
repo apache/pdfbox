@@ -18,6 +18,9 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.IOException;
 import java.util.List;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -31,6 +34,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
@@ -70,6 +74,7 @@ public final class AddAnnotations
             // Some basic reusable objects/constants
             // Annotations themselves can only be used once!
             PDColor red = new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE);
+            PDColor green = new PDColor(new float[] { 0, 1, 0 }, PDDeviceRGB.INSTANCE);
             PDColor blue = new PDColor(new float[] { 0, 0, 1 }, PDDeviceRGB.INSTANCE);
             PDColor black = new PDColor(new float[] { 0, 0, 0 }, PDDeviceRGB.INSTANCE);
 
@@ -235,8 +240,30 @@ public final class AddAnnotations
             dest.setPage(page3);
             actionGoto.setDestination(dest);
             pageLink.setAction(actionGoto);
-            annotations.add(pageLink);      
-            
+            annotations.add(pageLink);
+
+            // create a polygon annotation. Yes this is clunky, it will be easier in 3.0
+            PDAnnotationMarkup polygon = new PDAnnotationMarkup();
+            polygon.getCOSObject().setName(COSName.SUBTYPE, PDAnnotationMarkup.SUB_TYPE_POLYGON);
+            position = new PDRectangle();
+            position.setLowerLeftX(pw - INCH);
+            position.setLowerLeftY(ph - INCH);
+            position.setUpperRightX(pw - 2 * INCH);
+            position.setUpperRightY(ph - 2 * INCH);
+            polygon.setRectangle(position);
+            polygon.setColor(blue); // border color
+            polygon.getCOSObject().setItem(COSName.IC, green.toCOSArray()); // interior color
+            COSArray verticesArray = new COSArray();
+            verticesArray.add(new COSFloat(pw - INCH));
+            verticesArray.add(new COSFloat(ph - 2 * INCH));
+            verticesArray.add(new COSFloat(pw - INCH * 1.5f));
+            verticesArray.add(new COSFloat(ph - INCH));
+            verticesArray.add(new COSFloat(pw - 2 * INCH));
+            verticesArray.add(new COSFloat(ph - 2 * INCH));
+            polygon.getCOSObject().setItem(COSName.VERTICES, verticesArray);
+            polygon.setBorderStyle(borderThick);
+            polygon.setContents("Polygon annotation");
+            annotations.add(polygon);
 
             showPageNo(document, page1, "Page 1");
             showPageNo(document, page2, "Page 2");
