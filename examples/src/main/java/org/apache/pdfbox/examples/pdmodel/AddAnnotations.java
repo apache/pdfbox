@@ -77,6 +77,7 @@ public final class AddAnnotations
             // Annotations themselves can only be used once!
             PDColor red = new PDColor(new float[] { 1, 0, 0 }, PDDeviceRGB.INSTANCE);
             PDColor blue = new PDColor(new float[] { 0, 0, 1 }, PDDeviceRGB.INSTANCE);
+            PDColor green = new PDColor(new float[] { 0, 1, 0 }, PDDeviceRGB.INSTANCE);
             PDColor black = new PDColor(new float[] { 0, 0, 0 }, PDDeviceRGB.INSTANCE);
 
             PDBorderStyleDictionary borderThick = new PDBorderStyleDictionary();
@@ -269,6 +270,24 @@ public final class AddAnnotations
             freeTextAnnotation.setQ(PDVariableText.QUADDING_RIGHT);
             annotations.add(freeTextAnnotation);
 
+            PDAnnotationPolygon polygon = new PDAnnotationPolygon();
+            position = new PDRectangle();
+            position.setLowerLeftX(pw - INCH);
+            position.setLowerLeftY(ph - INCH);
+            position.setUpperRightX(pw - 2 * INCH);
+            position.setUpperRightY(ph - 2 * INCH);
+            polygon.setRectangle(position);
+            polygon.setColor(blue);
+            polygon.setInteriorColor(green);
+            float[] vertices = { pw - INCH,        ph - 2 * INCH, 
+                                 pw - 1.5f * INCH, ph - INCH, 
+                                 pw - 2 * INCH,    ph - 2 * INCH };            
+            polygon.setVertices(vertices);
+            polygon.setBorderStyle(borderThick);
+            polygon.setContents("Polygon annotation");
+            annotations.add(polygon);
+
+
             // add the "Helv" font to the default resources
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             if (acroForm == null)
@@ -283,7 +302,7 @@ public final class AddAnnotations
                 acroForm.setDefaultResources(dr);
             }
             dr.put(COSName.getPDFName("Helv"), PDType1Font.HELVETICA);
-            
+
             // Create the appearance streams.
             // Adobe Reader will always display annotations without appearance streams nicely,
             // but other applications may not.
