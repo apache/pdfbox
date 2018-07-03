@@ -85,8 +85,8 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
             }
         }
 
-        rect.setLowerLeftX(Math.min(minX - lineWidth / 2, rect.getLowerLeftX()));
-        rect.setLowerLeftY(Math.min(minY - lineWidth / 2, rect.getLowerLeftY()));
+        rect.setLowerLeftX(Math.min(minX - lineWidth, rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - lineWidth, rect.getLowerLeftY()));
         rect.setUpperRightX(Math.max(maxX + lineWidth, rect.getUpperRightX()));
         rect.setUpperRightY(Math.max(maxY + lineWidth, rect.getUpperRightY()));
         annotation.setRectangle(rect);
@@ -154,6 +154,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
                         }
                     }
                 }
+                contentStream.closePath();
             }
             contentStream.drawShape(lineWidth, hasStroke, hasBackground);
         }
