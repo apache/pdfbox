@@ -86,8 +86,8 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
         }
         rect.setLowerLeftX(Math.min(minX - ab.width / 2, rect.getLowerLeftX()));
         rect.setLowerLeftY(Math.min(minY - ab.width / 2, rect.getLowerLeftY()));
-        rect.setUpperRightX(Math.max(maxX + ab.width, rect.getUpperRightX()));
-        rect.setUpperRightY(Math.max(maxY + ab.width, rect.getUpperRightY()));
+        rect.setUpperRightX(Math.max(maxX + ab.width / 2, rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + ab.width / 2, rect.getUpperRightY()));
         annotation.setRectangle(rect);
 
         try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
