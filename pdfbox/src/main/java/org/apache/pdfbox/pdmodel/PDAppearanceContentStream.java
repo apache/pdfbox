@@ -26,7 +26,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
- * Provides the ability to write to a page content stream.
+ * Provides the ability to write to an appearance content stream.
  *
  * @author Ben Litchfield
  */
@@ -37,8 +37,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      *
      * @param appearance
      *            The appearance stream to write to.
-     * @throws IOException
-     *             If there is an error writing to the page contents.
+     * @throws IOException If there is an error writing to the content stream.
      */
     public PDAppearanceContentStream(PDAppearanceStream appearance) throws IOException
     {
@@ -46,8 +45,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     }
 
     /**
-     * Create a new appearance stream. Note that this is not actually a "page"
-     * content stream.
+     * Create a new appearance stream.
      *
      * @param appearance
      *            The appearance stream to add to.
@@ -64,8 +62,10 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * 
      * <p>
      * The command is only emitted if the color is not null and the number of
-     * components is gt 0.
+     * components is &gt; 0.
      * 
+     * @param color The colorspace to write.
+     * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setStrokingColor(PDColor)
      */
     public boolean setStrokingColorOnDemand(PDColor color) throws IOException
@@ -88,8 +88,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @see PDAbstractContentStream#setStrokingColor(java.awt.Color)
      * @param components
      *            the color components dependent on the color space being used.
-     * @throws IOException
-     *             if an IO error occurs while writing to the stream.
+     * @throws IOException If there is an error writing to the content stream.
      */
     public void setStrokingColor(float[] components) throws IOException
     {
@@ -120,8 +119,10 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * 
      * <p>
      * The command is only emitted if the color is not null and the number of
-     * components is gt 0.
+     * components is &gt; 0.
      * 
+     * @param color The colorspace to write.
+     * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setNonStrokingColor(PDColor)
      */
     public boolean setNonStrokingColorOnDemand(PDColor color) throws IOException
@@ -144,8 +145,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @see PDAbstractContentStream#setNonStrokingColor(java.awt.Color)
      * @param components
      *            the color components dependent on the color space being used.
-     * @throws IOException
-     *             if an IO error occurs while writing to the stream.
+     * @throws IOException If there is an error writing to the content stream.
      */
     public void setNonStrokingColor(float[] components) throws IOException
     {
@@ -188,7 +188,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * different to 1.
      * 
      * @param lineWidth the line width of the path.
-     * @throws java.io.IOException
+     * @throws IOException If there is an error writing to the content stream.
      * @see PDAbstractContentStream#setLineWidth(float)
      */
     public void setLineWidthOnDemand(float lineWidth) throws IOException
@@ -212,7 +212,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
      * @param lineWidth the line width of the path.
      * @param hasStroke shall there be a stroking color.
      * @param hasFill shall there be a fill color.
-     * @throws IOException if an IO error occurs while writing to the stream.
+     * @throws IOException If there is an error writing to the content stream.
      */
     public void drawShape(float lineWidth, boolean hasStroke, boolean hasFill) throws IOException
     {
