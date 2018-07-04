@@ -201,8 +201,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * @param ttf
      * @param embedSubset
      * @param closeTTF whether to close the ttf parameter after embedding. Must be true when the ttf
-     * parameter was created in the load(), false when the ttf parameter was passed to the load()
-     * method.
+     * parameter was created in the load() method, false when the ttf parameter was passed to the
+     * load() method.
      * @param vertical
      * @throws IOException
      */
