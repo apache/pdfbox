@@ -15,7 +15,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,7 +122,10 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                     cs.lineTo(x, y);
                 }
             }
-            cs.stroke();
+            if (pathsArray.length > 0)
+            {
+                cs.stroke();
+            }
 
             // paint the styles here and after line(s) draw, to avoid line crossing a filled shape       
             if ("FreeTextCallout".equals(annotation.getIntent())
@@ -154,19 +156,19 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 cs.restoreGraphicsState();
             }
 
-
-
-            //TODO this segment was copied from square handler. Refactor?
+            PDRectangle borderBox;
             PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
+                //TODO this segment was copied from square handler. Refactor?
                 CloudyBorder cloudyBorder = new CloudyBorder(cs,
                     borderEffect.getIntensity(), ab.width, getRectangle());
                 cloudyBorder.createCloudyRectangle(annotation.getRectDifference());
                 annotation.setRectangle(cloudyBorder.getRectangle());
                 annotation.setRectDifference(cloudyBorder.getRectDifference());
                 PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-                appearanceStream.setBBox(cloudyBorder.getBBox());
+                borderBox = cloudyBorder.getBBox();
+                appearanceStream.setBBox(borderBox);
                 appearanceStream.setMatrix(cloudyBorder.getMatrix());
             }
             else
@@ -177,30 +179,18 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 // implementation specific to Adobe Reader
                 // - if /RD is set the border box is the /Rect entry inset by the respective
                 //   border difference.
-                // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
-                //   be set to be the line width and the /Rect is enlarged by the /RD amount
-
-                PDRectangle borderBox;
+                // - if /RD is not set then we don't touch /RD etc because Adobe doesn't either.
                 float[] rectDifferences = annotation.getRectDifferences();
                 if (rectDifferences.length == 0)
                 {
-                    borderBox = getPaddedRectangle(getRectangle(), ab.width/2);
-                    // the differences rectangle
-                    annotation.setRectDifferences(ab.width/2);
-                    annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
-
-                    // when the normal appearance stream was generated BBox and Matrix have been set to the
-                    // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
-                    annotation.getNormalAppearanceStream().setBBox(getRectangle());
-                    AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
-                            -getRectangle().getLowerLeftY());
-                    annotation.getNormalAppearanceStream().setMatrix(transform);
+                    borderBox = getRectangle();
                 }
                 else
                 {
                     borderBox = applyRectDifferences(getRectangle(), rectDifferences);
-                    borderBox = getPaddedRectangle(borderBox, ab.width/2);
+                    annotation.getNormalAppearanceStream().setBBox(borderBox);
                 }
+                borderBox = getPaddedRectangle(borderBox, ab.width / 2);
                 cs.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
                         borderBox.getWidth(), borderBox.getHeight());
             }
@@ -212,45 +202,49 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             cs.transform(Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0));
             float xOffset;
             float yOffset;
-            float width = rotation == 90 || rotation == 270 ? getRectangle().getHeight(): getRectangle().getWidth();
+            float width = rotation == 90 || rotation == 270 ? borderBox.getHeight(): borderBox.getWidth();
             // somewhat inspired by AppearanceGeneratorHelper.insertGeneratedAppearance()
             cs.beginText();
             PDFont font = PDType1Font.HELVETICA;
             int factor = 1;
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
+                //TODO cloudy needs to be reviewed too.
                 factor = 2;
             }
             float fontSize = extractFontSize(annotation);
+            // used by Adobe, no idea where it comes from, actual font bbox max y is 0.931
+            // gathered by creating an annotation with width 0.
+            float yDelta = 0.7896f;
             switch (rotation)
             {
                 case 180:
-                    xOffset = - getRectangle().getUpperRightX() + fontSize / 2 * factor; 
-                    yOffset = - getRectangle().getLowerLeftY() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    xOffset = - borderBox.getUpperRightX() + ab.width * 2 * factor; 
+                    yOffset = - borderBox.getLowerLeftY() - ab.width * 2 * factor - yDelta * fontSize * factor;
                     break;
                 case 90:
-                    xOffset = getRectangle().getLowerLeftY() + fontSize / 2 * factor;
-                    yOffset = - getRectangle().getLowerLeftX() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    xOffset = borderBox.getLowerLeftY() + ab.width * 2 * factor;
+                    yOffset = - borderBox.getLowerLeftX() - ab.width * 2 * factor - yDelta * fontSize * factor;
                     break;
                 case 270:
-                    xOffset = - getRectangle().getUpperRightY() + fontSize / 2 * factor;
-                    yOffset = getRectangle().getUpperRightX() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    xOffset = - borderBox.getUpperRightY() + ab.width * 2 * factor;
+                    yOffset = borderBox.getUpperRightX() - ab.width * 2 * factor - yDelta * fontSize * factor;
                     break;
                 case 0:
                 default:
-                    xOffset = getRectangle().getLowerLeftX() + fontSize / 2 * factor;
-                    yOffset = getRectangle().getUpperRightY() - font.getBoundingBox().getHeight() * fontSize / 1000 * factor;
+                    xOffset = borderBox.getLowerLeftX() + ab.width * 2 * factor;
+                    yOffset = borderBox.getUpperRightY() - ab.width * 2 * factor - yDelta * fontSize * factor;
                     break;
             }
             cs.setFont(font, fontSize);
-            cs.setNonStrokingColor(strokingColor);
+            cs.setNonStrokingColor(strokingColor.getComponents());
             AppearanceStyle appearanceStyle = new AppearanceStyle();
             appearanceStyle.setFont(font);
             appearanceStyle.setFontSize(fontSize);
             PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
                     .style(appearanceStyle)
                     .text(new PlainText(annotation.getContents()))
-                    .width(width - fontSize / factor)
+                    .width(width - ab.width * factor * 4)
                     .wrapLines(true)
                     //TODO some reverse engineering needed to find out padding
                     .initialOffset(xOffset, yOffset)
@@ -283,7 +277,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                     maxX = Math.max(maxX, x);
                     maxY = Math.max(maxY, y);
                 }
-                // arrow length is 9 * width at about 30Â° => 10 * width seems to be enough
+                // arrow length is 9 * width at about 30° => 10 * width seems to be enough
                 rect.setLowerLeftX(Math.min(minX - ab.width * 10, rect.getLowerLeftX()));
                 rect.setLowerLeftY(Math.min(minY - ab.width * 10, rect.getLowerLeftY()));
                 rect.setUpperRightX(Math.max(maxX + ab.width * 10, rect.getUpperRightX()));
