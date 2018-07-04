@@ -136,7 +136,9 @@ public abstract class PDButton extends PDTerminalField
         }
         else
         {
-            return "";
+            // Off is the default value if there is nothing else set.
+            // See PDF Spec.
+            return "Off";
         }
     }
 
