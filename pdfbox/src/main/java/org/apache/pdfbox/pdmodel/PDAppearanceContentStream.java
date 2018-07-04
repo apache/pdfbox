@@ -112,6 +112,8 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         default:
             break;
         }
+        //TODO shouldn't we set the stack?
+        //Or call the appropriate setStrokingColor() method from the base class?
     }
 
     /**
@@ -169,6 +171,8 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         default:
             break;
         }
+        //TODO shouldn't we set the stack?
+        //Or call the appropriate setNonStrokingColor() method from the base class?
     }
 
     public void setBorderLine(float lineWidth, PDBorderStyleDictionary bs) throws IOException
