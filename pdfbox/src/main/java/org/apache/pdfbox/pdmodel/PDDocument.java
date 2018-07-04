@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -134,7 +135,10 @@ public class PDDocument implements Closeable
     
     // fonts to subset before saving
     private final Set<PDFont> fontsToSubset = new HashSet<>();
-    
+
+    // fonts to close when closing document
+    private final Set<TrueTypeFont> fontsToClose = new HashSet<>();
+
     // Signature interface
     private SignatureInterface signInterface;
 
@@ -874,6 +878,18 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * For internal PDFBox use when creating PDF documents: register a TrueTypeFont to make sure it
+     * is closed when the PDDocument is closed to avoid memory leaks. Users don't have to call this
+     * method, it is done by the appropriate PDFont classes.
+     *
+     * @param ttf
+     */
+    public void registerTrueTypeFont(TrueTypeFont ttf)
+    {
+        fontsToClose.add(ttf);
+    }
+
+    /**
      * Returns the list of fonts which will be subset before the document is saved.
      */
     Set<PDFont> getFontsToSubset()
@@ -1411,6 +1427,12 @@ public class PDDocument implements Closeable
             if (pdfSource != null)
             {
                 firstException = IOUtils.closeAndLogException(pdfSource, LOG, "RandomAccessRead pdfSource", firstException);
+            }
+
+            // close fonts
+            for (TrueTypeFont ttf : fontsToClose)
+            {
+                firstException = IOUtils.closeAndLogException(ttf, LOG, "TrueTypeFont", firstException);
             }
 
             // rethrow first exception to keep method contract
