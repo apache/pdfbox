@@ -127,7 +127,7 @@ public class COSWriterXRefEntry implements Comparable<COSWriterXRefEntry>
     }
 
     /**
-     * COSWriterXRefEntry constructor comment.
+     * Constructor.
      *
      * @param start The start attribute.
      * @param obj The COS object that this entry represents.

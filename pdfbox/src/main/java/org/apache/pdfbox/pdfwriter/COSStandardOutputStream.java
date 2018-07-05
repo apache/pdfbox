@@ -63,7 +63,7 @@ public class COSStandardOutputStream extends FilterOutputStream
     private long mark = -1;
     
     /**
-     * COSOutputStream constructor comment.
+     * Constructor.
      *
      * @param out The underlying stream to write to.
      */

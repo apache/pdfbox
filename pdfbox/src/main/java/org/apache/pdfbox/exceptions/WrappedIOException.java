@@ -27,7 +27,7 @@ import java.io.IOException;
 public class WrappedIOException extends IOException
 {
     /**
-     * constructor comment.
+     * Constructor.
      *
      * @param e The root exception that caused this exception.
      */
@@ -37,7 +37,7 @@ public class WrappedIOException extends IOException
     }
 
     /**
-     * constructor comment.
+     * Constructor.
      *
      * @param message Descriptive text for the exception.
      * @param e The root exception that caused this exception.

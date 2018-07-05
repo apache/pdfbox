@@ -26,7 +26,7 @@ public class COSVisitorException extends WrappedException
 {
 
     /**
-     * COSVisitorException constructor comment.
+     * Constructor.
      *
      * @param e The root exception that caused this exception.
      */
