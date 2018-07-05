@@ -49,7 +49,7 @@ public class COSStandardOutputStream extends FilterOutputStream
     private boolean onNewLine = false;
     
     /**
-     * COSOutputStream constructor comment.
+     * Constructor.
      *
      * @param out The underlying stream to write to.
      */
@@ -59,7 +59,7 @@ public class COSStandardOutputStream extends FilterOutputStream
     }
 
     /**
-     * COSOutputStream constructor comment.
+     * Constructor.
      *
      * @param out The underlying stream to write to.
      * @param position The current position of output stream.
@@ -73,7 +73,7 @@ public class COSStandardOutputStream extends FilterOutputStream
     }
 
     /**
-     * COSOutputStream constructor comment.
+     * Constructor.
      *
      * @param out The underlying stream to write to.
      * @param position The current position of output stream.
