@@ -117,24 +117,22 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
      * Get the annotations normal appearance content stream.
      * 
      * <p>
-     * This will get the annotations normal appearance content stream,
-     * to 'draw' to.
-     * 
+     * This will get the annotations normal appearance content stream, to 'draw' to. It will be
+     * uncompressed.
+     *
      * @return the appearance entry representing the normal appearance.
      * @throws IOException 
      */
     PDAppearanceContentStream getNormalAppearanceAsContentStream() throws IOException
     {
-        PDAppearanceEntry appearanceEntry = getNormalAppearance();
-        return getAppearanceEntryAsContentStream(appearanceEntry, false);
+        return getNormalAppearanceAsContentStream(false);
     }
     
     /**
      * Get the annotations normal appearance content stream.
      * 
      * <p>
-     * This will get the annotations normal appearance content stream,
-     * to 'draw' to.
+     * This will get the annotations normal appearance content stream, to 'draw' to.
      * 
      * @param compress whether the content stream is to be compressed. Set this to true when
      * creating long content streams.
