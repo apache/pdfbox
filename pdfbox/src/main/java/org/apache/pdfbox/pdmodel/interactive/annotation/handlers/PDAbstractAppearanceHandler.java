@@ -126,7 +126,25 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     PDAppearanceContentStream getNormalAppearanceAsContentStream() throws IOException
     {
         PDAppearanceEntry appearanceEntry = getNormalAppearance();
-        return getAppearanceEntryAsContentStream(appearanceEntry);
+        return getAppearanceEntryAsContentStream(appearanceEntry, false);
+    }
+    
+    /**
+     * Get the annotations normal appearance content stream.
+     * 
+     * <p>
+     * This will get the annotations normal appearance content stream,
+     * to 'draw' to.
+     * 
+     * @param compress whether the content stream is to be compressed. Set this to true when
+     * creating long content streams.
+     * @return the appearance entry representing the normal appearance.
+     * @throws IOException
+     */
+    PDAppearanceContentStream getNormalAppearanceAsContentStream(boolean compress) throws IOException
+    {
+        PDAppearanceEntry appearanceEntry = getNormalAppearance();
+        return getAppearanceEntryAsContentStream(appearanceEntry, compress);
     }
     
     /**
@@ -206,9 +224,11 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     
     /**
      * Get a rectangle enlarged by the differences.
-     * 
-     * <p>Creates a new rectangle with differences added to each side.
-     * .
+     *
+     * <p>
+     * Creates a new rectangle with differences added to each side. If there are no valid
+     * differences, then the original rectangle is returned.
+     *
      * @param rectangle the rectangle.
      * @param differences the differences to apply.
      * @return the padded rectangle.
@@ -228,9 +248,11 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     
     /**
      * Get a rectangle with the differences applied to each side.
-     * 
-     * <p>Creates a new rectangle with differences added to each side.
-     * .
+     *
+     * <p>
+     * Creates a new rectangle with differences added to each side. If there are no valid
+     * differences, then the original rectangle is returned.
+     *
      * @param rectangle the rectangle.
      * @param differences the differences to apply.
      * @return the padded rectangle.
@@ -468,7 +490,8 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     }
     
     
-    private PDAppearanceContentStream getAppearanceEntryAsContentStream(PDAppearanceEntry appearanceEntry) throws IOException
+    private PDAppearanceContentStream getAppearanceEntryAsContentStream(
+              PDAppearanceEntry appearanceEntry, boolean compress) throws IOException
     {
         PDAppearanceStream appearanceStream = appearanceEntry.getAppearanceStream();
         setTransformationMatrix(appearanceStream);
@@ -481,7 +504,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
             appearanceStream.setResources(resources);
         }
 
-        return new PDAppearanceContentStream(appearanceStream);
+        return new PDAppearanceContentStream(appearanceStream, compress);
     }
     
     private void setTransformationMatrix(PDAppearanceStream appearanceStream)
