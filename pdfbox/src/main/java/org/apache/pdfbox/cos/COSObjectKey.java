@@ -28,7 +28,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     private int generation;
     
     /**
-     * PDFObjectKey constructor comment.
+     * Constructor.
      *
      * @param object The object that this key will represent.
      */
@@ -38,7 +38,7 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     }
 
     /**
-     * PDFObjectKey constructor comment.
+     * Constructor.
      *
      * @param num The object number.
      * @param gen The object generation number.
