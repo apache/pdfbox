@@ -47,6 +47,19 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
     /**
      * Create a new appearance stream.
      *
+     * @param appearance The appearance stream to write to.
+     * @param compress whether the content stream is to be compressed. Set this to true when
+     * creating long content streams.
+     * @throws IOException If there is an error writing to the content stream.
+     */
+    public PDAppearanceContentStream(PDAppearanceStream appearance, boolean compress) throws IOException
+    {
+        this(appearance, appearance.getStream().createOutputStream(compress ? COSName.FLATE_DECODE : null));
+    }
+
+    /**
+     * Create a new appearance stream.
+     *
      * @param appearance
      *            The appearance stream to add to.
      * @param outputStream

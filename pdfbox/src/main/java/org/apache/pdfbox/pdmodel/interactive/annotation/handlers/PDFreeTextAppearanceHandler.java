@@ -77,7 +77,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
         }
         AnnotationBorder ab = AnnotationBorder.getAnnotationBorder(annotation, annotation.getBorderStyle());
 
-        try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream())
+        try (PDAppearanceContentStream cs = getNormalAppearanceAsContentStream(true))
         {
             // The fill color is the /C entry, there is no /IC entry defined
             boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getColor());
