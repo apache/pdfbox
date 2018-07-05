@@ -884,7 +884,7 @@ public class PDDocument implements Closeable
      *
      * @param ttf
      */
-    public void registerTrueTypeFont(TrueTypeFont ttf)
+    public void registerTrueTypeFontForClosing(TrueTypeFont ttf)
     {
         fontsToClose.add(ttf);
     }
