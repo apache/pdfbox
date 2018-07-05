@@ -160,6 +160,11 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
+                // Adobe draws the text with the original rectangle in mind.
+                // but if there is an /RD, then writing area get smaller.
+                // do this here because /RD is overwritten in a few lines
+                borderBox = applyRectDifferences(getRectangle(), annotation.getRectDifferences());
+
                 //TODO this segment was copied from square handler. Refactor?
                 CloudyBorder cloudyBorder = new CloudyBorder(cs,
                     borderEffect.getIntensity(), ab.width, getRectangle());
@@ -167,8 +172,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 annotation.setRectangle(cloudyBorder.getRectangle());
                 annotation.setRectDifference(cloudyBorder.getRectDifference());
                 PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-                borderBox = cloudyBorder.getBBox();
-                appearanceStream.setBBox(borderBox);
+                appearanceStream.setBBox(cloudyBorder.getBBox());
                 appearanceStream.setMatrix(cloudyBorder.getMatrix());
             }
             else
@@ -180,62 +184,65 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 // - if /RD is set the border box is the /Rect entry inset by the respective
                 //   border difference.
                 // - if /RD is not set then we don't touch /RD etc because Adobe doesn't either.
-                float[] rectDifferences = annotation.getRectDifferences();
-                if (rectDifferences.length == 0)
-                {
-                    borderBox = getRectangle();
-                }
-                else
-                {
-                    borderBox = applyRectDifferences(getRectangle(), rectDifferences);
-                    annotation.getNormalAppearanceStream().setBBox(borderBox);
-                }
-                borderBox = getPaddedRectangle(borderBox, ab.width / 2);
-                cs.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
-                        borderBox.getWidth(), borderBox.getHeight());
+                borderBox = applyRectDifferences(getRectangle(), annotation.getRectDifferences());
+                annotation.getNormalAppearanceStream().setBBox(borderBox);
+
+                // note that borderBox is not modified
+                PDRectangle paddedRectangle = getPaddedRectangle(borderBox, ab.width / 2);
+                cs.addRect(paddedRectangle.getLowerLeftX(), paddedRectangle.getLowerLeftY(),
+                           paddedRectangle.getWidth(), paddedRectangle.getHeight());
             }
             cs.drawShape(ab.width, hasStroke, hasBackground);
 
             // rotation is an undocumented feature, but Adobe uses it. Examples can be found
-            // in pdf_commenting_new.pdf file.
+            // in pdf_commenting_new.pdf file, page 3.
             int rotation = annotation.getCOSObject().getInt(COSName.ROTATE, 0);
             cs.transform(Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0));
             float xOffset;
             float yOffset;
-            float width = rotation == 90 || rotation == 270 ? borderBox.getHeight(): borderBox.getWidth();
-            // somewhat inspired by AppearanceGeneratorHelper.insertGeneratedAppearance()
-            cs.beginText();
+            float width = rotation == 90 || rotation == 270 ? borderBox.getHeight() : borderBox.getWidth();
+            // strategy to write formatted text is somewhat inspired by 
+            // AppearanceGeneratorHelper.insertGeneratedAppearance()
             PDFont font = PDType1Font.HELVETICA;
-            int factor = 1;
-            if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
-            {
-                //TODO cloudy needs to be reviewed too.
-                factor = 2;
-            }
+            float clipY;
+            float clipWidth = width - ab.width * 4;
+            float clipHeight = rotation == 90 || rotation == 270 ? 
+                                borderBox.getWidth() - ab.width * 4 : borderBox.getHeight() - ab.width * 4;
             float fontSize = extractFontSize(annotation);
-            // used by Adobe, no idea where it comes from, actual font bbox max y is 0.931
+
+            // value used by Adobe, no idea where it comes from, actual font bbox max y is 0.931
             // gathered by creating an annotation with width 0.
             float yDelta = 0.7896f;
             switch (rotation)
             {
                 case 180:
-                    xOffset = - borderBox.getUpperRightX() + ab.width * 2 * factor; 
-                    yOffset = - borderBox.getLowerLeftY() - ab.width * 2 * factor - yDelta * fontSize * factor;
+                    xOffset = - borderBox.getUpperRightX() + ab.width * 2;
+                    yOffset = - borderBox.getLowerLeftY() - ab.width * 2 - yDelta * fontSize;
+                    clipY = - borderBox.getUpperRightY() + ab.width * 2;
                     break;
                 case 90:
-                    xOffset = borderBox.getLowerLeftY() + ab.width * 2 * factor;
-                    yOffset = - borderBox.getLowerLeftX() - ab.width * 2 * factor - yDelta * fontSize * factor;
+                    xOffset = borderBox.getLowerLeftY() + ab.width * 2;
+                    yOffset = - borderBox.getLowerLeftX() - ab.width * 2 - yDelta * fontSize;
+                    clipY = - borderBox.getUpperRightX() + ab.width * 2;
                     break;
                 case 270:
-                    xOffset = - borderBox.getUpperRightY() + ab.width * 2 * factor;
-                    yOffset = borderBox.getUpperRightX() - ab.width * 2 * factor - yDelta * fontSize * factor;
+                    xOffset = - borderBox.getUpperRightY() + ab.width * 2;
+                    yOffset = borderBox.getUpperRightX() - ab.width * 2 - yDelta * fontSize;
+                    clipY = borderBox.getLowerLeftX() + ab.width * 2;
                     break;
                 case 0:
                 default:
-                    xOffset = borderBox.getLowerLeftX() + ab.width * 2 * factor;
-                    yOffset = borderBox.getUpperRightY() - ab.width * 2 * factor - yDelta * fontSize * factor;
+                    xOffset = borderBox.getLowerLeftX() + ab.width * 2;
+                    yOffset = borderBox.getUpperRightY() - ab.width * 2 - yDelta * fontSize;
+                    clipY = borderBox.getLowerLeftY() + ab.width * 2;
                     break;
             }
+
+            // clip writing area
+            cs.addRect(xOffset, clipY, clipWidth, clipHeight);
+            cs.clip();
+
+            cs.beginText();
             cs.setFont(font, fontSize);
             cs.setNonStrokingColor(strokingColor.getComponents());
             AppearanceStyle appearanceStyle = new AppearanceStyle();
@@ -244,9 +251,8 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
                     .style(appearanceStyle)
                     .text(new PlainText(annotation.getContents()))
-                    .width(width - ab.width * factor * 4)
+                    .width(width - ab.width * 4)
                     .wrapLines(true)
-                    //TODO some reverse engineering needed to find out padding
                     .initialOffset(xOffset, yOffset)
                     // Adobe ignores the /Q
                     //.textAlign(annotation.getQ())
