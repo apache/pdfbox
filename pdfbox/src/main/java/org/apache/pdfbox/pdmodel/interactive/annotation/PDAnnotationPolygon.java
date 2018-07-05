@@ -79,7 +79,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
 
     /**
      * This will set the border effect dictionary, specifying effects to be applied when drawing the
-     * line.
+     * line. This is supported by PDF 1.5 and higher.
      *
      * @param be The border effect dictionary to set.
      *
