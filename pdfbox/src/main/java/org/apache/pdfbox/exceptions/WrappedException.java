@@ -28,7 +28,7 @@ package org.apache.pdfbox.exceptions;
 public class WrappedException extends Exception
 {
     /**
-     * constructor comment.
+     * Constructor.
      *
      * @param e The root exception that caused this exception.
      */

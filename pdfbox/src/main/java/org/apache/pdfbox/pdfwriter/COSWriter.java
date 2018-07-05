@@ -218,7 +218,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private InputStream in;
 
     /**
-     * COSWriter constructor comment.
+     * Constructor.
      *
      * @param os The wrapped output stream.
      */
