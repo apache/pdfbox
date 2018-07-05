@@ -123,7 +123,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
             if (embedSubset)
             {
                 this.ttf = ttf;
-                document.registerTrueTypeFont(ttf);
+                document.registerTrueTypeFontForClosing(ttf);
             }
             else
             {
