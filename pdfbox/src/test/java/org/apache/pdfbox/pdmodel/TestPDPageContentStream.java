@@ -96,4 +96,20 @@ public class TestPDPageContentStream extends TestCase
         List<Object> tokens = parser.getTokens();
         assertEquals(0, tokens.size());
     }
+
+    /**
+     * Check that close() can be called twice.
+     *
+     * @throws IOException 
+     */
+    public void testCloseContract() throws IOException
+    {
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        doc.addPage(page);
+        PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
+        contentStream.close();
+        contentStream.close();
+        doc.close();
+    }
 }
