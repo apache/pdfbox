@@ -2302,7 +2302,7 @@ public final class PDPageContentStream implements Closeable
      *
      * @param commands The commands to append to the stream.
      * @throws IOException If an error occurs while writing to the stream.
-     * @deprecated This method will be removed in a future release.
+     * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
     public void appendRawCommands(String commands) throws IOException
@@ -2315,7 +2315,7 @@ public final class PDPageContentStream implements Closeable
      *
      * @param commands The commands to append to the stream.
      * @throws IOException If an error occurs while writing to the stream.
-     * @deprecated This method will be removed in a future release.
+     * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
     public void appendRawCommands(byte[] commands) throws IOException
@@ -2328,7 +2328,7 @@ public final class PDPageContentStream implements Closeable
      *
      * @param data Append a raw byte to the stream.
      * @throws IOException If an error occurs while writing to the stream.
-     * @deprecated This method will be removed in a future release.
+     * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
     public void appendRawCommands(int data) throws IOException
@@ -2341,7 +2341,7 @@ public final class PDPageContentStream implements Closeable
      *
      * @param data Append a formatted double value to the stream.
      * @throws IOException If an error occurs while writing to the stream.
-     * @deprecated This method will be removed in a future release.
+     * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
     public void appendRawCommands(double data) throws IOException
@@ -2354,7 +2354,7 @@ public final class PDPageContentStream implements Closeable
      *
      * @param data Append a formatted float value to the stream.
      * @throws IOException If an error occurs while writing to the stream.
-     * @deprecated This method will be removed in a future release.
+     * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
     public void appendRawCommands(float data) throws IOException
@@ -2367,7 +2367,7 @@ public final class PDPageContentStream implements Closeable
      *
      * @param name the name
      * @throws IOException If an error occurs while writing to the stream.
-     * @deprecated This method will be removed in a future release.
+     * @deprecated Usage of this method is discouraged.
      */
     @Deprecated
     public void appendCOSName(COSName name) throws IOException
