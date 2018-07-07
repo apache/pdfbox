@@ -40,10 +40,9 @@ public class TestPDPageContentStream extends TestCase
             {
                 // pass a non-stroking color in CMYK color space
                 contentStream.setNonStrokingColor(0.1f, 0.2f, 0.3f, 0.4f);
-                contentStream.close();
             }
 
-                // now read the PDF stream and verify that the CMYK values are correct
+            // now read the PDF stream and verify that the CMYK values are correct
             PDFStreamParser parser = new PDFStreamParser(page.getContents());
             parser.parse();
             java.util.List<Object>  pageTokens = parser.getTokens();
@@ -67,7 +66,6 @@ public class TestPDPageContentStream extends TestCase
             {
                 // pass a non-stroking color in CMYK color space
                 contentStream.setStrokingColor(0.5f, 0.6f, 0.7f, 0.8f);
-                contentStream.close();
             }
 
             // now read the PDF stream and verify that the CMYK values are correct
@@ -100,5 +98,22 @@ public class TestPDPageContentStream extends TestCase
         parser.parse();
         List<Object> tokens = parser.getTokens();
         assertEquals(0, tokens.size());
+    }
+
+    /**
+     * Check that close() can be called twice.
+     *
+     * @throws IOException 
+     */
+    public void testCloseContract() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, true);
+            contentStream.close();
+            contentStream.close();
+        }
     }
 }
