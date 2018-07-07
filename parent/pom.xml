@@ -54,6 +54,7 @@
         https://issues.apache.org/jira/browse/MPOM-185
         current version is 19. -->
         <surefire.version>2.21.0</surefire.version>
+        <bouncycastle.version>1.60</bouncycastle.version>
     </properties>
     
     <prerequisites>
@@ -82,17 +83,17 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>1.59</version>
+                <version>${bouncycastle.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcmail-jdk15on</artifactId>
-                <version>1.59</version>
+                <version>${bouncycastle.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
-                <version>1.59</version>
+                <version>${bouncycastle.version}</version>
             </dependency>
             <dependency>
                 <groupId>log4j</groupId>
