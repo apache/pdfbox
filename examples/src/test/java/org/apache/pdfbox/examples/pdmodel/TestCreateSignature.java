@@ -37,6 +37,7 @@ import java.util.List;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
@@ -123,7 +124,7 @@ public class TestCreateSignature
         final String fileName = getOutputFileName("signed{0}.pdf");
         signing.signDetached(new File(inDir + "sign_me.pdf"), new File(outDir + fileName));
 
-        checkSignature(new File(outDir + fileName));
+        checkSignature(new File(inDir, "sign_me.pdf"), new File(outDir, fileName));
     }
 
     /**
@@ -209,7 +210,7 @@ public class TestCreateSignature
         signing.signPDF(new File(inPath), destFile, null);
         fis.close();
 
-        checkSignature(destFile);
+        checkSignature(new File(inPath), destFile);
     }
 
     /**
@@ -251,7 +252,7 @@ public class TestCreateSignature
         signing1.setExternalSigning(false);
         signing1.signDetached(new File(filename), new File(filenameSigned1));
 
-        checkSignature(new File(filenameSigned1));
+        checkSignature(new File(filename), new File(filenameSigned1));
 
         PDDocument doc1 = PDDocument.load(new File(filenameSigned1));
         List<PDSignature> signatureDictionaries = doc1.getSignatureDictionaries();
@@ -267,7 +268,7 @@ public class TestCreateSignature
         signing2.signPDF(new File(filenameSigned1), new File(filenameSigned2), null, "Signature1");
         fis.close();
 
-        checkSignature(new File(filenameSigned2));
+        checkSignature(new File(filenameSigned1), new File(filenameSigned2));
 
         PDDocument doc2 = PDDocument.load(new File(filenameSigned2));
         signatureDictionaries = doc2.getSignatureDictionaries();
@@ -281,10 +282,18 @@ public class TestCreateSignature
     }
 
     // This check fails with a file created with the code before PDFBOX-3011 was solved.
-    private void checkSignature(File file)
+    private void checkSignature(File origFile, File signedFile)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
-        PDDocument document = PDDocument.load(file);
+        PDDocument document = PDDocument.load(origFile);
+        // get string representation of pages COSObject
+        String origPageKey = ((COSObject) document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES)).toString();
+        document.close();
+
+        document = PDDocument.load(signedFile);
+        // PDFBOX-4261: check that object number stays the same 
+        Assert.assertEquals(origPageKey, document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString());
+
         List<PDSignature> signatureDictionaries = document.getSignatureDictionaries();
         if (signatureDictionaries.isEmpty())
         {
@@ -294,7 +303,7 @@ public class TestCreateSignature
         {
             COSString contents = (COSString) sig.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             
-            FileInputStream fis = new FileInputStream(file);
+            FileInputStream fis = new FileInputStream(signedFile);
             byte[] buf = sig.getSignedContent(fis);
             fis.close();
 
