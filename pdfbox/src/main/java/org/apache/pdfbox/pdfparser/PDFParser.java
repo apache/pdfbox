@@ -147,7 +147,7 @@ public class PDFParser extends BaseParser
      * This can be overridden to add application specific handling (for example to stop
      * parsing when the number of exceptions thrown exceed a certain number).
      *
-     * @param e The exception if vailable. Can be null if there is no exception available
+     * @param e The exception if available. Can be null if there is no exception available
      * @return true if parsing could be continued, otherwise false
      */
     protected boolean isContinueOnError(Exception e)
