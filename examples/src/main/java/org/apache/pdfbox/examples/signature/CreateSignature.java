@@ -190,10 +190,6 @@ public class CreateSignature implements SignatureInterface
     } 
     finally
     {
-      if (randomAccessFile!= null) 
-      {
-        randomAccessFile.close();
-      }
       if (scratchFile != null && scratchFile.exists() && !scratchFile.delete())
       {
         scratchFile.deleteOnExit();
