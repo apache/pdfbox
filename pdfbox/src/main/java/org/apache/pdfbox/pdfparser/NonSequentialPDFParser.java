@@ -644,6 +644,8 @@ public class NonSequentialPDFParser extends PDFParser
 
         // check the offsets of all referenced objects
         checkXrefOffsets();
+        // copy xref table
+        document.addXRefTable(xrefTrailerResolver.getXrefTable());
         return trailer;
     }
 
