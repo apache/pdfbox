@@ -665,7 +665,8 @@ public final class LosslessFactory
             long sum = 0;
             for (byte aDataRawRowSub : dataRawRowSub)
             {
-                sum += aDataRawRowSub & 0xFF;
+                // https://www.w3.org/TR/PNG-Encoders.html#E.Filter-selection
+                sum += Math.abs(aDataRawRowSub);
             }
             return sum;
         }
