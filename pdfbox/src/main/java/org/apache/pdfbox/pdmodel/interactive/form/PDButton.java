@@ -122,8 +122,10 @@ public abstract class PDButton extends PDTerminalField
     }
     
     /**
-     * Returns the selected value. May be empty if NoToggleToOff is set but there is no value
-     * selected.
+     * Returns the selected value.
+     * 
+     * <p>Off is the default value which will also be returned if the
+     * value hasn't been set at all.
      * 
      * @return A non-null string.
      */
@@ -136,7 +138,9 @@ public abstract class PDButton extends PDTerminalField
         }
         else
         {
-            return "";
+            // Off is the default value if there is nothing else set.
+            // See PDF Spec.
+            return "Off";
         }
     }
 
