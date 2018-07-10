@@ -122,8 +122,10 @@ public abstract class PDButton extends PDTerminalField
     }
     
     /**
-     * Returns the selected value. May be empty if NoToggleToOff is set but there is no value
-     * selected.
+     * Returns the selected value.
+     * 
+     * <p>Off is the default value which will also be returned if the
+     * value hasn't been set at all.
      * 
      * @return A non-null string.
      */
