@@ -17,13 +17,15 @@
 
 package org.apache.pdfbox.cos;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 import org.apache.pdfbox.filter.Filter;
+import org.apache.pdfbox.io.RandomAccess;
+import org.apache.pdfbox.io.RandomAccessInputStream;
+import org.apache.pdfbox.io.RandomAccessOutputStream;
 import org.apache.pdfbox.io.ScratchFile;
 
 /**
@@ -35,66 +37,144 @@ public final class COSOutputStream extends FilterOutputStream
 {
     private final List<Filter> filters;
     private final COSDictionary parameters;
-    // todo: this is an in-memory buffer, should use scratch file (if any) instead
-    private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    
+    private final ScratchFile scratchFile;
+    private RandomAccess buffer;
+
     /**
      * Creates a new COSOutputStream writes to an encoded COS stream.
      * 
      * @param filters Filters to apply.
      * @param parameters Filter parameters.
      * @param output Encoded stream.
-     * @param scratchFile Scratch file to use, or null.
+     * @param scratchFile Scratch file to use.
+     * 
+     * @throws IOException If there was an error creating a temporary buffer
      */
     COSOutputStream(List<Filter> filters, COSDictionary parameters, OutputStream output,
-                    ScratchFile scratchFile)
+                    ScratchFile scratchFile) throws IOException
     {
         super(output);
         this.filters = filters;
         this.parameters = parameters;
+        this.scratchFile = scratchFile;
+
+        if (filters.isEmpty())
+        {
+            this.buffer = null;
+        }
+        else
+        {
+            this.buffer = scratchFile.createBuffer();
+        }
     }
 
     @Override
     public void write(byte[] b) throws IOException
     {
-        buffer.write(b);
+        if (buffer != null)
+        {
+            buffer.write(b);
+        }
+        else
+        {
+            super.write(b);
+        }
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException
     {
-        buffer.write(b, off, len);
+        if (buffer != null)
+        {
+            buffer.write(b, off, len);
+        }
+        else
+        {
+            super.write(b, off, len);
+        }
     }
 
     @Override
     public void write(int b) throws IOException
     {
-        buffer.write(b);
+        if (buffer != null)
+        {
+            buffer.write(b);
+        }
+        else
+        {
+            super.write(b);
+        }
     }
 
     @Override
     public void flush() throws IOException
     {
     }
-    
+
     @Override
     public void close() throws IOException
     {
-        if (buffer == null)
-        {
-            return;
+        try {
+            if (buffer != null)
+            {
+                try
+                {
+                    // apply filters in reverse order
+                    for (int i = filters.size() - 1; i >= 0; i--)
+                    {
+                        InputStream unfilteredIn = new RandomAccessInputStream(buffer);
+                        try
+                        {
+                            if (i == 0)
+                            {
+                                /*
+                                 * The last filter to run can encode directly to the enclosed output
+                                 * stream.
+                                 */
+                                filters.get(i).encode(unfilteredIn, out, parameters, i);
+                            }
+                            else
+                            {
+                                RandomAccess filteredBuffer = scratchFile.createBuffer();
+                                try
+                                {
+                                    OutputStream filteredOut = new RandomAccessOutputStream(filteredBuffer);
+                                    try
+                                    {
+                                        filters.get(i).encode(unfilteredIn, filteredOut, parameters, i);
+                                    }
+                                    finally
+                                    {
+                                        filteredOut.close();
+                                    }
+
+                                    RandomAccess tmpSwap = filteredBuffer;
+                                    filteredBuffer = buffer;
+                                    buffer = tmpSwap;
+                                }
+                                finally
+                                {
+                                    filteredBuffer.close();
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            unfilteredIn.close();
+                        }
+                    }
+                }
+                finally
+                {
+                    buffer.close();
+                    buffer = null;
+                }
+            }
         }
-        // apply filters in reverse order
-        for (int i = filters.size() - 1; i >= 0; i--)
+        finally
         {
-            // todo: this is an in-memory buffer, should use scratch file (if any) instead
-            ByteArrayInputStream input = new ByteArrayInputStream(buffer.toByteArray());
-            buffer = new ByteArrayOutputStream();
-            filters.get(i).encode(input, buffer, parameters, i);
+            super.close();
         }
-        // flush the entire stream
-        buffer.writeTo(out);
-        super.close();
-        buffer = null;
     }
 }
