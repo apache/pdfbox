@@ -57,6 +57,7 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPValidationException;
+import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -314,7 +315,7 @@ public class TestCreateSignature
             Store certificatesStore = signedData.getCertificates();
             Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
             SignerInformation signerInformation = signers.iterator().next();
-            Collection matches = certificatesStore.getMatches(signerInformation.getSID());
+            Collection matches = certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
             X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
             X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
 
