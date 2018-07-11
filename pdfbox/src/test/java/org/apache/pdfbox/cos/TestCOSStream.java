@@ -78,9 +78,10 @@ public class TestCOSStream extends TestCase
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         COSStream stream = new COSStream();
         
-        OutputStream output = stream.createRawOutputStream();
-        output.write(testStringEncoded);
-        output.close();
+        try (OutputStream output = stream.createRawOutputStream())
+        {
+            output.write(testStringEncoded);
+        }
 
         stream.setItem(COSName.FILTER, COSName.FLATE_DECODE);
         validateDecoded(stream, testString);
@@ -122,11 +123,31 @@ public class TestCOSStream extends TestCase
         filters.add(COSName.FLATE_DECODE);
         stream.setItem(COSName.FILTER, filters);
         
-        OutputStream output = stream.createRawOutputStream();
-        output.write(testStringEncoded);
-        output.close();
+        try (OutputStream output = stream.createRawOutputStream())
+        {
+            output.write(testStringEncoded);
+        }
         
         validateDecoded(stream, testString);
+    }
+
+    /**
+     * Tests tests that encoding is done correctly even if the the stream is closed twice.
+     * Closeable.close() allows streams to be closed multiple times. The second and subsequent
+     * close() calls should have no effect.
+     *
+     * @throws IOException
+     */
+    public void testCompressedStreamDoubleClose() throws IOException
+    {
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
+        COSStream stream = new COSStream();
+        OutputStream output = stream.createOutputStream(COSName.FLATE_DECODE);
+        output.write(testString);
+        output.close();
+        output.close();
+        validateEncoded(stream, testStringEncoded);
     }
 
     private byte[] encodeData(byte[] original, COSName filter) throws IOException
@@ -140,9 +161,10 @@ public class TestCOSStream extends TestCase
     private COSStream createStream(byte[] testString, COSBase filters) throws IOException
     {
         COSStream stream = new COSStream();
-        OutputStream output = stream.createOutputStream(filters);
-        output.write(testString);
-        output.close();
+        try (OutputStream output = stream.createOutputStream(filters))
+        {
+            output.write(testString);
+        }
         return stream;
     }
 
