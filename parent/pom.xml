@@ -181,7 +181,7 @@
                 <configuration>
                     <source>1.7</source>
                     <links>
-                        <link>http://download.oracle.com/javase/1.7.0/docs/api/</link>
+                        <link>https://docs.oracle.com/javase/7/docs/api/</link>
                     </links>
                     <encoding>UTF-8</encoding>
                     <notimestamp>true</notimestamp>
