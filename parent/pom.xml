@@ -105,7 +105,7 @@
         <configuration>
           <source>1.5</source>
           <links>
-            <link>http://download.oracle.com/javase/1.5.0/docs/api/</link>
+            <link>https://docs.oracle.com/javase/1.5.0/docs/api/</link>
           </links>
         </configuration>
       </plugin>
