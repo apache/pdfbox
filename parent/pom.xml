@@ -23,7 +23,11 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>20</version>
+
+        <!-- don't increase number without investigation of the diffs
+             https://maven.apache.org/pom/asf/ due to failure to build on jdk6 -->
+        <version>19</version>
+
         <relativePath />
     </parent>
 
