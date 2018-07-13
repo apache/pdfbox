@@ -171,8 +171,8 @@ public class CertInformationHelper
     }
 
     /**
-     * Gets the first CRL Url from given extension value. Structure has to be build as in 4.2.1.14
-     * CRL Distribution Points of RFC 2459.
+     * Gets the first CRL URL from given extension value. Structure has to be
+     * built as in 4.2.1.14 CRL Distribution Points of RFC 2459.
      *
      * @param extensionValue to get the extension value from
      * @return first CRL- URL or null
