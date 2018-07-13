@@ -84,7 +84,7 @@ public class TestEmbeddedFiles extends TestCase
         PDDocumentNameDictionary names = catalog.getNames();
         PDEmbeddedFilesNameTreeNode treeNode = names.getEmbeddedFiles();
         List<PDNameTreeNode<PDComplexFileSpecification>> kids = treeNode.getKids();
-        for (PDNameTreeNode kid : kids)
+        for (PDNameTreeNode<PDComplexFileSpecification> kid : kids)
         {
             Map<String, PDComplexFileSpecification> tmpNames = kid.getNames();
             COSObjectable obj = tmpNames.get("My first attachment");
