@@ -18,7 +18,7 @@ package org.apache.pdfbox.pdmodel.common;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.SortedMap;
+import java.util.Map;
 import java.util.TreeMap;
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSInteger;
@@ -31,18 +31,17 @@ import org.junit.Assert;
  */
 public class TestPDNameTreeNode extends TestCase
 {
-
-    private PDNameTreeNode node1;
-    private PDNameTreeNode node2;
-    private PDNameTreeNode node4;
-    private PDNameTreeNode node5;
-    private PDNameTreeNode node24;
+    private PDNameTreeNode<COSInteger> node1;
+    private PDNameTreeNode<COSInteger> node2;
+    private PDNameTreeNode<COSInteger> node4;
+    private PDNameTreeNode<COSInteger> node5;
+    private PDNameTreeNode<COSInteger> node24;
 
     @Override
     protected void setUp() throws Exception
     {
         this.node5 = new PDIntegerNameTreeNode();
-        SortedMap<String, COSObjectable> names = new TreeMap<>();
+        Map<String, COSInteger> names = new TreeMap<>();
         names.put("Actinium", COSInteger.get(89));
         names.put("Aluminum", COSInteger.get(13));
         names.put("Americium", COSInteger.get(95));
@@ -62,7 +61,7 @@ public class TestPDNameTreeNode extends TestCase
         this.node24.setNames(names);
 
         this.node2 = new PDIntegerNameTreeNode();
-        List<PDNameTreeNode> kids = this.node2.getKids();
+        List<PDNameTreeNode<COSInteger>> kids = this.node2.getKids();
         if (kids == null)
         {
             kids = new COSArrayList<>();
@@ -90,7 +89,6 @@ public class TestPDNameTreeNode extends TestCase
         this.node1.setKids(kids);
     }
 
-
     public void testUpperLimit() throws IOException
     {
         Assert.assertEquals("Astatine", this.node5.getUpperLimit());
@@ -112,5 +110,4 @@ public class TestPDNameTreeNode extends TestCase
 
         Assert.assertEquals(null, this.node1.getLowerLimit());
     }
-
 }
