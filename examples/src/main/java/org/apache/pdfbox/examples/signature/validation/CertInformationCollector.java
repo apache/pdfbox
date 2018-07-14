@@ -230,6 +230,7 @@ public class CertInformationCollector
         Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
         SignerInformation signerInformation = signers.iterator().next();
 
+        @SuppressWarnings("unchecked")
         Collection<X509CertificateHolder> matches = certificatesStore
                 .getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
 
