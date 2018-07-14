@@ -258,6 +258,7 @@ public final class ShowSignature
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
         SignerInformation signerInformation = signers.iterator().next();
+        @SuppressWarnings("unchecked")
         Collection<X509CertificateHolder> matches =
                 certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
         X509CertificateHolder certificateHolder = matches.iterator().next();
