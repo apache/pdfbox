@@ -63,7 +63,7 @@ class TilingPaintFactory
         if (paint == null)
         {
             paint = new TilingPaint(drawer, pattern, colorSpace, color, xform);
-            weakCache.put(tilingPaintParameter, new WeakReference(paint));
+            weakCache.put(tilingPaintParameter, new WeakReference<>(paint));
         }
         return paint;
     }
