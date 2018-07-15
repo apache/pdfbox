@@ -176,7 +176,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
         boolean retval = false;
         if( o instanceof COSDictionaryMap )
         {
-            COSDictionaryMap<K,V> other = (COSDictionaryMap)o;
+            COSDictionaryMap<K, V> other = (COSDictionaryMap<K, V>) o;
             retval = other.map.equals( this.map );
         }
         return retval;
