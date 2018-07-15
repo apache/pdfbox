@@ -248,7 +248,7 @@ public class PDPageLabels implements COSObjectable
      */
     public NavigableSet<Integer> getPageIndices()
     {
-        return new TreeSet(labels.keySet());
+        return new TreeSet<Integer>(labels.keySet());
     }
 
     /**
