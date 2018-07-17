@@ -43,7 +43,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 import javax.imageio.spi.IIORegistry;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
@@ -302,10 +301,20 @@ public class PDFDebugger extends JFrame
             }
         });
 
+        initGlobalEventHandlers();
+    }
+
+    /**
+     * Initialize application global event handlers. Protected to allow
+     * subclasses to override this method if they don't want the global event
+     * handler overridden.
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected void initGlobalEventHandlers()
+    {
         // Mac OS X file open/quit handler
-        if (IS_MAC_OS && !isMinJdk9())
+        if (IS_MAC_OS)
         {
-            //TODO this needs to be rewritten for JDK9, see PDFBOX-4013
             try
             {
                 Method osxOpenFiles = getClass().getDeclaredMethod("osxOpenFiles", String.class);
@@ -417,11 +426,8 @@ public class PDFDebugger extends JFrame
             }
         });
 
-        if (!IS_MAC_OS)
-        {
-            fileMenu.addSeparator();
-            fileMenu.add(printMenuItem);
-        }
+        fileMenu.addSeparator();
+        fileMenu.add(printMenuItem);
 
         JMenuItem exitMenuItem = new JMenuItem("Exit");
         exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
@@ -632,7 +638,7 @@ public class PDFDebugger extends JFrame
                 openDialog.setVisible(true);
                 if (openDialog.getFile() != null)
                 {
-                    readPDFFile(openDialog.getFile(), "");
+                    readPDFFile(new File(openDialog.getDirectory(),openDialog.getFile()), "");
                 }
             }
             else
@@ -1077,7 +1083,7 @@ public class PDFDebugger extends JFrame
         return data;
     }
 
-    private void exitMenuItemActionPerformed(ActionEvent evt)
+    private void exitMenuItemActionPerformed(ActionEvent ignored)
     {
         if( document != null )
         {
@@ -1095,6 +1101,16 @@ public class PDFDebugger extends JFrame
                 throw new RuntimeException(e);
             }
         }
+        performApplicationExit();
+    }
+
+    /**
+     * Exit the application after the window is closed. This is protected to let
+     * subclasses override the behavior.
+     */
+    @SuppressWarnings("WeakerAccess")
+    protected void performApplicationExit()
+    {
         System.exit(0);
     }
 
@@ -1151,23 +1167,7 @@ public class PDFDebugger extends JFrame
      */
     private void exitForm(WindowEvent evt)
     {
-        if( document != null )
-        {
-            try
-            {
-                document.close();
-                if (!currentFilePath.startsWith("http"))
-                {
-                    recentFiles.addFile(currentFilePath);
-                }
-                recentFiles.close();
-            }
-            catch( IOException e )
-            {
-                throw new RuntimeException(e);
-            }
-        }
-        System.exit(0);
+        exitMenuItemActionPerformed(null);
     }
 
     /**
@@ -1494,27 +1494,5 @@ public class PDFDebugger extends JFrame
             }
         }
         return null;
-    }
-
-    private static boolean isMinJdk9()
-    {
-        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
-        String version = System.getProperty("java.specification.version");
-        final StringTokenizer st = new StringTokenizer(version, ".");
-        try
-        {
-            int major = Integer.parseInt(st.nextToken());
-            int minor = 0;
-            if (st.hasMoreTokens())
-            {
-                minor = Integer.parseInt(st.nextToken());
-            }
-            return major > 1 || (major == 1 && minor >= 9);
-        }
-        catch (NumberFormatException nfe)
-        {
-            // maybe some new numbering scheme in the 22nd century
-            return true;
-        }
     }
 }
