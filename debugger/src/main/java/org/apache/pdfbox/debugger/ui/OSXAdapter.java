@@ -18,7 +18,7 @@
 
 /* 
  * This file includes code under the following terms:
- * 			
+ *
  *  Version: 2.0
  *  
  *  Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
@@ -64,10 +64,14 @@
 
 package org.apache.pdfbox.debugger.ui;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.StringTokenizer;
+import java.util.List;
 
 /**
  * Hooks existing preferences/about/quit functionality from an
@@ -87,10 +91,67 @@ public class OSXAdapter implements InvocationHandler
     protected String proxySignature;
 
     static Object macOSXApplication;
+    
+    private static boolean isMinJdk9()
+    {
+        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
+        String version = System.getProperty("java.specification.version");
+        final StringTokenizer st = new StringTokenizer(version, ".");
+        try
+        {
+            int major = Integer.parseInt(st.nextToken());
+            int minor = 0;
+            if (st.hasMoreTokens())
+            {
+                minor = Integer.parseInt(st.nextToken());
+            }
+            return major > 1 || (major == 1 && minor >= 9);
+        }
+        catch (NumberFormatException nfe)
+        {
+            // maybe some new numbering scheme in the 22nd century
+            return true;
+        }
+    }
 
     // Pass this method an Object and Method equipped to perform application shutdown logic
     // The method passed should return a boolean stating whether or not the quit should occur
-    public static void setQuitHandler(Object target, Method quitHandler) {
+    public static void setQuitHandler(final Object target, final Method quitHandler)
+    {
+        if (isMinJdk9())
+        {
+            try
+            {
+                Desktop desktopObject = Desktop.getDesktop();
+                Class<?> filesHandlerClass = Class.forName("java.awt.desktop.QuitHandler");
+                final Method setQuitHandlerMethod = desktopObject.getClass().getMethod("setQuitHandler", filesHandlerClass);
+                Object osxAdapterProxy = Proxy.newProxyInstance(OSXAdapter.class.getClassLoader(),
+                        new Class[]
+                        {
+                            filesHandlerClass
+                        }, new InvocationHandler()
+                {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args)
+                            throws Throwable
+                    {
+                        if (!method.getName().equals("handleQuitRequestWith"))
+                        {
+                            return null;
+                        }
+                        // We just call our own quit handler
+                        quitHandler.invoke(target);
+                        return null;
+                    }
+                });
+                setQuitHandlerMethod.invoke(desktopObject, osxAdapterProxy);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return;
+        }
         setHandler(new OSXAdapter("handleQuit", target, quitHandler));
     }
 
@@ -133,7 +194,53 @@ public class OSXAdapter implements InvocationHandler
     // Pass this method an Object and a Method equipped to handle document events from the Finder
     // Documents are registered with the Finder via the CFBundleDocumentTypes dictionary in the 
     // application bundle's Info.plist
-    public static void setFileHandler(Object target, Method fileHandler) {
+    public static void setFileHandler(Object target, Method fileHandler)
+    {
+        if (isMinJdk9())
+        {
+            try
+            {
+                Desktop desktopObject = Desktop.getDesktop();
+                Class<?> filesHandlerClass = Class.forName("java.awt.desktop.OpenFilesHandler");
+                Method setOpenFileHandlerMethod = desktopObject.getClass().getMethod("setOpenFileHandler", filesHandlerClass);
+                Object osxAdapterProxy = Proxy.newProxyInstance(OSXAdapter.class.getClassLoader(),
+                        new Class[]
+                        {
+                            filesHandlerClass
+                        }, new OSXAdapter("openFiles", target, fileHandler)
+                {
+                    // Override OSXAdapter.callTarget to send information on the
+                    // file to be opened
+                    public boolean callTarget(Object openFilesEvent)
+                    {
+                        if (openFilesEvent != null)
+                        {
+                            try
+                            {
+                                Method getFilesMethod = openFilesEvent.getClass().getDeclaredMethod("getFiles",
+                                        (Class[]) null);
+                                @SuppressWarnings("unchecked")
+                                List<File> files = (List<File>) getFilesMethod.invoke(openFilesEvent,
+                                        (Object[]) null);
+                                this.targetMethod.invoke(this.targetObject, files.get(0).getAbsolutePath());
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                        return true;
+                    }
+                });
+                setOpenFileHandlerMethod.invoke(desktopObject, osxAdapterProxy);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return;
+        }
+        /* JDK <= 1.8, using Apple classes */
         setHandler(new OSXAdapter("handleOpenFile", target, fileHandler) {
             // Override OSXAdapter.callTarget to send information on the
             // file to be opened
