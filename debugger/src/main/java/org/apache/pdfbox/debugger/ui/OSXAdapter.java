@@ -135,12 +135,11 @@ public class OSXAdapter implements InvocationHandler
                     public Object invoke(Object proxy, Method method, Object[] args)
                             throws Throwable
                     {
-                        if (!method.getName().equals("handleQuitRequestWith"))
+                        if ("handleQuitRequestWith".equals(method.getName()))
                         {
-                            return null;
+                            // We just call our own quit handler
+                            quitHandler.invoke(target);
                         }
-                        // We just call our own quit handler
-                        quitHandler.invoke(target);
                         return null;
                     }
                 });
@@ -211,6 +210,7 @@ public class OSXAdapter implements InvocationHandler
                 {
                     // Override OSXAdapter.callTarget to send information on the
                     // file to be opened
+                    @Override
                     public boolean callTarget(Object openFilesEvent)
                     {
                         if (openFilesEvent != null)
@@ -244,6 +244,7 @@ public class OSXAdapter implements InvocationHandler
         setHandler(new OSXAdapter("handleOpenFile", target, fileHandler) {
             // Override OSXAdapter.callTarget to send information on the
             // file to be opened
+            @Override
             public boolean callTarget(Object appleEvent) {
                 if (appleEvent != null) {
                     try {
