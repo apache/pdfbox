@@ -560,6 +560,14 @@ final class FontMapperImpl implements FontMapper
                 PDPanoseClassification panose = fontDescriptor.getPanose().getPanose();
                 if (panose.getFamilyKind() == info.getPanose().getFamilyKind())
                 {
+                    if (panose.getFamilyKind() == 0 && 
+                        (info.getPostScriptName().toLowerCase().contains("barcode") ||
+                         info.getPostScriptName().startsWith("Code")) && 
+                        !probablyBarcodeFont(fontDescriptor))
+                    {
+                        // PDFBOX-4268: ignore barcode font if we aren't searching for one.
+                        continue;
+                    }
                     // serifs
                     if (panose.getSerifStyle() == info.getPanose().getSerifStyle())
                     {
@@ -622,6 +630,22 @@ final class FontMapperImpl implements FontMapper
             queue.add(match);
         }
         return queue;
+    }
+
+    private boolean probablyBarcodeFont(PDFontDescriptor fontDescriptor)
+    {
+        String ff = fontDescriptor.getFontFamily();
+        if (ff == null)
+        {
+            ff = "";
+        }
+        String fn = fontDescriptor.getFontName();
+        if (fn == null)
+        {
+            fn = "";
+        }
+        return ff.startsWith("Code") || ff.toLowerCase().contains("barcode") ||
+               fn.startsWith("Code") || fn.toLowerCase().contains("barcode");
     }
 
     /**
