@@ -50,11 +50,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <bouncycastle.version>1.60</bouncycastle.version>
-    </properties>
-    
-    <prerequisites>
-    	<maven>3.3.1</maven>
-  	</prerequisites>
+      </properties>
 
     <dependencyManagement>
         <dependencies>
@@ -167,6 +163,23 @@
 
     <build>
         <plugins>
+            <plugin>
+              <artifactId>maven-enforcer-plugin</artifactId>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>enforce</goal>
+                  </goals>
+                  <configuration>
+                    <rules combine.children="append">
+                      <requireMavenVersion>
+                        <version>3.3.9</version>
+                      </requireMavenVersion>
+                    </rules>    
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
