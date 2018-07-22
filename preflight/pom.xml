@@ -109,7 +109,6 @@
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <!-- can't use download-maven-plugin for JDK6, see PDFBOX-3532 -->
                 <artifactId>maven-download-plugin</artifactId>
-                <version>1.1.0</version>
                 <configuration>
                     <skip>${skipTests}</skip>
                 </configuration>
@@ -158,7 +157,6 @@
 									<pluginExecutionFilter>
 										<groupId>com.googlecode.maven-download-plugin</groupId>
 										<artifactId>download-maven-plugin</artifactId>
-										<versionRange>[1.3.0,)</versionRange>
 										<goals>
 											<goal>wget</goal>
 										</goals>
