@@ -83,6 +83,22 @@ public final class LosslessFactory
                 PDImageXObject pdImageXObject = new PredictorEncoder(document, image).encode();
                 if (pdImageXObject != null)
                 {
+                    if (pdImageXObject.getBitsPerComponent() < 16 &&
+                        image.getWidth() * image.getHeight() <= 50 * 50)
+                    {
+                        // also create classic compressed image, compare sizes
+                        PDImageXObject pdImageXObjectClassic = createFromRGBImage(image, document);
+                        if (pdImageXObjectClassic.getCOSObject().getLength() < 
+                            pdImageXObject.getCOSObject().getLength())
+                        {
+                            pdImageXObject.getCOSObject().close();
+                            return pdImageXObjectClassic;
+                        }
+                        else
+                        {
+                            pdImageXObjectClassic.getCOSObject().close();
+                        }
+                    }
                     return pdImageXObject;
                 }
             }
