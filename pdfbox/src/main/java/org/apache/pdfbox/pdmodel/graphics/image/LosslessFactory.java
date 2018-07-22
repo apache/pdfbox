@@ -83,7 +83,8 @@ public final class LosslessFactory
                 PDImageXObject pdImageXObject = new PredictorEncoder(document, image).encode();
                 if (pdImageXObject != null)
                 {
-                    if (pdImageXObject.getBitsPerComponent() < 16 &&
+                    if (pdImageXObject.getColorSpace() == PDDeviceRGB.INSTANCE &&
+                        pdImageXObject.getBitsPerComponent() < 16 &&
                         image.getWidth() * image.getHeight() <= 50 * 50)
                     {
                         // also create classic compressed image, compare sizes
