@@ -107,8 +107,7 @@
 			</plugin>
             <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
-                <!-- can't use download-maven-plugin for JDK6, see PDFBOX-3532 -->
-                <artifactId>maven-download-plugin</artifactId>
+                <artifactId>download-maven-plugin</artifactId>
                 <configuration>
                     <skip>${skipTests}</skip>
                 </configuration>
