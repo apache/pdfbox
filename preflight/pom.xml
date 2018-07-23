@@ -133,7 +133,7 @@
                         </goals>
                         <configuration>
                             <skip>${skip-bavaria}</skip>
-                            <url>http://www.pdflib.com/fileadmin/pdflib/Bavaria/2009-04-03-Bavaria-pdfa.zip</url>
+                            <url>https://web.archive.org/web/20160305185745if_/http://www.pdflib.com/fileadmin/pdflib/Bavaria/2009-04-03-Bavaria-pdfa.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <md5>d8fccb2fea540ab49bef237f3579546b</md5>
