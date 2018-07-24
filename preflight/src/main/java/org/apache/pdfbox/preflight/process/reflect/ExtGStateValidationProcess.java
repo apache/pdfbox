@@ -69,7 +69,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * Validate the ExtGState dictionaries.
      * 
      * @param context the context which contains the Resource dictionary.
-     * @throws ValidationException thrown if a the Extended Graphic State isn't valid.
+     * @throws ValidationException thrown if an Extended Graphic State isn't valid.
      */
     @Override
     public void validate(PreflightContext context) throws ValidationException
@@ -99,7 +99,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      * @param context the context which contains the Resource dictionary.
      * @param egsEntry a resource COSDictionary.
      * @return the list of ExtGState dictionaries.
-     * @throws ValidationException thrown if a the Extended Graphic State isn't valid.
+     * @throws ValidationException thrown if an Extended Graphic State isn't valid.
      */
     public List<COSDictionary> extractExtGStateDictionaries(PreflightContext context, COSDictionary egsEntry)
             throws ValidationException
