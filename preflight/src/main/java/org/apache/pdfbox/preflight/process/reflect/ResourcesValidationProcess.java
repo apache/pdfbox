@@ -54,7 +54,7 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADING_PATTERN
 import static org.apache.pdfbox.preflight.PreflightConfiguration.TILING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_MAIN;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
+import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
 public class ResourcesValidationProcess extends AbstractProcess
 {
@@ -145,7 +145,7 @@ public class ResourcesValidationProcess extends AbstractProcess
      */
     protected void validateExtGStates(PreflightContext context, PDResources resources) throws ValidationException
     {
-        COSBase egsEntry = resources.getCOSObject().getItem(TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
+        COSBase egsEntry = resources.getCOSObject().getItem(TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE);
         COSDocument cosDocument = context.getDocument().getDocument();
         COSDictionary extGState = COSUtils.getAsDictionary(egsEntry, cosDocument);
         if (egsEntry != null)
