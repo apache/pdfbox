@@ -122,7 +122,7 @@
                             <url>https://www.pdfa.org/wp-content/until2016_uploads/2011/08/isartor-pdfa-2008-08-13.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
-                            <md5>9f129c834bc6f9f8dabad4491c4c10ec</md5>
+                            <sha512>66bf4ad470b36079c1e0ceca4438053f32649f964fb1de5cd88babce36c5afc0ba6fa7880bc1c9aac791df872cdfc8dc9851bfd3c75ae96786edd8fac61193ae</sha512>
                         </configuration>
                     </execution>
                     <execution>
@@ -136,7 +136,7 @@
                             <url>https://web.archive.org/web/20160305185745if_/http://www.pdflib.com/fileadmin/pdflib/Bavaria/2009-04-03-Bavaria-pdfa.zip</url>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
-                            <md5>d8fccb2fea540ab49bef237f3579546b</md5>
+                            <sha512>a6efe70574dcde3628271fc1d7aa32cc00095334aa9415e5ebfb96cc20e0f79edd040c0290d5a76b4ced4c6a4343ba4af9567bf12eb7cfe3ec70f1a43202c231</sha512>
                         </configuration>
                     </execution>
                 </executions>
