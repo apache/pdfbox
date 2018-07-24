@@ -113,16 +113,13 @@ public class ExtGStateValidationProcess extends AbstractProcess
             for (Object object : extGStates.keySet())
             {
                 COSName key = (COSName) object;
-                if (key.getName().matches(TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE_ENTRY_REGEX))
+                COSBase gsBase = extGStates.getItem(key);
+                COSDictionary gsDict = COSUtils.getAsDictionary(gsBase, cosDocument);
+                if (gsDict == null)
                 {
-                    COSBase gsBase = extGStates.getItem(key);
-                    COSDictionary gsDict = COSUtils.getAsDictionary(gsBase, cosDocument);
-                    if (gsDict == null)
-                    {
-                        throw new ValidationException("The Extended Graphics State dictionary is invalid");
-                    }
-                    listOfExtGState.add(gsDict);
+                    throw new ValidationException("The Extended Graphics State dictionary is invalid");
                 }
+                listOfExtGState.add(gsDict);
             }
         }
         return listOfExtGState;
