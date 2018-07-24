@@ -31,7 +31,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXP
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_TRANSPARENCY_EXT_GS_BLEND_MODE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_TRANSPARENCY_EXT_GS_CA;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_TRANSPARENCY_EXT_GS_SOFT_MASK;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE_ENTRY_REGEX;
+import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE_ENTRY_REGEX;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_KEY_BLEND_MODE;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_KEY_LOWER_CA;
 import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_KEY_UPPER_CA;
@@ -113,7 +113,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
             for (Object object : extGStates.keySet())
             {
                 COSName key = (COSName) object;
-                if (key.getName().matches(TRANPARENCY_DICTIONARY_KEY_EXTGSTATE_ENTRY_REGEX))
+                if (key.getName().matches(TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE_ENTRY_REGEX))
                 {
                     COSBase gsBase = extGStates.getItem(key);
                     COSDictionary gsDict = COSUtils.getAsDictionary(gsBase, cosDocument);

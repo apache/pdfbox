@@ -25,7 +25,7 @@ import java.io.IOException;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.EXTGSTATE_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_UNKNOWN_COLOR_SPACE;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRANPARENCY_DICTIONARY_KEY_EXTGSTATE;
+import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -114,7 +114,7 @@ public class ShadingPatternValidationProcess extends AbstractProcess
             throws ValidationException
     {
         COSDictionary resources = (COSDictionary) shadingRes.getCOSObject().getDictionaryObject(
-                TRANPARENCY_DICTIONARY_KEY_EXTGSTATE);
+                TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE);
         if (resources != null)
         {
             ContextHelper.validateElement(context, resources, EXTGSTATE_PROCESS);
