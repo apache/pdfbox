@@ -115,8 +115,8 @@ public class PDType3Font extends PDSimpleFont
     @Override
     public boolean hasGlyph(String name) throws IOException
     {
-        COSStream stream = (COSStream) getCharProcs().getDictionaryObject(COSName.getPDFName(name));
-        return stream != null;
+        COSBase base = getCharProcs().getDictionaryObject(COSName.getPDFName(name));
+        return base instanceof COSStream;
     }
 
     @Override
@@ -226,10 +226,10 @@ public class PDType3Font extends PDSimpleFont
     {
         if (fontMatrix == null)
         {
-            COSArray array = (COSArray) dict.getDictionaryObject(COSName.FONT_MATRIX);
-            if (array != null)
+            COSBase base = dict.getDictionaryObject(COSName.FONT_MATRIX);
+            if (base instanceof COSArray)
             {
-                fontMatrix = new Matrix(array);
+                fontMatrix = new Matrix((COSArray) base);
             }
             else
             {
@@ -255,10 +255,10 @@ public class PDType3Font extends PDSimpleFont
     {
         if (resources == null)
         {
-            COSDictionary resourcesDict = (COSDictionary) dict.getDictionaryObject(COSName.RESOURCES);
-            if (resourcesDict != null)
+            COSBase base = dict.getDictionaryObject(COSName.RESOURCES);
+            if (base instanceof COSDictionary)
             {
-                this.resources = new PDResources(resourcesDict);
+                this.resources = new PDResources((COSDictionary) base);
             }
         }
         return resources;
@@ -271,11 +271,11 @@ public class PDType3Font extends PDSimpleFont
      */
     public PDRectangle getFontBBox()
     {
-        COSArray rect = (COSArray) dict.getDictionaryObject(COSName.FONT_BBOX);
+        COSBase base = dict.getDictionaryObject(COSName.FONT_BBOX);
         PDRectangle retval = null;
-        if(rect != null)
+        if (base instanceof COSArray)
         {
-            retval = new PDRectangle(rect);
+            retval = new PDRectangle((COSArray) base);
         }
         return retval;
     }
