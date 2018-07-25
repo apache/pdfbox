@@ -350,15 +350,10 @@ public class PDType3Font extends PDSimpleFont
     public PDType3CharProc getCharProc(int code)
     {
         String name = getEncoding().getName(code);
-        if (!".notdef".equals(name))
+        COSBase base = getCharProcs().getDictionaryObject(COSName.getPDFName(name));
+        if (base instanceof COSStream)
         {
-            COSStream stream;
-            stream = (COSStream)getCharProcs().getDictionaryObject(COSName.getPDFName(name));
-            if (stream == null)
-            {
-                return null;
-            }
-            return new PDType3CharProc(this, stream);
+            return new PDType3CharProc(this, (COSStream) base);
         }
         return null;
     }
