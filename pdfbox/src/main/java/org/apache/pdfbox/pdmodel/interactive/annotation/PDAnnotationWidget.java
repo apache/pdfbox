@@ -24,7 +24,9 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDAnnotationAdditionalAction
 import org.apache.pdfbox.pdmodel.interactive.action.type.PDAction;
 
 /**
- * This is the class that represents a widget.
+ * This is the class that represents a widget annotation. This represents the
+ * appearance of a field and manages user interactions. A field may have several
+ * widget annotations, which may be on several pages.
  *
  * @author <a href="mailto:ben@benlitchfield.com">Ben Litchfield</a>
  * @version $Revision: 1.3 $
