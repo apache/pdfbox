@@ -113,9 +113,11 @@ public final class PDColor
      */
     public float[] getComponents()
     {
-        if (colorSpace instanceof PDPattern)
+        if (colorSpace instanceof PDPattern || colorSpace == null)
         {
             // colorspace of the pattern color isn't known, so just clone
+            // null colorspace can happen with empty annotation color
+            // see PDFBOX-3351-538928-p4.pdf
             return components.clone();
         }
         // PDFBOX-4279: copyOf instead of clone in case array is too small
