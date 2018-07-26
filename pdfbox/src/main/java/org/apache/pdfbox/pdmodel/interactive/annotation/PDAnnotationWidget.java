@@ -25,7 +25,9 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 
 /**
- * This is the class that represents a widget.
+ * This is the class that represents a widget annotation. This represents the
+ * appearance of a field and manages user interactions. A field may have several
+ * widget annotations, which may be on several pages.
  *
  * @author Ben Litchfield
  */
