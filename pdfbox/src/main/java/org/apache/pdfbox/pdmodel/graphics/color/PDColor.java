@@ -113,7 +113,13 @@ public final class PDColor
      */
     public float[] getComponents()
     {
-        return components.clone();
+        if (colorSpace instanceof PDPattern)
+        {
+            // colorspace of the pattern color isn't known, so just clone
+            return components.clone();
+        }
+        // PDFBOX-4279: copyOf instead of clone in case array is too small
+        return Arrays.copyOf(components, colorSpace.getNumberOfComponents());
     }
 
     /**
