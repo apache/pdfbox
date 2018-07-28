@@ -37,7 +37,6 @@ import java.util.Map;
 
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -53,7 +52,7 @@ public class MockHttpServer extends Thread {
         // mock response data
         private int                 mockResponseCode        = 200;
         private Map<String, String> mockResponseHeaders     = new HashMap<String, String>();
-        private byte[]              mockResponseContent     = BaseTest.RECEIVED_MESSAGE.getBytes();
+        private byte[]              mockResponseContent     = "received message".getBytes();
         private String              mockResponseContentType = "text/plain;charset=utf-8";
         private boolean             mockResponseContentEchoRequest;
 
@@ -276,9 +275,6 @@ public class MockHttpServer extends Thread {
             requestContent.reset();
             BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
             String requestMethodHeader = new String(readLine(is));
-            if (requestMethodHeader == null) {
-                return;
-            }
             processRequestMethod(requestMethodHeader);
             processRequestHeaders(is);
             processRequestContent(is);
@@ -295,7 +291,7 @@ public class MockHttpServer extends Thread {
 
         private void processRequestHeaders(InputStream is) throws IOException {
             requestHeaders.clear();
-            byte[] line = null;
+            byte[] line;
             while ((line = readLine(is)) != null) {
                 String lineStr = new String(line);
                 // if there are no more headers
@@ -409,7 +405,7 @@ public class MockHttpServer extends Thread {
 
         private byte[] getChunk(InputStream is, int len) throws IOException {
             ByteArrayOutputStream chunk = new ByteArrayOutputStream();
-            int read = 0;
+            int read;
             int totalRead = 0;
             byte[] bytes = new byte[512];
             // read len bytes as the chunk
@@ -529,68 +525,6 @@ public class MockHttpServer extends Thread {
 
     public String getRequestUrl() {
         return requestUrl;
-    }
-
-    public static void main(String[] args) {
-        MockHttpServer server = null;
-        try {
-            /*
-             * StringReader reader = new StringReader("lalalalala\r\n");
-             * BufferedReader r = new BufferedReader(reader); String a =
-             * r.readLine(); String b = r.readLine(); System.out.println(a);
-             * System.out.println(b); server = new MockHttpServer(3334);
-             * server.setMockResponseContent("Howdee!");
-             * server.setMockResponseContentType("text/plain;charset=UTF-8");
-             * //Map<String,String> maps = new HashMap<String,String>();
-             * //maps.put("Location", "http://localhost:3333/lalala");
-             * //server.setMockResponseHeaders(maps); server.startServer(); URL
-             * u = new
-             * URL("http://localhost:3334/qadefect-service/rest/defects/2");
-             * HttpURLConnection huc = (HttpURLConnection)u.openConnection();
-             * huc.setRequestMethod("PUT"); huc.setDoOutput(true);
-             * huc.setChunkedStreamingMode(40);
-             * huc.addRequestProperty("Content-Type", "application/xml");
-             * huc.connect(); OutputStream os = huc.getOutputStream();
-             * os.write("martinmartinartinmartinmartin".getBytes());
-             * //os.flush();
-             * os.write("martinmartinartinmartinmartin".getBytes()); os.flush();
-             * os.close(); huc.getResponseCode(); huc.getHeaderField("Server");
-             * InputStream is = huc.getInputStream(); byte[] by = new byte[0];
-             * byte[] by1 = new byte[5]; int readdd = is.read(by);
-             * System.out.println("readdd = " + readdd); readdd = is.read(by1);
-             * System.out.println("readdd = " + readdd); readdd = is.read(by);
-             * System.out.println("readdd = " + readdd); readdd = is.read(by1);
-             * System.out.println("readdd = " + readdd); readdd = is.read(by);
-             * System.out.println("readdd = " + readdd); huc.disconnect();
-             */
-
-            // RestClient client = new RestClient();
-            //            
-            // // init the resource
-            // String url =
-            // "http://localhost:3333/qadefect-service/rest/defects/2";
-            // Resource resource = client.newResource(url);
-            //            
-            // // get defect
-            // Response<TextEntity> response = resource.doGet(TextEntity.class);
-            // TextEntity d = response.getEntity();
-            // System.out.println("GET returned content: " + d.getText());
-            //
-            // TextEntity text = new TextEntity();
-            // text.setText("Hello");
-            // response = resource.doPut(text, TextEntity.class);
-            // d = response.getEntity();
-            // System.out.println("PUT sent content: " +
-            // server.getRequestContent());
-            // System.out.println("PUT returned content: " + d.getText());
-            // System.out.println(server.getRequestUrl());
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        } finally {
-            if (server != null) {
-                server.stopServer();
-            }
-        }
     }
 
     public void setMockHttpServerResponses(MockHttpServerResponse... responses) {
