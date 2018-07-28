@@ -31,6 +31,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class MockHttpServer extends Thread {
 
         // mock response data
         private int                 mockResponseCode        = 200;
-        private Map<String, String> mockResponseHeaders     = new HashMap<String, String>();
+        private final Map<String, String> mockResponseHeaders = new HashMap<>();
         private byte[]              mockResponseContent     = "received message".getBytes();
         private String              mockResponseContentType = "text/plain;charset=utf-8";
         private boolean             mockResponseContentEchoRequest;
@@ -118,11 +119,9 @@ public class MockHttpServer extends Thread {
     // request data
     private String                       requestMethod           = null;
     private String                       requestUrl              = null;
-    private Map<String, List<String>>    requestHeaders          =
-                                                                     new HashMap<String, List<String>>();
+    private Map<String, List<String>>    requestHeaders          = new HashMap<>();
     private ByteArrayOutputStream        requestContent          = new ByteArrayOutputStream();
-    private List<MockHttpServerResponse> mockHttpServerResponses =
-                                                                     new ArrayList<MockHttpServerResponse>();
+    private List<MockHttpServerResponse> mockHttpServerResponses = new ArrayList<>();
     private int                          responseCounter         = 0;
 
     public MockHttpServer(int serverPort) {
@@ -179,6 +178,7 @@ public class MockHttpServer extends Thread {
         }
     }
 
+    @Override
     public void run() {
         serverThread = Thread.currentThread();
         executeLoop();
@@ -238,7 +238,7 @@ public class MockHttpServer extends Thread {
 
     private class HttpProcessor {
 
-        private Socket socket;
+        private final Socket socket;
 
         public HttpProcessor(Socket socket) throws SocketException {
             // set the read timeout (5 seconds by default)
@@ -341,7 +341,7 @@ public class MockHttpServer extends Thread {
 
         private void processChunkedContent(InputStream is) throws IOException {
             requestContent.write("".getBytes());
-            byte[] chunk = null;
+            byte[] chunk;
             byte[] line = null;
             boolean lastChunk = false;
             // we should exit this loop only after we get to the end of stream
@@ -421,7 +421,7 @@ public class MockHttpServer extends Thread {
             String[] parts = line.split(": ");
             List<String> values = requestHeaders.get(parts[0]);
             if (values == null) {
-                values = new ArrayList<String>();
+                values = new ArrayList<>();
                 requestHeaders.put(parts[0], values);
             }
             values.add(parts[1]);
@@ -529,9 +529,7 @@ public class MockHttpServer extends Thread {
 
     public void setMockHttpServerResponses(MockHttpServerResponse... responses) {
         mockHttpServerResponses.clear();
-        for (int i = 0; i < responses.length; i++) {
-            mockHttpServerResponses.add(responses[i]);
-        }
+        mockHttpServerResponses.addAll(Arrays.asList(responses));
     }
 
     public List<MockHttpServerResponse> getMockHttpServerResponses() {
