@@ -94,14 +94,19 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             lle = -lle;
         }
 
+        // observed with diagonal line of AnnotationSample.Standard.pdf
+        // for line endings, very small widths must be treated as size 1.
+        // However the border of the line ending shapes is not drawn.
+        float lineEndingSize = (ab.width < 1e-5) ? 1 : ab.width;
+
         // add/substract with, font height, and arrows
         // arrow length is 9 * width at about 30° => 10 * width seems to be enough
         // but need to consider /LL, /LLE and /LLO too
         //TODO find better way to calculate padding
-        rect.setLowerLeftX(Math.min(minX - Math.max(ab.width * 10, Math.abs(llo+ll+lle)), rect.getLowerLeftX()));
-        rect.setLowerLeftY(Math.min(minY - Math.max(ab.width * 10, Math.abs(llo+ll+lle)), rect.getLowerLeftY()));
-        rect.setUpperRightX(Math.max(maxX + Math.max(ab.width * 10, Math.abs(llo+ll+lle)), rect.getUpperRightX()));
-        rect.setUpperRightY(Math.max(maxY + Math.max(ab.width * 10, Math.abs(llo+ll+lle)), rect.getUpperRightY()));
+        rect.setLowerLeftX(Math.min(minX - Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getLowerLeftX()));
+        rect.setLowerLeftY(Math.min(minY - Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getLowerLeftY()));
+        rect.setUpperRightX(Math.max(maxX + Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getUpperRightX()));
+        rect.setUpperRightY(Math.max(maxY + Math.max(lineEndingSize * 10, Math.abs(llo+ll+lle)), rect.getUpperRightY()));
 
         annotation.setRectangle(rect);
 
@@ -181,7 +186,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // that's the easiest way to calculate the positions for the line before and after inline caption
                 if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
                 {
-                    cs.moveTo(ab.width, y);
+                    cs.moveTo(lineEndingSize, y);
                 }
                 else
                 {
@@ -198,18 +203,18 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // this arbitrary number is from Adobe
                     yOffset = -2.6f;
 
-                    cs.lineTo(xOffset - ab.width, y);
-                    cs.moveTo(lineLength - xOffset + ab.width, y);
+                    cs.lineTo(xOffset - lineEndingSize, y);
+                    cs.moveTo(lineLength - xOffset + lineEndingSize, y);
                 }
                 if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
                 {
-                    cs.lineTo(lineLength - ab.width, y);
+                    cs.lineTo(lineLength - lineEndingSize, y);
                 }
                 else
                 {
                     cs.lineTo(lineLength, y);
                 }
-                cs.drawShape(ab.width, hasStroke, false);
+                cs.drawShape(lineEndingSize, hasStroke, false);
 
                 // /CO entry (caption offset)
                 float captionHorizontalOffset = annotation.getCaptionHorizontalOffset();
@@ -231,14 +236,14 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // Adobe paints vertical bar to the caption
                     cs.moveTo(0 + lineLength / 2, y);
                     cs.lineTo(0 + lineLength / 2, y + captionVerticalOffset);
-                    cs.drawShape(ab.width, hasStroke, false);
+                    cs.drawShape(lineEndingSize, hasStroke, false);
                 }
             }
             else
             {
                 if (SHORT_STYLES.contains(annotation.getStartPointEndingStyle()))
                 {
-                    cs.moveTo(ab.width, y);
+                    cs.moveTo(lineEndingSize, y);
                 }
                 else
                 {
@@ -246,19 +251,27 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 if (SHORT_STYLES.contains(annotation.getEndPointEndingStyle()))
                 {
-                    cs.lineTo(lineLength - ab.width, y);
+                    cs.lineTo(lineLength - lineEndingSize, y);
                 }
                 else
                 {
                     cs.lineTo(lineLength, y);
                 }
-                cs.drawShape(ab.width, hasStroke, false);
+                cs.drawShape(lineEndingSize, hasStroke, false);
             }
             cs.restoreGraphicsState();
-
+        
             // paint the styles here and not before showing the text, or the text would appear
             // with the interior color
             boolean hasBackground = cs.setNonStrokingColorOnDemand(annotation.getInteriorColor());
+
+            // observed with diagonal line of file AnnotationSample.Standard.pdf
+            // when width is very small, the border of the line ending shapes 
+            // is not drawn.
+            if (ab.width < 1e-5)
+            {
+                hasStroke = false;
+            }
 
             // check for LE_NONE only needed to avoid q cm Q for that case
             if (!LE_NONE.equals(annotation.getStartPointEndingStyle()))
@@ -267,7 +280,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 if (ANGLED_STYLES.contains(annotation.getStartPointEndingStyle()))
                 {
                     cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, ab.width, hasStroke, hasBackground);
+                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, lineEndingSize, hasStroke, hasBackground);
                 }
                 else
                 {
@@ -278,7 +291,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     float xx1 = x1 - (float) (y * Math.sin(angle));
                     float yy1 = y1 + (float) (y * Math.cos(angle));
                     cs.transform(Matrix.getTranslateInstance(xx1, yy1));
-                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, lineEndingSize, hasStroke, hasBackground);
                 }
                 cs.restoreGraphicsState();
             }
@@ -294,7 +307,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // by the non zero x parameter that this is "right ending" side
                     // of a line. This is important for arrows styles.
                     cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, ab.width, hasStroke, hasBackground);
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, lineEndingSize, hasStroke, hasBackground);
                 }
                 else
                 {
@@ -305,7 +318,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     float xx2 = x2 - (float) (y * Math.sin(angle));
                     float yy2 = y2 + (float) (y * Math.cos(angle));
                     cs.transform(Matrix.getTranslateInstance(xx2, yy2));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, lineEndingSize, hasStroke, hasBackground);
                 }
             }
         }
