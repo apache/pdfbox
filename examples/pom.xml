@@ -85,10 +85,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.wink</groupId>
-      <artifactId>wink-component-test-support</artifactId>
-      <version>1.4</version>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jaxrs_1.1_spec</artifactId>
+        <version>1.0</version>
+        <scope>test</scope>
     </dependency>
   </dependencies>
 
