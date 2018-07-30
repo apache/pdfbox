@@ -455,7 +455,7 @@ public class COSParser extends BaseParser
      * @return the offset of StartXref
      * @throws IOException If something went wrong.
      */
-    private final long getStartxrefOffset() throws IOException
+    private long getStartxrefOffset() throws IOException
     {
         byte[] buf;
         long skipBytes;
@@ -2150,7 +2150,7 @@ public class COSParser extends BaseParser
      * 
      * @throws IOException if something went wrong
      */
-    private final COSDictionary rebuildTrailer() throws IOException
+    private COSDictionary rebuildTrailer() throws IOException
     {
         COSDictionary trailer = null;
         bfSearchForObjects();
