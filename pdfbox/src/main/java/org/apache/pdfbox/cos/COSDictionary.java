@@ -1421,10 +1421,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This will add all of the dictionarys keys/values to this dictionary. Only called when adding keys to a trailer
-     * that already exists.
+     * This will add all of the dictionaries keys/values to this dictionary.
+     * Only called when adding keys to a trailer that already exists.
      *
-     * @param dic The dic to get the keys from.
+     * @param dic The dictionaries to get the keys from.
      */
     public void addAll(COSDictionary dic)
     {
