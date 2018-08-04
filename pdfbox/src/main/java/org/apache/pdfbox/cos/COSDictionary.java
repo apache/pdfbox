@@ -1358,10 +1358,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This will add all of the dictionarys keys/values to this dictionary. Only called when adding keys to a trailer
-     * that already exists.
+     * This will add all of the dictionaries keys/values to this dictionary.
+     * Only called when adding keys to a trailer that already exists.
      *
-     * @param dic The dic to get the keys from.
+     * @param dic The dictionaries to get the keys from.
      */
     public void addAll(COSDictionary dic)
     {
@@ -1402,13 +1402,15 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This will add all of the dictionarys keys/values to this dictionary, but only if they don't already exist. If a
-     * key already exists in this dictionary then nothing is changed.
+     * This will add all of the dictionaries keys/values to this dictionary, but
+     * only if they don't already exist. If a key already exists in this
+     * dictionary then nothing is changed.
      *
-     * @param dic The dic to get the keys from.
-     * 
-     * @deprecated This method should no longer be used and will be removed in 3.0 because it could
-     * also merge attributes that should not be merged (filter and length in a COSStream.
+     * @param dic The dictionaries to get the keys from.
+     *
+     * @deprecated This method should no longer be used and will be removed in
+     * 3.0 because it could also merge attributes that should not be merged
+     * (filter and length) in a COSStream.
      */
     @Deprecated
     public void mergeInto(COSDictionary dic)
