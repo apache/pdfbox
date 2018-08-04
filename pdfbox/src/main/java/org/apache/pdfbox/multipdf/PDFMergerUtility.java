@@ -1049,9 +1049,10 @@ public class PDFMergerUtility
     }
 
     /**
-     * This will add all of the dictionarys keys/values to this dictionary, but only if they are not
-     * in an exclusion list and if they don't already exist. If a key already exists in this
-     * dictionary then nothing is changed.
+     * This will add all of the dictionaries keys/values to this dictionary, but
+     * only if they are not in an exclusion list and if they don't already
+     * exist. If a key already exists in this dictionary then nothing is
+     * changed.
      *
      * @param src The source dictionary to get the keys/values from.
      * @param dst The destination dictionary to merge the keys/values into.
