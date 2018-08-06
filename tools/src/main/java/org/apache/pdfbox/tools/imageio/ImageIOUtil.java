@@ -175,7 +175,7 @@ public final class ImageIOUtil
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
             int dpi, float quality) throws IOException
     {
-        return writeImage(image, formatName, output, dpi, 1.0f, "");
+        return writeImage(image, formatName, output, dpi, quality, "");
     }
 
     /**
