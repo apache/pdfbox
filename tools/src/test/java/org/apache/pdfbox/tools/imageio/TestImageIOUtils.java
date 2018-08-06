@@ -257,10 +257,13 @@ public class TestImageIOUtils extends TestCase
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
         System.out.println("  " + fileName + "." + imageFormat); // for Maven (keep me!)
-        OutputStream os = new FileOutputStream(fileName + "." + imageFormat);
-        boolean res = ImageIOUtil.writeImage(image, imageFormat, os, Math.round(dpi), compressionQuality, compressionType);
-        os.close();
-        assertTrue("ImageIOUtil.writeImage() failed for file " + fileName, res);
+        try (OutputStream os = new FileOutputStream(fileName + "." + imageFormat))
+        {
+            boolean res = ImageIOUtil.writeImage(image, imageFormat, os,
+                    Math.round(dpi), compressionQuality, compressionType);
+            assertTrue("ImageIOUtil.writeImage() failed for file " + fileName, res);
+        }
+        
         if ("jpg".equals(imageFormat) || "gif".equals(imageFormat) || "JPEG".equals(compressionType))
         {
             // jpeg is lossy, gif has 256 colors, 
