@@ -160,8 +160,8 @@ public final class ImageIOUtil
      * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the quality
      * parameter for JPG, and dependent of bit count for TIFF (a bitonal image
      * will be compressed with CCITT G4, a color image with LZW). Creating a
-     * TIFF image is only supported if the jai_imageio library is in the class
-     * path.
+     * TIFF image is only supported if the jai_imageio library (or equivalent)
+     * is in the class path.
      *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
@@ -174,6 +174,33 @@ public final class ImageIOUtil
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
             int dpi, float quality) throws IOException
+    {
+        return writeImage(image, formatName, output, dpi, 1.0f, "");
+    }
+
+    /**
+     * Writes a buffered image to a file using the given image format.
+     * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the quality
+     * parameter for JPG, and dependent of bit count for TIFF (a bitonal image
+     * will be compressed with CCITT G4, a color image with LZW). Creating a
+     * TIFF image is only supported if the jai_imageio library is in the class
+     * path.
+     *
+     * @param image the image to be written
+     * @param formatName the target format (ex. "png")
+     * @param output the output stream to be used for writing
+     * @param dpi the resolution in dpi (dots per inch) to be used in metadata
+     * @param compressionQuality quality to be used when compressing the image
+     * (0 &lt; quality &lt; 1.0f)
+     * @param compressionType Advanced users only, and only relevant for TIFF
+     * files: If null, save uncompressed; if empty string, use logic explained
+     * above; other valid values are found in the javadoc of
+     * <a href="https://download.java.net/media/jai-imageio/javadoc/1.1/com/sun/media/imageio/plugins/tiff/TIFFImageWriteParam.html">TIFFImageWriteParam</a>.
+     * @return true if the image file was produced, false if there was an error.
+     * @throws IOException if an I/O error occurs
+     */
+    public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
+            int dpi, float compressionQuality, String compressionType) throws IOException
     {
         ImageOutputStream imageOutput = null;
         ImageWriter writer = null;
@@ -225,13 +252,24 @@ public final class ImageIOUtil
                 param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
                 if (formatName.toLowerCase().startsWith("tif"))
                 {
-                    // TIFF compression
-                    TIFFUtil.setCompressionType(param, image);
+                    if ("".equals(compressionType))
+                    {
+                        // default logic
+                        TIFFUtil.setCompressionType(param, image);
+                    }
+                    else
+                    {
+                        param.setCompressionType(compressionType);
+                        if (compressionType != null)
+                        {
+                            param.setCompressionQuality(compressionQuality);
+                        }
+                    }
                 }
                 else
                 {
                     param.setCompressionType(param.getCompressionTypes()[0]);
-                    param.setCompressionQuality(quality);
+                    param.setCompressionQuality(compressionQuality);
                 }
             }
 
