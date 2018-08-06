@@ -24,8 +24,10 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -123,43 +125,54 @@ public class TestImageIOUtils extends TestCase
             checkSaveResources(document.getPage(0).getResources());
 
             // testing PNG
-            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi, 1, "");
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
             checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.PNG);
 
             // testing JPG/JPEG
             imageType = "jpg";
-            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi, 0.5f, "");
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
             checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.JPEG);
 
             // testing BMP
             imageType = "bmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi, 1, "");
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
             checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.BMP);
 
             // testing GIF
             imageType = "gif";
-            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi, 1, "");
             // no META data posible for GIF, thus no dpi test
             checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.GIF);
 
             // testing WBMP
             imageType = "wbmp";
-            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.BINARY, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.BINARY, dpi, 1, "");
             // no META data posible for WBMP, thus no dpi test
 
             // testing TIFF
             imageType = "tif";
-            writeImage(document, imageType, outDir + file.getName() + "-bw-", ImageType.BINARY, dpi);
+            writeImage(document, imageType, outDir + file.getName() + "-bw-", ImageType.BINARY, dpi, 1, "");
             checkResolution(outDir + file.getName() + "-bw-1." + imageType, (int) dpi);
             checkTiffCompression(outDir + file.getName() + "-bw-1." + imageType, "CCITT T.6");
             checkFileTypeByContent(outDir + file.getName() + "-bw-1." + imageType, FileType.TIFF);
-            writeImage(document, imageType, outDir + file.getName() + "-co-", ImageType.RGB, dpi);
-            checkResolution(outDir + file.getName() + "-co-1." + imageType, (int) dpi);
-            checkTiffCompression(outDir + file.getName() + "-co-1." + imageType, "LZW");
-            checkFileTypeByContent(outDir + file.getName() + "-co-1." + imageType, FileType.TIFF);
+
+            writeImage(document, imageType, outDir + file.getName() + "-coLZW-", ImageType.RGB, dpi, 1, "");
+            checkResolution(outDir + file.getName() + "-coLZW-1." + imageType, (int) dpi);
+            checkTiffCompression(outDir + file.getName() + "-coLZW-1." + imageType, "LZW");
+            checkFileTypeByContent(outDir + file.getName() + "-coLZW-1." + imageType, FileType.TIFF);
+
+            writeImage(document, imageType, outDir + file.getName() + "-coJPEG-", ImageType.RGB, dpi, 0.5f, "JPEG");
+            checkResolution(outDir + file.getName() + "-coJPEG-1." + imageType, (int) dpi);
+            checkTiffCompression(outDir + file.getName() + "-coJPEG-1." + imageType, "JPEG");
+            checkFileTypeByContent(outDir + file.getName() + "-coJPEG-1." + imageType, FileType.TIFF);
+
+            writeImage(document, imageType, outDir + file.getName() + "-coNone-", ImageType.RGB, dpi, 1, null);
+            checkResolution(outDir + file.getName() + "-coNone-1." + imageType, (int) dpi);
+            checkTiffCompression(outDir + file.getName() + "-coNone-1." + imageType, "None");
+            checkFileTypeByContent(outDir + file.getName() + "-coNone-1." + imageType, FileType.TIFF);
         }
         finally
         {
@@ -236,16 +249,19 @@ public class TestImageIOUtils extends TestCase
     }
 
     private void writeImage(PDDocument document, String imageFormat, String outputPrefix,
-            ImageType imageType, float dpi) throws IOException
+            ImageType imageType, float dpi, float compressionQuality,
+            String compressionType) throws IOException
     {
         PDFRenderer renderer = new PDFRenderer(document);
         BufferedImage image = renderer.renderImageWithDPI(0, dpi, imageType);
         String fileName = outputPrefix + 1;
         LOG.info("Writing: " + fileName + "." + imageFormat);
         System.out.println("  " + fileName + "." + imageFormat); // for Maven (keep me!)
-        boolean res = ImageIOUtil.writeImage(image, fileName + "." + imageFormat, Math.round(dpi));
+        OutputStream os = new FileOutputStream(fileName + "." + imageFormat);
+        boolean res = ImageIOUtil.writeImage(image, imageFormat, os, Math.round(dpi), compressionQuality, compressionType);
+        os.close();
         assertTrue("ImageIOUtil.writeImage() failed for file " + fileName, res);
-        if ("jpg".equals(imageFormat) || "gif".equals(imageFormat))
+        if ("jpg".equals(imageFormat) || "gif".equals(imageFormat) || "JPEG".equals(compressionType))
         {
             // jpeg is lossy, gif has 256 colors, 
             // so we can't check for content identity
