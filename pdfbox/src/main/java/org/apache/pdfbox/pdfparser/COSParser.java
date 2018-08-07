@@ -600,7 +600,9 @@ public class COSParser extends BaseParser
 
     /**
      * Adds newObject to toBeParsedList if it is not an COSObject or we didn't
-     * add this COSObject already (checked via addedObjects).
+     * add this COSObject already (checked via addedObjects). Simple objects are
+     * not added because nothing is done with them when toBeParsedList is
+     * processed.
      */
     private void addNewToList(final Queue<COSBase> toBeParsedList, final COSBase newObject,
             final Set<Long> addedObjects)
@@ -612,8 +614,12 @@ public class COSParser extends BaseParser
             {
                 return;
             }
+            toBeParsedList.add(newObject);
         }
-        toBeParsedList.add(newObject);
+        else if (newObject instanceof COSDictionary || newObject instanceof COSArray)
+        {
+            toBeParsedList.add(newObject);
+        }
     }
 
     /**
