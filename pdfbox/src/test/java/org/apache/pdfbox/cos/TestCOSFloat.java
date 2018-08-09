@@ -300,6 +300,13 @@ public class TestCOSFloat extends TestCOSNumber
         writePDFTester.runTest(0.000000000000000000000000000000001f);
     }
 
+    public void testDoubleNegative() throws IOException
+    {
+        // PDFBOX-4289
+        COSFloat cosFloat = new COSFloat("--16.33");
+        assertEquals(-16.33f, cosFloat.floatValue());
+    }
+
     private String floatToString(float value)
     {
         // use a BigDecimal as intermediate state to avoid 

@@ -61,25 +61,30 @@ public class COSFloat extends COSNumber
         }
         catch( NumberFormatException e )
         {
-            if (aFloat.matches("^0\\.0*\\-\\d+"))
+            if (aFloat.startsWith("--"))
+            {
+                // PDFBOX-4289 has --16.33
+                valueAsString = aFloat.substring(1);
+            }
+            else if (aFloat.matches("^0\\.0*\\-\\d+"))
             {
                 // PDFBOX-2990 has 0.00000-33917698
                 // PDFBOX-3369 has 0.00-35095424
                 // PDFBOX-3500 has 0.-262
-                try
-                {
-                    valueAsString = "-" + valueAsString.replaceFirst("\\-", "");
-                    value = new BigDecimal(valueAsString);
-                    checkMinMaxValues();
-                }
-                catch (NumberFormatException e2)
-                {
-                    throw new IOException("Error expected floating point number actual='" + aFloat + "'", e2);
-                }
+                valueAsString = "-" + valueAsString.replaceFirst("\\-", "");
             }
             else
             {
                 throw new IOException("Error expected floating point number actual='" + aFloat + "'", e);
+            }
+            try
+            {
+                value = new BigDecimal(valueAsString);
+                checkMinMaxValues();
+            }
+            catch (NumberFormatException e2)
+            {
+                throw new IOException("Error expected floating point number actual='" + aFloat + "'", e2);
             }
         }
     }
