@@ -23,6 +23,7 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.Paint;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.TexturePaint;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
@@ -113,8 +115,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // the page box to draw (usually the crop box but may be another)
     private PDRectangle pageSize;
 
-    private int pageRotation;
-    
     // whether image of a transparency group must be flipped
     // needed when in a tiling pattern
     private boolean flipTG = false;
@@ -232,7 +232,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics = (Graphics2D) g;
         xform = graphics.getTransform();
         this.pageSize = pageSize;
-        pageRotation = getPage().getRotation() % 360;
 
         setRenderingHints();
 
@@ -539,7 +538,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             throw new IOException("Invalid soft mask subtype.");
         }
-        gray = getRotatedImage(gray);
+        gray = adjustImage(gray);
+        
         Rectangle2D tpgBounds = transparencyGroup.getBounds();
         adjustRectangle(tpgBounds);
         return new SoftMask(parentPaint, gray, tpgBounds, backdropColor, softMask.getTransferFunction());
@@ -554,55 +554,34 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private void adjustRectangle(Rectangle2D r)
     {
         Matrix m = new Matrix(xform);
-        if (pageRotation == 90)
-        {
-            r.setRect(pageSize.getHeight() * m.getScalingFactorY() - r.getY() - r.getHeight(), 
-                      r.getX(), 
-                      r.getWidth(), 
-                      r.getHeight());
-        }
-        if (pageRotation == 180)
-        {
-            r.setRect(pageSize.getWidth() * m.getScalingFactorX() - r.getX() - r.getWidth(),
-                      pageSize.getHeight() * m.getScalingFactorY() - r.getY() - r.getHeight(),
-                      r.getWidth(),
-                      r.getHeight());
-        }
-        if (pageRotation == 270)
-        {
-            r.setRect(r.getY(), 
-                      pageSize.getWidth() * m.getScalingFactorX() - r.getX() - r.getWidth(), 
-                      r.getWidth(), 
-                      r.getHeight());
-        }
+        double scaleX = m.getScalingFactorX();
+        double scaleY = m.getScalingFactorY();
+        
+        AffineTransform adjustedTransform = new AffineTransform(xform);
+        adjustedTransform.scale(1.0 / scaleX, 1.0 / scaleY);
+        r.setRect(adjustedTransform.createTransformedShape(r).getBounds2D());
     }
 
-    // return quadrant-rotated image with adjusted size
-    private BufferedImage getRotatedImage(BufferedImage gray) throws IOException
+    // returns the image adjusted for applySoftMaskToPaint().
+    private BufferedImage adjustImage(BufferedImage gray) throws IOException
     {
-        BufferedImage gray2;
-        AffineTransform at;
-        switch (pageRotation % 360)
-        {
-            case 90:
-                gray2 = new BufferedImage(gray.getHeight(), gray.getWidth(), BufferedImage.TYPE_BYTE_GRAY);
-                at = AffineTransform.getQuadrantRotateInstance(1, gray.getHeight() / 2d, gray.getHeight() / 2d);
-                break;
-            case 180:
-                gray2 = new BufferedImage(gray.getWidth(), gray.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-                at = AffineTransform.getQuadrantRotateInstance(2, gray.getWidth()/ 2d, gray.getHeight() / 2d);
-                break;
-            case 270:
-                gray2 = new BufferedImage(gray.getHeight(), gray.getWidth(), BufferedImage.TYPE_BYTE_GRAY);
-                at = AffineTransform.getQuadrantRotateInstance(3, gray.getWidth()/ 2d, gray.getWidth() / 2d);
-                break;
-            default:
-                return gray;
-        }
-        Graphics2D g2 = (Graphics2D) gray2.getGraphics();
+        AffineTransform at = new AffineTransform(xform);
+        Matrix m = new Matrix(at);
+        at.scale(1.0 / m.getScalingFactorX(), 1.0 / m.getScalingFactorY());
+        
+        Rectangle originalBounds = new Rectangle(gray.getWidth(), gray.getHeight());
+        Rectangle2D transformedBounds = at.createTransformedShape(originalBounds).getBounds2D();
+        at.preConcatenate(AffineTransform.getTranslateInstance(-transformedBounds.getMinX(), 
+                -transformedBounds.getMinY()));
+        
+        int width = (int) Math.ceil(transformedBounds.getWidth());
+        int height = (int) Math.ceil(transformedBounds.getHeight());
+        BufferedImage transformedGray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY); 
+        
+        Graphics2D g2 = (Graphics2D) transformedGray.getGraphics();
         g2.drawImage(gray, at, null);
         g2.dispose();
-        return gray2;
+        return transformedGray;
     }
 
     // returns the stroking AWT Paint
@@ -1234,10 +1213,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         float xScale = Math.abs(m.getScalingFactorX());
         float yScale = Math.abs(m.getScalingFactorY());
         
-        // adjust the initial translation (includes the translation used to "help" the rotation)
-        graphics.setTransform(AffineTransform.getTranslateInstance(xform.getTranslateX(), xform.getTranslateY()));
-
-        graphics.rotate(Math.toRadians(pageRotation));
+        AffineTransform transform = new AffineTransform(xform);
+        transform.scale(1.0 / xScale, 1.0 / yScale);
+        graphics.setTransform(transform);
 
         // adjust bbox (x,y) position at the initial scale + cropbox
         float x = bbox.getLowerLeftX() - pageSize.getLowerLeftX();
@@ -1412,8 +1390,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                        minY / Math.abs(m.getScalingFactorY()),
                         (float) bounds.getWidth() / Math.abs(m.getScalingFactorX()),
                         (float) bounds.getHeight() / Math.abs(m.getScalingFactorY()));
-            int pageRotationOriginal = pageRotation;
-            pageRotation = 0;
             int clipWindingRuleOriginal = clipWindingRule;
             clipWindingRule = -1;
             GeneralPath linePathOriginal = linePath;
@@ -1450,7 +1426,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 linePath = linePathOriginal;
                 pageSize = pageSizeOriginal;
                 xform = xformOriginal;
-                pageRotation = pageRotationOriginal;
             }
 
             if (needsBackdrop)
