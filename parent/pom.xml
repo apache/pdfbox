@@ -39,7 +39,7 @@
         <name>The Apache Software Foundation</name>
         <url>http://pdfbox.apache.org</url>
     </organization>
-  
+
     <issueManagement>
         <system>jira</system>
         <url>https://issues.apache.org/jira/browse/PDFBOX</url>
@@ -91,7 +91,7 @@
                 <artifactId>log4j</artifactId>
                 <version>1.2.17</version>
             </dependency>
-          
+
             <dependency>
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>jbig2-imageio</artifactId>
@@ -99,15 +99,15 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- For legal reasons (incompatible license), these two dependencies 
-            are to be used only in the tests and may not be distributed. 
+            <!-- For legal reasons (incompatible license), these two dependencies
+            are to be used only in the tests and may not be distributed.
             See also LEGAL-195 -->
             <dependency>
                 <groupId>com.github.jai-imageio</groupId>
                 <artifactId>jai-imageio-core</artifactId>
                 <version>1.4.0</version>
                 <scope>test</scope>
-            </dependency>    
+            </dependency>
             <dependency>
                 <groupId>com.github.jai-imageio</groupId>
                 <artifactId>jai-imageio-jpeg2000</artifactId>
@@ -116,7 +116,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-  
+
     <profiles>
         <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
         <profile>
@@ -175,7 +175,7 @@
                       <requireMavenVersion>
                         <version>3.3.9</version>
                       </requireMavenVersion>
-                    </rules>    
+                    </rules>
                   </configuration>
                 </execution>
               </executions>
@@ -198,6 +198,7 @@
                     </links>
                     <encoding>UTF-8</encoding>
                     <notimestamp>true</notimestamp>
+                    <locale>en</locale>
                 </configuration>
             </plugin>
             <plugin>
