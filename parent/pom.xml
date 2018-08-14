@@ -43,7 +43,7 @@
         <name>The Apache Software Foundation</name>
         <url>http://pdfbox.apache.org</url>
     </organization>
-  
+
     <issueManagement>
         <system>jira</system>
         <url>https://issues.apache.org/jira/browse/PDFBOX</url>
@@ -53,7 +53,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -101,15 +101,15 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- For legal reasons (incompatible license), these two dependencies 
-            are to be used only in the tests and may not be distributed. 
+            <!-- For legal reasons (incompatible license), these two dependencies
+            are to be used only in the tests and may not be distributed.
             See also LEGAL-195 -->
             <dependency>
                 <groupId>com.github.jai-imageio</groupId>
                 <artifactId>jai-imageio-core</artifactId>
                 <version>1.4.0</version>
                 <scope>test</scope>
-            </dependency>    
+            </dependency>
             <dependency>
                 <groupId>com.github.jai-imageio</groupId>
                 <artifactId>jai-imageio-jpeg2000</artifactId>
@@ -200,6 +200,7 @@
                     </links>
                     <encoding>UTF-8</encoding>
                     <notimestamp>true</notimestamp>
+                    <locale>en</locale>
                 </configuration>
             </plugin>
             <plugin>
