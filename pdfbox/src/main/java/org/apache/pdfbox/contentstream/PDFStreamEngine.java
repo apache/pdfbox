@@ -118,7 +118,7 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Initialises the stream engine for the given page.
+     * Initializes the stream engine for the given page.
      */
     private void initPage(PDPage page)
     {
@@ -136,7 +136,7 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * This will initialise and process the contents of the stream.
+     * This will initialize and process the contents of the stream.
      *
      * @param page the page to process
      * @throws IOException if there is an error accessing the stream
