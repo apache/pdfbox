@@ -90,7 +90,7 @@ public class CSSeparation implements ChangeListener, ActionListener
         slider.setMajorTickSpacing(50);
         slider.setPaintTicks(true);
 
-        Dictionary labelTable = new Hashtable();
+        Dictionary<Integer, JLabel> labelTable = new Hashtable<>();
         JLabel lightest = new JLabel("lightest");
         lightest.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
         JLabel darkest = new JLabel("darkest");
