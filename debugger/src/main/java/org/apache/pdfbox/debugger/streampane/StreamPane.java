@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -158,7 +159,7 @@ public class StreamPane implements ActionListener
 
     private JPanel createHeaderPanel(List<String> availableFilters, String i, ActionListener actionListener)
     {
-        JComboBox filters = new JComboBox(availableFilters.toArray());
+        JComboBox<String> filters = new JComboBox<>(new Vector<>(availableFilters));
         filters.setSelectedItem(i);
         filters.addActionListener(actionListener);
 
