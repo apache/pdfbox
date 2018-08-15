@@ -118,7 +118,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     }
 
     /**
-     * This will initialise and process the contents of the stream.
+     * This will initialize and process the contents of the stream.
      *
      * @param page the page to process
      * @throws java.io.IOException if there is an error accessing the stream.

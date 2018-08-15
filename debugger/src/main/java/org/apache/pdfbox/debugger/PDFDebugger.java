@@ -454,7 +454,7 @@ public class PDFDebugger extends JFrame
     }
 
     /**
-     * Initialise application global event handlers.
+     * Initialize application global event handlers.
      * Protected to allow subclasses to override this method if they
      * don't want the global event handler overridden.
      */
