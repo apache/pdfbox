@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.SoftReference;
+import java.util.Arrays;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.logging.Log;
@@ -421,7 +422,29 @@ public final class PDImageXObject extends PDXObject implements PDImage
         PDImageXObject softMask = getSoftMask();
         if (softMask != null)
         {
-            image = applyMask(image, softMask.getOpaqueImage(), true);
+            COSBase base = softMask.getCOSObject().getItem(COSName.MATTE);
+            float[] matte = null;
+            if (base instanceof COSArray)
+            {
+                // PDFBOX-4267: process /Matte
+                // see PDF specification 1.7, 11.6.5.3 Soft-Mask Images
+                matte = ((COSArray) base).toFloatArray();
+                if (getColorSpace().getNumberOfComponents() == 1 &&
+                    matte.length >= 1)
+                {
+                    // /DeviceGray has only one element in Matte
+                    // See file from PDFBOX-1359, page 14
+                    // Root/Pages/Kids/[2]/Kids/[2]/Resources/XObject/Im1/Resources/XObject/Im0
+                    matte = new float[] { matte[0], matte[0], matte[0] };
+                }
+                if (matte.length != 3)
+                {
+                    LOG.warn("/Matte entry " + Arrays.toString(matte) + 
+                             " for Soft-Mask may not work properly");
+                    matte = Arrays.copyOf(matte, 3);
+                }
+            }
+            image = applyMask(image, softMask.getOpaqueImage(), true, matte);
         }
         else
         {
@@ -429,7 +452,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             PDImageXObject mask = getMask();
             if (mask != null && mask.isStencil())
             {
-                image = applyMask(image, mask.getOpaqueImage(), false);
+                image = applyMask(image, mask.getOpaqueImage(), false, null);
             }
         }
 
@@ -471,7 +494,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     // explicit mask: RGB + Binary -> ARGB
     // soft mask: RGB + Gray -> ARGB
-    private BufferedImage applyMask(BufferedImage image, BufferedImage mask, boolean isSoft)
+    private BufferedImage applyMask(BufferedImage image, BufferedImage mask,
+                                    boolean isSoft, float[] matte)
             throws IOException
     {
         if (mask == null)
@@ -517,6 +541,12 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 if (isSoft)
                 {
                     rgba[3] = alphaPixel[0];
+                    if (matte != null && alphaPixel[0] != 0)
+                    {
+                        rgba[0] = clampColor(((rgba[0] / 255 - matte[0]) / (alphaPixel[0] / 255) + matte[0]) * 255);
+                        rgba[1] = clampColor(((rgba[1] / 255 - matte[1]) / (alphaPixel[0] / 255) + matte[1]) * 255);
+                        rgba[2] = clampColor(((rgba[2] / 255 - matte[2]) / (alphaPixel[0] / 255) + matte[2]) * 255);
+                    }
                 }
                 else
                 {
@@ -528,6 +558,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
 
         return masked;
+    }
+
+    private float clampColor(float color)
+    {
+        return color < 0 ? 0 : (color > 255 ? 255 : color);        
     }
 
     /**
