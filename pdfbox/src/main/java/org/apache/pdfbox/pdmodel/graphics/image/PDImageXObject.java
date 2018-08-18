@@ -566,7 +566,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 if (isSoft)
                 {
                     rgba[3] = alphaPixel[0];
-                    if (matte != null && alphaPixel[0] != 0)
+                    if (matte != null && Float.compare(alphaPixel[0], 0) != 0)
                     {
                         rgba[0] = clampColor(((rgba[0] / 255 - matte[0]) / (alphaPixel[0] / 255) + matte[0]) * 255);
                         rgba[1] = clampColor(((rgba[1] / 255 - matte[1]) / (alphaPixel[0] / 255) + matte[1]) * 255);
