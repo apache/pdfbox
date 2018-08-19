@@ -455,20 +455,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
             // PDFBOX-4267: process /Matte
             // see PDF specification 1.7, 11.6.5.3 Soft-Mask Images
             matte = ((COSArray) base).toFloatArray();
-            if (getColorSpace().getNumberOfComponents() == 1 &&
-                    matte.length >= 1)
-            {
-                // /DeviceGray has only one element in Matte
-                // See file from PDFBOX-1359, page 14
-                // Root/Pages/Kids/[2]/Kids/[2]/Resources/XObject/Im1/Resources/XObject/Im0
-                matte = new float[] { matte[0], matte[0], matte[0] };
-            }
-            if (matte.length != 3)
-            {
-                LOG.warn("/Matte entry " + Arrays.toString(matte) +
-                        " for Soft-Mask may not work properly");
-                matte = Arrays.copyOf(matte, 3);
-            }
+            // convert to RGB
+            matte = softMask.getColorSpace().toRGB(matte);
         }
         return matte;
     }
