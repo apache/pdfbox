@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ref.SoftReference;
-import java.util.Arrays;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.logging.Log;
