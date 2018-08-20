@@ -330,35 +330,42 @@ public class PDFMergerUtility
             for (Object sourceObject : sources)
             {
                 PDDocument sourceDoc = null;
-                if (sourceObject instanceof File)
+                try
                 {
-                    sourceDoc = PDDocument.load((File) sourceObject, memUsageSetting);
-                }
-                else
-                {
-                    sourceDoc = PDDocument.load((InputStream) sourceObject, memUsageSetting);
-                }
-                for (PDPage page : sourceDoc.getPages())
-                {
-                    PDPage newPage = new PDPage(
-                            (COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
-                    newPage.setCropBox(page.getCropBox());
-                    newPage.setMediaBox(page.getMediaBox());
-                    newPage.setRotation(page.getRotation());
-                    PDResources resources = page.getResources();
-                    if (resources != null)
+                    if (sourceObject instanceof File)
                     {
-                        // this is smart enough to just create references for resources that are used on multiple pages
-                        newPage.setResources(new PDResources(
-                                (COSDictionary) cloner.cloneForNewDocument(resources)));
+                        sourceDoc = PDDocument.load((File) sourceObject, memUsageSetting);
                     }
                     else
                     {
-                        newPage.setResources(new PDResources());
+                        sourceDoc = PDDocument.load((InputStream) sourceObject, memUsageSetting);
                     }
-                    destination.addPage(newPage);
+                    for (PDPage page : sourceDoc.getPages())
+                    {
+                        PDPage newPage = new PDPage(
+                                (COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
+                        newPage.setCropBox(page.getCropBox());
+                        newPage.setMediaBox(page.getMediaBox());
+                        newPage.setRotation(page.getRotation());
+                        PDResources resources = page.getResources();
+                        if (resources != null)
+                        {
+                            // this is smart enough to just create references for resources that are used on multiple
+                            // pages
+                            newPage.setResources(new PDResources(
+                                    (COSDictionary) cloner.cloneForNewDocument(resources)));
+                        }
+                        else
+                        {
+                            newPage.setResources(new PDResources());
+                        }
+                        destination.addPage(newPage);
+                    }
                 }
-                sourceDoc.close();
+                finally
+                {
+                    IOUtils.closeQuietly(sourceDoc);
+                }
             }
             
             if (destinationStream == null)
