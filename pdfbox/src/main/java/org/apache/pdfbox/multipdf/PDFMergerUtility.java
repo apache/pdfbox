@@ -81,8 +81,7 @@ public class PDFMergerUtility
      */
     private static final Log LOG = LogFactory.getLog(PDFMergerUtility.class);
 
-    private final List<InputStream> sources;
-    private final List<FileInputStream> fileInputStreams;
+    private final List<Object> sources;
     private String destinationFileName;
     private OutputStream destinationStream;
     private boolean ignoreAcroFormErrors = false;
@@ -137,7 +136,6 @@ public class PDFMergerUtility
     public PDFMergerUtility()
     {
         sources = new ArrayList<>();
-        fileInputStreams = new ArrayList<>();
     }
     
     /**
@@ -267,7 +265,6 @@ public class PDFMergerUtility
     {
         FileInputStream stream = new FileInputStream(source);
         sources.add(stream);
-        fileInputStreams.add(stream);
     }
 
     /**
@@ -324,36 +321,44 @@ public class PDFMergerUtility
         }
     }
     
-    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting, List<InputStream> sourceDocuments) throws IOException
+    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting,
+            List<Object> sourceDocuments) throws IOException
     {
         try (PDDocument destination = new PDDocument(memUsageSetting))
         {
             PDFCloneUtility cloner = new PDFCloneUtility(destination);
-            for (InputStream sourceInputStream : sources)
+            for (Object sourceObject : sources)
             {
-                try (PDDocument sourceDoc = PDDocument.load(sourceInputStream, memUsageSetting))
+                PDDocument sourceDoc = null;
+                if (sourceObject instanceof File)
                 {
-                    for (PDPage page : sourceDoc.getPages())
-                    {
-                        PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
-                        newPage.setCropBox(page.getCropBox());
-                        newPage.setMediaBox(page.getMediaBox());
-                        newPage.setRotation(page.getRotation());
-                        PDResources resources = page.getResources();
-                        if (resources != null)
-                        {
-                            // this is smart enough to just create references for resources that are used on multiple pages
-                            newPage.setResources(new PDResources((COSDictionary) cloner.cloneForNewDocument(resources)));
-                        }
-                        else
-                        {
-                            newPage.setResources(new PDResources());
-                        }
-                        destination.addPage(newPage);
-                    }
-                    sourceDoc.close();
+                    sourceDoc = PDDocument.load((File) sourceObject, memUsageSetting);
                 }
-                sourceInputStream.close();
+                else
+                {
+                    sourceDoc = PDDocument.load((InputStream) sourceObject, memUsageSetting);
+                }
+                for (PDPage page : sourceDoc.getPages())
+                {
+                    PDPage newPage = new PDPage(
+                            (COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
+                    newPage.setCropBox(page.getCropBox());
+                    newPage.setMediaBox(page.getMediaBox());
+                    newPage.setRotation(page.getRotation());
+                    PDResources resources = page.getResources();
+                    if (resources != null)
+                    {
+                        // this is smart enough to just create references for resources that are used on multiple pages
+                        newPage.setResources(new PDResources(
+                                (COSDictionary) cloner.cloneForNewDocument(resources)));
+                    }
+                    else
+                    {
+                        newPage.setResources(new PDResources());
+                    }
+                    destination.addPage(newPage);
+                }
+                sourceDoc.close();
             }
             
             if (destinationStream == null)
@@ -393,9 +398,18 @@ public class PDFMergerUtility
                     MemoryUsageSetting.setupMainMemoryOnly();
             try (PDDocument destination = new PDDocument(partitionedMemSetting))
             {
-                for (InputStream sourceInputStream : sources)
+                for (Object sourceObject : sources)
                 {
-                    PDDocument sourceDoc = PDDocument.load(sourceInputStream, partitionedMemSetting);
+                    PDDocument sourceDoc = null;
+                    if (sourceObject instanceof File)
+                    {
+                        sourceDoc = PDDocument.load((File) sourceObject, partitionedMemSetting);
+                    }
+                    else
+                    {
+                        sourceDoc = PDDocument.load((InputStream) sourceObject,
+                                partitionedMemSetting);
+                    }
                     tobeclosed.add(sourceDoc);
                     appendDocument(destination, sourceDoc);
                 }
@@ -424,11 +438,6 @@ public class PDFMergerUtility
                 for (PDDocument doc : tobeclosed)
                 {
                     IOUtils.closeAndLogException(doc, LOG, "PDDocument", null);
-                }
-
-                for (FileInputStream stream : fileInputStreams)
-                {
-                    IOUtils.closeAndLogException(stream, LOG, "FileInputStream", null);
                 }
             }
         }
