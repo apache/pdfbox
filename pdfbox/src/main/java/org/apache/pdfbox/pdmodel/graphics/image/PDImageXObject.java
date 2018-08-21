@@ -455,7 +455,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
             // see PDF specification 1.7, 11.6.5.3 Soft-Mask Images
             matte = ((COSArray) base).toFloatArray();
             // convert to RGB
-            matte = softMask.getColorSpace().toRGB(matte);
+            matte = getColorSpace().toRGB(matte);
         }
         return matte;
     }
