@@ -123,14 +123,7 @@ public class TestSynchronizedMetadataValidation
     @Test
     public void testEmptyXMP() throws Exception
     {
-        title = "TITLE";
-        author = "AUTHOR(S)";
-        subject = "SUBJECTS";
-        keywords = "KEYWORD(S)";
-        creator = "CREATOR";
-        producer = "PRODUCER";
-        creationDate = Calendar.getInstance();
-        modifyDate = Calendar.getInstance();
+        initValues();
 
         // Writing info in Document Information dictionary
         // TITLE
@@ -173,14 +166,7 @@ public class TestSynchronizedMetadataValidation
     @Test
     public void testEmptyXMPSchemas() throws Exception
     {
-        title = "TITLE";
-        author = "AUTHOR(S)";
-        subject = "SUBJECTS";
-        keywords = "KEYWORD(S)";
-        creator = "CREATOR";
-        producer = "PRODUCER";
-        creationDate = Calendar.getInstance();
-        modifyDate = Calendar.getInstance();
+        initValues();
 
         // building temporary XMP metadata (but empty)
         metadata.createAndAddDublinCoreSchema();
@@ -375,14 +361,7 @@ public class TestSynchronizedMetadataValidation
     @Test
     public void testAllInfoSynhcronized() throws Exception
     {
-        title = "TITLE";
-        author = "AUTHOR(S)";
-        subject = "SUBJECTS";
-        keywords = "KEYWORD(S)";
-        creator = "CREATOR";
-        producer = "PRODUCER";
-        creationDate = Calendar.getInstance();
-        modifyDate = Calendar.getInstance();
+        initValues();
 
         // building temporary XMP metadata
         DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
@@ -447,14 +426,7 @@ public class TestSynchronizedMetadataValidation
     @Test
     public void testBadPrefixSchemas() throws Exception
     {
-        title = "TITLE";
-        author = "AUTHOR(S)";
-        subject = "SUBJECTS";
-        keywords = "KEYWORD(S)";
-        creator = "CREATOR";
-        producer = "PRODUCER";
-        creationDate = Calendar.getInstance();
-        modifyDate = Calendar.getInstance();
+        initValues();
 
         // building temporary XMP metadata
         DublinCoreSchema dc = new DublinCoreSchema(metadata, "dctest");
@@ -514,14 +486,7 @@ public class TestSynchronizedMetadataValidation
     @Test
     public void testdoublePrefixSchemas() throws Exception
     {
-        title = "TITLE";
-        author = "AUTHOR(S)";
-        subject = "SUBJECTS";
-        keywords = "KEYWORD(S)";
-        creator = "CREATOR";
-        producer = "PRODUCER";
-        creationDate = Calendar.getInstance();
-        modifyDate = Calendar.getInstance();
+        initValues();
 
         // building temporary XMP metadata
         DublinCoreSchema dc = metadata.createAndAddDublinCoreSchema();
@@ -575,7 +540,40 @@ public class TestSynchronizedMetadataValidation
         {
             throw new Exception(e.getMessage());
         }
+    }
 
+    /**
+     * Tests that two date values, which are from different time zones but
+     * really identical, are detected as such.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPDFBox4292() throws Exception
+    {
+        initValues();
+
+        Calendar cal1 = org.apache.pdfbox.util.DateConverter.toCalendar("20180817115837+02'00'");
+        Calendar cal2 = org.apache.xmpbox.DateConverter.toCalendar("2018-08-17T09:58:37Z");
+
+        XMPBasicSchema xmp = metadata.createAndAddXMPBasicSchema();
+
+        dico.setCreationDate(cal1);
+        xmp.setCreateDate(cal2);
+        dico.setModificationDate(cal1);
+        xmp.setModifyDate(cal2);
+
+        // Launching synchronization test
+        try
+        {
+            ve = sync.validateMetadataSynchronization(doc, metadata);
+            // Test unsychronized value
+            Assert.assertEquals(0, ve.size());
+        }
+        catch (ValidationException e)
+        {
+            throw new Exception(e.getMessage());
+        }
     }
 
     @After
@@ -595,4 +593,21 @@ public class TestSynchronizedMetadataValidation
          */
     }
 
+    private void initValues()
+    {
+        title = "TITLE";
+        author = "AUTHOR(S)";
+        subject = "SUBJECTS";
+        keywords = "KEYWORD(S)";
+        creator = "CREATOR";
+        producer = "PRODUCER";
+        creationDate = Calendar.getInstance();
+        modifyDate = Calendar.getInstance();
+
+        // PDFBOX-4292: because xmp keeps the milliseconds before writing to XML,
+        // but COS doesn't, tests would fail when calendar values are compared
+        // so reset the milliseconds. 
+        creationDate.set(Calendar.MILLISECOND, 0);
+        modifyDate.set(Calendar.MILLISECOND, 0);
+    }
 }
