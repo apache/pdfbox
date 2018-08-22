@@ -35,7 +35,6 @@ import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.xmpbox.DateConverter;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
@@ -352,7 +351,7 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    if (!DateConverter.toISO8601(xmpCreationDate).equals(DateConverter.toISO8601(creationDate)))
+                    if (xmpCreationDate.compareTo(creationDate) != 0)
                     {
                         ve.add(unsynchronizedMetaDataError("CreationDate"));
                     }
@@ -395,7 +394,7 @@ public class SynchronizedMetaDataValidation
                 }
                 else
                 {
-                    if (!DateConverter.toISO8601(xmpModifyDate).equals(DateConverter.toISO8601(modifyDate)))
+                    if (xmpModifyDate.compareTo(modifyDate) != 0)
                     {
                         ve.add(unsynchronizedMetaDataError("ModificationDate"));
                     }
