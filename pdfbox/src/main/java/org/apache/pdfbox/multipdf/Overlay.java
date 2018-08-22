@@ -369,7 +369,8 @@ public class Overlay
         }
         else
         {
-            throw new IOException("Unknown content type:" + contents.getClass().getName());
+            throw new IOException("Unknown content type: " +
+                    (contents == null ? "(null)" : contents.getClass().getName()));
         }
     }
 
