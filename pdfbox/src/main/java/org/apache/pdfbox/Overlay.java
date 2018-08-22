@@ -271,7 +271,8 @@ public class Overlay
             }
             else
             {
-                throw new IOException( "Contents are unknown type:" + contents.getClass().getName() );
+                throw new IOException( "Unknown content type: " +
+                        (contents == null ? "(null)" : contents.getClass().getName()));
             }
         }
     }
@@ -391,7 +392,8 @@ public class Overlay
             }
             else
             {
-                throw new IOException( "Contents are unknown type:" + contents.getClass().getName() );
+                throw new IOException( "Unknown content type: " +
+                        (contents == null ? "(null)" : contents.getClass().getName()));
             }
             pageCount++;
         }
