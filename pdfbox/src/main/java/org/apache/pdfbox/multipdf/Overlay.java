@@ -94,8 +94,9 @@ public class Overlay
     /**
      * This will add overlays to a documents.
      * 
-     * @param specificPageOverlayFile map of overlay files for specific pages
-     * 
+     * @param specificPageOverlayFile map of overlay files for specific pages,
+     * The page numbers are 1-based.
+     *
      * @return the resulting pdf, which has to be saved and closed be the caller
      *  
      * @throws IOException if something went wrong
@@ -327,33 +328,39 @@ public class Overlay
 
     private void processPages(PDDocument document) throws IOException
     {
-        int pageCount = 0;
+        int pageCounter = 0;
         for (PDPage page : document.getPages())
         {
+            pageCounter++;
             COSDictionary pageDictionary = page.getCOSObject();
-            COSBase contents = pageDictionary.getDictionaryObject(COSName.CONTENTS);
-            COSArray contentArray = new COSArray();
+            COSBase originalContent = pageDictionary.getDictionaryObject(COSName.CONTENTS);
+            COSArray newContentArray = new COSArray();
+            LayoutPage layoutPage = getLayoutPage(pageCounter, document.getNumberOfPages());
+            if (layoutPage == null)
+            {
+                continue;
+            }
             switch (position)
             {
-            case FOREGROUND:
-                // save state
-                contentArray.add(createStream("q\n"));
-                addOriginalContent(contents, contentArray);
-                // restore state
-                contentArray.add(createStream("Q\n"));
-                // overlay content
-                overlayPage(contentArray, page, pageCount + 1, document.getNumberOfPages());
-                break;
-            case BACKGROUND:
-                // overlay content
-                overlayPage(contentArray, page, pageCount + 1, document.getNumberOfPages());
-                addOriginalContent(contents, contentArray);
-                break;
-            default:
-                throw new IOException("Unknown type of position:" + position);
+                case FOREGROUND:
+                    // save state
+                    newContentArray.add(createStream("q\n"));
+                    addOriginalContent(originalContent, newContentArray);
+                    // restore state
+                    newContentArray.add(createStream("Q\n"));
+                    // overlay content last
+                    overlayPage(page, layoutPage, newContentArray);
+                    break;
+                case BACKGROUND:
+                    // overlay content first
+                    overlayPage(page, layoutPage, newContentArray);
+
+                    addOriginalContent(originalContent, newContentArray);
+                    break;
+                default:
+                    throw new IOException("Unknown type of position:" + position);
             }
-            pageDictionary.setItem(COSName.CONTENTS, contentArray);
-            pageCount++;
+            pageDictionary.setItem(COSName.CONTENTS, newContentArray);
         }
     }
 
@@ -374,8 +381,21 @@ public class Overlay
         }
     }
 
-    private void overlayPage(COSArray array, PDPage page, int pageNumber, int numberOfPages)
+    private void overlayPage(PDPage page, LayoutPage layoutPage, COSArray array)
             throws IOException
+    {
+        PDResources resources = page.getResources();
+        if (resources == null)
+        {
+            resources = new PDResources();
+            page.setResources(resources);
+        }
+        COSName xObjectId = createOverlayXObject(page, layoutPage,
+                layoutPage.overlayContentStream);
+        array.add(createOverlayStream(page, layoutPage, xObjectId));
+    }
+
+    private LayoutPage getLayoutPage(int pageNumber, int numberOfPages)
     {
         LayoutPage layoutPage = null;
         if (!useAllOverlayPages && specificPageOverlayPage.containsKey(pageNumber))
@@ -407,18 +427,7 @@ public class Overlay
             int usePageNum = (pageNumber -1 ) % numberOfOverlayPages;
             layoutPage = specificPageOverlayPage.get(usePageNum);
         }
-        if (layoutPage != null)
-        {
-            PDResources resources = page.getResources();
-            if (resources == null)
-            {
-                resources = new PDResources();
-                page.setResources(resources);
-            }
-            COSName xObjectId = createOverlayXObject(page, layoutPage,
-                    layoutPage.overlayContentStream);
-            array.add(createOverlayStream(page, layoutPage, xObjectId));
-        }
+        return layoutPage;
     }
 
     private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage, COSStream contentStream)
