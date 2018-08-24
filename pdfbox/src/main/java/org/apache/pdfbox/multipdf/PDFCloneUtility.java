@@ -33,7 +33,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * Utility class used to clone PDF objects. It keeps track of objects it has already cloned.
+ * Utility class used to clone PDF objects. It keeps track of objects it has
+ * already cloned.
  *
  */
 class PDFCloneUtility
@@ -45,7 +46,7 @@ class PDFCloneUtility
      * Creates a new instance for the given target document.
      * @param dest the destination PDF document that will receive the clones
      */
-    public PDFCloneUtility(PDDocument dest)
+    PDFCloneUtility(PDDocument dest)
     {
         this.destination = dest;
     }
@@ -54,7 +55,7 @@ class PDFCloneUtility
      * Returns the destination PDF document this cloner instance is set up for.
      * @return the destination PDF document
      */
-    public PDDocument getDestination()
+    PDDocument getDestination()
     {
         return this.destination;
     }
@@ -66,7 +67,7 @@ class PDFCloneUtility
      * @return the cloned instance of the base object
      * @throws IOException if an I/O error occurs
      */
-      public COSBase cloneForNewDocument( Object base ) throws IOException
+      COSBase cloneForNewDocument( Object base ) throws IOException
       {
           if( base == null )
           {
@@ -145,7 +146,6 @@ class PDFCloneUtility
           return retval;
       }
 
-
       /**
        * Merges two objects of the same type by deep-cloning its members.
        * <br>
@@ -154,7 +154,7 @@ class PDFCloneUtility
        * @param target the merge target
        * @throws IOException if an I/O error occurs
        */
-      public void cloneMerge( final COSObjectable base, COSObjectable target) throws IOException
+      void cloneMerge( final COSObjectable base, COSObjectable target) throws IOException
       {
           if( base == null )
           {
@@ -232,5 +232,4 @@ class PDFCloneUtility
           }
           clonedVersion.put( base, retval );
       }
-
 }
