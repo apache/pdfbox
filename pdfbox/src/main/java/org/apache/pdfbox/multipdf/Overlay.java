@@ -87,22 +87,22 @@ public class Overlay
     private String evenPageOverlayFilename = null;
     private PDDocument evenPageOverlay = null;
 
-    
     private int numberOfOverlayPages = 0;
     private boolean useAllOverlayPages = false;
 
     /**
-     * This will add overlays to a documents.
-     * 
-     * @param specificPageOverlayFile map of overlay files for specific pages.
-     * The page numbers are 1-based.
+     * This will add overlays to a document.
      *
-     * @return the resulting pdf, which has to be saved and closed be the caller
-     *  
+     * @param specificPageOverlayFile map of overlay files for specific pages. The page numbers are
+     * 1-based.
+     *
+     * @return The modified input PDF document, which has to be saved and closed by the caller. If
+     * the input document was passed by {@link #setInputPDF(PDDocument) setInputPDF(PDDocument)}
+     * then it is that object that is returned.
+     *
      * @throws IOException if something went wrong
      */
-    public PDDocument overlay(Map<Integer, String> specificPageOverlayFile)
-            throws IOException
+    public PDDocument overlay(Map<Integer, String> specificPageOverlayFile) throws IOException
     {
         Map<String, PDDocument> loadedDocuments = new HashMap<>();
         Map<PDDocument, LayoutPage> layouts = new HashMap<>();
@@ -523,8 +523,10 @@ public class Overlay
 
     /**
      * Sets the file to be overlayed.
-     * 
-     * @param inputFile the file to be overlayed
+     *
+     * @param inputFile the file to be overlayed. The {@link PDDocument} object gathered from
+     * opening this file will be returned by
+     * {@link #overlay(java.util.Map) overlay(Map<Integer, String>)}.
      */
     public void setInputFile(String inputFile)
     {
@@ -533,8 +535,9 @@ public class Overlay
 
     /**
      * Sets the PDF to be overlayed.
-     * 
-     * @param inputPDF the PDF to be overlayed
+     *
+     * @param inputPDF the PDF to be overlayed. This will be the object that is returned by
+     * {@link #overlay(java.util.Map) overlay(Map<Integer, String>)}.
      */
     public void setInputPDF(PDDocument inputPDF)
     {
