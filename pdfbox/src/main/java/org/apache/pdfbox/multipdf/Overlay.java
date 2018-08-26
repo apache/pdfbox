@@ -522,7 +522,7 @@ public class Overlay
      *
      * @param inputFile the file to be overlayed. The {@link PDDocument} object gathered from
      * opening this file will be returned by
-     * {@link #overlay(java.util.Map) overlay(Map<Integer, String>)}.
+     * {@link #overlay(java.util.Map) overlay(Map&lt;Integer, String&gt;)}.
      */
     public void setInputFile(String inputFile)
     {
@@ -533,7 +533,7 @@ public class Overlay
      * Sets the PDF to be overlayed.
      *
      * @param inputPDF the PDF to be overlayed. This will be the object that is returned by
-     * {@link #overlay(java.util.Map) overlay(Map<Integer, String>)}.
+     * {@link #overlay(java.util.Map) overlay(Map&lt;Integer, String&gt;)}.
      */
     public void setInputPDF(PDDocument inputPDF)
     {
