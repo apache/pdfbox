@@ -83,7 +83,9 @@ public class GlyphTable extends TTFTable
      */
     public GlyphData[] getGlyphs() throws IOException
     {
-        synchronized (font)
+        // PDFBOX-4219: synchronize on data because it is accessed by several threads
+        // when PDFBox is accessing a standard 14 font for the first time
+        synchronized (data)
         {
             // the glyph offsets
             long[] offsets = loca.getOffsets();
@@ -157,7 +159,9 @@ public class GlyphTable extends TTFTable
             return glyphs[gid];
         }
 
-        synchronized (font)
+        // PDFBOX-4219: synchronize on data because it is accessed by several threads
+        // when PDFBox is accessing a standard 14 font for the first time
+        synchronized (data)
         {
             // read a single glyph
             long[] offsets = loca.getOffsets();
