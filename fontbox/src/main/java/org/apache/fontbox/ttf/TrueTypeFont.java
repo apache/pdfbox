@@ -343,12 +343,17 @@ public class TrueTypeFont implements FontBoxFont, Closeable
      */
     void readTable(TTFTable table) throws IOException
     {
-        // save current position
-        long currentPosition = data.getCurrentPosition();
-        data.seek(table.getOffset());
-        table.read(this, data);
-        // restore current position
-        data.seek(currentPosition);
+        // PDFBOX-4219: synchronize on data because it is accessed by several threads
+        // when PDFBox is accessing a standard 14 font for the first time
+        synchronized (data)
+        {
+            // save current position
+            long currentPosition = data.getCurrentPosition();
+            data.seek(table.getOffset());
+            table.read(this, data);
+            // restore current position
+            data.seek(currentPosition);
+        }
     }
 
     /**
