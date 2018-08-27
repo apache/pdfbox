@@ -598,9 +598,11 @@ public class PDExtendedGraphicsState implements COSObjectable
     private Float getFloatItem( COSName key )
     {
         Float retval = null;
-        COSNumber value = (COSNumber) dict.getDictionaryObject( key );
-        if( value != null )
+        
+        COSBase base = dict.getDictionaryObject(key);
+        if (base instanceof COSNumber)
         {
+            COSNumber value = (COSNumber) base;
             retval = value.floatValue();
         }
         return retval;
