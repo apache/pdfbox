@@ -513,6 +513,10 @@ public class CmapSubtable implements CmapLookup
                 if (p > 0)
                 {
                     p = (p + idDelta) % 65536;
+                    if (p < 0)
+                    {
+                        p = (p + 65536) % 65536;
+                    }
                 }
                 
                 if (p >= numGlyphs)
