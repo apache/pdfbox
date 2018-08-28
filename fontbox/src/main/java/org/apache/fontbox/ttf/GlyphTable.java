@@ -80,6 +80,8 @@ public class GlyphTable extends TTFTable
 
     /**
      * Returns all glyphs. This method can be very slow.
+     *
+     * @throws IOException If there is an error reading the data.
      */
     public GlyphData[] getGlyphs() throws IOException
     {
