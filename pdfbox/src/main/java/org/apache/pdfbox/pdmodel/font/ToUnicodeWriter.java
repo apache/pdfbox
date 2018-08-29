@@ -149,7 +149,7 @@ final class ToUnicodeWriter
         int batchCount = (int)Math.ceil(srcFrom.size() / 100.0);
         for (int batch = 0; batch < batchCount; batch++)
         {
-            int count = batch == batchCount - 1 ? srcFrom.size() % 100 : 100;
+            int count = batch == batchCount - 1 ? srcFrom.size() - 100 * batch : 100;
             writer.write(count + " beginbfrange\n");
             for (int j = 0; j < count; j++)
             {
