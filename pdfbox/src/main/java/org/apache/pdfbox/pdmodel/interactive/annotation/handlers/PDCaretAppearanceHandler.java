@@ -18,10 +18,12 @@ package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCaret;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * Handler to generate the caret annotations appearance.
@@ -48,13 +50,6 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
     @Override
     public void generateNormalAppearance()
     {
-        //TODO Adobe creates the /RD entry with a number that is decided by dividing the height by 10,
-        // with a maximum result of 5. That number is then substracted from the /BBox
-        // values and used in the translation values in the matrix and also for the line width
-        // (not used here because it has no effect).
-        // Currently, the rendering difference between our content stream and the one from Adobe
-        // is minimal, about one pixel line at the bottom.
-
         PDAnnotationCaret annotation = (PDAnnotationCaret) getAnnotation();
         try (PDAppearanceContentStream contentStream = getNormalAppearanceAsContentStream())
         {
@@ -65,6 +60,24 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
 
             PDRectangle rect = getRectangle();
             PDRectangle bbox = new PDRectangle(rect.getWidth(), rect.getHeight());
+            if (!annotation.getCOSObject().containsKey(COSName.RD))
+            {
+                // Adobe creates the /RD entry with a number that is decided
+                // by dividing the height by 10, with a maximum result of 5.
+                // That number is then used to enlarge the bbox and the rectangle and added to the
+                // translation values in the matrix and also used for the line width
+                // (not here because it has no effect, see comment near fill() ).
+                // The curves are based on the original rectangle.
+                float rd = Math.min(rect.getHeight() / 10, 5);
+                annotation.setRectDifferences(rd);
+                bbox = new PDRectangle(-rd, -rd, rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
+                Matrix matrix = annotation.getNormalAppearanceStream().getMatrix();
+                matrix.transformPoint(rd, rd);
+                annotation.getNormalAppearanceStream().setMatrix(matrix.createAffineTransform());
+                PDRectangle rect2 = new PDRectangle(rect.getLowerLeftX() - rd, rect.getLowerLeftY() - rd,
+                                                    rect.getWidth() + 2 * rd, rect.getHeight() + 2 * rd);
+                annotation.setRectangle(rect2);
+            }
             annotation.getNormalAppearanceStream().setBBox(bbox);
 
             float halfX = rect.getWidth() / 2;
