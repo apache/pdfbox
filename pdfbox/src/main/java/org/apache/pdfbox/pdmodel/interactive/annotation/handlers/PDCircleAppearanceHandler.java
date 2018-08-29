@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
@@ -153,7 +154,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationCircle annotation = (PDAnnotationCircle) getAnnotation();
+        PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
 
         PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
@@ -161,16 +162,14 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
         {
             return bs.getWidth();
         }
-        else
+
+        COSArray borderCharacteristics = annotation.getBorder();
+        if (borderCharacteristics.size() >= 3)
         {
-            COSArray borderCharacteristics = annotation.getBorder();
-            if (borderCharacteristics.size() >= 3)
+            COSBase base = borderCharacteristics.getObject(2);
+            if (base instanceof COSNumber)
             {
-                COSBase base = borderCharacteristics.getObject(2);
-                if (base instanceof COSNumber)
-                {
-                    return ((COSNumber) base).floatValue();
-                }
+                return ((COSNumber) base).floatValue();
             }
         }
 

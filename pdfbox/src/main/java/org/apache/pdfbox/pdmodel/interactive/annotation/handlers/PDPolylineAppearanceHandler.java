@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPolyline;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.LE_NONE;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.Matrix;
 
@@ -238,7 +239,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
     // here and removed from the individual handlers.
     float getLineWidth()
     {
-        PDAnnotationPolyline annotation = (PDAnnotationPolyline) getAnnotation();
+        PDAnnotationMarkup annotation = (PDAnnotationMarkup) getAnnotation();
 
         PDBorderStyleDictionary bs = annotation.getBorderStyle();
 
@@ -246,16 +247,14 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
         {
             return bs.getWidth();
         }
-        else
+
+        COSArray borderCharacteristics = annotation.getBorder();
+        if (borderCharacteristics.size() >= 3)
         {
-            COSArray borderCharacteristics = annotation.getBorder();
-            if (borderCharacteristics.size() >= 3)
+            COSBase base = borderCharacteristics.getObject(2);
+            if (base instanceof COSNumber)
             {
-                COSBase base = borderCharacteristics.getObject(2);
-                if (base instanceof COSNumber)
-                {
-                    return ((COSNumber) base).floatValue();
-                }
+                return ((COSNumber) base).floatValue();
             }
         }
 
