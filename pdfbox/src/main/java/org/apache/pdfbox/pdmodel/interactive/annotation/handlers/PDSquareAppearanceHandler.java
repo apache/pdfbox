@@ -67,7 +67,7 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
-            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());                
+            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());                
             PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
 
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
