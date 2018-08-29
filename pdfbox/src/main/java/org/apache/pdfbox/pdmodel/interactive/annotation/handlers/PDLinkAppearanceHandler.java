@@ -185,16 +185,14 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
         {
             return bs.getWidth();
         }
-        else
+
+        COSArray borderCharacteristics = annotation.getBorder();
+        if (borderCharacteristics.size() >= 3)
         {
-            COSArray borderCharacteristics = annotation.getBorder();
-            if (borderCharacteristics.size() >= 3)
+            COSBase base = borderCharacteristics.getObject(2);
+            if (base instanceof COSNumber)
             {
-                COSBase base = borderCharacteristics.getObject(2);
-                if (base instanceof COSNumber)
-                {
-                    return ((COSNumber) base).floatValue();
-                }
+                return ((COSNumber) base).floatValue();
             }
         }
 
