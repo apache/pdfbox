@@ -65,7 +65,7 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
-            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
+            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());
             PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
 
             // Acrobat applies a padding to each side of the bbox so the line is completely within

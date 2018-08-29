@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.apache.pdfbox.cos.COSArray;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -188,7 +189,18 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         //Or call the appropriate setNonStrokingColor() method from the base class?
     }
 
-    public void setBorderLine(float lineWidth, PDBorderStyleDictionary bs) throws IOException
+    /**
+     * Convenience method for annotations: sets the line with and dash style.
+     *
+     * @param lineWidth The line width.
+     * @param bs The border style, may be null.
+     * @param border The border array, must have at least three entries. This is
+     * only used if the border style is null.
+     *
+     * @throws IOException If there is an error writing to the content stream.
+     */
+    public void setBorderLine(float lineWidth, PDBorderStyleDictionary bs,
+                                               COSArray border) throws IOException
     {
         // Can't use PDBorderStyleDictionary.getDashStyle() as
         // this will return a default dash style if non is existing
@@ -196,6 +208,10 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
                           bs.getStyle().equals(PDBorderStyleDictionary.STYLE_DASHED))
         {
             setLineDashPattern(bs.getDashStyle().getDashArray(), 0);
+        }
+        else if (bs == null && border.size() > 3 && border.getObject(3) instanceof COSArray)
+        {
+            setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
         }
         setLineWidthOnDemand(lineWidth);
     }

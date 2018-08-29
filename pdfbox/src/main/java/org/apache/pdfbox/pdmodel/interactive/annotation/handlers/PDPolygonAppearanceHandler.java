@@ -100,17 +100,7 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
 
             setOpacity(contentStream, annotation.getConstantOpacity());
 
-            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle());
-            //TODO find better way to do this. Either pass border array to
-            // setBorderLine(), or use AnnotationBorder class
-            if (annotation.getBorderStyle() == null)
-            {
-                COSArray border = annotation.getBorder();
-                if (border.size() > 3 && border.getObject(3) instanceof COSArray)
-                {
-                    contentStream.setLineDashPattern(((COSArray) border.getObject(3)).toFloatArray(), 0);
-                }
-            }
+            contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());
 
             PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
