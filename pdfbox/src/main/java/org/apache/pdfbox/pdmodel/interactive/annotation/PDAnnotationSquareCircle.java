@@ -135,36 +135,6 @@ public abstract class PDAnnotationSquareCircle extends PDAnnotationMarkup
     }
 
     /**
-     * This will set the border style dictionary, specifying the width and dash pattern used in
-     * drawing the line.
-     *
-     * @param bs the border style dictionary to set. TODO not all annotations may have a BS entry
-     *
-     */
-    @Override
-    public void setBorderStyle(PDBorderStyleDictionary bs)
-    {
-        this.getCOSObject().setItem(COSName.BS, bs);
-    }
-
-    /**
-     * This will retrieve the border style dictionary, specifying the width and dash pattern used in
-     * drawing the line.
-     *
-     * @return the border style dictionary. TODO not all annotations may have a BS entry
-     */
-    @Override
-    public PDBorderStyleDictionary getBorderStyle()
-    {
-        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
-        if (bs instanceof COSDictionary)
-        {
-            return new PDBorderStyleDictionary((COSDictionary) bs);
-        }
-        return null;
-    }
-
-    /**
      * This will set the difference between the annotations "outer" rectangle defined by /Rect and
      * the border.
      *

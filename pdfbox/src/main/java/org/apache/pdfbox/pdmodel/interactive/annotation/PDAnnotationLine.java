@@ -271,34 +271,6 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     }
 
     /**
-     * This will set the border style dictionary, specifying the width and dash pattern used in drawing the line.
-     *
-     * @param bs the border style dictionary to set.
-     *
-     */
-    @Override
-    public void setBorderStyle(PDBorderStyleDictionary bs)
-    {
-        this.getCOSObject().setItem(COSName.BS, bs);
-    }
-
-    /**
-     * This will retrieve the border style dictionary, specifying the width and dash pattern used in drawing the line.
-     *
-     * @return the border style dictionary.
-     */
-    @Override
-    public PDBorderStyleDictionary getBorderStyle()
-    {
-        COSBase bs = getCOSObject().getDictionaryObject(COSName.BS);
-        if (bs instanceof COSDictionary)
-        {
-            return new PDBorderStyleDictionary((COSDictionary) bs);
-        }
-        return null;
-    }
-
-    /**
      * This will retrieve the length of the leader line.
      * 
      * @return the length of the leader line
