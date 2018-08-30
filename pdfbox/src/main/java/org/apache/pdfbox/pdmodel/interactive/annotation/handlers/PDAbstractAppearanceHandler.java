@@ -192,18 +192,6 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         return rolloverAppearanceEntry;
     }
-    
-    /**
-     * Set the differences rectangle.
-     */
-    void setRectDifference(float lineWidth)
-    {
-        if (annotation instanceof PDAnnotationSquareCircle && lineWidth > 0)
-        {
-            PDRectangle differences = new PDRectangle(lineWidth/2, lineWidth/2,0,0);
-            ((PDAnnotationSquareCircle) annotation).setRectDifference(differences);
-        }
-    }
 
     /**
      * Get a padded rectangle.
