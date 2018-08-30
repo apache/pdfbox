@@ -77,10 +77,6 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
 
             contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());
 
-            // the differences rectangle
-            // TODO: this only works for border effect solid. Cloudy needs a different approach.
-            setRectDifference(lineWidth);
-
             // Acrobat applies a padding to each side of the bbox so the line is completely within
             // the bbox.
             PDRectangle borderEdge = getPaddedRectangle(getRectangle(),lineWidth/2);
