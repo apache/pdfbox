@@ -116,9 +116,6 @@ public class PDPolygonAppearanceHandler extends PDAbstractAppearanceHandler
             }
             else
             {
-                // the differences rectangle
-                setRectDifference(lineWidth);
-
                 // Acrobat applies a padding to each side of the bbox so the line is
                 // completely within the bbox.
 
