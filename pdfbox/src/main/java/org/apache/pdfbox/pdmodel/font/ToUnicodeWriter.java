@@ -39,6 +39,11 @@ final class ToUnicodeWriter
     private int wMode;
 
     /**
+     * To test corner case of PDFBOX-4302.
+     */
+    static final int MAX_ENTRIES_PER_OPERATOR = 100;
+
+    /**
      * Creates a new ToUnicode CMap writer.
      */
     ToUnicodeWriter()
@@ -145,15 +150,18 @@ final class ToUnicodeWriter
             dstPrev = text;
         }
 
-        // limit of 100 entries per operator
-        int batchCount = (int)Math.ceil(srcFrom.size() / 100.0);
+        // limit entries per operator
+        int batchCount = (int) Math.ceil(srcFrom.size() /
+                                         (double) MAX_ENTRIES_PER_OPERATOR);
         for (int batch = 0; batch < batchCount; batch++)
         {
-            int count = batch == batchCount - 1 ? srcFrom.size() - 100 * batch : 100;
+            int count = batch == batchCount - 1 ?
+                            srcFrom.size() - MAX_ENTRIES_PER_OPERATOR * batch :
+                            MAX_ENTRIES_PER_OPERATOR;
             writer.write(count + " beginbfrange\n");
             for (int j = 0; j < count; j++)
             {
-                int index = batch * 100 + j;
+                int index = batch * MAX_ENTRIES_PER_OPERATOR + j;
                 writer.write('<');
                 writer.write(Hex.getChars(srcFrom.get(index).shortValue()));
                 writer.write("> ");
