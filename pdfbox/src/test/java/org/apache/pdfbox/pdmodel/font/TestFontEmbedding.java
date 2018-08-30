@@ -170,6 +170,41 @@ public class TestFontEmbedding extends TestCase
         assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
+    /**
+     * Test corner case of PDFBOX-4302.
+     *
+     * @throws java.io.IOException
+     */
+    public void testMaxEntries() throws IOException
+    {
+        File file;
+        String text;
+        text = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん" +
+                "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン" +
+                "１２３４５６７８";
+        assertEquals(ToUnicodeWriter.MAX_ENTRIES_PER_OPERATOR, text.length());
+        PDDocument document = new PDDocument();
+
+        PDPage page = new PDPage(PDRectangle.A0);
+        document.addPage(page);
+        File ipafont = new File("target/fonts/ipag00303", "ipag.ttf");
+        PDType0Font font = PDType0Font.load(document, ipafont);
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        contentStream.beginText();
+        contentStream.setFont(font, 20);
+        contentStream.newLineAtOffset(50, 3000);
+        contentStream.showText(text);
+        contentStream.endText();
+        contentStream.close();
+        file = new File(OUT_DIR, "PDFBOX-4302-test.pdf");
+        document.save(file);
+        document.close();
+
+        // check that the extracted text matches what we wrote
+        String extracted = getUnicodeText(file);
+        assertEquals(text, extracted.trim());
+    }
+
     private void validateCIDFontType2(boolean useSubset) throws Exception
     {
         PDDocument document = new PDDocument();
