@@ -90,7 +90,10 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
             else
             {
                 // the differences rectangle
-                setRectDifference(lineWidth);
+                if (lineWidth > 0)
+                {
+                    annotation.setRectDifferences(lineWidth / 2);
+                }
 
                 // lower left corner
                 float x0 = borderEdge.getLowerLeftX();
