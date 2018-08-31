@@ -30,6 +30,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
@@ -84,37 +85,8 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
             }
             else
             {
-                // handle the border box
-                //
-                // There are two options. The handling is not part of the PDF specification but
-                // implementation specific to Adobe Reader
-                // - if /RD is set the border box is the /Rect entry inset by the respective
-                //   border difference.
-                // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
-                //   be set to be the line width and the /Rect is enlarged by the /RD amount
 
-                PDRectangle borderBox;
-                float[] rectDifferences = annotation.getRectDifferences();
-
-                if (rectDifferences.length == 0)
-                {
-                    borderBox = getPaddedRectangle(getRectangle(), lineWidth/2);
-                    // the differences rectangle
-                    annotation.setRectDifferences(lineWidth/2);
-                    annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
-
-                    // when the normal appearance stream was generated BBox and Matrix have been set to the
-                    // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
-                    annotation.getNormalAppearanceStream().setBBox(getRectangle());
-                    AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
-                            -getRectangle().getLowerLeftY());
-                    annotation.getNormalAppearanceStream().setMatrix(transform);
-                }
-                else
-                {
-                    borderBox = applyRectDifferences(getRectangle(), rectDifferences);
-                    borderBox = getPaddedRectangle(borderBox, lineWidth/2);
-                }
+                PDRectangle borderBox = handleBorderBox(annotation, lineWidth);
 
                 contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
                         borderBox.getWidth(), borderBox.getHeight());
