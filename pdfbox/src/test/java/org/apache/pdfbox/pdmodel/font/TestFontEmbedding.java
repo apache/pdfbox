@@ -20,6 +20,8 @@ package org.apache.pdfbox.pdmodel.font;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -182,9 +184,16 @@ public class TestFontEmbedding extends TestCase
         text = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん" +
                 "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン" +
                 "１２３４５６７８";
-        assertEquals(ToUnicodeWriter.MAX_ENTRIES_PER_OPERATOR, text.length());
-        PDDocument document = new PDDocument();
 
+        // The test must have MAX_ENTRIES_PER_OPERATOR unique characters
+        Set<Character> set = new HashSet<Character>(ToUnicodeWriter.MAX_ENTRIES_PER_OPERATOR);
+        for (int i = 0; i < text.length(); ++i)
+        {
+            set.add(text.charAt(i));
+        }
+        assertEquals(ToUnicodeWriter.MAX_ENTRIES_PER_OPERATOR, set.size());
+
+        PDDocument document = new PDDocument();
         PDPage page = new PDPage(PDRectangle.A0);
         document.addPage(page);
         File ipafont = new File("target/fonts/ipag00303", "ipag.ttf");
