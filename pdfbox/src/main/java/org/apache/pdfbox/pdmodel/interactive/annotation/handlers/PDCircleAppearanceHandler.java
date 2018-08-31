@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,13 +70,6 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
             contentStream.setBorderLine(lineWidth, annotation.getBorderStyle(), annotation.getBorder());
             PDBorderEffectDictionary borderEffect = annotation.getBorderEffect();
 
-            // Acrobat applies a padding to each side of the bbox so the line is completely within
-            // the bbox.
-            // TODO: Needs validation for Circles as Adobe Reader seems to extend the bbox bei the rect differenve
-            // for circle annotations.
-            PDRectangle bbox = getRectangle();
-            PDRectangle borderEdge = getPaddedRectangle(bbox,lineWidth/2);
-
             if (borderEffect != null && borderEffect.getStyle().equals(PDBorderEffectDictionary.STYLE_CLOUDY))
             {
                 CloudyBorder cloudyBorder = new CloudyBorder(contentStream,
@@ -89,28 +83,58 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
             }
             else
             {
-                // the differences rectangle
-                if (lineWidth > 0)
+                // Acrobat applies a padding to each side of the bbox so the line is completely within
+                // the bbox.
+
+                // handle the border box
+                //
+                // There are two options. The handling is not part of the PDF specification but
+                // implementation specific to Adobe Reader
+                // - if /RD is set the border box is the /Rect entry inset by the respective
+                //   border difference.
+                // - if /RD is not set the border box is defined by the /Rect entry. The /RD entry will
+                //   be set to be the line width and the /Rect is enlarged by the /RD amount
+
+                PDRectangle borderBox;
+                float[] rectDifferences = annotation.getRectDifferences();
+
+                //TODO DRY refactor, this block was been copied from the square handler. 
+                if (rectDifferences.length == 0)
                 {
-                    annotation.setRectDifferences(lineWidth / 2);
+                    borderBox = getPaddedRectangle(getRectangle(), lineWidth/2);
+                    // the differences rectangle
+                    annotation.setRectDifferences(lineWidth/2);
+                    annotation.setRectangle(addRectDifferences(getRectangle(), annotation.getRectDifferences()));
+
+                    // when the normal appearance stream was generated BBox and Matrix have been set to the
+                    // values of the original /Rect. As the /Rect was changed that needs to be adjusted too.
+                    annotation.getNormalAppearanceStream().setBBox(getRectangle());
+                    AffineTransform transform = AffineTransform.getTranslateInstance(-getRectangle().getLowerLeftX(),
+                            -getRectangle().getLowerLeftY());
+                    annotation.getNormalAppearanceStream().setMatrix(transform);
+                }
+                else
+                {
+                    borderBox = applyRectDifferences(getRectangle(), rectDifferences);
+                    borderBox = getPaddedRectangle(borderBox, lineWidth/2);
                 }
 
                 // lower left corner
-                float x0 = borderEdge.getLowerLeftX();
-                float y0 = borderEdge.getLowerLeftY();
+                float x0 = borderBox.getLowerLeftX();
+                float y0 = borderBox.getLowerLeftY();
                 // upper right corner
-                float x1 = borderEdge.getUpperRightX();
-                float y1 = borderEdge.getUpperRightY();
+                float x1 = borderBox.getUpperRightX();
+                float y1 = borderBox.getUpperRightY();
                 // mid points
-                float xm = x0 + borderEdge.getWidth() / 2;
-                float ym = y0 + borderEdge.getHeight() / 2;
+                float xm = x0 + borderBox.getWidth() / 2;
+                float ym = y0 + borderBox.getHeight() / 2;
                 // see http://spencermortensen.com/articles/bezier-circle/
                 // the below number was calculated from sampling content streams
                 // generated using Adobe Reader
                 float magic = 0.55555417f;
                 // control point offsets
-                float vOffset = borderEdge.getHeight() / 2 * magic;
-                float hOffset = borderEdge.getWidth() / 2 * magic;
+                float vOffset = borderBox.getHeight() / 2 * magic;
+                float hOffset = borderBox.getWidth() / 2 * magic;
 
                 contentStream.moveTo(xm, y1);
                 contentStream.curveTo((xm + hOffset), y1, x1, (ym + vOffset), x1, ym);
