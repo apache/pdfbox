@@ -17,7 +17,6 @@
 
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +29,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
@@ -85,7 +83,6 @@ public class PDSquareAppearanceHandler extends PDAbstractAppearanceHandler
             }
             else
             {
-
                 PDRectangle borderBox = handleBorderBox(annotation, lineWidth);
 
                 contentStream.addRect(borderBox.getLowerLeftX(), borderBox.getLowerLeftY(),
