@@ -160,8 +160,8 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDDocumentOutline getDocumentOutline()
     {
-        COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.OUTLINES);
-        return dict == null ? null : new PDDocumentOutline(dict);
+        COSBase cosObj = root.getDictionaryObject(COSName.OUTLINES);
+        return cosObj instanceof COSDictionary ? new PDDocumentOutline((COSDictionary)cosObj) : null;
     }
 
     /**
