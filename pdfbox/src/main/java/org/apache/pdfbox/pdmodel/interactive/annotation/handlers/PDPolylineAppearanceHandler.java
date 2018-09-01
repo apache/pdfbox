@@ -170,7 +170,7 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     cs.transform(Matrix.getTranslateInstance(x1, y1));
                 }
-                drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground, false);
                 cs.restoreGraphicsState();
             }
 
@@ -184,22 +184,14 @@ public class PDPolylineAppearanceHandler extends PDAbstractAppearanceHandler
                 // save / restore not needed because it's the last one
                 if (ANGLED_STYLES.contains(annotation.getEndPointEndingStyle()))
                 {
-                    // we're transforming to (x1,y1) instead of to (x2,y2) position
-                    // because drawStyle needs to be aware
-                    // by the non zero x parameter that this is "right ending" side
-                    // of a line. This is important for arrows styles.
-                    //TODO this is not really good and should be improved,
-                    // maybe by an additional parameter for drawStyle?
                     double angle = Math.atan2(y2 - y1, x2 - x1);
-                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, 0, ab.width, hasStroke, hasBackground);
+                    cs.transform(Matrix.getRotateInstance(angle, x2, y2));
                 }
                 else
                 {
                     cs.transform(Matrix.getTranslateInstance(x2, y2));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
                 }
+                drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground, true);
             }
         }
         catch (IOException ex)

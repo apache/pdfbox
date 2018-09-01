@@ -267,23 +267,30 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         }
     }
 
+    /**
+     * Draw a line ending style.
+     * 
+     * @param style
+     * @param cs
+     * @param x
+     * @param y
+     * @param width
+     * @param hasStroke
+     * @param hasBackground
+     * @param ending false if left, true if right of an imagined horizontal line (important for
+     * arrows).
+     *
+     * @throws IOException
+     */
     void drawStyle(String style, final PDAppearanceContentStream cs, float x, float y,
-                   float width, boolean hasStroke, boolean hasBackground) throws IOException
+                   float width, boolean hasStroke, boolean hasBackground, boolean ending) throws IOException
     {
+        int sign = ending ? -1 : 1;
         switch (style)
         {
             case PDAnnotationLine.LE_OPEN_ARROW:
             case PDAnnotationLine.LE_CLOSED_ARROW:
-                if (Float.compare(x, 0) != 0)
-                {
-                    // ending
-                    drawArrow(cs, x - width, y, -width * 9);
-                }
-                else
-                {
-                    // start
-                    drawArrow(cs, width, y, width * 9);
-                }
+                drawArrow(cs, x + sign * width, y, sign * width * 9);
                 break;
             case PDAnnotationLine.LE_BUTT:
                 cs.moveTo(x, y - width * 3);
@@ -300,16 +307,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
                 break;
             case PDAnnotationLine.LE_R_OPEN_ARROW:
             case PDAnnotationLine.LE_R_CLOSED_ARROW:
-                if (Float.compare(x, 0) != 0)
-                {
-                    // ending
-                    drawArrow(cs, x + width, y, width * 9);
-                }
-                else
-                {
-                    // start
-                    drawArrow(cs, -width, y, -width * 9);
-                }
+                drawArrow(cs, x + (0 - sign) * width, y, (0 - sign) * width * 9);
                 break;
             case PDAnnotationLine.LE_SLASH:
                 // the line is 18 x linewidth at an angle of 60°
