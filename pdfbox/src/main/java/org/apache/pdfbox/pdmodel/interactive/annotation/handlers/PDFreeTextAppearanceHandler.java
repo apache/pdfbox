@@ -152,7 +152,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 {
                     cs.transform(Matrix.getTranslateInstance(x1, y1));
                 }
-                drawStyle(annotation.getLineEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground);
+                drawStyle(annotation.getLineEndingStyle(), cs, 0, 0, ab.width, hasStroke, hasBackground, false);
                 cs.restoreGraphicsState();
             }
 

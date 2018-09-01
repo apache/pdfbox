@@ -280,7 +280,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 if (ANGLED_STYLES.contains(annotation.getStartPointEndingStyle()))
                 {
                     cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, lineEndingSize, hasStroke, hasBackground);
+                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, y, lineEndingSize, hasStroke, hasBackground, false);
                 }
                 else
                 {
@@ -290,8 +290,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // We use the angle we already know and the distance y to translate to the new coordinate.
                     float xx1 = x1 - (float) (y * Math.sin(angle));
                     float yy1 = y1 + (float) (y * Math.cos(angle));
-                    cs.transform(Matrix.getTranslateInstance(xx1, yy1));
-                    drawStyle(annotation.getStartPointEndingStyle(), cs, 0, 0, lineEndingSize, hasStroke, hasBackground);
+                    drawStyle(annotation.getStartPointEndingStyle(), cs, xx1, yy1, lineEndingSize, hasStroke, hasBackground, false);
                 }
                 cs.restoreGraphicsState();
             }
@@ -302,12 +301,8 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 // save / restore not needed because it's the last one
                 if (ANGLED_STYLES.contains(annotation.getEndPointEndingStyle()))
                 {
-                    // we're transforming to (x1,y1) instead of to (x2,y2) position
-                    // because drawStyle needs to be aware
-                    // by the non zero x parameter that this is "right ending" side
-                    // of a line. This is important for arrows styles.
-                    cs.transform(Matrix.getRotateInstance(angle, x1, y1));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, lineLength, y, lineEndingSize, hasStroke, hasBackground);
+                    cs.transform(Matrix.getRotateInstance(angle, x2, y2));
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, y, lineEndingSize, hasStroke, hasBackground, true);
                 }
                 else
                 {
@@ -317,8 +312,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                     // We use the angle we already know and the distance y to translate to the new coordinate.
                     float xx2 = x2 - (float) (y * Math.sin(angle));
                     float yy2 = y2 + (float) (y * Math.cos(angle));
-                    cs.transform(Matrix.getTranslateInstance(xx2, yy2));
-                    drawStyle(annotation.getEndPointEndingStyle(), cs, 0, 0, lineEndingSize, hasStroke, hasBackground);
+                    drawStyle(annotation.getEndPointEndingStyle(), cs, xx2, yy2, lineEndingSize, hasStroke, hasBackground, true);
                 }
             }
         }
