@@ -569,7 +569,7 @@ public abstract class SecurityHandler
     {
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        encryptData(objNum, genNum, data, buffer, false /* decrypt */);
+        encryptData(objNum, genNum, data, buffer, false /* encrypt */);
         string.reset();
         string.append(buffer.toByteArray());
     }
