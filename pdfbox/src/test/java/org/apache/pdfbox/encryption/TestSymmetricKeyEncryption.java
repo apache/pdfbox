@@ -210,6 +210,27 @@ public class TestSymmetricKeyEncryption extends TestCase
     }
 
     /**
+     * PDFBOX-4308: test that index colorspace table string doesn't get
+     * corrupted when encrypting. This happened because the table was used by
+     * two dictionaries, and when saving one string ended up as a direct object
+     * and the other (but same java object) ended up as an indirect object.
+     * Encryption used the wrong object number and/or the object was encrypted
+     * twice.
+     *
+     * @throws IOException
+     */
+    public void testPDFBox4308() throws IOException
+    {
+        InputStream is = new FileInputStream("target/pdfs/PDFBOX-4308.pdf");
+        byte[] inputFileAsByteArray = IOUtils.toByteArray(is);
+        is.close();
+        int sizePriorToEncryption = inputFileAsByteArray.length;
+
+        testSymmEncrForKeySize(40, false, sizePriorToEncryption, inputFileAsByteArray,
+                USERPASSWORD, OWNERPASSWORD, permission);
+    }
+
+    /**
      * Protect a document with an embedded PDF with a key and try to reopen it
      * with that key and compare.
      *
