@@ -211,11 +211,12 @@ public class TestSymmetricKeyEncryption extends TestCase
 
     /**
      * PDFBOX-4308: test that index colorspace table string doesn't get
-     * corrupted when encrypting. This happened because the table was used by
-     * two dictionaries, and when saving one string ended up as a direct object
-     * and the other (but same java object) ended up as an indirect object.
-     * Encryption used the wrong object number and/or the object was encrypted
-     * twice.
+     * corrupted when encrypting. This happened because the colorspace was
+     * referenced twice, once in the resources dictionary and once in an image
+     * in the resources dictionary, and when saving the PDF the string was saved
+     * twice, once as a direct object and once as an indirect object (both from
+     * the same java object). Encryption used the wrong object number and/or the
+     * object was encrypted twice.
      *
      * @throws IOException
      */
