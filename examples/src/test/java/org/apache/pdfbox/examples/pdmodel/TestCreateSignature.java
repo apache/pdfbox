@@ -34,7 +34,6 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.xml.bind.DatatypeConverter;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
@@ -47,6 +46,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.util.Hex;
 import org.apache.wink.client.MockHttpServer;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -334,7 +334,7 @@ public class TestCreateSignature
     private String calculateDigestString(InputStream inputStream) throws NoSuchAlgorithmException, IOException
     {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
-        return DatatypeConverter.printHexBinary(md.digest(IOUtils.toByteArray(inputStream)));
+        return Hex.getString(md.digest(IOUtils.toByteArray(inputStream)));
     }
 
     /**
