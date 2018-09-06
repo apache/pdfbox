@@ -75,8 +75,8 @@ public class PDDocumentNameDictionary implements COSObjectable
     }
 
     /**
-     * Get the destination named tree node.  The value in this name tree will be PDDestination
-     * objects.
+     * Get the destination named tree node. The values in this name tree will be
+     * PDPageDestination objects.
      *
      * @return The destination name tree node.
      */
@@ -118,8 +118,8 @@ public class PDDocumentNameDictionary implements COSObjectable
     }
 
     /**
-     * Get the embedded files named tree node.  The value in this name tree will be PDComplexFileSpecification
-     * objects.
+     * Get the embedded files named tree node. The values in this name tree will
+     * be PDComplexFileSpecification objects.
      *
      * @return The embedded files name tree node.
      */
@@ -148,7 +148,8 @@ public class PDDocumentNameDictionary implements COSObjectable
     }
 
     /**
-     * Get the document level javascript entries.  The value in this name tree will be PDTextStream.
+     * Get the document level javascript entries. The values in this name tree
+     * will be PDTextStream objects.
      *
      * @return The document level named javascript.
      */
