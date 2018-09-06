@@ -36,6 +36,8 @@ import org.apache.pdfbox.cos.COSString;
  * This class represents a node in a name tree.
  *
  * @author Ben Litchfield
+ *
+ * @param <T> The type of the values in this name tree.
  */
 public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObjectable
 {
