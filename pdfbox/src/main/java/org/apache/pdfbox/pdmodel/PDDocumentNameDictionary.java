@@ -85,7 +85,7 @@ public class PDDocumentNameDictionary implements COSObjectable
     }
 
     /**
-     * Get the destination named tree node. The values in this name tree will be
+     * Get the destination name tree node. The values in this name tree will be
      * PDPageDestination objects.
      *
      * @return The destination name tree node.
