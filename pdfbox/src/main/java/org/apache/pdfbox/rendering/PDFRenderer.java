@@ -20,6 +20,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.StringTokenizer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -38,6 +41,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
  */
 public class PDFRenderer
 {
+    private static final Log LOG = LogFactory.getLog(PDFRenderer.class);
+
     protected final PDDocument document;
     // TODO keep rendering state such as caches here
     
@@ -56,6 +61,8 @@ public class PDFRenderer
     private boolean subsamplingAllowed = false;
 
     private BufferedImage pageImage;
+    
+    private static boolean kcmsLogged = false;
 
     /**
      * Creates a new PDFRenderer.
@@ -64,6 +71,12 @@ public class PDFRenderer
     public PDFRenderer(PDDocument document)
     {
         this.document = document;
+
+        if (!kcmsLogged)
+        {
+            suggestKCMS();
+            kcmsLogged = true;
+        }
     }
     
     /**
@@ -373,5 +386,49 @@ public class PDFRenderer
     BufferedImage getPageImage()
     {
         return pageImage;
+    }
+
+    private static void suggestKCMS()
+    {
+        String cmmProperty = System.getProperty("sun.java2d.cmm");
+        if (isMinJdk8() && !"sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
+        {
+            try
+            {
+                // Make sure that class exists
+                Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
+
+                LOG.info("To get higher rendering speed on java 8 or 9,");
+                LOG.info("  use the option -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider");
+                LOG.info("  or call System.setProperty(\"sun.java2d.cmm\", \"sun.java2d.cmm.kcms.KcmsServiceProvider\")");
+            }
+            catch (ClassNotFoundException e)
+            {
+                // jdk 10 and higher
+                LOG.debug("KCMS doesn't exist anymore. SO SAD!");
+            }
+        }
+    }
+
+    private static boolean isMinJdk8()
+    {
+        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
+        String version = System.getProperty("java.specification.version");
+        final StringTokenizer st = new StringTokenizer(version, ".");
+        try
+        {
+            int major = Integer.parseInt(st.nextToken());
+            int minor = 0;
+            if (st.hasMoreTokens())
+            {
+                minor = Integer.parseInt(st.nextToken());
+            }
+            return major > 1 || (major == 1 && minor >= 8);
+        }
+        catch (NumberFormatException nfe)
+        {
+            // maybe some new numbering scheme in the 22nd century
+            return true;
+        }
     }
 }
