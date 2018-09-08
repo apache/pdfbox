@@ -261,7 +261,7 @@ public class Overlay
         {
             resources = new PDResources();
         }
-        return new LayoutPage(page.getMediaBox(), createContentStream(contents),
+        return new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents),
                 resources.getCOSObject());
     }
     
@@ -278,13 +278,13 @@ public class Overlay
             {
                 resources = new PDResources();
             }
-            layoutPages.put(i,new LayoutPage(page.getMediaBox(), createContentStream(contents), 
+            layoutPages.put(i, new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents), 
                     resources.getCOSObject()));
         }
         return layoutPages;
     }
     
-    private COSStream createContentStream(COSBase contents) throws IOException
+    private COSStream createCombinedContentStream(COSBase contents) throws IOException
     {
         List<COSStream> contentStreams = createContentStreamList(contents);
         // concatenate streams
@@ -303,10 +303,15 @@ public class Overlay
         return concatStream;
     }
 
+    // get the content streams as a list
     private List<COSStream> createContentStreamList(COSBase contents) throws IOException
     {
         List<COSStream> contentStreams = new ArrayList<>();
-        if (contents instanceof COSStream)
+        if (contents == null)
+        {
+            return contentStreams;
+        }
+        else if (contents instanceof COSStream)
         {
             contentStreams.add((COSStream) contents);
         }
@@ -323,8 +328,7 @@ public class Overlay
         }
         else
         {
-            throw new IOException("Unknown content type: " +
-                    (contents == null ? "(null)" : contents.getClass().getName()));
+            throw new IOException("Unknown content type: " + contents.getClass().getName());
         }
         return contentStreams;
     }
@@ -369,6 +373,11 @@ public class Overlay
 
     private void addOriginalContent(COSBase contents, COSArray contentArray) throws IOException
     {
+        if (contents == null)
+        {
+            return;
+        }
+
         if (contents instanceof COSStream)
         {
             contentArray.add(contents);
@@ -379,8 +388,7 @@ public class Overlay
         }
         else
         {
-            throw new IOException("Unknown content type: " +
-                    (contents == null ? "(null)" : contents.getClass().getName()));
+            throw new IOException("Unknown content type: " + contents.getClass().getName());
         }
     }
 
