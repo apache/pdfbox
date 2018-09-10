@@ -83,15 +83,24 @@ public class RemoveAllText
                         if( token instanceof PDFOperator )
                         {
                             PDFOperator op = (PDFOperator)token;
-                            if( op.getOperation().equals( "TJ") || op.getOperation().equals( "Tj" ))
+                            if ("TJ".equals(op.getOperation()) ||
+                                "Tj".equals(op.getOperation()) ||
+                                "'".equals(op.getOperation()))
                             {
                                 //remove the one argument to this operator
                                 newTokens.remove( newTokens.size() -1 );
                                 continue;
                             }
+                            else if ("\"".equals(op.getOperation()))
+                            {
+                                // remove the 3 arguments to this operator
+                                newTokens.remove(newTokens.size() - 1);
+                                newTokens.remove(newTokens.size() - 1);
+                                newTokens.remove(newTokens.size() - 1);
+                                continue;
+                            }
                         }
                         newTokens.add( token );
-
                     }
                     PDStream newContents = new PDStream( document );
                     ContentStreamWriter writer = new ContentStreamWriter( newContents.createOutputStream() );
