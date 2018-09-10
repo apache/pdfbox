@@ -18,6 +18,7 @@
 package org.apache.pdfbox.debugger.ui;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 
@@ -63,12 +64,18 @@ public class PageEntry
         COSDictionary node = dict;
         while (node.containsKey(COSName.PARENT))
         {
-            COSDictionary parent = (COSDictionary)node.getDictionaryObject(COSName.PARENT);
-            COSArray kids = (COSArray)parent.getDictionaryObject(COSName.KIDS);
-            if (kids == null)
+            COSBase base = node.getDictionaryObject(COSName.PARENT);
+            if (!(base instanceof COSDictionary))
             {
                 return "";
             }
+            COSDictionary parent = (COSDictionary) base;
+            base = parent.getDictionaryObject(COSName.KIDS);
+            if (!(base instanceof COSArray))
+            {
+                return "";
+            }
+            COSArray kids = (COSArray) base;
             int idx = kids.indexOfObject(node);
             sb.append("/Kids/[").append(idx).append("]");
             node = parent;
