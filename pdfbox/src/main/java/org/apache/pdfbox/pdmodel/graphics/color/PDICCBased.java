@@ -63,6 +63,10 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     private ICC_ColorSpace awtColorSpace;
     private PDColor initialColor;
     private boolean isRGB = false;
+    // allows to force using alternate color space instead of ICC color space for performance
+    // reasons with LittleCMS (LCMS), see PDFBOX-4309
+    // WARNING: do not activate this in a conforming reader
+    private boolean useOnlyAlternateColorSpace = false;
 
     /**
      * Creates a new ICC color space with an empty stream.
@@ -93,6 +97,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         {
             throw new IOException("ICCBased colorspace array must have a stream as second element");
         }
+        useOnlyAlternateColorSpace = System
+            .getProperty("org.apache.pdfbox.rendering.UseAlternateInsteadOfICCColorSpace") != null;
         array = iccArray;
         stream = new PDStream((COSStream) iccArray.getObject(1));
         loadICCProfile();
@@ -118,6 +124,18 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     private void loadICCProfile() throws IOException
     {
+        if (useOnlyAlternateColorSpace)
+        {
+            try
+            {
+                fallbackToAlternateColorSpace(null);
+                return;
+            }
+            catch ( IOException e )
+            {
+              LOG.warn("Error initializing alternate color space: " + e.getLocalizedMessage());
+            }
+        }
         InputStream input = null;
         try
         {
@@ -195,8 +213,11 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         {
             isRGB = true;
         }
-        LOG.warn("Can't read embedded ICC profile (" + e.getLocalizedMessage() +
-                "), using alternate color space: " + alternateColorSpace.getName());
+        if ( e != null )
+        {
+            LOG.warn("Can't read embedded ICC profile (" + e.getLocalizedMessage() +
+                     "), using alternate color space: " + alternateColorSpace.getName());
+        }
         initialColor = alternateColorSpace.getInitialColor();
     }
 
