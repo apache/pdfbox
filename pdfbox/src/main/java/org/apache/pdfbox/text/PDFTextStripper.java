@@ -600,14 +600,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                 float expectedStartOfNextWordX = EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE;
                 if (Float.compare(endOfLastTextX, END_OF_LAST_TEXT_X_RESET_VALUE) != 0)
                 {
-                    if (deltaCharWidth > deltaSpace)
-                    {
-                        expectedStartOfNextWordX = endOfLastTextX + deltaSpace;
-                    }
-                    else
-                    {
-                        expectedStartOfNextWordX = endOfLastTextX + deltaCharWidth;
-                    }
+                    expectedStartOfNextWordX = endOfLastTextX + Math.min(deltaSpace, deltaCharWidth);
                 }
 
                 if (lastPosition != null)
