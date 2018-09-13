@@ -182,17 +182,15 @@ public class PDFDebugger extends JFrame
 
     /**
      * Constructor.
+     *
+     * @param isPageMode true if pages are to be displayed, false if internal structure is to be
+     * displayed.
      */
-    public PDFDebugger(boolean viewPages)
+    public PDFDebugger(boolean isPageMode)
     {
-        isPageMode = viewPages;
+        this.isPageMode = isPageMode;
         loadConfiguration();
         initComponents();
-
-        // use our custom logger
-        // this works only if there is no "LogFactory.getLog()" in this class!
-        LogDialog.init(this, statusBar.getLogLabel());
-        System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
     }
 
     /**
@@ -231,17 +229,6 @@ public class PDFDebugger extends JFrame
             }
         });
 
-        // trigger premature initializations for more accurate rendering benchmarks
-        // See discussion in PDFBOX-3988
-        if (PDType1Font.COURIER.isStandard14())
-        {
-            // Yes this is always true
-            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
-            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
-            IIORegistry.getDefaultInstance();
-            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-        }
-
         // open file, if any
         String filename = null;
         String password = "";
@@ -268,8 +255,25 @@ public class PDFDebugger extends JFrame
             }
         }
         final PDFDebugger viewer = new PDFDebugger(viewPages);
-        
-        
+
+        // use our custom logger
+        // this works only if there is no "LogFactory.getLog()" in this class,
+        // and if there are no methods that call logging, even invisible
+        // use reduced file from PDFBOX-3653 to see logging
+        LogDialog.init(viewer, viewer.statusBar.getLogLabel());
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
+
+        // trigger premature initializations for more accurate rendering benchmarks
+        // See discussion in PDFBOX-3988
+        if (PDType1Font.COURIER.isStandard14())
+        {
+            // Yes this is always true
+            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
+            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
+            IIORegistry.getDefaultInstance();
+            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
+        }
+
         if (filename != null)
         {
             File file = new File(filename);
