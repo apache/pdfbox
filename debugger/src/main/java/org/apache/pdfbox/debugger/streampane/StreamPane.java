@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -146,8 +145,15 @@ public class StreamPane implements ActionListener
         }
 
         tabbedPane = new JTabbedPane();
-        tabbedPane.add("Text view", view.getStreamPanel());
-        tabbedPane.add("Hex view", hexView.getPane());
+        if (stream.isImage())
+        {
+            tabbedPane.add("Image view", view.getStreamPanel());
+        }
+        else
+        {
+            tabbedPane.add("Text view", view.getStreamPanel());
+            tabbedPane.add("Hex view", hexView.getPane());
+        }
 
         panel.add(tabbedPane);
     }
@@ -182,8 +188,13 @@ public class StreamPane implements ActionListener
                 if (currentFilter.equals(Stream.IMAGE))
                 {
                     requestImageShowing();
+                    tabbedPane.removeAll();
+                    tabbedPane.add("Image view", view.getStreamPanel());
                     return;
                 }
+                tabbedPane.removeAll();
+                tabbedPane.add("Text view", view.getStreamPanel());
+                tabbedPane.add("Hex view", hexView.getPane());
                 requestStreamText(currentFilter);
             }
             catch (IOException e)
@@ -208,14 +219,6 @@ public class StreamPane implements ActionListener
                 return;
             }
             view.showStreamImage(image);
-
-           
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
-            {
-                ImageIO.write(image, "jpg", baos);
-                baos.flush();
-                hexView.changeData(baos.toByteArray());
-            }            
         }
     }
 
