@@ -47,9 +47,6 @@ import java.util.Properties;
 import java.util.Set;
 import javax.imageio.spi.IIORegistry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Sides;
@@ -132,8 +129,6 @@ import org.apache.pdfbox.printing.PDFPageable;
  */
 public class PDFDebugger extends JFrame
 {
-    private static final Log LOG = LogFactory.getLog(PDFDebugger.class);
-
     private static final Set<COSName> SPECIALCOLORSPACES =
             new HashSet<>(Arrays.asList(COSName.INDEXED, COSName.SEPARATION, COSName.DEVICEN));
 
@@ -195,6 +190,7 @@ public class PDFDebugger extends JFrame
         initComponents();
 
         // use our custom logger
+        // this works only if there is no "LogFactory.getLog()" in this class!
         LogDialog.init(this, statusBar.getLogLabel());
         System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
     }
@@ -215,7 +211,8 @@ public class PDFDebugger extends JFrame
         }
         catch (ClassNotFoundException e)
         {
-            LOG.debug("KCMS service not found - using LCMS", e);
+            // jdk7 or lower (KCMS has different name),
+            // or jdk10 and higher (KCMS no longer available)
         }
 
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
