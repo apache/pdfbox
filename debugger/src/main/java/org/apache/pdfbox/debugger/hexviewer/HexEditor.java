@@ -43,7 +43,7 @@ import javax.swing.border.LineBorder;
 /**
  * @author Khyrul Bashar
  *
- * This class hosts all the UI components of Hex view and cordinate among them.
+ * This class hosts all the UI components of Hex view and coordinates among them.
  */
 class HexEditor extends JPanel implements SelectionChangeListener
 {

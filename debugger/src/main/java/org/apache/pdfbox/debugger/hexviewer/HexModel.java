@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * @author Khyrul Bashar
  *
- * A class that acts as a model for the hex viewer. It holds the data and provide the data as ncessary.
+ * A class that acts as a model for the hex viewer. It holds the data and provide the data as necessary.
  * It'll let listen for any underlying data changes.
  */
 class HexModel implements HexChangeListener
