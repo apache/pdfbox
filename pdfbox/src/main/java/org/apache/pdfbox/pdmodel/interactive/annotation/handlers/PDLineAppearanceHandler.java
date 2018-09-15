@@ -148,6 +148,13 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
             double angle = Math.atan2(y2 - y1, x2 - x1);
             cs.transform(Matrix.getRotateInstance(angle, x1, y1));
             float lineLength = (float) Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
+
+            // Leader lines
+            cs.moveTo(0, llo);
+            cs.lineTo(0, llo + ll + lle);
+            cs.moveTo(lineLength, llo);
+            cs.lineTo(lineLength, llo + ll + lle);
+
             if (annotation.hasCaption() && !contents.isEmpty())
             {
                 // Note that Adobe places the text as a caption even if /CP is not set
@@ -173,12 +180,6 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
                 }
                 float xOffset = (lineLength - contentLength) / 2;
                 float yOffset;
-
-                // Leader lines
-                cs.moveTo(0, llo);
-                cs.lineTo(0, llo + ll + lle);
-                cs.moveTo(lineLength, llo);
-                cs.lineTo(lineLength, llo + ll + lle);
 
                 String captionPositioning = annotation.getCaptionPositioning();
 
