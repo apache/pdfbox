@@ -105,9 +105,31 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
             // https://stackoverflow.com/questions/9855814/pdf-spec-vs-acrobat-creation-quadpoints
             for (int i = 0; i < pathsArray.length / 8; ++i)
             {
-                // only lower coords are used
-                cs.moveTo(pathsArray[i * 8 + 4], pathsArray[i * 8 + 5]);
-                cs.lineTo(pathsArray[i * 8 + 6], pathsArray[i * 8 + 7]);
+                // Adobe deoesn't use the lower coordinate for the line, it uses lower + delta / 7.
+                // do the math for diagonal annotations with this weird old trick:
+                // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
+                float len0 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8] - pathsArray[i * 8 + 4], 2) + 
+                                      Math.pow(pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5], 2)));
+                float x0 = pathsArray[i * 8 + 4];
+                float y0 = pathsArray[i * 8 + 5];
+                if (Float.compare(len0, 0) != 0)
+                {
+                    // only if both coordinates are not identical to avoid divide by zero
+                    x0 += (pathsArray[i * 8] - pathsArray[i * 8 + 4]) / len0 * len0 / 7;
+                    y0 += (pathsArray[i * 8 + 1] - pathsArray[i * 8 + 5]) / len0 * (len0 / 7);
+                }
+                float len1 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8 + 2] - pathsArray[i * 8 + 6], 2) + 
+                                      Math.pow(pathsArray[i * 8 + 3] - pathsArray[i * 8 + 7], 2)));
+                float x1 = pathsArray[i * 8 + 6];
+                float y1 = pathsArray[i * 8 + 7];
+                if (Float.compare(len1, 0) != 0)
+                {
+                    // only if both coordinates are not identical to avoid divide by zero
+                    x1 += (pathsArray[i * 8 + 2] - pathsArray[i * 8 + 6]) / len1 * len1 / 7;
+                    y1 += (pathsArray[i * 8 + 3] - pathsArray[i * 8 + 7]) / len1 * len1 / 7;
+                }
+                cs.moveTo(x0, y0);
+                cs.lineTo(x1, y1);
             }
             cs.stroke();
         }
