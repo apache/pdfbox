@@ -105,7 +105,7 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
             // https://stackoverflow.com/questions/9855814/pdf-spec-vs-acrobat-creation-quadpoints
             for (int i = 0; i < pathsArray.length / 8; ++i)
             {
-                // Adobe deoesn't use the lower coordinate for the line, it uses lower + delta / 7.
+                // Adobe doesn't use the lower coordinate for the line, it uses lower + delta / 7.
                 // do the math for diagonal annotations with this weird old trick:
                 // https://stackoverflow.com/questions/7740507/extend-a-line-segment-a-specific-distance
                 float len0 = (float) (Math.sqrt(Math.pow(pathsArray[i * 8] - pathsArray[i * 8 + 4], 2) + 
