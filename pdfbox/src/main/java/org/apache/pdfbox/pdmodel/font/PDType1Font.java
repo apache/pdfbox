@@ -454,7 +454,7 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
         Map<String, Integer> inverted = encoding.getNameToCodeMap();
         int code = inverted.get(name);
         bytes = new byte[] { (byte)code };
-        codeToBytesMap.put(code, bytes);
+        codeToBytesMap.put(unicode, bytes);
         return bytes;
     }
 
