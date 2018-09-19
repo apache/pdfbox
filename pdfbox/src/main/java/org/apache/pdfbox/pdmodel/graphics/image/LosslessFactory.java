@@ -60,11 +60,20 @@ public final class LosslessFactory
     }
 
     /**
-     * Creates a new lossless encoded Image XObject from a Buffered Image.
+     * Creates a new lossless encoded image XObject from a BufferedImage.
+     * <p>
+     * <u>New for advanced users from 2.0.12 on:</u><br>
+     * If you created your image with a non standard ICC colorspace, it will be
+     * preserved. (If you load images in java using ImageIO then no need to read
+     * this segment) However a new colorspace will be created for each image. So
+     * if you create a PDF with several such images, consider replacing the
+     * colorspace with a common object to save space. This is done with
+     * {@link PDImageXObject#getColorSpace()} and
+     * {@link PDImageXObject#setColorSpace(org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace) PDImageXObject.setColorSpace()}
      *
      * @param document the document where the image will be created
-     * @param image the buffered image to embed
-     * @return a new Image XObject
+     * @param image the BufferedImage to embed
+     * @return a new image XObject
      * @throws IOException if something goes wrong
      */
     public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
@@ -572,6 +581,11 @@ public final class LosslessFactory
                     }
                     pdProfile.getPDStream().getCOSObject().setInt(COSName.N,
                             srcCspace.getNumComponents());
+                    pdProfile.getPDStream().getCOSObject().setItem(COSName.ALTERNATE,
+                            srcCspace.getType() == ColorSpace.TYPE_CMYK ?
+                                    COSName.DEVICECMYK :
+                                    COSName.DEVICERGB);
+                    pdColorSpace = pdProfile;
                 }
             }
 
