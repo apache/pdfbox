@@ -1398,9 +1398,13 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Returns the page at the given index.
+     * Returns the page at the given 0-based index.
+     * <p>
+     * This method is too slow to get all the pages from a large PDF document
+     * (1000 pages or more). For such documents, use the iterator of
+     * {@link PDDocument#getPages()} instead.
      *
-     * @param pageIndex the page index
+     * @param pageIndex the 0-based page index
      * @return the page at the given index.
      */
     public PDPage getPage(int pageIndex) // todo: REPLACE most calls to this method with BELOW method
