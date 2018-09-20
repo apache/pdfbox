@@ -1379,7 +1379,7 @@ public class PDDocument implements Pageable, Closeable
 
     /**
      * Save the pdf as incremental for signing. Use this only for small files
-     * because this method temporarly stores the entire file into memory.
+     * because this method temporarily stores the entire file into memory.
      *
      * @param fileName the filename to be used. This should be a copy of the
      * original file.
