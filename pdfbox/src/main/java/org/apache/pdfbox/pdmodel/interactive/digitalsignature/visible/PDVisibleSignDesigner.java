@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,6 +25,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -33,7 +33,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
  * 
- * That class is in order to build  your 
+ * That class is in order to build your 
  * visible signature design. Because of 
  * this is builder, instead of setParam()
  * we use param() methods.
@@ -48,7 +48,7 @@ public class PDVisibleSignDesigner
     private float yAxis;
     private float pageHeight;
     private float pageWidth;
-    private InputStream imgageStream;
+    private InputStream imageStream;
     private String signatureFieldName = "sig"; // default
     private byte[] formaterRectangleParams = { 0, 0, 100, 50 }; // default
     private byte[] AffineTransformParams =   { 1, 0, 0, 1, 0, 0 }; // default
@@ -58,7 +58,7 @@ public class PDVisibleSignDesigner
     /**
      *
      * @param originalDocumenStream
-     * @param imageStream
+     * @param imageStream stream of JPEG image
      * @param page the 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
@@ -71,8 +71,8 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param documentPath - path of your pdf document
-     * @param imageStream - stream of image
+     * @param documentPath path of your pdf document
+     * @param imageStream stream of JPEG image
      * @param page the 1-based page number for which the page size should be calculated.
      * @throws IOException
      */
@@ -92,10 +92,10 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param doc - Already created PDDocument of your PDF document
-     * @param imageStream
+     * @param doc Already created PDDocument of your PDF document
+     * @param imageStream stream of JPEG image
      * @param page the 1-based page number for which the page size should be calculated.
-     * @throws IOException - If we can't read, flush, or can't close stream
+     * @throws IOException If we can't read, flush, or can't close stream
      */
     public PDVisibleSignDesigner(PDDocument doc, InputStream imageStream, int page) throws IOException 
     {
@@ -133,8 +133,8 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @param path  of image location
-     * @return image Stream
+     * @param path JPEG image location
+     * @return Visible signature configuration object
      * @throws IOException
      */
     public PDVisibleSignDesigner signatureImage(String path) throws IOException
@@ -291,62 +291,36 @@ public class PDVisibleSignDesigner
 
     /**
      * 
-     * @return image Stream
+     * @return JPEG image stream
      */
     public InputStream getImageStream()
     {
-        return imgageStream;
+        return imageStream;
     }
 
     /**
      * 
-     * @param imgageStream- stream of your visible signature image
-     * @return Visible Signature Configuration Object
-     * @throws IOException - If we can't read, flush, or close stream of image
+     * @param jpegImageStream Stream of your visible signature JPEG image
+     * @return Visible signature configuration object
+     * @throws IOException If we can't read, flush, or close stream of image
      */
-    private PDVisibleSignDesigner signatureImageStream(InputStream imageStream) throws IOException 
+    private PDVisibleSignDesigner signatureImageStream(InputStream jpegImageStream) throws IOException 
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = imageStream.read(buffer)) > -1)
-        {
-            baos.write(buffer, 0, len);
-        }
-        baos.flush();
-        baos.close();
-
-        byte[] byteArray = baos.toByteArray();
-        byte[] byteArraySecond = new byte[byteArray.length];
-        System.arraycopy(byteArray, 0, byteArraySecond, 0, byteArray.length);
-
-        InputStream inputForBufferedImage = new ByteArrayInputStream(byteArray);
-        InputStream revertInputStream = new ByteArrayInputStream(byteArraySecond);
+        byte[] byteArray = IOUtils.toByteArray(jpegImageStream);
 
         if (sigImgHeight == null || sigImgWidth == null)
         {
-            calculateImageSize(inputForBufferedImage);
+            BufferedImage bimg = ImageIO.read(new ByteArrayInputStream(byteArray));
+            int width = bimg.getWidth();
+            int height = bimg.getHeight();
+
+            sigImgHeight = (float) height;
+            sigImgWidth = (float) width;
         }
 
-        this.imgageStream = revertInputStream;
+        this.imageStream = new ByteArrayInputStream(byteArray);
 
         return this;
-    }
-
-    /**
-     * calculates image width and height. supported formats: all
-     * 
-     * @param fis - input stream of image
-     * @throws IOException - if can't read input stream
-     */
-    private void calculateImageSize(InputStream fis) throws IOException 
-    {
-        BufferedImage bimg = ImageIO.read(fis);
-        int width = bimg.getWidth();
-        int height = bimg.getHeight();
-
-        sigImgHeight = (float) height;
-        sigImgWidth = (float) width;
     }
 
     /**
