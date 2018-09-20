@@ -1388,6 +1388,9 @@ public class PDDocument implements Pageable, Closeable
      */
     public void saveIncremental(String fileName) throws IOException, COSVisitorException
     {
+        //BEWARE: do not "optimize" this method by using buffered streams,
+        // because COSStandardOutputStream only allows seeking
+        // if a FileOutputStream is passed, see PDFBOX-4312.
         FileInputStream fis = new FileInputStream(fileName);
         byte[] ba = IOUtils.toByteArray(fis);
         fis.close();
