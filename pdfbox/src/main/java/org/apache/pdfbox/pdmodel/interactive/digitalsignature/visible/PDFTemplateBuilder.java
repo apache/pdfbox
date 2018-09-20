@@ -113,7 +113,7 @@ public interface PDFTemplateBuilder {
     /**
      * Creates signature image
      * @param template
-     * @param InputStream
+     * @param InputStream JPEG image stream
      * @throws IOException
      */
     public void createSignatureImage(PDDocument template, InputStream InputStream) throws IOException;
