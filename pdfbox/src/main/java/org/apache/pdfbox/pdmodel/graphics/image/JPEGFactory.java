@@ -177,19 +177,26 @@ public final class JPEGFactory
     {
         // Metadata format:
         // https://docs.oracle.com/javase/10/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
-        IIOMetadata imageMetadata = reader.getImageMetadata(0);
-        Element tree = (Element) imageMetadata.getAsTree("javax_imageio_jpeg_image_1.0");
-        Element markerSequence = (Element) tree.getElementsByTagName("markerSequence").item(0);
-        NodeList nodeList = markerSequence.getElementsByTagName("sof");
-        if (nodeList != null && nodeList.getLength() > 0)
+        try
         {
-            Element element = (Element) nodeList.item(0);
-            String process = element.getAttribute("process");
-            if ("2".equals(process))
+            IIOMetadata imageMetadata = reader.getImageMetadata(0);
+            Element tree = (Element) imageMetadata.getAsTree("javax_imageio_jpeg_image_1.0");
+            Element markerSequence = (Element) tree.getElementsByTagName("markerSequence").item(0);
+            NodeList nodeList = markerSequence.getElementsByTagName("sof");
+            if (nodeList != null && nodeList.getLength() > 0)
             {
-                LOG.warn("Progressive JPEGs are not properly supported by Adobe Reader;");
-                LOG.warn("please check whether your PDF displays.");
+                Element element = (Element) nodeList.item(0);
+                String process = element.getAttribute("process");
+                if ("2".equals(process))
+                {
+                    LOG.warn("Progressive JPEGs are not properly supported by Adobe Reader;");
+                    LOG.warn("please check whether your PDF displays.");
+                }
             }
+        }
+        catch (IOException ex)
+        {
+            LOG.debug("error reading metadata", ex);
         }
     }
 
