@@ -39,7 +39,8 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -51,6 +52,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
  * Factory for creating a PDImageXObject containing a JPEG compressed image.
@@ -58,6 +60,8 @@ import org.w3c.dom.Element;
  */
 public final class JPEGFactory
 {
+    private static final Log LOG = LogFactory.getLog(JPEGFactory.class);
+
     private JPEGFactory()
     {
     }
@@ -158,12 +162,34 @@ public final class JPEGFactory
         try (ImageInputStream iis = ImageIO.createImageInputStream(stream))
         {
             reader.setInput(iis);
+            warnIfProgressive(reader);
             ImageIO.setUseCache(false);
             return reader.readRaster(0, null);
         }
         finally
         {
             reader.dispose();
+        }
+    }
+
+    // PDFBOX-4317 warn about progressive JPEG files
+    private static void warnIfProgressive(ImageReader reader) throws IOException
+    {
+        // Metadata format:
+        // https://docs.oracle.com/javase/10/docs/api/javax/imageio/metadata/doc-files/jpeg_metadata.html
+        IIOMetadata imageMetadata = reader.getImageMetadata(0);
+        Element tree = (Element) imageMetadata.getAsTree("javax_imageio_jpeg_image_1.0");
+        Element markerSequence = (Element) tree.getElementsByTagName("markerSequence").item(0);
+        NodeList nodeList = markerSequence.getElementsByTagName("sof");
+        if (nodeList != null && nodeList.getLength() > 0)
+        {
+            Element element = (Element) nodeList.item(0);
+            String process = element.getAttribute("process");
+            if ("2".equals(process))
+            {
+                LOG.warn("Progressive JPEGs are not properly supported by Adobe Reader;");
+                LOG.warn("please check whether your PDF displays.");
+            }
         }
     }
 
