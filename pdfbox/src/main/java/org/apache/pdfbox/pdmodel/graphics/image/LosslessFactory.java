@@ -217,8 +217,7 @@ public final class LosslessFactory
     }
 
     /**
-     * Create a PDImageXObject while making a decision whether not to 
-     * compress, use Flate filter only, or Flate and LZW filters.
+     * Create a PDImageXObject using the Flate filter.
      * 
      * @param document The document.
      * @param byteArray array with data.
