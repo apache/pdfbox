@@ -702,7 +702,7 @@ class AppearanceGeneratorHelper
             contents.newLineAtOffset(contentRect.getLowerLeftX(), yTextPos);
             contents.showText(options.get(i));
 
-            if (i - topIndex != (numOptions - 1))
+            if (i != (numOptions - 1))
             {
                 contents.endText();
             }
