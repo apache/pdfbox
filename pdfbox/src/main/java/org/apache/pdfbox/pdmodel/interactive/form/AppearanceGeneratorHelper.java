@@ -428,7 +428,7 @@ class AppearanceGeneratorHelper
         // options
         if (field instanceof PDListBox)
         {
-            insertGeneratedSelectionHighlight(contents, appearanceStream, font, fontSize);
+            insertGeneratedListboxSelectionHighlight(contents, appearanceStream, font, fontSize);
         }
         
         // start the text output
@@ -613,7 +613,7 @@ class AppearanceGeneratorHelper
         }
     }
     
-    private void insertGeneratedSelectionHighlight(PDPageContentStream contents, PDAppearanceStream appearanceStream,
+    private void insertGeneratedListboxSelectionHighlight(PDPageContentStream contents, PDAppearanceStream appearanceStream,
             PDFont font, float fontSize) throws IOException
     {
         List<Integer> indexEntries = ((PDListBox) field).getSelectedOptionsIndex();
