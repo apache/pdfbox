@@ -514,10 +514,28 @@ public class DomXmpParser
             // no child
             String text = liElement.getTextContent();
             TypeMapping tm = xmp.getTypeMapping();
-            AbstractSimpleProperty sp = tm.instanciateSimpleProperty(descriptor.getNamespaceURI(),
-                    descriptor.getPrefix(), descriptor.getLocalPart(), text, type);
-            loadAttributes(sp, liElement);
-            return sp;
+            if (type.isSimple())
+            {
+                AbstractField af = tm.instanciateSimpleProperty(descriptor.getNamespaceURI(),
+                        descriptor.getPrefix(), descriptor.getLocalPart(), text, type);
+                loadAttributes(af, liElement);
+                return af;
+            }
+            else
+            {
+                // PDFBOX-4325: assume it is structured
+                AbstractField af;
+                try
+                {
+                    af = tm.instanciateStructuredType(type, descriptor.getLocalPart());
+                }
+                catch (BadFieldValueException ex)
+                {
+                    throw new XmpParsingException(ErrorType.InvalidType, "Parsing of structured type failed", ex);
+                }
+                loadAttributes(af, liElement);
+                return af;
+            }
         }
     }
 
