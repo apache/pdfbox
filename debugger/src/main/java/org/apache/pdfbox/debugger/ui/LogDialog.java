@@ -122,7 +122,7 @@ public class LogDialog extends JDialog
         StyleConstants.setForeground(nameStyle, new Color(0x6A6A6A));
 
         String shortName = name.substring(name.lastIndexOf('.') + 1);
-        String message = o.toString();
+        String message = o == null ? "(null)" : o.toString();
         
         if (throwable != null)
         {
