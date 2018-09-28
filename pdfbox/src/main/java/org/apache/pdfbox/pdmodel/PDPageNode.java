@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This represents a page node in a pdf document.
@@ -171,7 +172,7 @@ public class PDPageNode implements COSObjectable
     public List getKids()
     {
         List actuals = new ArrayList();
-        COSArray kids = getAllKids(actuals, page, false);
+        COSArray kids = getAllKids(actuals, page, false, new HashSet<COSBase>());
         return new COSArrayList( actuals, kids );
     }
 
@@ -182,7 +183,7 @@ public class PDPageNode implements COSObjectable
      */
     public void getAllKids(List result)
     {
-        getAllKids(result, page, true);
+        getAllKids(result, page, true, new HashSet<COSBase>());
     }
 
     /**
@@ -191,8 +192,9 @@ public class PDPageNode implements COSObjectable
      * @param result All direct and optionally indirect descendents of this node are added to this list.
      * @param page Page dictionary of a page node.
      * @param recurse if true indirect descendents are processed recursively
+     * @param seen set of objects that have been added
      */
-    private static COSArray getAllKids(List result, COSDictionary page, boolean recurse)
+    private static COSArray getAllKids(List result, COSDictionary page, boolean recurse, Set<COSBase> seen)
     {
         if(page == null)
             return null;
@@ -202,7 +204,6 @@ public class PDPageNode implements COSObjectable
             log.error("No Kids found in getAllKids(). Probably a malformed pdf.");
             return null;
         }
-        HashSet<COSBase> seen = new HashSet<COSBase>();
         for( int i=0; i<kids.size(); i++ )
         {
             // ignore duplicates (from malformed PDFs)
@@ -220,7 +221,7 @@ public class PDPageNode implements COSObjectable
                     {
                         if (recurse)
                         {
-                            getAllKids(result, kid, recurse);
+                            getAllKids(result, kid, recurse, seen);
                         }
                         else
                         {
