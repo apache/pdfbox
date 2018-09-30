@@ -911,6 +911,8 @@ public abstract class PDFStreamEngine
 
     /**
      * Saves the entire graphics stack.
+     * 
+     * @return the saved graphics state stack.
      */
     protected final Stack<PDGraphicsState> saveGraphicsStack()
     {
