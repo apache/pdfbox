@@ -22,7 +22,7 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferUShort;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MultiPixelPackedSampleModel;
-import java.awt.image.WritableRaster;
+import java.awt.image.Raster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -62,7 +62,7 @@ public final class JPXFilter extends Filter
         result.getParameters().addAll(parameters);
         BufferedImage image = readJPX(encoded, options, result);
 
-        WritableRaster raster = image.getRaster();
+        Raster raster = image.getRaster();
         switch (raster.getDataBuffer().getDataType())
         {
             case DataBuffer.TYPE_BYTE:
