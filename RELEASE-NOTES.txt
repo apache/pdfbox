@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.11
+Release Notes -- Apache PDFBox -- Version 2.0.12
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.10 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.11 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,11 +14,52 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-4248] - NPE when rendering a PDF with annotations using a g2d from Batik
+[PDFBOX-4013] - Java 9/macOS: Debugger App does not start (NoSuchMethodException)
+[PDFBOX-4219] - Multithreading problem when rendering several documents with Standard 14 fonts
+[PDFBOX-4242] - Fontbox does not close file descriptor when loading fonts.
+[PDFBOX-4245] - wrong rendering of the transparency group at the specific position on a page
+[PDFBOX-4254] - PDDocument.close() might ignore throwing an Exception
+[PDFBOX-4266] - Java 6 error
+[PDFBOX-4267] - Incorrect rendering when /Matte entry
+[PDFBOX-4268] - Japanese text displayed as barcode
+[PDFBOX-4276] - Multiply blend mode not detected
+[PDFBOX-4278] - Type 3 font .notdef-named glyph missing in rendering
+[PDFBOX-4279] - ArrayIndexOutOfBoundsException in PDDeviceGray.toRGB
+[PDFBOX-4283] - Allowing Rectangles with additional elements
+[PDFBOX-4288] - needless adding while parsing dictionary objects
+[PDFBOX-4291] - JavaDoc on website is marked as being in German
+[PDFBOX-4292] - Validation fails if ModifyDate and ModDate are specified using different time zones
+[PDFBOX-4298] - NullPointerException when doing overlay
+[PDFBOX-4299] - ArrayIndexOutOfBoundsException in CmapSubtable.processSubtype2
+[PDFBOX-4301] - ClassCastException in PDExtendedGraphicsState
+[PDFBOX-4302] - ToUnicode CMap is not written correctly when the entry count is just 100.
+[PDFBOX-4305] - Log message not in english
+[PDFBOX-4306] - Image clipping area rounding error
+[PDFBOX-4307] - ClassCastException in PDDocumentCatalog.getDocumentOutline if 'outlines' is not a dictionary
+[PDFBOX-4308] - PDDocument protect changes color palette
+[PDFBOX-4315] - PDFBox info message when not using it
+[PDFBOX-4316] - RemoveAllText does not delete all parameters with " operator
+[PDFBOX-4318] - PDFont.encode results change on identical input
+[PDFBOX-4319] - Parsing 100000 page pdf is slow
+[PDFBOX-4322] - Extract Text feature is not working for some part of PDF
 
 Improvement
 
-[PDFBOX-4251] - Optimize AFMParser
+[PDFBOX-4184] - [PATCH]: Support simple lossless compression of 16 bit RGB images
+[PDFBOX-4253] - Optimize PDFunctionType3.eval()
+[PDFBOX-4256] - Return default value for CheckBox / RadioButton if /V entry is missing (widget /AS entries are present)
+[PDFBOX-4259] - Add polygon annotation to AddAnnotations.java example
+[PDFBOX-4260] - Reduce RAM requirement of COSOutputStream
+[PDFBOX-4263] - Check object key when signing
+[PDFBOX-4271] - Consistently using the same version of the download-maven-plugin
+[PDFBOX-4274] - Get rid of warning about prerequisites
+[PDFBOX-4285] - Expose the tiff compression type to the user.
+[PDFBOX-4289] - Double negative number
+[PDFBOX-4295] - Don't create intermediate streams when merging files
+
+Task
+
+[PDFBOX-4281] - Replace Apache Wink dependency
 
 Release Contents
 ----------------
