@@ -25,6 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fontbox.cff.CFFFont.Mapping;
 import org.apache.fontbox.cff.charset.CFFCharset;
@@ -42,6 +44,10 @@ import org.apache.fontbox.cff.encoding.CFFStandardEncoding;
  */
 public class CFFParser
 {
+    /**
+     * Log instance.
+     */
+    private static final Log LOG = LogFactory.getLog(CFFParser.class);
 
     private static final String TAG_OTTO = "OTTO";
     private static final String TAG_TTCF = "ttcf";
@@ -273,6 +279,7 @@ public class CFFParser
         StringBuffer sb = new StringBuffer();
         boolean done = false;
         boolean exponentMissing = false;
+        boolean hasExponent = false;
         while (!done)
         {
             int b = input.readUnsignedByte();
@@ -298,12 +305,24 @@ public class CFFParser
                     sb.append(".");
                     break;
                 case 0xb:
+                    if (hasExponent)
+                    {
+                        LOG.warn("duplicate 'E' ignored after " + sb);
+                        break;
+                    }
                     sb.append("E");
                     exponentMissing = true;
+                    hasExponent = true;
                     break;
                 case 0xc:
+                    if (hasExponent)
+                    {
+                        LOG.warn("duplicate 'E-' ignored after " + sb);
+                        break;
+                    }
                     sb.append("E-");
                     exponentMissing = true;
+                    hasExponent = true;
                     break;
                 case 0xd:
                     break;
