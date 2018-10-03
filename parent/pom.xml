@@ -121,6 +121,14 @@
         <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
         <profile>
             <id>jdk9</id>
+            <!--
+            allows automatic activation when jdk9 or higher is used
+            https://maven.apache.org/guides/introduction/introduction-to-profiles.html
+            https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html
+            -->
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
             <properties>
                 <addmod>--add-modules java.activation --add-modules java.xml.bind</addmod>
             </properties>
