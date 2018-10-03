@@ -346,6 +346,7 @@ public class CFFParser
         StringBuilder sb = new StringBuilder();
         boolean done = false;
         boolean exponentMissing = false;
+        boolean hasExponent = false;
         while (!done)
         {
             int b = input.readUnsignedByte();
@@ -371,12 +372,24 @@ public class CFFParser
                     sb.append(".");
                     break;
                 case 0xb:
+                    if (hasExponent)
+                    {
+                        LOG.warn("duplicate 'E' ignored after " + sb);
+                        break;
+                    }
                     sb.append("E");
                     exponentMissing = true;
+                    hasExponent = true;
                     break;
                 case 0xc:
+                    if (hasExponent)
+                    {
+                        LOG.warn("duplicate 'E-' ignored after " + sb);
+                        break;
+                    }
                     sb.append("E-");
                     exponentMissing = true;
+                    hasExponent = true;
                     break;
                 case 0xd:
                     break;
