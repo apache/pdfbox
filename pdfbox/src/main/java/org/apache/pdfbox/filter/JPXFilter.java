@@ -16,10 +16,13 @@
  */
 package org.apache.pdfbox.filter;
 
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferUShort;
+import java.awt.image.IndexColorModel;
+import java.awt.image.MultiPixelPackedSampleModel;
 import java.awt.image.Raster;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +52,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDJPXColorSpace;
  */
 public final class JPXFilter extends Filter
 {
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DecodeResult decode(InputStream encoded, OutputStream decoded, COSDictionary
             parameters, int index, DecodeOptions options) throws IOException
@@ -71,6 +77,23 @@ public final class JPXFilter extends Filter
                 {
                     decoded.write(w >> 8);
                     decoded.write(w);
+                }
+                return result;
+
+            case DataBuffer.TYPE_INT:
+                // not yet used (as of October 2018) but works as fallback
+                // if we decide to convert to BufferedImage.TYPE_INT_RGB
+                int[] ar = new int[raster.getNumBands()];
+                for (int y = 0; y < image.getHeight(); ++y)
+                {
+                    for (int x = 0; x < image.getWidth(); ++x)
+                    {
+                        raster.getPixel(x, y, ar);
+                        for (int i = 0; i < ar.length; ++i)
+                        {
+                            decoded.write(ar[i]);
+                        }
+                    }
                 }
                 return result;
 
@@ -136,7 +159,21 @@ public final class JPXFilter extends Filter
             // extract embedded color space
             if (!parameters.containsKey(COSName.COLORSPACE))
             {
-                result.setColorSpace(new PDJPXColorSpace(image.getColorModel().getColorSpace()));
+                if (image.getSampleModel() instanceof MultiPixelPackedSampleModel &&
+                    image.getColorModel().getPixelSize() == 1 &&
+                    image.getRaster().getNumBands() == 1 && 
+                    image.getColorModel() instanceof IndexColorModel)
+                {
+                    // PDFBOX-4326:
+                    // force CS_GRAY colorspace because colorspace in IndexColorModel
+                    // has 3 colors despite that there is only 1 color per pixel
+                    // in raster
+                    result.setColorSpace(new PDJPXColorSpace(ColorSpace.getInstance(ColorSpace.CS_GRAY)));
+                }
+                else
+                {
+                    result.setColorSpace(new PDJPXColorSpace(image.getColorModel().getColorSpace()));
+                }
             }
 
             return image;
@@ -151,6 +188,9 @@ public final class JPXFilter extends Filter
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encode(InputStream input, OutputStream encoded, COSDictionary parameters)
             throws IOException
