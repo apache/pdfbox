@@ -214,6 +214,9 @@ public final class ExtractImages
                     PDTransparencyGroup group = softMask.getGroup();
                     if (group != null)
                     {
+                        // PDFBOX-4327: without this line NPEs will occur
+                        res.getExtGState(name).copyIntoGraphicsState(getGraphicsState());
+
                         processSoftMask(group);
                     }
                 }
