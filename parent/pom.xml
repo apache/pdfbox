@@ -122,16 +122,37 @@
         <profile>
             <id>jdk9</id>
             <!--
-            allows automatic activation when jdk9 or higher is used
+            allows automatic activation when jdk9 or jdk10 are used
             https://maven.apache.org/guides/introduction/introduction-to-profiles.html
             https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html
             -->
             <activation>
-                <jdk>[9,)</jdk>
+                <jdk>[9,10]</jdk>
             </activation>
             <properties>
                 <addmod>--add-modules java.activation --add-modules java.xml.bind</addmod>
             </properties>
+        </profile>
+        <profile>
+            <!-- from jdk11 onwards activation and bind are no longer part of the jdk -->
+            <id>jdk11</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>javax.xml.bind</groupId>
+                        <artifactId>jaxb-api</artifactId>
+                        <version>2.3.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                        <version>1.1.1</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
         </profile>
         <profile>
             <id>pedantic</id>
