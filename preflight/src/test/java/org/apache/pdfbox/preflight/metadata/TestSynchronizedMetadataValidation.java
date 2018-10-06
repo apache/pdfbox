@@ -359,7 +359,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testAllInfoSynhcronized() throws Exception
+    public void testAllInfoSynchronized() throws Exception
     {
         initValues();
 
