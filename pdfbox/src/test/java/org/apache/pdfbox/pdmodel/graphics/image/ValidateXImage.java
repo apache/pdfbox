@@ -61,6 +61,14 @@ public class ValidateXImage
         assertEquals(ximage.getWidth(), ximage.getImage().getWidth());
         assertEquals(ximage.getHeight(), ximage.getImage().getHeight());
 
+        if ("jpg".equals(format) &&
+            System.getProperty("java.specification.version").startsWith("11") &&
+            ximage.getImage().getType() == BufferedImage.TYPE_INT_ARGB)
+        {
+            // test doesn't work on jdk11, temporarly disabled
+            // https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8211748
+            return;
+        }
         boolean writeOk = ImageIO.write(ximage.getImage(),
                 format, new ByteArrayOutputStream());
         assertTrue(writeOk);
