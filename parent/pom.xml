@@ -135,6 +135,7 @@
         </profile>
         <profile>
             <!-- from jdk11 onwards activation and bind are no longer part of the jdk -->
+            <!-- must be set to "test" or "provided" in subprojects --> 
             <id>jdk11</id>
             <activation>
                 <jdk>[11,)</jdk>
@@ -145,13 +146,11 @@
                         <groupId>javax.xml.bind</groupId>
                         <artifactId>jaxb-api</artifactId>
                         <version>2.3.0</version>
-                        <scope>test</scope>
                     </dependency>
                     <dependency>
                         <groupId>javax.activation</groupId>
                         <artifactId>activation</artifactId>
                         <version>1.1.1</version>
-                        <scope>test</scope>
                     </dependency>
                 </dependencies>
             </dependencyManagement>
