@@ -91,9 +91,9 @@ public class PDFMergerUtility
     private DocumentMergeMode documentMergeMode = DocumentMergeMode.PDFBOX_LEGACY_MODE;
 
     /**
-     * The mode to use when merging documents.
+     * The mode to use when merging documents:
      * 
-     * <p><ul>
+     * <ul>
      * <li>{@link DocumentMergeMode#OPTIMIZE_RESOURCES_MODE} Optimizes resource handling such as
      *      closing documents early. <strong>Not all document elements are merged</strong> compared to
      *      the PDFBOX_LEGACY_MODE. Currently supported are:
