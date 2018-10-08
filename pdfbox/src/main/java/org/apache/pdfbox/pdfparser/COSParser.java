@@ -2334,6 +2334,11 @@ public class COSParser extends BaseParser
             List<? extends COSBase> kidsList = kidsArray.toList();
             for (COSBase kid : kidsList)
             {
+                if (!(kid instanceof COSObject))
+                {
+                    kidsArray.remove(kid);
+                    continue;
+                }
                 COSObject kidObject = (COSObject) kid;
                 if (set.contains(kidObject))
                 {
