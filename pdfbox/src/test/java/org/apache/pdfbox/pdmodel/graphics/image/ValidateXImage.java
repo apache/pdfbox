@@ -16,12 +16,14 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
+import javax.imageio.spi.ImageWriterSpi;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -61,20 +63,32 @@ public class ValidateXImage
         assertEquals(ximage.getWidth(), ximage.getImage().getWidth());
         assertEquals(ximage.getHeight(), ximage.getImage().getHeight());
 
+        boolean canEncode = true;
+        boolean writeOk;
+        // jdk11+ no longer encodes ARGB jpg
+        // https://bugs.openjdk.java.net/browse/JDK-8211748
         if ("jpg".equals(format) &&
-            System.getProperty("java.specification.version").startsWith("11") &&
             ximage.getImage().getType() == BufferedImage.TYPE_INT_ARGB)
         {
-            // test doesn't work on jdk11, temporarly disabled
-            // https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8211748
-            return;
+            ImageWriter writer = ImageIO.getImageWritersBySuffix(format).next();
+            ImageWriterSpi originatingProvider = writer.getOriginatingProvider();
+            canEncode = originatingProvider.canEncodeImage(ximage.getImage());
         }
-        boolean writeOk = ImageIO.write(ximage.getImage(),
-                format, new ByteArrayOutputStream());
+        if (canEncode)
+        {
+            writeOk = ImageIO.write(ximage.getImage(), format, new NullOutputStream());
+            assertTrue(writeOk);
+        }
+        writeOk = ImageIO.write(ximage.getOpaqueImage(), format, new NullOutputStream());
         assertTrue(writeOk);
-        writeOk = ImageIO.write(ximage.getOpaqueImage(),
-                format, new ByteArrayOutputStream());
-        assertTrue(writeOk);
+    }
+    
+    private static class NullOutputStream extends OutputStream
+    {
+        @Override
+        public void write(int b) throws IOException
+        {
+        }
     }
 
     static int colorCount(BufferedImage bim)
