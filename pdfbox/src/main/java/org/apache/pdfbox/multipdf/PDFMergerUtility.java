@@ -92,9 +92,9 @@ public class PDFMergerUtility
     private AcroFormMergeMode acroFormMergeMode = AcroFormMergeMode.PDFBOX_LEGACY_MODE;
     
     /**
-     * The mode to use when merging documents.
+     * The mode to use when merging documents:
      * 
-     * <p><ul>
+     * <ul>
      * <li>{@link DocumentMergeMode#OPTIMIZE_RESOURCES_MODE} Optimizes resource handling such as
      *      closing documents early. <strong>Not all document elements are merged</strong> compared to
      *      the PDFBOX_LEGACY_MODE. Currently supported are:
@@ -113,9 +113,9 @@ public class PDFMergerUtility
     }
     
     /**
-     * The mode to use when merging AcroForm between documents.
+     * The mode to use when merging AcroForm between documents:
      * 
-     * <p><ul>
+     * <ul>
      * <li>{@link AcroFormMergeMode#JOIN_FORM_FIELDS_MODE} fields with the same fully qualified name
      *      will be merged into one with the widget annotations of the merged fields 
      *      becoming part of the same field.
