@@ -17,6 +17,7 @@
 package org.apache.pdfbox.multipdf;
 
 import java.awt.geom.AffineTransform;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +46,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
  * Based on code contributed by Balazs Jerk.
  * 
  */
-public class Overlay
+public class Overlay implements Closeable
 {
     /**
      * Possible location of the overlayed pages: foreground or background.
