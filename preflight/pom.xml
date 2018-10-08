@@ -44,12 +44,12 @@
                     <dependency>
                         <groupId>javax.xml.bind</groupId>
                         <artifactId>jaxb-api</artifactId>
-                        <scope>test</scope>
+                        <scope>provided</scope>
                     </dependency>
                     <dependency>
                         <groupId>javax.activation</groupId>
                         <artifactId>activation</artifactId>
-                        <scope>test</scope>
+                        <scope>provided</scope>
                     </dependency>
                 </dependencies>
             </profile>

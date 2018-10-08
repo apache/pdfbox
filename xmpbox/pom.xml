@@ -40,7 +40,7 @@
                     <dependency>
                         <groupId>javax.xml.bind</groupId>
                         <artifactId>jaxb-api</artifactId>
-                        <scope>test</scope>
+                        <scope>provided</scope>
                     </dependency>
                 </dependencies>
             </profile>
