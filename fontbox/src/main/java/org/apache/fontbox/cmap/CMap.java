@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class represents a CMap file.
@@ -30,6 +32,8 @@ import java.util.Map;
  */
 public class CMap
 {
+    private static final Log LOG = LogFactory.getLog(CMap.class);
+
     private int wmode = 0;
     private String cmapName = null;
     private String cmapVersion = null;
@@ -120,7 +124,13 @@ public class CMap
                 bytes[byteCount] = (byte)in.read();
             }
         }
-        throw new IOException("CMap is invalid");
+        String seq = "";
+        for (int i = 0; i < maxCodeLength; ++i)
+        {
+            seq += String.format("0x%02X (%04o) ", bytes[i], bytes[i]);
+        }
+        LOG.warn("Invalid character code sequence " + seq + "in CMap " + cmapName);
+        return 0;
     }
 
     /**
