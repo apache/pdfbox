@@ -2334,17 +2334,12 @@ public class COSParser extends BaseParser
             List<? extends COSBase> kidsList = kidsArray.toList();
             for (COSBase kid : kidsList)
             {
-                if (!(kid instanceof COSObject))
+                if (!(kid instanceof COSObject) || set.contains((COSObject) kid))
                 {
                     kidsArray.remove(kid);
                     continue;
                 }
                 COSObject kidObject = (COSObject) kid;
-                if (set.contains(kidObject))
-                {
-                    kidsArray.remove(kid);
-                    continue;
-                }
                 COSBase kidBaseobject = kidObject.getObject();
                 // object wasn't dereferenced -> remove it
                 if (kidBaseobject.equals(COSNull.NULL))
