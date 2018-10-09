@@ -137,20 +137,23 @@ public final class OverlayPDF
             usage();
         }
         
-        try 
+        try
         {
             try (PDDocument result = overlayer.overlay(specificPageOverlayFile))
             {
                 result.save(outputFilename);
             }
-            // close the input files AFTER saving the resulting file as some 
-            // streams are shared among the input and the output files
-            overlayer.close();
         } 
         catch (IOException e) 
         {
             LOG.error("Overlay failed: " + e.getMessage(), e);
             throw e;
+        }
+        finally
+        {
+            // close the input files AFTER saving the resulting file as some 
+            // streams are shared among the input and the output files
+            overlayer.close();
         }
     }
 

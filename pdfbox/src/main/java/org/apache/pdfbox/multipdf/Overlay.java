@@ -129,6 +129,7 @@ public class Overlay implements Closeable
      * 
      * @throws IOException if something went wrong
      */
+    @Override
     public void close() throws IOException
     {
         if (defaultOverlay != null)
