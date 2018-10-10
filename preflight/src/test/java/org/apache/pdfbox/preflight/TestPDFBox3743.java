@@ -41,10 +41,12 @@ public class TestPDFBox3743
         DataSource ds = new FileDataSource("src/test/resources/PDFBOX-3743.pdf");
         PreflightParser parser = new PreflightParser(ds);
         parser.parse();
-        PreflightDocument document = parser.getPreflightDocument();
-        document.validate();
-        ValidationResult result = document.getResult();
-        document.close();
+        ValidationResult result;
+        try (PreflightDocument document = parser.getPreflightDocument())
+        {
+            document.validate();
+            result = document.getResult();
+        }
 
         // Error should be:
         // 2.4.3: Invalid Color space, /DeviceGray default for operator "Tj" can't be used without Color Profile

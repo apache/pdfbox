@@ -68,11 +68,12 @@ public class XmlResultParser
             try
             {
                 parser.parse();
-                PreflightDocument document = parser.getPreflightDocument();
-                document.validate();
-                pdfType = document.getSpecification().getFname();
-                result = document.getResult();
-                document.close();
+                try (PreflightDocument document = parser.getPreflightDocument())
+                {
+                    document.validate();
+                    pdfType = document.getSpecification().getFname();
+                    result = document.getResult();
+                }
             }
             catch (SyntaxValidationException e)
             {
