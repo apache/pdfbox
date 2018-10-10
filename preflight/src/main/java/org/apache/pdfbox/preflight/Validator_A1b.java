@@ -181,10 +181,11 @@ public class Validator_A1b
         try
         {
             parser.parse();
-            PreflightDocument document = parser.getPreflightDocument();
-            document.validate();
-            result = document.getResult();
-            document.close();
+            try (PreflightDocument document = parser.getPreflightDocument())
+            {
+                document.validate();
+                result = document.getResult();
+            }
         }
         catch (SyntaxValidationException e)
         {
