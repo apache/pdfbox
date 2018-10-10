@@ -51,7 +51,7 @@ public class PreflightContext implements Closeable
     /**
      * The datasource to load the document from. Needed by StreamValidationProcess.
      */
-    private DataSource source = null;
+    private DataSource dataSource = null;
 
     /**
      * Contains all Xref/trailer objects and resolves them into single object using startxref reference.
@@ -84,16 +84,16 @@ public class PreflightContext implements Closeable
     /**
      * Create the DocumentHandler using the DataSource which represent the PDF file to check.
      * 
-     * @param source
+     * @param dataSource
      */
-    public PreflightContext(DataSource source)
+    public PreflightContext(DataSource dataSource)
     {
-        this.source = source;
+        this.dataSource = dataSource;
     }
 
-    public PreflightContext(DataSource source, PreflightConfiguration configuration)
+    public PreflightContext(DataSource dataSource, PreflightConfiguration configuration)
     {
-        this.source = source;
+        this.dataSource = dataSource;
         this.config = configuration;
     }
 
@@ -148,12 +148,12 @@ public class PreflightContext implements Closeable
      */
     public DataSource getSource()
     {
-        return source;
+        return dataSource;
     }
 
     public boolean isComplete()
     {
-        return (document != null) && (source != null);
+        return (document != null) && (dataSource != null);
     }
 
     /**
