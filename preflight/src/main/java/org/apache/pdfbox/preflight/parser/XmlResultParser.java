@@ -43,12 +43,12 @@ public class XmlResultParser
 {
 
 
-    public Element validate(DataSource source) throws IOException
+    public Element validate(DataSource dataSource) throws IOException
     {
         try
         {
             Document rdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            return validate(rdocument,source);
+            return validate(rdocument,dataSource);
         }
         catch (ParserConfigurationException e)
         {
@@ -57,14 +57,14 @@ public class XmlResultParser
     }
 
 
-    public Element validate(Document rdocument, DataSource source) throws IOException
+    public Element validate(Document rdocument, DataSource dataSource) throws IOException
     {
         String pdfType = null;
         ValidationResult result;
         long before = System.currentTimeMillis();
         try
         {
-            PreflightParser parser = new PreflightParser(source);
+            PreflightParser parser = new PreflightParser(dataSource);
             try
             {
                 parser.parse();
@@ -82,13 +82,13 @@ public class XmlResultParser
         catch(Exception e) 
         {
             long after = System.currentTimeMillis();
-            return generateFailureResponse(rdocument, source.getName(), after-before, pdfType, e);
+            return generateFailureResponse(rdocument, dataSource.getName(), after-before, pdfType, e);
         }
 
         long after = System.currentTimeMillis();
         if (result.isValid())
         {
-            Element preflight = generateResponseSkeleton(rdocument, source.getName(), after-before);
+            Element preflight = generateResponseSkeleton(rdocument, dataSource.getName(), after-before);
             // valid ?
             Element valid = rdocument.createElement("isValid");
             valid.setAttribute("type", pdfType);
@@ -98,7 +98,7 @@ public class XmlResultParser
         }
         else
         {
-            Element preflight = generateResponseSkeleton(rdocument, source.getName(), after-before);
+            Element preflight = generateResponseSkeleton(rdocument, dataSource.getName(), after-before);
             // valid ?
             createResponseWithError(rdocument, pdfType, result, preflight);
             return preflight;
