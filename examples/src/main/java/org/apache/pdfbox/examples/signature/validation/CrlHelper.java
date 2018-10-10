@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.signature.validation;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.CRLException;
@@ -61,7 +62,9 @@ public final class CrlHelper
             }
 
             CertificateFactory certFac = new CertificateFactory();
-            X509CRL crl = (X509CRL) certFac.engineGenerateCRL(con.getInputStream());
+            InputStream is = con.getInputStream();
+            X509CRL crl = (X509CRL) certFac.engineGenerateCRL(is);
+            is.close();
             if (crl.isRevoked(cert))
             {   
                 throw new RevokedCertificateException("The Certificate was found on the CRL and is revoked!");
