@@ -2342,7 +2342,7 @@ public class COSParser extends BaseParser
                 COSObject kidObject = (COSObject) kid;
                 COSBase kidBaseobject = kidObject.getObject();
                 // object wasn't dereferenced -> remove it
-                if (kidBaseobject.equals(COSNull.NULL))
+                if (kidBaseobject == null || kidBaseobject.equals(COSNull.NULL))
                 {
                     LOG.warn("Removed null object " + kid + " from pages dictionary");
                     kidsArray.remove(kid);
