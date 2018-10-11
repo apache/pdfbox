@@ -308,6 +308,18 @@ public class TestPDFParser
         PDDocument.load(new File(TARGETPDFDIR, "genko_oc_shiryo1.pdf")).close();
     }
 
+    /**
+     * Test parsing the file from PDFBOX-4338, which brought an
+     * ArrayIndexOutOfBoundsException before the bug was fixed.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox4338() throws IOException
+    {
+        PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4338.pdf")).close();
+    }
+
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
