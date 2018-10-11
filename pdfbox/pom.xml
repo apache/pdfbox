@@ -451,6 +451,19 @@
                             <sha512>566346239d51f10b2ccfc435620e8f3b0281e91286983cb86660060a8d48777998eab46dfda93d35024e7e4b50b7ab6654f9a1002524163d228a5e41a80a1221</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4338</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12943502/ArrayIndexOutOfBoundsException%20COSParser</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4338.pdf</outputFileName>
+                            <sha512>130fa4b49345410b203613f3e67263f483f9a9797bef22322647655bb55cc55bcb1d1e0eb03c27f6f2855b3823675b27e8899d8eeb880d27a74fad5f60f23b47</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
