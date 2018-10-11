@@ -320,6 +320,18 @@ public class TestPDFParser
         PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4338.pdf")).close();
     }
 
+    /**
+     * Test parsing the file from PDFBOX-4339, which brought a
+     * NullPointerException before the bug was fixed.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox4339() throws IOException
+    {
+        PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4339.pdf")).close();
+    }
+
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
