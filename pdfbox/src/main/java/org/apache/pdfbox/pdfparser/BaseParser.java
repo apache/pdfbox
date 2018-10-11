@@ -632,10 +632,10 @@ public abstract class BaseParser
             if( pbo instanceof COSObject )
             {
                 // We have to check if the expected values are there or not PDFBOX-385
-                if (po.get(po.size()-1) instanceof COSInteger)
+                if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
                 {
                     COSInteger genNumber = (COSInteger)po.remove( po.size() -1 );
-                    if (po.get(po.size()-1) instanceof COSInteger)
+                    if (po.size() > 0 && po.get(po.size() - 1) instanceof COSInteger)
                     {
                         COSInteger number = (COSInteger)po.remove( po.size() -1 );
                         COSObjectKey key = new COSObjectKey(number.longValue(), genNumber.intValue());
