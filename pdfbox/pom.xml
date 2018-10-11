@@ -464,6 +464,19 @@
                             <sha512>130fa4b49345410b203613f3e67263f483f9a9797bef22322647655bb55cc55bcb1d1e0eb03c27f6f2855b3823675b27e8899d8eeb880d27a74fad5f60f23b47</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4339</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12943503/NullPointerException%20COSParser</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4339.pdf</outputFileName>
+                            <sha512>2e48aeae83ef6fc4c5f95aafdfe8c76dd8d2dcf3516701c70ffeb14f06ba246a17c21f2dadf8fa48bccef5b72daffdd30ed7c9aa7f5183ddf889968caa2ded6a</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
