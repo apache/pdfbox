@@ -130,11 +130,11 @@
                 <jdk>[9,10]</jdk>
             </activation>
             <properties>
-                <addmod>--add-modules java.activation --add-modules java.xml.bind</addmod>
+                <addmod>--add-modules java.xml.bind</addmod>
             </properties>
         </profile>
         <profile>
-            <!-- from jdk11 onwards activation and bind are no longer part of the jdk -->
+            <!-- from jdk11 onwards java.xml.bind is no longer part of the jdk -->
             <!-- must be set to "test" or "provided" in subprojects --> 
             <id>jdk11</id>
             <activation>
@@ -146,11 +146,6 @@
                         <groupId>javax.xml.bind</groupId>
                         <artifactId>jaxb-api</artifactId>
                         <version>2.3.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                        <version>1.1.1</version>
                     </dependency>
                 </dependencies>
             </dependencyManagement>
