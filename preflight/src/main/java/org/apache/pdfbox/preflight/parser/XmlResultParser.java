@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.activation.DataSource;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -36,6 +35,7 @@ import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
+import org.apache.pdfbox.preflight.utils.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
