@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -80,6 +78,8 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_NAME_SIZE;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_NEGATIVE_FLOAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_POSITIVE_FLOAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_STRING_LENGTH;
+import org.apache.pdfbox.preflight.utils.DataSource;
+import org.apache.pdfbox.preflight.utils.FileDataSource;
 
 public class PreflightParser extends PDFParser
 {

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.activation.FileDataSource;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -44,6 +43,7 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.parser.XmlResultParser;
+import org.apache.pdfbox.preflight.utils.FileDataSource;
 import org.apache.pdfbox.util.Version;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -149,7 +149,7 @@ public class Validator_A1b
             {
                 // generate xml output
                 XmlResultParser xrp = new XmlResultParser();
-                Element result = xrp.validate(new FileDataSource(args[posFile]));
+                Element result = xrp.validate(new FileDataSource(new File(args[posFile])));
                 Document document = result.getOwnerDocument();
                 document.appendChild(result);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();

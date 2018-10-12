@@ -21,9 +21,8 @@
 
 package org.apache.pdfbox.preflight.action.pdfa1b;
 
+import java.io.File;
 import java.util.List;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -35,6 +34,8 @@ import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.action.AbstractActionManager;
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
+import org.apache.pdfbox.preflight.utils.DataSource;
+import org.apache.pdfbox.preflight.utils.FileDataSource;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -49,7 +50,7 @@ public abstract class AbstractTestAction
      */
     protected PreflightContext createContext() throws Exception
     {
-        DataSource ds = new FileDataSource("src/test/resources/pdfa-with-annotations-square.pdf");
+        DataSource ds = new FileDataSource(new File("src/test/resources/pdfa-with-annotations-square.pdf"));
         PDDocument doc = PDDocument.load(ds.getInputStream());
         PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
         PreflightContext ctx = new PreflightContext(ds);
