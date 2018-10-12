@@ -25,17 +25,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.activation.DataSource;
 
 import org.apache.pdfbox.io.IOUtils;
 
 public class ByteArrayDataSource implements DataSource
 {
-    private ByteArrayOutputStream data;
-    private String type = null;
-    private String name = null;
+    private final ByteArrayOutputStream data;
+    private final String name = null;
 
     public ByteArrayDataSource(InputStream is) throws IOException
     {
@@ -44,42 +40,15 @@ public class ByteArrayDataSource implements DataSource
         IOUtils.closeQuietly(is);
     }
 
-    public String getContentType()
-    {
-        return this.type;
-    }
-
-    /**
-     * @param type
-     *            the type to set
-     */
-    public void setType(String type)
-    {
-        this.type = type;
-    }
-
-    /**
-     * @param name
-     *            the name to set
-     */
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
+    @Override
     public InputStream getInputStream() throws IOException
     {
         return new ByteArrayInputStream(data.toByteArray());
     }
 
+    @Override
     public String getName()
     {
         return this.name;
-    }
-
-    public OutputStream getOutputStream() throws IOException
-    {
-        this.data = new ByteArrayOutputStream();
-        return data;
     }
 }
