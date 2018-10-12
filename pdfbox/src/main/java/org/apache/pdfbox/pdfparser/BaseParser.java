@@ -621,6 +621,7 @@ public abstract class BaseParser
      */
     protected COSArray parseCOSArray() throws IOException
     {
+        long startPosition = seqSource.getPosition();
         readExpectedChar('[');
         COSArray po = new COSArray();
         COSBase pbo;
@@ -659,7 +660,8 @@ public abstract class BaseParser
             else
             {
                 //it could be a bad object in the array which is just skipped
-                LOG.warn("Corrupt object reference at offset " + seqSource.getPosition());
+                LOG.warn("Corrupt object reference at offset " +
+                        seqSource.getPosition() + ", start offset: " + startPosition);
 
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
