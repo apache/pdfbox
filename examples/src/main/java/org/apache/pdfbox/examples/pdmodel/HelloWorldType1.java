@@ -55,13 +55,14 @@ public final class HelloWorldType1
 
             PDFont font = new PDType1Font(doc, new FileInputStream(pfbPath));
 
-            PDPageContentStream contents = new PDPageContentStream(doc, page);
-            contents.beginText();
-            contents.setFont(font, 12);
-            contents.newLineAtOffset(100, 700);
-            contents.showText(message);
-            contents.endText();
-            contents.close();
+            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+            {
+                contents.beginText();
+                contents.setFont(font, 12);
+                contents.newLineAtOffset(100, 700);
+                contents.showText(message);
+                contents.endText();
+            }
 
             doc.save(file);
             System.out.println(file + " created!");    
