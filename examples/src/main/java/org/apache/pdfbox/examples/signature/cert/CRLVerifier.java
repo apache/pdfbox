@@ -98,7 +98,7 @@ public final class CRLVerifier
             {
                 throw new CertificateVerificationException(
                         "Can not verify CRL for certificate: "
-                        + cert.getSubjectX500Principal());
+                        + cert.getSubjectX500Principal(), ex);
             }
         }
     }
