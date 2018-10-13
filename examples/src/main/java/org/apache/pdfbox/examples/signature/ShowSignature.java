@@ -28,7 +28,9 @@ import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -277,7 +279,19 @@ public final class ShowSignature
         X509CertificateHolder certificateHolder = matches.iterator().next();
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
-        certFromSignedData.checkValidity(sig.getSignDate().getTime());
+        try
+        {
+            certFromSignedData.checkValidity(sig.getSignDate().getTime());
+            System.out.println("Certificate valid at signing time");
+        }
+        catch (CertificateExpiredException ex)
+        {
+            System.err.println("Certificate expired at signing time");
+        }
+        catch (CertificateNotYetValidException ex)
+        {
+            System.err.println("Certificate not yet valid at signing time");
+        }
 
         if (isSelfSigned(certFromSignedData))
         {
