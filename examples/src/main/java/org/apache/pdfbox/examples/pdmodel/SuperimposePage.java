@@ -59,35 +59,35 @@ public final class SuperimposePage
                 doc.addPage(page);
 
                 // write some sample text to the new page
-                PDPageContentStream contents = new PDPageContentStream(doc, page);
-                contents.beginText();
-                contents.setFont(PDType1Font.HELVETICA_BOLD, 12);
-                contents.newLineAtOffset(2, PDRectangle.LETTER.getHeight() - 12);
-                contents.showText("Sample text");
-                contents.endText();
-                
-                // Create a Form XObject from the source document using LayerUtility
-                LayerUtility layerUtility = new LayerUtility(doc);
-                PDFormXObject form = layerUtility.importPageAsForm(sourceDoc, sourcePage - 1);
-                
-                // draw the full form
-                contents.drawForm(form);
-                
-                // draw a scaled form
-                contents.saveGraphicsState();
-                Matrix matrix = Matrix.getScaleInstance(0.5f, 0.5f);
-                contents.transform(matrix);
-                contents.drawForm(form);
-                contents.restoreGraphicsState();
-
-                // draw a scaled and rotated form
-                contents.saveGraphicsState();
-                matrix.rotate(1.8 * Math.PI); // radians
-                contents.transform(matrix);
-                contents.drawForm(form);
-                contents.restoreGraphicsState();
-
-                contents.close();
+                try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+                {
+                    contents.beginText();
+                    contents.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                    contents.newLineAtOffset(2, PDRectangle.LETTER.getHeight() - 12);
+                    contents.showText("Sample text");
+                    contents.endText();
+                    
+                    // Create a Form XObject from the source document using LayerUtility
+                    LayerUtility layerUtility = new LayerUtility(doc);
+                    PDFormXObject form = layerUtility.importPageAsForm(sourceDoc, sourcePage - 1);
+                    
+                    // draw the full form
+                    contents.drawForm(form);
+                    
+                    // draw a scaled form
+                    contents.saveGraphicsState();
+                    Matrix matrix = Matrix.getScaleInstance(0.5f, 0.5f);
+                    contents.transform(matrix);
+                    contents.drawForm(form);
+                    contents.restoreGraphicsState();
+                    
+                    // draw a scaled and rotated form
+                    contents.saveGraphicsState();
+                    matrix.rotate(1.8 * Math.PI); // radians
+                    contents.transform(matrix);
+                    contents.drawForm(form);
+                    contents.restoreGraphicsState();
+                }
                 doc.save(destPath);
             }
         }
