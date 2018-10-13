@@ -46,14 +46,13 @@ public class DateConverterTest
     @Test
     public void testDateConversion() throws Exception
     {
-
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        Calendar jaxbCal = null,
-                convDate = null;
+        Calendar jaxbCal;
+
         // Test partial dates
-        convDate = DateConverter.toCalendar("2015-02-02");
+        Calendar convDate = DateConverter.toCalendar("2015-02-02");
         assertEquals(2015, convDate.get(Calendar.YEAR));
-        
+
         //Test missing seconds
         assertEquals(DateConverter.toCalendar("2015-12-08T12:07:00-05:00"),
                      DateConverter.toCalendar("2015-12-08T12:07-05:00"));
