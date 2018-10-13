@@ -188,22 +188,19 @@ public final class CRLVerifier
      * Point" extension in a X.509 certificate. If CRL distribution point
      * extension is unavailable, returns an empty list.
      */
-    public static List<String>
-            getCrlDistributionPoints(X509Certificate cert) throws CertificateParsingException, IOException
+    public static List<String> getCrlDistributionPoints(X509Certificate cert)
+            throws CertificateParsingException, IOException
     {
-        byte[] crldpExt = cert
-                .getExtensionValue(Extension.cRLDistributionPoints.getId());
+        byte[] crldpExt = cert.getExtensionValue(Extension.cRLDistributionPoints.getId());
         if (crldpExt == null)
         {
             return new ArrayList<String>();
         }
-        ASN1InputStream oAsnInStream = new ASN1InputStream(
-                new ByteArrayInputStream(crldpExt));
+        ASN1InputStream oAsnInStream = new ASN1InputStream(new ByteArrayInputStream(crldpExt));
         ASN1Primitive derObjCrlDP = oAsnInStream.readObject();
         DEROctetString dosCrlDP = (DEROctetString) derObjCrlDP;
         byte[] crldpExtOctets = dosCrlDP.getOctets();
-        ASN1InputStream oAsnInStream2 = new ASN1InputStream(
-                new ByteArrayInputStream(crldpExtOctets));
+        ASN1InputStream oAsnInStream2 = new ASN1InputStream(new ByteArrayInputStream(crldpExtOctets));
         ASN1Primitive derObj2 = oAsnInStream2.readObject();
         CRLDistPoint distPoint = CRLDistPoint.getInstance(derObj2);
         List<String> crlUrls = new ArrayList<String>();
@@ -211,18 +208,14 @@ public final class CRLVerifier
         {
             DistributionPointName dpn = dp.getDistributionPoint();
             // Look for URIs in fullName
-            if (dpn != null
-                    && dpn.getType() == DistributionPointName.FULL_NAME)
+            if (dpn != null && dpn.getType() == DistributionPointName.FULL_NAME)
             {
-                GeneralName[] genNames = GeneralNames.getInstance(
-                        dpn.getName()).getNames();
                 // Look for an URI
-                for (int j = 0; j < genNames.length; j++)
+                for (GeneralName genName : GeneralNames.getInstance(dpn.getName()).getNames())
                 {
-                    if (genNames[j].getTagNo() == GeneralName.uniformResourceIdentifier)
+                    if (genName.getTagNo() == GeneralName.uniformResourceIdentifier)
                     {
-                        String url = DERIA5String.getInstance(
-                                genNames[j].getName()).getString();
+                        String url = DERIA5String.getInstance(genName.getName()).getString();
                         crlUrls.add(url);
                     }
                 }
