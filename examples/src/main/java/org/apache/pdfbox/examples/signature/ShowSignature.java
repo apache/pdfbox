@@ -20,12 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PublicKey;
-import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -294,7 +291,7 @@ public final class ShowSignature
             System.out.println("Signature verification failed");
         }
 
-        if (isSelfSigned(certFromSignedData))
+        if (CertificateVerifier.isSelfSigned(certFromSignedData))
         {
             System.err.println("Certificate is self-signed, LOL!");
         }
@@ -377,28 +374,6 @@ public final class ShowSignature
                 System.out.println(description + " (" + elements.indexOf(streamObj) + "): "
                         + Hex.getString(streamBytes));
             }
-        }
-    }
-
-    // https://svn.apache.org/repos/asf/cxf/tags/cxf-2.4.1/distribution/src/main/release/samples/sts_issue_operation/src/main/java/demo/sts/provider/cert/CertificateVerifier.java
-
-    /**
-     * Checks whether given X.509 certificate is self-signed.
-     */
-    private boolean isSelfSigned(X509Certificate cert)
-            throws CertificateException, NoSuchAlgorithmException, NoSuchProviderException
-    {
-        try
-        {
-            // Try to verify certificate signature with its own public key
-            PublicKey key = cert.getPublicKey();
-            cert.verify(key);
-            return true;
-        }
-        catch (SignatureException | InvalidKeyException sigEx)
-        {
-            LOG.debug("Couldn't get signature information - returning false", sigEx);
-            return false;
         }
     }
 
