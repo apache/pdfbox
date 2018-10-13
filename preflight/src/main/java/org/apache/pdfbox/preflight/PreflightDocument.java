@@ -157,7 +157,7 @@ public class PreflightDocument extends PDDocument
     public void validate() throws ValidationException
     {
         // force early class loading to check if people forgot to use --add-modules javax.xml.bind
-        // on java 9 or later
+        // on java 9 & 10, or to add jaxb-api on java 11 and later
         javax.xml.bind.DatatypeConverter.parseInt("0");
         context.setConfig(config);
         Collection<String> processes = config.getProcessNames();
