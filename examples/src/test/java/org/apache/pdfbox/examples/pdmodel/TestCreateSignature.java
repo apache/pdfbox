@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
@@ -288,7 +287,7 @@ public class TestCreateSignature
     {
         PDDocument document = PDDocument.load(origFile);
         // get string representation of pages COSObject
-        String origPageKey = ((COSObject) document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES)).toString();
+        String origPageKey = document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString();
         document.close();
 
         document = PDDocument.load(signedFile);
