@@ -20,6 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -28,6 +31,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.PKIXParameters;
+import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -316,6 +321,46 @@ public final class ShowSignature
             }
             CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true);
         }
+    }
+
+    // for later use: get all root certificates. Will be used to check
+    // whether we trust the root in the certificate chain.
+    private Set<X509Certificate> getRootCertificates()
+            throws GeneralSecurityException, IOException
+    {
+        Set<X509Certificate> rootCertificates = new HashSet<>();
+
+        // https://stackoverflow.com/questions/3508050/
+        String filename = System.getProperty("java.home") + "/lib/security/cacerts";
+        KeyStore keystore;
+        try (FileInputStream is = new FileInputStream(filename))
+        {
+            keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keystore.load(is, null);
+        }
+        PKIXParameters params = new PKIXParameters(keystore);
+        for (TrustAnchor trustAnchor : params.getTrustAnchors())
+        {
+            rootCertificates.add(trustAnchor.getTrustedCert());
+        }
+
+        // https://www.oracle.com/technetwork/articles/javase/security-137537.html
+        try
+        {
+            keystore = KeyStore.getInstance("Windows-ROOT");
+            keystore.load(null, null);
+            params = new PKIXParameters(keystore);
+            for (TrustAnchor trustAnchor : params.getTrustAnchors())
+            {
+                rootCertificates.add(trustAnchor.getTrustedCert());
+            }
+        }
+        catch (InvalidAlgorithmParameterException ex)
+        {
+            // not on windows
+        }
+
+        return rootCertificates;
     }
 
     /**
