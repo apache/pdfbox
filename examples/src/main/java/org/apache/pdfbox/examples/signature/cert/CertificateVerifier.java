@@ -37,6 +37,8 @@ import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Copied from Apache CXF 2.4.9, initial version:
@@ -45,6 +47,7 @@ import java.util.Set;
  */
 public final class CertificateVerifier
 {
+    private static final Log LOG = LogFactory.getLog(CertificateVerifier.class);
 
     private CertificateVerifier()
     {
@@ -143,14 +146,10 @@ public final class CertificateVerifier
             cert.verify(key);
             return true;
         }
-        catch (SignatureException sigEx)
+        catch (SignatureException | InvalidKeyException sigEx)
         {
             // Invalid signature --> not self-signed
-            return false;
-        }
-        catch (InvalidKeyException keyEx)
-        {
-            // Invalid key --> not self-signed
+            LOG.debug("Couldn't get signature information - returning false", sigEx);
             return false;
         }
     }
