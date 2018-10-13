@@ -32,6 +32,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -266,16 +268,6 @@ public final class ShowSignature
         System.out.println("certFromSignedData: " + certFromSignedData);
         certFromSignedData.checkValidity(sig.getSignDate().getTime());
 
-        if (isSelfSigned(certFromSignedData))
-        {
-            System.err.println("Certificate is self-signed, LOL!");
-        }
-        else
-        {
-            System.out.println("Certificate is not self-signed");
-            // todo rest of chain
-        }
-
         if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
         {
             System.out.println("Signature verified");
@@ -283,6 +275,32 @@ public final class ShowSignature
         else
         {
             System.out.println("Signature verification failed");
+        }
+
+        if (isSelfSigned(certFromSignedData))
+        {
+            System.err.println("Certificate is self-signed, LOL!");
+        }
+        else
+        {
+            System.out.println("Certificate is not self-signed");
+
+            // Verify certificate chain (new since 10/2018)
+            // Please post bad PDF files that succeed and
+            // good PDF files that fail in
+            // https://issues.apache.org/jira/browse/PDFBOX-3017
+            Set<X509Certificate> additionalCerts = new HashSet<>();
+            Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
+            JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+            for (X509CertificateHolder certHolder : certificateHolders)
+            {
+                X509Certificate certificate = certificateConverter.getCertificate(certHolder);
+                if (!certificate.equals(certFromSignedData))
+                {
+                    additionalCerts.add(certificate);
+                }
+            }
+            CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true);
         }
     }
 
