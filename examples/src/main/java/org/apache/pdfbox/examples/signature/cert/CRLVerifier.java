@@ -41,6 +41,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -60,6 +62,7 @@ import org.bouncycastle.asn1.x509.GeneralNames;
  */
 public final class CRLVerifier
 {
+    private static final Log LOG = LogFactory.getLog(CRLVerifier.class);
 
     private CRLVerifier()
     {
@@ -77,14 +80,15 @@ public final class CRLVerifier
     {
         try
         {
-            List<String> crlDistPoints = getCrlDistributionPoints(cert);
-            for (String crlDP : crlDistPoints)
+            List<String> crlDistributionPointsURLs = getCrlDistributionPoints(cert);
+            for (String crlDistributionPointsURL : crlDistributionPointsURLs)
             {
-                X509CRL crl = downloadCRL(crlDP);
+                LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
+                X509CRL crl = downloadCRL(crlDistributionPointsURL);
                 if (crl.isRevoked(cert))
                 {
                     throw new CertificateVerificationException(
-                            "The certificate is revoked by CRL: " + crlDP);
+                            "The certificate is revoked by CRL: " + crlDistributionPointsURL);
                 }
             }
         }
