@@ -45,6 +45,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -90,11 +92,12 @@ public final class ShowSignature
      * @throws java.security.NoSuchAlgorithmException
      * @throws java.security.NoSuchProviderException
      * @throws org.bouncycastle.tsp.TSPException
+     * @throws org.apache.pdfbox.examples.signature.cert.CertificateVerificationException
      */
     public static void main(String[] args) throws IOException, CertificateException,
                                                   NoSuchAlgorithmException,
                                                   NoSuchProviderException,
-                                                  TSPException
+                                                  TSPException, CertificateVerificationException
     {
         ShowSignature show = new ShowSignature();
         show.showSignature( args );
@@ -103,7 +106,7 @@ public final class ShowSignature
     private void showSignature(String[] args) throws IOException, CertificateException,
                                                      NoSuchAlgorithmException,
                                                      NoSuchProviderException,
-                                                     TSPException
+                                                     TSPException, CertificateVerificationException
     {
         if( args.length != 2 )
         {
@@ -250,7 +253,7 @@ public final class ShowSignature
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
             throws CMSException, CertificateException, StoreException, OperatorCreationException,
-                   NoSuchAlgorithmException, NoSuchProviderException
+                   NoSuchAlgorithmException, NoSuchProviderException, CertificateVerificationException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
