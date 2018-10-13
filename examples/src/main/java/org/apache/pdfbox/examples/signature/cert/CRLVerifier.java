@@ -43,15 +43,15 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
 import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DERIA5String;
-import org.bouncycastle.asn1.DERObject;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.x509.CRLDistPoint;
 import org.bouncycastle.asn1.x509.DistributionPoint;
 import org.bouncycastle.asn1.x509.DistributionPointName;
+import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
-import org.bouncycastle.asn1.x509.X509Extensions;
 
 /**
  * Copied from Apache CXF 2.4.9, initial version:
@@ -188,19 +188,19 @@ public final class CRLVerifier
             getCrlDistributionPoints(X509Certificate cert) throws CertificateParsingException, IOException
     {
         byte[] crldpExt = cert
-                .getExtensionValue(X509Extensions.CRLDistributionPoints.getId());
+                .getExtensionValue(Extension.cRLDistributionPoints.getId());
         if (crldpExt == null)
         {
             return new ArrayList<String>();
         }
         ASN1InputStream oAsnInStream = new ASN1InputStream(
                 new ByteArrayInputStream(crldpExt));
-        DERObject derObjCrlDP = oAsnInStream.readObject();
+        ASN1Primitive derObjCrlDP = oAsnInStream.readObject();
         DEROctetString dosCrlDP = (DEROctetString) derObjCrlDP;
         byte[] crldpExtOctets = dosCrlDP.getOctets();
         ASN1InputStream oAsnInStream2 = new ASN1InputStream(
                 new ByteArrayInputStream(crldpExtOctets));
-        DERObject derObj2 = oAsnInStream2.readObject();
+        ASN1Primitive derObj2 = oAsnInStream2.readObject();
         CRLDistPoint distPoint = CRLDistPoint.getInstance(derObj2);
         List<String> crlUrls = new ArrayList<String>();
         for (DistributionPoint dp : distPoint.getDistributionPoints())
