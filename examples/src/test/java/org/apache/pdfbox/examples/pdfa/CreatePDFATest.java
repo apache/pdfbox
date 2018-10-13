@@ -69,16 +69,16 @@ public class CreatePDFATest extends TestCase
             }
             assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
         }
-        
+
         // check the XMP metadata
-        PDDocument document = PDDocument.load(new File(pdfaFilename));
-        PDDocumentCatalog catalog = document.getDocumentCatalog();
-        PDMetadata meta = catalog.getMetadata();
-        DomXmpParser xmpParser = new DomXmpParser();
-        XMPMetadata metadata = xmpParser.parse(meta.createInputStream());
-        DublinCoreSchema dc = metadata.getDublinCoreSchema();
-        assertEquals(pdfaFilename, dc.getTitle());
-        document.close();
+        try (PDDocument document = PDDocument.load(new File(pdfaFilename)))
+        {
+            PDDocumentCatalog catalog = document.getDocumentCatalog();
+            PDMetadata meta = catalog.getMetadata();
+            DomXmpParser xmpParser = new DomXmpParser();
+            XMPMetadata metadata = xmpParser.parse(meta.createInputStream());
+            DublinCoreSchema dc = metadata.getDublinCoreSchema();
+            assertEquals(pdfaFilename, dc.getTitle());
+        }
     }
-    
 }
