@@ -178,9 +178,8 @@ public final class ExtractImages
                 throw new IOException("You do not have permission to extract images");
             }
 
-            for (int i = 0; i < document.getNumberOfPages(); i++) // todo: ITERATOR would be much better
+            for (PDPage page : document.getPages())
             {
-                PDPage page = document.getPage(i);
                 ImageGraphicsEngine extractor = new ImageGraphicsEngine(page);
                 extractor.run();
             }
