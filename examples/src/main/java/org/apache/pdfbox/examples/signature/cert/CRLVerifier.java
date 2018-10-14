@@ -138,19 +138,17 @@ public final class CRLVerifier
             NamingException, CRLException,
             CertificateVerificationException
     {
-        Map<String, String> env = new Hashtable<String, String>();
-        env.put(Context.INITIAL_CONTEXT_FACTORY,
-                "com.sun.jndi.ldap.LdapCtxFactory");
+        Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, ldapURL);
 
-        DirContext ctx = new InitialDirContext((Hashtable) env);
+        DirContext ctx = new InitialDirContext(env);
         Attributes avals = ctx.getAttributes("");
         Attribute aval = avals.get("certificateRevocationList;binary");
         byte[] val = (byte[]) aval.get();
-        if ((val == null) || (val.length == 0))
+        if (val == null || val.length == 0)
         {
-            throw new CertificateVerificationException(
-                    "Can not download CRL from: " + ldapURL);
+            throw new CertificateVerificationException("Can not download CRL from: " + ldapURL);
         }
         else
         {
