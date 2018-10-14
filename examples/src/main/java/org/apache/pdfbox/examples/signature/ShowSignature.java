@@ -25,10 +25,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
@@ -93,25 +90,23 @@ public final class ShowSignature
      * @param args The command-line arguments.
      *
      * @throws IOException If there is an error reading the file.
-     * @throws CertificateException
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.security.NoSuchProviderException
      * @throws org.bouncycastle.tsp.TSPException
      * @throws org.apache.pdfbox.examples.signature.cert.CertificateVerificationException
+     * @throws java.security.GeneralSecurityException
      */
-    public static void main(String[] args) throws IOException, CertificateException,
-                                                  NoSuchAlgorithmException,
-                                                  NoSuchProviderException,
-                                                  TSPException, CertificateVerificationException
+    public static void main(String[] args) throws IOException,
+                                                  TSPException,
+                                                  CertificateVerificationException,
+                                                  GeneralSecurityException
     {
         ShowSignature show = new ShowSignature();
         show.showSignature( args );
     }
 
-    private void showSignature(String[] args) throws IOException, CertificateException,
-                                                     NoSuchAlgorithmException,
-                                                     NoSuchProviderException,
-                                                     TSPException, CertificateVerificationException
+    private void showSignature(String[] args) throws IOException,
+                                                     GeneralSecurityException,
+                                                     TSPException,
+                                                     CertificateVerificationException
     {
         if( args.length != 2 )
         {
@@ -251,14 +246,15 @@ public final class ShowSignature
      * @param byteArray the byte sequence that has been signed
      * @param contents the /Contents field as a COSString
      * @param sig the PDF signature (the /V dictionary)
-     * @throws CertificateException
      * @throws CMSException
      * @throws StoreException
      * @throws OperatorCreationException
+     * @throws GeneralSecurityException
+     * @throws CertificateVerificationException
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
-            throws CMSException, CertificateException, StoreException, OperatorCreationException,
-                   NoSuchAlgorithmException, NoSuchProviderException, CertificateVerificationException
+            throws CMSException, StoreException, OperatorCreationException,
+                   CertificateVerificationException, GeneralSecurityException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
