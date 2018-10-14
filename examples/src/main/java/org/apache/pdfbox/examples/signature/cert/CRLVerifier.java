@@ -22,7 +22,6 @@ package org.apache.pdfbox.examples.signature.cert;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
@@ -166,9 +165,8 @@ public final class CRLVerifier
      * Downloads a CRL from given HTTP/HTTPS/FTP URL, e.g.
      * http://crl.infonotary.com/crl/identity-ca.crl
      */
-    private static X509CRL downloadCRLFromWeb(String crlURL) throws MalformedURLException,
-            IOException, CertificateException,
-            CRLException
+    private static X509CRL downloadCRLFromWeb(String crlURL)
+            throws IOException, CertificateException, CRLException
     {
         URL url = new URL(crlURL);
         InputStream crlStream = url.openStream();
