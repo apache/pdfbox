@@ -26,7 +26,6 @@ import java.net.URL;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateParsingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -185,6 +184,9 @@ public final class CRLVerifier
      * Extracts all CRL distribution point URLs from the "CRL Distribution
      * Point" extension in a X.509 certificate. If CRL distribution point
      * extension is unavailable, returns an empty list.
+     * @param cert
+     * @return List of CRL distribution point URLs.
+     * @throws java.io.IOException
      */
     public static List<String> getCrlDistributionPoints(X509Certificate cert)
             throws IOException
