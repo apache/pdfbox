@@ -78,8 +78,7 @@ public final class CertificateVerifier
         try
         {
             // Check for self-signed certificate
-            if (!verifySelfSignedCert
-                    && isSelfSigned(cert))
+            if (!verifySelfSignedCert && isSelfSigned(cert))
             {
                 throw new CertificateVerificationException(
                         "The certificate is self-signed.");
@@ -183,8 +182,7 @@ public final class CertificateVerifier
         }
 
         // Configure the PKIX certificate builder algorithm parameters
-        PKIXBuilderParameters pkixParams = new PKIXBuilderParameters(
-                trustAnchors, selector);
+        PKIXBuilderParameters pkixParams = new PKIXBuilderParameters(trustAnchors, selector);
 
         // Disable CRL checks (this is done manually as additional step)
         pkixParams.setRevocationEnabled(false);
@@ -196,8 +194,6 @@ public final class CertificateVerifier
 
         // Build and verify the certification chain
         CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
-        PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) builder
-                .build(pkixParams);
-        return result;
+        return (PKIXCertPathBuilderResult) builder.build(pkixParams);
     }
 }
