@@ -187,7 +187,7 @@ public final class CRLVerifier
      * extension is unavailable, returns an empty list.
      */
     public static List<String> getCrlDistributionPoints(X509Certificate cert)
-            throws CertificateParsingException, IOException
+            throws IOException
     {
         byte[] crldpExt = cert.getExtensionValue(Extension.cRLDistributionPoints.getId());
         if (crldpExt == null)
