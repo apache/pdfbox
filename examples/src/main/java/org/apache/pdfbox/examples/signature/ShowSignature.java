@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -355,9 +356,9 @@ public final class ShowSignature
                 rootCertificates.add(trustAnchor.getTrustedCert());
             }
         }
-        catch (InvalidAlgorithmParameterException ex)
+        catch (InvalidAlgorithmParameterException | KeyStoreException ex)
         {
-            // not on windows
+            // empty or not windows
         }
 
         return rootCertificates;
