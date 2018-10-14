@@ -135,9 +135,11 @@ public final class CertificateVerifier
 
     /**
      * Checks whether given X.509 certificate is self-signed.
+     * @param cert The X.509 certificate to check.
+     * @return true if the certificate is self-signed, false if not.
+     * @throws java.security.GeneralSecurityException 
      */
-    public static boolean isSelfSigned(X509Certificate cert) throws CertificateException,
-            NoSuchAlgorithmException, NoSuchProviderException
+    public static boolean isSelfSigned(X509Certificate cert) throws GeneralSecurityException
     {
         try
         {
