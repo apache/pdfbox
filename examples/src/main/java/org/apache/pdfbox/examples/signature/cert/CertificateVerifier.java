@@ -21,14 +21,11 @@ package org.apache.pdfbox.examples.signature.cert;
 
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.CertStore;
-import java.security.cert.CertificateException;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXBuilderParameters;
 import java.security.cert.PKIXCertPathBuilderResult;
@@ -68,6 +65,7 @@ public final class CertificateVerifier
      * used as part of the certification chain. All self-signed certificates are
      * considered to be trusted root CA certificates. All the rest are
      * considered to be intermediate CA certificates.
+     * @param verifySelfSignedCert true if a self-signed certificate is accepted, false if not.
      * @return the certification chain (if verification is successful)
      * @throws CertificateVerificationException - if the certification is not
      * successful (e.g. certification path cannot be built or some certificate
@@ -105,8 +103,7 @@ public final class CertificateVerifier
 
             // Attempt to build the certification chain and verify it
             PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
-                    cert, trustedRootCerts, intermediateCerts,
-                    verifySelfSignedCert);
+                    cert, trustedRootCerts, intermediateCerts);
 
             // Check whether the certificate is revoked by the CRL
             // given in its CRL distribution point extension
@@ -171,8 +168,7 @@ public final class CertificateVerifier
      */
     private static PKIXCertPathBuilderResult verifyCertificate(
             X509Certificate cert, Set<X509Certificate> trustedRootCerts,
-            Set<X509Certificate> intermediateCerts,
-            boolean verifySelfSignedCert) throws GeneralSecurityException
+            Set<X509Certificate> intermediateCerts) throws GeneralSecurityException
     {
 
         // Create the selector that specifies the starting certificate
