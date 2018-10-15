@@ -27,8 +27,10 @@ import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
+import java.security.cert.X509CRLEntry;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -71,9 +73,11 @@ public final class CRLVerifier
      * the distribution points. Supports HTTP, HTTPS, FTP and LDAP based URLs.
      *
      * @param cert the certificate to be checked for revocation
+     * @param signDate the date when the signing took place
      * @throws CertificateVerificationException if the certificate is revoked
      */
-    public static void verifyCertificateCRLs(X509Certificate cert) throws CertificateVerificationException
+    public static void verifyCertificateCRLs(X509Certificate cert, Date signDate)
+            throws CertificateVerificationException
     {
         try
         {
@@ -82,10 +86,17 @@ public final class CRLVerifier
             {
                 LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
                 X509CRL crl = downloadCRL(crlDistributionPointsURL);
-                if (crl.isRevoked(cert))
+                //TODO verify CRL, see wikipedia:
+                // "To validate a specific CRL prior to relying on it,
+                //  the certificate of its corresponding CA is needed"
+                X509CRLEntry revokedCRLEntry = crl.getRevokedCertificate(cert);
+                if (revokedCRLEntry != null &&
+                    revokedCRLEntry.getRevocationDate().compareTo(signDate) <= 0)
                 {
                     throw new CertificateVerificationException(
-                            "The certificate is revoked by CRL: " + crlDistributionPointsURL);
+                            "The certificate was revoked by CRL " +
+                            crlDistributionPointsURL + " on " +
+                            revokedCRLEntry.getRevocationDate());
                 }
             }
         }
