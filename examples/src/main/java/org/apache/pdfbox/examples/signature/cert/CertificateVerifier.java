@@ -32,6 +32,7 @@ import java.security.cert.PKIXCertPathBuilderResult;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
@@ -66,6 +67,7 @@ public final class CertificateVerifier
      * considered to be trusted root CA certificates. All the rest are
      * considered to be intermediate CA certificates.
      * @param verifySelfSignedCert true if a self-signed certificate is accepted, false if not.
+     * @param signDate the date when the signing took place
      * @return the certification chain (if verification is successful)
      * @throws CertificateVerificationException - if the certification is not
      * successful (e.g. certification path cannot be built or some certificate
@@ -73,7 +75,8 @@ public final class CertificateVerifier
      */
     public static PKIXCertPathBuilderResult verifyCertificate(
             X509Certificate cert, Set<X509Certificate> additionalCerts,
-            boolean verifySelfSignedCert) throws CertificateVerificationException
+            boolean verifySelfSignedCert, Date signDate)
+            throws CertificateVerificationException
     {
         try
         {
@@ -106,7 +109,7 @@ public final class CertificateVerifier
 
             // Check whether the certificate is revoked by the CRL
             // given in its CRL distribution point extension
-            CRLVerifier.verifyCertificateCRLs(cert);
+            CRLVerifier.verifyCertificateCRLs(cert, signDate);
 
             // The chain is built and verified. Return it as a result
             return verifiedCertChain;

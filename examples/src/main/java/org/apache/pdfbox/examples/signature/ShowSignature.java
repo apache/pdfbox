@@ -70,7 +70,9 @@ import org.bouncycastle.util.Store;
 import org.bouncycastle.util.StoreException;
 
 /**
- * This will read a document from the filesystem, decrypt it and do something with the signature.
+ * This will get the signature(s) from the document, do some verifications and
+ * show the signature(s) and the certificates. This is a complex topic - the
+ * code here is an example and not a production-ready solution.
  *
  * @author Ben Litchfield
  */
@@ -272,6 +274,7 @@ public final class ShowSignature
         System.out.println("certFromSignedData: " + certFromSignedData);
         try
         {
+            //TODO NPE risk
             certFromSignedData.checkValidity(sig.getSignDate().getTime());
             System.out.println("Certificate valid at signing time");
         }
@@ -316,7 +319,9 @@ public final class ShowSignature
                     additionalCerts.add(certificate);
                 }
             }
-            CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true);
+            //TODO NPE risk (signDate parameter)
+            CertificateVerifier.verifyCertificate(certFromSignedData,
+                    additionalCerts, true, sig.getSignDate().getTime());
         }
     }
 
