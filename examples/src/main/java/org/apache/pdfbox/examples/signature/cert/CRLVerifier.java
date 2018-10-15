@@ -31,7 +31,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
