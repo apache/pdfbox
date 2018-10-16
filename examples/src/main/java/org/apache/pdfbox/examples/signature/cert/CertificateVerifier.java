@@ -105,11 +105,11 @@ public final class CertificateVerifier
 
             // Attempt to build the certification chain and verify it
             PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
-                    cert, trustedRootCerts, intermediateCerts);
+                    cert, trustedRootCerts, intermediateCerts, signDate);
 
             // Check whether the certificate is revoked by the CRL
             // given in its CRL distribution point extension
-            CRLVerifier.verifyCertificateCRLs(cert, signDate);
+            CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
 
             // The chain is built and verified. Return it as a result
             return verifiedCertChain;
@@ -163,6 +163,7 @@ public final class CertificateVerifier
      * @param cert - certificate for validation
      * @param trustedRootCerts - set of trusted root CA certificates
      * @param intermediateCerts - set of intermediate certificates
+     * @param signDate the date when the signing took place
      * @return the certification chain (if verification is successful)
      * @throws GeneralSecurityException - if the verification is not successful
      * (e.g. certification path cannot be built or some certificate in the chain
@@ -170,9 +171,9 @@ public final class CertificateVerifier
      */
     private static PKIXCertPathBuilderResult verifyCertificate(
             X509Certificate cert, Set<X509Certificate> trustedRootCerts,
-            Set<X509Certificate> intermediateCerts) throws GeneralSecurityException
+            Set<X509Certificate> intermediateCerts, Date signDate)
+            throws GeneralSecurityException
     {
-
         // Create the selector that specifies the starting certificate
         X509CertSelector selector = new X509CertSelector();
         selector.setCertificate(cert);
@@ -190,12 +191,18 @@ public final class CertificateVerifier
         // Disable CRL checks (this is done manually as additional step)
         pkixParams.setRevocationEnabled(false);
 
+        pkixParams.setDate(signDate);
+
         // Specify a list of intermediate certificates
         CertStore intermediateCertStore = CertStore.getInstance("Collection",
                 new CollectionCertStoreParameters(intermediateCerts));
         pkixParams.addCertStore(intermediateCertStore);
 
         // Build and verify the certification chain
+        // If this doesn't work although it should, it can be debugged
+        // by starting java with -Djava.security.debug=certpath
+        // see also
+        // https://docs.oracle.com/javase/8/docs/technotes/guides/security/troubleshooting-security.html
         CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
         return (PKIXCertPathBuilderResult) builder.build(pkixParams);
     }
