@@ -906,7 +906,9 @@ public class PDFDebugger extends JFrame
         {
             selectedNode = ((MapEntry)selectedNode).getKey();
             selectedNode = getUnderneathObject(selectedNode);
-            FlagBitsPane flagBitsPane = new FlagBitsPane((COSDictionary) parentNode, (COSName) selectedNode);
+            FlagBitsPane flagBitsPane = new FlagBitsPane(document,
+                    (COSDictionary) parentNode,
+                    (COSName) selectedNode);
             replaceRightComponent(flagBitsPane.getPane());
         }
     }
