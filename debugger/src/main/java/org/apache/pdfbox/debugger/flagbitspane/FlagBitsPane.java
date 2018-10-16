@@ -20,6 +20,7 @@ package org.apache.pdfbox.debugger.flagbitspane;
 import javax.swing.JPanel;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * @author Khyrul Bashar
@@ -29,14 +30,16 @@ import org.apache.pdfbox.cos.COSName;
 public class FlagBitsPane
 {
     private FlagBitsPaneView view;
+    private final PDDocument document;
 
     /**
      * Constructor.
      * @param dictionary COSDictionary instance.
      * @param flagType COSName instance.
      */
-    public FlagBitsPane(final COSDictionary dictionary, COSName flagType)
+    public FlagBitsPane(PDDocument document, final COSDictionary dictionary, COSName flagType)
     {
+        this.document = document;
         createPane(dictionary, flagType);
     }
 
@@ -79,7 +82,7 @@ public class FlagBitsPane
         }
         if (COSName.SIG_FLAGS.equals(flagType))
         {
-            flag = new SigFlag(dictionary);
+            flag = new SigFlag(document, dictionary);
             view = new FlagBitsPaneView(
                     flag.getFlagType(), flag.getFlagValue(), flag.getFlagBits(), flag.getColumnNames());
         }
