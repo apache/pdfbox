@@ -19,6 +19,7 @@ package org.apache.pdfbox.debugger.flagbitspane;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 
 /**
@@ -28,16 +29,18 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
  */
 public class SigFlag extends Flag
 {
-    private final COSDictionary acroformDictionary;
+    private final PDDocument document;
+    private final COSDictionary acroFormDictionary;
 
     /**
      * Constructor
      *
      * @param acroFormDictionary COSDictionary instance.
      */
-    SigFlag(COSDictionary acroFormDictionary)
+    SigFlag(PDDocument document, COSDictionary acroFormDictionary)
     {
-        acroformDictionary = acroFormDictionary;
+        this.document = document;
+        this.acroFormDictionary = acroFormDictionary;
     }
 
     @Override
@@ -49,13 +52,13 @@ public class SigFlag extends Flag
     @Override
     String getFlagValue()
     {
-        return "Flag value: " + acroformDictionary.getInt(COSName.SIG_FLAGS);
+        return "Flag value: " + acroFormDictionary.getInt(COSName.SIG_FLAGS);
     }
 
     @Override
     Object[][] getFlagBits()
     {
-        PDAcroForm acroForm = new PDAcroForm(null, acroformDictionary);
+        PDAcroForm acroForm = new PDAcroForm(document, acroFormDictionary);
         return new Object[][]{
                 new Object[]{1, "SignaturesExist", acroForm.isSignaturesExist()},
                 new Object[]{2, "AppendOnly", acroForm.isAppendOnly()},
