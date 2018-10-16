@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.PublicKey;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -74,9 +76,13 @@ public final class CRLVerifier
      *
      * @param cert the certificate to be checked for revocation
      * @param signDate the date when the signing took place
+     * @param additionalCerts set of trusted root CA certificates that will be
+     * used as "trust anchors" and intermediate CA certificates that will be
+     * used as part of the certification chain.
      * @throws CertificateVerificationException if the certificate is revoked
      */
-    public static void verifyCertificateCRLs(X509Certificate cert, Date signDate)
+    public static void verifyCertificateCRLs(X509Certificate cert, Date signDate,
+            Set<X509Certificate> additionalCerts)
             throws CertificateVerificationException
     {
         try
@@ -86,9 +92,27 @@ public final class CRLVerifier
             {
                 LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
                 X509CRL crl = downloadCRL(crlDistributionPointsURL);
-                //TODO verify CRL, see wikipedia:
+
+                // Verify CRL, see wikipedia:
                 // "To validate a specific CRL prior to relying on it,
                 //  the certificate of its corresponding CA is needed"
+                PublicKey issuerKey = null;
+                for (X509Certificate additionalCert : additionalCerts)
+                {
+                    if (crl.getIssuerX500Principal().equals(
+                            additionalCert.getSubjectX500Principal()))
+                    {
+                        issuerKey = additionalCert.getPublicKey();
+                    }
+                }
+                if (issuerKey == null)
+                {
+                    throw new CertificateVerificationException(
+                            "Certificate for " + crl.getIssuerX500Principal() +
+                            "not found in certificate chain, so the CRL at " +
+                            crlDistributionPointsURL + " could not be verified");
+                }
+                crl.verify(issuerKey);
                 X509CRLEntry revokedCRLEntry = crl.getRevokedCertificate(cert);
                 if (revokedCRLEntry != null &&
                     revokedCRLEntry.getRevocationDate().compareTo(signDate) <= 0)
