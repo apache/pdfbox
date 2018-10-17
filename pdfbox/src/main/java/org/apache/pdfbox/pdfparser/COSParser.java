@@ -327,7 +327,7 @@ public class COSParser extends BaseParser
                 parseXrefTable(prev);
                 if (!parseTrailer())
                 {
-                    throw new IOException("Expected trailer object at position: "
+                    throw new IOException("Expected trailer object at offset "
                             + source.getPosition());
                 }
                 COSDictionary trailer = xrefTrailerResolver.getCurrentTrailer();
@@ -2467,7 +2467,7 @@ public class COSParser extends BaseParser
                 if (source.getPosition() == trailerOffset)
                 {
                     // warn only the first time
-                    LOG.warn("Expected trailer object at position " + trailerOffset
+                    LOG.warn("Expected trailer object at offset " + trailerOffset
                             + ", keep trying");
                 }
                 readLine();
@@ -2886,6 +2886,13 @@ public class COSParser extends BaseParser
     private void parseDictionaryRecursive(COSObject dictionaryObject) throws IOException
     {
         parseObjectDynamically(dictionaryObject, true);
+        if (dictionaryObject.getObject() == null)
+        {
+            // we can't be lenient here, this is called by prepareDecryption()
+            // to get the encryption directory
+            throw new IOException("Dictionary object " + dictionaryObject +
+                    " is null at offset " + source.getPosition());
+        }
         COSDictionary dictionary = (COSDictionary) dictionaryObject.getObject();
         for (COSBase value : dictionary.getValues())
         {
