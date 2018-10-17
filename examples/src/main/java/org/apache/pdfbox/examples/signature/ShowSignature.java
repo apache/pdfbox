@@ -25,6 +25,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -36,7 +37,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
@@ -46,6 +46,7 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -64,14 +65,16 @@ import org.bouncycastle.util.Store;
 import org.bouncycastle.util.StoreException;
 
 /**
- * This will read a document from the filesystem, decrypt it and do something with the signature.
+ * This will get the signature(s) from the document, do some verifications and
+ * show the signature(s) and the certificates. This is a complex topic - the
+ * code here is an example and not a production-ready solution.
  *
  * @author Ben Litchfield
  */
 public final class ShowSignature
 {
     private final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-    
+
     private ShowSignature()
     {
     }
@@ -92,6 +95,9 @@ public final class ShowSignature
                                                   NoSuchProviderException,
                                                   TSPException
     {
+        // register BouncyCastle provider, needed for "exotic" algorithms
+        Security.addProvider(SecurityProvider.getProvider());
+
         ShowSignature show = new ShowSignature();
         show.showSignature( args );
     }
@@ -259,10 +265,11 @@ public final class ShowSignature
      * @throws CMSException
      * @throws StoreException
      * @throws OperatorCreationException
+     * @throws IOException
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
             throws CMSException, CertificateException, StoreException, OperatorCreationException,
-                   NoSuchAlgorithmException, NoSuchProviderException
+                   NoSuchAlgorithmException, NoSuchProviderException, IOException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
@@ -303,7 +310,8 @@ public final class ShowSignature
             // todo rest of chain
         }
 
-        if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
+        if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().
+                setProvider(SecurityProvider.getProvider()).build(certFromSignedData)))
         {
             System.out.println("Signature verified");
         }
