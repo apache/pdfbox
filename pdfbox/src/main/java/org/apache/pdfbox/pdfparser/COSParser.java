@@ -2886,12 +2886,11 @@ public class COSParser extends BaseParser
     private void parseDictionaryRecursive(COSObject dictionaryObject) throws IOException
     {
         parseObjectDynamically(dictionaryObject, true);
-        if (dictionaryObject.getObject() == null)
+        if (!(dictionaryObject.getObject() instanceof COSDictionary))
         {
             // we can't be lenient here, this is called by prepareDecryption()
             // to get the encryption directory
-            throw new IOException("Dictionary object " + dictionaryObject +
-                    " is null at offset " + source.getPosition());
+            throw new IOException("Dictionary object expected at offset " + source.getPosition());
         }
         COSDictionary dictionary = (COSDictionary) dictionaryObject.getObject();
         for (COSBase value : dictionary.getValues())
