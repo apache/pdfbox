@@ -289,8 +289,15 @@ public final class ShowSignature
         System.out.println("certFromSignedData: " + certFromSignedData);
         try
         {
-            certFromSignedData.checkValidity(sig.getSignDate().getTime());
-            System.out.println("Certificate valid at signing time");
+            if (sig.getSignDate() != null)
+            {
+                certFromSignedData.checkValidity(sig.getSignDate().getTime());
+                System.out.println("Certificate valid at signing time");
+            }
+            else
+            {
+                System.err.println("Certificate cannot be verified without signing time");
+            }
         }
         catch (CertificateExpiredException ex)
         {
