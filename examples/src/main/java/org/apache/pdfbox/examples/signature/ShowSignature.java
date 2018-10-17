@@ -214,7 +214,8 @@ public final class ShowSignature
                                 Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                                 System.out.println("certs=" + certs);
 
-                                //TODO verify signature
+                                // to verify signature, see code at 
+                                // https://stackoverflow.com/questions/43383859/
                                 break;
                             }
                             case "ETSI.RFC3161":
