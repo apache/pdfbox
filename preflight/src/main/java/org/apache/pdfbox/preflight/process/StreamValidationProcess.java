@@ -204,7 +204,7 @@ public class StreamValidationProcess extends AbstractProcess
         InputStream ra = null;
         try
         {
-            ra = context.getSource().getInputStream();
+            ra = context.getDataSource().getInputStream();
             Long offset = context.getDocument().getDocument().getXrefTable().get(new COSObjectKey(cObj));
 
             // ---- go to the beginning of the object

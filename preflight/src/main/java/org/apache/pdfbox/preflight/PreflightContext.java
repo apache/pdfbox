@@ -145,7 +145,7 @@ public class PreflightContext implements Closeable
      * 
      * @return The datasource of the pdf document
      */
-    public DataSource getSource()
+    public DataSource getDataSource()
     {
         return dataSource;
     }
