@@ -35,6 +35,7 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -58,6 +59,7 @@ import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
@@ -278,6 +280,31 @@ public final class ShowSignature
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
 
+        // Check whether signer certificate is "valid for usage"
+        // https://stackoverflow.com/a/52765021/535646
+        // https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/changes.html#id1
+        boolean[] keyUsage = certFromSignedData.getKeyUsage();
+        if (keyUsage != null && !keyUsage[0] && !keyUsage[1])
+        {
+            // (unclear what "signTransaction" is)
+            // https://tools.ietf.org/html/rfc5280#section-4.2.1.3
+            System.err.println("Certificate key usage does not include " +
+                    "digitalSignature nor nonRepudiation");
+        }
+        List<String> extendedKeyUsage = certFromSignedData.getExtendedKeyUsage();
+        if (extendedKeyUsage != null &&
+            !extendedKeyUsage.contains(KeyPurposeId.id_kp_emailProtection.toString()) &&
+            !extendedKeyUsage.contains(KeyPurposeId.id_kp_codeSigning.toString()) &&
+            !extendedKeyUsage.contains(KeyPurposeId.anyExtendedKeyUsage.toString()) &&
+            !extendedKeyUsage.contains("1.2.840.113583.1.1.5") &&
+            // not mentioned in Adobe document, but tolerated in practice
+            !extendedKeyUsage.contains("1.3.6.1.4.1.311.10.3.12"))
+        {
+            System.err.println("Certificate extended key usage does not include " +
+                    "emailProtection, nor codeSigning, nor anyExtendedKeyUsage, " +
+                    "nor 'Adobe Authentic Documents Trust'");
+        }
+        
         if (signerInformation.getUnsignedAttributes() != null)
         {            
             AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
