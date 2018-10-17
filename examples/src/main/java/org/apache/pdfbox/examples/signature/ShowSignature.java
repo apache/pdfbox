@@ -25,6 +25,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
@@ -53,6 +54,7 @@ import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1Object;
@@ -108,6 +110,9 @@ public final class ShowSignature
                                                   CertificateVerificationException,
                                                   GeneralSecurityException
     {
+        // register BouncyCastle provider, needed for "exotic" algorithms
+        Security.addProvider(SecurityProvider.getProvider());
+
         ShowSignature show = new ShowSignature();
         show.showSignature( args );
     }
@@ -263,7 +268,8 @@ public final class ShowSignature
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
             throws CMSException, StoreException, OperatorCreationException,
-                   CertificateVerificationException, GeneralSecurityException, TSPException, IOException
+                   CertificateVerificationException, GeneralSecurityException,
+                   TSPException, IOException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
@@ -321,7 +327,7 @@ public final class ShowSignature
                     timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
             X509CertificateHolder holder = tstMatches.iterator().next();
             X509Certificate tstCert = new JcaX509CertificateConverter().getCertificate(holder);
-            SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().build(tstCert);
+            SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCert);
             timeStampToken.validate(siv);
             System.out.println("TimeStampToken validated");
         }
@@ -341,7 +347,8 @@ public final class ShowSignature
             System.err.println("Certificate not yet valid at signing time");
         }
 
-        if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
+        if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().
+                setProvider(SecurityProvider.getProvider()).build(certFromSignedData)))
         {
             System.out.println("Signature verified");
         }
