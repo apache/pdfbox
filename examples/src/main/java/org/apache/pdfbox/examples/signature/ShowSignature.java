@@ -60,8 +60,10 @@ import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.asn1.x509.Time;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
@@ -348,6 +350,30 @@ public final class ShowSignature
         catch (CertificateNotYetValidException ex)
         {
             System.err.println("Certificate not yet valid at signing time");
+        }
+
+        // usually not available
+        if (signerInformation.getSignedAttributes() != null)
+        {
+            // From SignedMailValidator.getSignatureTime()
+            Attribute signingTime = signerInformation.getSignedAttributes().get(CMSAttributes.signingTime);
+            if (signingTime != null)
+            {
+                Time timeInstance = Time.getInstance(signingTime.getAttrValues().getObjectAt(0));
+                try
+                {
+                    certFromSignedData.checkValidity(timeInstance.getDate());
+                    System.out.println("Certificate valid at signing time: " + timeInstance.getDate());
+                }
+                catch (CertificateExpiredException ex)
+                {
+                    System.err.println("Certificate expired at signing time");
+                }
+                catch (CertificateNotYetValidException ex)
+                {
+                    System.err.println("Certificate not yet valid at signing time");
+                }
+            }
         }
 
         if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().
