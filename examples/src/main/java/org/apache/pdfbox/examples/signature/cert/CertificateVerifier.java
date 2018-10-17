@@ -107,6 +107,8 @@ public final class CertificateVerifier
             PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
                     cert, trustedRootCerts, intermediateCerts, signDate);
 
+            LOG.info("Certification chain verified successfully");
+
             // Check whether the certificate is revoked by the CRL
             // given in its CRL distribution point extension
             CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
