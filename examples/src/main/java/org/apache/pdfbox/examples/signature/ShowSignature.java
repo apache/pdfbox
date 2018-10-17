@@ -186,8 +186,6 @@ public final class ShowSignature
                             case "adbe.pkcs7.detached":
                             case "ETSI.CAdES.detached":
                                 verifyPKCS7(buf, contents, sig);
-
-                                //TODO check certificate chain, revocation lists, timestamp...
                                 break;
                             case "adbe.pkcs7.sha1":
                             {
@@ -199,8 +197,6 @@ public final class ShowSignature
                                 System.out.println("certs=" + certs);
                                 byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
                                 verifyPKCS7(hash, contents, sig);
-
-                                //TODO check certificate chain, revocation lists, timestamp...
                                 break;
                             }
                             case "adbe.x509.rsa_sha1":
@@ -334,9 +330,15 @@ public final class ShowSignature
 
         try
         {
-            //TODO NPE risk
-            certFromSignedData.checkValidity(sig.getSignDate().getTime());
-            System.out.println("Certificate valid at signing time");
+            if (sig.getSignDate() != null)
+            {
+                certFromSignedData.checkValidity(sig.getSignDate().getTime());
+                System.out.println("Certificate valid at signing time");
+            }
+            else
+            {
+                System.err.println("Certificate cannot be verified without signing time");
+            }
         }
         catch (CertificateExpiredException ex)
         {
@@ -380,9 +382,15 @@ public final class ShowSignature
                     additionalCerts.add(certificate);
                 }
             }
-            //TODO NPE risk (signDate parameter)
-            CertificateVerifier.verifyCertificate(certFromSignedData,
-                    additionalCerts, true, sig.getSignDate().getTime());
+            if (sig.getSignDate() != null)
+            {
+                CertificateVerifier.verifyCertificate(certFromSignedData,
+                        additionalCerts, true, sig.getSignDate().getTime());
+            }
+            else
+            {
+                System.err.println("Certificate cannot be verified without signing time");
+            }
         }
     }
 
