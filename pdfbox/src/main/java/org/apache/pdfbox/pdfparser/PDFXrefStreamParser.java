@@ -80,7 +80,7 @@ public class PDFXrefStreamParser extends BaseParser
         {
             indexArray = new COSArray();
             indexArray.add(COSInteger.ZERO);
-            indexArray.add(stream.getDictionaryObject(COSName.SIZE));
+            indexArray.add(COSInteger.get(stream.getInt(COSName.SIZE, 0)));
         }
 
         List<Long> objNums = new ArrayList<>();
