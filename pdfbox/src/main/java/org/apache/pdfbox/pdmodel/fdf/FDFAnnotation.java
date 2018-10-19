@@ -37,10 +37,12 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderEffectDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.DateConverter;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 /**
  * This represents an FDF annotation that is part of the FDF document.
@@ -959,43 +961,49 @@ public abstract class FDFAnnotation implements COSObjectable
 
     private String richContentsToString(Node node, boolean root)
     {
-        String retval = "";
-        XPath xpath = XPathFactory.newInstance().newXPath();
-        try
+        String subString = "";
+
+        NodeList nodelist = node.getChildNodes();
+        for (int i = 0; i < nodelist.getLength(); i++)
         {
-            NodeList nodelist = (NodeList) xpath.evaluate("*", node, XPathConstants.NODESET);
-            String subString = "";
-            if (nodelist.getLength() == 0)
+            Node child = nodelist.item(i);
+            if (child instanceof Element)
             {
-                subString = node.getFirstChild().getNodeValue();
+                subString += richContentsToString(child, false);
             }
-            for (int i = 0; i < nodelist.getLength(); i++)
+            else if (child instanceof CDATASection)
             {
-                Node child = nodelist.item(i);
-                if (child instanceof Element)
-                {
-                    subString += richContentsToString(child, false);
-                }
+            	subString += "<![CDATA[" + ((CDATASection) child).getData() + "]]>";
             }
-            NamedNodeMap attributes = node.getAttributes();
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < attributes.getLength(); i++)
+            else if (child instanceof Text)
             {
-                Node attribute = attributes.item(i);
-                builder.append(String.format(" %s=\"%s\"", attribute.getNodeName(),
-                        attribute.getNodeValue()));
+            	String cdata = ((Text) child).getData();
+            	if (cdata!=null)
+            	{
+            		cdata = cdata.replace("&", "&amp;").replace("<", "&lt;");
+            	}
+            	subString += cdata;
             }
-            if (root)
-            {
-                return subString;
-            }
-            retval = String.format("<%s%s>%s</%s>", node.getNodeName(), builder.toString(),
-                    subString, node.getNodeName());
         }
-        catch (XPathExpressionException e)
+        if (root)
         {
-            LOG.debug("Error while evaluating XPath expression for richtext contents");
+            return subString;
         }
-        return retval;
+
+        NamedNodeMap attributes = node.getAttributes();
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < attributes.getLength(); i++)
+        {
+            Node attribute = attributes.item(i);
+            String attributeNodeValue = attribute.getNodeValue();
+            if (attributeNodeValue!=null)
+            {
+            	attributeNodeValue = attributeNodeValue.replace("\"", "&quot;");
+            }
+            builder.append(String.format(" %s=\"%s\"", attribute.getNodeName(),
+                    attributeNodeValue));
+        }
+        return String.format("<%s%s>%s</%s>", node.getNodeName(), builder.toString(),
+                subString, node.getNodeName());
     }
 }
