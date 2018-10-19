@@ -158,7 +158,8 @@ public class PDType3Font extends PDSimpleFont
     public float getWidthFromFont(int code) throws IOException
     {
         PDType3CharProc charProc = getCharProc(code);
-        if (charProc == null)
+        if (charProc == null || charProc.getContentStream() == null || 
+            charProc.getContentStream().getLength() == 0)
         {
             return 0;
         }
