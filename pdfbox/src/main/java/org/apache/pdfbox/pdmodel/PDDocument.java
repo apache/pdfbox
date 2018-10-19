@@ -219,7 +219,7 @@ public class PDDocument implements Closeable
      * {@link #saveIncrementalForExternalSigning(OutputStream)} method description on external
      * signature creation scenario details.
      * <p>
-     * Only one signature may be added at in a document. To sign several times,
+     * Only one signature may be added in a document. To sign several times,
      * load document, add signature, save incremental and close again.
      *
      * @param sigObject is the PDSignatureField model
@@ -237,7 +237,7 @@ public class PDDocument implements Closeable
      * {@link #saveIncrementalForExternalSigning(OutputStream)} method description on external
      * signature creation scenario details.
      * <p>
-     * Only one signature may be added at in a document. To sign several times,
+     * Only one signature may be added in a document. To sign several times,
      * load document, add signature, save incremental and close again.
      *
      * @param sigObject is the PDSignatureField model
@@ -254,7 +254,7 @@ public class PDDocument implements Closeable
     /**
      * Add a signature to be created using the instance of given interface.
      * <p>
-     * Only one signature may be added at in a document. To sign several times,
+     * Only one signature may be added in a document. To sign several times,
      * load document, add signature, save incremental and close again.
      * 
      * @param sigObject is the PDSignatureField model
@@ -274,7 +274,7 @@ public class PDDocument implements Closeable
      * parameter is smaller than 0 or larger than max, the nearest valid page number will be used
      * (i.e. 0 or max) and no exception will be thrown.
      * <p>
-     * Only one signature may be added at in a document. To sign several times,
+     * Only one signature may be added in a document. To sign several times,
      * load document, add signature, save incremental and close again.
      *
      * @param sigObject is the PDSignatureField model
@@ -290,7 +290,7 @@ public class PDDocument implements Closeable
     {
         if (signatureAdded)
         {
-            throw new IllegalStateException("Only one signature may be added at in a document");
+            throw new IllegalStateException("Only one signature may be added in a document");
         }
         signatureAdded = true;
 
