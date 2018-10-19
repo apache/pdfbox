@@ -242,7 +242,8 @@ public class PDDocument implements Closeable
      * Add a signature to be created using the instance of given interface.
      * 
      * @param sigObject is the PDSignatureField model
-     * @param signatureInterface is an interface which provides signing capabilities
+     * @param signatureInterface is an interface whose implementation provides
+     * signing capabilities. Can be null if external signing if used.
      * @throws IOException if there is an error creating required fields
      */
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
@@ -256,7 +257,8 @@ public class PDDocument implements Closeable
      * (i.e. 0 or max) and no exception will be thrown.
      *
      * @param sigObject is the PDSignatureField model
-     * @param signatureInterface is an interface which provides signing capabilities
+     * @param signatureInterface is an interface whose implementation provides
+     * signing capabilities. Can be null if external signing if used.
      * @param options signature options
      * @throws IOException if there is an error creating required fields
      */
@@ -568,8 +570,10 @@ public class PDDocument implements Closeable
     /**
      * This will add a list of signature fields to the document.
      * 
-     * @param sigFields are the PDSignatureFields that should be added to the document
-     * @param signatureInterface is a interface which provides signing capabilities
+     * @param sigFields are the PDSignatureFields that should be added to the
+     * document
+     * @param signatureInterface is an interface whose implementation provides
+     * signing capabilities. Can be null if external signing if used.
      * @param options signature options
      * @throws IOException if there is an error creating required fields
      */
