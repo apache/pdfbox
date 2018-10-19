@@ -158,7 +158,10 @@ public class PDDocument implements Closeable
 
     // document-wide cached resources
     private ResourceCache resourceCache = new DefaultResourceCache();
-    
+
+    // to make sure only one signature is added
+    private boolean signatureAdded = false;
+
     /**
      * Creates an empty PDF document.
      * You need to add at least one page for the document to be valid.
@@ -229,9 +232,14 @@ public class PDDocument implements Closeable
      * Add parameters of signature to be created externally using default signature options. See
      * {@link #saveIncrementalForExternalSigning(OutputStream)} method description on external
      * signature creation scenario details.
+     * <p>
+     * Only one signature may be added in a document. To sign several times,
+     * load document, add signature, save incremental and close again.
      *
      * @param sigObject is the PDSignatureField model
      * @throws IOException if there is an error creating required fields
+     * @throws IllegalStateException if one attempts to add several signature
+     * fields.
      */
     public void addSignature(PDSignature sigObject) throws IOException
     {
@@ -242,10 +250,15 @@ public class PDDocument implements Closeable
      * Add parameters of signature to be created externally. See
      * {@link #saveIncrementalForExternalSigning(OutputStream)} method description on external
      * signature creation scenario details.
+     * <p>
+     * Only one signature may be added in a document. To sign several times,
+     * load document, add signature, save incremental and close again.
      *
      * @param sigObject is the PDSignatureField model
      * @param options signature options
      * @throws IOException if there is an error creating required fields
+     * @throws IllegalStateException if one attempts to add several signature
+     * fields.
      */
     public void addSignature(PDSignature sigObject, SignatureOptions options) throws IOException
     {
@@ -254,11 +267,16 @@ public class PDDocument implements Closeable
 
     /**
      * Add a signature to be created using the instance of given interface.
+     * <p>
+     * Only one signature may be added in a document. To sign several times,
+     * load document, add signature, save incremental and close again.
      * 
      * @param sigObject is the PDSignatureField model
      * @param signatureInterface is an interface whose implementation provides
      * signing capabilities. Can be null if external signing if used.
      * @throws IOException if there is an error creating required fields
+     * @throws IllegalStateException if one attempts to add several signature
+     * fields.
      */
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface) throws IOException
     {
@@ -269,16 +287,27 @@ public class PDDocument implements Closeable
      * This will add a signature to the document. If the 0-based page number in the options
      * parameter is smaller than 0 or larger than max, the nearest valid page number will be used
      * (i.e. 0 or max) and no exception will be thrown.
+     * <p>
+     * Only one signature may be added in a document. To sign several times,
+     * load document, add signature, save incremental and close again.
      *
      * @param sigObject is the PDSignatureField model
      * @param signatureInterface is an interface whose implementation provides
      * signing capabilities. Can be null if external signing if used.
      * @param options signature options
      * @throws IOException if there is an error creating required fields
+     * @throws IllegalStateException if one attempts to add several signature
+     * fields.
      */
     public void addSignature(PDSignature sigObject, SignatureInterface signatureInterface,
                              SignatureOptions options) throws IOException
     {
+        if (signatureAdded)
+        {
+            throw new IllegalStateException("Only one signature may be added in a document");
+        }
+        signatureAdded = true;
+
         // Reserve content
         // We need to reserve some space for the signature. Some signatures including
         // big certificate chain and we need enough space to store it.
@@ -590,7 +619,10 @@ public class PDDocument implements Closeable
      * signing capabilities. Can be null if external signing if used.
      * @param options signature options
      * @throws IOException if there is an error creating required fields
+     * @deprecated The method is misleading, because only one signature may be
+     * added in a document. The method will be removed in the future.
      */
+    @Deprecated
     public void addSignatureField(List<PDSignatureField> sigFields, SignatureInterface signatureInterface,
             SignatureOptions options) throws IOException
     {
