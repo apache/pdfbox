@@ -193,12 +193,7 @@ public class PDFParser extends COSParser
         }
         // check pages dictionaries
         checkPages(root);
-        COSBase pages = root.getItem(COSName.PAGES);
-        if (pages instanceof COSObject)
-        {
-            pages = ((COSObject) pages).getObject();
-        }
-        if (pages == null || pages instanceof COSNull)
+        if (root.getDictionaryObject(COSName.PAGES) == null)
         {
             throw new IOException("Page tree root is null");
         }
