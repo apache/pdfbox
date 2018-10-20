@@ -72,7 +72,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     {
         if (root == null)
         {
-            throw new IllegalArgumentException("root cannot be null");
+            throw new IllegalArgumentException("page tree root cannot be null");
         }
         // repair bad PDFs which contain a Page dict instead of a page tree, see PDFBOX-3154
         if (COSName.PAGE.equals(root.getCOSName(COSName.TYPE)))
