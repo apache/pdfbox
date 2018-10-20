@@ -316,6 +316,11 @@
                     <!-- don't upgrade to 3.0.x as long as we have to ensure jdk6 compatibility -->
                     <version>2.5.4</version>
                 </plugin>
+                <plugin>
+                    <!-- default version 2.20.1 doesn't work with jdk11 -->
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
