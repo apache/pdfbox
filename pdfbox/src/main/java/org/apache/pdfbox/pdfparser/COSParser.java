@@ -2282,7 +2282,7 @@ public class COSParser extends BaseParser
      */
     protected void checkPages(COSDictionary root) throws IOException
     {
-        if (trailerWasRebuild && root != null)
+        if (trailerWasRebuild)
         {
             // check if all page objects are dereferenced
             COSBase pages = root.getDictionaryObject(COSName.PAGES);
@@ -2290,15 +2290,10 @@ public class COSParser extends BaseParser
             {
                 checkPagesDictionary((COSDictionary) pages, new HashSet<COSObject>());
             }
-
-            if (pages instanceof COSObject)
-            {
-                pages = ((COSObject) pages).getObject();
-            }
-            if (pages == null || pages instanceof COSNull)
-            {
-                throw new IOException("Page tree root is null");
-            }
+        }
+        if (root.getDictionaryObject(COSName.PAGES) == null)
+        {
+            throw new IOException("Page tree root is null");
         }
     }
 
