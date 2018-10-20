@@ -65,5 +65,16 @@
     <link width="0" page="3" rect="345.110000,457.870000,499.680000,471.040000" opacity="1" rotation="0" actiontype="URI" target="https://www.dropbox.com/help/26" />
     <link width="0" page="3" rect="158.240000,205.870000,273.730000,219.040000" opacity="1" rotation="0" actiontype="URI" target="http://www.dropbox.com/anywhere" />
     <link width="0" page="3" rect="105.110000,187.870000,217.190000,201.040000" opacity="1" rotation="0" actiontype="URI" target="http://www.dropbox.com" />
+<!-- the following one only to test PDFBOX-4345 and PDFBOX-3646. Might appear over another -->
+    <freetext page="0" date="D:20150415150448+00'00'" title="weblogic" rect="400.430000,487.270000,562.980000,571.310000" flags="print" name="88D147A8-CC51-4178-8102-8C63E2C90F09" creationdate="D:20150415150432+00'00'" opacity="1" rotation="0" width="2" style="solid" justification="left">
+      <contents-richtext>
+        <body
+          xmlns="http://www.w3.org/1999/xhtml"
+          xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/" style="font:12pt Helvetica; color:#D66C00;" xfa:APIVersion="Acrobat:7.0.8" xfa:spec="2.0.2">
+          <p dir="ltr">P&amp;1 <span style="text-decoration:word;font-family:Helvetica">P&amp;2</span> P&amp;3</p>
+        </body>
+      </contents-richtext>
+      <defaultappearance>/Helvetica 12 Tf 0.842 0.424 0.000 rg</defaultappearance>
+    </freetext>
   </annots>
 </xfdf>
