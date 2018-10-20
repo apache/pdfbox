@@ -2278,8 +2278,9 @@ public class COSParser extends BaseParser
      * Check if all entries of the pages dictionary are present. Those which can't be dereferenced are removed.
      * 
      * @param root the root dictionary of the pdf
+     * @throws java.io.IOException if the page tree root is null
      */
-    protected void checkPages(COSDictionary root)
+    protected void checkPages(COSDictionary root) throws IOException
     {
         if (trailerWasRebuild && root != null)
         {
@@ -2288,6 +2289,15 @@ public class COSParser extends BaseParser
             if (pages instanceof COSDictionary)
             {
                 checkPagesDictionary((COSDictionary) pages, new HashSet<COSObject>());
+            }
+
+            if (pages instanceof COSObject)
+            {
+                pages = ((COSObject) pages).getObject();
+            }
+            if (pages == null || pages instanceof COSNull)
+            {
+                throw new IOException("Page tree root is null");
             }
         }
     }
