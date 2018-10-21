@@ -2838,7 +2838,7 @@ public class COSParser extends BaseParser
             }
         }
         // parse catalog or root object
-        COSObject root = (COSObject) trailer.getItem(COSName.ROOT);
+        COSObject root = trailer.getCOSObject(COSName.ROOT);
         if (root == null)
         {
             throw new IOException("Missing root object specification in trailer.");
