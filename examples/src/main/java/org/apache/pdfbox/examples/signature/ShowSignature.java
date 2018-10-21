@@ -49,8 +49,11 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
+import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.Time;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -59,6 +62,7 @@ import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
@@ -273,7 +277,7 @@ public final class ShowSignature
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
             throws CMSException, CertificateException, StoreException, OperatorCreationException,
-                   NoSuchAlgorithmException, NoSuchProviderException, IOException
+                   NoSuchAlgorithmException, NoSuchProviderException, TSPException, IOException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
@@ -290,6 +294,28 @@ public final class ShowSignature
         X509CertificateHolder certificateHolder = matches.iterator().next();
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
+
+        if (signerInformation.getUnsignedAttributes() != null)
+        {            
+            AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+
+            // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
+            Attribute attribute = unsignedAttributes.get(
+                    PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+            ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
+            CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
+            TimeStampToken timeStampToken = new TimeStampToken(signedTSTData);
+
+            // https://stackoverflow.com/questions/42114742/
+            Collection<X509CertificateHolder> tstMatches =
+                    timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
+            X509CertificateHolder holder = tstMatches.iterator().next();
+            X509Certificate tstCert = new JcaX509CertificateConverter().getCertificate(holder);
+            SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCert);
+            timeStampToken.validate(siv);
+            System.out.println("TimeStampToken validated");
+        }
+
         try
         {
             if (sig.getSignDate() != null)
