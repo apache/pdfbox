@@ -295,6 +295,8 @@ public final class ShowSignature
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
 
+        SigUtils.checkCertificateUsage(certFromSignedData);
+
         if (signerInformation.getUnsignedAttributes() != null)
         {            
             AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
