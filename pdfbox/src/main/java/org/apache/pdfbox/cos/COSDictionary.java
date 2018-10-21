@@ -226,26 +226,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a special case of getDictionaryObject that takes multiple keys, it will handle the situation where
-     * multiple keys could get the same value, ie if either CS or ColorSpace is used to get the colorspace. This will
-     * get an object from this dictionary. If the object is a reference then it will dereference it and get it from the
-     * document. If the object is COSNull then null will be returned.
-     *
-     * @param keyList The list of keys to find a value.
-     *
-     * @return The object that matches the key.
-     */
-    public COSBase getDictionaryObject(String[] keyList)
-    {
-        COSBase retval = null;
-        for (int i = 0; i < keyList.length && retval == null; i++)
-        {
-            retval = getDictionaryObject(COSName.getPDFName(keyList[i]));
-        }
-        return retval;
-    }
-
-    /**
      * This will get an object from this dictionary. If the object is a reference then it will dereference it and get it
      * from the document. If the object is COSNull then null will be returned.
      *
@@ -625,6 +605,57 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         if (name instanceof COSName)
         {
             return (COSName) name;
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that is expected to be a COSObject. Null is
+     * returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @return The COSObject.
+     */
+    public COSObject getCOSObject(COSName key)
+    {
+        COSBase object = getItem(key);
+        if (object instanceof COSObject)
+        {
+            return (COSObject) object;
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that is expected to be a COSDictionary. Null is
+     * returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @return The COSDictionary.
+     */
+    public COSDictionary getCOSDictionary(COSName key)
+    {
+        COSBase dictionary = getDictionaryObject(key);
+        if (dictionary instanceof COSDictionary)
+        {
+            return (COSDictionary) dictionary;
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that is expected to be a COSArray. Null is
+     * returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @return The COSArray.
+     */
+    public COSArray getCOSArray(COSName key)
+    {
+        COSBase array = getDictionaryObject(key);
+        if (array instanceof COSArray)
+        {
+            return (COSArray) array;
         }
         return null;
     }
@@ -1086,25 +1117,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
      * dictionary value is null then the default value will be returned.
      *
-     * @param keyList The key to the item in the dictionary.
-     * @param defaultValue The value to return if the dictionary item is null.
-     * @return The integer value.
-     */
-    public int getInt(String[] keyList, int defaultValue)
-    {
-        int retval = defaultValue;
-        COSBase obj = getDictionaryObject(keyList);
-        if (obj instanceof COSNumber)
-        {
-            retval = ((COSNumber) obj).intValue();
-        }
-        return retval;
-    }
-
-    /**
-     * This is a convenience method that will get the dictionary object that is expected to be an integer. If the
-     * dictionary value is null then the default value will be returned.
-     *
      * @param key The key to the item in the dictionary.
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The integer value.
@@ -1183,25 +1195,6 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public long getLong(COSName key)
     {
         return getLong(key, -1L);
-    }
-
-    /**
-     * This is a convenience method that will get the dictionary object that is expected to be an long. If the
-     * dictionary value is null then the default value will be returned.
-     *
-     * @param keyList The key to the item in the dictionary.
-     * @param defaultValue The value to return if the dictionary item is null.
-     * @return The long value.
-     */
-    public long getLong(String[] keyList, long defaultValue)
-    {
-        long retval = defaultValue;
-        COSBase obj = getDictionaryObject(keyList);
-        if (obj instanceof COSNumber)
-        {
-            retval = ((COSNumber) obj).longValue();
-        }
-        return retval;
     }
 
     /**
