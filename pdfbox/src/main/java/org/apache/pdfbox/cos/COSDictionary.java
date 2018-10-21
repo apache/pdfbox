@@ -164,6 +164,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param keyList The list of keys to find a value.
      *
      * @return The object that matches the key.
+     * 
+     * @deprecated Will be removed in 3.0. A value may have to keys, the regular one and sometimes an additional
+     * abbreviation. More than 2 values doesn't make sense.
      */
     public COSBase getDictionaryObject(String[] keyList)
     {
@@ -555,6 +558,57 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         if (name instanceof COSName)
         {
             return (COSName) name;
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that is expected to be a COSObject. Null is
+     * returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @return The COSObject.
+     */
+    public COSObject getCOSObject(COSName key)
+    {
+        COSBase object = getItem(key);
+        if (object instanceof COSObject)
+        {
+            return (COSObject) object;
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that is expected to be a COSDictionary. Null is
+     * returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @return The COSDictionary.
+     */
+    public COSDictionary getCOSDictionary(COSName key)
+    {
+        COSBase dictionary = getDictionaryObject(key);
+        if (dictionary instanceof COSDictionary)
+        {
+            return (COSDictionary) dictionary;
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that is expected to be a COSArray. Null is
+     * returned if the entry does not exist in the dictionary.
+     *
+     * @param key The key to the item in the dictionary.
+     * @return The COSArray.
+     */
+    public COSArray getCOSArray(COSName key)
+    {
+        COSBase array = getDictionaryObject(key);
+        if (array instanceof COSArray)
+        {
+            return (COSArray) array;
         }
         return null;
     }
@@ -1026,6 +1080,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param keyList The key to the item in the dictionary.
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The integer value.
+     * 
+     * @deprecated Will be removed in 3.0. A value may have to keys, the regular one and sometimes an additional
+     * abbreviation. More than 2 values doesn't make sense.
      */
     public int getInt(String[] keyList, int defaultValue)
     {
@@ -1129,6 +1186,9 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      * @param keyList The key to the item in the dictionary.
      * @param defaultValue The value to return if the dictionary item is null.
      * @return The long value.
+     *
+     * @deprecated Will be removed in 3.0. A value may have to keys, the regular one and sometimes an additional
+     * abbreviation. More than 2 values doesn't make sense.
      */
     public long getLong(String[] keyList, long defaultValue)
     {
