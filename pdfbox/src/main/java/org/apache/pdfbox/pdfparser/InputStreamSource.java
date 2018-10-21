@@ -52,16 +52,30 @@ final class InputStreamSource implements SequentialSource
     public int read(byte[] b) throws IOException
     {
         int n = input.read(b);
-        position += n;
-        return n;
+        if (n > 0)
+        {
+            position += n;
+            return n;
+        }
+        else
+        {
+            return -1;
+        }
     }
 
     @Override
     public int read(byte[] b, int offset, int length) throws IOException
     {
         int n = input.read(b, offset, length);
-        position += n;
-        return n;
+        if (n > 0)
+        {
+            position += n;
+            return n;
+        }
+        else
+        {
+            return -1;
+        }
     }
 
     @Override
@@ -111,9 +125,16 @@ final class InputStreamSource implements SequentialSource
         while (len > 0)
         {
             int n = this.read(bytes, off, len);
-            off += n;
-            len -= n;
-            position += n;
+            if (n > 0)
+            {
+                off += n;
+                len -= n;
+                position += n;
+            }
+            else
+            {
+                break;
+            }
         }
         return bytes;
     }
