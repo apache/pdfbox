@@ -91,6 +91,7 @@ public final class CRLVerifier
             for (String crlDistributionPointsURL : crlDistributionPointsURLs)
             {
                 LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
+                //TODO catch connection errors and try the next one
                 X509CRL crl = downloadCRL(crlDistributionPointsURL);
 
                 // Verify CRL, see wikipedia:
@@ -122,6 +123,15 @@ public final class CRLVerifier
                             crlDistributionPointsURL + " on " +
                             revokedCRLEntry.getRevocationDate());
                 }
+
+                // https://tools.ietf.org/html/rfc5280#section-4.2.1.13
+                // If the DistributionPointName contains multiple values,
+                // each name describes a different mechanism to obtain the same
+                // CRL.  For example, the same CRL could be available for
+                // retrieval through both LDAP and HTTP.
+                //
+                //TODO => thus no need to check several protocols
+                return;
             }
         }
         catch (Exception ex)
