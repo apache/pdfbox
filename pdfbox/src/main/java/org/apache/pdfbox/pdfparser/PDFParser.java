@@ -193,9 +193,9 @@ public class PDFParser extends COSParser
         }
         // check pages dictionaries
         checkPages(root);
-        if (root.getDictionaryObject(COSName.PAGES) == null)
+        if (!(root.getDictionaryObject(COSName.PAGES) instanceof COSDictionary))
         {
-            throw new IOException("Page tree root is null");
+            throw new IOException("Page tree root must be a dictionary");
         }
         document.setDecrypted();
         initialParseDone = true;
