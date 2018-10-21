@@ -119,9 +119,9 @@ public class PDFXrefStreamParser extends BaseParser
         /*
          * Calculating the size of the line in bytes
          */
-        int w0 = xrefFormat.getInt(0);
-        int w1 = xrefFormat.getInt(1);
-        int w2 = xrefFormat.getInt(2);
+        int w0 = xrefFormat.getInt(0, 0);
+        int w1 = xrefFormat.getInt(1, 0);
+        int w2 = xrefFormat.getInt(2, 0);
         int lineSize = w0 + w1 + w2;
 
         while(!seqSource.isEOF() && objIter.hasNext())
