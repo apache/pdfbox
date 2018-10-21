@@ -84,6 +84,8 @@ public abstract class CreateSignatureBase implements SignatureInterface
             {
                 // avoid expired certificate
                 ((X509Certificate) cert).checkValidity();
+                
+                SigUtils.checkCertificateUsage((X509Certificate) cert);
             }
             break;
         }
