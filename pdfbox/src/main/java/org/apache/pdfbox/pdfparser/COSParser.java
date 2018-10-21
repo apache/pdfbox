@@ -2291,9 +2291,9 @@ public class COSParser extends BaseParser
                 checkPagesDictionary((COSDictionary) pages, new HashSet<COSObject>());
             }
         }
-        if (root.getDictionaryObject(COSName.PAGES) == null)
+        if (!(root.getDictionaryObject(COSName.PAGES) instanceof COSDictionary))
         {
-            throw new IOException("Page tree root is null");
+            throw new IOException("Page tree root must be a dictionary");
         }
     }
 
