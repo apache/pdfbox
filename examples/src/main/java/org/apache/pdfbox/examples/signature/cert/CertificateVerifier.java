@@ -113,6 +113,10 @@ public final class CertificateVerifier
             // given in its CRL distribution point extension
             CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
 
+            //TODO OCSP might be better, and would be faster too
+            // use existing code from Alexis Suter
+            // in org.apache.pdfbox.examples.signature.validation ?
+
             // The chain is built and verified. Return it as a result
             return verifiedCertChain;
         }
