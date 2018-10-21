@@ -2049,13 +2049,20 @@ public class COSParser extends BaseParser
                 Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
                 for (int i = 0; i < nrOfObjects; i++)
                 {
-                    long objNumber = Long.parseLong(numbers[i * 2]);
-                    COSObjectKey objKey = new COSObjectKey(objNumber, 0);
-                    Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
-                    if (existingOffset == null || offset > existingOffset)
+                    try
                     {
-                        bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
-                        xrefOffset.put(objKey, -stmObjNumber);
+                        long objNumber = Long.parseLong(numbers[i * 2]);
+                        COSObjectKey objKey = new COSObjectKey(objNumber, 0);
+                        Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                        if (existingOffset == null || offset > existingOffset)
+                        {
+                            bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
+                            xrefOffset.put(objKey, -stmObjNumber);
+                        }
+                    }
+                    catch (NumberFormatException exception)
+                    {
+                        LOG.debug("Skipped corrupt object key in stream: " + stmObjNumber);
                     }
                 }
             }
