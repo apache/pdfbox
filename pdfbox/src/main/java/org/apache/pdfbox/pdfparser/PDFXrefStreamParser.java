@@ -72,12 +72,15 @@ public class PDFXrefStreamParser extends BaseParser
         }
         COSArray xrefFormat = (COSArray) w;
         
-        COSArray indexArray = (COSArray)stream.getDictionaryObject(COSName.INDEX);
-        /*
-         * If Index doesn't exist, we will use the default values.
-         */
-        if(indexArray == null)
+        COSBase base = stream.getDictionaryObject(COSName.INDEX);
+        COSArray indexArray;
+        if (base instanceof COSArray)
         {
+            indexArray = (COSArray) base;
+        }
+        else
+        {
+            // If /Index doesn't exist, we will use the default values.
             indexArray = new COSArray();
             indexArray.add(COSInteger.ZERO);
             indexArray.add(COSInteger.get(stream.getInt(COSName.SIZE, 0)));
@@ -89,11 +92,25 @@ public class PDFXrefStreamParser extends BaseParser
          * Populates objNums with all object numbers available
          */
         Iterator<COSBase> indexIter = indexArray.iterator();
-        while(indexIter.hasNext())
+        while (indexIter.hasNext())
         {
-            long objID = ((COSInteger)indexIter.next()).longValue();
-            int size = ((COSInteger)indexIter.next()).intValue();
-            for(int i = 0; i < size; i++)
+            base = indexIter.next();
+            if (!(base instanceof COSInteger))
+            {
+                throw new IOException("Xref stream must have integer in /Index array");
+            }
+            long objID = ((COSInteger) base).longValue();
+            if (!indexIter.hasNext())
+            {
+                break;
+            }
+            base = indexIter.next();
+            if (!(base instanceof COSInteger))
+            {
+                throw new IOException("Xref stream must have integer in /Index array");
+            }
+            int size = ((COSInteger) base).intValue();
+            for (int i = 0; i < size; i++)
             {
                 objNums.add(objID + i);
             }
