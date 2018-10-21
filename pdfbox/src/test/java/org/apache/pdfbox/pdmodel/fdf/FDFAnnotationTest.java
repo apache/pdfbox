@@ -56,7 +56,6 @@ public class FDFAnnotationTest
                     if ("P&1 P&2 P&3".equals(annotationFreeText.getContents()))
                     {
                         testedPDFBox4345andPDFBox3646 = true;
-                        System.out.println(annotationFreeText.getRichContents());
                         Assert.assertEquals("<body style=\"font:12pt Helvetica; "
                                 + "color:#D66C00;\" xfa:APIVersion=\"Acrobat:7.0.8\" "
                                 + "xfa:spec=\"2.0.2\" xmlns=\"http://www.w3.org/1999/xhtml\" "
