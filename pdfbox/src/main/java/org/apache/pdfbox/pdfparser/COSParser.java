@@ -323,8 +323,7 @@ public class COSParser extends BaseParser
             {
                 // xref table and trailer
                 // use existing parser to parse xref table
-                parseXrefTable(prev);
-                if (!parseTrailer())
+                if (!parseXrefTable(prev) || !parseTrailer())
                 {
                     throw new IOException("Expected trailer object at offset "
                             + source.getPosition());
@@ -2695,12 +2694,31 @@ public class COSParser extends BaseParser
             if (splitString.length != 2)
             {
                 LOG.warn("Unexpected XRefTable Entry: " + currentLine);
-                break;
+                return false;
             }
             // first obj id
-            long currObjID = Long.parseLong(splitString[0]);
+            long currObjID = 0;
+            try
+            {
+                currObjID = Long.parseLong(splitString[0]);
+            }
+            catch (NumberFormatException exception)
+            {
+                LOG.warn("XRefTable: invalid ID for the first object: " + currentLine);
+                return false;
+            }
+
             // the number of objects in the xref table
-            int count = Integer.parseInt(splitString[1]);
+            int count = 0;
+            try
+            {
+                count = Integer.parseInt(splitString[1]);
+            }
+            catch (NumberFormatException exception)
+            {
+                LOG.warn("XRefTable: invalid number of objects: " + currentLine);
+                return false;
+            }
             
             skipSpaces();
             for(int i = 0; i < count; i++)
