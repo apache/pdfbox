@@ -127,7 +127,10 @@ public class OcspHelper
 
                 if (status instanceof RevokedStatus)
                 {
-                    throw new RevokedCertificateException("OCSP: Certificate is revoked.");
+                    RevokedStatus revokedStatus = (RevokedStatus) status;
+                    throw new RevokedCertificateException(
+                            "OCSP: Certificate is revoked since " +
+                                    revokedStatus.getRevocationTime());
                 }
                 else if (status != CertificateStatus.GOOD)
                 {
