@@ -43,6 +43,7 @@ import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
@@ -64,14 +65,6 @@ import org.bouncycastle.util.Store;
 public class CertInformationCollector
 {
     private static final Log LOG = LogFactory.getLog(CertInformationCollector.class);
-
-    // As described in https://tools.ietf.org/html/rfc3280.html#section-4.2.2.1
-    private static final String ID_PE_AUTHORITYINFOACCESS = "1.3.6.1.5.5.7.1.1";
-
-    // As described in https://tools.ietf.org/html/rfc3280.html#section-4.2.1.14
-    // Disable false Sonar warning for "Hardcoded IP Address ..."
-    @SuppressWarnings("squid:S1313")
-    private static final String ID_CE_CRLDISTRIBUTIONPOINTS = "2.5.29.31";
 
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
 
@@ -258,7 +251,8 @@ public class CertInformationCollector
         certInfo.certificate = certificate;
 
         // Certificate Authority Information Access
-        byte[] authorityExtensionValue = certificate.getExtensionValue(ID_PE_AUTHORITYINFOACCESS);
+        // As described in https://tools.ietf.org/html/rfc3280.html#section-4.2.2.1
+        byte[] authorityExtensionValue = certificate.getExtensionValue(Extension.authorityInfoAccess.getId());
         if (authorityExtensionValue != null)
         {
             CertInformationHelper.getAuthorityInfoExtensionValue(authorityExtensionValue, certInfo);
@@ -269,7 +263,8 @@ public class CertInformationCollector
             getAlternativeIssuerCertificate(certInfo, maxDepth);
         }
 
-        byte[] crlExtensionValue = certificate.getExtensionValue(ID_CE_CRLDISTRIBUTIONPOINTS);
+        // As described in https://tools.ietf.org/html/rfc3280.html#section-4.2.1.14
+        byte[] crlExtensionValue = certificate.getExtensionValue(Extension.cRLDistributionPoints.getId());
         if (crlExtensionValue != null)
         {
             certInfo.crlUrl = CertInformationHelper.getCrlUrlFromExtensionValue(crlExtensionValue);
