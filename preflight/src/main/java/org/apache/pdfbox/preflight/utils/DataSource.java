@@ -30,7 +30,7 @@ import java.io.InputStream;
  */
 public interface DataSource
 {
-    public InputStream getInputStream() throws IOException;
+    InputStream getInputStream() throws IOException;
 
-    public String getName();
+    String getName();
 }
