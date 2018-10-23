@@ -31,7 +31,7 @@ import java.io.InputStream;
  */
 public class FileDataSource implements DataSource
 {
-    private File file;
+    private final File file;
 
     public FileDataSource(File file)
     {
