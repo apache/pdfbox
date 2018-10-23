@@ -1569,6 +1569,18 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             }
             return sb.toString();
         }
+        if (base instanceof COSArray)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append("COSArray{");
+            for (COSBase x : ((COSArray) base).toList())
+            {
+                sb.append(getDictionaryString(x, objs));
+                sb.append(";");
+            }
+            sb.append("}");
+            return sb.toString();
+        }
         if (base instanceof COSObject)
         {
             COSObject obj = (COSObject) base;
