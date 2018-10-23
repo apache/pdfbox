@@ -68,6 +68,8 @@ public class CertInformationCollector
 
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
 
+    //TODO certificateStore name misleading, this is a map.
+    // even more confusing: there are also "certificatesStore" variables that are a Store
     private final Map<BigInteger, X509Certificate> certificateStore = new HashMap<>();
 
     private final JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
@@ -346,8 +348,9 @@ public class CertInformationCollector
     }
 
     /**
-     * Gets the X509Certificate out of the X509CertificateHolder
-     * 
+     * Gets the X509Certificate out of the X509CertificateHolder and add it to
+     * the certificateStore map.
+     *
      * @param certificateHolder to get the certificate from
      * @return a X509Certificate or <code>null</code> when there was an Error with the Certificate
      * @throws CertificateProccessingException on failed conversion from X509CertificateHolder to X509Certificate
@@ -355,6 +358,7 @@ public class CertInformationCollector
     private X509Certificate getCertFromHolder(X509CertificateHolder certificateHolder)
             throws CertificateProccessingException
     {
+        //TODO getCertFromHolder violates "do one thing" rule (adds to the map and returns a certificate)
         if (!certificateStore.containsKey(certificateHolder.getSerialNumber()))
         {
             try
