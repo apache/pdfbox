@@ -1736,29 +1736,23 @@ public class COSParser extends BaseParser
                     skipSpaces();
                     COSDictionary trailerDict = parseCOSDictionary();
                     StringBuilder trailerKeys = new StringBuilder();
-                    if (trailerDict.containsKey(COSName.ROOT))
+                    COSObject rootObj = trailerDict.getCOSObject(COSName.ROOT);
+                    if (rootObj != null)
                     {
-                        COSBase rootObj = trailerDict.getItem(COSName.ROOT);
-                        if (rootObj instanceof COSObject)
-                        {
-                            long objNumber = ((COSObject) rootObj).getObjectNumber();
-                            int genNumber = ((COSObject) rootObj).getGenerationNumber();
-                            trailerKeys.append(objNumber).append(" ");
-                            trailerKeys.append(genNumber).append(" ");
-                            rootFound = true;
-                        }
+                        long objNumber = rootObj.getObjectNumber();
+                        int genNumber = rootObj.getGenerationNumber();
+                        trailerKeys.append(objNumber).append(" ");
+                        trailerKeys.append(genNumber).append(" ");
+                        rootFound = true;
                     }
-                    if (trailerDict.containsKey(COSName.INFO))
+                    COSObject infoObj = trailerDict.getCOSObject(COSName.INFO);
+                    if (infoObj != null)
                     {
-                        COSBase infoObj = trailerDict.getItem(COSName.INFO);
-                        if (infoObj instanceof COSObject)
-                        {
-                            long objNumber = ((COSObject) infoObj).getObjectNumber();
-                            int genNumber = ((COSObject) infoObj).getGenerationNumber();
-                            trailerKeys.append(objNumber).append(" ");
-                            trailerKeys.append(genNumber).append(" ");
-                            infoFound = true;
-                        }
+                        long objNumber = infoObj.getObjectNumber();
+                        int genNumber = infoObj.getGenerationNumber();
+                        trailerKeys.append(objNumber).append(" ");
+                        trailerKeys.append(genNumber).append(" ");
+                        infoFound = true;
                     }
                     if (rootFound && infoFound)
                     {
