@@ -19,6 +19,7 @@
 
 package org.apache.pdfbox.examples.signature.cert;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
@@ -33,10 +34,23 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.examples.signature.validation.OcspHelper;
+import org.apache.pdfbox.examples.signature.validation.RevokedCertificateException;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERTaggedObject;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
+import org.bouncycastle.cert.ocsp.OCSPException;
+import org.bouncycastle.cert.ocsp.OCSPResp;
 
 /**
  * Copied from Apache CXF 2.4.9, initial version:
@@ -91,6 +105,7 @@ public final class CertificateVerifier
             // and a set of intermediate certificates
             Set<X509Certificate> trustedRootCerts = new HashSet<X509Certificate>();
             Set<X509Certificate> intermediateCerts = new HashSet<X509Certificate>();
+            X509Certificate issuerCert = null;
             for (X509Certificate additionalCert : additionalCerts)
             {
                 if (isSelfSigned(additionalCert))
@@ -101,6 +116,10 @@ public final class CertificateVerifier
                 {
                     intermediateCerts.add(additionalCert);
                 }
+                if (cert.getIssuerX500Principal().equals(additionalCert.getSubjectX500Principal()))                        
+                {
+                    issuerCert = additionalCert;
+                }
             }
 
             // Attempt to build the certification chain and verify it
@@ -109,15 +128,23 @@ public final class CertificateVerifier
 
             LOG.info("Certification chain verified successfully");
 
+            // Try checking the certificate through OCSP (faster than CRL)
+            String ocspURL = extractOCSPURL(cert);
+            if (ocspURL != null)
+            {
+                OcspHelper ocspHelper = new OcspHelper(cert, issuerCert, ocspURL);
+                verifyOCSP(ocspHelper, signDate);
+                return verifiedCertChain;
+            }
+            else
+            {
+                LOG.info("OCSP not available, will try CRL");
+            }
+
             // Check whether the certificate is revoked by the CRL
             // given in its CRL distribution point extension
             CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
 
-            //TODO OCSP might be better, and would be faster too
-            // use existing code from Alexis Suter
-            // in org.apache.pdfbox.examples.signature.validation ?
-
-            // The chain is built and verified. Return it as a result
             return verifiedCertChain;
         }
         catch (CertPathBuilderException certPathEx)
@@ -211,5 +238,77 @@ public final class CertificateVerifier
         // https://docs.oracle.com/javase/8/docs/technotes/guides/security/troubleshooting-security.html
         CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
         return (PKIXCertPathBuilderResult) builder.build(pkixParams);
+    }
+
+    /**
+     * Extract the OCSP URL from an X.509 certificate if available.
+     *
+     * @param cert X.509 certificate
+     * @return the URL of the OCSP validation service
+     * @throws IOException 
+     */
+    private static String extractOCSPURL(X509Certificate cert) throws IOException
+    {
+        byte[] authorityExtensionValue = cert.getExtensionValue(Extension.authorityInfoAccess.getId());
+        if (authorityExtensionValue != null)
+        {
+            // copied from CertInformationHelper.getAuthorityInfoExtensionValue()
+            // DRY refactor should be done some day
+            ASN1Sequence asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
+            Enumeration<?> objects = asn1Seq.getObjects();
+            while (objects.hasMoreElements())
+            {
+                // AccessDescription
+                ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
+                ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
+                // accessLocation
+                DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
+                if (oid.equals(X509ObjectIdentifiers.id_ad_ocsp)
+                        && location.getTagNo() == GeneralName.uniformResourceIdentifier)
+                {
+                    DEROctetString url = (DEROctetString) location.getObject();
+                    String ocspURL = new String(url.getOctets());
+                    LOG.info("OCSP URL: " + ocspURL);
+                    return ocspURL;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Verify whether the certificate has been revoked at signing date.
+     *
+     * @param ocspHelper the OCSP helper.
+     * @param signDate the signing date.
+     * @throws RevokedCertificateException
+     * @throws IOException
+     * @throws OCSPException
+     * @throws CertificateVerificationException
+     */
+    private static void verifyOCSP(OcspHelper ocspHelper, Date signDate)
+            throws RevokedCertificateException, IOException, OCSPException, CertificateVerificationException
+    {
+        try
+        {
+            OCSPResp basicResponse = ocspHelper.getResponseOcsp();
+            if (basicResponse.getStatus() != OCSPResp.SUCCESSFUL)
+            {
+                throw new CertificateVerificationException("OCSP check not successful, status: "
+                        + basicResponse.getStatus());
+            }
+            else
+            {
+                LOG.info("OCSP check successful");
+            }
+        }
+        catch (RevokedCertificateException ex)
+        {
+            if (ex.getRevocationTime().compareTo(signDate) <= 0)
+            {
+                throw ex;
+            }
+            LOG.info("OCSP check successful: certificate was revoked, but after signing");
+        }
     }
 }
