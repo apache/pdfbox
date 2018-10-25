@@ -2025,7 +2025,7 @@ public class COSParser extends BaseParser
                 }
                 int start = 0;
                 // skip spaces
-                while (numbersBytes[start] == 32)
+                while (start < numbersBytes.length && numbersBytes[start] == 32)
                 {
                     start++;
                 }
