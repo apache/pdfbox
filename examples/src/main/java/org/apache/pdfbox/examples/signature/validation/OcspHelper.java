@@ -314,7 +314,7 @@ public class OcspHelper
 
         builder.addRequest(certId);
 
-        System.out.println("Nonce: " + Hex.getString(nonceExtension.getExtnValue().getEncoded()));
+        LOG.info("Nonce: " + Hex.getString(nonceExtension.getExtnValue().getEncoded()));
 
         return builder.build();
     }
