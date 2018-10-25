@@ -31,6 +31,7 @@ import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
@@ -281,7 +282,7 @@ public class OcspHelper
      */
     private OCSPReq generateOCSPRequest() throws OCSPException, IOException
     {
-        Security.addProvider(new BouncyCastleProvider());
+        Security.addProvider(SecurityProvider.getProvider());
 
         // Generate the ID for the certificate we are looking for
         CertificateID certId;
