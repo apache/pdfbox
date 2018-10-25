@@ -89,7 +89,7 @@ public class OcspHelper
      * Performs and verifies the OCSP-Request
      *
      * @return the OCSPResp, when the request was successful, else a corresponding exception will be
-     * thrown.
+     * thrown. Never returns null.
      * @throws IOException
      * @throws OCSPException
      * @throws RevokedCertificateException
