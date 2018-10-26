@@ -142,7 +142,7 @@ public class OcspHelper
             else
             {
                 throw new OCSPException(
-                        "OCSP: Recieved " + responses.length + " responses instead of 1!");
+                        "OCSP: Received " + responses.length + " responses instead of 1!");
             }
         }
     }
