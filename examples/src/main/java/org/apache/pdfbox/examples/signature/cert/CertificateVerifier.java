@@ -308,7 +308,8 @@ public final class CertificateVerifier
             {
                 throw ex;
             }
-            LOG.info("OCSP check successful: certificate was revoked, but after signing");
+            LOG.info("OCSP check successful: The certificate was revoked after signing on " +
+                    ex.getRevocationTime());
         }
     }
 }
