@@ -242,34 +242,39 @@ public class OcspHelper
             {
             case OCSPResponseStatus.INTERNAL_ERROR:
                 statusInfo = "INTERNAL_ERROR";
-                System.err.println("An internal error occurred in the OCSP Server!");
+                LOG.error("An internal error occurred in the OCSP Server!");
                 break;
             case OCSPResponseStatus.MALFORMED_REQUEST:
+                // This can also happen if the nonce extension is not supported.
+                // The nonce extension is meant to prevent replay attacks.
+                // Once could argue that a replay attack is less likely in document validating
+                // than in ssl-certificate validating, so decide for yourself to remove
+                // the nonce submission (and the check).
                 statusInfo = "MALFORMED_REQUEST";
-                System.err.println("Your request did not fit the RFC 2560 syntax!");
+                LOG.error("Your request did not fit the RFC 2560 syntax!");
                 break;
             case OCSPResponseStatus.SIG_REQUIRED:
                 statusInfo = "SIG_REQUIRED";
-                System.err.println("Your request was not signed!");
+                LOG.error("Your request was not signed!");
                 break;
             case OCSPResponseStatus.TRY_LATER:
                 statusInfo = "TRY_LATER";
-                System.err.println("The server was too busy to answer you!");
+                LOG.error("The server was too busy to answer you!");
                 break;
             case OCSPResponseStatus.UNAUTHORIZED:
                 statusInfo = "UNAUTHORIZED";
-                System.err.println("The server could not authenticate you!");
+                LOG.error("The server could not authenticate you!");
                 break;
             case OCSPResponseStatus.SUCCESSFUL:
                 break;
             default:
                 statusInfo = "UNKNOWN";
-                System.err.println("Unknown OCSPResponse status code! " + status);
+                LOG.error("Unknown OCSPResponse status code! " + status);
             }
         }
         if (resp == null || resp.getStatus() != OCSPResponseStatus.SUCCESSFUL)
         {
-            throw new OCSPException(statusInfo + "OCSP response unsuccessful! ");
+            throw new OCSPException("OCSP response unsuccessful, status: " + statusInfo);
         }
     }
 
