@@ -120,8 +120,16 @@ public final class CRLVerifier
                 {
                     throw new CertificateVerificationException(
                             "The certificate was revoked by CRL " +
-                            crlDistributionPointsURL + " on " +
-                            revokedCRLEntry.getRevocationDate());
+                            crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
+                }
+                else if (revokedCRLEntry != null)
+                {
+                    LOG.info("The certificate was revoked after signing by CRL " +
+                            crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
+                }
+                else
+                {
+                    LOG.info("The certificate was not revoked by CRL " + crlDistributionPointsURL);
                 }
 
                 // https://tools.ietf.org/html/rfc5280#section-4.2.1.13
