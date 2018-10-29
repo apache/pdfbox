@@ -40,6 +40,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
@@ -415,13 +416,16 @@ public class AddValidationInformation
     private COSStream writeDataToStream(byte[] data) throws IOException
     {
         COSStream stream = document.getDocument().createCOSStream();
-        COSArray filters = new COSArray();
-        filters.add(COSName.FLATE_DECODE);
-
-        OutputStream os = stream.createOutputStream(filters);
-        os.write(data);
-        os.close();
-
+        OutputStream os = null;
+        try
+        {
+            os = stream.createOutputStream(COSName.FLATE_DECODE);
+            os.write(data);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(os);
+        }
         return stream;
     }
 
@@ -449,6 +453,7 @@ public class AddValidationInformation
 
     public static void main(String[] args) throws IOException, GeneralSecurityException
     {
+args = new String[]{"C:\\Users\\Tilman\\Downloads\\ebox_certified_eutl.pdf"};
         if (args.length != 1)
         {
             usage();
