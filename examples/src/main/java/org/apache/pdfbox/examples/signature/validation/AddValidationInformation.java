@@ -453,7 +453,6 @@ public class AddValidationInformation
 
     public static void main(String[] args) throws IOException, GeneralSecurityException
     {
-args = new String[]{"C:\\Users\\Tilman\\Downloads\\ebox_certified_eutl.pdf"};
         if (args.length != 1)
         {
             usage();
