@@ -27,6 +27,7 @@ import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.Security;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
@@ -243,14 +244,7 @@ public final class ShowSignature
                                     System.err.println("ETSI.RFC3161 timestamp signature verification failed");
                                 }
 
-                                // https://stackoverflow.com/questions/42114742/
-                                Collection<X509CertificateHolder> tstMatches
-                                        = timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
-                                X509CertificateHolder holder = tstMatches.iterator().next();
-                                X509Certificate tstCert = new JcaX509CertificateConverter().getCertificate(holder);
-                                SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCert);
-                                timeStampToken.validate(siv);
-                                System.out.println("TimeStampToken validated");
+                                validateTimestampToken(timeStampToken);
 
                                 //TODO check certificate chain, revocation lists, etc
                                 // verifyPKCS7(hash, contents, sig) does not work
@@ -321,14 +315,7 @@ public final class ShowSignature
             CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
             TimeStampToken timeStampToken = new TimeStampToken(signedTSTData);
 
-            // https://stackoverflow.com/questions/42114742/
-            Collection<X509CertificateHolder> tstMatches =
-                    timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
-            X509CertificateHolder holder = tstMatches.iterator().next();
-            X509Certificate tstCert = new JcaX509CertificateConverter().getCertificate(holder);
-            SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCert);
-            timeStampToken.validate(siv);
-            System.out.println("TimeStampToken validated");
+            validateTimestampToken(timeStampToken);
         }
 
         try
@@ -419,6 +406,19 @@ public final class ShowSignature
                 System.err.println("Certificate cannot be verified without signing time");
             }
         }
+    }
+
+    private void validateTimestampToken(TimeStampToken timeStampToken)
+            throws TSPException, CertificateException, StoreException, OperatorCreationException, IOException
+    {
+        // https://stackoverflow.com/questions/42114742/
+        Collection<X509CertificateHolder> tstMatches =
+                timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
+        X509CertificateHolder holder = tstMatches.iterator().next();
+        X509Certificate tstCert = new JcaX509CertificateConverter().getCertificate(holder);
+        SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCert);
+        timeStampToken.validate(siv);
+        System.out.println("TimeStampToken validated");
     }
 
     // for later use: get all root certificates. Will be used to check
