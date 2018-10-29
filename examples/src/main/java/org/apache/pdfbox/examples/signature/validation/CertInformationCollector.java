@@ -101,7 +101,7 @@ public class CertInformationCollector
             }
             finally
             {
-                IOUtils.closeQuietly(document);
+                IOUtils.closeQuietly(documentInput);
             }
         }
         return null;
