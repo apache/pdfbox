@@ -390,10 +390,7 @@ public class AddValidationInformation
     private COSStream writeDataToStream(byte[] data) throws IOException
     {
         COSStream stream = document.getDocument().createCOSStream();
-        COSArray filters = new COSArray();
-        filters.add(COSName.FLATE_DECODE);
-
-        try (OutputStream os = stream.createOutputStream(filters))
+        try (OutputStream os = stream.createOutputStream(COSName.FLATE_DECODE))
         {
             os.write(data);
         }
