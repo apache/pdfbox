@@ -37,6 +37,7 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
@@ -245,8 +246,10 @@ public final class ShowSignature
                                 }
 
                                 validateTimestampToken(timeStampToken);
+                                verifyCertificateChain(timeStampToken.getCertificates(), 
+                                        (X509Certificate) certs.iterator().next(), 
+                                        timeStampToken.getTimeStampInfo().getGenTime());
 
-                                //TODO check certificate chain, revocation lists, etc
                                 // verifyPKCS7(hash, contents, sig) does not work
                                 break;
 
@@ -381,31 +384,37 @@ public final class ShowSignature
         {
             System.out.println("Certificate is not self-signed");
 
-            // Verify certificate chain (new since 10/2018)
-            // Please post bad PDF files that succeed and
-            // good PDF files that fail in
-            // https://issues.apache.org/jira/browse/PDFBOX-3017
-            Set<X509Certificate> additionalCerts = new HashSet<>();
-            Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
-            JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
-            for (X509CertificateHolder certHolder : certificateHolders)
-            {
-                X509Certificate certificate = certificateConverter.getCertificate(certHolder);
-                if (!certificate.equals(certFromSignedData))
-                {
-                    additionalCerts.add(certificate);
-                }
-            }
             if (sig.getSignDate() != null)
             {
-                CertificateVerifier.verifyCertificate(certFromSignedData,
-                        additionalCerts, true, sig.getSignDate().getTime());
+                verifyCertificateChain(certificatesStore, certFromSignedData, sig.getSignDate().getTime());
             }
             else
             {
                 System.err.println("Certificate cannot be verified without signing time");
             }
         }
+    }
+
+    private void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
+            X509Certificate certFromSignedData, Date signDate)
+            throws CertificateVerificationException, StoreException, CertificateException
+    {
+        // Verify certificate chain (new since 10/2018)
+        // Please post bad PDF files that succeed and
+        // good PDF files that fail in
+        // https://issues.apache.org/jira/browse/PDFBOX-3017
+        Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
+        Set<X509Certificate> additionalCerts = new HashSet<>();
+        JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+        for (X509CertificateHolder certHolder : certificateHolders)
+        {
+            X509Certificate certificate = certificateConverter.getCertificate(certHolder);
+            if (!certificate.equals(certFromSignedData))
+            {
+                additionalCerts.add(certificate);
+            }
+        }
+        CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true, signDate);
     }
 
     private void validateTimestampToken(TimeStampToken timeStampToken)
