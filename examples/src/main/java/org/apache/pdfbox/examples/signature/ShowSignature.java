@@ -34,6 +34,7 @@ import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -219,16 +220,40 @@ public final class ShowSignature
                                 break;
                             }
                             case "ETSI.RFC3161":
+                                // e.g. PDFBOX-1848, file_timestamped.pdf
                                 TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
                                 System.out.println("Time stamp gen time: " + timeStampToken.getTimeStampInfo().getGenTime());
                                 System.out.println("Time stamp tsa name: " + timeStampToken.getTimeStampInfo().getTsa().getName());
-                                
+
                                 CertificateFactory factory = CertificateFactory.getInstance("X.509");
                                 ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
                                 Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                                 System.out.println("certs=" + certs);
 
-                                //TODO verify signature
+                                String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
+                                // compare the hash of the signed content with the hash in
+                                // the timestamp
+                                if (Arrays.equals(MessageDigest.getInstance(hashAlgorithm).digest(buf),
+                                        timeStampToken.getTimeStampInfo().getMessageImprintDigest()))
+                                {
+                                    System.out.println("ETSI.RFC3161 timestamp signature verified");
+                                }
+                                else
+                                {
+                                    System.err.println("ETSI.RFC3161 timestamp signature verification failed");
+                                }
+
+                                // https://stackoverflow.com/questions/42114742/
+                                Collection<X509CertificateHolder> tstMatches
+                                        = timeStampToken.getCertificates().getMatches(timeStampToken.getSID());
+                                X509CertificateHolder holder = tstMatches.iterator().next();
+                                X509Certificate tstCert = new JcaX509CertificateConverter().getCertificate(holder);
+                                SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCert);
+                                timeStampToken.validate(siv);
+                                System.out.println("TimeStampToken validated");
+
+                                //TODO check certificate chain, revocation lists, etc
+                                // verifyPKCS7(hash, contents, sig) does not work
                                 break;
 
                             default:
