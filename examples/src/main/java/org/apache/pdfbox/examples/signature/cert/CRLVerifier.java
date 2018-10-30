@@ -190,7 +190,7 @@ public final class CRLVerifier
             NamingException, CRLException,
             CertificateVerificationException
     {
-        Hashtable<String, String> env = new Hashtable<String, String>();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, ldapURL);
 
@@ -244,7 +244,7 @@ public final class CRLVerifier
         byte[] crldpExt = cert.getExtensionValue(Extension.cRLDistributionPoints.getId());
         if (crldpExt == null)
         {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
         ASN1InputStream oAsnInStream = new ASN1InputStream(new ByteArrayInputStream(crldpExt));
         ASN1Primitive derObjCrlDP = oAsnInStream.readObject();
@@ -253,7 +253,7 @@ public final class CRLVerifier
         ASN1InputStream oAsnInStream2 = new ASN1InputStream(new ByteArrayInputStream(crldpExtOctets));
         ASN1Primitive derObj2 = oAsnInStream2.readObject();
         CRLDistPoint distPoint = CRLDistPoint.getInstance(derObj2);
-        List<String> crlUrls = new ArrayList<String>();
+        List<String> crlUrls = new ArrayList<>();
         for (DistributionPoint dp : distPoint.getDistributionPoints())
         {
             DistributionPointName dpn = dp.getDistributionPoint();
