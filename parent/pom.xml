@@ -46,8 +46,24 @@
   </issueManagement>
 
   <properties>
-    <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+      <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+      <bouncycastle.version>1.44</bouncycastle.version>
   </properties>
+
+  <dependencyManagement>
+      <dependencies>
+          <dependency>
+              <groupId>org.bouncycastle</groupId>
+              <artifactId>bcprov-jdk15</artifactId>
+              <version>${bouncycastle.version}</version>
+          </dependency>
+          <dependency>
+              <groupId>org.bouncycastle</groupId>
+              <artifactId>bcmail-jdk15</artifactId>
+              <version>${bouncycastle.version}</version>
+          </dependency>
+      </dependencies>
+  </dependencyManagement>
 
   <profiles>
     <profile>
