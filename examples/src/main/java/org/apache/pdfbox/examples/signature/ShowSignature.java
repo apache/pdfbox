@@ -79,7 +79,6 @@ import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
-import org.bouncycastle.util.StoreException;
 
 /**
  * This will get the signature(s) from the document, do some verifications and
@@ -280,13 +279,12 @@ public final class ShowSignature
      * @param contents the /Contents field as a COSString
      * @param sig the PDF signature (the /V dictionary)
      * @throws CMSException
-     * @throws StoreException
      * @throws OperatorCreationException
      * @throws GeneralSecurityException
      * @throws CertificateVerificationException
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
-            throws CMSException, StoreException, OperatorCreationException,
+            throws CMSException, OperatorCreationException,
                    CertificateVerificationException, GeneralSecurityException,
                    TSPException, IOException
     {
@@ -397,7 +395,7 @@ public final class ShowSignature
 
     private void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
             X509Certificate certFromSignedData, Date signDate)
-            throws CertificateVerificationException, StoreException, CertificateException
+            throws CertificateVerificationException, CertificateException
     {
         // Verify certificate chain (new since 10/2018)
         // Please post bad PDF files that succeed and
@@ -418,7 +416,7 @@ public final class ShowSignature
     }
 
     private void validateTimestampToken(TimeStampToken timeStampToken)
-            throws TSPException, CertificateException, StoreException, OperatorCreationException, IOException
+            throws TSPException, CertificateException, OperatorCreationException, IOException
     {
         // https://stackoverflow.com/questions/42114742/
         Collection<X509CertificateHolder> tstMatches =
