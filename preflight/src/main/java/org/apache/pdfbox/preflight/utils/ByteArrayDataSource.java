@@ -31,7 +31,6 @@ import org.apache.pdfbox.io.IOUtils;
 public class ByteArrayDataSource implements DataSource
 {
     private final ByteArrayOutputStream data;
-    private final String name = null;
 
     public ByteArrayDataSource(InputStream is) throws IOException
     {
@@ -49,6 +48,6 @@ public class ByteArrayDataSource implements DataSource
     @Override
     public String getName()
     {
-        return this.name;
+        return null;
     }
 }
