@@ -70,7 +70,6 @@ import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
-import org.bouncycastle.util.StoreException;
 
 /**
  * This will get the signature(s) from the document, do some verifications and
@@ -286,12 +285,11 @@ public final class ShowSignature
      * @param sig the PDF signature (the /V dictionary)
      * @throws CertificateException
      * @throws CMSException
-     * @throws StoreException
      * @throws OperatorCreationException
      * @throws IOException
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
-            throws CMSException, CertificateException, StoreException, OperatorCreationException,
+            throws CMSException, CertificateException, OperatorCreationException,
                    NoSuchAlgorithmException, NoSuchProviderException, TSPException, IOException
     {
         // inspiration:
@@ -393,7 +391,7 @@ public final class ShowSignature
     }
 
     private void validateTimestampToken(TimeStampToken timeStampToken)
-            throws StoreException, IOException, CertificateException, TSPException, OperatorCreationException
+            throws IOException, CertificateException, TSPException, OperatorCreationException
     {
         // https://stackoverflow.com/questions/42114742/
         Collection<X509CertificateHolder> tstMatches =
