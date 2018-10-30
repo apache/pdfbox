@@ -165,7 +165,7 @@ public class StreamPane implements ActionListener
 
     private JPanel createHeaderPanel(List<String> availableFilters, String i, ActionListener actionListener)
     {
-        JComboBox<String> filters = new JComboBox<String>(new Vector<String>(availableFilters));
+        JComboBox filters = new JComboBox(new Vector<String>(availableFilters));
         filters.setSelectedItem(i);
         filters.addActionListener(actionListener);
 
