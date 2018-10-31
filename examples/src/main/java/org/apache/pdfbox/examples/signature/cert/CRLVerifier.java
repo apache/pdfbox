@@ -138,7 +138,7 @@ public final class CRLVerifier
                 // CRL.  For example, the same CRL could be available for
                 // retrieval through both LDAP and HTTP.
                 //
-                //TODO => thus no need to check several protocols
+                // => thus no need to check several protocols
                 return;
             }
         }
