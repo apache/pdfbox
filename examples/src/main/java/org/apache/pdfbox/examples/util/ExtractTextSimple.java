@@ -31,6 +31,10 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public class ExtractTextSimple
 {
+    private ExtractTextSimple()
+    {
+        // example class should not be instantiated
+    }
 
     /**
      * This will print the documents text page by page.
