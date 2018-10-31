@@ -317,6 +317,10 @@ public final class ShowSignature
             TimeStampToken timeStampToken = new TimeStampToken(signedTSTData);
 
             validateTimestampToken(timeStampToken);
+            X509Certificate tstCert = timeStampToken.getCertificates().getMatches(null).iterator().next();
+            verifyCertificateChain(timeStampToken.getCertificates(),
+                    tstCert,
+                    timeStampToken.getTimeStampInfo().getGenTime());
         }
 
         try
