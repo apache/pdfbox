@@ -25,6 +25,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -250,32 +251,7 @@ public final class ShowSignature
                             }
                             case "ETSI.RFC3161":
                                 // e.g. PDFBOX-1848, file_timestamped.pdf
-                                TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
-                                System.out.println("Time stamp gen time: " + timeStampToken.getTimeStampInfo().getGenTime());
-                                System.out.println("Time stamp tsa name: " + timeStampToken.getTimeStampInfo().getTsa().getName());
-
-                                CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                                ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
-                                Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
-                                System.out.println("certs=" + certs);
-
-                                String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
-                                // compare the hash of the signed content with the hash in
-                                // the timestamp
-                                if (Arrays.equals(MessageDigest.getInstance(hashAlgorithm).digest(buf),
-                                        timeStampToken.getTimeStampInfo().getMessageImprintDigest()))
-                                {
-                                    System.out.println("ETSI.RFC3161 timestamp signature verified");
-                                }
-                                else
-                                {
-                                    System.err.println("ETSI.RFC3161 timestamp signature verification failed");
-                                }
-
-                                validateTimestampToken(timeStampToken);
-                                verifyCertificateChain(timeStampToken.getCertificates(), 
-                                        (X509Certificate) certs.iterator().next(), 
-                                        timeStampToken.getTimeStampInfo().getGenTime());
+                                verifyETSIdotRFC3161(buf, contents);
 
                                 // verifyPKCS7(hash, contents, sig) does not work
                                 break;
@@ -298,6 +274,51 @@ public final class ShowSignature
             }
             System.out.println("Analyzed: " + args[1]);
         }
+    }
+
+    /**
+     * Verify ETSI.RFC3161 TImeStampToken
+     *
+     * @param byteArray the byte sequence that has been signed
+     * @param contents the /Contents field as a COSString
+     * @throws CMSException
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     * @throws TSPException
+     * @throws OperatorCreationException
+     * @throws CertificateVerificationException
+     * @throws CertificateException 
+     */
+    private void verifyETSIdotRFC3161(byte[] buf, COSString contents)
+            throws CMSException, NoSuchAlgorithmException, IOException, TSPException,
+            OperatorCreationException, CertificateVerificationException, CertificateException
+    {
+        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
+        System.out.println("Time stamp gen time: " + timeStampToken.getTimeStampInfo().getGenTime());
+        System.out.println("Time stamp tsa name: " + timeStampToken.getTimeStampInfo().getTsa().getName());
+        
+        CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
+        Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+        System.out.println("certs=" + certs);
+        
+        String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
+        // compare the hash of the signed content with the hash in
+        // the timestamp
+        if (Arrays.equals(MessageDigest.getInstance(hashAlgorithm).digest(buf),
+                timeStampToken.getTimeStampInfo().getMessageImprintDigest()))
+        {
+            System.out.println("ETSI.RFC3161 timestamp signature verified");
+        }
+        else
+        {
+            System.err.println("ETSI.RFC3161 timestamp signature verification failed");
+        }
+        
+        validateTimestampToken(timeStampToken);
+        verifyCertificateChain(timeStampToken.getCertificates(),
+                (X509Certificate) certs.iterator().next(),
+                timeStampToken.getTimeStampInfo().getGenTime());
     }
 
     /**
