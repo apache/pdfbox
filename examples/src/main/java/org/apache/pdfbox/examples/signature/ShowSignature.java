@@ -333,18 +333,10 @@ public final class ShowSignature
 
         SigUtils.checkCertificateUsage(certFromSignedData);
         
-        if (signerInformation.getUnsignedAttributes() != null)
+        // Embedded timestamp
+        TimeStampToken timeStampToken = extractTimeStampTokenFromSignerInformation(signerInformation);
+        if (timeStampToken != null)
         {
-            // Embedded timestamp
-            AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-
-            // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
-            Attribute attribute = unsignedAttributes.get(
-                    PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
-            ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
-            CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
-            TimeStampToken timeStampToken = new TimeStampToken(signedTSTData);
-
             // tested with QV_RCA1_RCA3_CPCPS_V4_11.pdf
             // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
             // timeStampToken.getCertificates() only contained the local certificate and not
@@ -430,6 +422,22 @@ public final class ShowSignature
                 System.err.println("Certificate cannot be verified without signing time");
             }
         }
+    }
+
+    private TimeStampToken extractTimeStampTokenFromSignerInformation(SignerInformation signerInformation)
+            throws CMSException, IOException, TSPException
+    {
+        if (signerInformation.getUnsignedAttributes() == null)
+        {
+            return null;
+        }
+        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+        // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
+        Attribute attribute = unsignedAttributes.get(
+                PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+        ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
+        CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
+        return new TimeStampToken(signedTSTData);
     }
 
     private void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
