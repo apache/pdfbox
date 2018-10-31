@@ -334,7 +334,8 @@ public final class ShowSignature
         SigUtils.checkCertificateUsage(certFromSignedData);
         
         if (signerInformation.getUnsignedAttributes() != null)
-        {            
+        {
+            // Embedded timestamp
             AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
 
             // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
@@ -344,10 +345,16 @@ public final class ShowSignature
             CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
             TimeStampToken timeStampToken = new TimeStampToken(signedTSTData);
 
+            // tested with QV_RCA1_RCA3_CPCPS_V4_11.pdf
+            // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
+            // timeStampToken.getCertificates() only contained the local certificate and not
+            // the whole chain, so use the store of the main signature.
+            // (If this assumption is incorrect, then the code must be changed to merge
+            // both stores, or to pass a collection)
             validateTimestampToken(timeStampToken);
-            X509Certificate tstCert = (X509Certificate) timeStampToken.getCertificates().getMatches(null).iterator().next();
-            verifyCertificateChain(timeStampToken.getCertificates(),
-                    tstCert,
+            X509CertificateHolder tstCertHolder = (X509CertificateHolder) timeStampToken.getCertificates().getMatches(null).iterator().next();
+            verifyCertificateChain(certificatesStore,
+                    new JcaX509CertificateConverter().getCertificate(tstCertHolder),
                     timeStampToken.getTimeStampInfo().getGenTime());
         }
 
