@@ -205,6 +205,7 @@ public final class ShowSignature
                             {
                                 // example: PDFBOX-2693.pdf
                                 COSString certString = (COSString) sigDict.getDictionaryObject(COSName.CERT);
+                                //TODO this could also be an array.
                                 if (certString == null)
                                 {
                                     System.err.println("The /Cert certificate string is missing in the signature dictionary");
@@ -215,9 +216,35 @@ public final class ShowSignature
                                 ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
                                 Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                                 System.out.println("certs=" + certs);
+                                
+                                X509Certificate cert = (X509Certificate) certs.iterator().next();
 
                                 // to verify signature, see code at 
                                 // https://stackoverflow.com/questions/43383859/
+                                
+                                try
+                                {
+                                    if (sig.getSignDate() != null)
+                                    {
+                                        cert.checkValidity(sig.getSignDate().getTime());
+                                        System.out.println("Certificate valid at signing time");
+                                        verifyCertificateChain(new JcaCertStore(certs),
+                                                (X509Certificate) certs.iterator().next(),
+                                                sig.getSignDate().getTime());
+                                    }
+                                    else
+                                    {
+                                        System.err.println("Certificate cannot be verified without signing time");
+                                    }
+                                }
+                                catch (CertificateExpiredException ex)
+                                {
+                                    System.err.println("Certificate expired at signing time");
+                                }
+                                catch (CertificateNotYetValidException ex)
+                                {
+                                    System.err.println("Certificate not yet valid at signing time");
+                                }
                                 break;
                             }
                             case "ETSI.RFC3161":
