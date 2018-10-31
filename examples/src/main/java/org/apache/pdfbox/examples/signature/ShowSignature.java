@@ -353,10 +353,6 @@ public final class ShowSignature
             // (If this assumption is incorrect, then the code must be changed to merge
             // both stores, or to pass a collection)
             validateTimestampToken(timeStampToken);
-            X509CertificateHolder tstCertHolder = (X509CertificateHolder) timeStampToken.getCertificates().getMatches(null).iterator().next();
-            verifyCertificateChain(certificatesStore,
-                    new JcaX509CertificateConverter().getCertificate(tstCertHolder),
-                    timeStampToken.getTimeStampInfo().getGenTime());
         }
 
         try
