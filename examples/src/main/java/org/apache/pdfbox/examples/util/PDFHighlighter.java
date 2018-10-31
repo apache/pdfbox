@@ -54,7 +54,6 @@ public class PDFHighlighter extends PDFTextStripper
      */
     public PDFHighlighter() throws IOException
     {
-        super();
         super.setLineSeparator( "" );
         super.setWordSeparator( "" );
         super.setShouldSeparateByBeads( false );
