@@ -142,18 +142,16 @@ public final class CRLVerifier
                 return;
             }
         }
+        catch (CertificateVerificationException ex)
+        {
+            throw ex;
+        }
         catch (Exception ex)
         {
-            if (ex instanceof CertificateVerificationException)
-            {
-                throw (CertificateVerificationException) ex;
-            }
-            else
-            {
-                throw new CertificateVerificationException(
-                        "Can not verify CRL for certificate: "
-                        + cert.getSubjectX500Principal(), ex);
-            }
+            throw new CertificateVerificationException(
+                    "Cannot verify CRL for certificate: "
+                    + cert.getSubjectX500Principal(), ex);
+
         }
     }
 
@@ -217,16 +215,9 @@ public final class CRLVerifier
     private static X509CRL downloadCRLFromWeb(String crlURL)
             throws IOException, CertificateException, CRLException
     {
-        URL url = new URL(crlURL);
-        InputStream crlStream = url.openStream();
-        try
+        try (InputStream crlStream = new URL(crlURL).openStream())
         {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            return (X509CRL) cf.generateCRL(crlStream);
-        }
-        finally
-        {
-            crlStream.close();
+            return (X509CRL) CertificateFactory.getInstance("X.509").generateCRL(crlStream);
         }
     }
 
