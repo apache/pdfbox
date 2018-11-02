@@ -114,7 +114,7 @@ public class TestCheckBox extends TestCase
             checkBox.setExportValues(null);
             assertNull(checkBox.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
-            assertEquals(checkBox.getExportValues(), new ArrayList<String>());
+            assertTrue(checkBox.getExportValues().isEmpty());
         }
         finally
         {
