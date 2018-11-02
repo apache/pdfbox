@@ -381,6 +381,10 @@ public abstract class PDButton extends PDTerminalField
         // update the appearance state (AS)
         for (PDAnnotationWidget widget : getWidgets())
         {
+            if (widget.getAppearance() == null)
+            {
+                continue;
+            }
             PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
             if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(value))
             {
