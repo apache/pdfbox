@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacterist
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
- * This will test the functionality of Radio Buttons in PDFBox.
+ * This will test the functionality of checkboxes in PDFBox.
  */
 public class TestCheckBox extends TestCase
 {
@@ -74,7 +74,7 @@ public class TestCheckBox extends TestCase
     }
 
     /**
-     * This will test the radio button PDModel.
+     * This will test the checkbox PDModel.
      *
      * @throws IOException If there is an error creating the field.
      */
