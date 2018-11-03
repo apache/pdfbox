@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Color;
-import java.awt.Paint;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -33,12 +32,9 @@ import org.apache.pdfbox.util.Matrix;
  * AWT Paint for axial shading.
  *
  */
-public class AxialShadingPaint implements Paint
+public class AxialShadingPaint extends ShadingPaint<PDShadingType2>
 {
     private static final Log LOG = LogFactory.getLog(AxialShadingPaint.class);
-
-    private final PDShadingType2 shading;
-    private final Matrix matrix;
 
     /**
      * Constructor.
@@ -48,8 +44,7 @@ public class AxialShadingPaint implements Paint
      */
     AxialShadingPaint(PDShadingType2 shadingType2, Matrix matrix)
     {
-        shading = shadingType2;
-        this.matrix = matrix;
+        super(shadingType2, matrix);
     }
 
     @Override

@@ -17,7 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Color;
-import java.awt.Paint;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -32,12 +31,9 @@ import org.apache.pdfbox.util.Matrix;
 /**
  * AWT Paint for Gouraud Triangle Lattice (Type 5) shading.
  */
-class Type5ShadingPaint implements Paint
+class Type5ShadingPaint extends ShadingPaint<PDShadingType5>
 {
     private static final Log LOG = LogFactory.getLog(Type5ShadingPaint.class);
-
-    private final PDShadingType5 shading;
-    private final Matrix matrix;
 
     /**
      * Constructor.
@@ -47,8 +43,7 @@ class Type5ShadingPaint implements Paint
      */
     Type5ShadingPaint(PDShadingType5 shading, Matrix matrix)
     {
-        this.shading = shading;
-        this.matrix = matrix;
+        super(shading, matrix);
     }
 
     @Override
