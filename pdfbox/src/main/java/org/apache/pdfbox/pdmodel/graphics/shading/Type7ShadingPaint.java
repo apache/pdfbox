@@ -16,7 +16,6 @@
 package org.apache.pdfbox.pdmodel.graphics.shading;
 
 import java.awt.Color;
-import java.awt.Paint;
 import java.awt.PaintContext;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -34,12 +33,9 @@ import org.apache.pdfbox.util.Matrix;
  *
  * @author Shaola Ren
  */
-class Type7ShadingPaint implements Paint
+class Type7ShadingPaint extends ShadingPaint<PDShadingType7>
 {
     private static final Log LOG = LogFactory.getLog(Type7ShadingPaint.class);
-
-    private final PDShadingType7 shading;
-    private final Matrix matrix;
 
     /**
      * Constructor.
@@ -49,8 +45,7 @@ class Type7ShadingPaint implements Paint
      */
     Type7ShadingPaint(PDShadingType7 shading, Matrix matrix)
     {
-        this.shading = shading;
-        this.matrix = matrix;
+        super(shading, matrix);
     }
 
     @Override
