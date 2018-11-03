@@ -24,14 +24,14 @@ import org.apache.pdfbox.util.Matrix;
  * This is base class for all PDShading-Paints to allow other low level libraries access to the
  * shading source data. One user of this interface is the PdfBoxGraphics2D-adapter.
  *
- * @param <TPDShading> the actual PDShading class.
+ * @param <T> the actual PDShading class.
  */
-public abstract class ShadingPaint<TPDShading extends PDShading> implements Paint
+public abstract class ShadingPaint<T extends PDShading> implements Paint
 {
-    protected final TPDShading shading;
+    protected final T shading;
     protected final Matrix matrix;
 
-    ShadingPaint(TPDShading shading, Matrix matrix)
+    ShadingPaint(T shading, Matrix matrix)
     {
         this.shading = shading;
         this.matrix = matrix;
@@ -40,7 +40,7 @@ public abstract class ShadingPaint<TPDShading extends PDShading> implements Pain
     /**
      * @return the PDShading of this paint
      */
-    public TPDShading getShading()
+    public T getShading()
     {
         return shading;
     }
