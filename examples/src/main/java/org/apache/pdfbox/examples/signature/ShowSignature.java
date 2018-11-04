@@ -304,7 +304,9 @@ public final class ShowSignature
         {
             System.err.println("ETSI.RFC3161 timestamp signature verification failed");
         }
-        
+
+        X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
+        SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
         validateTimestampToken(timeStampToken);
     }
 
@@ -352,6 +354,9 @@ public final class ShowSignature
             // (If this assumption is incorrect, then the code must be changed to merge
             // both stores, or to pass a collection)
             validateTimestampToken(timeStampToken);
+            X509CertificateHolder tstCertHolder = (X509CertificateHolder) timeStampToken.getCertificates().getMatches(null).iterator().next();
+            X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(tstCertHolder);
+            SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
         }
 
         try
