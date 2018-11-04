@@ -170,4 +170,22 @@ public class SigUtils
                     "nor 'Adobe Authentic Documents Trust'");
         }
     }
+
+    /**
+     * Log if the certificate is not valid for timestamping.
+     *
+     * @param x509Certificate 
+     * @throws java.security.cert.CertificateParsingException 
+     */
+    public static void checkTimeStampCertificateUsage(X509Certificate x509Certificate)
+            throws CertificateParsingException
+    {
+        List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
+        // https://tools.ietf.org/html/rfc5280#section-4.2.1.12
+        if (extendedKeyUsage != null &&
+            !extendedKeyUsage.contains(KeyPurposeId.id_kp_timeStamping.toString()))
+        {
+            LOG.error("Certificate extended key usage does not include timeStamping");
+        }
+    }
 }
