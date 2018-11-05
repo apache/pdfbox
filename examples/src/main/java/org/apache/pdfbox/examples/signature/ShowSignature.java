@@ -230,9 +230,6 @@ public final class ShowSignature
                                     {
                                         cert.checkValidity(sig.getSignDate().getTime());
                                         System.out.println("Certificate valid at signing time");
-                                        verifyCertificateChain(new JcaCertStore(certs),
-                                                (X509Certificate) certs.iterator().next(),
-                                                sig.getSignDate().getTime());
                                     }
                                     else
                                     {
@@ -246,6 +243,21 @@ public final class ShowSignature
                                 catch (CertificateNotYetValidException ex)
                                 {
                                     System.err.println("Certificate not yet valid at signing time");
+                                }
+                                if (CertificateVerifier.isSelfSigned(certFromSignedData))
+                                {
+                                    System.err.println("Certificate is self-signed, LOL!");
+                                }
+                                else
+                                {
+                                    System.out.println("Certificate is not self-signed");
+
+                                    if (sig.getSignDate() != null)
+                                    {
+                                        verifyCertificateChain(new JcaCertStore(certs),
+                                                cert,
+                                                sig.getSignDate().getTime());
+                                    }
                                 }
                                 break;
                             }
