@@ -149,6 +149,7 @@ public class TestCheckBox extends TestCase
             fields.add(checkBox);
             page.getAnnotations().add(widget);
             acroForm.setFields(fields);
+            assertEquals("Off", checkBox.getValue());
         }
     }
 }
