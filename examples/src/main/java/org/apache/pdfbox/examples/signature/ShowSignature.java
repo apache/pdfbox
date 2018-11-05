@@ -244,7 +244,7 @@ public final class ShowSignature
                                 {
                                     System.err.println("Certificate not yet valid at signing time");
                                 }
-                                if (CertificateVerifier.isSelfSigned(certFromSignedData))
+                                if (CertificateVerifier.isSelfSigned(cert))
                                 {
                                     System.err.println("Certificate is self-signed, LOL!");
                                 }
