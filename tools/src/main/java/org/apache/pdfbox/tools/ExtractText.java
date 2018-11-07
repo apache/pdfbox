@@ -224,18 +224,30 @@ public final class ExtractText
                 }
                 stripper.setSortByPosition( sort );
                 stripper.setShouldSeparateByBeads( separateBeads );
-                stripper.setStartPage( startPage );
-                stripper.setEndPage( endPage );
 
                 startTime = startProcessing("Starting text extraction");
                 if (debug) 
                 {
                     System.err.println("Writing to "+outputFile);
                 }
-                
+                endPage = Math.min(endPage, document.getNumberOfPages());
+
                 // Extract text for main document:
-                stripper.writeText( document, output );
-                
+                for (int p = startPage; p <= endPage; ++p)
+                {
+                    try
+                    {
+                        stripper.setStartPage(p);
+                        stripper.setEndPage(p);
+                        stripper.writeText(document, output);
+                    }
+                    catch (IOException ex)
+                    {
+                        //TODO alternatively, log and continue
+                        throw ex;
+                    }
+                }
+
                 // ... also for any embedded PDFs:
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDDocumentNameDictionary names = catalog.getNames();    
@@ -273,7 +285,20 @@ public final class ExtractText
                                     }
                                     try 
                                     {
-                                        stripper.writeText( subDoc, output );
+                                        for (int p = 1; p <= subDoc.getNumberOfPages(); ++p)
+                                        {
+                                            try
+                                            {
+                                                stripper.setStartPage(p);
+                                                stripper.setEndPage(p);
+                                                stripper.writeText(subDoc, output);
+                                            }
+                                            catch (IOException ex)
+                                            {
+                                                //TODO alternatively, log and continue
+                                                throw ex;
+                                            }
+                                        }
                                     } 
                                     finally 
                                     {
@@ -320,17 +345,17 @@ public final class ExtractText
     {
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar ExtractText [options] <inputfile> [output-text-file]\n"
             + "\nOptions:\n"
-            + "  -password  <password>        : Password to decrypt document\n"
-            + "  -encoding  <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE, UTF-16LE, etc.\n"
-            + "  -console                     : Send text to console instead of file\n"
-            + "  -html                        : Output in HTML format instead of raw text\n"
-            + "  -sort                        : Sort the text before writing\n"
-            + "  -ignoreBeads                 : Disables the separation by beads\n"
-            + "  -debug                       : Enables debug output about the time consumption of every stage\n"
-            + "  -startPage <number>          : The first page to start extraction(1 based)\n"
-            + "  -endPage <number>            : The last page to extract(inclusive)\n"
-            + "  <inputfile>                  : The PDF document to use\n"
-            + "  [output-text-file]           : The file to write the text to";
+            + "  -password <password>        : Password to decrypt document\n"
+            + "  -encoding <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE, UTF-16LE, etc.\n"
+            + "  -console                    : Send text to console instead of file\n"
+            + "  -html                       : Output in HTML format instead of raw text\n"
+            + "  -sort                       : Sort the text before writing\n"
+            + "  -ignoreBeads                : Disables the separation by beads\n"
+            + "  -debug                      : Enables debug output about the time consumption of every stage\n"
+            + "  -startPage <number>         : The first page to start extraction (1 based)\n"
+            + "  -endPage <number>           : The last page to extract (1 based and inclusive)\n"
+            + "  <inputfile>                 : The PDF document to use\n"
+            + "  [output-text-file]          : The file to write the text to";
         
         System.err.println(message);
         System.exit( 1 );
