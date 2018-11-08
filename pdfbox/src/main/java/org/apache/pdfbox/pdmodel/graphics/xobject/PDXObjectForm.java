@@ -94,10 +94,17 @@ public class PDXObjectForm extends PDXObject
     public PDResources getResources()
     {
         PDResources retval = null;
-        COSDictionary resources = (COSDictionary) getCOSStream().getDictionaryObject(COSName.RESOURCES);
-        if (resources != null)
+        COSBase base = getCOSStream().getDictionaryObject(COSName.RESOURCES);
+        if (base instanceof COSDictionary)
         {
-            retval = new PDResources(resources);
+            retval = new PDResources((COSDictionary) base);
+        }
+        else if (getCOSStream().containsKey(COSName.RESOURCES))
+        {
+            // PDFBOX-4372 if the resource key exists but has nothing, return empty resources,
+            // to avoid a self-reference (xobject form Fm0 contains "/Fm0 Do")
+            // See also the mention of PDFBOX-1359 in PDFStreamEngine
+            retval = new PDResources();
         }
         return retval;
     }
