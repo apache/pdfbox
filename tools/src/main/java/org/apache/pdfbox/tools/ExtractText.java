@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -41,6 +43,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public final class ExtractText
 {
+    private static final Log LOG = LogFactory.getLog(ExtractText.class);
+
     private static final String PASSWORD = "-password";
     private static final String ENCODING = "-encoding";
     private static final String CONSOLE = "-console";
@@ -50,7 +54,7 @@ public final class ExtractText
     private static final String IGNORE_BEADS = "-ignoreBeads";
     private static final String DEBUG = "-debug";
     private static final String HTML = "-html";
-    
+    private static final String ALWAYSNEXT = "-alwaysNext";
     private static final String STD_ENCODING = "UTF-8";
 
     /*
@@ -93,6 +97,7 @@ public final class ExtractText
         boolean toHTML = false;
         boolean sort = false;
         boolean separateBeads = true;
+        boolean alwaysNext = false;
         String password = "";
         String encoding = STD_ENCODING;
         String pdfFile = null;
@@ -146,6 +151,10 @@ public final class ExtractText
             else if( args[i].equals( DEBUG ) )
             {
                 debug = true;
+            }
+            else if (args[i].equals(ALWAYSNEXT))
+            {
+                alwaysNext = true;
             }
             else if( args[i].equals( END_PAGE ) )
             {
@@ -243,8 +252,11 @@ public final class ExtractText
                     }
                     catch (IOException ex)
                     {
-                        //TODO alternatively, log and continue
-                        throw ex;
+                        if (!alwaysNext)
+                        {
+                            throw ex;
+                        }
+                        LOG.error("Failed to process page " + p, ex);
                     }
                 }
 
@@ -339,6 +351,7 @@ public final class ExtractText
             + "  -sort                       : Sort the text before writing\n"
             + "  -ignoreBeads                : Disables the separation by beads\n"
             + "  -debug                      : Enables debug output about the time consumption of every stage\n"
+            + "  -alwaysNext                 : Process next page (if applicable) despite IOException\n"
             + "  -startPage <number>         : The first page to start extraction (1 based)\n"
             + "  -endPage <number>           : The last page to extract (1 based and inclusive)\n"
             + "  <inputfile>                 : The PDF document to use\n"
