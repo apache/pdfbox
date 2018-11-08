@@ -153,10 +153,17 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     @Override
     public PDResources getResources()
     {
-        COSDictionary resources = (COSDictionary) getCOSObject().getDictionaryObject(COSName.RESOURCES);
+        COSDictionary resources = getCOSObject().getCOSDictionary(COSName.RESOURCES);
         if (resources != null)
         {
             return new PDResources(resources, cache);
+        }
+        if (getCOSObject().containsKey(COSName.RESOURCES))
+        {
+            // PDFBOX-4372 if the resource key exists but has nothing, return empty resources,
+            // to avoid a self-reference (xobject form Fm0 contains "/Fm0 Do")
+            // See also the mention of PDFBOX-1359 in PDFStreamEngine
+            return new PDResources();
         }
         return null;
     }
