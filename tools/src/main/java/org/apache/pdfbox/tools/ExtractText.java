@@ -302,6 +302,7 @@ public final class ExtractText
                                     PDDocument subDoc = null;
                                     try 
                                     {
+                                        subDoc = PDDocument.load(fis);
                                         if (toHTML)
                                         {
                                             // will not really work because of HTML header + footer
