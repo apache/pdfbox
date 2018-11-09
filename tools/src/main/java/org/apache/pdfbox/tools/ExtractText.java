@@ -23,23 +23,32 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.text.TextPosition;
+import org.apache.pdfbox.util.Matrix;
 
 /**
  * This is the main program that simply parses the pdf document and transforms it
  * into text.
  *
  * @author Ben Litchfield
+ * @author Tilman Hausherr
  */
 public final class ExtractText
 {
@@ -55,6 +64,7 @@ public final class ExtractText
     private static final String DEBUG = "-debug";
     private static final String HTML = "-html";
     private static final String ALWAYSNEXT = "-alwaysNext";
+    private static final String ROTATION_MAGIC = "-rotationMagic";
     private static final String STD_ENCODING = "UTF-8";
 
     /*
@@ -98,6 +108,7 @@ public final class ExtractText
         boolean sort = false;
         boolean separateBeads = true;
         boolean alwaysNext = false;
+        boolean rotationMagic = false;
         String password = "";
         String encoding = STD_ENCODING;
         String pdfFile = null;
@@ -155,6 +166,10 @@ public final class ExtractText
             else if (args[i].equals(ALWAYSNEXT))
             {
                 alwaysNext = true;
+            }
+            else if (args[i].equals(ROTATION_MAGIC))
+            {
+                rotationMagic = true;
             }
             else if( args[i].equals( END_PAGE ) )
             {
@@ -221,43 +236,41 @@ public final class ExtractText
                     }
                     output = new OutputStreamWriter( new FileOutputStream( outputFile ), encoding );
                 }
+                startTime = startProcessing("Starting text extraction");
+                if (debug)
+                {
+                    System.err.println("Writing to " + outputFile);
+                }
 
                 PDFTextStripper stripper;
                 if(toHTML)
                 {
+                    // HTML stripper can't work page by page because of startDocument() callback
                     stripper = new PDFText2HTML();
+                    stripper.setSortByPosition(sort);
+                    stripper.setShouldSeparateByBeads(separateBeads);
+                    stripper.setStartPage(startPage);
+                    stripper.setEndPage(endPage);
+
+                    // Extract text for main document:
+                    stripper.writeText(document, output);
                 }
                 else
                 {
-                    stripper = new PDFTextStripper();
-                }
-                stripper.setSortByPosition( sort );
-                stripper.setShouldSeparateByBeads( separateBeads );
-
-                startTime = startProcessing("Starting text extraction");
-                if (debug) 
-                {
-                    System.err.println("Writing to "+outputFile);
-                }
-                endPage = Math.min(endPage, document.getNumberOfPages());
-
-                // Extract text for main document:
-                for (int p = startPage; p <= endPage; ++p)
-                {
-                    try
+                    if (rotationMagic)
                     {
-                        stripper.setStartPage(p);
-                        stripper.setEndPage(p);
-                        stripper.writeText(document, output);
+                        stripper = new FilteredTextStripper();
                     }
-                    catch (IOException ex)
+                    else
                     {
-                        if (!alwaysNext)
-                        {
-                            throw ex;
-                        }
-                        LOG.error("Failed to process page " + p, ex);
+                        stripper = new PDFTextStripper();
                     }
+                    stripper.setSortByPosition(sort);
+                    stripper.setShouldSeparateByBeads(separateBeads);
+
+                    // Extract text for main document:
+                    extractPages(startPage, Math.min(endPage, document.getNumberOfPages()), 
+                                 stripper, document, output, rotationMagic, alwaysNext);
                 }
 
                 // ... also for any embedded PDFs:
@@ -288,19 +301,15 @@ public final class ExtractText
                                     try (InputStream fis = file.createInputStream();
                                         PDDocument subDoc = PDDocument.load(fis))
                                     {
-                                        for (int p = 1; p <= subDoc.getNumberOfPages(); ++p)
+                                        if (toHTML)
                                         {
-                                            try
-                                            {
-                                                stripper.setStartPage(p);
-                                                stripper.setEndPage(p);
-                                                stripper.writeText(subDoc, output);
-                                            }
-                                            catch (IOException ex)
-                                            {
-                                                //TODO alternatively, log and continue
-                                                throw ex;
-                                            }
+                                            // will not really work because of HTML header + footer
+                                            stripper.writeText( subDoc, output );
+                                        }
+                                        else
+                                        {
+                                            extractPages(1, subDoc.getNumberOfPages(),
+                                                         stripper, subDoc, output, rotationMagic, alwaysNext);
                                         }
                                     } 
                                 }
@@ -314,6 +323,59 @@ public final class ExtractText
             {
                 IOUtils.closeQuietly(output);
                 IOUtils.closeQuietly(document);
+            }
+        }
+    }
+
+    private void extractPages(int startPage, int endPage,
+            PDFTextStripper stripper, PDDocument document, Writer output,
+            boolean rotationMagic, boolean alwaysNext) throws IOException
+    {
+        for (int p = startPage; p <= endPage; ++p)
+        {
+            stripper.setStartPage(p);
+            stripper.setEndPage(p);
+            try
+            {
+                if (rotationMagic)
+                {
+                    PDPage page = document.getPage(p - 1);
+                    int rotation = page.getRotation();
+                    page.setRotation(0);
+                    AngleCollector angleCollector = new AngleCollector();
+                    angleCollector.setStartPage(p);
+                    angleCollector.setEndPage(p);
+                    angleCollector.writeText(document, new NullWriter());
+                    // rotation magic
+                    for (int angle : angleCollector.getAngles())
+                    {
+                        // prepend a transformation
+                        // (we could skip these parts for angle 0, but it doesn't matter much)
+                        try (PDPageContentStream cs = new PDPageContentStream(document, page, 
+                                PDPageContentStream.AppendMode.PREPEND, false))
+                        {
+                            cs.transform(Matrix.getRotateInstance(-Math.toRadians(angle), 0, 0));
+                        }
+
+                        stripper.writeText(document, output);
+
+                        // remove prepended transformation
+                        ((COSArray) page.getCOSObject().getItem(COSName.CONTENTS)).remove(0);
+                    }
+                    page.setRotation(rotation);
+                }
+                else
+                {
+                    stripper.writeText(document, output);
+                }
+            }
+            catch (IOException ex)
+            {
+                if (!alwaysNext)
+                {
+                    throw ex;
+                }
+                LOG.error("Failed to process page " + p, ex);
             }
         }
     }
@@ -345,19 +407,94 @@ public final class ExtractText
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar ExtractText [options] <inputfile> [output-text-file]\n"
             + "\nOptions:\n"
             + "  -password <password>        : Password to decrypt document\n"
-            + "  -encoding <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE, UTF-16LE, etc.\n"
+            + "  -encoding <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE,\n"
+            + "                                UTF-16LE, etc.\n"
             + "  -console                    : Send text to console instead of file\n"
             + "  -html                       : Output in HTML format instead of raw text\n"
             + "  -sort                       : Sort the text before writing\n"
             + "  -ignoreBeads                : Disables the separation by beads\n"
-            + "  -debug                      : Enables debug output about the time consumption of every stage\n"
-            + "  -alwaysNext                 : Process next page (if applicable) despite IOException\n"
+            + "  -debug                      : Enables debug output about the time consumption\n"
+            + "                                of every stage\n"
+            + "  -alwaysNext                 : Process next page (if applicable) despite\n"
+            + "                                IOException (ignored when -html)\n"
+            + "  -rotationMagic              : Analyze each page for rotated/skewed text,\n"
+            + "                                rotate to 0° and extract separately\n"
+            + "                                (slower, and ignored when -html)\n"
             + "  -startPage <number>         : The first page to start extraction (1 based)\n"
-            + "  -endPage <number>           : The last page to extract (1 based and inclusive)\n"
+            + "  -endPage <number>           : The last page to extract (1 based, inclusive)\n"
             + "  <inputfile>                 : The PDF document to use\n"
             + "  [output-text-file]          : The file to write the text to";
         
         System.err.println(message);
         System.exit( 1 );
+    }
+}
+
+/**
+ * Collect all angles while doing text extraction. Angles are in degrees and rounded to the closest
+ * integer. Must be constructed for each page.
+ */
+class AngleCollector extends PDFTextStripper
+{
+    private final Set<Integer> angles = new TreeSet<>();
+
+    AngleCollector() throws IOException
+    {
+    }
+
+    Set<Integer> getAngles()
+    {
+        return angles;
+    }
+
+    @Override
+    protected void processTextPosition(TextPosition text)
+    {
+        Matrix m = text.getTextMatrix();
+        int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
+        angle = (angle + 360) % 360;
+        angles.add(angle);
+    }
+}
+
+/**
+ * TextStripper that only processes glyphs that have angle 0.
+ */
+class FilteredTextStripper extends PDFTextStripper
+{
+    FilteredTextStripper() throws IOException
+    {
+    }
+
+    @Override
+    protected void processTextPosition(TextPosition text)
+    {
+        Matrix m = text.getTextMatrix();
+        int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
+        if (angle == 0)
+        {
+            super.processTextPosition(text);
+        }
+    }
+}
+
+/**
+ * Dummy output.
+ */
+class NullWriter extends Writer
+{
+    @Override
+    public void write(char[] cbuf, int off, int len) throws IOException
+    {
+    }
+
+    @Override
+    public void flush() throws IOException
+    {
+    }
+
+    @Override
+    public void close() throws IOException
+    {
     }
 }
