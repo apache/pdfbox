@@ -25,8 +25,10 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -62,7 +64,7 @@ public class Overlay implements Closeable
     private LayoutPage oddPageOverlayPage;
     private LayoutPage evenPageOverlayPage;
 
-    private final Map<Integer, PDDocument> openDocumentsMap = new HashMap<>();
+    private final Set<PDDocument> openDocuments = new HashSet<PDDocument>();
     private Map<Integer, LayoutPage> specificPageOverlayPage = new HashMap<>();
 
     private Position position = Position.BACKGROUND;
@@ -117,7 +119,7 @@ public class Overlay implements Closeable
                 loadedDocuments.put(e.getValue(), doc);
                 layouts.put(doc, getLayoutPage(doc));
             }
-            openDocumentsMap.put(e.getKey(), doc);
+            openDocuments.add(doc);
             specificPageOverlayPage.put(e.getKey(), layouts.get(doc));
         }
         processPages(inputPDFDocument);
@@ -156,11 +158,11 @@ public class Overlay implements Closeable
         {
             evenPageOverlay.close();
         }
-        for (PDDocument doc : openDocumentsMap.values())
+        for (PDDocument doc : openDocuments)
         {
             doc.close();
         }
-        openDocumentsMap.clear();
+        openDocuments.clear();
         specificPageOverlayPage.clear();
     }
 
