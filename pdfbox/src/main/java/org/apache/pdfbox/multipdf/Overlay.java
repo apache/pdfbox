@@ -64,7 +64,7 @@ public class Overlay implements Closeable
     private LayoutPage oddPageOverlayPage;
     private LayoutPage evenPageOverlayPage;
 
-    private final Set<PDDocument> openDocuments = new HashSet<PDDocument>();
+    private final Set<PDDocument> openDocuments = new HashSet<>();
     private Map<Integer, LayoutPage> specificPageOverlayPage = new HashMap<>();
 
     private Position position = Position.BACKGROUND;
