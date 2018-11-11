@@ -156,9 +156,9 @@ public class Overlay implements Closeable
         {
             evenPageOverlay.close();
         }
-        for (Map.Entry<Integer, PDDocument> e : specificPageOverlay.entrySet())
+        for (PDDocument doc : specificPageOverlay.values())
         {
-            e.getValue().close();
+            doc.close();
         }
         specificPageOverlay.clear();
         specificPageOverlayPage.clear();
