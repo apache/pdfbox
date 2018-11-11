@@ -62,7 +62,7 @@ public class Overlay implements Closeable
     private LayoutPage oddPageOverlayPage;
     private LayoutPage evenPageOverlayPage;
 
-    private final Map<Integer, PDDocument> specificPageOverlay = new HashMap<>();
+    private final Map<Integer, PDDocument> openDocumentsMap = new HashMap<>();
     private Map<Integer, LayoutPage> specificPageOverlayPage = new HashMap<>();
 
     private Position position = Position.BACKGROUND;
@@ -117,7 +117,7 @@ public class Overlay implements Closeable
                 loadedDocuments.put(e.getValue(), doc);
                 layouts.put(doc, getLayoutPage(doc));
             }
-            specificPageOverlay.put(e.getKey(), doc);
+            openDocumentsMap.put(e.getKey(), doc);
             specificPageOverlayPage.put(e.getKey(), layouts.get(doc));
         }
         processPages(inputPDFDocument);
@@ -156,11 +156,11 @@ public class Overlay implements Closeable
         {
             evenPageOverlay.close();
         }
-        for (PDDocument doc : specificPageOverlay.values())
+        for (PDDocument doc : openDocumentsMap.values())
         {
             doc.close();
         }
-        specificPageOverlay.clear();
+        openDocumentsMap.clear();
         specificPageOverlayPage.clear();
     }
 
