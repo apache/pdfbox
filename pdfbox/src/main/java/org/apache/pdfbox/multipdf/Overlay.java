@@ -127,8 +127,35 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Close all input pdfs which were used for the overlay.
-     * 
+     * This will add overlays documents to a document.
+     *
+     * @param specificPageOverlayDocuments map of overlay documents for specific pages. The page
+     * numbers are 1-based.
+     *
+     * @return The modified input PDF document, which has to be saved and closed by the caller. If
+     * the input document was passed by {@link #setInputPDF(PDDocument) setInputPDF(PDDocument)}
+     * then it is that object that is returned.
+     *
+     * @throws IOException if something went wrong
+     */
+    public PDDocument overlayDocuments(Map<Integer, PDDocument> specificPageOverlayDocuments) throws IOException
+    {
+        loadPDFs();
+        for (Map.Entry<Integer, PDDocument> e : specificPageOverlayDocuments.entrySet())
+        {
+            PDDocument doc = e.getValue();
+            if (doc != null)
+            {
+                specificPageOverlayPage.put(e.getKey(), getLayoutPage(doc));
+            }
+        }
+        processPages(inputPDFDocument);
+        return inputPDFDocument;
+    }
+
+    /**
+     * Close all input documents which were used for the overlay and opened by this class.
+     *
      * @throws IOException if something went wrong
      */
     @Override
