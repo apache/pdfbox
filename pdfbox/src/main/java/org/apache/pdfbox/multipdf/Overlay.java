@@ -156,15 +156,12 @@ public class Overlay implements Closeable
         {
             evenPageOverlay.close();
         }
-        if (specificPageOverlay != null)
+        for (Map.Entry<Integer, PDDocument> e : specificPageOverlay.entrySet())
         {
-            for (Map.Entry<Integer, PDDocument> e : specificPageOverlay.entrySet())
-            {
-                e.getValue().close();
-            }
-            specificPageOverlay.clear();
-            specificPageOverlayPage.clear();
+            e.getValue().close();
         }
+        specificPageOverlay.clear();
+        specificPageOverlayPage.clear();
     }
 
     private void loadPDFs() throws IOException
