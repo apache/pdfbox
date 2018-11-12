@@ -182,8 +182,6 @@ public final class ShowSignature
                             subFilter.equals("ETSI.CAdES.detached"))
                         {
                             verifyPKCS7(buf, contents, sig);
-                            
-                            //TODO check certificate chain, revocation lists, timestamp...
                         }
                         else if (subFilter.equals("adbe.pkcs7.sha1"))
                         {
@@ -196,8 +194,6 @@ public final class ShowSignature
 
                             byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
                             verifyPKCS7(hash, contents, sig);
-                            
-                            //TODO check certificate chain, revocation lists, timestamp...
                         }
                         else if (subFilter.equals("adbe.x509.rsa_sha1"))
                         {
