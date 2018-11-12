@@ -21,13 +21,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
 import java.security.Security;
-import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -37,6 +33,9 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -45,6 +44,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -59,6 +59,7 @@ import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.Time;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaCertStore;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessable;
@@ -96,8 +97,10 @@ public final class ShowSignature
      * @throws IOException If there is an error reading the file.
      * @throws org.bouncycastle.tsp.TSPException
      * @throws java.security.GeneralSecurityException
+     * @throws org.apache.pdfbox.examples.signature.cert.CertificateVerificationException
      */
-    public static void main(String[] args) throws IOException, TSPException, GeneralSecurityException
+    public static void main(String[] args) throws IOException, TSPException, GeneralSecurityException,
+            CertificateVerificationException
     {
         // register BouncyCastle provider, needed for "exotic" algorithms
         Security.addProvider(SecurityProvider.getProvider());
@@ -106,7 +109,8 @@ public final class ShowSignature
         show.showSignature( args );
     }
 
-    private void showSignature(String[] args) throws IOException, TSPException, GeneralSecurityException
+    private void showSignature(String[] args) throws IOException, TSPException, GeneralSecurityException,
+            CertificateVerificationException
     {
         if( args.length != 2 )
         {
@@ -236,6 +240,21 @@ public final class ShowSignature
                             {
                                 System.err.println("Certificate not yet valid at signing time");
                             }
+                            if (CertificateVerifier.isSelfSigned(cert))
+                            {
+                                System.err.println("Certificate is self-signed, LOL!");
+                            }
+                            else
+                            {
+                                System.out.println("Certificate is not self-signed");
+
+                                if (sig.getSignDate() != null)
+                                {
+                                    verifyCertificateChain(new JcaCertStore(certs),
+                                            cert,
+                                            sig.getSignDate().getTime());
+                                }
+                            }
                         }
                         else if (subFilter.equals("ETSI.RFC3161"))
                         {
@@ -275,7 +294,7 @@ public final class ShowSignature
 
     private void verifyETSIdotRFC3161(byte[] buf, COSString contents)
             throws CertificateException, CMSException, IOException, OperatorCreationException,
-            TSPException, NoSuchAlgorithmException
+            TSPException, NoSuchAlgorithmException, CertificateVerificationException
     {
         TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
         System.out.println("Time stamp gen time: " + timeStampToken.getTimeStampInfo().getGenTime());
@@ -302,6 +321,9 @@ public final class ShowSignature
         X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
         SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
         validateTimestampToken(timeStampToken);
+                verifyCertificateChain(timeStampToken.getCertificates(),
+                certFromTimeStamp,
+                timeStampToken.getTimeStampInfo().getGenTime());
     }
 
     /**
@@ -318,7 +340,7 @@ public final class ShowSignature
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
             throws CMSException, OperatorCreationException,
-                   IOException, GeneralSecurityException, TSPException
+                   IOException, GeneralSecurityException, TSPException, CertificateVerificationException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
@@ -351,6 +373,9 @@ public final class ShowSignature
             validateTimestampToken(timeStampToken);
             X509CertificateHolder tstCertHolder = (X509CertificateHolder) timeStampToken.getCertificates().getMatches(null).iterator().next();
             X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(tstCertHolder);
+            verifyCertificateChain(certificatesStore,
+                    certFromTimeStamp,
+                    timeStampToken.getTimeStampInfo().getGenTime());
             SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
         }
 
@@ -399,16 +424,6 @@ public final class ShowSignature
             }
         }
 
-        if (CertificateVerifier.isSelfSigned(certFromSignedData))
-        {
-            System.err.println("Certificate is self-signed, LOL!");
-        }
-        else
-        {
-            System.out.println("Certificate is not self-signed");
-            // todo rest of chain
-        }
-
         if (signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().
                 setProvider(SecurityProvider.getProvider()).build(certFromSignedData)))
         {
@@ -417,6 +432,24 @@ public final class ShowSignature
         else
         {
             System.out.println("Signature verification failed");
+        }
+
+        if (CertificateVerifier.isSelfSigned(certFromSignedData))
+        {
+            System.err.println("Certificate is self-signed, LOL!");
+        }
+        else
+        {
+            System.out.println("Certificate is not self-signed");
+
+            if (sig.getSignDate() != null)
+            {
+                verifyCertificateChain(certificatesStore, certFromSignedData, sig.getSignDate().getTime());
+            }
+            else
+            {
+                System.err.println("Certificate cannot be verified without signing time");
+            }
         }
     }
 
@@ -434,6 +467,28 @@ public final class ShowSignature
         ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
         CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
         return new TimeStampToken(signedTSTData);
+    }
+
+    private void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
+            X509Certificate certFromSignedData, Date signDate)
+            throws CertificateVerificationException, CertificateException
+    {
+        // Verify certificate chain (new since 11/2018)
+        // Please post bad PDF files that succeed and
+        // good PDF files that fail in
+        // https://issues.apache.org/jira/browse/PDFBOX-3017
+        Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
+        Set<X509Certificate> additionalCerts = new HashSet<X509Certificate>();
+        JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+        for (X509CertificateHolder certHolder : certificateHolders)
+        {
+            X509Certificate certificate = certificateConverter.getCertificate(certHolder);
+            if (!certificate.equals(certFromSignedData))
+            {
+                additionalCerts.add(certificate);
+            }
+        }
+        CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true, signDate);
     }
 
     private void validateTimestampToken(TimeStampToken timeStampToken)
