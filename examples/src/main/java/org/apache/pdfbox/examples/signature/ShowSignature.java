@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +45,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -92,15 +94,10 @@ public final class ShowSignature
      * @param args The command-line arguments.
      *
      * @throws IOException If there is an error reading the file.
-     * @throws CertificateException
-     * @throws java.security.NoSuchAlgorithmException
-     * @throws java.security.NoSuchProviderException
      * @throws org.bouncycastle.tsp.TSPException
+     * @throws java.security.GeneralSecurityException
      */
-    public static void main(String[] args) throws IOException, CertificateException,
-                                                  NoSuchAlgorithmException,
-                                                  NoSuchProviderException,
-                                                  TSPException
+    public static void main(String[] args) throws IOException, TSPException, GeneralSecurityException
     {
         // register BouncyCastle provider, needed for "exotic" algorithms
         Security.addProvider(SecurityProvider.getProvider());
@@ -109,10 +106,7 @@ public final class ShowSignature
         show.showSignature( args );
     }
 
-    private void showSignature(String[] args) throws IOException, CertificateException,
-                                                     NoSuchAlgorithmException,
-                                                     NoSuchProviderException,
-                                                     TSPException
+    private void showSignature(String[] args) throws IOException, TSPException, GeneralSecurityException
     {
         if( args.length != 2 )
         {
@@ -316,14 +310,15 @@ public final class ShowSignature
      * @param byteArray the byte sequence that has been signed
      * @param contents the /Contents field as a COSString
      * @param sig the PDF signature (the /V dictionary)
-     * @throws CertificateException
      * @throws CMSException
      * @throws OperatorCreationException
      * @throws IOException
+     * @throws GeneralSecurityException
+     * @throws TSPException
      */
     private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
-            throws CMSException, CertificateException, OperatorCreationException,
-                   NoSuchAlgorithmException, NoSuchProviderException, TSPException, IOException
+            throws CMSException, OperatorCreationException,
+                   IOException, GeneralSecurityException, TSPException
     {
         // inspiration:
         // http://stackoverflow.com/a/26702631/535646
@@ -404,7 +399,7 @@ public final class ShowSignature
             }
         }
 
-        if (isSelfSigned(certFromSignedData))
+        if (CertificateVerifier.isSelfSigned(certFromSignedData))
         {
             System.err.println("Certificate is self-signed, LOL!");
         }
@@ -513,31 +508,6 @@ public final class ShowSignature
         }
     }
 
-    // https://svn.apache.org/repos/asf/cxf/tags/cxf-2.4.1/distribution/src/main/release/samples/sts_issue_operation/src/main/java/demo/sts/provider/cert/CertificateVerifier.java
-    
-    /**
-     * Checks whether given X.509 certificate is self-signed.
-     */
-    private boolean isSelfSigned(X509Certificate cert)
-            throws CertificateException, NoSuchAlgorithmException, NoSuchProviderException
-    {
-        try
-        {
-            // Try to verify certificate signature with its own public key
-            PublicKey key = cert.getPublicKey();
-            cert.verify(key);
-            return true;
-        }
-        catch (SignatureException sigEx)
-        {
-            return false;
-        }
-        catch (InvalidKeyException keyEx)
-        {
-            return false;
-        }
-    }
-    
     /**
      * This will print a usage message.
      */
