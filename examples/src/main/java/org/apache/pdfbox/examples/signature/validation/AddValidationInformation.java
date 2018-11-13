@@ -298,7 +298,7 @@ public class AddValidationInformation
         {
             addCrlRevocationInfo(certInfo);
         }
-        catch (CRLException | IOException | RevokedCertificateException e)
+        catch (GeneralSecurityException | IOException | RevokedCertificateException e)
         {
             LOG.warn("Failed fetching CRL", e);
             throw new IOException(e);
@@ -344,10 +344,10 @@ public class AddValidationInformation
      * @throws RevokedCertificateException
      */
     private void addCrlRevocationInfo(CertSignatureInformation certInfo)
-            throws CRLException, IOException, RevokedCertificateException
+            throws IOException, RevokedCertificateException, GeneralSecurityException
     {
         byte[] crlData = CrlHelper.performCrlRequestAndCheck(certInfo.getCrlUrl(),
-                certInfo.getCertificate());
+                certInfo.getCertificate(), certInfo.getIssuerCertificate().getPublicKey());
         COSStream crlStream = writeDataToStream(crlData);
         crls.add(crlStream);
         if (correspondingCRLs != null)
