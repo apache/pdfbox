@@ -16,19 +16,19 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.state;
 
-import org.apache.pdfbox.pdmodel.graphics.state.RenderingIntent;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class RenderingIntentTest {
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
+public class RenderingIntentTest
+{
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void fromStringInputNotNullOutputNotNull() {
-
+    public void fromStringInputNotNullOutputNotNull()
+    {
         // Arrange
         final String value = "AbsoluteColorimetric";
 
@@ -40,8 +40,8 @@ public class RenderingIntentTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull2() {
-
+    public void fromStringInputNotNullOutputNotNull2()
+    {
         // Arrange
         final String value = "RelativeColorimetric";
 
@@ -53,8 +53,8 @@ public class RenderingIntentTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull3() {
-
+    public void fromStringInputNotNullOutputNotNull3()
+    {
         // Arrange
         final String value = "Perceptual";
 
@@ -66,8 +66,8 @@ public class RenderingIntentTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull4() {
-
+    public void fromStringInputNotNullOutputNotNull4()
+    {
         // Arrange
         final String value = "Saturation";
 
@@ -79,8 +79,8 @@ public class RenderingIntentTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull5() {
-
+    public void fromStringInputNotNullOutputNotNull5()
+    {
         // Arrange
         final String value = "";
 
@@ -92,8 +92,8 @@ public class RenderingIntentTest {
     }
 
     @Test
-    public void stringValueOutputNotNull() {
-
+    public void stringValueOutputNotNull()
+    {
         // Arrange
         final RenderingIntent objectUnderTest = RenderingIntent.ABSOLUTE_COLORIMETRIC;
 

@@ -27,6 +27,7 @@ public class PageLayoutTest
 {
     /**
      * @author Tilman Hausherr
+     *
      * Test for completeness (PDFBOX-3362).
      */
     @Test
@@ -47,10 +48,12 @@ public class PageLayoutTest
     /**
      * @author John Bergqvist
      */
-    @Rule public ExpectedException thrown = ExpectedException.none();
-    @Test
-    public void fromStringInputNotNullOutputIllegalArgumentException() {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
+    @Test
+    public void fromStringInputNotNullOutputIllegalArgumentException()
+    {
         // Arrange
         final String value = "SinglePag";
 
