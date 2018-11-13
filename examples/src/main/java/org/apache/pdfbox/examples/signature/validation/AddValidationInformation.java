@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSUpdateInfo;
@@ -192,7 +191,7 @@ public class AddValidationInformation
     private void addRevocationData(CertSignatureInformation certInfo) throws IOException
     {
         COSDictionary vri = new COSDictionary();
-        vriBase.setItem(COSName.getPDFName(certInfo.getSignatureHash()), vri);
+        vriBase.setItem(certInfo.getSignatureHash(), vri);
 
         correspondingOCSPs = new COSArray();
         correspondingCRLs = new COSArray();
@@ -201,11 +200,11 @@ public class AddValidationInformation
 
         if (correspondingOCSPs.size() > 0)
         {
-            vri.setItem(COSName.getPDFName("OCSP"), correspondingOCSPs);
+            vri.setItem("OCSP", correspondingOCSPs);
         }
         if (correspondingCRLs.size() > 0)
         {
-            vri.setItem(COSName.getPDFName("CRL"), correspondingCRLs);
+            vri.setItem("CRL", correspondingCRLs);
         }
 
         if (certInfo.getTsaCerts() != null)
@@ -407,16 +406,16 @@ public class AddValidationInformation
     {
         COSDictionary dssExtensions = new COSDictionary();
         dssExtensions.setDirect(true);
-        catalog.getCOSObject().setItem(COSName.getPDFName("Extensions"), dssExtensions);
+        catalog.getCOSObject().setItem("Extensions", dssExtensions);
 
         COSDictionary adbeExtension = new COSDictionary();
         adbeExtension.setDirect(true);
-        dssExtensions.setItem(COSName.getPDFName("ADBE"), adbeExtension);
+        dssExtensions.setItem("ADBE", adbeExtension);
 
-        adbeExtension.setItem(COSName.getPDFName("BaseVersion"), COSName.getPDFName("1.7"));
-        adbeExtension.setItem(COSName.getPDFName("ExtensionLevel"), COSInteger.get(5));
+        adbeExtension.setName("BaseVersion", "1.7");
+        adbeExtension.setInt("ExtensionLevel", 5);
 
-        catalog.getCOSObject().setItem(COSName.getPDFName("Version"), COSName.getPDFName("1.7"));
+        catalog.setVersion("1.7");
     }
 
     public static void main(String[] args) throws IOException, GeneralSecurityException
