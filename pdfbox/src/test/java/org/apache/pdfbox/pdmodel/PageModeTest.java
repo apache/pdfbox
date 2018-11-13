@@ -16,20 +16,19 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import org.apache.pdfbox.pdmodel.PageMode;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.Timeout;
 
-public class PageModeTest {
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
+public class PageModeTest
+{
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void fromStringInputNotNullOutputNotNull() {
-
+    public void fromStringInputNotNullOutputNotNull()
+    {
         // Arrange
         final String value = "FullScreen";
 
@@ -41,8 +40,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull2() {
-
+    public void fromStringInputNotNullOutputNotNull2()
+    {
         // Arrange
         final String value = "UseThumbs";
 
@@ -54,8 +53,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull3() {
-
+    public void fromStringInputNotNullOutputNotNull3()
+    {
         // Arrange
         final String value = "UseOC";
 
@@ -67,8 +66,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull4() {
-
+    public void fromStringInputNotNullOutputNotNull4()
+    {
         // Arrange
         final String value = "UseNone";
 
@@ -80,8 +79,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull5() {
-
+    public void fromStringInputNotNullOutputNotNull5()
+    {
         // Arrange
         final String value = "UseAttachments";
 
@@ -93,8 +92,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull6() {
-
+    public void fromStringInputNotNullOutputNotNull6()
+    {
         // Arrange
         final String value = "UseOutlines";
 
@@ -106,8 +105,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputIllegalArgumentException() {
-
+    public void fromStringInputNotNullOutputIllegalArgumentException()
+    {
         // Arrange
         final String value = "";
 
@@ -119,8 +118,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void fromStringInputNotNullOutputIllegalArgumentException2() {
-
+    public void fromStringInputNotNullOutputIllegalArgumentException2()
+    {
         // Arrange
         final String value = "Dulacb`ecj";
 
@@ -132,8 +131,8 @@ public class PageModeTest {
     }
 
     @Test
-    public void stringValueOutputNotNull() {
-
+    public void stringValueOutputNotNull()
+    {
         // Arrange
         final PageMode objectUnderTest = PageMode.USE_OPTIONAL_CONTENT;
 
