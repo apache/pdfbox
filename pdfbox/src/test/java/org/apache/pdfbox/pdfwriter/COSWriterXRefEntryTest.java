@@ -16,19 +16,19 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
-import org.apache.pdfbox.pdfwriter.COSWriterXRefEntry;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class COSWriterXRefEntryTest {
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
+public class COSWriterXRefEntryTest
+{
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void compareToInputNullOutputNegative() {
-
+    public void compareToInputNullOutputNegative()
+    {
         // Arrange
         final COSWriterXRefEntry objectUnderTest = new COSWriterXRefEntry(0L, null, null);
         final COSWriterXRefEntry obj = null;
