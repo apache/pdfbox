@@ -16,19 +16,19 @@
  */
 package org.apache.pdfbox.cos;
 
-import org.apache.pdfbox.cos.COSObjectKey;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class COSObjectKeyTest {
-
-    @Rule public ExpectedException thrown = ExpectedException.none();
+public class COSObjectKeyTest
+{
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void compareToInputNotNullOutputZero() {
-
+    public void compareToInputNotNullOutputZero()
+    {
         // Arrange
         final COSObjectKey objectUnderTest = new COSObjectKey(0L, 0);
         final COSObjectKey other = new COSObjectKey(0L, 0);
@@ -41,8 +41,8 @@ public class COSObjectKeyTest {
     }
 
     @Test
-    public void compareToInputNotNullOutputPositive() {
-
+    public void compareToInputNotNullOutputPositive()
+    {
         // Arrange
         final COSObjectKey objectUnderTest = new COSObjectKey(0L, 0);
         final COSObjectKey other = new COSObjectKey(-9_223_372_036_854_775_808L, 0);
