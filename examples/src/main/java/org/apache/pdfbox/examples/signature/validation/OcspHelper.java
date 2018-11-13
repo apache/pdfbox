@@ -126,6 +126,13 @@ public class OcspHelper
                 SingleResp resp = responses[0];
                 Object status = resp.getCertStatus();
 
+                //TODO check time
+                // https://tools.ietf.org/html/rfc5019
+                // Clients MUST check for the existence of the nextUpdate field and MUST
+                // ensure the current time, expressed in GMT time as described in
+                // Section 2.2.4, falls between the thisUpdate and nextUpdate times.  If
+                // the nextUpdate field is absent, the client MUST reject the response.
+
                 if (status instanceof RevokedStatus)
                 {
                     RevokedStatus revokedStatus = (RevokedStatus) status;
@@ -192,6 +199,12 @@ public class OcspHelper
         }
         else if (encodedNonce != null)
         {
+            //TODO this is not correct!
+            // https://tools.ietf.org/html/rfc5019
+            // Clients that opt to include a nonce in the
+            // request SHOULD NOT reject a corresponding OCSPResponse solely on the
+            // basis of the nonexistent expected nonce, but MUST fall back to
+            // validating the OCSPResponse based on time.
             throw new OCSPException("Nonce not found in response!");
         }
     }
