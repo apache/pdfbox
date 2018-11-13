@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.security.PublicKey;
 import java.security.cert.CRLException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
@@ -40,15 +42,17 @@ public final class CrlHelper
 
     /**
      * Performs the CRL-Request and checks if the given certificate has been revoked.
-     * 
+     *
      * @param crlUrl to get the CRL from
      * @param cert to be checked if it is inside the CRL
-     * @return CRL-Response; might be very big depending on the issuer. 
-     * @throws CRLException if an Error occurred getting the CRL, or parsing it.
+     * @param issuerKey public key of the issuer certificate to verify the CRL signature
+     * @return CRL-Response; might be very big depending on the issuer.
+     * @throws GeneralSecurityException if an error occurred getting the CRL, or parsing it, or
+     * verifying it.
      * @throws RevokedCertificateException
      */
-    public static byte[] performCrlRequestAndCheck(String crlUrl, X509Certificate cert)
-            throws CRLException, RevokedCertificateException
+    public static byte[] performCrlRequestAndCheck(String crlUrl, X509Certificate cert, PublicKey issuerKey)
+            throws RevokedCertificateException, GeneralSecurityException
     {
         try
         {
@@ -66,7 +70,9 @@ public final class CrlHelper
             try (InputStream is = con.getInputStream())
             {
                 crl = (X509CRL) certFac.engineGenerateCRL(is);
+                crl.verify(issuerKey);
             }
+            //TODO should be checked for signing time, see CRLVerifier.verifyCertificateCRLs
             if (crl.isRevoked(cert))
             {   
                 throw new RevokedCertificateException("The Certificate was found on the CRL and is revoked!");
