@@ -95,8 +95,7 @@ public class CertInformationCollector
             try
             {
                 documentInput = new FileInputStream(fileName);
-                byte[] docBytes = IOUtils.toByteArray(documentInput);
-                byte[] signatureContent = signature.getContents(docBytes);
+                byte[] signatureContent = signature.getContents(documentInput);
                 return getCertInfo(signatureContent);
             }
             finally
