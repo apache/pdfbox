@@ -107,7 +107,7 @@ public class CertInformationCollector
     }
 
     /**
-     * Gets the last relevant signature in the document
+     * Gets the last relevant signature in the document, i.e. the one with the highest offset.
      * 
      * @param document to get its last Signature
      * @return last signature or null when none found
