@@ -105,7 +105,6 @@ public final class CertificateVerifier
             // and a set of intermediate certificates
             Set<X509Certificate> trustedRootCerts = new HashSet<>();
             Set<X509Certificate> intermediateCerts = new HashSet<>();
-            X509Certificate issuerCert = null;
             for (X509Certificate additionalCert : additionalCerts)
             {
                 if (isSelfSigned(additionalCert))
@@ -116,10 +115,6 @@ public final class CertificateVerifier
                 {
                     intermediateCerts.add(additionalCert);
                 }
-                if (cert.getIssuerX500Principal().equals(additionalCert.getSubjectX500Principal()))                        
-                {
-                    issuerCert = additionalCert;
-                }
             }
 
             // Attempt to build the certification chain and verify it
@@ -128,22 +123,7 @@ public final class CertificateVerifier
 
             LOG.info("Certification chain verified successfully");
 
-            // Try checking the certificate through OCSP (faster than CRL)
-            String ocspURL = extractOCSPURL(cert);
-            if (ocspURL != null)
-            {
-                OcspHelper ocspHelper = new OcspHelper(cert, issuerCert, ocspURL);
-                verifyOCSP(ocspHelper, signDate);
-                return verifiedCertChain;
-            }
-            else
-            {
-                LOG.info("OCSP not available, will try CRL");
-            }
-
-            // Check whether the certificate is revoked by the CRL
-            // given in its CRL distribution point extension
-            CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
+            checkRevocations(cert, additionalCerts, signDate);
 
             return verifiedCertChain;
         }
@@ -157,12 +137,55 @@ public final class CertificateVerifier
         {
             throw cvex;
         }
-        catch (Exception ex)
+        catch (IOException | GeneralSecurityException | RevokedCertificateException | OCSPException ex)
         {
             throw new CertificateVerificationException(
                     "Error verifying the certificate: "
                     + cert.getSubjectX500Principal(), ex);
         }
+    }
+
+    private static void checkRevocations(X509Certificate cert,
+                                         Set<X509Certificate> additionalCerts,
+                                         Date signDate)
+            throws IOException, CertificateVerificationException, OCSPException,
+                   RevokedCertificateException, GeneralSecurityException
+    {
+        if (isSelfSigned(cert))
+        {
+            // root, we're done
+            return;
+        }
+        X509Certificate issuerCert = null;
+        for (X509Certificate additionalCert : additionalCerts)
+        {
+            if (cert.getIssuerX500Principal().equals(additionalCert.getSubjectX500Principal()))
+            {
+                issuerCert = additionalCert;
+                break;
+            }
+        }
+        // issuerCert is never null here. If it hadn't been found, then there wouldn't be a 
+        // verifiedCertChain earlier.
+
+        // Try checking the certificate through OCSP (faster than CRL)
+        String ocspURL = extractOCSPURL(cert);
+        if (ocspURL != null)
+        {
+            OcspHelper ocspHelper = new OcspHelper(cert, issuerCert, ocspURL);
+            verifyOCSP(ocspHelper, signDate);
+        }
+        else
+        {
+            LOG.info("OCSP not available, will try CRL");
+
+            // Check whether the certificate is revoked by the CRL
+            // given in its CRL distribution point extension
+            CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
+        }
+
+        // now check the issuer
+        checkRevocations(issuerCert, additionalCerts, signDate);
     }
 
     /**
