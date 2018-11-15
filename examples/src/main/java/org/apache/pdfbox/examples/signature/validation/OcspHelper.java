@@ -27,12 +27,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
-import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
@@ -53,7 +55,6 @@ import org.bouncycastle.cert.ocsp.OCSPReqBuilder;
 import org.bouncycastle.cert.ocsp.OCSPResp;
 import org.bouncycastle.cert.ocsp.RevokedStatus;
 import org.bouncycastle.cert.ocsp.SingleResp;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentVerifierProvider;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -107,9 +108,10 @@ public class OcspHelper
      * @param ocspResponse to be verified
      * @throws OCSPException
      * @throws RevokedCertificateException
+     * @throws IOException if the default security provider can't be instantiated
      */
     private void verifyOcspResponse(OCSPResp ocspResponse)
-            throws OCSPException, RevokedCertificateException
+            throws OCSPException, RevokedCertificateException, IOException
     {
         verifyRespStatus(ocspResponse);
 
@@ -118,7 +120,7 @@ public class OcspHelper
         {
             checkOcspSignature(basicResponse.getCerts()[0], basicResponse);
 
-            checkNonce(basicResponse);
+            boolean nonceChecked = checkNonce(basicResponse);
 
             SingleResp[] responses = basicResponse.getResponses();
             if (responses.length == 1)
@@ -126,12 +128,12 @@ public class OcspHelper
                 SingleResp resp = responses[0];
                 Object status = resp.getCertStatus();
 
-                //TODO check time
-                // https://tools.ietf.org/html/rfc5019
-                //    Clients MUST check for the existence of the nextUpdate field and MUST
-                // ensure the current time, expressed in GMT time as described in
-                // Section 2.2.4, falls between the thisUpdate and nextUpdate times.  If
-                // the nextUpdate field is absent, the client MUST reject the response.
+                if (!nonceChecked)
+                {
+                    // https://tools.ietf.org/html/rfc5019
+                    // fall back to validating the OCSPResponse based on time
+                    checkOcspResponseFresh(resp);
+                }
 
                 if (status instanceof RevokedStatus)
                 {
@@ -154,20 +156,54 @@ public class OcspHelper
         }
     }
 
+    private void checkOcspResponseFresh(SingleResp resp) throws OCSPException
+    {
+        // https://tools.ietf.org/html/rfc5019
+        // Clients MUST check for the existence of the nextUpdate field and MUST
+        // ensure the current time, expressed in GMT time as described in
+        // Section 2.2.4, falls between the thisUpdate and nextUpdate times.  If
+        // the nextUpdate field is absent, the client MUST reject the response.
+
+        Date curDate = Calendar.getInstance().getTime();
+
+        Date thisUpdate = resp.getThisUpdate();
+        if (thisUpdate == null)
+        {
+            throw new OCSPException("OCSP: thisUpdate field is missing in response (RFC 5019 2.2.4.)");
+        }
+        Date nextUpdate = resp.getNextUpdate();
+        if (nextUpdate == null)
+        {
+            throw new OCSPException("OCSP: nextUpdate field is missing in response (RFC 5019 2.2.4.)");
+        }
+        if (curDate.compareTo(thisUpdate) < 0)
+        {
+            LOG.error(curDate + " < " + thisUpdate);
+            throw new OCSPException("OCSP: current date < thisUpdate field (RFC 5019 2.2.4.)");
+        }
+        if (curDate.compareTo(nextUpdate) > 0)
+        {
+            LOG.error(curDate + " > " + nextUpdate);
+            throw new OCSPException("OCSP: current date > nextUpdate field (RFC 5019 2.2.4.)");
+        }
+        LOG.info("OCSP response is fresh");
+    }
+
     /**
      * Checks whether the OCSP response is signed by the given certificate.
      * 
      * @param certificate the certificate to check the signature
      * @param basicResponse OCSP response containing the signature
      * @throws OCSPException when the signature is invalid or could not be checked
+     * @throws IOException if the default security provider can't be instantiated
      */
     private void checkOcspSignature(X509CertificateHolder certificate, BasicOCSPResp basicResponse)
-            throws OCSPException
+            throws OCSPException, IOException
     {
         try
         {
             ContentVerifierProvider verifier = new JcaX509ContentVerifierProviderBuilder()
-                    .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(certificate);
+                    .setProvider(SecurityProvider.getProvider()).build(certificate);
 
             if (!basicResponse.isSignatureValid(verifier))
             {
@@ -181,12 +217,12 @@ public class OcspHelper
     }
 
     /**
-     * Checks if the nonce in the response is correct
+     * Checks if the nonce in the response matches.
      * 
      * @param basicResponse Response to be checked
-     * @throws OCSPException if nonce is wrong or inexistent
+     * @throws OCSPException if the nonce is different
      */
-    private void checkNonce(BasicOCSPResp basicResponse) throws OCSPException
+    private boolean checkNonce(BasicOCSPResp basicResponse) throws OCSPException
     {
         Extension nonceExt = basicResponse.getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce);
         if (nonceExt != null)
@@ -194,19 +230,20 @@ public class OcspHelper
             DEROctetString responseNonceString = (DEROctetString) nonceExt.getExtnValue();
             if (!responseNonceString.equals(encodedNonce))
             {
-                throw new OCSPException("Invalid Nonce found in response!");
+                throw new OCSPException("Different nonce found in response!");
+            }
+            else
+            {
+                LOG.info("Nonce is good");
+                return true;
             }
         }
-        else if (encodedNonce != null)
-        {
-            //TODO this is not correct!
-            // https://tools.ietf.org/html/rfc5019
-            // Clients that opt to include a nonce in the
-            // request SHOULD NOT reject a corresponding OCSPResponse solely on the
-            // basis of the nonexistent expected nonce, but MUST fall back to
-            // validating the OCSPResponse based on time.
-            throw new OCSPException("Nonce not found in response!");
-        }
+        // https://tools.ietf.org/html/rfc5019
+        // Clients that opt to include a nonce in the
+        // request SHOULD NOT reject a corresponding OCSPResponse solely on the
+        // basis of the nonexistent expected nonce, but MUST fall back to
+        // validating the OCSPResponse based on time.
+        return false;
     }
 
     /**
@@ -221,21 +258,41 @@ public class OcspHelper
         OCSPReq request = generateOCSPRequest();
         URL url = new URL(ocspUrl);
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-        httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
-        httpConnection.setRequestProperty("Accept", "application/ocsp-response");
-        httpConnection.setDoOutput(true);
-        OutputStream out = httpConnection.getOutputStream();
-        out.write(request.getEncoded());
-        out.close();
-
-        if (httpConnection.getResponseCode() != 200)
+        try
         {
-            throw new IOException("OCSP: Could not access url, ResponseCode: "
-                    + httpConnection.getResponseCode());
+            httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
+            httpConnection.setRequestProperty("Accept", "application/ocsp-response");
+            httpConnection.setDoOutput(true);
+            OutputStream out = httpConnection.getOutputStream();
+            try
+            {
+                out.write(request.getEncoded());
+            }
+            finally
+            {
+                IOUtils.closeQuietly(out);
+            }
+
+            if (httpConnection.getResponseCode() != 200)
+            {
+                throw new IOException("OCSP: Could not access url, ResponseCode: "
+                        + httpConnection.getResponseCode());
+            }
+            // Get response
+            InputStream in = (InputStream) httpConnection.getContent();
+            try
+            {
+                return new OCSPResp(in);
+            }
+            finally
+            {
+                IOUtils.closeQuietly(in);
+            }
         }
-        // Get Response
-        InputStream in = (InputStream) httpConnection.getContent();
-        return new OCSPResp(in);
+        finally
+        {
+            httpConnection.disconnect();
+        }
     }
 
     /**
@@ -257,11 +314,8 @@ public class OcspHelper
                 LOG.error("An internal error occurred in the OCSP Server!");
                 break;
             case OCSPResponseStatus.MALFORMED_REQUEST:
-                // This can also happen if the nonce extension is not supported.
-                // The nonce extension is meant to prevent replay attacks.
-                // Once could argue that a replay attack is less likely in document validating
-                // than in ssl-certificate validating, so decide for yourself to remove
-                // the nonce submission (and the check).
+                // This happened when the "critical" flag was used for extensions
+                // on a responder known by the committer of this comment.
                 statusInfo = "MALFORMED_REQUEST";
                 LOG.error("Your request did not fit the RFC 2560 syntax!");
                 break;
@@ -314,25 +368,24 @@ public class OcspHelper
             throw new IOException("Error creating CertificateID with the Certificate encoding", e);
         }
 
-        OCSPReqBuilder builder = new OCSPReqBuilder();
+        // https://tools.ietf.org/html/rfc2560#section-4.1.2
+        // Support for any specific extension is OPTIONAL. The critical flag
+        // SHOULD NOT be set for any of them.
 
         Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
-                true, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
+                false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
 
         Random rand = new Random();
         byte[] nonce = new byte[16];
         rand.nextBytes(nonce);
         encodedNonce = new DEROctetString(new DEROctetString(nonce));
-        Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, true,
+        Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
                 encodedNonce);
 
+        OCSPReqBuilder builder = new OCSPReqBuilder();
         builder.setRequestExtensions(
                 new Extensions(new Extension[] { responseExtension, nonceExtension }));
-
         builder.addRequest(certId);
-
-        LOG.info("Nonce: " + Hex.getString(nonceExtension.getExtnValue().getEncoded()));
-
         return builder.build();
     }
 
