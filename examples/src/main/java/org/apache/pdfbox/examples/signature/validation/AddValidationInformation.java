@@ -367,7 +367,7 @@ public class AddValidationInformation
     {
         try
         {
-            for (X509Certificate cert : certInformationHelper.getCertificateStore().values())
+            for (X509Certificate cert : certInformationHelper.getCertificatesMap().values())
             {
                 COSStream stream = writeDataToStream(cert.getEncoded());
                 certs.add(stream);
