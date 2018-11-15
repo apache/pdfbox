@@ -68,9 +68,9 @@ public class CertInformationCollector
 
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
 
-    //TODO certificateStore name misleading, this is a map.
+    //TODO certificatesMap name misleading, this is a map.
     // even more confusing: there are also "certificatesStore" variables that are a Store
-    private final Map<BigInteger, X509Certificate> certificateStore = new HashMap<BigInteger, X509Certificate>();
+    private final Map<BigInteger, X509Certificate> certificatesMap = new HashMap<BigInteger, X509Certificate>();
 
     private final JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
 
@@ -221,7 +221,7 @@ public class CertInformationCollector
      * not yet practicable.
      *
      * @param certificatesStore To get the certificate information from. Certificates will be saved
-     * in the certificateStore.
+     * in certificatesMap.
      * @param signedData to get SignerInformation off
      * @param certInfo where to add certificate information
      * @return Signer Information of the processed certificate Store for further usage.
@@ -291,7 +291,7 @@ public class CertInformationCollector
             return;
         }
 
-        for (X509Certificate issuer : certificateStore.values())
+        for (X509Certificate issuer : certificatesMap.values())
         {
             if (CertInformationHelper.verify(certificate, issuer.getPublicKey()))
             {
@@ -348,21 +348,20 @@ public class CertInformationCollector
     }
 
     /**
-     * Adds the given Certificate to the certificateStore, if not yet containing.
+     * Adds the given Certificate to the certificatesMap, if not yet containing.
      * 
-     * @param certificate to add to the certificateStore
+     * @param certificate to add to the certificatesMap
      */
     private void addCertToCertStore(X509Certificate certificate)
     {
-        if (!certificateStore.containsKey(certificate.getSerialNumber()))
+        if (!certificatesMap.containsKey(certificate.getSerialNumber()))
         {
-            certificateStore.put(certificate.getSerialNumber(), certificate);
+            certificatesMap.put(certificate.getSerialNumber(), certificate);
         }
     }
 
     /**
-     * Gets the X509Certificate out of the X509CertificateHolder and add it to
-     * the certificateStore map.
+     * Gets the X509Certificate out of the X509CertificateHolder and add it to certificatesMap.
      *
      * @param certificateHolder to get the certificate from
      * @return a X509Certificate or <code>null</code> when there was an Error with the Certificate
@@ -372,12 +371,12 @@ public class CertInformationCollector
             throws CertificateProccessingException
     {
         //TODO getCertFromHolder violates "do one thing" rule (adds to the map and returns a certificate)
-        if (!certificateStore.containsKey(certificateHolder.getSerialNumber()))
+        if (!certificatesMap.containsKey(certificateHolder.getSerialNumber()))
         {
             try
             {
                 X509Certificate certificate = certConverter.getCertificate(certificateHolder);
-                certificateStore.put(certificate.getSerialNumber(), certificate);
+                certificatesMap.put(certificate.getSerialNumber(), certificate);
                 return certificate;
             }
             catch (CertificateException e)
@@ -388,7 +387,7 @@ public class CertInformationCollector
         }
         else
         {
-            return certificateStore.get(certificateHolder.getSerialNumber());
+            return certificatesMap.get(certificateHolder.getSerialNumber());
         }
     }
 
@@ -415,7 +414,7 @@ public class CertInformationCollector
 
     /**
      * Gets a list of X509Certificate out of an array of X509CertificateHolder. The certificates
-     * will be added to the certificateStore.
+     * will be added to certificatesMap.
      *
      * @param certHolders Array of X509CertificateHolder
      * @throws CertificateProccessingException when one of the Certificates could not be parsed.
@@ -430,13 +429,13 @@ public class CertInformationCollector
     }
 
     /**
-     * Get the certificate store of all processed certificates until now.
+     * Get the map of all processed certificates until now.
      * 
      * @return a map of serial numbers to certificates.
      */
-    public Map<BigInteger, X509Certificate> getCertificateStore()
+    public Map<BigInteger, X509Certificate> getCertificatesMap()
     {
-        return certificateStore;
+        return certificatesMap;
     }
 
     /**
