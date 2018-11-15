@@ -68,8 +68,6 @@ public class CertInformationCollector
 
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
 
-    //TODO certificatesMap name misleading, this is a map.
-    // even more confusing: there are also "certificatesStore" variables that are a Store
     private final Map<BigInteger, X509Certificate> certificatesMap = new HashMap<BigInteger, X509Certificate>();
 
     private final JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
