@@ -74,54 +74,22 @@ public class CertInformationCollector
     private CertSignatureInformation rootCertInfo;
 
     /**
-     * Gets the Certificate Information of the last Signature.
+     * Gets the certificate information of a signature.
      * 
-     * @param document to get the Signature from
+     * @param PDSignature the signature of the document.
      * @param fileName of the document.
      * @return the CertSignatureInformation containing all certificate information
      * @throws CertificateProccessingException when there is an error processing the certificates
      * @throws IOException on a data processing error
      */
-    public CertSignatureInformation getLastCertInfo(PDDocument document, String fileName)
+    public CertSignatureInformation getLastCertInfo(PDSignature signature, String fileName)
             throws CertificateProccessingException, IOException
     {
-        PDSignature signature = getLastRelevantSignature(document);
-        if (signature != null)
+        try (FileInputStream documentInput = new FileInputStream(fileName))
         {
-            try (FileInputStream documentInput = new FileInputStream(fileName))
-            {
-                byte[] signatureContent = signature.getContents(documentInput);
-                return getCertInfo(signatureContent);
-            }
+            byte[] signatureContent = signature.getContents(documentInput);
+            return getCertInfo(signatureContent);
         }
-        return null;
-    }
-
-    /**
-     * Gets the last relevant signature in the document, i.e. the one with the highest offset.
-     * 
-     * @param document to get its last Signature
-     * @return last signature or null when none found
-     * @throws IOException
-     */
-    private PDSignature getLastRelevantSignature(PDDocument document) throws IOException
-    {
-        SortedMap<Integer, PDSignature> sortedMap = new TreeMap<>();
-        for (PDSignature signature : document.getSignatureDictionaries())
-        {
-            int sigOffset = signature.getByteRange()[1];
-            sortedMap.put(sigOffset, signature);
-        }
-        if (sortedMap.size() > 0)
-        {
-            PDSignature lastSignature = sortedMap.get(sortedMap.lastKey());
-            COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
-            if (type.equals(COSName.SIG) || type.equals(COSName.DOC_TIME_STAMP))
-            {
-                return lastSignature;
-            }
-        }
-        return null;
     }
 
     /**
