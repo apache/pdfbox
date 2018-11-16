@@ -132,7 +132,7 @@ public final class CRLVerifier
         {
             throw ex;
         }
-        catch (CertificateVerificationException ex)
+        catch (RevokedCertificateException ex)
         {
             throw ex;
         }
