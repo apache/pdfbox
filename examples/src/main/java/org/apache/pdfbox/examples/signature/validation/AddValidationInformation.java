@@ -43,6 +43,8 @@ import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.cert.CRLVerifier;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
+import org.apache.pdfbox.examples.signature.cert.OcspHelper;
+import org.apache.pdfbox.examples.signature.cert.RevokedCertificateException;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
