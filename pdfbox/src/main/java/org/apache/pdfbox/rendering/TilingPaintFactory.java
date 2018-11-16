@@ -15,6 +15,7 @@
  */
 package org.apache.pdfbox.rendering;
 
+import java.awt.Paint;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -40,7 +41,7 @@ class TilingPaintFactory
     private static final Log LOG = LogFactory.getLog(TilingPaintFactory.class);
 
     private final PageDrawer drawer;
-    private final Map<TilingPaintParameter, WeakReference<TilingPaint>> weakCache
+    private final Map<TilingPaintParameter, WeakReference<Paint>> weakCache
             = new WeakHashMap<>();
 
     TilingPaintFactory(PageDrawer drawer)
@@ -48,13 +49,13 @@ class TilingPaintFactory
         this.drawer = drawer;
     }
 
-    TilingPaint create(PDTilingPattern pattern, PDColorSpace colorSpace,
+    Paint create(PDTilingPattern pattern, PDColorSpace colorSpace,
             PDColor color, AffineTransform xform) throws IOException
     {
-        TilingPaint paint = null;
+        Paint paint = null;
         TilingPaintParameter tilingPaintParameter
                 = new TilingPaintParameter(drawer.getInitialMatrix(), pattern.getCOSObject(), colorSpace, color, xform);
-        WeakReference<TilingPaint> weakRef = weakCache.get(tilingPaintParameter);
+        WeakReference<Paint> weakRef = weakCache.get(tilingPaintParameter);
         if (weakRef != null)
         {
             // PDFBOX-4058: additional WeakReference makes gc work better
