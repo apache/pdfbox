@@ -72,7 +72,7 @@ public class CertInformationCollector
     /**
      * Gets the certificate information of a signature.
      * 
-     * @param PDSignature the signature of the document.
+     * @param signature the signature of the document.
      * @param fileName of the document.
      * @return the CertSignatureInformation containing all certificate information
      * @throws CertificateProccessingException when there is an error processing the certificates
