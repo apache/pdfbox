@@ -46,7 +46,7 @@ import org.apache.pdfbox.util.Matrix;
 class TilingPaint implements Paint
 {
     private static final Log LOG = LogFactory.getLog(TilingPaint.class);
-    private final TexturePaint paint;
+    private final Paint paint;
     private final Matrix patternMatrix;
     private static final int MAXEDGE;
     private static final String DEFAULTMAXEDGE = "3000";
