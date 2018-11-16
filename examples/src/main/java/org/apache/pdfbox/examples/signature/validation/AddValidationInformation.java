@@ -26,7 +26,9 @@ import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,10 +40,14 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSUpdateInfo;
+import org.apache.pdfbox.examples.signature.SigUtils;
+import org.apache.pdfbox.examples.signature.cert.CRLVerifier;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
@@ -67,6 +73,7 @@ public class AddValidationInformation
     private COSArray certs;
     private PDDocument document;
     private final Set<BigInteger> foundRevocationInformation = new HashSet<BigInteger>();
+    Calendar signDate;
 
     /**
      * Signs the given PDF file.
@@ -91,9 +98,9 @@ public class AddValidationInformation
     }
 
     /**
-     * Fetches certificate information from the last signature of the document and appends a DSS with the validation
-     * information to the document.
-     * 
+     * Fetches certificate information from the last signature of the document and appends a DSS
+     * with the validation information to the document.
+     *
      * @param document containing the Signature
      * @param filename in file to extract signature
      * @param output where to write the changed document
@@ -102,10 +109,15 @@ public class AddValidationInformation
     private void doValidation(String filename, OutputStream output) throws IOException
     {
         certInformationHelper = new CertInformationCollector();
-        CertSignatureInformation certInfo;
+        CertSignatureInformation certInfo = null;
         try
         {
-            certInfo = certInformationHelper.getLastCertInfo(document, filename);
+            PDSignature signature = SigUtils.getLastRelevantSignature(document);
+            if (signature != null)
+            {
+                certInfo = certInformationHelper.getLastCertInfo(signature, filename);
+                signDate = signature.getSignDate();
+            }
         }
         catch (CertificateProccessingException e)
         {
@@ -329,6 +341,11 @@ public class AddValidationInformation
             LOG.warn("Failed fetching CRL", e);
             throw new IOException(e);
         }
+        catch (CertificateVerificationException e)
+        {
+            LOG.warn("Failed fetching CRL", e);
+            throw new IOException(e);
+        }
     }
 
     /**
@@ -370,11 +387,13 @@ public class AddValidationInformation
      * @throws RevokedCertificateException
      */
     private void addCrlRevocationInfo(CertSignatureInformation certInfo)
-            throws IOException, RevokedCertificateException, GeneralSecurityException
+            throws IOException, RevokedCertificateException, GeneralSecurityException,
+            CertificateVerificationException
     {
-        byte[] crlData = CrlHelper.performCrlRequestAndCheck(certInfo.getCrlUrl(),
-                certInfo.getCertificate(), certInfo.getIssuerCertificate().getPublicKey());
-        COSStream crlStream = writeDataToStream(crlData);
+        X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
+        crl.verify(certInfo.getIssuerCertificate().getPublicKey());
+        CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());
+        COSStream crlStream = writeDataToStream(crl.getEncoded());
         crls.add(crlStream);
         if (correspondingCRLs != null)
         {
@@ -406,10 +425,10 @@ public class AddValidationInformation
     }
 
     /**
-     * Creates a FlateDecoded <code>COSStream</code> element with the given data.
+     * Creates a Flate encoded <code>COSStream</code> object with the given data.
      * 
-     * @param data to write into the element
-     * @return COSStream Element, that can be added to the document
+     * @param data to write into the COSStream
+     * @return COSStream a COSStream object that can be added to the document
      * @throws IOException
      */
     private COSStream writeDataToStream(byte[] data) throws IOException
