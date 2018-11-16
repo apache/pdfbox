@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitWidthDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -82,6 +83,9 @@ public final class CreateBookmarks
                 }
                 pagesOutline.openNode();
                 outline.openNode();
+
+                // optional: show the outlines when opening the file
+                document.getDocumentCatalog().setPageMode(PageMode.USE_OUTLINES);
 
                 document.save( args[1] );
             }
