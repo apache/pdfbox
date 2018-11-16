@@ -204,8 +204,9 @@ public class AddValidationInformation
 
     /**
      * Fetches and adds revocation information based on the certInfo to the DSS.
-     * 
-     * @param certInfo Certificate information from CertInformationHelper containing certificate chains.
+     *
+     * @param certInfo Certificate information from CertInformationHelper containing certificate
+     * chains.
      * @throws IOException
      */
     private void addRevocationData(CertSignatureInformation certInfo) throws IOException
@@ -238,8 +239,9 @@ public class AddValidationInformation
 
     /**
      * Tries to get Revocation Data (first OCSP, else CRL) from the given Certificate Chain.
-     * 
-     * @param certInfo from which to fetch revocation data. Will work recursively through its chains.
+     *
+     * @param certInfo from which to fetch revocation data. Will work recursively through its
+     * chains.
      * @throws IOException when failed to fetch an revocation data.
      */
     private void addRevocationDataRecursive(CertSignatureInformation certInfo) throws IOException
@@ -318,9 +320,10 @@ public class AddValidationInformation
 
     /**
      * Tries to fetch and add CRL Data to its containers.
-     * 
+     *
      * @param certInfo the certificate info, for it to check CRL data.
-     * @throws IOException when failed to fetch, because no validation data could be fetched for data.
+     * @throws IOException when failed to fetch, because no validation data could be fetched for
+     * data.
      */
     private void fetchCrlData(CertSignatureInformation certInfo) throws IOException
     {
@@ -384,9 +387,10 @@ public class AddValidationInformation
      * Fetches and adds CRL data to storage for the given Certificate.
      * 
      * @param certInfo the certificate info, for it to check CRL data.
-     * @throws CRLException
      * @throws IOException
      * @throws RevokedCertificateException
+     * @throws GeneralSecurityException
+     * @throws CertificateVerificationException 
      */
     private void addCrlRevocationInfo(CertSignatureInformation certInfo)
             throws IOException, RevokedCertificateException, GeneralSecurityException,
@@ -405,9 +409,9 @@ public class AddValidationInformation
     }
 
     /**
-     * Adds all certs to the certs-array. Make sure, all certificates are inside the certificateStore of
-     * certInformationHelper
-     * 
+     * Adds all certs to the certs-array. Make sure, all certificates are inside the
+     * certificateStore of certInformationHelper
+     *
      * @throws IOException
      */
     private void addAllCertsToCertArray() throws IOException
@@ -450,9 +454,9 @@ public class AddValidationInformation
     }
 
     /**
-     * Adds Extensions to the document catalog. So that the use of DSS is identified. Described in PAdES Part 4, Chapter
-     * 4.4.
-     * 
+     * Adds Extensions to the document catalog. So that the use of DSS is identified. Described in
+     * PAdES Part 4, Chapter 4.4.
+     *
      * @param catalog to add Extensions into
      */
     private void addExtensions(PDDocumentCatalog catalog)
