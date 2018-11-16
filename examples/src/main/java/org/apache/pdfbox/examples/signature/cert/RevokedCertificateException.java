@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.examples.signature.validation;
+package org.apache.pdfbox.examples.signature.cert;
 
 import java.util.Date;
 
