@@ -16,9 +16,12 @@
 
 package org.apache.pdfbox.examples.signature;
 
+import java.io.IOException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -187,5 +190,32 @@ public class SigUtils
         {
             LOG.error("Certificate extended key usage does not include timeStamping");
         }
+    }
+
+    /**
+     * Gets the last relevant signature in the document, i.e. the one with the highest offset.
+     * 
+     * @param document to get its last signature
+     * @return last signature or null when none found
+     * @throws IOException
+     */
+    public static PDSignature getLastRelevantSignature(PDDocument document) throws IOException
+    {
+        SortedMap<Integer, PDSignature> sortedMap = new TreeMap<>();
+        for (PDSignature signature : document.getSignatureDictionaries())
+        {
+            int sigOffset = signature.getByteRange()[1];
+            sortedMap.put(sigOffset, signature);
+        }
+        if (sortedMap.size() > 0)
+        {
+            PDSignature lastSignature = sortedMap.get(sortedMap.lastKey());
+            COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
+            if (type.equals(COSName.SIG) || type.equals(COSName.DOC_TIME_STAMP))
+            {
+                return lastSignature;
+            }
+        }
+        return null;
     }
 }
