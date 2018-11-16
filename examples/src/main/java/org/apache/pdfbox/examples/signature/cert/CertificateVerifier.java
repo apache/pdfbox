@@ -39,8 +39,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.examples.signature.validation.OcspHelper;
-import org.apache.pdfbox.examples.signature.validation.RevokedCertificateException;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DEROctetString;

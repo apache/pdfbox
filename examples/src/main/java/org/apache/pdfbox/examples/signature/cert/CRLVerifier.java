@@ -154,7 +154,6 @@ public final class CRLVerifier
                 throws CertificateVerificationException
     {
         //TODO this should throw a RevokedCertificateException
-        // and these exceptions should go to "cert" package
         X509CRLEntry revokedCRLEntry = crl.getRevokedCertificate(cert);
         if (revokedCRLEntry != null &&
                 revokedCRLEntry.getRevocationDate().compareTo(signDate) <= 0)
