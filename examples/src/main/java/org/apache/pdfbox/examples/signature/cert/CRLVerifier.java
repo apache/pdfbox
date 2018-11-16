@@ -114,23 +114,8 @@ public final class CRLVerifier
                             crlDistributionPointsURL + " could not be verified");
                 }
                 crl.verify(issuerKey);
-                X509CRLEntry revokedCRLEntry = crl.getRevokedCertificate(cert);
-                if (revokedCRLEntry != null &&
-                    revokedCRLEntry.getRevocationDate().compareTo(signDate) <= 0)
-                {
-                    throw new CertificateVerificationException(
-                            "The certificate was revoked by CRL " +
-                            crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
-                }
-                else if (revokedCRLEntry != null)
-                {
-                    LOG.info("The certificate was revoked after signing by CRL " +
-                            crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
-                }
-                else
-                {
-                    LOG.info("The certificate was not revoked by CRL " + crlDistributionPointsURL);
-                }
+
+                checkRevocation(crl, cert, signDate, crlDistributionPointsURL);
 
                 // https://tools.ietf.org/html/rfc5280#section-4.2.1.13
                 // If the DistributionPointName contains multiple values,
@@ -156,8 +141,41 @@ public final class CRLVerifier
     }
 
     /**
-     * Downloads CRL from given URL. Supports http, https, ftp and ldap based
-     * URLs.
+     * Check whether the certificate was revoked at signing time.
+     *
+     * @param crl certificate revocation list
+     * @param cert certificate to be checked
+     * @param signDate date the certificate was used for signing
+     * @param crlDistributionPointsURL URL for log message or exception text
+     * @throws CertificateVerificationException if the certificate was revoked at signing time
+     */
+    public static void checkRevocation
+        (X509CRL crl, X509Certificate cert, Date signDate, String crlDistributionPointsURL)
+                throws CertificateVerificationException
+    {
+        //TODO this should throw a RevokedCertificateException
+        // and these exceptions should go to "cert" package
+        X509CRLEntry revokedCRLEntry = crl.getRevokedCertificate(cert);
+        if (revokedCRLEntry != null &&
+                revokedCRLEntry.getRevocationDate().compareTo(signDate) <= 0)
+        {
+            throw new CertificateVerificationException(
+                    "The certificate was revoked by CRL " +
+                            crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
+        }
+        else if (revokedCRLEntry != null)
+        {
+            LOG.info("The certificate was revoked after signing by CRL " +
+                    crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
+        }
+        else
+        {
+            LOG.info("The certificate was not revoked by CRL " + crlDistributionPointsURL);
+        }
+    }
+
+    /**
+     * Downloads CRL from given URL. Supports http, https, ftp and ldap based URLs.
      */
     private static X509CRL downloadCRL(String crlURL) throws IOException,
             CertificateException, CRLException,
@@ -212,7 +230,7 @@ public final class CRLVerifier
      * Downloads a CRL from given HTTP/HTTPS/FTP URL, e.g.
      * http://crl.infonotary.com/crl/identity-ca.crl
      */
-    private static X509CRL downloadCRLFromWeb(String crlURL)
+    public static X509CRL downloadCRLFromWeb(String crlURL)
             throws IOException, CertificateException, CRLException
     {
         InputStream crlStream = new URL(crlURL).openStream();

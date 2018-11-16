@@ -28,15 +28,10 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
@@ -75,60 +70,28 @@ public class CertInformationCollector
     private CertSignatureInformation rootCertInfo;
 
     /**
-     * Gets the Certificate Information of the last Signature.
+     * Gets the certificate information of a signature.
      * 
-     * @param document to get the Signature from
+     * @param PDSignature the signature of the document.
      * @param fileName of the document.
      * @return the CertSignatureInformation containing all certificate information
      * @throws CertificateProccessingException when there is an error processing the certificates
      * @throws IOException on a data processing error
      */
-    public CertSignatureInformation getLastCertInfo(PDDocument document, String fileName)
+    public CertSignatureInformation getLastCertInfo(PDSignature signature, String fileName)
             throws CertificateProccessingException, IOException
     {
-        PDSignature signature = getLastRelevantSignature(document);
-        if (signature != null)
+        FileInputStream documentInput = null;
+        try
         {
-            FileInputStream documentInput = null;
-            try
-            {
-                documentInput = new FileInputStream(fileName);
-                byte[] signatureContent = signature.getContents(documentInput);
-                return getCertInfo(signatureContent);
-            }
-            finally
-            {
-                IOUtils.closeQuietly(documentInput);
-            }
+            documentInput = new FileInputStream(fileName);
+            byte[] signatureContent = signature.getContents(documentInput);
+            return getCertInfo(signatureContent);
         }
-        return null;
-    }
-
-    /**
-     * Gets the last relevant signature in the document, i.e. the one with the highest offset.
-     * 
-     * @param document to get its last Signature
-     * @return last signature or null when none found
-     * @throws IOException
-     */
-    private PDSignature getLastRelevantSignature(PDDocument document) throws IOException
-    {
-        SortedMap<Integer, PDSignature> sortedMap = new TreeMap<Integer, PDSignature>();
-        for (PDSignature signature : document.getSignatureDictionaries())
+        finally
         {
-            int sigOffset = signature.getByteRange()[1];
-            sortedMap.put(sigOffset, signature);
+            IOUtils.closeQuietly(documentInput);
         }
-        if (sortedMap.size() > 0)
-        {
-            PDSignature lastSignature = sortedMap.get(sortedMap.lastKey());
-            COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
-            if (type.equals(COSName.SIG) || type.equals(COSName.DOC_TIME_STAMP))
-            {
-                return lastSignature;
-            }
-        }
-        return null;
     }
 
     /**
@@ -149,7 +112,6 @@ public class CertInformationCollector
         try
         {
             CMSSignedData signedData = new CMSSignedData(signatureContent);
-            @SuppressWarnings("unchecked")
             Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
 
             SignerInformation signerInformation = processSignerStore(certificatesStore, signedData,
@@ -222,7 +184,7 @@ public class CertInformationCollector
      * in certificatesMap.
      * @param signedData to get SignerInformation off
      * @param certInfo where to add certificate information
-     * @return Signer Information of the processed certificate Store for further usage.
+     * @return Signer Information of the processed certificatesStore for further usage.
      * @throws IOException on data-processing error
      * @throws CertificateProccessingException on a specific error with a certificate
      */
@@ -297,7 +259,7 @@ public class CertInformationCollector
                         + "\n" + issuer.getSubjectDN());
                 certInfo.issuerCertificate = issuer;
                 certInfo.certChain = new CertSignatureInformation();
-                traverseChain(issuer, certInfo.certChain, --maxDepth);
+                traverseChain(issuer, certInfo.certChain, maxDepth - 1);
                 break;
             }
         }
