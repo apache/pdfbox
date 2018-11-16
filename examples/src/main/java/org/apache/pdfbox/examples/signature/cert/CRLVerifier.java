@@ -79,11 +79,12 @@ public final class CRLVerifier
      * @param additionalCerts set of trusted root CA certificates that will be
      * used as "trust anchors" and intermediate CA certificates that will be
      * used as part of the certification chain.
-     * @throws CertificateVerificationException if the certificate is revoked
+     * @throws CertificateVerificationException if the certificate could not be verified
+     * @throws RevokedCertificateException if the certificate is revoked
      */
     public static void verifyCertificateCRLs(X509Certificate cert, Date signDate,
             Set<X509Certificate> additionalCerts)
-            throws CertificateVerificationException
+            throws CertificateVerificationException, RevokedCertificateException
     {
         try
         {
@@ -127,7 +128,7 @@ public final class CRLVerifier
                 return;
             }
         }
-        catch (CertificateVerificationException ex)
+        catch (RevokedCertificateException | CertificateVerificationException ex)
         {
             throw ex;
         }
@@ -147,20 +148,20 @@ public final class CRLVerifier
      * @param cert certificate to be checked
      * @param signDate date the certificate was used for signing
      * @param crlDistributionPointsURL URL for log message or exception text
-     * @throws CertificateVerificationException if the certificate was revoked at signing time
+     * @throws RevokedCertificateException if the certificate was revoked at signing time
      */
-    public static void checkRevocation
-        (X509CRL crl, X509Certificate cert, Date signDate, String crlDistributionPointsURL)
-                throws CertificateVerificationException
+    public static void checkRevocation(
+        X509CRL crl, X509Certificate cert, Date signDate, String crlDistributionPointsURL)
+                throws RevokedCertificateException
     {
-        //TODO this should throw a RevokedCertificateException
         X509CRLEntry revokedCRLEntry = crl.getRevokedCertificate(cert);
         if (revokedCRLEntry != null &&
                 revokedCRLEntry.getRevocationDate().compareTo(signDate) <= 0)
         {
-            throw new CertificateVerificationException(
+            throw new RevokedCertificateException(
                     "The certificate was revoked by CRL " +
-                            crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate());
+                            crlDistributionPointsURL + " on " + revokedCRLEntry.getRevocationDate(),
+                    revokedCRLEntry.getRevocationDate());
         }
         else if (revokedCRLEntry != null)
         {
