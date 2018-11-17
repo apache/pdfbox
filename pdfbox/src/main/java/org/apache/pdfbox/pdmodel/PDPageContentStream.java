@@ -2503,6 +2503,10 @@ public final class PDPageContentStream implements Closeable
     @Override
     public void close() throws IOException
     {
+        if (inTextMode)
+        {
+            LOG.warn("You did not call endText(), some viewers won't display your text");
+        }
         if (output != null)
         {
             output.close();
