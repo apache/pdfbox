@@ -73,7 +73,7 @@ public class AddValidationInformation
     private COSArray certs;
     private PDDocument document;
     private final Set<BigInteger> foundRevocationInformation = new HashSet<>();
-    Calendar signDate;
+    private Calendar signDate;
 
     /**
      * Signs the given PDF file.
