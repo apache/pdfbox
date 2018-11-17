@@ -246,6 +246,7 @@ abstract class PDAbstractContentStream implements Closeable
      *
      * @param text The Unicode text to show.
      * @throws IOException If an io exception occurs.
+     * @throws IllegalArgumentException if a character isn't supported by the current font
      */
     public void showText(String text) throws IOException
     {
