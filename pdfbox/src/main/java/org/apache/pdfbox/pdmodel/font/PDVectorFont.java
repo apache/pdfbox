@@ -28,15 +28,15 @@ import java.io.IOException;
 public interface PDVectorFont
 {
     /**
-     * Returns the glyph path for the given character code.
+     * Returns the glyph path for the given character code in a PDF.
      *
      * @param code character code in a PDF. Not to be confused with unicode.
      * @throws java.io.IOException if the font could not be read
      */
     GeneralPath getPath(int code) throws IOException;
-    
+
     /**
-     * Returns true if this font contains a glyph for the given character code.
+     * Returns true if this font contains a glyph for the given character code in a PDF.
      *
      * @param code character code in a PDF. Not to be confused with unicode.
      */
