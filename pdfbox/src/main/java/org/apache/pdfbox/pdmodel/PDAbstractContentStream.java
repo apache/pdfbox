@@ -1534,6 +1534,10 @@ abstract class PDAbstractContentStream implements Closeable
     @Override
     public void close() throws IOException
     {
+        if (inTextMode)
+        {
+            LOG.warn("You did not call endText(), some viewers won't display your text");
+        }
         outputStream.close();
     }
 
