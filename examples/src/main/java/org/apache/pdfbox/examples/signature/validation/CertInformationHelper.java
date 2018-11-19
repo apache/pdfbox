@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PublicKey;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
@@ -30,6 +29,7 @@ import java.util.Enumeration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -104,7 +104,7 @@ public class CertInformationHelper
             {
                 try
                 {
-                    cert.verify(key);
+                    cert.verify(key, SecurityProvider.getProvider());
                     return true;
                 }
                 catch (SignatureException se)
@@ -119,7 +119,7 @@ public class CertInformationHelper
             }
         }
         catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException
-                | NoSuchProviderException e)
+                | IOException e)
         {
             throw new CertificateProccessingException(e);
         }
