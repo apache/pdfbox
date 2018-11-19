@@ -25,6 +25,7 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -36,7 +37,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
-import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
@@ -256,9 +256,9 @@ public class CertInformationCollector
             {
                 try
                 {
-                    certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider());
+                    certificate.verify(issuer.getPublicKey());
                 }
-                catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | SignatureException ex)
+                catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException ex)
                 {
                     throw new CertificateProccessingException(ex);
                 }
