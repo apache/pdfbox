@@ -283,7 +283,7 @@ public class CertInformationCollector
     private void getAlternativeIssuerCertificate(CertSignatureInformation certInfo, int maxDepth)
             throws CertificateProccessingException
     {
-        System.out.println("Get Certificate from: " + certInfo.issuerUrl);
+        LOG.info("Get alternative issuer certificate from: " + certInfo.issuerUrl);
         try
         {
             URL certUrl = new URL(certInfo.issuerUrl);
@@ -299,11 +299,11 @@ public class CertInformationCollector
         }
         catch (IOException e)
         {
-            LOG.error("Error getting additional Certificate from " + certInfo.issuerUrl, e);
+            LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
         }
         catch (CertificateException e)
         {
-            LOG.error("Error getting additional Certificate from " + certInfo.issuerUrl, e);
+            LOG.error("Error getting alternative issuer certificate from " + certInfo.issuerUrl, e);
         }
     }
 
