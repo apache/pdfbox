@@ -44,6 +44,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -114,7 +115,7 @@ public final class CRLVerifier
                             "not found in certificate chain, so the CRL at " +
                             crlDistributionPointsURL + " could not be verified");
                 }
-                crl.verify(issuerKey);
+                crl.verify(issuerKey, SecurityProvider.getProvider());
 
                 checkRevocation(crl, cert, signDate, crlDistributionPointsURL);
 
