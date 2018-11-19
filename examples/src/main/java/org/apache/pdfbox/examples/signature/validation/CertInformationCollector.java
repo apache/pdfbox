@@ -22,6 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.URL;
+import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -31,6 +35,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
@@ -231,9 +237,13 @@ public class CertInformationCollector
             certInfo.crlUrl = CertInformationHelper.getCrlUrlFromExtensionValue(crlExtensionValue);
         }
 
-        if (CertInformationHelper.isSelfSigned(certificate))
+        try
         {
-            certInfo.isSelfSigned = true;
+            certInfo.isSelfSigned = CertificateVerifier.isSelfSigned(certificate);
+        }
+        catch (GeneralSecurityException ex)
+        {
+            throw new CertificateProccessingException(ex);
         }
         if (maxDepth <= 0 || certInfo.isSelfSigned)
         {
@@ -242,8 +252,16 @@ public class CertInformationCollector
 
         for (X509Certificate issuer : certificatesMap.values())
         {
-            if (CertInformationHelper.verify(certificate, issuer.getPublicKey()))
+            if (certificate.getIssuerX500Principal().equals(issuer.getSubjectX500Principal()))
             {
+                try
+                {
+                    certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider());
+                }
+                catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | SignatureException ex)
+                {
+                    throw new CertificateProccessingException(ex);
+                }
                 LOG.info("Found the right Issuer Cert! for Cert: " + certificate.getSubjectDN()
                         + "\n" + issuer.getSubjectDN());
                 certInfo.issuerCertificate = issuer;
