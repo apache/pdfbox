@@ -188,7 +188,7 @@ public class CertInformationCollector
      *
      * @param certificatesStore To get the certificate information from. Certificates will be saved
      * in certificatesMap.
-     * @param signedData to get SignerInformation off
+     * @param signedData data from which to get the SignerInformation
      * @param certInfo where to add certificate information
      * @return Signer Information of the processed certificatesStore for further usage.
      * @throws IOException on data-processing error
