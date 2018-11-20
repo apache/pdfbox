@@ -30,6 +30,7 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -415,10 +416,7 @@ public class CertInformationCollector
     public void addAllCertsFromHolders(X509CertificateHolder[] certHolders)
             throws CertificateProccessingException
     {
-        for (X509CertificateHolder certHolder : certHolders)
-        {
-            getCertFromHolder(certHolder);
-        }
+        addAllCerts(Arrays.asList(certHolders));
     }
 
     /**
