@@ -262,8 +262,8 @@ public class CertInformationCollector
                 {
                     throw new CertificateProccessingException(ex);
                 }
-                LOG.info("Found the right Issuer Cert! for Cert: " + certificate.getSubjectDN()
-                        + "\n" + issuer.getSubjectDN());
+                LOG.info("Found the right Issuer Cert! for Cert: " + certificate.getSubjectX500Principal()
+                        + "\n" + issuer.getSubjectX500Principal());
                 certInfo.issuerCertificate = issuer;
                 certInfo.certChain = new CertSignatureInformation();
                 traverseChain(issuer, certInfo.certChain, maxDepth - 1);
@@ -273,7 +273,7 @@ public class CertInformationCollector
         if (certInfo.issuerCertificate == null)
         {
             throw new IOException(
-                    "No Issuer Certificate found for Cert: " + certificate.getSubjectDN());
+                    "No Issuer Certificate found for Cert: " + certificate.getSubjectX500Principal());
         }
     }
 
