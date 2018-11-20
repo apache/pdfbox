@@ -17,14 +17,8 @@
 package org.apache.pdfbox.examples.signature.validation;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
-import java.security.SignatureException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 
 import org.apache.commons.logging.Log;
@@ -66,63 +60,6 @@ public class CertInformationHelper
             LOG.error("No SHA-1 Algorithm found", e);
         }
         return null;
-    }
-
-    /**
-     * Checks whether the given certificate is self-signed (root).
-     * 
-     * @param cert to be checked
-     * @return true when it is a self-signed certificate
-     * @throws CertificateProccessingException containing the cause, on multiple exception with the given data
-     */
-    public static boolean isSelfSigned(X509Certificate cert) throws CertificateProccessingException
-    {
-        return verify(cert, cert.getPublicKey());
-    }
-
-    /**
-     * Verifies whether the certificate is signed by the given public key. Can be done to check
-     * signature chain. Idea and code are from Julius Musseau at:
-     * https://stackoverflow.com/a/10822177/2497581
-     *
-     * @param cert Child certificate to check
-     * @param key Fathers public key to check
-     * @return true when the certificate is signed by the public key
-     * @throws CertificateProccessingException containing the cause, on multiple exception with the
-     * given data
-     */
-    public static boolean verify(X509Certificate cert, PublicKey key)
-            throws CertificateProccessingException
-    {
-        try
-        {
-            String sigAlg = cert.getSigAlgName();
-            String keyAlg = key.getAlgorithm();
-            sigAlg = sigAlg != null ? sigAlg.trim().toUpperCase() : "";
-            keyAlg = keyAlg != null ? keyAlg.trim().toUpperCase() : "";
-            if (keyAlg.length() >= 2 && sigAlg.endsWith(keyAlg))
-            {
-                try
-                {
-                    cert.verify(key);
-                    return true;
-                }
-                catch (SignatureException se)
-                {
-                    LOG.debug("Couldn't get signature information - returning false", se);
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-        catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException
-                | NoSuchProviderException e)
-        {
-            throw new CertificateProccessingException(e);
-        }
     }
 
     /**
