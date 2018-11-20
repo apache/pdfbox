@@ -325,7 +325,7 @@ public class CertInformationCollector
             InputStream in = certUrl.openStream();
 
             X509Certificate altIssuerCert = (X509Certificate) certFactory.generateCertificate(in);
-            addCertToCertStore(altIssuerCert);
+            addCertToCertificatesMap(altIssuerCert);
 
             certInfo.alternativeCertChain = new CertSignatureInformation();
             traverseChain(altIssuerCert, certInfo.alternativeCertChain, maxDepth - 1);
@@ -346,7 +346,7 @@ public class CertInformationCollector
      * 
      * @param certificate to add to the certificatesMap
      */
-    private void addCertToCertStore(X509Certificate certificate)
+    private void addCertToCertificatesMap(X509Certificate certificate)
     {
         if (!certificatesMap.containsKey(certificate.getSerialNumber()))
         {
