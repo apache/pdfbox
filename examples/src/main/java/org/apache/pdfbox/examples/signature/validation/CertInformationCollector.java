@@ -386,8 +386,7 @@ public class CertInformationCollector
     }
 
     /**
-     * Adds multiple Certificates out of a Collection of X509CertificateHolder into the
-     * Certificate-Store.
+     * Adds multiple Certificates out of a Collection of X509CertificateHolder into certificatesMap.
      *
      * @param certHolders Collection of X509CertificateHolder
      */
