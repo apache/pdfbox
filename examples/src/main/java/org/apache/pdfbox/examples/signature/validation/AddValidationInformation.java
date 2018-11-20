@@ -267,7 +267,7 @@ public class AddValidationInformation
             if (!isRevocationInfoFound)
             {
                 throw new IOException("Could not fetch Revocation Info for Cert: "
-                        + certInfo.getCertificate().getSubjectDN());
+                        + certInfo.getCertificate().getSubjectX500Principal());
             }
         }
 
