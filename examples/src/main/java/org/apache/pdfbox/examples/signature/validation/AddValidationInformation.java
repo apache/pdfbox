@@ -258,7 +258,11 @@ public class AddValidationInformation
                 isRevocationInfoFound = true;
             }
 
-            if (!isRevocationInfoFound)
+            if (certInfo.getOcspUrl() == null && certInfo.getCrlUrl() == null)
+            {
+                LOG.info("No revocation information for cert " + certInfo.getCertificate().getSubjectX500Principal());
+            }
+            else if (!isRevocationInfoFound)
             {
                 throw new IOException("Could not fetch Revocation Info for Cert: "
                         + certInfo.getCertificate().getSubjectX500Principal());
@@ -339,6 +343,12 @@ public class AddValidationInformation
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
+
+        // mkl in https://stackoverflow.com/questions/30617875
+        // "ocsp responses usually are signed by special certificates. 
+        //  Often these certificates are marked to not require revocation checks but not always"
+        CertSignatureInformation ocspCertInfo = certInformationHelper.getOCSPCertInfo(basicResponse.getCerts()[0]);
+        addRevocationDataRecursive(ocspCertInfo);
 
         byte[] ocspData = ocspResp.getEncoded();
 

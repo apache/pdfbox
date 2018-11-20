@@ -392,6 +392,27 @@ public class CertInformationCollector
     }
 
     /**
+     * Traverse the OCSP certificate.
+     *
+     * @param certHolder
+     * @return
+     * @throws CertificateProccessingException 
+     */
+    CertSignatureInformation getOCSPCertInfo(X509CertificateHolder certHolder) throws CertificateProccessingException
+    {
+        try
+        {
+            CertSignatureInformation certSignatureInformation = new CertSignatureInformation();
+            traverseChain(certConverter.getCertificate(certHolder), certSignatureInformation, MAX_CERTIFICATE_CHAIN_DEPTH);
+            return certSignatureInformation;
+        }
+        catch (IOException | CertificateException ex)
+        {
+            throw new CertificateProccessingException(ex);
+        }
+    }
+
+    /**
      * Get the map of all processed certificates until now.
      * 
      * @return a map of serial numbers to certificates.
