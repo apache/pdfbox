@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
@@ -492,6 +493,9 @@ public class AddValidationInformation
             usage();
             System.exit(1);
         }
+
+        // register BouncyCastle provider, needed for "exotic" algorithms
+        Security.addProvider(SecurityProvider.getProvider());
 
         // add ocspInformation
         AddValidationInformation addOcspInformation = new AddValidationInformation();
