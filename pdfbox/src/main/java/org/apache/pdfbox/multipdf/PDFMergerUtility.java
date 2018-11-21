@@ -263,8 +263,7 @@ public class PDFMergerUtility
      */
     public void addSource(File source) throws FileNotFoundException
     {
-        FileInputStream stream = new FileInputStream(source);
-        sources.add(stream);
+        sources.add(source);
     }
 
     /**
