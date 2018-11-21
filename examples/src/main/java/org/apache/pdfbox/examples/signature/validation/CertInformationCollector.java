@@ -38,6 +38,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.DERSet;
@@ -257,7 +258,7 @@ public class CertInformationCollector
             {
                 try
                 {
-                    certificate.verify(issuer.getPublicKey());
+                    certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider().getName());
                 }
                 catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException ex)
                 {
