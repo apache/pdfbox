@@ -205,7 +205,7 @@ public final class CertificateVerifier
         catch (SignatureException | InvalidKeyException | IOException ex)
         {
             // Invalid signature --> not self-signed
-            LOG.debug("Couldn't get signature information - returning false", sigEx);
+            LOG.debug("Couldn't get signature information - returning false", ex);
             return false;
         }
     }
