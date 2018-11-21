@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DEROctetString;
@@ -198,19 +199,25 @@ public final class CertificateVerifier
         {
             // Try to verify certificate signature with its own public key
             PublicKey key = cert.getPublicKey();
-            cert.verify(key);
+            cert.verify(key, SecurityProvider.getProvider().getName());
             return true;
         }
-        catch (SignatureException sigEx)
+        catch (SignatureException ex)
         {
             // Invalid signature --> not self-signed
-            LOG.debug("Couldn't get signature information - returning false", sigEx);
+            LOG.debug("Couldn't get signature information - returning false", ex);
             return false;
         }
-        catch (InvalidKeyException sigEx)
+        catch (InvalidKeyException ex)
         {
             // Invalid signature --> not self-signed
-            LOG.debug("Couldn't get signature information - returning false", sigEx);
+            LOG.debug("Couldn't get signature information - returning false", ex);
+            return false;
+        }
+        catch (IOException ex)
+        {
+            // Invalid signature --> not self-signed
+            LOG.debug("Couldn't get signature information - returning false", ex);
             return false;
         }
     }
