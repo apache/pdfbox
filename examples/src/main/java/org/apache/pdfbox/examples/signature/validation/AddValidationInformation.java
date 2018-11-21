@@ -48,6 +48,7 @@ import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
@@ -406,7 +407,7 @@ public class AddValidationInformation
             CertificateVerificationException
     {
         X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
-        crl.verify(certInfo.getIssuerCertificate().getPublicKey());
+        crl.verify(certInfo.getIssuerCertificate().getPublicKey(), SecurityProvider.getProvider().getName());
         CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());
         COSStream crlStream = writeDataToStream(crl.getEncoded());
         crls.add(crlStream);
