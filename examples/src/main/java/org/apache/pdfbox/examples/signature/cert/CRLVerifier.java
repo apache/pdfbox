@@ -89,12 +89,26 @@ public final class CRLVerifier
     {
         try
         {
+            Exception firstException = null;
             List<String> crlDistributionPointsURLs = getCrlDistributionPoints(cert);
             for (String crlDistributionPointsURL : crlDistributionPointsURLs)
             {
                 LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
-                //TODO catch connection errors and try the next one
-                X509CRL crl = downloadCRL(crlDistributionPointsURL);
+                X509CRL crl;
+                try
+                {
+                    crl = downloadCRL(crlDistributionPointsURL);
+                }
+                catch (Exception ex)
+                {
+                    // e.g. LDAP behind corporate proxy
+                    LOG.warn("Caught " + ex.getClass().getSimpleName() + " downloading CRL, will try next distribution point if available");
+                    if (firstException == null)
+                    {
+                        firstException = ex;
+                    }
+                    continue;
+                }
 
                 // Verify CRL, see wikipedia:
                 // "To validate a specific CRL prior to relying on it,
@@ -127,6 +141,10 @@ public final class CRLVerifier
                 //
                 // => thus no need to check several protocols
                 return;
+            }
+            if (firstException != null)
+            {
+                throw firstException;
             }
         }
         catch (CertificateVerificationException ex)
@@ -214,6 +232,10 @@ public final class CRLVerifier
         Hashtable<String, String> env = new Hashtable<String, String>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, ldapURL);
+
+        // https://docs.oracle.com/javase/jndi/tutorial/ldap/connect/create.html
+        // don't wait forever behind corporate proxy
+        env.put("com.sun.jndi.ldap.connect.timeout", "1000");
 
         DirContext ctx = new InitialDirContext(env);
         Attributes avals = ctx.getAttributes("");
