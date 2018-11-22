@@ -38,7 +38,9 @@ import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.ocsp.OCSPResponseStatus;
+import org.bouncycastle.asn1.ocsp.ResponderID;
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.Extensions;
@@ -112,12 +114,60 @@ public class OcspHelper
     private void verifyOcspResponse(OCSPResp ocspResponse)
             throws OCSPException, RevokedCertificateException, IOException
     {
+        X509CertificateHolder ocspResponderCertificateHolder = null;
+
         verifyRespStatus(ocspResponse);
 
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
         if (basicResponse != null)
         {
-            checkOcspSignature(basicResponse.getCerts()[0], basicResponse);
+            ResponderID responderID = basicResponse.getResponderId().toASN1Primitive();
+            // https://tools.ietf.org/html/rfc6960#section-4.2.2.3
+            // The basic response type contains:
+            // (...)
+            // either the name of the responder or a hash of the responder's
+            // public key as the ResponderID
+            X500Name name = responderID.getName();
+            if (name != null)
+            {
+                // The responder MAY include certificates in the certs field of
+                // BasicOCSPResponse that help the OCSP client verify the responder's
+                // signature.
+                X509CertificateHolder[] certHolders = basicResponse.getCerts();
+                for (X509CertificateHolder certHolder : certHolders)
+                {
+                    if (name.equals(certHolder.getSubject()))
+                    {
+                        ocspResponderCertificateHolder = certHolder;
+                    }
+                }
+                if (ocspResponderCertificateHolder == null)
+                {
+                    //TODO search existing chain
+                    throw new OCSPException("OCSP: certificate for responder " + name + " not found in response");
+                }
+            }
+            else
+            {
+                byte[] keyHash = responderID.getKeyHash();
+                //TODO
+                // KeyHash ::= OCTET STRING -- SHA-1 hash of responder's public key
+                //         -- (i.e., the SHA-1 hash of the value of the
+                //         -- BIT STRING subjectPublicKey [excluding
+                //         -- the tag, length, and number of unused
+                //         -- bits] in the responder's certificate)
+                throw new UnsupportedOperationException("search by key hash is not implemented yet");
+
+                // how BC calculates the HeyHash:
+                // see CertificateID.createCertID()
+                //  digCalc is a SHA1DigestCalculator
+                //            SubjectPublicKeyInfo info = issuerCert.getSubjectPublicKeyInfo();
+                //            dgOut = digCalc.getOutputStream();
+                //            dgOut.write(info.getPublicKeyData().getBytes());
+                //            dgOut.close();
+                //            ASN1OctetString issuerKeyHash = new DEROctetString(digCalc.getDigest());
+            }
+            checkOcspSignature(ocspResponderCertificateHolder, basicResponse);
 
             boolean nonceChecked = checkNonce(basicResponse);
 
