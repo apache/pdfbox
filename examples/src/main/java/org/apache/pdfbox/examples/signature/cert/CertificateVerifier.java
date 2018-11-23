@@ -175,7 +175,7 @@ public final class CertificateVerifier
         String ocspURL = extractOCSPURL(cert);
         if (ocspURL != null)
         {
-            OcspHelper ocspHelper = new OcspHelper(cert, issuerCert, ocspURL);
+            OcspHelper ocspHelper = new OcspHelper(cert, issuerCert, additionalCerts, ocspURL);
             try
             {
                 verifyOCSP(ocspHelper, signDate);
