@@ -29,6 +29,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -372,7 +373,8 @@ public class AddValidationInformation
             CertificateProccessingException, RevokedCertificateException
     {
         OcspHelper ocspHelper = new OcspHelper(certInfo.getCertificate(),
-                certInfo.getIssuerCertificate(), certInfo.getOcspUrl());
+                //TODO put actual cert chain
+                certInfo.getIssuerCertificate(), Collections.<X509Certificate>emptySet(), certInfo.getOcspUrl());
 
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
