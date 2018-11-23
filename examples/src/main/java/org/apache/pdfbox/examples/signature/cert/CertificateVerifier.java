@@ -176,7 +176,16 @@ public final class CertificateVerifier
         if (ocspURL != null)
         {
             OcspHelper ocspHelper = new OcspHelper(cert, issuerCert, ocspURL);
-            verifyOCSP(ocspHelper, signDate);
+            try
+            {
+                verifyOCSP(ocspHelper, signDate);
+            }
+            catch (IOException ex)
+            {
+                // happens with 021496.pdf because OCSP responder no longer exists
+                LOG.warn("IOException trying OCSP, will try CRL", ex);
+                CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
+            }
         }
         else
         {
