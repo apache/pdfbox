@@ -69,8 +69,10 @@ import org.apache.pdfbox.pdmodel.graphics.blend.BlendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
+import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
@@ -136,6 +138,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     
     private final Stack<TransparencyGroup> transparencyGroupStack = new Stack<>();
 
+    // separation color space
+    private PDColorSpace colorSpace;
+
+    // separation color space component
+    private final int component;
+
     /**
     * Default annotations filter, returns all annotations
     */
@@ -159,6 +167,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         super(parameters.getPage());
         this.renderer = parameters.getRenderer();
         this.subsamplingAllowed = parameters.isSubsamplingAllowed();
+        this.colorSpace = parameters.getColorSpace();
+        this.component = parameters.getComponent();
     }
 
     /**
@@ -460,19 +470,26 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             if (renderingMode.isFill())
             {
-                graphics.setComposite(state.getNonStrokingJavaComposite());
-                graphics.setPaint(getNonStrokingPaint());
-                setClip();
-                graphics.fill(glyph);
+                if (shouldDraw(state.getNonStrokingColor())) {
+                    checkColors();
+                    graphics.setComposite(state.getNonStrokingJavaComposite());
+                    graphics.setPaint(getNonStrokingPaint());
+                    setClip();
+                    graphics.fill(glyph);
+                }
             }
 
             if (renderingMode.isStroke())
             {
-                graphics.setComposite(state.getStrokingJavaComposite());
-                graphics.setPaint(getStrokingPaint());
-                graphics.setStroke(getStroke());
-                setClip();
-                graphics.draw(glyph);
+                if (shouldDraw(state.getStrokingColor())) {
+                    checkColors();
+
+                    graphics.setComposite(state.getStrokingJavaComposite());
+                    graphics.setPaint(getStrokingPaint());
+                    graphics.setStroke(getStroke());
+                    setClip();
+                    graphics.draw(glyph);
+                }
             }
 
             if (renderingMode.isClip())
@@ -497,8 +514,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         linePath.closePath();
     }
 
+    private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException {
+        return applySoftMaskToPaint(parentPaint, softMask, 0, 0);
+    }    
+
     //TODO: move soft mask apply to getPaint()?
-    private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask) throws IOException
+    private Paint applySoftMaskToPaint(Paint parentPaint, PDSoftMask softMask, float x, float y) throws IOException
     {
         if (softMask == null || softMask.getGroup() == null)
         {
@@ -541,7 +562,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         gray = adjustImage(gray);
         
         Rectangle2D tpgBounds = transparencyGroup.getBounds();
-        adjustRectangle(tpgBounds);
+        adjustRectangle(tpgBounds, x, y);
         return new SoftMask(parentPaint, gray, tpgBounds, backdropColor, softMask.getTransferFunction());
     }
 
@@ -551,14 +572,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // 2. change transparencyGroup.getBounds() to getOrigin(), because size isn't used in SoftMask
     // 3. Is it possible to create the softmask and transparency group in the correct rotation?
     //    (needs rendering identity testing before committing!)
-    private void adjustRectangle(Rectangle2D r)
+    private void adjustRectangle(Rectangle2D r, float x, float y)
     {
         Matrix m = new Matrix(xform);
         double scaleX = m.getScalingFactorX();
         double scaleY = m.getScalingFactorY();
-        
+
         AffineTransform adjustedTransform = new AffineTransform(xform);
         adjustedTransform.scale(1.0 / scaleX, 1.0 / scaleY);
+        adjustedTransform.translate(Math.round(-x), Math.round(-y));
         r.setRect(adjustedTransform.createTransformedShape(r).getBounds2D());
     }
 
@@ -652,18 +674,26 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     @Override
     public void strokePath() throws IOException
     {
+        checkColors();
+
         graphics.setComposite(getGraphicsState().getStrokingJavaComposite());
         graphics.setPaint(getStrokingPaint());
         graphics.setStroke(getStroke());
         setClip();
-        //TODO bbox of shading pattern should be used here? (see fillPath)
-        graphics.draw(linePath);
+
+        if (shouldDraw(getGraphicsState().getStrokingColor())) {            
+            //TODO bbox of shading pattern should be used here? (see fillPath)       
+            graphics.draw(linePath);
+        }
+
         linePath.reset();
     }
 
     @Override
     public void fillPath(int windingRule) throws IOException
     {
+        checkColors();
+
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         graphics.setPaint(getNonStrokingPaint());
         setClip();
@@ -688,9 +718,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area area = new Area(linePath);
             area.intersect(new Area(graphics.getClip()));
             intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
-            graphics.fill(area);
+
+            if (shouldDraw(getGraphicsState().getNonStrokingColor())) {
+                graphics.fill(area);
+            }
         }
-        else
+        else if (shouldDraw(getGraphicsState().getNonStrokingColor()))
         {
             graphics.fill(linePath);
         }
@@ -958,12 +991,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 int subsampling = getSubsampling(pdImage, at);
                 // draw the subsampled image
-                drawBufferedImage(pdImage.getImage(null, subsampling), at);
+                drawBufferedImage(pdImage.getImage(null, subsampling, colorSpace, component), at);
             }
             else
             {
                 // subsampling not allowed, draw the image
-                drawBufferedImage(pdImage.getImage(), at);
+                drawBufferedImage(pdImage.getImage(null, 1, colorSpace, component), at);
             }
         }
 
@@ -1234,12 +1267,21 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if (softMask != null)
         {
-            Paint awtPaint = new TexturePaint(image,
-                    new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
-            awtPaint = applySoftMaskToPaint(awtPaint, softMask);
-            graphics.setPaint(awtPaint);
-            graphics.fill(
-                    new Rectangle2D.Float(0, 0, bbox.getWidth() * xScale, bbox.getHeight() * yScale));
+            BufferedImage img = new BufferedImage((int)(bbox.getWidth() * xScale), (int)(bbox.getHeight() * yScale), BufferedImage.TYPE_INT_ARGB);
+            Paint awtPaint = new TexturePaint(image, new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
+            Graphics2D g = img.createGraphics();
+            awtPaint = applySoftMaskToPaint(awtPaint, softMask, x * xScale, y * yScale);
+            try {
+                g.setPaint(awtPaint);
+                g.fill(
+                    new Rectangle2D.Float(0, 0, img.getWidth(), img.getHeight())
+                );
+            }
+            finally {
+                g.dispose();
+            }
+
+            graphics.drawImage(img, null, null);
         }
         else
         {
@@ -1557,4 +1599,88 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         return false;
     }
+
+    private void checkColors() {
+        PDColor white = PDDeviceRGB.INSTANCE.getWhite();
+        PDGraphicsState graphicsState = getGraphicsState();
+        PDColor sColor = graphicsState.getStrokingColor();
+        PDColor nsColor = graphicsState.getNonStrokingColor();
+        PDColorSpace sColorSpace = sColor.getColorSpace();
+        PDColorSpace nsColorSpace = nsColor.getColorSpace();
+
+        if (colorSpace == null) {
+            if (sColorSpace instanceof PDSeparation) {
+                getRenderer().getSeparations().add((PDSeparation)sColorSpace);
+            }
+
+            if (nsColorSpace instanceof PDSeparation) {
+                getRenderer().getSeparations().add((PDSeparation)nsColorSpace);
+            }
+
+            return;
+        }
+
+        if (!isRegistrationColor(sColor)) {
+            if (sColorSpace != colorSpace) {
+                graphicsState.setStrokingColor(white);
+            }
+            else if (component >= 0) {
+                float[] components = sColor.getComponents();
+                
+                for (int i = 0; i < components.length; i++) {
+                    if (i != component) {
+                        components[i] = 0;
+                    }
+                }
+
+                graphicsState.setStrokingColor(new PDColor(components, sColorSpace));
+            }
+        }
+
+        if (!isRegistrationColor(nsColor)) {
+            if (nsColorSpace != colorSpace) {
+                graphicsState.setNonStrokingColor(white);
+            }
+            else if (component >= 0) {
+                float[] components = nsColor.getComponents();
+                
+                for (int i = 0; i < components.length; i++) {
+                    if (i != component) {
+                        components[i] = 0;
+                    }
+                }
+
+                graphicsState.setNonStrokingColor(new PDColor(components, nsColorSpace));
+            }
+        }
+    }
+
+    private boolean isRegistrationColor(PDColor color) {
+        PDColorSpace colorSpace = color.getColorSpace();
+
+        if (colorSpace instanceof PDSeparation) {
+            PDSeparation separation = (PDSeparation)colorSpace;
+
+            if (separation.getColorantName().equals("All")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean shouldDraw(PDColor color) {
+        if (colorSpace == null) {
+            return true;
+        }
+
+        PDColorSpace cs = color.getColorSpace();
+        boolean isOverprint = getGraphicsState().isOverprint() || getGraphicsState().isNonStrokingOverprint();
+
+        if (isOverprint && colorSpace != cs && !isRegistrationColor(color)) {
+            return false;
+        }
+        
+        return true;
+    }    
 }

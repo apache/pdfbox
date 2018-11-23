@@ -138,7 +138,7 @@ public final class PDIndexed extends PDSpecialColorSpace
         }
 
         // convert the base image to RGB
-        BufferedImage rgbImage = baseColorSpace.toRGBImage(baseRaster);
+        BufferedImage rgbImage = baseColorSpace.toRGBImage(baseRaster, null, -1);
         WritableRaster rgbRaster = rgbImage.getRaster();
 
         // build an RGB lookup table from the raster
@@ -176,7 +176,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(WritableRaster raster, PDColorSpace targetColorSpace, int component) throws IOException
     {
         // use lookup table
         int width = raster.getWidth();
@@ -184,6 +184,7 @@ public final class PDIndexed extends PDSpecialColorSpace
 
         BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         WritableRaster rgbRaster = rgbImage.getRaster();
+        float[] baseColor = new float[baseColorSpace.getNumberOfComponents()];
 
         int[] src = new int[1];
         for (int y = 0; y < height; y++)
@@ -194,7 +195,35 @@ public final class PDIndexed extends PDSpecialColorSpace
 
                 // lookup
                 int index = Math.min(src[0], actualMaxIndex);
-                rgbRaster.setPixel(x, y, rgbColorTable[index]);
+
+                if (targetColorSpace == null || this == targetColorSpace || baseColorSpace == targetColorSpace) {
+                    if (component < 0) {                        
+                        rgbRaster.setPixel(x, y, rgbColorTable[index]);
+                    }
+                    else {
+                        float[] tableColor = colorTable[index];
+
+                        for (int i = 0; i < baseColor.length; i++) {
+                            if (i != component) {
+                                baseColor[i] = 0;
+                            }
+                            else {
+                                baseColor[i] = tableColor[i];
+                            }
+                        }
+
+                        float[] rgbColor = baseColorSpace.toRGB(baseColor);
+
+                        for(int i = 0; i < rgbColor.length; i++) {
+                            rgbColor[i] = rgbColor[i] * 255f;
+                        }
+
+                        rgbRaster.setPixel(x, y, rgbColor);
+                    }
+                }
+                else {
+                    rgbRaster.setPixel(x, y, new int[] {255, 255, 255});
+                }                
             }
         }
 

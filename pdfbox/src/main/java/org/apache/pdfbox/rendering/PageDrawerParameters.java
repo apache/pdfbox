@@ -18,6 +18,7 @@
 package org.apache.pdfbox.rendering;
 
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
 /**
  * Parameters for a PageDrawer. This class ensures allows PDFRenderer and PageDrawer to share
@@ -31,15 +32,19 @@ public final class PageDrawerParameters
     private final PDFRenderer renderer;
     private final PDPage page;
     private final boolean subsamplingAllowed;
+    private final PDColorSpace colorSpace;
+    private final int component;
 
     /**
      * Package-private constructor.
      */
-    PageDrawerParameters(PDFRenderer renderer, PDPage page, boolean subsamplingAllowed)
+    PageDrawerParameters(PDFRenderer renderer, PDPage page, boolean subsamplingAllowed, PDColorSpace colorSpace, int component)
     {
         this.renderer = renderer;
         this.page = page;
         this.subsamplingAllowed = subsamplingAllowed;
+        this.colorSpace = colorSpace;
+        this.component = component;
     }
 
     /**
@@ -64,5 +69,19 @@ public final class PageDrawerParameters
     public boolean isSubsamplingAllowed()
     {
         return subsamplingAllowed;
+    }
+
+    /**
+     * Returns the separation color space or null when rendering composite
+     */
+    public PDColorSpace getColorSpace() {
+        return colorSpace;
+    }
+
+    /**
+     * Returns the component of the separation color space or -1 when rendering all components
+     */
+    public int getComponent() {
+        return component;
     }
 }

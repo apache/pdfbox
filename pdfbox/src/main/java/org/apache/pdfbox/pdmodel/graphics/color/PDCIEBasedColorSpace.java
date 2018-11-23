@@ -33,7 +33,7 @@ public abstract class PDCIEBasedColorSpace extends PDColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(WritableRaster raster, PDColorSpace colorSpace, int component) throws IOException
     {
         // This method calls toRGB to convert images one pixel at a time. For matrix-based
         // CIE color spaces this is fast enough. However, it should not be used with any

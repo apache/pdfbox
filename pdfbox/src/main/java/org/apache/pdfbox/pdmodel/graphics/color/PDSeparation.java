@@ -133,7 +133,7 @@ public class PDSeparation extends PDSpecialColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(WritableRaster raster, PDColorSpace targeColorSpace, int component) throws IOException
     {
         if (alternateColorSpace instanceof PDLab)
         {
@@ -172,7 +172,7 @@ public class PDSeparation extends PDSpecialColorSpace
         }
 
         // convert the alternate color space to RGB
-        return alternateColorSpace.toRGBImage(altRaster);
+        return alternateColorSpace.toRGBImage(altRaster, targeColorSpace, component);
     }
 
     // converter that works without using super implementation of toRGBImage()

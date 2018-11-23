@@ -61,7 +61,7 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
     // WARNING: this method is performance sensitive, modify with care!
     //
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(WritableRaster raster, PDColorSpace targetColorSpace, int component) throws IOException
     {
         int width = raster.getWidth();
         int height = raster.getHeight();

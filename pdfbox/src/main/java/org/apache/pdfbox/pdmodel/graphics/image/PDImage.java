@@ -56,7 +56,7 @@ public interface PDImage extends COSObjectable
      * @return subsampled content of the requested subregion as a buffered image.
      * @throws IOException
      */
-    BufferedImage getImage(Rectangle region, int subsampling) throws IOException;
+    BufferedImage getImage(Rectangle region, int subsampling, PDColorSpace targetColorSpace, int component) throws IOException;
 
     /**
      * Returns an ARGB image filled with the given paint and using this image as a mask.

@@ -267,15 +267,15 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(WritableRaster raster, PDColorSpace targetColorSpace, int component) throws IOException
     {
         if (awtColorSpace != null)
         {
-            return toRGBImageAWT(raster, awtColorSpace);
+            return toRGBImageAWT(raster, awtColorSpace, targetColorSpace, component);
         }
         else
         {
-            return alternateColorSpace.toRGBImage(raster);
+            return alternateColorSpace.toRGBImage(raster, targetColorSpace, component);
         }
     }
 

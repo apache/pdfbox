@@ -36,6 +36,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     public static final PDDeviceRGB INSTANCE = new PDDeviceRGB();
     
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0 }, this);
+    private final PDColor white = new PDColor(new float[] { 1, 1, 1 }, this);
     private volatile ColorSpace awtColorSpace;
 
     private PDDeviceRGB()
@@ -96,6 +97,11 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         return initialColor;
     }
 
+    public PDColor getWhite() 
+    {
+        return white;
+    }
+
     @Override
     public float[] toRGB(float[] value)
     {
@@ -103,7 +109,7 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
     }
 
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(WritableRaster raster, PDColorSpace colorSpace, int component) throws IOException
     {
         init();
 

@@ -102,7 +102,7 @@ public class PDDocument implements Closeable
     	try
         {
             WritableRaster raster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE, 1, 1, 3, new Point(0, 0));
-            PDDeviceRGB.INSTANCE.toRGBImage(raster);
+            PDDeviceRGB.INSTANCE.toRGBImage(raster, null, -1);
         }
         catch (IOException ex)
         {

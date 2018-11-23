@@ -288,7 +288,7 @@ public abstract class PDColorSpace implements COSObjectable
      * @return an (A)RGB buffered image
      * @throws IOException if the color conversion fails
      */
-    public abstract BufferedImage toRGBImage(WritableRaster raster) throws IOException;
+    public abstract BufferedImage toRGBImage(WritableRaster raster, PDColorSpace targetColorSpace, int component) throws IOException;
 
     /**
      * Returns the (A)RGB equivalent of the given raster, using the given AWT color space
@@ -297,7 +297,7 @@ public abstract class PDColorSpace implements COSObjectable
      * @param colorSpace the AWT
      * @return an (A)RGB buffered image
      */
-    protected BufferedImage toRGBImageAWT(WritableRaster raster, ColorSpace colorSpace)
+    protected BufferedImage toRGBImageAWT(WritableRaster raster, ColorSpace colorSpace, PDColorSpace targetColorSpace, int component)
     {
         //
         // WARNING: this method is performance sensitive, modify with care!
