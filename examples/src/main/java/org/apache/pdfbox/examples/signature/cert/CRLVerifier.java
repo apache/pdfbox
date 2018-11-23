@@ -95,6 +95,9 @@ public final class CRLVerifier
             for (String crlDistributionPointsURL : crlDistributionPointsURLs)
             {
                 LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
+
+                // nested exception needed to try several distribution points
+                @SuppressWarnings({"squid:S1141"})
                 X509CRL crl;
                 try
                 {
