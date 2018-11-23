@@ -255,6 +255,17 @@ public final class CertificateVerifier
         // Disable CRL checks (this is done manually as additional step)
         pkixParams.setRevocationEnabled(false);
 
+        // not doing this brings
+        // "SunCertPathBuilderException: unable to find valid certification path to requested target"
+        // (when using -Djava.security.debug=certpath: "critical policy qualifiers present in certificate")
+        // for files like 021496.pdf that have the "Adobe CDS Certificate Policy" 1.2.840.113583.1.2.1
+        // CDS = "Certified Document Services"
+        // https://www.adobe.com/misc/pdfs/Adobe_CDS_CP.pdf
+        pkixParams.setPolicyQualifiersRejected(false);
+        // However, maybe there is still work to do:
+        // "If the policyQualifiersRejected flag is set to false, it is up to the application
+        // to validate all policy qualifiers in this manner in order to be PKIX compliant."
+
         pkixParams.setDate(signDate);
 
         // Specify a list of intermediate certificates
