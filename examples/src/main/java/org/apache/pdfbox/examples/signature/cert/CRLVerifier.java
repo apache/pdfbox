@@ -84,6 +84,7 @@ public final class CRLVerifier
      * @throws CertificateVerificationException if the certificate could not be verified
      * @throws RevokedCertificateException if the certificate is revoked
      */
+    @SuppressWarnings({"squid:S1141"}) // nested exception needed to try several distribution points
     public static void verifyCertificateCRLs(X509Certificate cert, Date signDate,
             Set<X509Certificate> additionalCerts)
             throws CertificateVerificationException, RevokedCertificateException
@@ -96,8 +97,6 @@ public final class CRLVerifier
             {
                 LOG.info("Checking distribution point URL: " + crlDistributionPointsURL);
 
-                // nested exception needed to try several distribution points
-                @SuppressWarnings({"squid:S1141"})
                 X509CRL crl;
                 try
                 {
