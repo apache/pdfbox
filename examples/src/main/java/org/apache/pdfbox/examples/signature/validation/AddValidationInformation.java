@@ -29,6 +29,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -341,7 +342,8 @@ public class AddValidationInformation
             CertificateProccessingException, RevokedCertificateException
     {
         OcspHelper ocspHelper = new OcspHelper(certInfo.getCertificate(),
-                certInfo.getIssuerCertificate(), certInfo.getOcspUrl());
+                //TODO put actual cert chain
+                certInfo.getIssuerCertificate(), Collections.<X509Certificate>emptySet(), certInfo.getOcspUrl());
 
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
@@ -358,6 +360,7 @@ public class AddValidationInformation
             // 1) this must go into separate VRI
             // 2) basicResponse.getCerts()[0] is not always the correct certificate
             //    see in OCSPHelper code with ResponderID
+            // 3) OCSP responder validation should also be done (or not done depending of id_pkix_ocsp_nocheck) when doing ShowSignature
         }
 
         byte[] ocspData = ocspResp.getEncoded();
