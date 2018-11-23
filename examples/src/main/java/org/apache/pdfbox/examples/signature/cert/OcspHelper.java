@@ -30,6 +30,7 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,19 +72,25 @@ public class OcspHelper
 
     private final X509Certificate issuerCertificate;
     private final X509Certificate certificateToCheck;
+    private final Set<X509Certificate> additionalCerts;
     private final String ocspUrl;
     private DEROctetString encodedNonce;
 
     /**
      * @param checkCertificate Certificate to be OCSP-Checked
      * @param issuerCertificate Certificate of the issuer
+     * @param additionalCerts Set of trusted root CA certificates that will be used as "trust
+     * anchors" and intermediate CA certificates that will be used as part of the certification
+     * chain. All self-signed certificates are considered to be trusted root CA certificates. All
+     * the rest are considered to be intermediate CA certificates.
      * @param ocspUrl where to fetch for OCSP
      */
     public OcspHelper(X509Certificate checkCertificate, X509Certificate issuerCertificate,
-            String ocspUrl)
+            Set<X509Certificate> additionalCerts, String ocspUrl)
     {
         this.certificateToCheck = checkCertificate;
         this.issuerCertificate = issuerCertificate;
+        this.additionalCerts = additionalCerts;
         this.ocspUrl = ocspUrl;
     }
 
