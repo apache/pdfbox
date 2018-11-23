@@ -96,19 +96,18 @@ public final class CertificateVerifier
             // Check for self-signed certificate
             if (!verifySelfSignedCert && isSelfSigned(cert))
             {
-                throw new CertificateVerificationException(
-                        "The certificate is self-signed.");
+                throw new CertificateVerificationException("The certificate is self-signed.");
             }
 
-            // Prepare a set of trusted root CA certificates
+            // Prepare a set of trust anchors (set of root CA certificates)
             // and a set of intermediate certificates
-            Set<X509Certificate> trustedRootCerts = new HashSet<>();
             Set<X509Certificate> intermediateCerts = new HashSet<>();
+            Set<TrustAnchor> trustAnchors = new HashSet<>();
             for (X509Certificate additionalCert : additionalCerts)
             {
                 if (isSelfSigned(additionalCert))
                 {
-                    trustedRootCerts.add(additionalCert);
+                    trustAnchors.add(new TrustAnchor(additionalCert, null));
                 }
                 else
                 {
@@ -116,9 +115,14 @@ public final class CertificateVerifier
                 }
             }
 
+            if (trustAnchors.isEmpty())
+            {
+                throw new CertificateVerificationException("No root certificate in the chain");
+            }
+
             // Attempt to build the certification chain and verify it
             PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
-                    cert, trustedRootCerts, intermediateCerts, signDate);
+                    cert, trustAnchors, intermediateCerts, signDate);
 
             LOG.info("Certification chain verified successfully");
 
@@ -216,7 +220,7 @@ public final class CertificateVerifier
      * set of intermediate certificates (to be used as part of the chain).
      *
      * @param cert - certificate for validation
-     * @param trustedRootCerts - set of trusted root CA certificates
+     * @param trustAnchors - set of trust anchors
      * @param intermediateCerts - set of intermediate certificates
      * @param signDate the date when the signing took place
      * @return the certification chain (if verification is successful)
@@ -225,20 +229,13 @@ public final class CertificateVerifier
      * is expired)
      */
     private static PKIXCertPathBuilderResult verifyCertificate(
-            X509Certificate cert, Set<X509Certificate> trustedRootCerts,
+            X509Certificate cert, Set<TrustAnchor> trustAnchors,
             Set<X509Certificate> intermediateCerts, Date signDate)
             throws GeneralSecurityException
     {
         // Create the selector that specifies the starting certificate
         X509CertSelector selector = new X509CertSelector();
         selector.setCertificate(cert);
-
-        // Create the trust anchors (set of root CA certificates)
-        Set<TrustAnchor> trustAnchors = new HashSet<>();
-        for (X509Certificate trustedRootCert : trustedRootCerts)
-        {
-            trustAnchors.add(new TrustAnchor(trustedRootCert, null));
-        }
 
         // Configure the PKIX certificate builder algorithm parameters
         PKIXBuilderParameters pkixParams = new PKIXBuilderParameters(trustAnchors, selector);
