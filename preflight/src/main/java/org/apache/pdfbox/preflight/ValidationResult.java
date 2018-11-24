@@ -43,6 +43,11 @@ public class ValidationResult
     private List<ValidationError> lErrors = new ArrayList<ValidationError>();
 
     /**
+     * Max error count, to avoid out of memory.
+     */
+    static private final int MAX_ERRORS = 10000;
+
+    /**
      * Object representation of the XMPMetaData contained by the pdf file This attribute can be null if the Validation
      * fails.
      */
@@ -70,7 +75,7 @@ public class ValidationResult
         this.isValid = false;
         if (error != null)
         {
-            this.lErrors.add(error);
+            addErrorInternal(error);
         }
     }
 
@@ -137,7 +142,7 @@ public class ValidationResult
         if (error != null)
         {
             this.isValid &= error.isWarning();
-            this.lErrors.add(error);
+            addErrorInternal(error);
         }
     }
 
@@ -163,6 +168,20 @@ public class ValidationResult
     public List<ValidationError> getErrorsList()
     {
         return this.lErrors;
+    }
+
+    private void addErrorInternal(ValidationError error)
+    {
+        if (this.lErrors.size() == MAX_ERRORS)
+        {
+            this.lErrors.add(new ValidationError(PreflightConstants.ERROR_UNKOWN_ERROR, "Too many errors"));
+            return;
+        }
+        if (this.lErrors.size() > MAX_ERRORS)
+        {
+            return;
+        }
+        this.lErrors.add(error);
     }
 
     /**
