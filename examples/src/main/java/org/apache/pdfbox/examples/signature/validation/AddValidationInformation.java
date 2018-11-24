@@ -29,7 +29,6 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +51,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
@@ -372,28 +370,15 @@ public class AddValidationInformation
     private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
             CertificateProccessingException, RevokedCertificateException
     {
-        OcspHelper ocspHelper = new OcspHelper(certInfo.getCertificate(),
-                //TODO put actual cert chain
-                certInfo.getIssuerCertificate(), Collections.<X509Certificate>emptySet(), certInfo.getOcspUrl());
+        OcspHelper ocspHelper = new OcspHelper(
+                certInfo.getCertificate(),
+                certInfo.getIssuerCertificate(),
+                new HashSet<X509Certificate>(certInformationHelper.getCertificatesMap().values()),
+                certInfo.getOcspUrl());
 
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
-        if (basicResponse.getCerts()[0].getExtension(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck) == null)
-        {
-            // mkl in https://stackoverflow.com/questions/30617875
-            // "ocsp responses usually are signed by special certificates. 
-            //  Often these certificates are marked to not require revocation checks but not always"
-            CertSignatureInformation ocspCertInfo = certInformationHelper.getOCSPCertInfo(basicResponse.getCerts()[0]);
-            addRevocationDataRecursive(ocspCertInfo);
-
-            //TODO 
-            // 1) this must go into separate VRI
-            // 2) basicResponse.getCerts()[0] is not always the correct certificate
-            //    see in OCSPHelper code with ResponderID
-        }
-        CertSignatureInformation ocspCertInfo = certInformationHelper.getOCSPCertInfo(basicResponse.getCerts()[0]);
-        addRevocationDataRecursive(ocspCertInfo);
 
         byte[] ocspData = ocspResp.getEncoded();
 
