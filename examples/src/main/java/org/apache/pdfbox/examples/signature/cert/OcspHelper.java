@@ -135,24 +135,46 @@ public class OcspHelper
             // (...)
             // either the name of the responder or a hash of the responder's
             // public key as the ResponderID
+            // (...)
+            // The responder MAY include certificates in the certs field of
+            // BasicOCSPResponse that help the OCSP client verify the responder's
+            // signature.
             X500Name name = responderID.getName();
             if (name != null)
             {
-                // The responder MAY include certificates in the certs field of
-                // BasicOCSPResponse that help the OCSP client verify the responder's
-                // signature.
                 X509CertificateHolder[] certHolders = basicResponse.getCerts();
                 for (X509CertificateHolder certHolder : certHolders)
                 {
                     if (name.equals(certHolder.getSubject()))
                     {
                         ocspResponderCertificateHolder = certHolder;
+                        break;
                     }
                 }
                 if (ocspResponderCertificateHolder == null)
                 {
-                    //TODO search existing chain
-                    throw new OCSPException("OCSP: certificate for responder " + name + " not found in response");
+                    // DO NOT use the certificate found in additionalCerts first. One file had a 
+                    // responder certificate in the PDF itself with SHA1withRSA algorithm, but
+                    // the responder delivered a different (newer, more secure) certificate
+                    // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
+                    // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
+                    for (X509Certificate cert : additionalCerts)
+                    {
+                        X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
+                        if (certSubjectName.equals(name))
+                        {
+                            try
+                            {
+                                ocspResponderCertificateHolder = new X509CertificateHolder(cert.getEncoded());
+                                break;
+                            }
+                            catch (CertificateEncodingException ex)
+                            {
+                                // unlikely to happen because the certificate existed as an object
+                                LOG.error(ex, ex);
+                            }
+                        }
+                    }
                 }
             }
             else
@@ -175,6 +197,14 @@ public class OcspHelper
                 //            dgOut.close();
                 //            ASN1OctetString issuerKeyHash = new DEROctetString(digCalc.getDigest());
             }
+
+            if (ocspResponderCertificateHolder == null)
+            {
+                throw new OCSPException("OCSP: certificate for responder " + name + " not found");
+            }
+
+            //TODO verify that ExtendedKeyUsage usage contains OCSPSigning
+
             checkOcspSignature(ocspResponderCertificateHolder, basicResponse);
 
             boolean nonceChecked = checkNonce(basicResponse);
