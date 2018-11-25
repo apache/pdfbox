@@ -193,6 +193,24 @@ public class SigUtils
     }
 
     /**
+     * Log if the certificate is not valid for responding.
+     *
+     * @param x509Certificate 
+     * @throws java.security.cert.CertificateParsingException 
+     */
+    public static void checkResponderCertificateUsage(X509Certificate x509Certificate)
+            throws CertificateParsingException
+    {
+        List<String> extendedKeyUsage = x509Certificate.getExtendedKeyUsage();
+        // https://tools.ietf.org/html/rfc5280#section-4.2.1.12
+        if (extendedKeyUsage != null &&
+            !extendedKeyUsage.contains(KeyPurposeId.id_kp_OCSPSigning.toString()))
+        {
+            LOG.error("Certificate extended key usage does not include OCSP responding");
+        }
+    }
+
+    /**
      * Gets the last relevant signature in the document, i.e. the one with the highest offset.
      * 
      * @param document to get its last signature

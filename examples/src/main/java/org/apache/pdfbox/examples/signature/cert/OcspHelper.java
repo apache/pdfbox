@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
@@ -35,6 +36,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
@@ -182,7 +184,15 @@ public class OcspHelper
                 throw new OCSPException("OCSP: certificate for responder " + name + " not found");
             }
 
-            //TODO verify that ExtendedKeyUsage usage contains OCSPSigning
+            try
+            {
+                SigUtils.checkResponderCertificateUsage(ocspResponderCertificate);
+            }
+            catch (CertificateParsingException ex)
+            {
+                // unlikely to happen because the certificate existed as an object
+                LOG.error(ex, ex);
+            }
             checkOcspSignature(ocspResponderCertificate, basicResponse);
 
             boolean nonceChecked = checkNonce(basicResponse);
@@ -252,7 +262,6 @@ public class OcspHelper
                 X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
                 if (certSubjectName.equals(name))
                 {
-                    
                     ocspResponderCertificate = cert;
                     break;
                 }
