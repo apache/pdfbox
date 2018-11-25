@@ -155,41 +155,7 @@ public class OcspHelper
             X500Name name = responderID.getName();
             if (name != null)
             {
-                X509CertificateHolder[] certHolders = basicResponse.getCerts();
-                for (X509CertificateHolder certHolder : certHolders)
-                {
-                    if (name.equals(certHolder.getSubject()))
-                    {
-                        try
-                        {
-                            ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
-                        }
-                        catch (CertificateException ex)
-                        {
-                            // unlikely to happen because the certificate existed as an object
-                            LOG.error(ex, ex);
-                        }
-                        break;
-                    }
-                }
-                if (ocspResponderCertificate == null)
-                {
-                    // DO NOT use the certificate found in additionalCerts first. One file had a 
-                    // responder certificate in the PDF itself with SHA1withRSA algorithm, but
-                    // the responder delivered a different (newer, more secure) certificate
-                    // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
-                    // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
-                    for (X509Certificate cert : additionalCerts)
-                    {
-                        X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
-                        if (certSubjectName.equals(name))
-                        {
-
-                            ocspResponderCertificate = cert;
-                            break;
-                        }
-                    }
-                }
+                findResponderCertificateByName(basicResponse, name);
             }
             else
             {
@@ -252,6 +218,45 @@ public class OcspHelper
             {
                 throw new OCSPException(
                         "OCSP: Received " + responses.length + " responses instead of 1!");
+            }
+        }
+    }
+
+    private void findResponderCertificateByName(BasicOCSPResp basicResponse, X500Name name)
+    {
+        X509CertificateHolder[] certHolders = basicResponse.getCerts();
+        for (X509CertificateHolder certHolder : certHolders)
+        {
+            if (name.equals(certHolder.getSubject()))
+            {
+                try
+                {
+                    ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
+                }
+                catch (CertificateException ex)
+                {
+                    // unlikely to happen because the certificate existed as an object
+                    LOG.error(ex, ex);
+                }
+                break;
+            }
+        }
+        if (ocspResponderCertificate == null)
+        {
+            // DO NOT use the certificate found in additionalCerts first. One file had a
+            // responder certificate in the PDF itself with SHA1withRSA algorithm, but
+            // the responder delivered a different (newer, more secure) certificate
+            // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
+            // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
+            for (X509Certificate cert : additionalCerts)
+            {
+                X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
+                if (certSubjectName.equals(name))
+                {
+                    
+                    ocspResponderCertificate = cert;
+                    break;
+                }
             }
         }
     }
