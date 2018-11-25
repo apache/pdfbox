@@ -45,7 +45,7 @@ public class ValidationResult
     /**
      * Max error count, to avoid out of memory.
      */
-    static private final int MAX_ERRORS = 10000;
+    private static final int MAX_ERRORS = 10000;
 
     /**
      * Object representation of the XMPMetaData contained by the pdf file This attribute can be null if the Validation
