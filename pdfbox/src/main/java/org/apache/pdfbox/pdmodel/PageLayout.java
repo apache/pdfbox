@@ -44,23 +44,14 @@ public enum PageLayout
 
     public static PageLayout fromString(String value)
     {
-        switch (value)
+        for (PageLayout instance : PageLayout.values())
         {
-            case "SinglePage":
-                return SINGLE_PAGE;
-            case "OneColumn":
-                return ONE_COLUMN;
-            case "TwoColumnLeft":
-                return TWO_COLUMN_LEFT;
-            case "TwoColumnRight":
-                return TWO_COLUMN_RIGHT;
-            case "TwoPageLeft":
-                return TWO_PAGE_LEFT;
-            case "TwoPageRight":
-                return TWO_PAGE_RIGHT;
-            default:
-                throw new IllegalArgumentException(value);
+            if (instance.value.equals(value))
+            {
+                return instance;
+            }
         }
+        throw new IllegalArgumentException(value);
     }
 
     private final String value;
