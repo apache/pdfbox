@@ -26,6 +26,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,8 +47,8 @@ import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.Extensions;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509ContentVerifierProviderBuilder;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.CertificateID;
 import org.bouncycastle.cert.ocsp.CertificateStatus;
@@ -60,6 +61,7 @@ import org.bouncycastle.cert.ocsp.SingleResp;
 import org.bouncycastle.operator.ContentVerifierProvider;
 import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 
 /**
  * Helper Class for OCSP-Operations with bouncy castle.
@@ -75,6 +77,8 @@ public class OcspHelper
     private final Set<X509Certificate> additionalCerts;
     private final String ocspUrl;
     private DEROctetString encodedNonce;
+    private X509Certificate ocspResponderCertificate;
+    private final JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
 
     /**
      * @param checkCertificate Certificate to be OCSP-Checked
@@ -99,6 +103,7 @@ public class OcspHelper
      *
      * @return the OCSPResp, when the request was successful, else a corresponding exception will be
      * thrown. Never returns null.
+     *
      * @throws IOException
      * @throws OCSPException
      * @throws RevokedCertificateException
@@ -108,6 +113,16 @@ public class OcspHelper
         OCSPResp ocspResponse = performRequest();
         verifyOcspResponse(ocspResponse);
         return ocspResponse;
+    }
+
+    /**
+     * Get responder certificate. This is available after {@link #getResponseOcsp()} has been called.
+     *
+     * @return The certificate of the responder.
+     */
+    public X509Certificate getOcspResponderCertificate()
+    {
+        return ocspResponderCertificate;
     }
 
     /**
@@ -121,8 +136,6 @@ public class OcspHelper
     private void verifyOcspResponse(OCSPResp ocspResponse)
             throws OCSPException, RevokedCertificateException, IOException
     {
-        X509CertificateHolder ocspResponderCertificateHolder = null;
-
         verifyRespStatus(ocspResponse);
 
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
@@ -146,11 +159,19 @@ public class OcspHelper
                 {
                     if (name.equals(certHolder.getSubject()))
                     {
-                        ocspResponderCertificateHolder = certHolder;
+                        try
+                        {
+                            ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
+                        }
+                        catch (CertificateException ex)
+                        {
+                            // unlikely to happen because the certificate existed as an object
+                            LOG.error(ex, ex);
+                        }
                         break;
                     }
                 }
-                if (ocspResponderCertificateHolder == null)
+                if (ocspResponderCertificate == null)
                 {
                     // DO NOT use the certificate found in additionalCerts first. One file had a 
                     // responder certificate in the PDF itself with SHA1withRSA algorithm, but
@@ -162,16 +183,9 @@ public class OcspHelper
                         X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
                         if (certSubjectName.equals(name))
                         {
-                            try
-                            {
-                                ocspResponderCertificateHolder = new X509CertificateHolder(cert.getEncoded());
-                                break;
-                            }
-                            catch (CertificateEncodingException ex)
-                            {
-                                // unlikely to happen because the certificate existed as an object
-                                LOG.error(ex, ex);
-                            }
+
+                            ocspResponderCertificate = cert;
+                            break;
                         }
                     }
                 }
@@ -197,14 +211,13 @@ public class OcspHelper
                 //            ASN1OctetString issuerKeyHash = new DEROctetString(digCalc.getDigest());
             }
 
-            if (ocspResponderCertificateHolder == null)
+            if (ocspResponderCertificate == null)
             {
                 throw new OCSPException("OCSP: certificate for responder " + name + " not found");
             }
 
             //TODO verify that ExtendedKeyUsage usage contains OCSPSigning
-
-            checkOcspSignature(ocspResponderCertificateHolder, basicResponse);
+            checkOcspSignature(ocspResponderCertificate, basicResponse);
 
             boolean nonceChecked = checkNonce(basicResponse);
 
@@ -283,12 +296,12 @@ public class OcspHelper
      * @throws OCSPException when the signature is invalid or could not be checked
      * @throws IOException if the default security provider can't be instantiated
      */
-    private void checkOcspSignature(X509CertificateHolder certificate, BasicOCSPResp basicResponse)
+    private void checkOcspSignature(X509Certificate certificate, BasicOCSPResp basicResponse)
             throws OCSPException, IOException
     {
         try
         {
-            ContentVerifierProvider verifier = new JcaX509ContentVerifierProviderBuilder()
+            ContentVerifierProvider verifier = new JcaContentVerifierProviderBuilder()
                     .setProvider(SecurityProvider.getProvider()).build(certificate);
 
             if (!basicResponse.isSignatureValid(verifier))
