@@ -128,8 +128,8 @@ public class OcspHelper
     }
 
     /**
-     * Verifies the status and the response itself (including nonce), but not the signature.
-     * 
+     * Verifies the status and the response itself (including nonce).
+     *
      * @param ocspResponse to be verified
      * @throws OCSPException
      * @throws RevokedCertificateException
