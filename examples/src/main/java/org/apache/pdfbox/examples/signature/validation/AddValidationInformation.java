@@ -372,6 +372,7 @@ public class AddValidationInformation
     {
         OcspHelper ocspHelper = new OcspHelper(
                 certInfo.getCertificate(),
+                signDate.getTime(),
                 certInfo.getIssuerCertificate(),
                 new HashSet<X509Certificate>(certInformationHelper.getCertificatesMap().values()),
                 certInfo.getOcspUrl());
