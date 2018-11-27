@@ -114,6 +114,11 @@ public class PreflightConfiguration
      */
     private ColorSpaceHelperFactory colorSpaceHelperFact;
 
+    /**
+     * Define the maximum number of errors.
+     */
+    private int maxErrors = 10000;
+
     public static PreflightConfiguration createPdfA1BConfiguration()
     {
         PreflightConfiguration configuration = new PreflightConfiguration();
@@ -282,4 +287,23 @@ public class PreflightConfiguration
         this.colorSpaceHelperFact = colorSpaceHelperFact;
     }
 
+    /**
+     * Get the maximum number of errors after which to abort when possible.
+     *
+     * @return 
+     */
+    public int getMaxErrors()
+    {
+        return maxErrors;
+    }
+
+    /**
+     * Set the maximum number of errors after which to abort when possible.
+     *
+     * @param maxErrors 
+     */
+    public void setMaxErrors(int maxErrors)
+    {
+        this.maxErrors = maxErrors;
+    }
 }
