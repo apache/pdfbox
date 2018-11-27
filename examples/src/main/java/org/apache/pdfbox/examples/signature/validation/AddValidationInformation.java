@@ -380,6 +380,9 @@ public class AddValidationInformation
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
+        
+        //TODO check revocation of responder + include in separate VRI (usually not needed). 
+        // See comment by mkl in PDFBOX-3017 on 21.11.2018
 
         byte[] ocspData = ocspResp.getEncoded();
 
