@@ -75,6 +75,7 @@ public class OcspHelper
     private static final Log LOG = LogFactory.getLog(OcspHelper.class);
 
     private final X509Certificate issuerCertificate;
+    private final Date signDate;
     private final X509Certificate certificateToCheck;
     private final Set<X509Certificate> additionalCerts;
     private final String ocspUrl;
@@ -83,7 +84,8 @@ public class OcspHelper
     private final JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
 
     /**
-     * @param checkCertificate Certificate to be OCSP-Checked
+     * @param checkCertificate Certificate to be OCSP-checked
+     * @param signDate the date when the signing took place
      * @param issuerCertificate Certificate of the issuer
      * @param additionalCerts Set of trusted root CA certificates that will be used as "trust
      * anchors" and intermediate CA certificates that will be used as part of the certification
@@ -91,10 +93,11 @@ public class OcspHelper
      * the rest are considered to be intermediate CA certificates.
      * @param ocspUrl where to fetch for OCSP
      */
-    public OcspHelper(X509Certificate checkCertificate, X509Certificate issuerCertificate,
+    public OcspHelper(X509Certificate checkCertificate, Date signDate, X509Certificate issuerCertificate,
             Set<X509Certificate> additionalCerts, String ocspUrl)
     {
         this.certificateToCheck = checkCertificate;
+        this.signDate = signDate;
         this.issuerCertificate = issuerCertificate;
         this.additionalCerts = additionalCerts;
         this.ocspUrl = ocspUrl;
@@ -128,8 +131,8 @@ public class OcspHelper
     }
 
     /**
-     * Verifies the status and the response itself (including nonce).
-     *
+     * Verifies the status and the response itself (including nonce), but not the signature.
+     * 
      * @param ocspResponse to be verified
      * @throws OCSPException
      * @throws RevokedCertificateException
@@ -213,10 +216,15 @@ public class OcspHelper
                 if (status instanceof RevokedStatus)
                 {
                     RevokedStatus revokedStatus = (RevokedStatus) status;
-                    throw new RevokedCertificateException(
+                    if (revokedStatus.getRevocationTime().compareTo(signDate) <= 0)
+                    {
+                        throw new RevokedCertificateException(
                             "OCSP: Certificate is revoked since " +
                                     revokedStatus.getRevocationTime(),
                                     revokedStatus.getRevocationTime());
+                    }
+                    LOG.info("The certificate was revoked after signing by OCSP " + ocspUrl + 
+                             " on " + revokedStatus.getRevocationTime());
                 }
                 else if (status != CertificateStatus.GOOD)
                 {

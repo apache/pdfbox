@@ -27,12 +27,14 @@ import java.security.SignatureException;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.CertStore;
+import java.security.cert.CertificateException;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXBuilderParameters;
 import java.security.cert.PKIXCertPathBuilderResult;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -44,10 +46,14 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERTaggedObject;
+import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
+import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
 
@@ -175,10 +181,10 @@ public final class CertificateVerifier
         String ocspURL = extractOCSPURL(cert);
         if (ocspURL != null)
         {
-            OcspHelper ocspHelper = new OcspHelper(cert, issuerCert, additionalCerts, ocspURL);
+            OcspHelper ocspHelper = new OcspHelper(cert, signDate, issuerCert, additionalCerts, ocspURL);
             try
             {
-                verifyOCSP(ocspHelper, signDate);
+                verifyOCSP(ocspHelper, additionalCerts);
             }
             catch (IOException ex)
             {
@@ -316,39 +322,68 @@ public final class CertificateVerifier
     }
 
     /**
-     * Verify whether the certificate has been revoked at signing date.
+     * Verify whether the certificate has been revoked at signing date, and verify whether
+     * the certificate of the responder has been revoked now.
      *
      * @param ocspHelper the OCSP helper.
-     * @param signDate the signing date.
+     * @param additionalCerts
      * @throws RevokedCertificateException
      * @throws IOException
      * @throws OCSPException
      * @throws CertificateVerificationException
      */
-    private static void verifyOCSP(OcspHelper ocspHelper, Date signDate)
+    private static void verifyOCSP(OcspHelper ocspHelper, Set<X509Certificate> additionalCerts)
             throws RevokedCertificateException, IOException, OCSPException, CertificateVerificationException
     {
+        Date now = Calendar.getInstance().getTime();
+        OCSPResp ocspResponse;
+        ocspResponse = ocspHelper.getResponseOcsp();
+        if (ocspResponse.getStatus() != OCSPResp.SUCCESSFUL)
+        {
+            throw new CertificateVerificationException("OCSP check not successful, status: "
+                    + ocspResponse.getStatus());
+        }
+        LOG.info("OCSP check successful");
+
+        BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
+        X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
+        if (ocspResponderCertificate.getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) != null)
+        {
+            // https://tools.ietf.org/html/rfc6960#section-4.2.2.2.1
+            // A CA may specify that an OCSP client can trust a responder for the
+            // lifetime of the responder's certificate.  The CA does so by
+            // including the extension id-pkix-ocsp-nocheck.
+            LOG.info("Revocation check of OCSP responder certificate skipped (id-pkix-ocsp-nocheck is set)");
+            return;
+        }
+
+        LOG.info("Revocation check of OCSP responder certificate");
+        Set<X509Certificate> additionalCerts2 = new HashSet<>(additionalCerts);
+        JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+        for (X509CertificateHolder certHolder : basicResponse.getCerts())
+        {
+            try
+            {
+                X509Certificate cert = certificateConverter.getCertificate(certHolder);
+                if (!ocspResponderCertificate.equals(cert))
+                {
+                    additionalCerts2.add(cert);
+                }
+            }
+            catch (CertificateException ex)
+            {
+                // unlikely to happen because the certificate existed as an object
+                LOG.error(ex, ex);
+            }
+        }
         try
         {
-            OCSPResp basicResponse = ocspHelper.getResponseOcsp();
-            if (basicResponse.getStatus() != OCSPResp.SUCCESSFUL)
-            {
-                throw new CertificateVerificationException("OCSP check not successful, status: "
-                        + basicResponse.getStatus());
-            }
-            else
-            {
-                LOG.info("OCSP check successful");
-            }
+            checkRevocations(ocspResponderCertificate, additionalCerts2, now);
         }
-        catch (RevokedCertificateException ex)
+        catch (GeneralSecurityException ex)
         {
-            if (ex.getRevocationTime().compareTo(signDate) <= 0)
-            {
-                throw ex;
-            }
-            LOG.info("OCSP check successful: The certificate was revoked after signing on " +
-                    ex.getRevocationTime());
+            throw new CertificateVerificationException(ex.getMessage(), ex);
         }
+        LOG.info("Revocation check of OCSP responder certificate done");
     }
 }
