@@ -472,6 +472,10 @@ public final class ShowSignature
         // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
         Attribute attribute = unsignedAttributes.get(
                 PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+        if (attribute == null)
+        {
+            return null;
+        }
         ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
         CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
         return new TimeStampToken(signedTSTData);
