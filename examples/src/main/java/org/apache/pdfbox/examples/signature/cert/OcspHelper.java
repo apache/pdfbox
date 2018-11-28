@@ -202,40 +202,38 @@ public class OcspHelper
             boolean nonceChecked = checkNonce(basicResponse);
 
             SingleResp[] responses = basicResponse.getResponses();
-            if (responses.length == 1)
-            {
-                SingleResp resp = responses[0];
-                Object status = resp.getCertStatus();
-
-                if (!nonceChecked)
-                {
-                    // https://tools.ietf.org/html/rfc5019
-                    // fall back to validating the OCSPResponse based on time
-                    checkOcspResponseFresh(resp);
-                }
-
-                if (status instanceof RevokedStatus)
-                {
-                    RevokedStatus revokedStatus = (RevokedStatus) status;
-                    if (revokedStatus.getRevocationTime().compareTo(signDate) <= 0)
-                    {
-                        throw new RevokedCertificateException(
-                            "OCSP: Certificate is revoked since " +
-                                    revokedStatus.getRevocationTime(),
-                                    revokedStatus.getRevocationTime());
-                    }
-                    LOG.info("The certificate was revoked after signing by OCSP " + ocspUrl + 
-                             " on " + revokedStatus.getRevocationTime());
-                }
-                else if (status != CertificateStatus.GOOD)
-                {
-                    throw new OCSPException("OCSP: Status of Cert is unknown");
-                }
-            }
-            else
+            if (responses.length != 1)
             {
                 throw new OCSPException(
                         "OCSP: Received " + responses.length + " responses instead of 1!");
+            }    
+
+            SingleResp resp = responses[0];
+            Object status = resp.getCertStatus();
+
+            if (!nonceChecked)
+            {
+                // https://tools.ietf.org/html/rfc5019
+                // fall back to validating the OCSPResponse based on time
+                checkOcspResponseFresh(resp);
+            }
+
+            if (status instanceof RevokedStatus)
+            {
+                RevokedStatus revokedStatus = (RevokedStatus) status;
+                if (revokedStatus.getRevocationTime().compareTo(signDate) <= 0)
+                {
+                    throw new RevokedCertificateException(
+                        "OCSP: Certificate is revoked since " +
+                                revokedStatus.getRevocationTime(),
+                                revokedStatus.getRevocationTime());
+                }
+                LOG.info("The certificate was revoked after signing by OCSP " + ocspUrl + 
+                         " on " + revokedStatus.getRevocationTime());
+            }
+            else if (status != CertificateStatus.GOOD)
+            {
+                throw new OCSPException("OCSP: Status of Cert is unknown");
             }
         }
     }
