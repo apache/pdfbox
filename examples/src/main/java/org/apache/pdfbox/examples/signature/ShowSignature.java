@@ -71,6 +71,7 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 
@@ -362,14 +363,15 @@ public final class ShowSignature
         {
             // tested with QV_RCA1_RCA3_CPCPS_V4_11.pdf
             // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
-            // timeStampToken.getCertificates() only contained the local certificate and not
-            // the whole chain, so use the store of the main signature.
-            // (If this assumption is incorrect, then the code must be changed to merge
-            // both stores, or to pass a collection)
+            // also 021496.pdf and 036351.pdf from digitalcorpora
             validateTimestampToken(timeStampToken);
             X509CertificateHolder tstCertHolder = (X509CertificateHolder) timeStampToken.getCertificates().getMatches(null).iterator().next();
             X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(tstCertHolder);
-            verifyCertificateChain(certificatesStore,
+            // merge both stores using a set to remove duplicates
+            HashSet<X509CertificateHolder> certificateHolderSet = new HashSet<X509CertificateHolder>();
+            certificateHolderSet.addAll(certificatesStore.getMatches(null));
+            certificateHolderSet.addAll(timeStampToken.getCertificates().getMatches(null));
+            verifyCertificateChain(new CollectionStore<X509CertificateHolder>(certificateHolderSet),
                     certFromTimeStamp,
                     timeStampToken.getTimeStampInfo().getGenTime());
             SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
