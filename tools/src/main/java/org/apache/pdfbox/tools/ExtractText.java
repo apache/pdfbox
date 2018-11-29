@@ -453,6 +453,7 @@ class AngleCollector extends PDFTextStripper
     protected void processTextPosition(TextPosition text)
     {
         Matrix m = text.getTextMatrix();
+        m.concatenate(text.getFont().getFontMatrix());
         int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
         angle = (angle + 360) % 360;
         angles.add(angle);
@@ -472,6 +473,7 @@ class FilteredTextStripper extends PDFTextStripper
     protected void processTextPosition(TextPosition text)
     {
         Matrix m = text.getTextMatrix();
+        m.concatenate(text.getFont().getFontMatrix());
         int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
         if (angle == 0)
         {
