@@ -357,7 +357,7 @@ public final class CertificateVerifier
             return;
         }
 
-        LOG.info("Revocation check of OCSP responder certificate");
+        LOG.info("Check of OCSP responder certificate");
         Set<X509Certificate> additionalCerts2 = new HashSet<>(additionalCerts);
         JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
         for (X509CertificateHolder certHolder : basicResponse.getCerts())
@@ -376,14 +376,7 @@ public final class CertificateVerifier
                 LOG.error(ex, ex);
             }
         }
-        try
-        {
-            checkRevocations(ocspResponderCertificate, additionalCerts2, now);
-        }
-        catch (GeneralSecurityException ex)
-        {
-            throw new CertificateVerificationException(ex.getMessage(), ex);
-        }
-        LOG.info("Revocation check of OCSP responder certificate done");
+        CertificateVerifier.verifyCertificate(ocspResponderCertificate, additionalCerts2, true, now);
+        LOG.info("Check of OCSP responder certificate done");
     }
 }
