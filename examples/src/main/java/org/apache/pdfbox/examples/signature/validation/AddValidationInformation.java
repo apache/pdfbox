@@ -220,6 +220,9 @@ public class AddValidationInformation
 
         addRevocationDataRecursive(certInfo);
 
+        //TODO this will have to be rewritten differently, because it is wrong to take the whole
+        // list object for the OCSP / CRL entries. Each VRI must have its own.
+
         if (correspondingOCSPs.size() > 0)
         {
             vri.setItem("OCSP", correspondingOCSPs);
