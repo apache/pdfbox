@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.PublicKey;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -32,6 +31,7 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -91,6 +91,7 @@ public final class CRLVerifier
     {
         try
         {
+            Date now = Calendar.getInstance().getTime();
             Exception firstException = null;
             List<String> crlDistributionPointsURLs = getCrlDistributionPoints(cert);
             for (String crlDistributionPointsURL : crlDistributionPointsURLs)
@@ -117,23 +118,34 @@ public final class CRLVerifier
                 // Verify CRL, see wikipedia:
                 // "To validate a specific CRL prior to relying on it,
                 //  the certificate of its corresponding CA is needed"
-                PublicKey issuerKey = null;
+                X509Certificate crlIssuerCert = null;
                 for (X509Certificate additionalCert : additionalCerts)
                 {
-                    if (crl.getIssuerX500Principal().equals(
-                            additionalCert.getSubjectX500Principal()))
+                    if (crl.getIssuerX500Principal().equals(additionalCert.getSubjectX500Principal()))
                     {
-                        issuerKey = additionalCert.getPublicKey();
+                        crlIssuerCert = additionalCert;
+                        break;
                     }
                 }
-                if (issuerKey == null)
+                if (crlIssuerCert == null)
                 {
                     throw new CertificateVerificationException(
                             "Certificate for " + crl.getIssuerX500Principal() +
                             "not found in certificate chain, so the CRL at " +
                             crlDistributionPointsURL + " could not be verified");
                 }
-                crl.verify(issuerKey, SecurityProvider.getProvider().getName());
+                crl.verify(crlIssuerCert.getPublicKey(), SecurityProvider.getProvider().getName());
+
+                if (!crl.getIssuerX500Principal().equals(cert.getIssuerX500Principal()))
+                {
+                    LOG.info("CRL issuer certificate is not identical to cert issuer, check needed");
+                    CertificateVerifier.verifyCertificate(crlIssuerCert, additionalCerts, true, now);
+                    LOG.info("CRL issuer certificate checked successfully");
+                }
+                else
+                {
+                    LOG.info("CRL issuer certificate is identical to cert issuer, no extra check needed");
+                }
 
                 checkRevocation(crl, cert, signDate, crlDistributionPointsURL);
 
