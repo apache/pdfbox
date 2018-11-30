@@ -229,6 +229,8 @@ public class AddValidationInformation
             vri.setItem("CRL", correspondingCRLs);
         }
 
+        vri.setDate(COSName.TU, Calendar.getInstance());
+
         if (certInfo.getTsaCerts() != null)
         {
             // Don't add RevocationInfo from tsa to VRI's
