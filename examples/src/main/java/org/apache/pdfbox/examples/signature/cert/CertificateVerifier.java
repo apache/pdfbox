@@ -313,33 +313,33 @@ public final class CertificateVerifier
             // AccessDescription
             ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
             ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
-            if (oid.equals(X509ObjectIdentifiers.id_ad_caIssuers))
+            if (!oid.equals(X509ObjectIdentifiers.id_ad_caIssuers))
             {
-                DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
-                DEROctetString uri = (DEROctetString) location.getObject();
-                InputStream in = null;
-                try
+                continue;
+            }
+            DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
+            DEROctetString uri = (DEROctetString) location.getObject();
+            InputStream in = null;
+            try
+            {
+                URL certUrl = new URL(new String(uri.getOctets()));
+                LOG.info("CA issuers URL: " + certUrl);
+                CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                in = certUrl.openStream();
+                Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
+                for (Certificate altCert : altCerts)
                 {
-                    URL certUrl = new URL(new String(uri.getOctets()));
-                    LOG.info("CA issuers URL: " + certUrl);
-                    CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-
-                    in = certUrl.openStream();
-                    Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
-                    for (Certificate altCert : altCerts)
-                    {
-                        resultSet.add((X509Certificate) altCert);
-                    }
-                    LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
+                    resultSet.add((X509Certificate) altCert);
                 }
-                catch (IOException | CertificateException ex)
-                {
-                    LOG.warn(ex.getMessage(), ex);
-                }
-                finally
-                {
-                    IOUtils.closeQuietly(in);
-                }
+                LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
+            }
+            catch (IOException | CertificateException ex)
+            {
+                LOG.warn(ex.getMessage(), ex);
+            }
+            finally
+            {
+                IOUtils.closeQuietly(in);
             }
         }
         LOG.info("CA issuers: Downloaded " + resultSet.size() + " certificate(s) total");
