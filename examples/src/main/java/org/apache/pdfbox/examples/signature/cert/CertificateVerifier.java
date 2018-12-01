@@ -268,10 +268,7 @@ public final class CertificateVerifier
             }
         }
         int added = certHolderSet.size() - startSize;
-        if (added > 0)
-        {
-            LOG.info("Added " + added + " new certificate(s) to the store");
-        }
+        LOG.info("CA issuers: Added " + added + " new certificate(s) to the store");
         return new CollectionStore<>(certHolderSet);
     }
 
@@ -290,66 +287,62 @@ public final class CertificateVerifier
         // https://tools.ietf.org/html/rfc4325
         Set<X509Certificate> resultSet = new HashSet<>();
         byte[] authorityExtensionValue = ext.getExtensionValue(Extension.authorityInfoAccess.getId());
-        if (authorityExtensionValue != null)
+        if (authorityExtensionValue == null)
         {
-            ASN1Primitive asn1Prim;
-            try
+            return resultSet;
+        }
+        ASN1Primitive asn1Prim;
+        try
+        {
+            asn1Prim = JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
+        }
+        catch (IOException ex)
+        {
+            LOG.warn(ex.getMessage(), ex);
+            return resultSet;
+        }
+        if (!(asn1Prim instanceof ASN1Sequence))
+        {
+            LOG.warn("ASN1Sequence expected, got " + asn1Prim.getClass().getSimpleName());
+            return resultSet;
+        }
+        ASN1Sequence asn1Seq = (ASN1Sequence) asn1Prim;
+        Enumeration<?> objects = asn1Seq.getObjects();
+        while (objects.hasMoreElements())
+        {
+            // AccessDescription
+            ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
+            ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
+            if (oid.equals(X509ObjectIdentifiers.id_ad_caIssuers))
             {
-                asn1Prim = JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
-            }
-            catch (IOException ex)
-            {
-                LOG.warn(ex.getMessage(), ex);
-                return resultSet;
-            }
-            if (!(asn1Prim instanceof ASN1Sequence))
-            {
-                LOG.warn("ASN1Sequence expected, got " + asn1Prim.getClass().getSimpleName());
-                return resultSet;
-            }
-            ASN1Sequence asn1Seq = (ASN1Sequence) asn1Prim;
-            Enumeration<?> objects = asn1Seq.getObjects();
-            while (objects.hasMoreElements())
-            {
-                // AccessDescription
-                ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
-                ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
-                if (oid.equals(X509ObjectIdentifiers.id_ad_caIssuers))
+                DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
+                DEROctetString uri = (DEROctetString) location.getObject();
+                InputStream in = null;
+                try
                 {
-                    DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
-                    DEROctetString uri = (DEROctetString) location.getObject();
-                    InputStream in = null;
-                    try
-                    {
-                        URL certUrl = new URL(new String(uri.getOctets()));
-                        LOG.info("CA issuers URL: " + certUrl);
-                        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                    URL certUrl = new URL(new String(uri.getOctets()));
+                    LOG.info("CA issuers URL: " + certUrl);
+                    CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
 
-                        in = certUrl.openStream();
-                        Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
-                        LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) loaded");
-                        // Create new store that contains the online certificates
-                        for (Certificate altCert : altCerts)
-                        {
-                            resultSet.add((X509Certificate) altCert);
-                        }
-                        LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
-                    }
-                    catch (IOException | CertificateException ex)
+                    in = certUrl.openStream();
+                    Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
+                    for (Certificate altCert : altCerts)
                     {
-                        LOG.warn(ex.getMessage(), ex);
+                        resultSet.add((X509Certificate) altCert);
                     }
-                    finally
-                    {
-                        IOUtils.closeQuietly(in);
-                    }
+                    LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
+                }
+                catch (IOException | CertificateException ex)
+                {
+                    LOG.warn(ex.getMessage(), ex);
+                }
+                finally
+                {
+                    IOUtils.closeQuietly(in);
                 }
             }
         }
-        if (!resultSet.isEmpty())
-        {
-            LOG.info("Downloaded " + resultSet.size() + " certificate(s)");
-        }
+        LOG.info("CA issuers: Downloaded " + resultSet.size() + " certificate(s) total");
         return resultSet;
     }
 
