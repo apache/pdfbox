@@ -30,6 +30,7 @@ import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CollectionCertStoreParameters;
@@ -241,19 +242,53 @@ public final class CertificateVerifier
 
     /**
      * Download extra certificates from the URI mentioned in id-ad-caIssuers in the "authority
-     * information access" extension of the certificate. These are added to the store and the
-     * possibly updated store is returned. The method is lenient, i.e. catches all exceptions.
+     * information access" extension. These are added to the store and the possibly updated store is
+     * returned. The method is lenient, i.e. catches all exceptions.
      *
-     * @param ext
+     * @param ext an X509 object that can have extensions.
      * @param certificatesStore
      * @return the updated certificates store.
      */
     public static Store<X509CertificateHolder> addExtraCertificatesToStore(
             X509Extension ext, Store<X509CertificateHolder> certificatesStore)
     {
+        // use Set to get rid of duplicates 
+        Set<X509CertificateHolder> certHolderSet = new HashSet<>(certificatesStore.getMatches(null));
+        int startSize = certHolderSet.size();
+        for (X509Certificate cert : downloadExtraCertificates(ext))
+        {
+            try
+            {
+                certHolderSet.add(new X509CertificateHolder(cert.getEncoded()));
+            }
+            catch (CertificateEncodingException | IOException ex)
+            {
+                // should not happen because the certificates already exist
+                LOG.warn(ex.getMessage(), ex);
+            }
+        }
+        int added = certHolderSet.size() - startSize;
+        if (added > 0)
+        {
+            LOG.info("Added " + added + " new certificate(s) to the store");
+        }
+        return new CollectionStore<>(certHolderSet);
+    }
+
+    /**
+     * Download extra certificates from the URI mentioned in id-ad-caIssuers in the "authority
+     * information access" extension. The method is lenient, i.e. catches all exceptions.
+     *
+     * @param ext an X509 object that can have extensions.
+     *
+     * @return a certificate set, never null.
+     */
+    public static Set<X509Certificate> downloadExtraCertificates(X509Extension ext)
+    {
         // https://tools.ietf.org/html/rfc2459#section-4.2.2.1
         // https://tools.ietf.org/html/rfc3280#section-4.2.2.1
         // https://tools.ietf.org/html/rfc4325
+        Set<X509Certificate> resultSet = new HashSet<>();
         byte[] authorityExtensionValue = ext.getExtensionValue(Extension.authorityInfoAccess.getId());
         if (authorityExtensionValue != null)
         {
@@ -265,12 +300,12 @@ public final class CertificateVerifier
             catch (IOException ex)
             {
                 LOG.warn(ex.getMessage(), ex);
-                return certificatesStore;
+                return resultSet;
             }
             if (!(asn1Prim instanceof ASN1Sequence))
             {
                 LOG.warn("ASN1Sequence expected, got " + asn1Prim.getClass().getSimpleName());
-                return certificatesStore;
+                return resultSet;
             }
             ASN1Sequence asn1Seq = (ASN1Sequence) asn1Prim;
             Enumeration<?> objects = asn1Seq.getObjects();
@@ -291,19 +326,14 @@ public final class CertificateVerifier
                         CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
 
                         in = certUrl.openStream();
-                        // use Set to get rid of duplicates
-                        Set<X509CertificateHolder> certSet =
-                                new HashSet<>(certificatesStore.getMatches(null));
-                        int oldCertSetSize = certSet.size();
                         Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
                         LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) loaded");
                         // Create new store that contains the online certificates
                         for (Certificate altCert : altCerts)
                         {
-                            certSet.add(new X509CertificateHolder(altCert.getEncoded()));
+                            resultSet.add((X509Certificate) altCert);
                         }
-                        certificatesStore = new CollectionStore<>(certSet);
-                        LOG.info("CA issuers URL: " + (certSet.size() - oldCertSetSize) + " new certificate(s)");
+                        LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
                     }
                     catch (IOException | CertificateException ex)
                     {
@@ -316,7 +346,11 @@ public final class CertificateVerifier
                 }
             }
         }
-        return certificatesStore;
+        if (!resultSet.isEmpty())
+        {
+            LOG.info("Downloaded " + resultSet.size() + " certificate(s)");
+        }
+        return resultSet;
     }
 
     /**
