@@ -20,6 +20,8 @@
 package org.apache.pdfbox.examples.signature.cert;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.PublicKey;
@@ -27,7 +29,9 @@ import java.security.SignatureException;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.CertStore;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXBuilderParameters;
 import java.security.cert.PKIXCertPathBuilderResult;
@@ -35,12 +39,14 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -56,6 +62,8 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
+import org.bouncycastle.util.CollectionStore;
+import org.bouncycastle.util.Store;
 
 /**
  * Copied from Apache CXF 2.4.9, initial version:
@@ -227,6 +235,80 @@ public final class CertificateVerifier
             LOG.debug("Couldn't get signature information - returning false", ex);
             return false;
         }
+    }
+
+    /**
+     * Download extra certificates from the URI mentioned in id-ad-caIssuers in the "authority
+     * information access" extension of the certificate. These are added to the store and the
+     * possibly updated store is returned. The method is lenient, i.e. catches all exceptions.
+     *
+     * @param certFromSignedData
+     * @param certificatesStore
+     * @return the updated certificates store.
+     */
+    public static Store<X509CertificateHolder> addExtraCertificatesToStore(
+            X509Certificate certFromSignedData, Store<X509CertificateHolder> certificatesStore)
+    {
+        // https://tools.ietf.org/html/rfc2459#section-4.2.2.1
+        // https://tools.ietf.org/html/rfc3280#section-4.2.2.1
+        // https://tools.ietf.org/html/rfc4325
+        byte[] authorityExtensionValue = certFromSignedData.getExtensionValue(Extension.authorityInfoAccess.getId());
+        if (authorityExtensionValue != null)
+        {
+            ASN1Sequence asn1Seq;
+            try
+            {
+                asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
+            }
+            catch (IOException ex)
+            {
+                LOG.warn(ex.getMessage(), ex);
+                return certificatesStore;
+            }
+            Enumeration<?> objects = asn1Seq.getObjects();
+            while (objects.hasMoreElements())
+            {
+                // AccessDescription
+                ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
+                ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
+                if (oid.equals(X509ObjectIdentifiers.id_ad_caIssuers))
+                {
+                    DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
+                    DEROctetString uri = (DEROctetString) location.getObject();
+                    InputStream in = null;
+                    try
+                    {
+                        URL certUrl = new URL(new String(uri.getOctets()));
+                        LOG.info("CA issuers URL: " + certUrl);
+                        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+
+                        in = certUrl.openStream();
+                        // use Set to get rid of duplicates
+                        Set<X509CertificateHolder> certSet =
+                                new HashSet<>(certificatesStore.getMatches(null));
+                        int oldCertSetSize = certSet.size();
+                        Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
+                        LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) loaded");
+                        // Create new store that contains the online certificates
+                        for (Certificate altCert : altCerts)
+                        {
+                            certSet.add(new X509CertificateHolder(altCert.getEncoded()));
+                        }
+                        certificatesStore = new CollectionStore<>(certSet);
+                        LOG.info("CA issuers URL: " + (certSet.size() - oldCertSetSize) + " new certificate(s)");
+                    }
+                    catch (IOException | CertificateException ex)
+                    {
+                        LOG.warn(ex.getMessage(), ex);
+                    }
+                    finally
+                    {
+                        IOUtils.closeQuietly(in);
+                    }
+                }
+            }
+        }
+        return certificatesStore;
     }
 
     /**
