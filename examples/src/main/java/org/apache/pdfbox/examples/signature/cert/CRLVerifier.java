@@ -115,15 +115,18 @@ public final class CRLVerifier
                     continue;
                 }
 
+                Set<X509Certificate> mergedCertSet = CertificateVerifier.downloadExtraCertificates(crl);
+                mergedCertSet.addAll(additionalCerts);
+
                 // Verify CRL, see wikipedia:
                 // "To validate a specific CRL prior to relying on it,
                 //  the certificate of its corresponding CA is needed"
                 X509Certificate crlIssuerCert = null;
-                for (X509Certificate additionalCert : additionalCerts)
+                for (X509Certificate possibleCert : mergedCertSet)
                 {
-                    if (crl.getIssuerX500Principal().equals(additionalCert.getSubjectX500Principal()))
+                    if (crl.getIssuerX500Principal().equals(possibleCert.getSubjectX500Principal()))
                     {
-                        crlIssuerCert = additionalCert;
+                        crlIssuerCert = possibleCert;
                         break;
                     }
                 }
@@ -139,7 +142,7 @@ public final class CRLVerifier
                 if (!crl.getIssuerX500Principal().equals(cert.getIssuerX500Principal()))
                 {
                     LOG.info("CRL issuer certificate is not identical to cert issuer, check needed");
-                    CertificateVerifier.verifyCertificate(crlIssuerCert, additionalCerts, true, now);
+                    CertificateVerifier.verifyCertificate(crlIssuerCert, mergedCertSet, true, now);
                     LOG.info("CRL issuer certificate checked successfully");
                 }
                 else
