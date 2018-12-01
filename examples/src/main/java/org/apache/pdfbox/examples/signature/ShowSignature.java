@@ -355,6 +355,8 @@ public final class ShowSignature
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
 
+        certificatesStore = CertificateVerifier.addExtraCertificatesToStore(certFromSignedData, certificatesStore);
+
         SigUtils.checkCertificateUsage(certFromSignedData);
 
         // Embedded timestamp
