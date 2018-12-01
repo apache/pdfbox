@@ -38,6 +38,7 @@ import java.security.cert.PKIXCertPathBuilderResult;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
+import java.security.cert.X509Extension;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -49,6 +50,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERTaggedObject;
@@ -242,29 +244,35 @@ public final class CertificateVerifier
      * information access" extension of the certificate. These are added to the store and the
      * possibly updated store is returned. The method is lenient, i.e. catches all exceptions.
      *
-     * @param certFromSignedData
+     * @param ext
      * @param certificatesStore
      * @return the updated certificates store.
      */
     public static Store<X509CertificateHolder> addExtraCertificatesToStore(
-            X509Certificate certFromSignedData, Store<X509CertificateHolder> certificatesStore)
+            X509Extension ext, Store<X509CertificateHolder> certificatesStore)
     {
         // https://tools.ietf.org/html/rfc2459#section-4.2.2.1
         // https://tools.ietf.org/html/rfc3280#section-4.2.2.1
         // https://tools.ietf.org/html/rfc4325
-        byte[] authorityExtensionValue = certFromSignedData.getExtensionValue(Extension.authorityInfoAccess.getId());
+        byte[] authorityExtensionValue = ext.getExtensionValue(Extension.authorityInfoAccess.getId());
         if (authorityExtensionValue != null)
         {
-            ASN1Sequence asn1Seq;
+            ASN1Primitive asn1Prim;
             try
             {
-                asn1Seq = (ASN1Sequence) JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
+                asn1Prim = JcaX509ExtensionUtils.parseExtensionValue(authorityExtensionValue);
             }
             catch (IOException ex)
             {
                 LOG.warn(ex.getMessage(), ex);
                 return certificatesStore;
             }
+            if (!(asn1Prim instanceof ASN1Sequence))
+            {
+                LOG.warn("ASN1Sequence expected, got " + asn1Prim.getClass().getSimpleName());
+                return certificatesStore;
+            }
+            ASN1Sequence asn1Seq = (ASN1Sequence) asn1Prim;
             Enumeration<?> objects = asn1Seq.getObjects();
             while (objects.hasMoreElements())
             {
