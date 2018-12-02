@@ -250,7 +250,8 @@ public class OcspHelper
         catch (NoSuchAlgorithmException ex)
         {
             // should not happen
-            return null;
+            LOG.error("SHA-1 Algorithm not found", ex);
+            return new byte[0];
         }
     }
 
@@ -591,10 +592,11 @@ public class OcspHelper
                 MessageDigest md = MessageDigest.getInstance("SHA-1");
                 return md.digest(bytes);
             }
-            catch (NoSuchAlgorithmException e)
+            catch (NoSuchAlgorithmException ex)
             {
-                LOG.error("SHA-1 Algorithm not found", e);
-                return null;
+                // should not happen
+                LOG.error("SHA-1 Algorithm not found", ex);
+                return new byte[0];
             }
         }
     }
