@@ -233,18 +233,6 @@ public class OcspHelper
 
     private byte[] getKeyHashFromCertHolder(X509CertificateHolder certHolder) throws IOException
     {
-        SHA1DigestCalculator digCalc = new SHA1DigestCalculator();
-        SubjectPublicKeyInfo info = certHolder.getSubjectPublicKeyInfo();
-        try (OutputStream dgOut = digCalc.getOutputStream())
-        {
-            dgOut.write(info.getPublicKeyData().getBytes());
-        }
-        return digCalc.getDigest();
-    }
-
-    private void findResponderCertificateByKeyHash(BasicOCSPResp basicResponse, byte[] keyHash)
-            throws IOException
-    {
         // https://tools.ietf.org/html/rfc2560#section-4.2.1
         // KeyHash ::= OCTET STRING -- SHA-1 hash of responder's public key
         //         -- (i.e., the SHA-1 hash of the value of the
@@ -254,6 +242,21 @@ public class OcspHelper
 
         // code below inspired by org.bouncycastle.cert.ocsp.CertificateID.createCertID()
         // tested with SO52757037-Signed3-OCSP-with-KeyHash.pdf
+        SubjectPublicKeyInfo info = certHolder.getSubjectPublicKeyInfo();
+        try
+        {
+            return MessageDigest.getInstance("SHA-1").digest(info.getPublicKeyData().getBytes());
+        }
+        catch (NoSuchAlgorithmException ex)
+        {
+            // should not happen
+            return null;
+        }
+    }
+
+    private void findResponderCertificateByKeyHash(BasicOCSPResp basicResponse, byte[] keyHash)
+            throws IOException
+    {
         X509CertificateHolder[] certHolders = basicResponse.getCerts();
         for (X509CertificateHolder certHolder : certHolders)
         {
@@ -262,7 +265,7 @@ public class OcspHelper
             {
                 try
                 {
-                    ocspResponderCertificate = certificateConverter.getCertificate(certHolder);            
+                    ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
                 }
                 catch (CertificateException ex)
                 {
