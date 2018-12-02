@@ -174,24 +174,6 @@ public class OcspHelper
 
             if (ocspResponderCertificate == null)
             {
-                // DO NOT use the certificate found in additionalCerts first. One file had a
-                // responder certificate in the PDF itself with SHA1withRSA algorithm, but
-                // the responder delivered a different (newer, more secure) certificate
-                // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
-                // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
-                for (X509Certificate cert : additionalCerts)
-                {
-                    X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
-                    if (certSubjectName.equals(name))
-                    {
-                        ocspResponderCertificate = cert;
-                        break;
-                    }
-                }
-            }
-
-            if (ocspResponderCertificate == null)
-            {
                 throw new OCSPException("OCSP: certificate for responder " + name + " not found");
             }
 
@@ -300,6 +282,23 @@ public class OcspHelper
                     LOG.error(ex, ex);
                 }
                 break;
+            }
+        }
+        if (ocspResponderCertificate == null)
+        {
+            // DO NOT use the certificate found in additionalCerts first. One file had a
+            // responder certificate in the PDF itself with SHA1withRSA algorithm, but
+            // the responder delivered a different (newer, more secure) certificate
+            // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
+            // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
+            for (X509Certificate cert : additionalCerts)
+            {
+                X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
+                if (certSubjectName.equals(name))
+                {
+                    ocspResponderCertificate = cert;
+                    break;
+                }
             }
         }
     }
