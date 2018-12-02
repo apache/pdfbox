@@ -164,7 +164,7 @@
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>
-                        <version>3.3.3</version>
+                        <version>3.3.4</version>
                         <configuration>
                             <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                         </configuration>
@@ -295,7 +295,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>4.0.0</version>
+                    <version>4.1.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
