@@ -171,6 +171,10 @@ public class OcspHelper
                 {
                     findResponderCertificateByKeyHash(basicResponse, keyHash);
                 }
+                else
+                {
+                    throw new OCSPException("OCSP: basic response must provide name or key hash");
+                }
             }
 
             if (ocspResponderCertificate == null)
