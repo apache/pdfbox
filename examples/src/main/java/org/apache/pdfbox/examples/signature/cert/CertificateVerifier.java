@@ -340,10 +340,10 @@ public final class CertificateVerifier
             InputStream in = null;
             try
             {
-                URL certUrl = new URL(new String(uri.getOctets()));
-                LOG.info("CA issuers URL: " + certUrl);
+                String urlString = new String(uri.getOctets());
+                LOG.info("CA issuers URL: " + urlString);
+                in = new URL(urlString).openStream();
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-                in = certUrl.openStream();
                 Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
                 for (Certificate altCert : altCerts)
                 {
