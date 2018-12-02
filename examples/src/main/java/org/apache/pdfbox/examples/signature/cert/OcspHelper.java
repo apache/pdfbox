@@ -266,6 +266,7 @@ public class OcspHelper
                 try
                 {
                     ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
+                    return;
                 }
                 catch (CertificateException ex)
                 {
@@ -275,29 +276,27 @@ public class OcspHelper
                 break;
             }
         }
-        if (ocspResponderCertificate == null)
+
+        // DO NOT use the certificate found in additionalCerts first. One file had a
+        // responder certificate in the PDF itself with SHA1withRSA algorithm, but
+        // the responder delivered a different (newer, more secure) certificate
+        // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
+        // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
+        for (X509Certificate cert : additionalCerts)
         {
-            // DO NOT use the certificate found in additionalCerts first. One file had a
-            // responder certificate in the PDF itself with SHA1withRSA algorithm, but
-            // the responder delivered a different (newer, more secure) certificate
-            // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
-            // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
-            for (X509Certificate cert : additionalCerts)
+            try
             {
-                try
+                byte[] digest = getKeyHashFromCertHolder(new X509CertificateHolder(cert.getEncoded()));
+                if (Arrays.equals(keyHash, digest))
                 {
-                    byte[] digest = getKeyHashFromCertHolder(new X509CertificateHolder(cert.getEncoded()));
-                    if (Arrays.equals(keyHash, digest))
-                    {
-                        ocspResponderCertificate = cert;
-                        break;
-                    }
+                    ocspResponderCertificate = cert;
+                    return;
                 }
-                catch (CertificateException ex)
-                {
-                    // unlikely to happen because the certificate existed as an object
-                    LOG.error(ex, ex);
-                }
+            }
+            catch (CertificateException ex)
+            {
+                // unlikely to happen because the certificate existed as an object
+                LOG.error(ex, ex);
             }
         }
     }
@@ -312,30 +311,28 @@ public class OcspHelper
                 try
                 {
                     ocspResponderCertificate = certificateConverter.getCertificate(certHolder);
+                    return;
                 }
                 catch (CertificateException ex)
                 {
                     // unlikely to happen because the certificate existed as an object
                     LOG.error(ex, ex);
                 }
-                break;
             }
         }
-        if (ocspResponderCertificate == null)
+
+        // DO NOT use the certificate found in additionalCerts first. One file had a
+        // responder certificate in the PDF itself with SHA1withRSA algorithm, but
+        // the responder delivered a different (newer, more secure) certificate
+        // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
+        // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
+        for (X509Certificate cert : additionalCerts)
         {
-            // DO NOT use the certificate found in additionalCerts first. One file had a
-            // responder certificate in the PDF itself with SHA1withRSA algorithm, but
-            // the responder delivered a different (newer, more secure) certificate
-            // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
-            // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
-            for (X509Certificate cert : additionalCerts)
+            X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
+            if (certSubjectName.equals(name))
             {
-                X500Name certSubjectName = new X500Name(cert.getSubjectX500Principal().getName());
-                if (certSubjectName.equals(name))
-                {
-                    ocspResponderCertificate = cert;
-                    break;
-                }
+                ocspResponderCertificate = cert;
+                return;
             }
         }
     }
