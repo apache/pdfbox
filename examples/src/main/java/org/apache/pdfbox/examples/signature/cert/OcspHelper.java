@@ -29,6 +29,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -48,6 +49,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.Extensions;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
@@ -164,22 +166,10 @@ public class OcspHelper
             else
             {
                 byte[] keyHash = responderID.getKeyHash();
-                //TODO
-                // KeyHash ::= OCTET STRING -- SHA-1 hash of responder's public key
-                //         -- (i.e., the SHA-1 hash of the value of the
-                //         -- BIT STRING subjectPublicKey [excluding
-                //         -- the tag, length, and number of unused
-                //         -- bits] in the responder's certificate)
-                throw new UnsupportedOperationException("search by key hash is not implemented yet");
-
-                // how BC calculates the HeyHash:
-                // see CertificateID.createCertID()
-                //  digCalc is a SHA1DigestCalculator
-                //            SubjectPublicKeyInfo info = issuerCert.getSubjectPublicKeyInfo();
-                //            dgOut = digCalc.getOutputStream();
-                //            dgOut.write(info.getPublicKeyData().getBytes());
-                //            dgOut.close();
-                //            ASN1OctetString issuerKeyHash = new DEROctetString(digCalc.getDigest());
+                if (keyHash != null)
+                {
+                    findResponderCertificateByKeyHash(basicResponse, keyHash);
+                }
             }
 
             if (ocspResponderCertificate == null)
@@ -233,6 +223,43 @@ public class OcspHelper
             else if (status != CertificateStatus.GOOD)
             {
                 throw new OCSPException("OCSP: Status of Cert is unknown");
+            }
+        }
+    }
+
+    private void findResponderCertificateByKeyHash(BasicOCSPResp basicResponse, byte[] keyHash)
+            throws IOException
+    {
+        // https://tools.ietf.org/html/rfc2560#section-4.2.1
+        // KeyHash ::= OCTET STRING -- SHA-1 hash of responder's public key
+        //         -- (i.e., the SHA-1 hash of the value of the
+        //         -- BIT STRING subjectPublicKey [excluding
+        //         -- the tag, length, and number of unused
+        //         -- bits] in the responder's certificate)
+
+        // code below inspired by org.bouncycastle.cert.ocsp.CertificateID.createCertID()
+        // tested with SO52757037-Signed3-OCSP-with-KeyHash.pdf
+        X509CertificateHolder[] certHolders = basicResponse.getCerts();
+        for (X509CertificateHolder certHolder : certHolders)
+        {
+            SHA1DigestCalculator digCalc = new SHA1DigestCalculator();
+            SubjectPublicKeyInfo info = certHolder.getSubjectPublicKeyInfo();
+            OutputStream dgOut = digCalc.getOutputStream();
+            dgOut.write(info.getPublicKeyData().getBytes());
+            dgOut.close();
+            byte[] digest = digCalc.getDigest();
+            if (Arrays.equals(keyHash, digest))
+            {
+                try
+                {
+                    ocspResponderCertificate = certificateConverter.getCertificate(certHolder);            
+                }
+                catch (CertificateException ex)
+                {
+                    // unlikely to happen because the certificate existed as an object
+                    LOG.error(ex, ex);
+                }
+                break;
             }
         }
     }
