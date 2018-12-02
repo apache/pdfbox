@@ -227,6 +227,17 @@ public class OcspHelper
         }
     }
 
+    private byte[] getKeyHashFromCertHolder(X509CertificateHolder certHolder) throws IOException
+    {
+        SHA1DigestCalculator digCalc = new SHA1DigestCalculator();
+        SubjectPublicKeyInfo info = certHolder.getSubjectPublicKeyInfo();
+        try (OutputStream dgOut = digCalc.getOutputStream())
+        {
+            dgOut.write(info.getPublicKeyData().getBytes());
+        }
+        return digCalc.getDigest();
+    }
+
     private void findResponderCertificateByKeyHash(BasicOCSPResp basicResponse, byte[] keyHash)
             throws IOException
     {
@@ -242,13 +253,7 @@ public class OcspHelper
         X509CertificateHolder[] certHolders = basicResponse.getCerts();
         for (X509CertificateHolder certHolder : certHolders)
         {
-            SHA1DigestCalculator digCalc = new SHA1DigestCalculator();
-            SubjectPublicKeyInfo info = certHolder.getSubjectPublicKeyInfo();
-            try (OutputStream dgOut = digCalc.getOutputStream())
-            {
-                dgOut.write(info.getPublicKeyData().getBytes());
-            }
-            byte[] digest = digCalc.getDigest();
+            byte[] digest = getKeyHashFromCertHolder(certHolder);
             if (Arrays.equals(keyHash, digest))
             {
                 try
@@ -261,6 +266,31 @@ public class OcspHelper
                     LOG.error(ex, ex);
                 }
                 break;
+            }
+        }
+        if (ocspResponderCertificate == null)
+        {
+            // DO NOT use the certificate found in additionalCerts first. One file had a
+            // responder certificate in the PDF itself with SHA1withRSA algorithm, but
+            // the responder delivered a different (newer, more secure) certificate
+            // with SHA256withRSA (tried with QV_RCA1_RCA3_CPCPS_V4_11.pdf)
+            // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
+            for (X509Certificate cert : additionalCerts)
+            {
+                try
+                {
+                    byte[] digest = getKeyHashFromCertHolder(new X509CertificateHolder(cert.getEncoded()));
+                    if (Arrays.equals(keyHash, digest))
+                    {
+                        ocspResponderCertificate = cert;
+                        break;
+                    }
+                }
+                catch (CertificateException ex)
+                {
+                    // unlikely to happen because the certificate existed as an object
+                    LOG.error(ex, ex);
+                }
             }
         }
     }
