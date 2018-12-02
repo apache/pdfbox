@@ -30,7 +30,6 @@ import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathBuilderException;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CollectionCertStoreParameters;
@@ -65,8 +64,6 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
 import org.bouncycastle.cert.ocsp.OCSPResp;
-import org.bouncycastle.util.CollectionStore;
-import org.bouncycastle.util.Store;
 
 /**
  * Copied from Apache CXF 2.4.9, initial version:
@@ -116,11 +113,19 @@ public final class CertificateVerifier
                 throw new CertificateVerificationException("The certificate is self-signed.");
             }
 
+            Set<X509Certificate> certSet = CertificateVerifier.downloadExtraCertificates(cert);
+            int downloadSize = certSet.size();
+            certSet.addAll(additionalCerts);
+            if (downloadSize > 0)
+            {
+                LOG.info("CA issuers: " + (certSet.size() - additionalCerts.size()) + " downloaded certificate(s) are new");
+            }
+
             // Prepare a set of trust anchors (set of root CA certificates)
             // and a set of intermediate certificates
             Set<X509Certificate> intermediateCerts = new HashSet<X509Certificate>();
             Set<TrustAnchor> trustAnchors = new HashSet<TrustAnchor>();
-            for (X509Certificate additionalCert : additionalCerts)
+            for (X509Certificate additionalCert : certSet)
             {
                 if (isSelfSigned(additionalCert))
                 {
@@ -143,7 +148,7 @@ public final class CertificateVerifier
 
             LOG.info("Certification chain verified successfully");
 
-            checkRevocations(cert, additionalCerts, signDate);
+            checkRevocations(cert, certSet, signDate);
 
             return verifiedCertChain;
         }
@@ -250,44 +255,6 @@ public final class CertificateVerifier
             LOG.debug("Couldn't get signature information - returning false", ex);
             return false;
         }
-    }
-
-    /**
-     * Download extra certificates from the URI mentioned in id-ad-caIssuers in the "authority
-     * information access" extension. These are added to the store and the possibly updated store is
-     * returned. The method is lenient, i.e. catches all exceptions.
-     *
-     * @param ext an X509 object that can have extensions.
-     * @param certificatesStore
-     * @return the updated certificates store.
-     */
-    public static Store<X509CertificateHolder> addExtraCertificatesToStore(
-            X509Extension ext, Store<X509CertificateHolder> certificatesStore)
-    {
-        // use Set to get rid of duplicates 
-        Set<X509CertificateHolder> certHolderSet =
-                                new HashSet<X509CertificateHolder>(certificatesStore.getMatches(null));
-        int startSize = certHolderSet.size();
-        for (X509Certificate cert : downloadExtraCertificates(ext))
-        {
-            try
-            {
-                certHolderSet.add(new X509CertificateHolder(cert.getEncoded()));
-            }
-            catch (CertificateEncodingException ex)
-            {
-                // should not happen because the certificates already exist
-                LOG.warn(ex.getMessage(), ex);
-            }
-            catch (IOException ex)
-            {
-                // should not happen because the certificates already exist
-                LOG.warn(ex.getMessage(), ex);
-            }
-        }
-        int added = certHolderSet.size() - startSize;
-        LOG.info("CA issuers: Added " + added + " new certificate(s) to the store");
-        return new CollectionStore<X509CertificateHolder>(certHolderSet);
     }
 
     /**
