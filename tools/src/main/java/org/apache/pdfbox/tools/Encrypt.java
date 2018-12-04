@@ -75,7 +75,7 @@ public final class Encrypt
             String userPassword = "";
             String ownerPassword = "";
 
-            int keyLength = 40;
+            int keyLength = 256;
 
             PDDocument document = null;
 
@@ -217,8 +217,8 @@ public final class Encrypt
     {
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar Encrypt [options] <inputfile> [outputfile]\n"
                 + "\nOptions:\n"
-                + "  -O <password>                            : Set the owner password (ignored if cert is set)\n"
-                + "  -U <password>                            : Set the user password (ignored if cert is set)\n"
+                + "  -O <password>                            : Set the owner password (ignored if certFile is set)\n"
+                + "  -U <password>                            : Set the user password (ignored if certFile is set)\n"
                 + "  -certFile <path to cert>                 : Path to X.509 certificate\n"
                 + "  -canAssemble <true|false>                : Set the assemble permission\n"
                 + "  -canExtractContent <true|false>          : Set the extraction permission\n"
@@ -228,8 +228,8 @@ public final class Encrypt
                 + "  -canModifyAnnotations <true|false>       : Set the modify annots permission\n"
                 + "  -canPrint <true|false>                   : Set the print permission\n"
                 + "  -canPrintDegraded <true|false>           : Set the print degraded permission\n"
-                + "  -keyLength <length>                      : The length of the key in bits "
-                + "(valid values: 40, 128 or 256, default is 40)\n"
+                + "  -keyLength <length>                      : Key length in bits "
+                + "(valid values: 40, 128 or 256, default is 256)\n"
                 + "\nNote: By default all permissions are set to true!";
         
         System.err.println(message);
