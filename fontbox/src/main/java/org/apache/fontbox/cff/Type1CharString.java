@@ -498,7 +498,7 @@ public class Type1CharString
         {
             Type1CharString accent = font.getType1CharString(accentName);
             AffineTransform at = AffineTransform.getTranslateInstance(
-                    leftSideBearing.getX() + adx.floatValue(),
+                    leftSideBearing.getX() + adx.floatValue() - asb.floatValue(),
                     leftSideBearing.getY() + ady.floatValue());
             path.append(accent.getPath().getPathIterator(at), false);
         }
