@@ -109,6 +109,7 @@ public final class PDAcroForm implements COSObjectable
         if (getDefaultAppearance().length() == 0)
         {
             setDefaultAppearance(adobeDefaultAppearanceString);
+            dictionary.setNeedToBeUpdated(true);
         }
 
         // DR entry is required
@@ -117,19 +118,30 @@ public final class PDAcroForm implements COSObjectable
         {
             defaultResources = new PDResources();
             setDefaultResources(defaultResources);
+            dictionary.setNeedToBeUpdated(true);
         }
 
         // Adobe Acrobat uses Helvetica as a default font and 
         // stores that under the name '/Helv' in the resources dictionary
         // Zapf Dingbats is included per default for check boxes and 
         // radio buttons as /ZaDb.
-        if (!defaultResources.getCOSObject().containsKey("Helv"))
+        COSDictionary fontDict = defaultResources.getCOSObject().getCOSDictionary(COSName.FONT);
+        if (fontDict == null)
         {
-            defaultResources.put(COSName.getPDFName("Helv"), PDType1Font.HELVETICA);
+            fontDict = new COSDictionary();
+            defaultResources.getCOSObject().setItem(COSName.FONT, fontDict);
         }
-        if (!defaultResources.getCOSObject().containsKey("ZaDb"))
+        if (!fontDict.containsKey(COSName.HELV))
         {
-            defaultResources.put(COSName.getPDFName("ZaDb"), PDType1Font.ZAPF_DINGBATS);
+            defaultResources.put(COSName.HELV, PDType1Font.HELVETICA);
+            defaultResources.getCOSObject().setNeedToBeUpdated(true);
+            fontDict.setNeedToBeUpdated(true);
+        }
+        if (!fontDict.containsKey(COSName.ZA_DB))
+        {
+            defaultResources.put(COSName.ZA_DB, PDType1Font.ZAPF_DINGBATS);
+            defaultResources.getCOSObject().setNeedToBeUpdated(true);
+            fontDict.setNeedToBeUpdated(true);
         }
     }
     
