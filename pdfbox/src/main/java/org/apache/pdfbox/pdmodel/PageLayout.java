@@ -44,29 +44,12 @@ public enum PageLayout
 
     public static PageLayout fromString(String value)
     {
-        if (value.equals("SinglePage"))
+        for (PageLayout instance : PageLayout.values())
         {
-            return SINGLE_PAGE;
-        }
-        else if (value.equals("OneColumn"))
-        {
-            return ONE_COLUMN;
-        }
-        else if (value.equals("TwoColumnLeft"))
-        {
-            return TWO_COLUMN_LEFT;
-        }
-        else if (value.equals("TwoColumnRight"))
-        {
-            return TWO_COLUMN_RIGHT;
-        }
-        else if (value.equals("TwoPageLeft"))
-        {
-            return TWO_PAGE_LEFT;
-        }
-        else if (value.equals("TwoPageRight"))
-        {
-            return TWO_PAGE_RIGHT;
+            if (instance.value.equals(value))
+            {
+                return instance;
+            }
         }
         throw new IllegalArgumentException(value);
     }
@@ -80,8 +63,6 @@ public enum PageLayout
 
     /**
      * Returns the string value, as used in a PDF file.
-     *
-     * @return the string value.
      */
     public String stringValue()
     {

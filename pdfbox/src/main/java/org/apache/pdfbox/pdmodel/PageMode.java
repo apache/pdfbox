@@ -44,29 +44,12 @@ public enum PageMode
 
     public static PageMode fromString(String value)
     {
-        if (value.equals("UseNone"))
+        for (PageMode instance : PageMode.values())
         {
-            return USE_NONE;
-        }
-        else if (value.equals("UseOutlines"))
-        {
-            return USE_OUTLINES;
-        }
-        else if (value.equals("UseThumbs"))
-        {
-            return USE_THUMBS;
-        }
-        else if (value.equals("FullScreen"))
-        {
-            return FULL_SCREEN;
-        }
-        else if (value.equals("UseOC"))
-        {
-            return USE_OPTIONAL_CONTENT;
-        }
-        else if (value.equals("UseAttachments"))
-        {
-            return USE_ATTACHMENTS;
+            if (instance.value.equals(value))
+            {
+                return instance;
+            }
         }
         throw new IllegalArgumentException(value);
     }
