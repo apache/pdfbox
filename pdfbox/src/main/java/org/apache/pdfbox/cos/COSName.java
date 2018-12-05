@@ -273,6 +273,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName H = new COSName("H");
     public static final COSName HARD_LIGHT = new COSName("HardLight");
     public static final COSName HEIGHT = new COSName("Height");
+    public static final COSName HELV = new COSName("Helv");
     public static final COSName HIDE_MENUBAR = new COSName("HideMenubar");
     public static final COSName HIDE_TOOLBAR = new COSName("HideToolbar");
     public static final COSName HIDE_WINDOWUI = new COSName("HideWindowUI");
@@ -579,6 +580,9 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // Y
     public static final COSName Y_STEP = new COSName("YStep");
     public static final COSName YES = new COSName("Yes");
+
+    // Z
+    public static final COSName ZA_DB = new COSName("ZaDb");
 
     // fields
     private final String name;
