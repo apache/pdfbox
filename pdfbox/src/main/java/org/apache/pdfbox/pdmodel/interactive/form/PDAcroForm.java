@@ -81,7 +81,7 @@ public final class PDAcroForm implements COSObjectable
     }
 
     /**
-     * Constructor.
+     * Constructor. Side effect: /Helv and /ZaDb fonts added with update mark.
      *
      * @param doc The document that this form is part of.
      * @param form The existing acroForm.
@@ -121,10 +121,12 @@ public final class PDAcroForm implements COSObjectable
             dictionary.setNeedToBeUpdated(true);
         }
 
-        // Adobe Acrobat uses Helvetica as a default font and 
+        // PDFBOX-3732: Adobe Acrobat uses Helvetica as a default font and 
         // stores that under the name '/Helv' in the resources dictionary
         // Zapf Dingbats is included per default for check boxes and 
         // radio buttons as /ZaDb.
+        // PDFBOX-4393: the two fonts are added by Adobe when signing
+        // and this breaks a previous signature. (Might be an Adobe bug)
         COSDictionary fontDict = defaultResources.getCOSObject().getCOSDictionary(COSName.FONT);
         if (fontDict == null)
         {
