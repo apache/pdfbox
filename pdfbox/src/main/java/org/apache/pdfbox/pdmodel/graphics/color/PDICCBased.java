@@ -165,10 +165,9 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 initialColor = new PDColor(initial, this);
 
                 // do things that trigger a ProfileDataException
-                // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740
+                // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740 (ü-file)
                 // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
-                awtColorSpace.toRGB(new float[awtColorSpace.getNumComponents()]);
-                // this one triggers an exception for PDFBOX-3549 with KCMS
+                // also triggers a ProfileDataException for PDFBOX-3549 with KCMS
                 new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
                 // PDFBOX-4015: this one triggers "CMMException: LCMS error 13" with LCMS
                 new ComponentColorModel(awtColorSpace, false, false, 
