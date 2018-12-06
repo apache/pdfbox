@@ -218,7 +218,8 @@ public class COSStream extends COSDictionary implements Closeable
         {
             setItem(COSName.FILTER, filters);
         }
-        randomAccess = scratchFile.createBuffer(); // discards old data - TODO: close existing buffer?
+        IOUtils.closeQuietly(randomAccess);
+        randomAccess = scratchFile.createBuffer();
         OutputStream randomOut = new RandomAccessOutputStream(randomAccess);
         OutputStream cosOut = new COSOutputStream(getFilterList(), this, randomOut, scratchFile);
         isWriting = true;
@@ -268,7 +269,8 @@ public class COSStream extends COSDictionary implements Closeable
         {
             throw new IllegalStateException("Cannot have more than one open stream writer.");
         }
-        randomAccess = scratchFile.createBuffer(); // discards old data - TODO: close existing buffer?
+        IOUtils.closeQuietly(randomAccess);
+        randomAccess = scratchFile.createBuffer();
         OutputStream out = new RandomAccessOutputStream(randomAccess);
         isWriting = true;
         return new FilterOutputStream(out)
