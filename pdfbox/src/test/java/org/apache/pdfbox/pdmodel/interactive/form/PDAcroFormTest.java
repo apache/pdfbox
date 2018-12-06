@@ -20,6 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,11 +37,12 @@ import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.After;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -290,6 +293,58 @@ public class PDAcroFormTest
             doc.close();
         }
         fail("IllegalArgumentException should have been thrown");
+    }
+
+    /**
+     * PDFBOX-3732, PDFBOX-4303, PDFBOX-4393: Test whether /Helv and /ZaDb get added, but only if
+     * they don't exist.
+     */
+    @Test
+    public void testAcroFormDefaultFonts() throws IOException
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        PDDocument doc = new PDDocument();
+
+        PDPage page = new PDPage(PDRectangle.A4);
+        doc.addPage(page);
+        PDAcroForm acroForm2 = new PDAcroForm(doc);
+        doc.getDocumentCatalog().setAcroForm(acroForm2);
+        PDResources defaultResources = acroForm2.getDefaultResources();
+        assertNull(defaultResources);
+        defaultResources = new PDResources();
+        acroForm2.setDefaultResources(defaultResources);
+        assertNull(defaultResources.getFont(COSName.HELV));
+        assertNull(defaultResources.getFont(COSName.ZA_DB));
+
+        // getting AcroForm sets the two fonts
+        acroForm2 = doc.getDocumentCatalog().getAcroForm();
+        defaultResources = acroForm2.getDefaultResources();
+        assertNotNull(defaultResources.getFont(COSName.HELV));
+        assertNotNull(defaultResources.getFont(COSName.ZA_DB));
+
+        // repeat with a new AcroForm (to delete AcroForm cache) and thus missing /DR
+        doc.getDocumentCatalog().setAcroForm(new PDAcroForm(doc));
+        acroForm2 = doc.getDocumentCatalog().getAcroForm();
+        defaultResources = acroForm2.getDefaultResources();
+        PDFont helv = defaultResources.getFont(COSName.HELV);
+        PDFont zadb = defaultResources.getFont(COSName.ZA_DB);
+        assertNotNull(helv);
+        assertNotNull(zadb);
+        doc.save(baos);
+        doc.close();
+
+        doc = PDDocument.load(baos.toByteArray());
+        acroForm2 = doc.getDocumentCatalog().getAcroForm();
+        defaultResources = acroForm2.getDefaultResources();
+        helv = defaultResources.getFont(COSName.HELV);
+        zadb = defaultResources.getFont(COSName.ZA_DB);
+        assertNotNull(helv);
+        assertNotNull(zadb);
+        // make sure that font wasn't overwritten
+        assertNotEquals(PDType1Font.HELVETICA, helv);
+        assertNotEquals(PDType1Font.ZAPF_DINGBATS, zadb);
+        doc.close();
     }
 
     @After
