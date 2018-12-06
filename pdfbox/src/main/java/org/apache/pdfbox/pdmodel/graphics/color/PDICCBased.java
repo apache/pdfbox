@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -66,6 +67,13 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     // reasons with LittleCMS (LCMS), see PDFBOX-4309
     // WARNING: do not activate this in a conforming reader
     private boolean useOnlyAlternateColorSpace = false;
+    static private final boolean IS_KCMS;
+
+    static
+    {
+        String cmmProperty = System.getProperty("sun.java2d.cmm");
+        IS_KCMS = !isMinJdk8() || "sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty);
+    }
 
     /**
      * Creates a new ICC color space with an empty stream.
@@ -164,14 +172,20 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                 }
                 initialColor = new PDColor(initial, this);
 
-                // do things that trigger a ProfileDataException
-                // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740 (ü-file)
-                // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
-                // also triggers a ProfileDataException for PDFBOX-3549 with KCMS
-                new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
-                // PDFBOX-4015: this one triggers "CMMException: LCMS error 13" with LCMS
-                new ComponentColorModel(awtColorSpace, false, false, 
-                                        Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+                if (IS_KCMS)
+                {
+                    // do things that trigger a ProfileDataException
+                    // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740 (ü-file)
+                    // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
+                    // also triggers a ProfileDataException for PDFBOX-3549 with KCMS
+                    new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
+                }
+                else
+                {
+                    // PDFBOX-4015: this one triggers "CMMException: LCMS error 13" with LCMS
+                    new ComponentColorModel(awtColorSpace, false, false,
+                            Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+                }
             }
         }
         catch (ProfileDataException | CMMException | IllegalArgumentException |
@@ -485,5 +499,27 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     public String toString()
     {
         return getName() + "{numberOfComponents: " + getNumberOfComponents() + "}";
+    }
+
+    private static boolean isMinJdk8()
+    {
+        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
+        String version = System.getProperty("java.specification.version");
+        final StringTokenizer st = new StringTokenizer(version, ".");
+        try
+        {
+            int major = Integer.parseInt(st.nextToken());
+            int minor = 0;
+            if (st.hasMoreTokens())
+            {
+                minor = Integer.parseInt(st.nextToken());
+            }
+            return major > 1 || (major == 1 && minor >= 8);
+        }
+        catch (NumberFormatException nfe)
+        {
+            // maybe some new numbering scheme in the 22nd century
+            return true;
+        }
     }
 }
