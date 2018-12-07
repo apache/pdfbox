@@ -67,7 +67,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     // reasons with LittleCMS (LCMS), see PDFBOX-4309
     // WARNING: do not activate this in a conforming reader
     private boolean useOnlyAlternateColorSpace = false;
-    static private final boolean IS_KCMS;
+    private static final boolean IS_KCMS;
 
     static
     {
