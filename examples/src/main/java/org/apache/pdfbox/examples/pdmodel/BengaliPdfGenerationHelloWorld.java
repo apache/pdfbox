@@ -50,20 +50,6 @@ public class BengaliPdfGenerationHelloWorld
     private static final int FONT_SIZE = 20;
     private static final int MARGIN = 20;
 
-    static
-    {
-        try
-        {
-            // turns off log info about using KCMS (faster than LCMS) if available
-            Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
-            System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
-        }
-        catch (ClassNotFoundException e)
-        {
-            // ignore
-        }
-    }
-
     private BengaliPdfGenerationHelloWorld()
     {
     }
