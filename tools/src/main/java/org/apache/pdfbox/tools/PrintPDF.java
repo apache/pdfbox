@@ -59,17 +59,6 @@ public final class PrintPDF
      */
     public static void main(String[] args) throws PrinterException, IOException
     {
-        try
-        {
-            // force KCMS (faster than LCMS) if available
-            Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
-            System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
-        }
-        catch (ClassNotFoundException e)
-        {
-            // do nothing
-        }
-
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
