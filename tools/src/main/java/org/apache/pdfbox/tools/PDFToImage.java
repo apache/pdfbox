@@ -77,17 +77,6 @@ public final class PDFToImage
      */
     public static void main( String[] args ) throws IOException
     {
-        try
-        {
-            // force KCMS (faster than LCMS) if available
-            Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
-            System.setProperty("sun.java2d.cmm", "sun.java2d.cmm.kcms.KcmsServiceProvider");
-        }
-        catch (ClassNotFoundException e)
-        {
-            LOG.debug("KCMS service not found - using LCMS", e);
-        }
-
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
