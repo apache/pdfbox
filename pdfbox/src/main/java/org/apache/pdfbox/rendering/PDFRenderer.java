@@ -404,43 +404,11 @@ public class PDFRenderer
                 Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
 
                 String version = System.getProperty("java.version");
-                if (version == null)
+                if (version == null ||
+                    isGoodVersion(version, "1.8.0_(\\d+)", 191) ||
+                    isGoodVersion(version, "9.0.(\\d+)", 4))
                 {
                     return;
-                }
-                Matcher matcher = Pattern.compile("1.8.0_(\\d+)").matcher(version);
-                if (matcher.matches() && matcher.groupCount() >= 1)
-                {
-                    try
-                    {
-                        int v = Integer.parseInt(matcher.group(1));
-                        if (v >= 191)
-                        {
-                            // LCMS no longer bad
-                            return;
-                        }
-                    }
-                    catch (NumberFormatException ex)
-                    {
-                        return;
-                    }
-                }
-                matcher = Pattern.compile("9.0.(\\d+)").matcher(version);
-                if (matcher.matches() && matcher.groupCount() >= 1)
-                {
-                    try
-                    {
-                        int v = Integer.parseInt(matcher.group(1));
-                        if (v >= 4)
-                        {
-                            // LCMS no longer bad
-                            return;
-                        }
-                    }
-                    catch (NumberFormatException ex)
-                    {
-                        return;
-                    }
                 }
                 LOG.info("Your current java version is: " + version);
                 LOG.info("To get higher rendering speed on old java 1.8 or 9 versions,");
@@ -454,6 +422,28 @@ public class PDFRenderer
                 // KCMS not available
             }
         }
+    }
+
+    private static boolean isGoodVersion(String version, String regex, int min)
+    {
+        Matcher matcher = Pattern.compile(regex).matcher(version);
+        if (matcher.matches() && matcher.groupCount() >= 1)
+        {
+            try
+            {
+                int v = Integer.parseInt(matcher.group(1));
+                if (v >= min)
+                {
+                    // LCMS no longer bad
+                    return true;
+                }
+            }
+            catch (NumberFormatException ex)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean isMinJdk8()
