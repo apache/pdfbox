@@ -21,6 +21,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
@@ -401,14 +403,55 @@ public class PDFRenderer
                 // Make sure that class exists
                 Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
 
-                LOG.info("To get higher rendering speed on java 8 or 9,");
+                String version = System.getProperty("java.version");
+                if (version == null)
+                {
+                    return;
+                }
+                Matcher matcher = Pattern.compile("1.8.0_(\\d+)").matcher(version);
+                if (matcher.matches() && matcher.groupCount() >= 1)
+                {
+                    try
+                    {
+                        int v = Integer.parseInt(matcher.group(1));
+                        if (v >= 191)
+                        {
+                            // LCMS no longer bad
+                            return;
+                        }
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        return;
+                    }
+                }
+                matcher = Pattern.compile("9.0.(\\d+)").matcher(version);
+                if (matcher.matches() && matcher.groupCount() >= 1)
+                {
+                    try
+                    {
+                        int v = Integer.parseInt(matcher.group(1));
+                        if (v >= 4)
+                        {
+                            // LCMS no longer bad
+                            return;
+                        }
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        return;
+                    }
+                }
+                LOG.info("Your current java version is: " + version);
+                LOG.info("To get higher rendering speed on old java 1.8 or 9 versions,");
+                LOG.info("  update to the latest 1.8 or 9 version (>= 1.8.0_191 or >= 9.0.4),");
+                LOG.info("  or");
                 LOG.info("  use the option -Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider");
                 LOG.info("  or call System.setProperty(\"sun.java2d.cmm\", \"sun.java2d.cmm.kcms.KcmsServiceProvider\")");
             }
             catch (ClassNotFoundException e)
             {
-                // jdk 10 and higher
-                LOG.debug("KCMS doesn't exist anymore. SO SAD!");
+                // KCMS not available
             }
         }
     }
