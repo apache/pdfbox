@@ -1839,8 +1839,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     static
     {
-        String path = "org/apache/pdfbox/resources/text/BidiMirroring.txt";
-        InputStream input = PDFTextStripper.class.getClassLoader().getResourceAsStream(path);
+        String path = "/org/apache/pdfbox/resources/text/BidiMirroring.txt";
+        InputStream input = PDFTextStripper.class.getResourceAsStream(path);
         try
         {
             if (input != null)
