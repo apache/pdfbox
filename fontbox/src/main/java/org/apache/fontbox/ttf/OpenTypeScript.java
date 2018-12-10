@@ -218,11 +218,11 @@ public final class OpenTypeScript
 
     static
     {
-        String path = "org/apache/fontbox/unicode/Scripts.txt";
+        String path = "/org/apache/fontbox/unicode/Scripts.txt";
         InputStream input = null;
         try
         {
-            input = OpenTypeScript.class.getClassLoader().getResourceAsStream(path);
+            input = OpenTypeScript.class.getResourceAsStream(path);
             if (input != null)
             {
                 parseScriptsFile(input);
