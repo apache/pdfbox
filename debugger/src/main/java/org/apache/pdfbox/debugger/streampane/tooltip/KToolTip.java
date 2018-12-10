@@ -77,9 +77,9 @@ final class KToolTip extends ColorToolTip
         // Instead, the "ISO Coated v2 300% (basICColor)" is used, which
         // is an open alternative to the "ISO Coated v2 300% (ECI)" profile.
 
-        String name = "org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
+        String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
 
-        URL url = PDDeviceCMYK.class.getClassLoader().getResource(name);
+        URL url = PDDeviceCMYK.class.getResource(name);
         if (url == null)
         {
             throw new IOException("Error loading resource: " + name);

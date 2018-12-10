@@ -108,8 +108,8 @@ final class FontMapperImpl implements FontMapper
         
         try
         {
-            String ttfName = "org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
-            URL url = FontMapper.class.getClassLoader().getResource(ttfName);
+            String ttfName = "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf";
+            URL url = FontMapper.class.getResource(ttfName);
             if (url == null)
             {
                 throw new IOException("Error loading resource: " + ttfName);

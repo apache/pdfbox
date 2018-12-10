@@ -32,7 +32,7 @@ public final class Version
     private static final Log LOG = LogFactory.getLog(Version.class);
 
     private static final String PDFBOX_VERSION_PROPERTIES =
-            "org/apache/pdfbox/resources/version.properties";
+            "/org/apache/pdfbox/resources/version.properties";
 
     private Version()
     {
@@ -46,7 +46,7 @@ public final class Version
     {
         try
         {
-            URL url = Version.class.getClassLoader().getResource(PDFBOX_VERSION_PROPERTIES);
+            URL url = Version.class.getResource(PDFBOX_VERSION_PROPERTIES);
             if (url == null)
             {
                 return null;
