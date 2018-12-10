@@ -219,8 +219,8 @@ public final class OpenTypeScript
 
     static
     {
-        String path = "org/apache/fontbox/unicode/Scripts.txt";
-        try (InputStream input = OpenTypeScript.class.getClassLoader().getResourceAsStream(path))
+        String path = "/org/apache/fontbox/unicode/Scripts.txt";
+        try (InputStream input = OpenTypeScript.class.getResourceAsStream(path))
         {
             if (input != null)
             {
