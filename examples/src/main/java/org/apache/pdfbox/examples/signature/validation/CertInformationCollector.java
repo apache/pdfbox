@@ -391,21 +391,21 @@ public class CertInformationCollector
     }
 
     /**
-     * Traverse the OCSP certificate.
+     * Traverse a certificate.
      *
-     * @param certHolder
+     * @param certificate
      * @return
      * @throws CertificateProccessingException 
      */
-    CertSignatureInformation getOCSPCertInfo(X509CertificateHolder certHolder) throws CertificateProccessingException
+    CertSignatureInformation getCertInfo(X509Certificate certificate) throws CertificateProccessingException
     {
         try
         {
             CertSignatureInformation certSignatureInformation = new CertSignatureInformation();
-            traverseChain(certConverter.getCertificate(certHolder), certSignatureInformation, MAX_CERTIFICATE_CHAIN_DEPTH);
+            traverseChain(certificate, certSignatureInformation, MAX_CERTIFICATE_CHAIN_DEPTH);
             return certSignatureInformation;
         }
-        catch (IOException | CertificateException ex)
+        catch (IOException ex)
         {
             throw new CertificateProccessingException(ex);
         }

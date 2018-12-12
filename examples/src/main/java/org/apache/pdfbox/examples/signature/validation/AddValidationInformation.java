@@ -362,7 +362,7 @@ public class AddValidationInformation
             // "ocsp responses usually are signed by special certificates. 
             //  Often these certificates are marked to not require revocation checks but not always"
             // see also updated comment by mkl in PDFBOX-3017 on 21.11.2018
-//            CertSignatureInformation ocspCertInfo = certInformationHelper.getOCSPCertInfo(basicResponse.getCerts()[0]);
+//            CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(basicResponse.getCerts()[0]);
 //            addRevocationDataRecursive(ocspCertInfo);
 
             //TODO 
