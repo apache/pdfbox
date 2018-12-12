@@ -123,7 +123,8 @@ public class OcspHelper
     }
 
     /**
-     * Get responder certificate. This is available after {@link #getResponseOcsp()} has been called.
+     * Get responder certificate. This is available after {@link #getResponseOcsp()} has been
+     * called. This method should be used instead of {@code basicResponse.getCerts()[0]}
      *
      * @return The certificate of the responder.
      */
