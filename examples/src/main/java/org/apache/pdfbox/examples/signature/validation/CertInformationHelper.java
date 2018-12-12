@@ -117,6 +117,11 @@ public class CertInformationHelper
             DERTaggedObject derTagged = (DERTaggedObject) obj.getObjectAt(0);
             derTagged = (DERTaggedObject) derTagged.getObject();
             derTagged = (DERTaggedObject) derTagged.getObject();
+            if (!(derTagged.getObject() instanceof DEROctetString))
+            {
+                // happens with SampleSignedPDFDocument.pdf
+                continue;
+            }
             DEROctetString uri = (DEROctetString) derTagged.getObject();
             String url = new String(uri.getOctets());
             // TODO Check for: DistributionPoint ::= SEQUENCE (see RFC 2459), multiples can be possible.
