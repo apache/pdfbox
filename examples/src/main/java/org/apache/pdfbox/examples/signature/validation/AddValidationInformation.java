@@ -363,9 +363,7 @@ public class AddValidationInformation
             {
                 CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(ocspResponderCertificate);
 
-                System.out.println("davor: " + certInformationHelper.getCertificatesMap().size());
                 updateVRI(ocspCertInfo, vri);
-                System.out.println("danach: " + certInformationHelper.getCertificatesMap().size());
             }
             COSArray correspondingCerts = new COSArray();
             try
