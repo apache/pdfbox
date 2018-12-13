@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
@@ -50,6 +52,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.cert.ocsp.BasicOCSPResp;
 import org.bouncycastle.cert.ocsp.OCSPException;
@@ -210,24 +213,7 @@ public class AddValidationInformation
         COSDictionary vri = new COSDictionary();
         vriBase.setItem(certInfo.getSignatureHash(), vri);
 
-        correspondingOCSPs = new COSArray();
-        correspondingCRLs = new COSArray();
-
-        addRevocationDataRecursive(certInfo);
-
-        //TODO this will have to be rewritten differently, because it is wrong to take the whole
-        // list object for the OCSP / CRL entries. Each VRI must have its own.
-
-        if (correspondingOCSPs.size() > 0)
-        {
-            vri.setItem("OCSP", correspondingOCSPs);
-        }
-        if (correspondingCRLs.size() > 0)
-        {
-            vri.setItem("CRL", correspondingCRLs);
-        }
-
-        vri.setDate(COSName.TU, Calendar.getInstance());
+        updateVRI(certInfo, vri);
 
         if (certInfo.getTsaCerts() != null)
         {
@@ -351,25 +337,50 @@ public class AddValidationInformation
                 certInfo.getIssuerCertificate(),
                 new HashSet<>(certInformationHelper.getCertificatesMap().values()),
                 certInfo.getOcspUrl());
-
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
         X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
-        if (ocspResponderCertificate.getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) == null)
+        byte[] signatureHash;
+        try
         {
-            // mkl in https://stackoverflow.com/questions/30617875
-            // "ocsp responses usually are signed by special certificates. 
-            //  Often these certificates are marked to not require revocation checks but not always"
-            // see also updated comment by mkl in PDFBOX-3017 on 21.11.2018
-//            CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(basicResponse.getCerts()[0]);
-//            addRevocationDataRecursive(ocspCertInfo);
+            signatureHash = MessageDigest.getInstance("SHA-1").digest(basicResponse.getSignature());
+        }
+        catch (NoSuchAlgorithmException ex)
+        {
+            throw new CertificateProccessingException(ex);
+        }
+        String signatureHashHex = Hex.getString(signatureHash);
 
-            //TODO 
-            // 1) this must go into separate VRI
-            // 2) basicResponse.getCerts()[0] is not always the correct certificate
-            //    see in OCSPHelper code with ResponderID
-            // 3) OCSP responder validation should also be done (or not done depending of id_pkix_ocsp_nocheck) when doing ShowSignature
+        if (!vriBase.containsKey(signatureHashHex))
+        {
+            COSArray savedCorrespondingOCSPs = correspondingOCSPs;
+            COSArray savedCorrespondingCRLs = correspondingCRLs;
+
+            COSDictionary vri = new COSDictionary();
+            vriBase.setItem(signatureHashHex, vri);
+            if (ocspResponderCertificate.getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) == null)
+            {
+                CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(ocspResponderCertificate);
+
+                System.out.println("davor: " + certInformationHelper.getCertificatesMap().size());
+                updateVRI(ocspCertInfo, vri);
+                System.out.println("danach: " + certInformationHelper.getCertificatesMap().size());
+            }
+            COSArray correspondingCerts = new COSArray();
+            try
+            {
+                COSStream certStream = writeDataToStream(ocspResponderCertificate.getEncoded());
+                correspondingCerts.add(certStream);
+                certs.add(certStream);
+                vri.setItem(COSName.CERT, correspondingCerts);
+            }
+            catch (CertificateEncodingException ex)
+            {
+                throw new CertificateProccessingException(ex);
+            }
+            correspondingOCSPs = savedCorrespondingOCSPs;
+            correspondingCRLs = savedCorrespondingCRLs;
         }
 
         byte[] ocspData = ocspResp.getEncoded();
@@ -397,15 +408,89 @@ public class AddValidationInformation
             CertificateVerificationException
     {
         X509CRL crl = CRLVerifier.downloadCRLFromWeb(certInfo.getCrlUrl());
-        crl.verify(certInfo.getIssuerCertificate().getPublicKey(), SecurityProvider.getProvider().getName());
+        X509Certificate issuerCertificate = certInfo.getIssuerCertificate();
+
+        // find the issuer certificate (usually issuer of signature certificate)
+        for (X509Certificate certificate : certInformationHelper.getCertificatesMap().values())
+        {
+            if (certificate.getSubjectX500Principal().equals(crl.getIssuerX500Principal()))
+            {
+                issuerCertificate = certificate;
+                break;
+            }
+        }
+        crl.verify(issuerCertificate.getPublicKey(), SecurityProvider.getProvider().getName());
         CRLVerifier.checkRevocation(crl, certInfo.getCertificate(), signDate.getTime(), certInfo.getCrlUrl());
         COSStream crlStream = writeDataToStream(crl.getEncoded());
         crls.add(crlStream);
         if (correspondingCRLs != null)
         {
             correspondingCRLs.add(crlStream);
+
+            byte[] signatureHash;
+            try
+            {
+                signatureHash = MessageDigest.getInstance("SHA-1").digest(crl.getSignature());
+            }
+            catch (NoSuchAlgorithmException ex)
+            {
+                throw new CertificateVerificationException(ex.getMessage(), ex);
+            }
+            String signatureHashHex = Hex.getString(signatureHash);
+
+            if (!vriBase.containsKey(signatureHashHex))
+            {
+                COSArray savedCorrespondingOCSPs = correspondingOCSPs;
+                COSArray savedCorrespondingCRLs = correspondingCRLs;
+
+                COSDictionary vri = new COSDictionary();
+                vriBase.setItem(signatureHashHex, vri);
+
+                CertSignatureInformation crlCertInfo;
+                try
+                {
+                    crlCertInfo = certInformationHelper.getCertInfo(issuerCertificate);
+                }
+                catch (CertificateProccessingException ex)
+                {
+                    throw new CertificateVerificationException(ex.getMessage(), ex);
+                }
+
+                updateVRI(crlCertInfo, vri);
+
+                COSArray correspondingCerts = new COSArray();
+                try
+                {
+                    COSStream certStream = writeDataToStream(issuerCertificate.getEncoded());
+                    correspondingCerts.add(certStream);
+                    certs.add(certStream);
+                    vri.setItem(COSName.CERT, correspondingCerts);
+                }
+                catch (CertificateEncodingException ex)
+                {
+                    throw new CertificateVerificationException(ex.getMessage(), ex);
+                }
+                correspondingOCSPs = savedCorrespondingOCSPs;
+                correspondingCRLs = savedCorrespondingCRLs;
+            }
         }
         foundRevocationInformation.add(certInfo.getCertificate().getSerialNumber());
+    }
+
+    private void updateVRI(CertSignatureInformation certInfo, COSDictionary vri) throws IOException
+    {
+        correspondingOCSPs = new COSArray();
+        correspondingCRLs = new COSArray();
+        addRevocationDataRecursive(certInfo);
+        if (correspondingOCSPs.size() > 0)
+        {
+            vri.setItem("OCSP", correspondingOCSPs);
+        }
+        if (correspondingCRLs.size() > 0)
+        {
+            vri.setItem("CRL", correspondingCRLs);
+        }
+        vri.setDate(COSName.TU, Calendar.getInstance());
     }
 
     /**
