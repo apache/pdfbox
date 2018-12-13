@@ -616,18 +616,13 @@ public class PDType1CFont extends PDSimpleFont
     {
         byte[] type1Bytes = Type1FontFormatter.format(font);
 
-        InputStream is = new ByteArrayInputStream(type1Bytes);
         try
         {
-            return Font.createFont(Font.TYPE1_FONT, is);
+            return Font.createFont(Font.TYPE1_FONT, new ByteArrayInputStream(type1Bytes));
         }
         catch( FontFormatException ffe )
         {
             throw new WrappedIOException(ffe);
-        }
-        finally
-        {
-            is.close();
         }
     }
 
