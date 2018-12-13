@@ -518,13 +518,18 @@ public class PDTrueTypeFont extends PDSimpleFont
                     TrueTypeFont ttf = getExternalFontFile2( fd );
                     if( ttf != null )
                     {
+                        InputStream is = ttf.getOriginalData();
                         try
                         {
-                            awtFont = Font.createFont( Font.TRUETYPE_FONT, ttf.getOriginalData() );
+                            awtFont = Font.createFont(Font.TRUETYPE_FONT, is);
                         }
                         catch( FontFormatException f )
                         {
                             log.info("Can't read the external fontfile " + fd.getFontName() );
+                        }
+                        finally
+                        {
+                            IOUtils.closeQuietly(is);
                         }
                     }
                 }

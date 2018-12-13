@@ -76,14 +76,19 @@ public class PDCIDFontType2Font extends PDCIDFont
         PDStream ff2Stream = fd.getFontFile2();
         if( ff2Stream != null )
         {
+            InputStream is = ff2Stream.createInputStream();
             try
             {
                 // create a font with the embedded data
-                awtFont = Font.createFont( Font.TRUETYPE_FONT, ff2Stream.createInputStream() );
+                awtFont = Font.createFont(Font.TRUETYPE_FONT, is);
             }
             catch( FontFormatException f )
             {
                 LOG.info("Can't read the embedded font " + fd.getFontName() );
+            }
+            finally
+            {
+                IOUtils.closeQuietly(is);
             }
             if (awtFont == null)
             {

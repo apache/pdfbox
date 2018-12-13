@@ -20,6 +20,7 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.encoding.EncodingManager;
 import org.apache.pdfbox.encoding.Type1Encoding;
 import org.apache.pdfbox.encoding.WinAnsiEncoding;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDMatrix;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -224,14 +226,19 @@ public class PDType1Font extends PDSimpleFont
                     PDFontDescriptorDictionary fdDictionary = (PDFontDescriptorDictionary)fd;
                     if( fdDictionary.getFontFile() != null )
                     {
+                        InputStream is = fdDictionary.getFontFile().createInputStream();
                         try 
                         {
                             // create a type1 font with the embedded data
-                            awtFont = Font.createFont( Font.TYPE1_FONT, fdDictionary.getFontFile().createInputStream() );
+                            awtFont = Font.createFont( Font.TYPE1_FONT, is );
                         } 
                         catch (FontFormatException e) 
                         {
                             log.info("Can't read the embedded type1 font " + fd.getFontName() );
+                        }
+                        finally
+                        {
+                            IOUtils.closeQuietly(is);
                         }
                     }
                     if (awtFont == null)
