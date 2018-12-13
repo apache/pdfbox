@@ -117,7 +117,10 @@ public class TestPDFToImage extends TestCase
         }
         finally
         {
-            document.close();
+            if (document != null)
+            {
+                document.close();
+            }
         }
 
         //Now check the resulting files ... did we get identical PNG(s)?
