@@ -359,24 +359,10 @@ public class AddValidationInformation
 
             COSDictionary vri = new COSDictionary();
             vriBase.setItem(signatureHashHex, vri);
-            if (ocspResponderCertificate.getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) == null)
-            {
-                CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(ocspResponderCertificate);
+            CertSignatureInformation ocspCertInfo = certInformationHelper.getCertInfo(ocspResponderCertificate);
 
-                updateVRI(ocspCertInfo, vri);
-            }
-            COSArray correspondingCerts = new COSArray();
-            try
-            {
-                COSStream certStream = writeDataToStream(ocspResponderCertificate.getEncoded());
-                correspondingCerts.add(certStream);
-                certs.add(certStream);
-                vri.setItem(COSName.CERT, correspondingCerts);
-            }
-            catch (CertificateEncodingException ex)
-            {
-                throw new CertificateProccessingException(ex);
-            }
+            updateVRI(ocspCertInfo, vri);
+
             correspondingOCSPs = savedCorrespondingOCSPs;
             correspondingCRLs = savedCorrespondingCRLs;
         }
@@ -456,18 +442,6 @@ public class AddValidationInformation
 
                 updateVRI(crlCertInfo, vri);
 
-                COSArray correspondingCerts = new COSArray();
-                try
-                {
-                    COSStream certStream = writeDataToStream(issuerCertificate.getEncoded());
-                    correspondingCerts.add(certStream);
-                    certs.add(certStream);
-                    vri.setItem(COSName.CERT, correspondingCerts);
-                }
-                catch (CertificateEncodingException ex)
-                {
-                    throw new CertificateVerificationException(ex.getMessage(), ex);
-                }
                 correspondingOCSPs = savedCorrespondingOCSPs;
                 correspondingCRLs = savedCorrespondingCRLs;
             }
@@ -477,17 +451,47 @@ public class AddValidationInformation
 
     private void updateVRI(CertSignatureInformation certInfo, COSDictionary vri) throws IOException
     {
-        correspondingOCSPs = new COSArray();
-        correspondingCRLs = new COSArray();
-        addRevocationDataRecursive(certInfo);
-        if (correspondingOCSPs.size() > 0)
+        if (certInfo.getCertificate().getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) == null)
         {
-            vri.setItem("OCSP", correspondingOCSPs);
+            correspondingOCSPs = new COSArray();
+            correspondingCRLs = new COSArray();
+            addRevocationDataRecursive(certInfo);
+            if (correspondingOCSPs.size() > 0)
+            {
+                vri.setItem("OCSP", correspondingOCSPs);
+            }
+            if (correspondingCRLs.size() > 0)
+            {
+                vri.setItem("CRL", correspondingCRLs);
+            }
         }
-        if (correspondingCRLs.size() > 0)
+
+        COSArray correspondingCerts = new COSArray();
+        CertSignatureInformation ci = certInfo;
+        do
         {
-            vri.setItem("CRL", correspondingCRLs);
+            X509Certificate cert = ci.getCertificate();
+            try
+            {
+                COSStream certStream = writeDataToStream(cert.getEncoded());
+                correspondingCerts.add(certStream);
+                certs.add(certStream); // may lead to duplicate certificates. Important?
+            }
+            catch (CertificateEncodingException ex)
+            {
+                // should not happen because these are existing certificates
+                LOG.error(ex, ex);
+            }
+
+            if (cert.getExtensionValue(OCSPObjectIdentifiers.id_pkix_ocsp_nocheck.getId()) != null)
+            {
+                break;
+            }
+            ci = ci.getCertChain();
         }
+        while (ci != null);
+        vri.setItem(COSName.CERT, correspondingCerts);
+
         vri.setDate(COSName.TU, Calendar.getInstance());
     }
 
