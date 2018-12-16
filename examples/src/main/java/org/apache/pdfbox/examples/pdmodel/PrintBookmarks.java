@@ -138,7 +138,7 @@ public class PrintBookmarks
                 }
                 else
                 {
-                    System.out.println(indentation + "Destination class2: " + gta.getDestination().getClass().getSimpleName());
+                    System.out.println(indentation + "Destination class: " + gta.getDestination().getClass().getSimpleName());
                 }
             }
             else if (current.getAction() != null)
