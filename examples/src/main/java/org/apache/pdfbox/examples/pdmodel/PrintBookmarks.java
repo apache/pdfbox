@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
+import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -96,11 +97,29 @@ public class PrintBookmarks
         PDOutlineItem current = bookmark.getFirstChild();
         while( current != null )
         {
+            // one could also use current.findDestinationPage(document) to get the page number,
+            // but this example does it the hard way to explain the different types
+            // Note that bookmarks can also do completely different things, e.g. link to a website,
+            // or to an external file. This example focuses on internal pages.
+
             if (current.getDestination() instanceof PDPageDestination)
             {
                 PDPageDestination pd = (PDPageDestination) current.getDestination();
                 System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
             }
+            else if (current.getDestination() instanceof PDNamedDestination)
+            {
+                PDPageDestination pd = document.getDocumentCatalog().findNamedDestinationPage((PDNamedDestination) current.getDestination());
+                if (pd != null)
+                {
+                    System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
+                }
+            }
+            else if (current.getDestination() != null)
+            {
+                System.out.println(indentation + "Destination class: " + current.getDestination().getClass().getSimpleName());
+            }
+
             if (current.getAction() instanceof PDActionGoTo)
             {
                 PDActionGoTo gta = (PDActionGoTo) current.getAction();
@@ -109,6 +128,22 @@ public class PrintBookmarks
                     PDPageDestination pd = (PDPageDestination) gta.getDestination();
                     System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
                 }
+                else if (gta.getDestination() instanceof PDNamedDestination)
+                {
+                    PDPageDestination pd = document.getDocumentCatalog().findNamedDestinationPage((PDNamedDestination) gta.getDestination());
+                    if (pd != null)
+                    {
+                        System.out.println(indentation + "Destination page: " + (pd.retrievePageNumber() + 1));
+                    }
+                }
+                else
+                {
+                    System.out.println(indentation + "Destination class2: " + gta.getDestination().getClass().getSimpleName());
+                }
+            }
+            else if (current.getAction() != null)
+            {
+                System.out.println(indentation + "Action class: " + current.getAction().getClass().getSimpleName());
             }
             System.out.println( indentation + current.getTitle() );
             printBookmark( document, current, indentation + "    " );
