@@ -36,10 +36,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 /**
@@ -239,6 +243,59 @@ public class PDFMergerUtilityTest extends TestCase
         assertEquals(singleSetSize * 2, elementCounter.set.size());
 
         doc.close();
+    }
+
+    /**
+     * PDFBOX-4408: check that StructParent values are found in the ParentTree.
+     *
+     * @throws IOException
+     */
+    public void testStructureTreeMerge3() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+        PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+        pdfMergerUtility.appendDocument(dst, src);
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-4408-merged.pdf"));
+        checkWithNumberTree(dst);
+        dst.close();
+    }
+    /**
+     * PDFBOX-4408: Check that StructParent values are found in the ParentTree
+     *
+     * @param document
+     */
+    void checkWithNumberTree(PDDocument document)
+    {
+        PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
+        PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
+        COSDictionary parentTreeDict = parentTree.getCOSObject();
+        COSArray numArray = (COSArray) parentTreeDict.getDictionaryObject(COSName.NUMS);
+        Set<Integer> keySet = new HashSet<>();
+        for (int i = 0; i < numArray.size(); i += 2)
+        {
+            int key = numArray.getInt(i);
+            assertTrue(key >= 0);
+            keySet.add(key);
+        }
+        PDAcroForm acroForm = documentCatalog.getAcroForm();
+        if (acroForm != null)
+        {
+            for (PDField field : acroForm.getFieldTree())
+            {
+                for (PDAnnotationWidget widget : field.getWidgets())
+                {
+                    assertTrue(keySet.contains(widget.getStructParent()));
+                }
+            }
+        }
+        for (PDPage page : document.getPages())
+        {
+            assertTrue(keySet.contains(page.getStructParents()));
+        }
+
+        // might also test image and form dictionaries...
     }
 
     /**
