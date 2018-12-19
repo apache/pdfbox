@@ -477,6 +477,19 @@
                             <sha512>2e48aeae83ef6fc4c5f95aafdfe8c76dd8d2dcf3516701c70ffeb14f06ba246a17c21f2dadf8fa48bccef5b72daffdd30ed7c9aa7f5183ddf889968caa2ded6a</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4408</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12952086/form.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4408.pdf</outputFileName>
+                            <sha512>eaabebdc39eb9df2f96de4d322ce02478c61193311fdbabf310995cbab55d72e80047bd562d506c391f53a15b1cac9a5d225245b1c5d8a0745acd1b506f571f8</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
