@@ -704,6 +704,7 @@ public class PDFMergerUtility
                 {
                     if (destParentTreeNextKey < 0)
                     {
+                        //TODO this is not correct. Needs to search the tree and put last + 1 here
                         destParentTreeNextKey = destNumbersArray.size() / 2;
                     }
                     if (destParentTreeNextKey > 0 && srcStructTree != null)
@@ -785,13 +786,24 @@ public class PDFMergerUtility
         }
         if (mergeStructTree)
         {
+            //TODO this code only works with flat number trees.
+            // It should be a PDNumberTreeNode, but that class is broken because
+            // COSBase can't be instanciated and because the tree elements can
+            // be an array or a dictionary
             updatePageReferences(cloner, srcNumbersArray, objMapping);
+            int srcKey = 0;
             for (int i = 0; i < srcNumbersArray.size() / 2; i++)
             {
-                destNumbersArray.add(COSInteger.get(destParentTreeNextKey + i));
+                srcKey = srcNumbersArray.getInt(i * 2);
+                if (srcKey < 0)
+                {
+                    LOG.error("numbers array content on position " + (i * 2) + " should be an int");
+                    continue;
+                }
+                destNumbersArray.add(COSInteger.get(destParentTreeNextKey + srcKey));
                 destNumbersArray.add(srcNumbersArray.getObject(i * 2 + 1));
             }
-            destParentTreeNextKey += srcNumbersArray.size() / 2;
+            destParentTreeNextKey += srcKey + 1;
             destParentTreeDict.setItem(COSName.NUMS, destNumbersArray);
             PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(destParentTreeDict, COSBase.class);
             destStructTree.setParentTree(newParentTreeNode);
