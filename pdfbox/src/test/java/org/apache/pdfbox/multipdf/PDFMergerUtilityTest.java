@@ -188,12 +188,10 @@ public class PDFMergerUtilityTest extends TestCase
         dst.close();
 
         PDDocument doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-merged.pdf"));
-        PDPageTree pageTree = doc.getPages();
 
-        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
-        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
-        checkElement(pageTree, structureTreeRoot.getK());
+        checkForPageOrphans(doc);
+
+        doc.close();
     }
 
     /**
@@ -226,16 +224,12 @@ public class PDFMergerUtilityTest extends TestCase
         dst.close();
 
         doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-flattened-merged.pdf"));
-        PDPageTree pageTree = doc.getPages();
 
-        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
-        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
-        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
-        checkElement(pageTree, structureTreeRoot.getK());
+        checkForPageOrphans(doc);
 
         // Assume that the merged tree has double element count
         elementCounter = new ElementCounter();
-        elementCounter.walk(structureTreeRoot.getK());
+        elementCounter.walk(doc.getDocumentCatalog().getStructureTreeRoot().getK());
         assertEquals(singleCnt * 2, elementCounter.cnt);
         assertEquals(singleSetSize * 2, elementCounter.set.size());
 
@@ -256,15 +250,10 @@ public class PDFMergerUtilityTest extends TestCase
         src.close();
         dst.save(new File(TARGETTESTDIR, "PDFBOX-4408-merged.pdf"));
         checkWithNumberTree(dst);
-
-        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
-        PDPageTree pageTree = dst.getPages();
-        PDStructureTreeRoot structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
-        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
-        checkElement(pageTree, structureTreeRoot.getK());
-
+        checkForPageOrphans(dst);
         dst.close();
     }
+
     /**
      * PDFBOX-4408: Check that StructParent values are found in the ParentTree
      *
@@ -328,6 +317,15 @@ public class PDFMergerUtilityTest extends TestCase
         assertTrue(inFile1.delete());
         assertTrue(inFile2.delete());
         assertTrue(outFile.delete());
+    }
+
+    private void checkForPageOrphans(PDDocument doc) throws IOException
+    {
+        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
+        PDPageTree pageTree = doc.getPages();
+        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
+        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
+        checkElement(pageTree, structureTreeRoot.getK());
     }
 
     private void createSimpleFile(File file) throws IOException
