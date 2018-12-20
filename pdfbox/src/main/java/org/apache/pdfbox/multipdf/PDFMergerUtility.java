@@ -789,6 +789,8 @@ public class PDFMergerUtility
             // It should be a PDNumberTreeNode, but that class is broken because
             // COSBase can't be instanciated and because the tree elements can
             // be an array or a dictionary
+            // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
+            // from digitalcorpora site
             updatePageReferences(cloner, srcNumbersArray, objMapping);
             int srcKey = 0;
             for (int i = 0; i < srcNumbersArray.size() / 2; i++)
