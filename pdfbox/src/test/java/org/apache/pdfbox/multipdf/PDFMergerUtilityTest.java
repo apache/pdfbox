@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import static junit.framework.TestCase.fail;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -39,6 +40,7 @@ import org.apache.pdfbox.pdmodel.PDPageTree;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageFitDestination;
@@ -383,9 +385,10 @@ public class PDFMergerUtilityTest extends TestCase
     // See PDF specification Table 37 - Entries in a number tree node dictionary
     // See PDF specification Table 322 - Entries in the structure tree root
     // See PDF specification Table 323 - Entries in a structure element dictionary
+    // See PDF specification Table 325 – Entries in an object reference dictionary
     // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
     // from digitalcorpora site
-    private void checkElement(PDPageTree pageTree, COSBase base)
+    private void checkElement(PDPageTree pageTree, COSBase base) throws IOException
     {
         if (base instanceof COSArray)
         {
@@ -420,6 +423,33 @@ public class PDFMergerUtilityTest extends TestCase
             else if (kdict.containsKey(COSName.NUMS))
             {
                 checkElement(pageTree, kdict.getDictionaryObject(COSName.NUMS));
+            }
+
+            // if we're an object reference dictionary (/OBJR), check the obj
+            if (kdict.containsKey(COSName.OBJ))
+            {
+                COSDictionary obj = (COSDictionary) kdict.getDictionaryObject(COSName.OBJ);
+                COSBase type = obj.getDictionaryObject(COSName.TYPE);
+                if (COSName.ANNOT.equals(type))
+                {
+                    PDAnnotation annotation = PDAnnotation.createAnnotation(obj);
+                    PDPage page = annotation.getPage();
+                    if (page != null)
+                    {
+                        //TODO activate when PDFBOX-4407 is solved
+                        //assertTrue("Annotation page is not in the page tree", pageTree.indexOf(page) != -1);
+                        if (pageTree.indexOf(page) == -1)
+                        {
+                            System.err.println("Annotation page is not in the page tree");
+                        }
+                    }
+                }
+                else
+                {
+                    //TODO needs to be investigated. Specification mentions
+                    // "such as an XObject or an annotation"
+                    fail("Other type: " + type);
+                }
             }
         }
     }
