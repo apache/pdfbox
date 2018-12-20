@@ -425,11 +425,18 @@ public class PDFMergerUtilityTest extends TestCase
                     PDPage page = annotation.getPage();
                     if (page != null)
                     {
-                        //TODO activate when PDFBOX-4407 is solved
-                        //assertTrue("Annotation page is not in the page tree", pageTree.indexOf(page) != -1);
                         if (pageTree.indexOf(page) == -1)
                         {
-                            System.err.println("Annotation page is not in the page tree");
+                            COSBase item = kdict.getItem(COSName.OBJ);
+                            if (item instanceof COSObject)
+                            {
+                                assertTrue("Annotation page is not in the page tree: " + item, pageTree.indexOf(page) != -1);
+                            }
+                            else
+                            {
+                                // don't display because of stack overflow
+                                assertTrue("Annotation page is not in the page tree", pageTree.indexOf(page) != -1);
+                            }
                         }
                     }
                 }
