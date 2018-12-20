@@ -254,6 +254,13 @@ public class PDFMergerUtilityTest extends TestCase
         src.close();
         dst.save(new File(TARGETTESTDIR, "PDFBOX-4408-merged.pdf"));
         checkWithNumberTree(dst);
+
+        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
+        PDPageTree pageTree = dst.getPages();
+        PDStructureTreeRoot structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
+        checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
+        checkElement(pageTree, structureTreeRoot.getK());
+
         dst.close();
     }
     /**
