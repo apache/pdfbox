@@ -1040,6 +1040,11 @@ public class PDFMergerUtility
             {
                 parentTreeEntry.setItem(COSName.OBJ, objMapping.get(obj));
             }
+            else if (objMapping.containsValue(obj))
+            {
+                // PDFBOX-4407: don't clone a clone
+                LOG.debug("don't clone a clone");
+            }
             else
             {
                 // PDFBOX-3999: clone objects that are not in mapping to make sure that
