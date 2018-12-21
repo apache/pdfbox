@@ -960,11 +960,12 @@ public class PDFMergerUtility
         COSBase obj = parentTreeEntry.getDictionaryObject(COSName.OBJ);
         if (obj instanceof COSDictionary)
         {
-            if (objMapping.containsKey(obj))
+            COSDictionary objDict = (COSDictionary) obj;
+            if (objMapping.containsKey(objDict))
             {
-                parentTreeEntry.setItem(COSName.OBJ, objMapping.get(obj));
+                parentTreeEntry.setItem(COSName.OBJ, objMapping.get(objDict));
             }
-            else if (objMapping.containsValue(obj))
+            else if (objMapping.containsValue(objDict))
             {
                 // PDFBOX-4407: don't clone a clone
                 LOG.debug("don't clone a clone");
@@ -977,13 +978,17 @@ public class PDFMergerUtility
                 if (item instanceof COSObject)
                 {
                     LOG.debug("clone potential orphan object in structure tree: " + item +
-                            ", type: " + ((COSDictionary) obj).getNameAsString(COSName.TYPE));
+                            ", Type: " + objDict.getNameAsString(COSName.TYPE) +
+                            ", Subtype: " + objDict.getNameAsString(COSName.SUBTYPE) +
+                            ", T: " + objDict.getNameAsString(COSName.T));
                 }
                 else
                 {
-                    // don't display because of stack overflow
+                    // don't display in full because of stack overflow
                     LOG.debug("clone potential orphan object in structure tree, type: " +
-                            ((COSDictionary) obj).getNameAsString(COSName.TYPE));
+                            ", Type: " + objDict.getNameAsString(COSName.TYPE) +
+                            ", Subtype: " + objDict.getNameAsString(COSName.SUBTYPE) +
+                            ", T: " + objDict.getNameAsString(COSName.T));
                 }
                 parentTreeEntry.setItem(COSName.OBJ, cloner.cloneForNewDocument(obj));
             }
