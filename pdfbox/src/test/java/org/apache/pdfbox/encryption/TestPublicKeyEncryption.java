@@ -65,6 +65,8 @@ public class TestPublicKeyEncryption extends TestCase
     private String text;
     private String producer;
 
+    private final int KEYLENGTH = 256;
+
     /**
      * {@inheritDoc}
      */
@@ -131,6 +133,7 @@ public class TestPublicKeyEncryption extends TestCase
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
+        policy.setEncryptionKeyLength(KEYLENGTH);
         document.protect(policy);
 
         PDDocument encryptedDoc = null;
@@ -167,6 +170,7 @@ public class TestPublicKeyEncryption extends TestCase
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
+        policy.setEncryptionKeyLength(KEYLENGTH);
         document.protect(policy);
 
         File file = save("testProtection");
@@ -197,6 +201,7 @@ public class TestPublicKeyEncryption extends TestCase
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
         policy.addRecipient(recipient2);
+        policy.setEncryptionKeyLength(KEYLENGTH);
         document.protect(policy);
 
         // open first time
