@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.encryption;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +30,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 import junit.framework.TestCase;
 
@@ -43,6 +43,7 @@ import org.junit.Assert;
  */
 public class TestPublicKeyEncryption extends TestCase
 {
+    private final File testResultsDir = new File("target/test-output/crypto");
 
     private AccessPermission permission1;
     private AccessPermission permission2;
@@ -61,7 +62,9 @@ public class TestPublicKeyEncryption extends TestCase
      */
     private PDDocument document;
 
-    
+    private String text;
+    private String producer;
+
     /**
      * {@inheritDoc}
      */
@@ -104,6 +107,9 @@ public class TestPublicKeyEncryption extends TestCase
         keyStore2 = "test2.pfx";
         
         document = PDDocument.load(new File(this.getClass().getResource("test.pdf").toURI()));
+        text = new PDFTextStripper().getText(document);
+        producer = document.getDocumentInformation().getProducer();
+        document.setVersion(1.7f);
     }
 
     /**
@@ -130,7 +136,8 @@ public class TestPublicKeyEncryption extends TestCase
         PDDocument encryptedDoc = null;
         try 
         {
-            encryptedDoc = reload(document, password2, getKeyStore(keyStore2));
+            File file = save("testProtectionError");
+            encryptedDoc = reload(file, password2, getKeyStore(keyStore2));
             Assert.assertTrue(encryptedDoc.isEncrypted());
             fail("No exception when using an incorrect decryption key");
         }
@@ -162,13 +169,13 @@ public class TestPublicKeyEncryption extends TestCase
         policy.addRecipient(recipient1);
         document.protect(policy);
 
-        PDDocument encryptedDoc = reload(document, password1, getKeyStore(keyStore1));
+        File file = save("testProtection");
+        PDDocument encryptedDoc = reload(file, password1, getKeyStore(keyStore1));
         try 
         {
             Assert.assertTrue(encryptedDoc.isEncrypted());
 
-            AccessPermission permission =
-                encryptedDoc.getCurrentAccessPermission();
+            AccessPermission permission = encryptedDoc.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
             Assert.assertFalse(permission.canExtractContent());
             Assert.assertTrue(permission.canExtractForAccessibility());
@@ -198,11 +205,11 @@ public class TestPublicKeyEncryption extends TestCase
         document.protect(policy);
 
         // open first time
-        PDDocument encryptedDoc1 = reload(document, password1, getKeyStore(keyStore1));
+        File file = save("testMultipleRecipients");
+        PDDocument encryptedDoc1 = reload(file, password1, getKeyStore(keyStore1));
         try 
         {
-            AccessPermission permission =
-                encryptedDoc1.getCurrentAccessPermission();
+            AccessPermission permission = encryptedDoc1.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
             Assert.assertFalse(permission.canExtractContent());
             Assert.assertTrue(permission.canExtractForAccessibility());
@@ -218,11 +225,10 @@ public class TestPublicKeyEncryption extends TestCase
         }
 
         // open second time
-        PDDocument encryptedDoc2 = reload(document, password2, getKeyStore(keyStore2));
+        PDDocument encryptedDoc2 = reload(file, password2, getKeyStore(keyStore2));
         try 
         {
-            AccessPermission permission =
-                encryptedDoc2.getCurrentAccessPermission();
+            AccessPermission permission = encryptedDoc2.getCurrentAccessPermission();
             Assert.assertFalse(permission.canAssembleDocument());
             Assert.assertFalse(permission.canExtractContent());
             Assert.assertTrue(permission.canExtractForAccessibility());
@@ -242,19 +248,24 @@ public class TestPublicKeyEncryption extends TestCase
      * Reloads the given document by writing it to a temporary byte array
      * and loading a fresh document from that byte array.
      *
-     * @param doc input document
+     * @param file input file
      * @param decryptionPassword password to be used to decrypt the doc
      * @param keyStore password to be used to decrypt the doc
      * @return reloaded document
      * @throws Exception if 
      */
-    private PDDocument reload(PDDocument doc, String decryptionPassword, InputStream keyStore)
+    private PDDocument reload(File file, String decryptionPassword, InputStream keyStore)
             throws IOException, NoSuchAlgorithmException
     {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        doc.save(baos);
-        return PDDocument.load(baos.toByteArray(), decryptionPassword,
+        PDDocument doc2 = PDDocument.load(file, decryptionPassword,
                 keyStore, null, MemoryUsageSetting.setupMainMemoryOnly());
+        Assert.assertEquals("Extracted text is different",
+                                text,
+                                new PDFTextStripper().getText(doc2));
+        Assert.assertEquals("Producer is different",
+                                producer,
+                                doc2.getDocumentInformation().getProducer());
+        return doc2;
     }
 
     /**
@@ -274,8 +285,7 @@ public class TestPublicKeyEncryption extends TestCase
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             PublicKeyRecipient recipient = new PublicKeyRecipient();
             recipient.setPermission(permission);
-            recipient.setX509(
-                    (X509Certificate) factory.generateCertificate(input));
+            recipient.setX509((X509Certificate) factory.generateCertificate(input));
             return recipient;
         } 
         finally 
@@ -287,5 +297,13 @@ public class TestPublicKeyEncryption extends TestCase
     private InputStream getKeyStore(String name) 
     {
         return TestPublicKeyEncryption.class.getResourceAsStream(name);
+    }
+
+    private File save(String name) throws IOException
+    {
+        int keyLength = document.getEncryption().getSecurityHandler().getKeyLength();
+        File file = new File(testResultsDir, name + "-" + keyLength + "bit.pdf");
+        document.save(file);
+        return file;
     }
 }
