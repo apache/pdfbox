@@ -168,6 +168,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName DECODE_PARMS = new COSName("DecodeParms");
     public static final COSName DEFAULT = new COSName("default");
     public static final COSName DEFAULT_CMYK = new COSName("DefaultCMYK");
+    public static final COSName DEFAULT_CRYPT_FILTER = new COSName("DefaultCryptFilter");
     public static final COSName DEFAULT_GRAY = new COSName("DefaultGray");
     public static final COSName DEFAULT_RGB = new COSName("DefaultRGB");
     public static final COSName DESC = new COSName("Desc");
