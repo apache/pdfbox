@@ -60,4 +60,20 @@ final class MessageDigests
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * @return SHA-256 message digest
+     */
+    static MessageDigest getSHA256()
+    {
+        try
+        {
+            return MessageDigest.getInstance("SHA-256");
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+            // should never happen
+            throw new RuntimeException(e);
+        }
+    }
 }
