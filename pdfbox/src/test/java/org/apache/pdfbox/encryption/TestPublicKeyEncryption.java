@@ -245,8 +245,7 @@ public class TestPublicKeyEncryption extends TestCase
     }
 
     /**
-     * Reloads the given document by writing it to a temporary byte array
-     * and loading a fresh document from that byte array.
+     * Reloads the given document from a file and check some contents.
      *
      * @param file input file
      * @param decryptionPassword password to be used to decrypt the doc
