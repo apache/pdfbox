@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.Collection;
 
 import javax.crypto.Cipher;
 
@@ -32,16 +34,21 @@ import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-import junit.framework.TestCase;
-
+import org.junit.After;
 import org.junit.Assert;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 /**
  * Tests for public key encryption.
  *
  * @author Ben Litchfield
  */
-public class TestPublicKeyEncryption extends TestCase
+@RunWith(Parameterized.class)
+public class TestPublicKeyEncryption
 {
     private final File testResultsDir = new File("target/test-output/crypto");
 
@@ -65,7 +72,19 @@ public class TestPublicKeyEncryption extends TestCase
     private String text;
     private String producer;
 
-    private final int KEYLENGTH = 256;
+    @Parameterized.Parameter
+    public int keyLength;
+
+    /**
+     * Values for keyLength test parameter.
+     *
+     * @return
+     */
+    @Parameterized.Parameters
+    public static Collection keyLengths()
+    {
+        return Arrays.asList(40, 128, 256);
+    }
 
     public TestPublicKeyEncryption()
     {
@@ -75,8 +94,8 @@ public class TestPublicKeyEncryption extends TestCase
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected void setUp() throws Exception 
+    @Before
+    public void setUp() throws Exception 
     {
         if (Cipher.getMaxAllowedKeyLength("AES") != Integer.MAX_VALUE)
         {
@@ -122,8 +141,8 @@ public class TestPublicKeyEncryption extends TestCase
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected void tearDown() throws Exception 
+    @After
+    public void tearDown() throws Exception 
     {
         document.close();
     }
@@ -134,11 +153,12 @@ public class TestPublicKeyEncryption extends TestCase
      *
      * @throws Exception If there is an unexpected error during the test.
      */
+    @Test
     public void testProtectionError() throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
-        policy.setEncryptionKeyLength(KEYLENGTH);
+        policy.setEncryptionKeyLength(keyLength);
         document.protect(policy);
 
         PDDocument encryptedDoc = null;
@@ -171,11 +191,12 @@ public class TestPublicKeyEncryption extends TestCase
      *
      * @throws Exception If there is an unexpected error during the test.
      */
+    @Test
     public void testProtection() throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
-        policy.setEncryptionKeyLength(KEYLENGTH);
+        policy.setEncryptionKeyLength(keyLength);
         document.protect(policy);
 
         File file = save("testProtection");
@@ -206,12 +227,13 @@ public class TestPublicKeyEncryption extends TestCase
      *
      * @throws Exception If there is an error during the test.
      */
+    @Test
     public void testMultipleRecipients() throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
         policy.addRecipient(recipient2);
-        policy.setEncryptionKeyLength(KEYLENGTH);
+        policy.setEncryptionKeyLength(keyLength);
         document.protect(policy);
 
         // open first time
@@ -310,7 +332,6 @@ public class TestPublicKeyEncryption extends TestCase
 
     private File save(String name) throws IOException
     {
-        int keyLength = document.getEncryption().getSecurityHandler().getKeyLength();
         File file = new File(testResultsDir, name + "-" + keyLength + "bit.pdf");
         document.save(file);
         return file;
