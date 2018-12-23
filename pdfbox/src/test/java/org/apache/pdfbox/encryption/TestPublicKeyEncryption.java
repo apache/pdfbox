@@ -67,6 +67,11 @@ public class TestPublicKeyEncryption extends TestCase
 
     private final int KEYLENGTH = 256;
 
+    public TestPublicKeyEncryption()
+    {
+        testResultsDir.mkdirs();
+    }
+
     /**
      * {@inheritDoc}
      */
