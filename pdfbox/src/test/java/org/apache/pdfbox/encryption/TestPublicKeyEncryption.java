@@ -43,7 +43,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 /**
- * Tests for public key encryption.
+ * Tests for public key encryption. These tests are not perfect - to be sure, encrypt a file by
+ * using a certificate exported from your digital id in Adobe Reader, and then open that file with
+ * Adobe Reader. Do this with every key length.
  *
  * @author Ben Litchfield
  */
