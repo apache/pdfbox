@@ -522,7 +522,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public PDStructureTreeRoot getStructureTreeRoot()
     {
-        COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.STRUCT_TREE_ROOT);
+        COSDictionary dict = root.getCOSDictionary(COSName.STRUCT_TREE_ROOT);
         return dict == null ? null : new PDStructureTreeRoot(dict);
     }
 
