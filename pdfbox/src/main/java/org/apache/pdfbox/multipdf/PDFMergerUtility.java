@@ -315,12 +315,11 @@ public class PDFMergerUtility
         }
         else if (documentMergeMode == DocumentMergeMode.OPTIMIZE_RESOURCES_MODE)
         {
-            optimizedMergeDocuments(memUsageSetting, sources);
+            optimizedMergeDocuments(memUsageSetting);
         }
     }
     
-    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting,
-            List<Object> sourceDocuments) throws IOException
+    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
         try (PDDocument destination = new PDDocument(memUsageSetting))
         {
