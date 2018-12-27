@@ -17,7 +17,6 @@
 package org.apache.pdfbox.multipdf;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -277,12 +276,11 @@ public class PDFMergerUtility
         }
         else if (documentMergeMode == DocumentMergeMode.OPTIMIZE_RESOURCES_MODE)
         {
-            optimizedMergeDocuments(memUsageSetting, sources);
+            optimizedMergeDocuments(memUsageSetting);
         }
     }
 
-    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting,
-            List<Object> sourceDocuments) throws IOException
+    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
         PDDocument destination = null;
         try
