@@ -823,6 +823,34 @@ public class PDFMergerUtility
             kDictLevel0.setItem(COSName.P, destStructTree);
             kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
             destStructTree.setK(kDictLevel0);
+
+            mergeRoleMap(srcStructTree, destStructTree);
+        }
+    }
+
+    private void mergeRoleMap(PDStructureTreeRoot srcStructTree, PDStructureTreeRoot destStructTree)
+    {
+        COSDictionary srcDict = srcStructTree.getCOSObject().getCOSDictionary(COSName.ROLE_MAP);
+        COSDictionary destDict = destStructTree.getCOSObject().getCOSDictionary(COSName.ROLE_MAP);
+        if (srcDict == null)
+        {
+            return;
+        }
+        if (destDict == null)
+        {
+            destStructTree.getCOSObject().setItem(COSName.ROLE_MAP, srcDict); // clone not needed
+            return;
+        }
+        for (Map.Entry<COSName, COSBase> entry : srcDict.entrySet())
+        {
+            if (destDict.containsKey(entry.getKey()))
+            {
+                LOG.warn("key " + entry.getKey() + " already exists in destination RoleMap");
+            }
+            else
+            {
+                destDict.setItem(entry.getKey(), entry.getValue());
+            }
         }
     }
 
