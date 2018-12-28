@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,9 +54,11 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
+import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -826,6 +829,26 @@ public class PDFMergerUtility
 
             mergeRoleMap(srcStructTree, destStructTree);
         }
+    }
+
+    // PDNameTreeNode.getNames() only brings one level, this is why we need this
+    static Map<String, PDStructureElement> getIDTreeAsMap(PDNameTreeNode<PDStructureElement> idTree)
+            throws IOException
+    {
+        Map<String, PDStructureElement> names = idTree.getNames();
+        if (names == null)
+        {
+            names = new LinkedHashMap<String, PDStructureElement>();
+        }
+        List<PDNameTreeNode<PDStructureElement>> kids = idTree.getKids();
+        if (kids != null)
+        {
+            for (PDNameTreeNode<PDStructureElement> kid : kids)
+            {
+                names.putAll(getIDTreeAsMap(kid));
+            }
+        }
+        return names;
     }
 
     private void mergeRoleMap(PDStructureTreeRoot srcStructTree, PDStructureTreeRoot destStructTree)
