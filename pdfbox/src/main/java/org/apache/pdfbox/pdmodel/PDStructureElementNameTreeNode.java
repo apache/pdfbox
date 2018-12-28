@@ -35,6 +35,7 @@ public class PDStructureElementNameTreeNode extends PDNameTreeNode<PDStructureEl
      */
     public PDStructureElementNameTreeNode()
     {
+        // just calls super()
     }
 
     /**
