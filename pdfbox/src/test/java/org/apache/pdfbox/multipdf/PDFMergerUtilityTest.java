@@ -256,6 +256,28 @@ public class PDFMergerUtilityTest extends TestCase
         dst.close();
     }
 
+
+    /**
+     * PDFBOX-4417: Same as the previous tests, but this one failed when the previous tests
+     * succeeded because of more bugs with cloning.
+     *
+     * @throws IOException
+     */
+    public void testStructureTreeMerge4() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
+        PDDocument dst = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
+        pdfMergerUtility.appendDocument(dst, src);
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-4417-001031-merged.pdf"));
+        dst.close();
+        dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4417-001031-merged.pdf"));
+        checkWithNumberTree(dst);
+        checkForPageOrphans(dst);
+        dst.close();
+    }
+
     /**
      * PDFBOX-4408: Check that StructParent values are found in the ParentTree
      *
