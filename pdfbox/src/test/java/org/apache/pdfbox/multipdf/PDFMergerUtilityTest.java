@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -36,6 +37,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
@@ -326,6 +328,29 @@ public class PDFMergerUtilityTest extends TestCase
         PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
         checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
         checkElement(pageTree, structureTreeRoot.getK());
+        checkForIDTreeOrphans(pageTree, structureTreeRoot);
+    }
+
+    private void checkForIDTreeOrphans(PDPageTree pageTree, PDStructureTreeRoot structureTreeRoot)
+            throws IOException
+    {
+        PDNameTreeNode<PDStructureElement> idTree = structureTreeRoot.getIDTree();
+        if (idTree == null)
+        {
+            return;
+        }
+        Map<String, PDStructureElement> map = PDFMergerUtility.getIDTreeAsMap(idTree);
+        for (PDStructureElement element : map.values())
+        {
+            if (element.getPage() != null)
+            {
+                checkForPage(pageTree, element);
+            }
+            if (!element.getKids().isEmpty())
+            {
+                checkElement(pageTree, element.getCOSObject().getDictionaryObject(COSName.K));
+            }
+        }
     }
 
     private void createSimpleFile(File file) throws IOException
