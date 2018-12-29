@@ -323,7 +323,8 @@ public class PDFMergerUtilityTest extends TestCase
 
     private void checkForPageOrphans(PDDocument doc) throws IOException
     {
-        // check for orphan pages in the StructTreeRoot/K and StructTreeRoot/ParentTree trees.
+        // check for orphan pages in the StructTreeRoot/K, StructTreeRoot/ParentTree and
+        // StructTreeRoot/IDTree trees.
         PDPageTree pageTree = doc.getPages();
         PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
         checkElement(pageTree, structureTreeRoot.getParentTree().getCOSObject());
