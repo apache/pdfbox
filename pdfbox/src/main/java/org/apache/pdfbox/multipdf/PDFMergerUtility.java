@@ -818,6 +818,7 @@ public class PDFMergerUtility
             COSArray srcKArray = srcStructTree.getKArray();
             if (destKArray != null && srcKArray != null)
             {
+                srcKArray = (COSArray) cloner.cloneForNewDocument(srcKArray);
                 updateParentEntry(destKArray, kDictLevel0);
                 newKArray.addAll(destKArray);
                 updateParentEntry(srcKArray, kDictLevel0);
