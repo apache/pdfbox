@@ -804,7 +804,7 @@ public class PDFMergerUtility
                     continue;
                 }
                 destNumbersArray.add(COSInteger.get(destParentTreeNextKey + srcKey));
-                destNumbersArray.add(srcNumbersArray.getObject(i * 2 + 1));
+                destNumbersArray.add(cloner.cloneForNewDocument(srcNumbersArray.getObject(i * 2 + 1)));
             }
             destParentTreeNextKey += srcKey + 1;
             destParentTreeDict.setItem(COSName.NUMS, destNumbersArray);
