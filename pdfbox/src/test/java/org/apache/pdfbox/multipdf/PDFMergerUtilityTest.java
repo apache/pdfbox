@@ -283,6 +283,40 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
+     * PDFBOX-4417: Same as the previous tests, but this one failed when the previous tests
+     * succeeded because the /K tree started with two dictionaries and not with an array.
+     *
+     * @throws IOException 
+     */
+    public void testStructureTreeMerge5() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-054080.pdf"));
+
+        ElementCounter elementCounter = new ElementCounter();
+        elementCounter.walk(src.getDocumentCatalog().getStructureTreeRoot().getK());
+        int singleCnt = elementCounter.cnt;
+        int singleSetSize = elementCounter.set.size();
+
+        PDDocument dst = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-054080.pdf"));
+        pdfMergerUtility.appendDocument(dst, src);
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-4417-054080-merged.pdf"));
+        dst.close();
+        dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4417-054080-merged.pdf"));
+        checkWithNumberTree(dst);
+        checkForPageOrphans(dst);
+
+        // Assume that the merged tree has double element count
+        elementCounter = new ElementCounter();
+        elementCounter.walk(dst.getDocumentCatalog().getStructureTreeRoot().getK());
+        assertEquals(singleCnt * 2, elementCounter.cnt);
+        assertEquals(singleSetSize * 2, elementCounter.set.size());
+
+        dst.close();
+    }
+
+    /**
      * PDFBOX-4408: Check that StructParent values are found in the ParentTree
      *
      * @param document
