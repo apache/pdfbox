@@ -811,22 +811,23 @@ public class PDFMergerUtility
             destStructTree.setParentTree(newParentTreeNode);
             destStructTree.setParentTreeNextKey(destParentTreeNextKey);
 
-            COSDictionary kDictLevel0 = new COSDictionary();
             COSArray newKArray = new COSArray();
-            COSArray destKArray = destStructTree.getKArray();
-            COSArray srcKArray = srcStructTree.getKArray();
-            if (destKArray != null && srcKArray != null)
+            if (srcStructTree.getK() != null)
             {
-                srcKArray = (COSArray) cloner.cloneForNewDocument(srcKArray);
-                updateParentEntry(destKArray, kDictLevel0);
-                newKArray.addAll(destKArray);
-                updateParentEntry(srcKArray, kDictLevel0);
-                newKArray.addAll(srcKArray);
+                newKArray.add(cloner.cloneForNewDocument(srcStructTree.getK()));
             }
-            kDictLevel0.setItem(COSName.K, newKArray);
-            kDictLevel0.setItem(COSName.P, destStructTree);
-            kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
-            destStructTree.setK(kDictLevel0);
+            if (destStructTree.getK() != null)
+            {
+                newKArray.add(destStructTree.getK());
+            }
+            if (newKArray.size() > 0)
+            {
+                COSDictionary kDictLevel0 = new COSDictionary();
+                kDictLevel0.setItem(COSName.K, newKArray);
+                kDictLevel0.setItem(COSName.P, destStructTree);
+                kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
+                destStructTree.setK(kDictLevel0);
+            }
 
             mergeRoleMap(srcStructTree, destStructTree);
         }
