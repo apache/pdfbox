@@ -77,8 +77,14 @@ class PDFCloneUtility
           if( retval != null )
           {
               //we are done, it has already been converted.
+              return retval;
           }
-          else if( base instanceof List)
+          if (base instanceof COSBase && clonedVersion.containsValue(base))
+          {
+              // Don't clone a clone
+              return (COSBase) base;
+          }
+          if (base instanceof List)
           {
               COSArray array = new COSArray();
               List<?> list = (List<?>) base;
@@ -166,7 +172,8 @@ class PDFCloneUtility
               return;
               //we are done, it has already been converted. // ### Is that correct for cloneMerge???
           }
-          else if (!(base instanceof COSBase))
+          //TODO what when clone-merging a clone? Does it ever happen?
+          if (!(base instanceof COSBase))
           {
               cloneMerge(base.getCOSObject(), target.getCOSObject());
               clonedVersion.put(base, retval);
