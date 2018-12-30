@@ -811,25 +811,49 @@ public class PDFMergerUtility
             destStructTree.setParentTree(newParentTreeNode);
             destStructTree.setParentTreeNextKey(destParentTreeNextKey);
 
-            COSArray newKArray = new COSArray();
-            if (srcStructTree.getK() != null)
-            {
-                newKArray.add(cloner.cloneForNewDocument(srcStructTree.getK()));
-            }
-            if (destStructTree.getK() != null)
-            {
-                newKArray.add(destStructTree.getK());
-            }
-            if (newKArray.size() > 0)
-            {
-                COSDictionary kDictLevel0 = new COSDictionary();
-                kDictLevel0.setItem(COSName.K, newKArray);
-                kDictLevel0.setItem(COSName.P, destStructTree);
-                kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
-                destStructTree.setK(kDictLevel0);
-            }
-
+            mergeKEntries(cloner, srcStructTree, destStructTree);
             mergeRoleMap(srcStructTree, destStructTree);
+        }
+    }
+
+    private void mergeKEntries(PDFCloneUtility cloner,
+                      PDStructureTreeRoot srcStructTree,
+                      PDStructureTreeRoot destStructTree) throws IOException
+    {
+        // make new /K with array that has the input /K entries
+        COSArray newKArray = new COSArray();
+        if (srcStructTree.getK() != null)
+        {
+            COSBase base = cloner.cloneForNewDocument(srcStructTree.getK());
+            if (base instanceof COSArray)
+            {
+                newKArray.addAll((COSArray) base);
+            }
+            else
+            {
+                newKArray.add(base);
+            }
+        }
+        if (destStructTree.getK() != null)
+        {
+            COSBase base = destStructTree.getK();
+            if (base instanceof COSArray)
+            {
+                newKArray.addAll((COSArray) base);
+            }
+            else
+            {
+                newKArray.add(base);
+            }
+        }
+        if (newKArray.size() > 0)
+        {
+            COSDictionary kDictLevel0 = new COSDictionary();
+            updateParentEntry(newKArray, kDictLevel0);
+            kDictLevel0.setItem(COSName.K, newKArray);
+            kDictLevel0.setItem(COSName.P, destStructTree);
+            kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
+            destStructTree.setK(kDictLevel0);
         }
     }
 
