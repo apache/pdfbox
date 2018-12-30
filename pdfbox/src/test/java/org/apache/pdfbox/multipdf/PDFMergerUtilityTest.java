@@ -259,7 +259,7 @@ public class PDFMergerUtilityTest extends TestCase
         checkWithNumberTree(dst);
         checkForPageOrphans(dst);
         dst.close();
-        checkStructTreeRootCount();
+        checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4408-merged.pdf"));
     }
 
 
@@ -282,7 +282,7 @@ public class PDFMergerUtilityTest extends TestCase
         checkWithNumberTree(dst);
         checkForPageOrphans(dst);
         dst.close();
-        checkStructTreeRootCount();
+        checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4417-001031-merged.pdf"));
     }
 
     /**
@@ -318,14 +318,13 @@ public class PDFMergerUtilityTest extends TestCase
 
         dst.close();
         
-        checkStructTreeRootCount();
+        checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4417-054080-merged.pdf"));
     }
 
     // PDFBOX-4417: check for multiple /StructTreeRoot entries that was due to
     // incorrect merging of /K entries
-    private void checkStructTreeRootCount() throws FileNotFoundException, IOException
+    private void checkStructTreeRootCount(File file) throws FileNotFoundException, IOException
     {
-        File file = new File(TARGETTESTDIR, "PDFBOX-4417-054080-merged.pdf");
         int count = 0;
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
         String line;
