@@ -323,7 +323,7 @@ public class PDFMergerUtilityTest extends TestCase
 
     // PDFBOX-4417: check for multiple /StructTreeRoot entries that was due to
     // incorrect merging of /K entries
-    private void checkStructTreeRootCount(File file) throws FileNotFoundException, IOException
+    private void checkStructTreeRootCount(File file) throws IOException
     {
         int count = 0;
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
