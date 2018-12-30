@@ -1055,7 +1055,7 @@ public class PDFMergerUtility
                 else
                 {
                     // don't display in full because of stack overflow
-                    LOG.debug("clone potential orphan object in structure tree, type: " +
+                    LOG.debug("clone potential orphan object in structure tree" +
                             ", Type: " + objDict.getNameAsString(COSName.TYPE) +
                             ", Subtype: " + objDict.getNameAsString(COSName.SUBTYPE) +
                             ", T: " + objDict.getNameAsString(COSName.T));
