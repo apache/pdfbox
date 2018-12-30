@@ -340,9 +340,9 @@ public class PDFMergerUtilityTest extends TestCase
 
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
-        dst.save(new File(TARGETTESTDIR, "IDTree-merged.pdf"));
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-4416-IDTree-merged.pdf"));
         dst.close();
-        dst = PDDocument.load(new File(TARGETTESTDIR, "IDTree-merged.pdf"));
+        dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4416-IDTree-merged.pdf"));
         checkWithNumberTree(dst);
         checkForPageOrphans(dst);
 
@@ -351,7 +351,7 @@ public class PDFMergerUtilityTest extends TestCase
         assertEquals(expectedTotal, dstIDTreeMap.size());
 
         dst.close();
-        checkStructTreeRootCount(new File(TARGETTESTDIR, "IDTree-merged.pdf"));
+        checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4416-IDTree-merged.pdf"));
     }
 
     // PDFBOX-4417: check for multiple /StructTreeRoot entries that was due to
