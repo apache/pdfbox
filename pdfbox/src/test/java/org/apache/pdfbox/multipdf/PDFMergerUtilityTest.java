@@ -16,15 +16,20 @@
 package org.apache.pdfbox.multipdf;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -254,6 +259,7 @@ public class PDFMergerUtilityTest extends TestCase
         checkWithNumberTree(dst);
         checkForPageOrphans(dst);
         dst.close();
+        checkStructTreeRootCount();
     }
 
 
@@ -276,6 +282,7 @@ public class PDFMergerUtilityTest extends TestCase
         checkWithNumberTree(dst);
         checkForPageOrphans(dst);
         dst.close();
+        checkStructTreeRootCount();
     }
 
     /**
@@ -310,6 +317,27 @@ public class PDFMergerUtilityTest extends TestCase
         assertEquals(singleSetSize * 2, elementCounter.set.size());
 
         dst.close();
+        
+        checkStructTreeRootCount();
+    }
+
+    // PDFBOX-4417: check for multiple /StructTreeRoot entries that was due to
+    // incorrect merging of /K entries
+    private void checkStructTreeRootCount() throws FileNotFoundException, IOException
+    {
+        File file = new File(TARGETTESTDIR, "PDFBOX-4417-054080-merged.pdf");
+        int count = 0;
+        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        String line;
+        while ((line = br.readLine()) != null)
+        {
+            if (line.equals("/Type /StructTreeRoot"))
+            {
+                ++count;
+            }
+        }
+        br.close();
+        assertEquals(1, count);
     }
 
     /**
