@@ -51,6 +51,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.PDStructureElementNameTreeNode;
 import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -821,6 +822,7 @@ public class PDFMergerUtility
 
             mergeKEntries(cloner, srcStructTree, destStructTree);
             mergeRoleMap(srcStructTree, destStructTree);
+            mergeIDTree(cloner, srcStructTree, destStructTree);
         }
     }
 
@@ -863,6 +865,39 @@ public class PDFMergerUtility
             kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
             destStructTree.setK(kDictLevel0);
         }
+    }
+
+    private void mergeIDTree(PDFCloneUtility cloner,
+            PDStructureTreeRoot srcStructTree,
+            PDStructureTreeRoot destStructTree) throws IOException
+    {
+        PDNameTreeNode<PDStructureElement> srcIDTree = srcStructTree.getIDTree();
+        PDNameTreeNode<PDStructureElement> destIDTree = destStructTree.getIDTree();
+        if (srcIDTree == null)
+        {
+            return;
+        }
+        if (destIDTree == null)
+        {
+            destIDTree = new PDStructureElementNameTreeNode();
+        }
+        Map<String, PDStructureElement> srcNames = getIDTreeAsMap(srcIDTree);
+        Map<String, PDStructureElement> destNames = getIDTreeAsMap(destIDTree);
+        for (Map.Entry<String, PDStructureElement> entry : srcNames.entrySet())
+        {
+            if (destNames.containsKey(entry.getKey()))
+            {
+                LOG.warn("key " + entry.getKey() + " already exists in destination IDTree");
+            }
+            else
+            {
+                destNames.put(entry.getKey(),
+                              new PDStructureElement((COSDictionary) cloner.cloneForNewDocument(entry.getValue().getCOSObject())));
+            }
+        }
+        destIDTree = new PDStructureElementNameTreeNode();
+        destIDTree.setNames(destNames);
+        destStructTree.setIDTree(destIDTree);
     }
 
     // PDNameTreeNode.getNames() only brings one level, this is why we need this
