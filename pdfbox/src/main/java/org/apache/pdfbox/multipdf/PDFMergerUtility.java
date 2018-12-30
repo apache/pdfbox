@@ -812,24 +812,6 @@ public class PDFMergerUtility
             destStructTree.setParentTree(newParentTreeNode);
             destStructTree.setParentTreeNextKey(destParentTreeNextKey);
 
-            COSArray newKArray = new COSArray();
-            if (srcStructTree.getK() != null)
-            {
-                newKArray.add(cloner.cloneForNewDocument(srcStructTree.getK()));
-            }
-            if (destStructTree.getK() != null)
-            {
-                newKArray.add(destStructTree.getK());
-            }
-            if (newKArray.size() > 0)
-            {
-                COSDictionary kDictLevel0 = new COSDictionary();
-                kDictLevel0.setItem(COSName.K, newKArray);
-                kDictLevel0.setItem(COSName.P, destStructTree);
-                kDictLevel0.setItem(COSName.S, COSName.DOCUMENT);
-                destStructTree.setK(kDictLevel0);
-            }
-
             mergeKEntries(cloner, srcStructTree, destStructTree);
             mergeRoleMap(srcStructTree, destStructTree);
         }
