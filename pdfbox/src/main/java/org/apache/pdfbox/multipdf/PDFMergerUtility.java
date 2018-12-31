@@ -731,14 +731,6 @@ public class PDFMergerUtility
                     }
                 }
             }
-            if (destMark != null && destMark.isMarked() && !mergeStructTree)
-            {
-                destMark.setMarked(false);
-            }
-            if (!mergeStructTree)
-            {
-                destCatalog.setStructureTreeRoot(null);
-            }
         }
 
         Map<COSDictionary, COSDictionary> objMapping = new HashMap<>();
