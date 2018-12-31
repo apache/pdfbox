@@ -931,6 +931,11 @@ public class PDFMergerUtility
         {
             numbers = new LinkedHashMap<Integer, COSObjectable>();
         }
+        else
+        {
+            // must copy because the map is read only
+            numbers = new LinkedHashMap<Integer, COSObjectable>(numbers);
+        }
         List<PDNumberTreeNode> kids = tree.getKids();
         if (kids != null)
         {
