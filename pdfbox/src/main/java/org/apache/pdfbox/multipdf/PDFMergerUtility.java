@@ -59,6 +59,7 @@ import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDMarkInfo;
+import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDParentTreeValue;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureTreeRoot;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
@@ -807,7 +808,7 @@ public class PDFMergerUtility
             }
             destParentTreeNextKey += srcKey + 1;
             destParentTreeDict.setItem(COSName.NUMS, destNumbersArray);
-            PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(destParentTreeDict, COSBase.class);
+            PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(destParentTreeDict, PDParentTreeValue.class);
             destStructTree.setParentTree(newParentTreeNode);
             destStructTree.setParentTreeNextKey(destParentTreeNextKey);
 
