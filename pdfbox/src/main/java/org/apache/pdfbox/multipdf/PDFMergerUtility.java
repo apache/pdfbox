@@ -725,7 +725,7 @@ public class PDFMergerUtility
                             destParentTreeNextKey = Collections.max(numberTreeAsMap.keySet()) + 1;
                         }
                     }
-                    if (destParentTreeNextKey > 0 && srcStructTree != null)
+                    if (destParentTreeNextKey >= 0 && srcStructTree != null)
                     {
                         PDNumberTreeNode srcParentTree = srcStructTree.getParentTree();
                         if (srcParentTree != null)
