@@ -341,6 +341,7 @@ public class PDFMergerUtilityTest extends TestCase
         PDNameTreeNode<PDStructureElement> dstIDTree = dst.getDocumentCatalog().getStructureTreeRoot().getIDTree();
         Map<String, PDStructureElement> dstIDTreeMap = PDFMergerUtility.getIDTreeAsMap(dstIDTree);
         int expectedTotal = srcIDTreeMap.size() + dstIDTreeMap.size();
+        assertEquals(192, expectedTotal);
 
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
