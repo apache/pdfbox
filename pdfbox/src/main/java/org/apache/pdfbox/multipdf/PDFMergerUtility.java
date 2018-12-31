@@ -716,8 +716,15 @@ public class PDFMergerUtility
                 {
                     if (destParentTreeNextKey < 0)
                     {
-                        //TODO this is not correct. Needs to search the tree and put last + 1 here
-                        destParentTreeNextKey = destNumbersArray.size() / 2;
+                        Map<Integer, COSObjectable> numberTreeAsMap = getNumberTreeAsMap(destParentTree);
+                        if (numberTreeAsMap.isEmpty())
+                        {
+                            destParentTreeNextKey = 0;
+                        }
+                        else
+                        {
+                            destParentTreeNextKey = Collections.max(numberTreeAsMap.keySet()) + 1;
+                        }
                     }
                     if (destParentTreeNextKey > 0 && srcStructTree != null)
                     {
