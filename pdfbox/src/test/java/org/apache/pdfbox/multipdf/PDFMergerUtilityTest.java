@@ -19,11 +19,11 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageTree;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.PDNumberTreeNode;
 import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructureElement;
@@ -353,6 +354,25 @@ public class PDFMergerUtilityTest extends TestCase
 
         dst.close();
         checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4416-IDTree-merged.pdf"));
+    }
+
+    /**
+     * Test of the parent tree. Didn't work before PDFBOX-4003 because of incompatible class for
+     * PDNumberTreeNode.
+     *
+     * @throws IOException
+     */
+    public void testParentTree() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
+        PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
+        PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
+        parentTree.getValue(0);
+        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        assertEquals(31, numberTreeAsMap.size());
+        assertEquals(31, Collections.max(numberTreeAsMap.keySet()) + 1);
+        assertEquals(31, structureTreeRoot.getParentTreeNextKey());
+        doc.close();
     }
 
     // PDFBOX-4417: check for multiple /StructTreeRoot entries that was due to
