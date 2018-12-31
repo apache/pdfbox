@@ -53,6 +53,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.PDStructureElementNameTreeNode;
 import org.apache.pdfbox.pdmodel.PageMode;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDDestinationOrAction;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.pdmodel.common.PDNameTreeNode;
@@ -894,6 +895,7 @@ public class PDFMergerUtility
     }
 
     // PDNameTreeNode.getNames() only brings one level, this is why we need this
+    // might be made public at a later time, or integrated into PDNameTreeNode with template.
     static Map<String, PDStructureElement> getIDTreeAsMap(PDNameTreeNode<PDStructureElement> idTree)
             throws IOException
     {
@@ -911,6 +913,27 @@ public class PDFMergerUtility
             }
         }
         return names;
+    }
+
+    // PDNumberTreeNode.getNumbers() only brings one level, this is why we need this
+    // might be made public at a later time, or integrated into PDNumberTreeNode.
+    static Map<Integer, COSObjectable> getNumberTreeAsMap(PDNumberTreeNode tree)
+            throws IOException
+    {
+        Map<Integer, COSObjectable> numbers = tree.getNumbers();
+        if (numbers == null)
+        {
+            numbers = new LinkedHashMap<Integer, COSObjectable>();
+        }
+        List<PDNumberTreeNode> kids = tree.getKids();
+        if (kids != null)
+        {
+            for (PDNumberTreeNode kid : kids)
+            {
+                numbers.putAll(getNumberTreeAsMap(kid));
+            }
+        }
+        return numbers;
     }
 
     private void mergeRoleMap(PDStructureTreeRoot srcStructTree, PDStructureTreeRoot destStructTree)
