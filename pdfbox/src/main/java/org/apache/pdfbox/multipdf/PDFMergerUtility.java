@@ -692,14 +692,21 @@ public class PDFMergerUtility
         
         mergeOutputIntents(cloner, srcCatalog, destCatalog);
 
-        // merge logical structure hierarchy if logical structure information is available in both source pdf and
-        // destination pdf
+        // merge logical structure hierarchy
         boolean mergeStructTree = false;
         int destParentTreeNextKey = -1;
         Map<Integer, COSObjectable> srcNumberTreeAsMap = null;
         Map<Integer, COSObjectable> destNumberTreeAsMap = null;
-        PDStructureTreeRoot destStructTree = destCatalog.getStructureTreeRoot();
         PDStructureTreeRoot srcStructTree = srcCatalog.getStructureTreeRoot();
+        PDStructureTreeRoot destStructTree = destCatalog.getStructureTreeRoot();
+        if (destStructTree == null && srcStructTree != null)
+        {
+            // create a dummy structure tree in the destination, so that the source
+            // tree is cloned. (We can't just copy the tree reference due to PDFBOX-3999)
+            destStructTree = new PDStructureTreeRoot();
+            destCatalog.setStructureTreeRoot(destStructTree);
+            destStructTree.setParentTree(new PDNumberTreeNode(PDParentTreeValue.class));
+        }
         if (destStructTree != null)
         {
             PDNumberTreeNode destParentTree = destStructTree.getParentTree();
