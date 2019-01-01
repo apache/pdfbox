@@ -377,6 +377,8 @@ public class PDFMergerUtilityTest extends TestCase
 
     /**
      * PDFBOX-4416: Test merging of /IDTree
+     * <br>
+     * PDFBOX-4009: test merging to empty destination
      *
      * @throws IOException 
      */
@@ -392,6 +394,13 @@ public class PDFMergerUtilityTest extends TestCase
         Map<String, PDStructureElement> dstIDTreeMap = PDFMergerUtility.getIDTreeAsMap(dstIDTree);
         int expectedTotal = srcIDTreeMap.size() + dstIDTreeMap.size();
         assertEquals(192, expectedTotal);
+
+        // PDFBOX-4009, test that empty dest doc still merges structure tree
+        // (empty dest doc is used in command line app)
+        PDDocument emptyDest = new PDDocument();
+        pdfMergerUtility.appendDocument(emptyDest, src);
+        src.close();
+        src = emptyDest;
 
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
