@@ -804,7 +804,13 @@ public class PDFMergerUtility
             }
             destParentTreeNextKey += maxSrcKey + 1;
             PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(PDParentTreeValue.class);
+
+            // Note that all elements are stored flatly. This could become a problem for large files
+            // when these are opened in a viewer that uses the tagging information.
+            // If this happens, then ​PDNumberTreeNode should be improved with a convenience method that
+            // stores the map into a B+Tree, see https://en.wikipedia.org/wiki/B+_tree
             newParentTreeNode.setNumbers(destNumberTreeAsMap);
+
             destStructTree.setParentTree(newParentTreeNode);
             destStructTree.setParentTreeNextKey(destParentTreeNextKey);
 
@@ -905,6 +911,10 @@ public class PDFMergerUtility
         destIDTree = new PDStructureElementNameTreeNode();
         destIDTree.setNames(destNames);
         destStructTree.setIDTree(destIDTree);
+        // Note that all elements are stored flatly. This could become a problem for large files
+        // when these are opened in a viewer that uses the tagging information.
+        // If this happens, then PDNameTreeNode should be improved with a convenience method that
+        // stores the map into a B+Tree, see https://en.wikipedia.org/wiki/B+_tree
     }
 
     // PDNameTreeNode.getNames() only brings one level, this is why we need this
