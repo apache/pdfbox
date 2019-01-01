@@ -695,10 +695,8 @@ public class PDFMergerUtility
         // destination pdf
         boolean mergeStructTree = false;
         int destParentTreeNextKey = -1;
-        COSDictionary destParentTreeDict = null;
-        COSDictionary srcParentTreeDict;
-        COSArray destNumbersArray = null;
-        COSArray srcNumbersArray = null;
+        Map<Integer, COSObjectable> srcNumberTreeAsMap = null;
+        Map<Integer, COSObjectable> destNumberTreeAsMap = null;
         PDMarkInfo destMark = destCatalog.getMarkInfo();
         PDStructureTreeRoot destStructTree = destCatalog.getStructureTreeRoot();
         PDMarkInfo srcMark = srcCatalog.getMarkInfo();
@@ -709,33 +707,27 @@ public class PDFMergerUtility
             destParentTreeNextKey = destStructTree.getParentTreeNextKey();
             if (destParentTree != null)
             {
-                destParentTreeDict = destParentTree.getCOSObject();
-                destNumbersArray = (COSArray) destParentTreeDict.getDictionaryObject(COSName.NUMS);
-                if (destNumbersArray != null)
+                destNumberTreeAsMap = getNumberTreeAsMap(destParentTree);
+                if (destParentTreeNextKey < 0)
                 {
-                    if (destParentTreeNextKey < 0)
+                    if (destNumberTreeAsMap.isEmpty())
                     {
-                        Map<Integer, COSObjectable> numberTreeAsMap = getNumberTreeAsMap(destParentTree);
-                        if (numberTreeAsMap.isEmpty())
-                        {
-                            destParentTreeNextKey = 0;
-                        }
-                        else
-                        {
-                            destParentTreeNextKey = Collections.max(numberTreeAsMap.keySet()) + 1;
-                        }
+                        destParentTreeNextKey = 0;
                     }
-                    if (destParentTreeNextKey >= 0 && srcStructTree != null)
+                    else
                     {
-                        PDNumberTreeNode srcParentTree = srcStructTree.getParentTree();
-                        if (srcParentTree != null)
+                        destParentTreeNextKey = Collections.max(destNumberTreeAsMap.keySet()) + 1;
+                    }
+                }
+                if (destParentTreeNextKey >= 0 && srcStructTree != null)
+                {
+                    PDNumberTreeNode srcParentTree = srcStructTree.getParentTree();
+                    if (srcParentTree != null)
+                    {
+                        srcNumberTreeAsMap = getNumberTreeAsMap(srcParentTree);
+                        if (!srcNumberTreeAsMap.isEmpty())
                         {
-                            srcParentTreeDict = srcParentTree.getCOSObject();
-                            srcNumbersArray = (COSArray) srcParentTreeDict.getDictionaryObject(COSName.NUMS);
-                            if (srcNumbersArray != null)
-                            {
-                                mergeStructTree = true;
-                            }
+                            mergeStructTree = true;
                         }
                     }
                 }
@@ -796,28 +788,17 @@ public class PDFMergerUtility
         }
         if (mergeStructTree)
         {
-            //TODO this code only works with flat number trees.
-            // It should be a PDNumberTreeNode, but that class is broken because
-            // COSBase can't be instanciated and because the tree elements can
-            // be an array or a dictionary
-            // example of file with /Kids: 000153.pdf 000208.pdf 000314.pdf 000359.pdf 000671.pdf
-            // from digitalcorpora site
-            updatePageReferences(cloner, srcNumbersArray, objMapping);
-            int srcKey = 0;
-            for (int i = 0; i < srcNumbersArray.size() / 2; i++)
+            updatePageReferences(cloner, srcNumberTreeAsMap, objMapping);
+            int maxSrcKey = -1;
+            for (Map.Entry<Integer, COSObjectable> entry : srcNumberTreeAsMap.entrySet())
             {
-                srcKey = srcNumbersArray.getInt(i * 2);
-                if (srcKey < 0)
-                {
-                    LOG.error("numbers array content on position " + (i * 2) + " should be an int");
-                    continue;
-                }
-                destNumbersArray.add(COSInteger.get(destParentTreeNextKey + srcKey));
-                destNumbersArray.add(cloner.cloneForNewDocument(srcNumbersArray.getObject(i * 2 + 1)));
+                int srcKey = entry.getKey();
+                maxSrcKey = Math.max(srcKey, maxSrcKey);
+                destNumberTreeAsMap.put(destParentTreeNextKey + srcKey, cloner.cloneForNewDocument(entry.getValue()));
             }
-            destParentTreeNextKey += srcKey + 1;
-            destParentTreeDict.setItem(COSName.NUMS, destNumbersArray);
-            PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(destParentTreeDict, PDParentTreeValue.class);
+            destParentTreeNextKey += maxSrcKey + 1;
+            PDNumberTreeNode newParentTreeNode = new PDNumberTreeNode(PDParentTreeValue.class);
+            newParentTreeNode.setNumbers(destNumberTreeAsMap);
             destStructTree.setParentTree(newParentTreeNode);
             destStructTree.setParentTreeNextKey(destParentTreeNextKey);
 
@@ -1162,6 +1143,28 @@ public class PDFMergerUtility
     public void setAcroFormMergeMode(AcroFormMergeMode theAcroFormMergeMode)
     {
         this.acroFormMergeMode = theAcroFormMergeMode;
+    }
+
+    /**
+     * Update the Pg and Obj references to the new (merged) page.
+     */
+    private void updatePageReferences(PDFCloneUtility cloner,
+            Map<Integer, COSObjectable> numberTreeAsMap,
+            Map<COSDictionary, COSDictionary> objMapping) throws IOException
+    {
+        for (COSObjectable obj : numberTreeAsMap.values())
+        {
+            PDParentTreeValue val = (PDParentTreeValue) obj;
+            COSBase base = val.getCOSObject();
+            if (base instanceof COSArray)
+            {
+                updatePageReferences(cloner, (COSArray) base, objMapping);
+            }
+            else
+            {
+                updatePageReferences(cloner, (COSDictionary) base, objMapping);
+            }
+        }
     }
 
     /**
