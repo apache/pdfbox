@@ -458,6 +458,7 @@ public class PDFMergerUtilityTest extends TestCase
         Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
         assertEquals(31, numberTreeAsMap.size());
         assertEquals(31, Collections.max(numberTreeAsMap.keySet()) + 1);
+        assertEquals(0, (int) Collections.min(numberTreeAsMap.keySet()));
         assertEquals(31, structureTreeRoot.getParentTreeNextKey());
         doc.close();
     }
