@@ -697,9 +697,7 @@ public class PDFMergerUtility
         int destParentTreeNextKey = -1;
         Map<Integer, COSObjectable> srcNumberTreeAsMap = null;
         Map<Integer, COSObjectable> destNumberTreeAsMap = null;
-        PDMarkInfo destMark = destCatalog.getMarkInfo();
         PDStructureTreeRoot destStructTree = destCatalog.getStructureTreeRoot();
-        PDMarkInfo srcMark = srcCatalog.getMarkInfo();
         PDStructureTreeRoot srcStructTree = srcCatalog.getStructureTreeRoot();
         if (destStructTree != null)
         {
@@ -805,7 +803,26 @@ public class PDFMergerUtility
             mergeKEntries(cloner, srcStructTree, destStructTree);
             mergeRoleMap(srcStructTree, destStructTree);
             mergeIDTree(cloner, srcStructTree, destStructTree);
+            mergeMarkInfo(destCatalog, srcCatalog);
         }
+    }
+
+    private void mergeMarkInfo(PDDocumentCatalog destCatalog, PDDocumentCatalog srcCatalog)
+    {
+        PDMarkInfo destMark = destCatalog.getMarkInfo();
+        PDMarkInfo srcMark = srcCatalog.getMarkInfo();
+        if (destMark == null)
+        {
+            destMark = new PDMarkInfo();
+        }
+        if (srcMark == null)
+        {
+            srcMark = new PDMarkInfo();
+        }
+        destMark.setMarked(true);
+        destMark.setSuspect(srcMark.isSuspect() || destMark.isSuspect());
+        destMark.setSuspect(srcMark.usesUserProperties() || destMark.usesUserProperties());
+        destCatalog.setMarkInfo(destMark);
     }
 
     private void mergeKEntries(PDFCloneUtility cloner,
