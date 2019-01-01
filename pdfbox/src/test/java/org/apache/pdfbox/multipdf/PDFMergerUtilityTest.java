@@ -323,6 +323,59 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
+     * PDFBOX-4418: test merging PDFs where ParentTree have a hierarchy.
+     * 
+     * @throws IOException 
+     */
+    public void testStructureTreeMerge6() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4418-000671.pdf"));
+
+        PDStructureTreeRoot structureTreeRoot = src.getDocumentCatalog().getStructureTreeRoot();
+        PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
+        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        assertEquals(381, numberTreeAsMap.size());
+        assertEquals(743, Collections.max(numberTreeAsMap.keySet()) + 1);
+        assertEquals(0, (int) Collections.min(numberTreeAsMap.keySet()));
+        assertEquals(743, structureTreeRoot.getParentTreeNextKey());        
+
+        PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4418-000314.pdf"));
+
+        structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
+        parentTree = structureTreeRoot.getParentTree();
+        numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        assertEquals(7, numberTreeAsMap.size());
+        assertEquals(328, Collections.max(numberTreeAsMap.keySet()) + 1);
+        assertEquals(321, (int) Collections.min(numberTreeAsMap.keySet()));
+        // ParentTreeNextKey should be 321 but PDF has a higher value
+        assertEquals(408, structureTreeRoot.getParentTreeNextKey());
+
+        //TODO if we delete ParentTreeNextKey and merge 000314.pdf with an empty file then 
+        // the new key should be 328
+        
+        pdfMergerUtility.appendDocument(dst, src);
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-4418-merged.pdf"));
+        dst.close();
+
+        dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4418-merged.pdf"));
+        checkWithNumberTree(dst);
+        checkForPageOrphans(dst);
+
+        structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
+        parentTree = structureTreeRoot.getParentTree();
+        numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        assertEquals(381+7, numberTreeAsMap.size());
+        assertEquals(408+743, Collections.max(numberTreeAsMap.keySet()) + 1);
+        assertEquals(321, (int) Collections.min(numberTreeAsMap.keySet()));
+        assertEquals(408+743, structureTreeRoot.getParentTreeNextKey());
+        dst.close();
+
+        checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4418-merged.pdf"));
+    }
+
+    /**
      * PDFBOX-4416: Test merging of /IDTree
      *
      * @throws IOException 
