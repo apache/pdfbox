@@ -351,9 +351,6 @@ public class PDFMergerUtilityTest extends TestCase
         // ParentTreeNextKey should be 321 but PDF has a higher value
         assertEquals(408, structureTreeRoot.getParentTreeNextKey());
 
-        //TODO if we delete ParentTreeNextKey and merge 000314.pdf with an empty file then 
-        // the new key should be 328
-        
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
         dst.save(new File(TARGETTESTDIR, "PDFBOX-4418-merged.pdf"));
@@ -373,6 +370,30 @@ public class PDFMergerUtilityTest extends TestCase
         dst.close();
 
         checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4418-merged.pdf"));
+    }
+
+    /**
+     * PDFBOX-4009: Test that ParentTreeNextKey is recalculated correctly.
+     */
+    public void testMissingParentTreeNextKey() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4418-000314.pdf"));
+        PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4418-000314.pdf"));
+        System.out.println(dst.getDocumentCatalog().getStructureTreeRoot().getParentTreeNextKey());
+        // existing numbers are 321..327; ParentTreeNextKey is 408. 
+        // After deletion, it is recalculated in the merge 328.
+        // That value is added to all numbers of the destination,
+        // so the new numbers should be 321+328..327+328, i.e. 649..655,
+        // and this ParentTreeNextKey is 656 at the end.
+        dst.getDocumentCatalog().getStructureTreeRoot().getCOSObject().removeItem(COSName.PARENT_TREE_NEXT_KEY);
+        pdfMergerUtility.appendDocument(dst, src);
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-4418-000314-merged.pdf"));
+        dst.close();
+        dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4418-000314-merged.pdf"));
+        assertEquals(656, dst.getDocumentCatalog().getStructureTreeRoot().getParentTreeNextKey());
+        dst.close();
     }
 
     /**
