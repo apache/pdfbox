@@ -426,6 +426,7 @@ public class PDFMergerUtilityTest extends TestCase
         pdfMergerUtility.appendDocument(emptyDest, src);
         src.close();
         src = emptyDest;
+        assertEquals(4, src.getDocumentCatalog().getStructureTreeRoot().getParentTreeNextKey());
 
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
