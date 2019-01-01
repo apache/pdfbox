@@ -384,7 +384,6 @@ public class PDFMergerUtilityTest extends TestCase
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4418-000314.pdf"));
         PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4418-000314.pdf"));
-        System.out.println(dst.getDocumentCatalog().getStructureTreeRoot().getParentTreeNextKey());
         // existing numbers are 321..327; ParentTreeNextKey is 408. 
         // After deletion, it is recalculated in the merge 328.
         // That value is added to all numbers of the destination,
