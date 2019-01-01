@@ -490,6 +490,32 @@
                             <sha512>eaabebdc39eb9df2f96de4d322ce02478c61193311fdbabf310995cbab55d72e80047bd562d506c391f53a15b1cac9a5d225245b1c5d8a0745acd1b506f571f8</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4418-1</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12953423/000314.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4418-000314.pdf</outputFileName>
+                            <sha512>1e16476ff9cdf11fdcb8bfd7d1e6e434d85bce187164936d352846e6804694cd89c9f789da1b9fcae13b51058c1bab0cc4f50dd63e3544ab02050b00044cc5df</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-4418-2</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12953421/000671.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4418-000671.pdf</outputFileName>
+                            <sha512>a0fc0cfd42cb7eb8d521db259f53723f1e8a1618e740e89c787157f85623ed3f8a85b1920933328dfef355c8a468f26c459f37eeeaf5cdafa86540b56fb46090</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
