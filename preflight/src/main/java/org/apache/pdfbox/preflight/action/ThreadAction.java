@@ -52,7 +52,7 @@ public class ThreadAction extends AbstractActionManager
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.actions.AbstractActionManager#valid(java.util .List)
+     * @see org.apache.pdfbox.preflight.action.AbstractActionManager#valid(java.util .List)
      */
     @Override
     protected boolean innerValid()
