@@ -50,7 +50,7 @@ public class TextAnnotationValidator extends AnnotationValidator
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.annotation.AnnotationValidator#checkFlags( java.util.List)
+     * @see org.apache.pdfbox.preflight.annotation.AnnotationValidator#checkFlags( java.util.List)
      */
     protected boolean checkFlags()
     {
@@ -73,7 +73,7 @@ public class TextAnnotationValidator extends AnnotationValidator
     /*
      * (non-Javadoc)
      * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
+     * @seeorg.apache.pdfbox.preflight.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
      */
     protected boolean checkMandatoryFields()
     {

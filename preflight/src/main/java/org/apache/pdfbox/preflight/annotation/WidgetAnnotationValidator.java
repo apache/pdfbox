@@ -80,7 +80,7 @@ public class WidgetAnnotationValidator extends AnnotationValidator
     /*
      * (non-Javadoc)
      * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields()
+     * @seeorg.apache.pdfbox.preflight.annotation.AnnotationValidator# checkMandatoryFields()
      */
     protected boolean checkMandatoryFields()
     {

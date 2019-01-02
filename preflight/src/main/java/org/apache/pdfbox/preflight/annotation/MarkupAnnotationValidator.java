@@ -50,7 +50,7 @@ public class MarkupAnnotationValidator extends AnnotationValidator
     /*
      * (non-Javadoc)
      * 
-     * @seenet.awl.edoc.pdfa.validation.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
+     * @seeorg.apache.pdfbox.preflight.annotation.AnnotationValidator# checkMandatoryFields(java.util.List)
      */
     protected boolean checkMandatoryFields()
     {
