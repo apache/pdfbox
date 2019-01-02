@@ -51,7 +51,7 @@ import org.w3c.dom.Element;
 /**
  * This class is a simple main class used to check the validity of a pdf file.
  * 
- * Usage : java net.awl.edoc.pdfa.Validator &lt;file path&gt;
+ * Usage : java org.apache.pdfbox.preflight.Validator_A1b &lt;file path&gt;
  * 
  * @author gbailleul
  * 
