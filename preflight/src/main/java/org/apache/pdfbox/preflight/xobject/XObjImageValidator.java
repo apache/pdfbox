@@ -171,7 +171,7 @@ public class XObjImageValidator extends AbstractXObjValidator
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#validate()
+     * @see org.apache.pdfbox.preflight.graphic.AbstractXObjValidator#validate()
      */
     @Override
     public void validate() throws ValidationException
