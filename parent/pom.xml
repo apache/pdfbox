@@ -85,7 +85,8 @@
           <plugin>
               <groupId>org.owasp</groupId>
               <artifactId>dependency-check-maven</artifactId>
-              <version>4.0.2</version>
+              <!-- can't update because of troubles with bouncycastle -->
+              <version>3.3.2</version>
               <configuration>
                   <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                   <suppressionFile>suppressions.xml</suppressionFile>
