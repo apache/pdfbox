@@ -78,7 +78,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.graphics.color.ColorSpaceHelper#validate(java .util.List)
+     * @see org.apache.pdfbox.preflight.graphic.color.ColorSpaceHelper#validate(java .util.List)
      */
     public final void validate() throws ValidationException
     {

@@ -95,7 +95,7 @@ public class ShaddingPatternValidationProcess extends AbstractProcess
 
     /**
      * Check the Extended Graphic State contains in the ShadingPattern dictionary if it is present. To check this
-     * ExtGState, this method uses the net.awl.edoc.pdfa.validation.graphics.ExtGStateContainer object.
+     * ExtGState, this method uses the org.apache.pdfbox.preflight.graphic.ExtGStateContainer object.
      * 
      * @return true is the ExtGState is missing or valid, false otherwise.
      * @throws ValidationException

@@ -36,7 +36,7 @@ public class XObjPostscriptValidator extends AbstractXObjValidator
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator#validate()
+     * @see org.apache.pdfbox.preflight.graphic.AbstractXObjValidator#validate()
      */
     @Override
     public void validate() throws ValidationException
@@ -47,7 +47,7 @@ public class XObjPostscriptValidator extends AbstractXObjValidator
     /*
      * (non-Javadoc)
      * 
-     * @seenet.awl.edoc.pdfa.validation.graphics.AbstractXObjValidator# checkMandatoryFields(java.util.List)
+     * @seeorg.apache.pdfbox.preflight.graphic.AbstractXObjValidator# checkMandatoryFields(java.util.List)
      */
     @Override
     protected void checkMandatoryFields()

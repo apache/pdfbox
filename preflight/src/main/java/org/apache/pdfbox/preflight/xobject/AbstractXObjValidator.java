@@ -145,7 +145,7 @@ public abstract class AbstractXObjValidator implements XObjectValidator
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.graphics.XObjectValidator#validate()
+     * @see org.apache.pdfbox.preflight.graphic.XObjectValidator#validate()
      */
     public void validate() throws ValidationException
     {
