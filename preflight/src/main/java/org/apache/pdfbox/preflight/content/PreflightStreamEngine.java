@@ -215,7 +215,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
 
     /**
      * Check operands of the "ri" operator. Operands must exist in the RenderingIntent list.
-     * (net.awl.edoc.pdfa.validation.utils.RenderingIntents)
+     * (org.apache.pdfbox.preflight.utils.RenderingIntents)
      * 
      * @param operator
      *            the "ri" operator
