@@ -34,8 +34,7 @@ public class CrossRefParseException extends PdfParseException
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(net.awl
-     * .edoc.pdfa.validation.ParseException)
+     * @see org.apache.pdfbox.preflight.javacc.ParseException#PdfParseException(net.awl.edoc.pdfa.validation.ParseException)
      */
     public CrossRefParseException(ParseException e)
     {
@@ -45,7 +44,7 @@ public class CrossRefParseException extends PdfParseException
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String,java.lang.String)
+     * @see org.apache.pdfbox.preflight.javacc.ParseException#PdfParseException(java.lang.String,java.lang.String)
      */
     public CrossRefParseException(String message, String code)
     {
@@ -55,7 +54,7 @@ public class CrossRefParseException extends PdfParseException
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.PdfParseException#PdfParseException(java.lang .String)
+     * @see org.apache.pdfbox.preflight.javacc.ParseException#PdfParseException(java.lang .String)
      */
     public CrossRefParseException(String message)
     {
@@ -65,7 +64,7 @@ public class CrossRefParseException extends PdfParseException
     /*
      * (non-Javadoc)
      * 
-     * @see net.awl.edoc.pdfa.validation.PdfParseException#getErrorCode()
+     * @see org.apache.pdfbox.preflight.javacc.ParseException#getErrorCode()
      */
     @Override
     public String getErrorCode()
