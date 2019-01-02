@@ -239,7 +239,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
     // /**
     // * Check the RI entry of the Graphic State. If the rendering intent entry is
     // * present, the value must be one of the four values defined in the PDF
-    // * reference. (@see net.awl.edoc.pdfa.validation.utils.RenderingIntents)
+    // * reference. (@see org.apache.pdfbox.preflight.utils.RenderingIntents)
     // *
     // * @param egs
     // * the graphic state to check
