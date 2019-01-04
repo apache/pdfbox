@@ -358,17 +358,12 @@ public class CatalogValidationProcess extends AbstractProcess
                 return;
             }
 
-            InputStream is = stream.createInputStream();
-            ICC_Profile iccp = null;
-            try
+            ICC_Profile iccp;
+            try (InputStream is = stream.createInputStream())
             {
                 iccp = ICC_Profile.getInstance(is);
             }
-            finally
-            {
-                is.close();
-            }
-            
+
             if (!validateICCProfileNEntry(stream, ctx, iccp))
             {
                 return;
