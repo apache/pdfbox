@@ -467,15 +467,13 @@ public class CatalogValidationProcess extends AbstractProcess
         array.add(stream);
         PDICCBased iccBased = new PDICCBased(array);
         PDColorSpace altCS = iccBased.getAlternateColorSpace();
-        if (altCS != null)
+        if (altCS != null && altCS.getNumberOfComponents() != iccBased.getNumberOfComponents())
         {
-            if (altCS.getNumberOfComponents() != iccBased.getNumberOfComponents())
-            {
-                addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                        "/N entry of ICC profile is different (" + iccBased.getNumberOfComponents()
-                        + ") than alternate entry colorspace component count ("
-                        + altCS.getNumberOfComponents() + ")"));
-            }
+            // https://github.com/veraPDF/veraPDF-library/issues/773
+            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                    "/N entry of ICC profile is different (" + iccBased.getNumberOfComponents()
+                    + ") than alternate entry colorspace component count ("
+                    + altCS.getNumberOfComponents() + ")"));
         }
     }
 }
