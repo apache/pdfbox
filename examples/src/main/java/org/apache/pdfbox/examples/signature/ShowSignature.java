@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
@@ -607,12 +608,12 @@ public final class ShowSignature
             if (streamObj.getObject() instanceof COSStream)
             {
                 COSStream cosStream = (COSStream) streamObj.getObject();
-
-                COSInputStream input = cosStream.createInputStream();
-                byte[] streamBytes = IOUtils.toByteArray(input);
-
-                System.out.println(description + " (" + elements.indexOf(streamObj) + "): "
+                try (InputStream is = cosStream.createInputStream())
+                {
+                    byte[] streamBytes = IOUtils.toByteArray(is);
+                    System.out.println(description + " (" + elements.indexOf(streamObj) + "): "
                         + Hex.getString(streamBytes));
+                }
             }
         }
     }
