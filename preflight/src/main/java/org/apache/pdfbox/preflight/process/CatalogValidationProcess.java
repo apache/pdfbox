@@ -41,6 +41,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
+import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -425,6 +427,7 @@ public class CatalogValidationProcess extends AbstractProcess
     }
 
     private boolean validateICCProfileNEntry(COSStream stream, PreflightContext ctx, ICC_Profile iccp)
+            throws IOException
     {
         COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
         if (!streamDict.containsKey(COSName.N))
@@ -453,6 +456,26 @@ public class CatalogValidationProcess extends AbstractProcess
                     "/N entry of ICC profile is " + nNumberValue + " but the ICC profile has " + iccp.getNumComponents() + " components"));
             return false;
         }
+        validateICCProfileAlternateEntry(stream, ctx);
         return true;
+    }
+
+    private void validateICCProfileAlternateEntry(COSStream stream, PreflightContext ctx) throws IOException
+    {
+        COSArray array = new COSArray();
+        array.add(COSName.ICCBASED);
+        array.add(stream);
+        PDICCBased iccBased = new PDICCBased(array);
+        PDColorSpace altCS = iccBased.getAlternateColorSpace();
+        if (altCS != null)
+        {
+            if (altCS.getNumberOfComponents() != iccBased.getNumberOfComponents())
+            {
+                addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
+                        "/N entry of ICC profile is different (" + iccBased.getNumberOfComponents()
+                        + ") than alternate entry colorspace component count ("
+                        + altCS.getNumberOfComponents() + ")"));
+            }
+        }
     }
 }
