@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -556,8 +557,9 @@ public final class ShowSignature
             {
                 COSStream cosStream = (COSStream) streamObj.getObject();
 
-                COSInputStream input = cosStream.createInputStream();
+                InputStream input = cosStream.createInputStream();
                 byte[] streamBytes = IOUtils.toByteArray(input);
+                input.close();
 
                 System.out.println(description + " (" + elements.indexOf(streamObj) + "): "
                         + Hex.getString(streamBytes));
