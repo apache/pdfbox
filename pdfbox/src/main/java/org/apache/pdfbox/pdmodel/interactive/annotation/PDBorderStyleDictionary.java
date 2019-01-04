@@ -123,6 +123,12 @@ public class PDBorderStyleDictionary implements COSObjectable
      */
     public float getWidth()
     {
+        if (getCOSObject().getDictionaryObject(COSName.W) instanceof COSName)
+        {
+            // replicate Adobe behavior although it contradicts the specification
+            // https://github.com/mozilla/pdf.js/issues/10385
+            return 0;
+        }
         return getCOSObject().getFloat(COSName.W, 1);
     }
 
