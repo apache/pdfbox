@@ -305,10 +305,10 @@ public class CatalogValidationProcess extends AbstractProcess
     /**
      * This method checks the destOutputProfile which must be a valid ICCProfile.
      * 
-     * If an other ICCProfile exists in the mapDestOutputProfile, a ValdiationError
-     * (ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_MULTIPLE) is returned because of only one profile is authorized. If the
-     * ICCProfile already exist in the mapDestOutputProfile, the method returns null. If the destOutputProfile contains
-     * an invalid ICCProfile, a ValidationError (ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID) is returned If the
+     * If another ICCProfile exists in the mapDestOutputProfile, a ValidationError
+     * (ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_MULTIPLE) is returned because only one profile is authorized. If the
+     * ICCProfile already exists in the mapDestOutputProfile, the method returns null. If the destOutputProfile contains
+     * an invalid ICCProfile, a ValidationError (ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID) is returned. If the
      * destOutputProfile is an empty stream, a ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY) is returned.
      * 
      * If the destOutputFile is valid, mapDestOutputProfile is updated, the ICCProfile is added to the document ctx and
