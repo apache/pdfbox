@@ -374,6 +374,47 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
+     * PDFBOX-4423: test merging a PDF where a widget has no StructParent.
+     * 
+     * @throws IOException 
+     */
+    public void testStructureTreeMerge7() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4423-000746.pdf"));
+
+        PDStructureTreeRoot structureTreeRoot = src.getDocumentCatalog().getStructureTreeRoot();
+        PDNumberTreeNode parentTree = structureTreeRoot.getParentTree();
+        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        assertEquals(33, numberTreeAsMap.size());
+        assertEquals(64, Collections.max(numberTreeAsMap.keySet()) + 1);
+        assertEquals(31, (int) Collections.min(numberTreeAsMap.keySet()));
+        assertEquals(126, structureTreeRoot.getParentTreeNextKey());        
+
+        PDDocument dst = new PDDocument();
+
+        pdfMergerUtility.appendDocument(dst, src);
+        src.close();
+        dst.save(new File(TARGETTESTDIR, "PDFBOX-4423-merged.pdf"));
+        dst.close();
+
+        dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4423-merged.pdf"));
+        checkWithNumberTree(dst);
+        checkForPageOrphans(dst);
+
+        structureTreeRoot = dst.getDocumentCatalog().getStructureTreeRoot();
+        parentTree = structureTreeRoot.getParentTree();
+        numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        assertEquals(33, numberTreeAsMap.size());
+        assertEquals(64, Collections.max(numberTreeAsMap.keySet()) + 1);
+        assertEquals(31, (int) Collections.min(numberTreeAsMap.keySet()));
+        assertEquals(64, structureTreeRoot.getParentTreeNextKey());
+        dst.close();
+
+        checkStructTreeRootCount(new File(TARGETTESTDIR, "PDFBOX-4423-merged.pdf"));
+    }
+
+    /**
      * PDFBOX-4009: Test that ParentTreeNextKey is recalculated correctly.
      */
     public void testMissingParentTreeNextKey() throws IOException
@@ -504,13 +545,21 @@ public class PDFMergerUtilityTest extends TestCase
             {
                 for (PDAnnotationWidget widget : field.getWidgets())
                 {
-                    assertTrue(keySet.contains(widget.getStructParent()));
+                    if (widget.getStructParent() >= 0)
+                    {
+                        assertTrue("field '" + field.getFullyQualifiedName() + "' /StructParent " +
+                                   widget.getStructParent() + " missing in /ParentTree",
+                                   keySet.contains(widget.getStructParent()));
+                    }
                 }
             }
         }
         for (PDPage page : document.getPages())
         {
-            assertTrue(keySet.contains(page.getStructParents()));
+            if (page.getStructParents() >= 0)
+            {
+                assertTrue(keySet.contains(page.getStructParents()));
+            }
         }
 
         // might also test image and form dictionaries...
