@@ -636,12 +636,13 @@ public abstract class PDAnnotation implements COSObjectable
 
     /**
      * This will get the key of this annotation in the structural parent tree.
-     * 
-     * @return the integer key of the annotation's entry in the structural parent tree
+     *
+     * @return the integer key of the annotation's entry in the structural parent tree or -1 if
+     * there isn't any.
      */
     public int getStructParent()
     {
-        return getCOSObject().getInt(COSName.STRUCT_PARENT, 0);
+        return getCOSObject().getInt(COSName.STRUCT_PARENT);
     }
 
     /**

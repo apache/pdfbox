@@ -239,14 +239,15 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     }
 
     /**
-     * This will get the key of this XObjectForm in the structural parent tree.
-     * Required if the form XObject contains marked-content sequences that are
-     * structural content items.
-     * @return the integer key of the XObjectForm's entry in the structural parent tree
+     * This will get the key of this XObjectForm in the structural parent tree. Required if the form
+     * XObject contains marked-content sequences that are structural content items.
+     *
+     * @return the integer key of the XObjectForm's entry in the structural parent tree or -1 if
+     * there isn't any.
      */
     public int getStructParents()
     {
-        return getCOSObject().getInt(COSName.STRUCT_PARENTS, 0);
+        return getCOSObject().getInt(COSName.STRUCT_PARENTS);
     }
 
     /**

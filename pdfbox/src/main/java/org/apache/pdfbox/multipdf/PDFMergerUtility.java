@@ -1306,12 +1306,18 @@ public class PDFMergerUtility
      */
     private void updateStructParentEntries(PDPage page, int structParentOffset) throws IOException
     {
-        page.setStructParents(page.getStructParents() + structParentOffset);
+        if (page.getStructParents() >= 0)
+        {
+            page.setStructParents(page.getStructParents() + structParentOffset);
+        }
         List<PDAnnotation> annots = page.getAnnotations();
         List<PDAnnotation> newannots = new ArrayList<>();
         for (PDAnnotation annot : annots)
         {
-            annot.setStructParent(annot.getStructParent() + structParentOffset);
+            if (annot.getStructParent() >= 0)
+            {
+                annot.setStructParent(annot.getStructParent() + structParentOffset);
+            }
             newannots.add(annot);
         }
         page.setAnnotations(newannots);
