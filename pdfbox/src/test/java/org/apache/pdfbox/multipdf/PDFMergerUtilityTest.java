@@ -250,7 +250,8 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
-     * PDFBOX-4408: check that StructParent values are found in the ParentTree.
+     * PDFBOX-4408: Check that /StructParents values from pages and /StructParent values from
+     * annotations are found in the /ParentTree.
      *
      * @throws IOException
      */
@@ -482,7 +483,8 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
-     * PDFBOX-4408: Check that StructParent values are found in the ParentTree
+     * PDFBOX-4408: Check that /StructParents values from pages and /StructParent values from
+     * annotations are found in the /ParentTree.
      *
      * @param document
      */
