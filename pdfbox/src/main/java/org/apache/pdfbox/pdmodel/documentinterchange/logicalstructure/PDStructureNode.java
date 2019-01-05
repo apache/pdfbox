@@ -50,7 +50,7 @@ public abstract class PDStructureNode implements COSObjectable
         {
             return new PDStructureTreeRoot(node);
         }
-        if ((type == null) || "StructElem".equals(type))
+        if (type == null || "StructElem".equals(type))
         {
             return new PDStructureElement(node);
         }
@@ -103,7 +103,7 @@ public abstract class PDStructureNode implements COSObjectable
     /**
      * Returns a list of objects for the kids (K).
      * 
-     * @return a list of objects for the kids
+     * @return a list of objects for the kids, never null.
      */
     public List<Object> getKids()
     {
