@@ -1211,10 +1211,10 @@ public class PDFMergerUtility
             COSDictionary parentTreeEntry, Map<COSDictionary, COSDictionary> objMapping)
             throws IOException
     {
-        COSBase page = parentTreeEntry.getDictionaryObject(COSName.PG);
-        if (page instanceof COSDictionary && objMapping.containsKey(page))
+        COSDictionary pageDict = parentTreeEntry.getCOSDictionary(COSName.PG);
+        if (objMapping.containsKey(pageDict))
         {
-            parentTreeEntry.setItem(COSName.PG, objMapping.get(page));
+            parentTreeEntry.setItem(COSName.PG, objMapping.get(pageDict));
         }
         COSBase obj = parentTreeEntry.getDictionaryObject(COSName.OBJ);
         if (obj instanceof COSDictionary)
