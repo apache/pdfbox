@@ -523,10 +523,10 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://issues.apache.org/jira/secure/attachment/12953421/000671.pdf</url>
+                            <url>https://issues.apache.org/jira/secure/attachment/12953866/000746.pdf</url>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <outputFileName>PDFBOX-4423-000746.pdf</outputFileName>
-                            <sha512>a0fc0cfd42cb7eb8d521db259f53723f1e8a1618e740e89c787157f85623ed3f8a85b1920933328dfef355c8a468f26c459f37eeeaf5cdafa86540b56fb46090</sha512>
+                            <sha512>42a61d0061b0b3b0bcc92c9f3ddc78daca79e9d5ea56c19796270316fb7cf3858db9f51efafa3776e1fef17f85202b35c8eed0e88ba6b7ebc7bb05c6014b9fc8</sha512>
                         </configuration>
                     </execution>
                 </executions>
