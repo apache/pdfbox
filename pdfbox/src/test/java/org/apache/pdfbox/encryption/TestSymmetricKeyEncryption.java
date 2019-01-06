@@ -315,11 +315,10 @@ public class TestSymmetricKeyEncryption extends TestCase
             PDDocument doc, String prefix, AccessPermission permission,
             String userpassword, String ownerpassword) throws IOException
     {
-        AccessPermission ap = new AccessPermission();
-        StandardProtectionPolicy spp = new StandardProtectionPolicy(ownerpassword, userpassword, ap);
+        StandardProtectionPolicy spp = new StandardProtectionPolicy(ownerpassword, userpassword,
+                permission);
         spp.setEncryptionKeyLength(keyLength);
         spp.setPreferAES(preferAES);
-        spp.setPermissions(permission);
         
         // This must have no effect and should only log a warning.
         doc.setAllSecurityToBeRemoved(true);
@@ -335,10 +334,8 @@ public class TestSymmetricKeyEncryption extends TestCase
                 + "-bit " + (preferAES ? "AES" : "RC4") + " encrypted pdf should not have same size as plain one",
                 sizeEncrypted != sizePriorToEncr);
 
-        PDDocument encryptedDoc;
-
         // test with owner password => full permissions
-        encryptedDoc = PDDocument.load(pdfFile, ownerpassword);
+        PDDocument encryptedDoc = PDDocument.load(pdfFile, ownerpassword);
         Assert.assertTrue(encryptedDoc.isEncrypted());
         Assert.assertTrue(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
 
