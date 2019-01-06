@@ -529,19 +529,12 @@ public class PDFMergerUtilityTest extends TestCase
      *
      * @param document
      */
-    void checkWithNumberTree(PDDocument document)
+    void checkWithNumberTree(PDDocument document) throws IOException
     {
         PDDocumentCatalog documentCatalog = document.getDocumentCatalog();
         PDNumberTreeNode parentTree = documentCatalog.getStructureTreeRoot().getParentTree();
-        COSDictionary parentTreeDict = parentTree.getCOSObject();
-        COSArray numArray = (COSArray) parentTreeDict.getDictionaryObject(COSName.NUMS);
-        Set<Integer> keySet = new HashSet<>();
-        for (int i = 0; i < numArray.size(); i += 2)
-        {
-            int key = numArray.getInt(i);
-            assertTrue(key >= 0);
-            keySet.add(key);
-        }
+        Map<Integer, COSObjectable> numberTreeAsMap = PDFMergerUtility.getNumberTreeAsMap(parentTree);
+        Set<Integer> keySet = numberTreeAsMap.keySet();
         PDAcroForm acroForm = documentCatalog.getAcroForm();
         if (acroForm != null)
         {
