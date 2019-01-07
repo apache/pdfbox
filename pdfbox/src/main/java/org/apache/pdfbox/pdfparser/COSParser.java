@@ -185,6 +185,8 @@ public class COSParser extends BaseParser
     
     /**
      * Default constructor.
+     *
+     * @param source input representing the pdf.
      */
     public COSParser(RandomAccessRead source)
     {
