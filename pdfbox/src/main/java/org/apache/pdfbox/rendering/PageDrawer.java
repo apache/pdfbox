@@ -56,6 +56,7 @@ import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
+import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -63,6 +64,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
@@ -75,6 +77,8 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDPattern;
 import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup.RenderState;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
@@ -138,6 +142,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     
     private final Stack<TransparencyGroup> transparencyGroupStack = new Stack<>();
 
+    // if greater zero the content is hidden and wil not be rendered
+    private int nestedHiddenOCGCount;
+
+    private final RenderDestination destination; 
+
     /**
     * Default annotations filter, returns all annotations
     */
@@ -161,6 +170,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         super(parameters.getPage());
         this.renderer = parameters.getRenderer();
         this.subsamplingAllowed = parameters.isSubsamplingAllowed();
+        this.destination = parameters.getDestination();
     }
 
     /**
@@ -1580,5 +1590,80 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         return false;
+    }
+
+    /**
+     * Marked content begins
+     *
+     * @param tag name of the content mark
+     * @see
+     * org.apache.pdfbox.contentstream.PDFStreamEngine#beginMarkedContentSequence(org.apache.pdfbox.cos.COSName,
+     * org.apache.pdfbox.cos.COSDictionary)
+     */
+    @Override
+    public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
+    {
+        if (nestedHiddenOCGCount > 0)
+        {
+            nestedHiddenOCGCount++;
+        }
+        else if (tag != null && getPage().getResources() != null)
+        {
+            PDPropertyList propertyList = getPage().getResources().getProperties(tag);
+            if (propertyList instanceof PDOptionalContentGroup)
+            {
+                PDOptionalContentGroup group = (PDOptionalContentGroup) propertyList;
+                RenderState printState = group.getRenderState(destination);
+                if (printState == null)
+                {
+                    if (!getRenderer().isGroupEnabled(group))
+                    {
+                        nestedHiddenOCGCount = 1;
+                    }
+                }
+                else if (RenderState.OFF.equals(printState))
+                {
+                    nestedHiddenOCGCount = 1;
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @see org.apache.pdfbox.contentstream.PDFStreamEngine#endMarkedContentSequence()
+     */
+    @Override
+    public void endMarkedContentSequence()
+    {
+        if (nestedHiddenOCGCount > 0)
+        {
+            nestedHiddenOCGCount--;
+        }
+    }
+
+    private boolean isContentMarkOperator(Operator operator)
+    {
+        String name = operator.getName();
+        return "BMC".equals(name) || "BDC".equals(name) || "EMC".equals(name);
+    }
+
+    private boolean isContentRendered()
+    {
+        return nestedHiddenOCGCount <= 0;
+    }
+
+    /**
+     * Handle hidden optional content groups
+     *
+     * @see org.apache.pdfbox.contentstream.PDFStreamEngine#processOperator(Operator, List)
+     */
+    @Override
+    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException
+    {
+        if (isContentRendered() || isContentMarkOperator(operator))
+        {
+            super.processOperator(operator, operands);
+        }
     }
 }

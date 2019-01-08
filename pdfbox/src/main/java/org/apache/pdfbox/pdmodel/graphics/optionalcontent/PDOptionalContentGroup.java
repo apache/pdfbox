@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.optionalcontent;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
+import org.apache.pdfbox.rendering.RenderDestination;
 
 /**
  * An optional content group (OCG).
@@ -48,6 +49,51 @@ public class PDOptionalContentGroup extends PDPropertyList
                     "Provided dictionary is not of type '" + COSName.OCG + "'");
         }
     }
+    
+    /**
+     * Enumeration for the renderState dictionary entry on the "Export", "View"
+     * and "Print" dictionary.
+     */
+    public enum RenderState 
+    {
+        /** The "ON" value. */
+        ON(COSName.ON),
+        /** The "OFF" value. */
+        OFF(COSName.OFF);
+
+        private final COSName name;
+
+        private RenderState(COSName value)
+        {
+            this.name = value;
+        }
+
+        /**
+         * Returns the base state represented by the given {@link COSName}.
+         *
+         * @param state the state name
+         * @return the state enum value
+         */
+        public static RenderState valueOf(COSName state)
+        {
+            if (state == null)
+            {
+                return null;
+            }
+
+            return RenderState.valueOf(state.getName().toUpperCase());
+        }
+
+        /**
+         * Returns the PDF name for the state.
+         *
+         * @return the name of the state
+         */
+        public COSName getName()
+        {
+            return this.name;
+        }
+    }
 
     /**
      * Returns the name of the optional content group.
@@ -67,7 +113,36 @@ public class PDOptionalContentGroup extends PDPropertyList
         dict.setString(COSName.NAME, name);
     }
 
-    //TODO Add support for "Intent" and "Usage"
+    //TODO Add support for "Intent"
+    /**
+     * @param destination to be rendered
+     * @return state or null if undefined
+     */
+    public RenderState getRenderState(RenderDestination destination)
+    {
+        COSName state = null;
+        COSDictionary usage = (COSDictionary) dict.getDictionaryObject("Usage");
+        if (usage != null)
+        {
+            if (RenderDestination.PRINT.equals(destination))
+            {
+                COSDictionary print = (COSDictionary) usage.getDictionaryObject("Print");
+                state = print == null ? null : (COSName) print.getDictionaryObject("PrintState");
+            }
+            else if (RenderDestination.VIEW.equals(destination))
+            {
+                COSDictionary view = (COSDictionary) usage.getDictionaryObject("View");
+                state = view == null ? null : (COSName) view.getDictionaryObject("ViewState");
+            }
+            // Fallback to export
+            if (state == null)
+            {
+                COSDictionary export = (COSDictionary) usage.getDictionaryObject("Export");
+                state = export == null ? null : (COSName) export.getDictionaryObject("ExportState");
+            }
+        }
+        return state == null ? null : RenderState.valueOf(state);
+    }
 
     @Override
     public String toString()

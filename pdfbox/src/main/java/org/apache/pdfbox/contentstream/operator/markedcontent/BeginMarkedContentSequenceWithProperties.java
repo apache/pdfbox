@@ -49,10 +49,7 @@ public class BeginMarkedContentSequenceWithProperties extends OperatorProcessor
                 properties = (COSDictionary) argument;
             }
         }
-        if (this.context instanceof PDFMarkedContentExtractor)
-        {
-            ((PDFMarkedContentExtractor) this.context).beginMarkedContentSequence(tag, properties);
-        }
+        this.context.beginMarkedContentSequence(tag, properties);
     }
 
     @Override

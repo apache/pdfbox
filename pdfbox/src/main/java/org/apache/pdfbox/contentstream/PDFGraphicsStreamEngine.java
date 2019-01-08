@@ -56,6 +56,9 @@ import org.apache.pdfbox.contentstream.operator.graphics.LineTo;
 import org.apache.pdfbox.contentstream.operator.graphics.MoveTo;
 import org.apache.pdfbox.contentstream.operator.graphics.ShadingFill;
 import org.apache.pdfbox.contentstream.operator.graphics.StrokePath;
+import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequence;
+import org.apache.pdfbox.contentstream.operator.markedcontent.BeginMarkedContentSequenceWithProperties;
+import org.apache.pdfbox.contentstream.operator.markedcontent.EndMarkedContentSequence;
 import org.apache.pdfbox.contentstream.operator.state.Concatenate;
 import org.apache.pdfbox.contentstream.operator.state.Restore;
 import org.apache.pdfbox.contentstream.operator.state.Save;
@@ -165,6 +168,9 @@ public abstract class PDFGraphicsStreamEngine extends PDFStreamEngine
         addOperator(new CurveToReplicateFinalPoint());
         addOperator(new ShowTextLine());
         addOperator(new ShowTextLineAndSpace());
+        addOperator(new BeginMarkedContentSequence());
+        addOperator(new BeginMarkedContentSequenceWithProperties());
+        addOperator(new EndMarkedContentSequence());
     }
 
     /**

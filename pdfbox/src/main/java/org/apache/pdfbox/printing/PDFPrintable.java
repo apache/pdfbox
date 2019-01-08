@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.rendering.RenderDestination;
 
 /**
  * Prints pages from a PDF document using any page size or scaling mode.
@@ -217,7 +218,7 @@ public final class PDFPrintable implements Printable
             AffineTransform transform = (AffineTransform)graphics2D.getTransform().clone();
             graphics2D.setBackground(Color.WHITE);
             renderer.setSubsamplingAllowed(subsamplingAllowed);
-            renderer.renderPageToGraphics(pageIndex, graphics2D, (float)scale);
+            renderer.renderPageToGraphics(pageIndex, graphics2D, (float) scale, (float) scale, RenderDestination.PRINT);
 
             // draw crop box
             if (showPageBorder)
