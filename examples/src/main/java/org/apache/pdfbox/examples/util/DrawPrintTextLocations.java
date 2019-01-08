@@ -255,6 +255,10 @@ public class DrawPrintTextLocations extends PDFTextStripper
         List<PDThreadBead> pageArticles = pdPage.getThreadBeads();
         for (PDThreadBead bead : pageArticles)
         {
+            if (bead == null)
+            {
+                continue;
+            }
             PDRectangle r = bead.getRectangle();
             Shape s = r.toGeneralPath().createTransformedShape(transAT);
             s = flipAT.createTransformedShape(s);

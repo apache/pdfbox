@@ -91,6 +91,10 @@ final class DebugTextOverlay
                 List<PDThreadBead> pageArticles = page.getThreadBeads();
                 for (PDThreadBead bead : pageArticles)
                 {
+                    if (bead == null)
+                    {
+                        continue;
+                    }
                     PDRectangle r = bead.getRectangle();
                     GeneralPath p = r.transform(Matrix.getTranslateInstance(-cropBox.getLowerLeftX(), cropBox.getLowerLeftY()));
                     Shape s = flip.createTransformedShape(p);
