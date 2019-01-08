@@ -812,7 +812,7 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Called when a a marked content group begins
+     * Called when a marked content group begins
      *
      * @param tag content tag
      * @param properties optional properties
