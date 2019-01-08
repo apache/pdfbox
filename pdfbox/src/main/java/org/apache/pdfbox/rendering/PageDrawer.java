@@ -1606,25 +1606,27 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (nestedHiddenOCGCount > 0)
         {
             nestedHiddenOCGCount++;
+            return;
         }
-        else if (tag != null && getPage().getResources() != null)
+        if (tag == null || getPage().getResources() == null)
         {
-            PDPropertyList propertyList = getPage().getResources().getProperties(tag);
-            if (propertyList instanceof PDOptionalContentGroup)
+            return;
+        }
+        PDPropertyList propertyList = getPage().getResources().getProperties(tag);
+        if (propertyList instanceof PDOptionalContentGroup)
+        {
+            PDOptionalContentGroup group = (PDOptionalContentGroup) propertyList;
+            RenderState printState = group.getRenderState(destination);
+            if (printState == null)
             {
-                PDOptionalContentGroup group = (PDOptionalContentGroup) propertyList;
-                RenderState printState = group.getRenderState(destination);
-                if (printState == null)
-                {
-                    if (!getRenderer().isGroupEnabled(group))
-                    {
-                        nestedHiddenOCGCount = 1;
-                    }
-                }
-                else if (RenderState.OFF.equals(printState))
+                if (!getRenderer().isGroupEnabled(group))
                 {
                     nestedHiddenOCGCount = 1;
                 }
+            }
+            else if (RenderState.OFF.equals(printState))
+            {
+                nestedHiddenOCGCount = 1;
             }
         }
     }
