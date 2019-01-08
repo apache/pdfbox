@@ -510,16 +510,17 @@ public class PDFMergerUtilityTest extends TestCase
     private void checkStructTreeRootCount(File file) throws IOException
     {
         int count = 0;
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        String line;
-        while ((line = br.readLine()) != null)
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file))))
         {
-            if (line.equals("/Type /StructTreeRoot"))
+            String line;
+            while ((line = br.readLine()) != null)
             {
-                ++count;
+                if (line.equals("/Type /StructTreeRoot"))
+                {
+                    ++count;
+                }
             }
         }
-        br.close();
         assertEquals(1, count);
     }
 
