@@ -194,6 +194,14 @@ public class PDFMergerUtilityTest extends TestCase
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
+
+        ElementCounter elementCounter = new ElementCounter();
+        elementCounter.walk(src.getDocumentCatalog().getStructureTreeRoot().getK());
+        int singleCnt = elementCounter.cnt;
+        int singleSetSize = elementCounter.set.size();
+        assertEquals(134, singleCnt);
+        assertEquals(134, singleSetSize);
+
         PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
@@ -202,6 +210,11 @@ public class PDFMergerUtilityTest extends TestCase
 
         PDDocument doc = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-3999-GeneralForbearance-merged.pdf"));
 
+        // Assume that the merged tree has double element count
+        elementCounter = new ElementCounter();
+        elementCounter.walk(doc.getDocumentCatalog().getStructureTreeRoot().getK());
+        assertEquals(singleCnt * 2, elementCounter.cnt);
+        assertEquals(singleSetSize * 2, elementCounter.set.size());
         checkForPageOrphans(doc);
 
         doc.close();
@@ -224,6 +237,8 @@ public class PDFMergerUtilityTest extends TestCase
         elementCounter.walk(doc.getDocumentCatalog().getStructureTreeRoot().getK());
         int singleCnt = elementCounter.cnt;
         int singleSetSize = elementCounter.set.size();
+        assertEquals(134, singleCnt);
+        assertEquals(134, singleSetSize);
 
         doc.close();
 
@@ -259,10 +274,28 @@ public class PDFMergerUtilityTest extends TestCase
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+
+        ElementCounter elementCounter = new ElementCounter();
+        elementCounter.walk(src.getDocumentCatalog().getStructureTreeRoot().getK());
+        int singleCnt = elementCounter.cnt;
+        int singleSetSize = elementCounter.set.size();
+        assertEquals(25, singleCnt);
+        assertEquals(25, singleSetSize);
+
         PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
         dst.save(new File(TARGETTESTDIR, "PDFBOX-4408-merged.pdf"));
+        dst.close();
+
+        dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4408-merged.pdf"));
+
+        // Assume that the merged tree has double element count
+        elementCounter = new ElementCounter();
+        elementCounter.walk(dst.getDocumentCatalog().getStructureTreeRoot().getK());
+        assertEquals(singleCnt * 2, elementCounter.cnt);
+        assertEquals(singleSetSize * 2, elementCounter.set.size());
+
         checkWithNumberTree(dst);
         checkForPageOrphans(dst);
         dst.close();
@@ -279,12 +312,27 @@ public class PDFMergerUtilityTest extends TestCase
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
+
+        ElementCounter elementCounter = new ElementCounter();
+        elementCounter.walk(src.getDocumentCatalog().getStructureTreeRoot().getK());
+        int singleCnt = elementCounter.cnt;
+        int singleSetSize = elementCounter.set.size();
+        assertEquals(104, singleCnt);
+        assertEquals(104, singleSetSize);
+
         PDDocument dst = PDDocument.load(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
         pdfMergerUtility.appendDocument(dst, src);
         src.close();
         dst.save(new File(TARGETTESTDIR, "PDFBOX-4417-001031-merged.pdf"));
         dst.close();
         dst = PDDocument.load(new File(TARGETTESTDIR, "PDFBOX-4417-001031-merged.pdf"));
+
+        // Assume that the merged tree has double element count
+        elementCounter = new ElementCounter();
+        elementCounter.walk(dst.getDocumentCatalog().getStructureTreeRoot().getK());
+        assertEquals(singleCnt * 2, elementCounter.cnt);
+        assertEquals(singleSetSize * 2, elementCounter.set.size());
+
         checkWithNumberTree(dst);
         checkForPageOrphans(dst);
         dst.close();
