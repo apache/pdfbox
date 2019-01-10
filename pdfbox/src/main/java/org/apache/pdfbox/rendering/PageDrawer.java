@@ -1215,6 +1215,26 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
+
+        //TODO DRY-refactor this and the code from beginMarkedContentSequence() when PDFBOX-4399 is mostly done
+        PDPropertyList propertyList = annotation.getOptionalContent();
+        if (propertyList instanceof PDOptionalContentGroup)
+        {
+            PDOptionalContentGroup group = (PDOptionalContentGroup) propertyList;
+            RenderState printState = group.getRenderState(destination);
+            if (printState == null)
+            {
+                if (!getRenderer().isGroupEnabled(group))
+                {
+                    return;
+                }
+            }
+            else if (RenderState.OFF.equals(printState))
+            {
+                return;
+            }
+        }
+
         if (annotation.getAppearance() == null)
         {
             // TODO: Improve memory consumption by passing a ScratchFile
