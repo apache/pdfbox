@@ -706,6 +706,15 @@ public class PDFMergerUtility
             destStructTree = new PDStructureTreeRoot();
             destCatalog.setStructureTreeRoot(destStructTree);
             destStructTree.setParentTree(new PDNumberTreeNode(PDParentTreeValue.class));
+            // PDFBOX-4429: remove bogus StructParent(s)
+            for (PDPage page : destCatalog.getPages())
+            {
+                page.getCOSObject().removeItem(COSName.STRUCT_PARENTS);
+                for (PDAnnotation ann : page.getAnnotations())
+                {
+                    ann.getCOSObject().removeItem(COSName.STRUCT_PARENT);
+                }
+            }
         }
         if (destStructTree != null)
         {
@@ -745,6 +754,15 @@ public class PDFMergerUtility
         for (PDPage page : srcCatalog.getPages())
         {
             PDPage newPage = new PDPage((COSDictionary) cloner.cloneForNewDocument(page.getCOSObject()));
+            if (!mergeStructTree)
+            {
+                // PDFBOX-4429: remove bogus StructParent(s)
+                newPage.getCOSObject().removeItem(COSName.STRUCT_PARENTS);
+                for (PDAnnotation ann : newPage.getAnnotations())
+                {
+                    ann.getCOSObject().removeItem(COSName.STRUCT_PARENT);
+                }
+            }
             newPage.setCropBox(page.getCropBox());
             newPage.setMediaBox(page.getMediaBox());
             newPage.setRotation(page.getRotation());

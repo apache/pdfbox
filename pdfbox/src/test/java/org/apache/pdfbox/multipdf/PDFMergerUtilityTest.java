@@ -482,6 +482,48 @@ public class PDFMergerUtilityTest extends TestCase
     }
 
     /**
+     * PDFBOX-4429: merge into destination that has /StructParent(s) entries in the destination file
+     * but no structure tree.
+     *
+     * @throws IOException
+     */
+    public void testMergeBogusStructParents1() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+        PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+        dst.getDocumentCatalog().setStructureTreeRoot(null);
+        dst.getPage(0).setStructParents(9999);
+        dst.getPage(0).getAnnotations().get(0).setStructParent(9998);
+        pdfMergerUtility.appendDocument(dst, src);
+        checkWithNumberTree(dst);
+        checkForPageOrphans(dst);
+        src.close();
+        dst.close();
+    }
+
+    /**
+     * PDFBOX-4429: merge into destination that has /StructParent(s) entries in the source file but
+     * no structure tree.
+     *
+     * @throws IOException
+     */
+    public void testMergeBogusStructParents2() throws IOException
+    {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+        PDDocument src = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+        PDDocument dst = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
+        src.getDocumentCatalog().setStructureTreeRoot(null);
+        src.getPage(0).setStructParents(9999);
+        src.getPage(0).getAnnotations().get(0).setStructParent(9998);
+        pdfMergerUtility.appendDocument(dst, src);
+        checkWithNumberTree(dst);
+        checkForPageOrphans(dst);
+        src.close();
+        dst.close();
+    }
+
+    /**
      * Test of the parent tree. Didn't work before PDFBOX-4003 because of incompatible class for
      * PDNumberTreeNode.
      *
