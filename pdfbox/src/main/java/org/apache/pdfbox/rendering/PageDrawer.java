@@ -1662,12 +1662,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     * Marked content begins
-     *
-     * @param tag name of the content mark
-     * @see
-     * org.apache.pdfbox.contentstream.PDFStreamEngine#beginMarkedContentSequence(org.apache.pdfbox.cos.COSName,
-     * org.apache.pdfbox.cos.COSDictionary)
+     * {@inheritDoc}
      */
     @Override
     public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
@@ -1701,8 +1696,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     /**
-     *
-     * @see org.apache.pdfbox.contentstream.PDFStreamEngine#endMarkedContentSequence()
+     * {@inheritDoc}
      */
     @Override
     public void endMarkedContentSequence()
