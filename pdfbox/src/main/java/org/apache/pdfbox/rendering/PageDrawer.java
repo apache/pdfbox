@@ -56,7 +56,6 @@ import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
-import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -497,7 +496,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 graphics.setComposite(state.getNonStrokingJavaComposite());
                 graphics.setPaint(getNonStrokingPaint());
                 setClip();
-                graphics.fill(glyph);
+                if (isContentRendered())
+                {
+                    graphics.fill(glyph);
+                }
             }
 
             if (renderingMode.isStroke())
@@ -506,7 +508,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 graphics.setPaint(getStrokingPaint());
                 graphics.setStroke(getStroke());
                 setClip();
-                graphics.draw(glyph);
+                if (isContentRendered())
+                {
+                    graphics.draw(glyph);
+                }
             }
 
             if (renderingMode.isClip())
@@ -691,7 +696,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setStroke(getStroke());
         setClip();
         //TODO bbox of shading pattern should be used here? (see fillPath)
-        graphics.draw(linePath);
+        if (isContentRendered())
+        {
+            graphics.draw(linePath);
+        }
         linePath.reset();
     }
 
@@ -722,12 +730,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area area = new Area(linePath);
             area.intersect(new Area(graphics.getClip()));
             intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
-            graphics.fill(area);
+            if (isContentRendered())
+            {
+                graphics.fill(area);
+            }
         }
         else
         {
-            graphics.fill(linePath);
+            if (isContentRendered())
+            {
+                graphics.fill(linePath);
+            }
         }
+        //TODO refactor fill
         
         linePath.reset();
 
@@ -973,9 +988,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 // draw the image
                 setClip();
                 graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
-                graphics.drawImage(renderedPaint, 
-                        AffineTransform.getTranslateInstance(bounds.getMinX(), bounds.getMinY()), 
-                        null);
+                if (isContentRendered())
+                {
+                    graphics.drawImage(renderedPaint,
+                            AffineTransform.getTranslateInstance(bounds.getMinX(), bounds.getMinY()),
+                            null);
+                }
             }
             else
             {
@@ -1057,7 +1075,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
             Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
-            graphics.fill(at.createTransformedShape(unitRect));
+            if (isContentRendered())
+            {
+                graphics.fill(at.createTransformedShape(unitRect));
+            }
         }
         else
         {
@@ -1071,7 +1092,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             int height = image.getHeight();
             imageTransform.scale(1.0 / width, -1.0 / height);
             imageTransform.translate(0, -height);
-            graphics.drawImage(image, imageTransform, null);
+            if (isContentRendered())
+            {
+                graphics.drawImage(image, imageTransform, null);
+            }
         }
     }
 
@@ -1183,12 +1207,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             Area bboxArea = new Area(bbox.transform(ctm));
             bboxArea.intersect(getGraphicsState().getCurrentClippingPath());
-            graphics.fill(bboxArea);
+            if (isContentRendered())
+            {
+                graphics.fill(bboxArea);
+            }
         }
         else
         {
-            graphics.fill(getGraphicsState().getCurrentClippingPath());
+            if (isContentRendered())
+            {
+                graphics.fill(getGraphicsState().getCurrentClippingPath());
+            }
         }
+        //TODO refactor fill
     }
 
     @Override
@@ -1243,11 +1274,27 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         super.showAnnotation(annotation);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showForm(PDFormXObject form) throws IOException
+    {
+        if (isContentRendered())
+        {
+            super.showForm(form);
+        }
+    }
+
     @Override
     public void showTransparencyGroup(PDTransparencyGroup form) throws IOException
     {
-        TransparencyGroup group =
-                new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix(), null);
+        if (!isContentRendered())
+        {
+            return;
+        }
+        TransparencyGroup group
+                = new TransparencyGroup(form, false, getGraphicsState().getCurrentTransformationMatrix(), null);
         BufferedImage image = group.getImage();
         if (image == null)
         {
@@ -1292,12 +1339,18 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     new Rectangle2D.Float(0, 0, image.getWidth(), image.getHeight()));
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
-            graphics.fill(
-                    new Rectangle2D.Float(0, 0, bbox.getWidth() * xScale, bbox.getHeight() * yScale));
+            if (isContentRendered())
+            {
+                graphics.fill(
+                        new Rectangle2D.Float(0, 0, bbox.getWidth() * xScale, bbox.getHeight() * yScale));
+            }
         }
         else
         {
-            graphics.drawImage(image, null, null);
+            if (isContentRendered())
+            {
+                graphics.drawImage(image, null, null);
+            }
         }
 
         graphics.setTransform(prev);
@@ -1664,28 +1717,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
     }
 
-    private boolean isContentMarkOperator(Operator operator)
-    {
-        String name = operator.getName();
-        return "BMC".equals(name) || "BDC".equals(name) || "EMC".equals(name);
-    }
-
     private boolean isContentRendered()
     {
         return nestedHiddenOCGCount <= 0;
-    }
-
-    /**
-     * Handle hidden optional content groups
-     *
-     * @see org.apache.pdfbox.contentstream.PDFStreamEngine#processOperator(Operator, List)
-     */
-    @Override
-    protected void processOperator(Operator operator, List<COSBase> operands) throws IOException
-    {
-        if (isContentRendered() || isContentMarkOperator(operator))
-        {
-            super.processOperator(operator, operands);
-        }
     }
 }
