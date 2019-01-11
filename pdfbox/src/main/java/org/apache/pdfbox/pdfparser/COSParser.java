@@ -1609,8 +1609,6 @@ public class COSParser extends BaseParser
     private long bfSearchForXRef(long xrefOffset) throws IOException
     {
         long newOffset = -1;
-        long newOffsetTable;
-        long newOffsetStream;
 
         // initialize bfSearchXRefTablesOffsets -> not null
         bfSearchForXRefTables();
@@ -1618,10 +1616,10 @@ public class COSParser extends BaseParser
         bfSearchForXRefStreams();
 
         // TODO to be optimized, this won't work in every case
-        newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
+        long newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
         
         // TODO to be optimized, this won't work in every case
-        newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
+        long newOffsetStream = searchNearestValue(bfSearchXRefStreamsOffsets, xrefOffset);
 
         // choose the nearest value
         if (newOffsetTable > -1 && newOffsetStream > -1)
@@ -1873,7 +1871,6 @@ public class COSParser extends BaseParser
                 long currentPosition = source.getPosition();
                 // search backwards for the beginning of the object
                 long newOffset = -1;
-                COSObjectKey streamObjectKey = null;
                 boolean objFound = false;
                 for (int i = 1; i < 40 && !objFound; i++)
                 {
@@ -1908,7 +1905,7 @@ public class COSParser extends BaseParser
                                             newOffset = source.getPosition();
                                             long objNumber = readObjectNumber();
                                             int genNumber = readGenerationNumber();
-                                            streamObjectKey = new COSObjectKey(objNumber,
+                                            COSObjectKey streamObjectKey = new COSObjectKey(objNumber,
                                                     genNumber);
                                             bfSearchObjStreamsOffsets.put(newOffset,
                                                     streamObjectKey);
@@ -2228,7 +2225,7 @@ public class COSParser extends BaseParser
 
     private COSDictionary retrieveCOSDictionary(COSObject object) throws IOException
     {
-        COSObjectKey key = new COSObjectKey((COSObject) object);
+        COSObjectKey key = new COSObjectKey(object);
         Long offset = bfSearchCOSObjectKeyOffsets.get(key);
         if (offset != null)
         {
@@ -2668,7 +2665,7 @@ public class COSParser extends BaseParser
                 return false;
             }
             // first obj id
-            long currObjID = 0;
+            long currObjID;
             try
             {
                 currObjID = Long.parseLong(splitString[0]);
