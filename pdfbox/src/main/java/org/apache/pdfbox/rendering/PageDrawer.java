@@ -725,25 +725,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                       RenderingHints.VALUE_ANTIALIAS_OFF);
         }
 
+        Shape shape;
         if (!(graphics.getPaint() instanceof Color))
         {
             // apply clip to path to avoid oversized device bounds in shading contexts (PDFBOX-2901)
             Area area = new Area(linePath);
             area.intersect(new Area(graphics.getClip()));
             intersectShadingBBox(getGraphicsState().getNonStrokingColor(), area);
-            if (isContentRendered())
-            {
-                graphics.fill(area);
-            }
+            shape = area;
         }
         else
         {
-            if (isContentRendered())
-            {
-                graphics.fill(linePath);
-            }
+            shape = linePath;
         }
-        //TODO refactor fill
+        if (isContentRendered())
+        {
+            graphics.fill(shape);
+        }
         
         linePath.reset();
 
@@ -1204,23 +1202,20 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // get the transformed BBox and intersect with current clipping path
         // need to do it here and not in shading getRaster() because it may have been rotated
         PDRectangle bbox = shading.getBBox();
+        Area area;
         if (bbox != null)
         {
-            Area bboxArea = new Area(bbox.transform(ctm));
-            bboxArea.intersect(getGraphicsState().getCurrentClippingPath());
-            if (isContentRendered())
-            {
-                graphics.fill(bboxArea);
-            }
+            area = new Area(bbox.transform(ctm));
+            area.intersect(getGraphicsState().getCurrentClippingPath());
         }
         else
         {
-            if (isContentRendered())
-            {
-                graphics.fill(getGraphicsState().getCurrentClippingPath());
-            }
+            area = getGraphicsState().getCurrentClippingPath();
         }
-        //TODO refactor fill
+        if (isContentRendered())
+        {
+            graphics.fill(area);
+        }
     }
 
     @Override
