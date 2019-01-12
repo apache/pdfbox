@@ -944,6 +944,11 @@ public class PDFMergerUtility
         {
             names = new LinkedHashMap<>();
         }
+        else
+        {
+            // must copy because the map is read only
+            names = new LinkedHashMap<>(names);
+        }
         List<PDNameTreeNode<PDStructureElement>> kids = idTree.getKids();
         if (kids != null)
         {
