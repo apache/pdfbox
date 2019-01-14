@@ -648,6 +648,14 @@ public class PDFMergerUtilityTest extends TestCase
             {
                 assertTrue(keySet.contains(page.getStructParents()));
             }
+            for (PDAnnotation ann : page.getAnnotations())
+            {
+                if (ann.getStructParent() >= 0)
+                {
+                    assertTrue("/StructParent " + ann.getStructParent() + " missing in /ParentTree",
+                               keySet.contains(ann.getStructParent()));
+                }
+            }
         }
 
         // might also test image and form dictionaries...
