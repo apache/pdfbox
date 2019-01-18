@@ -44,7 +44,11 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
  */
 public class CreateCheckBox
 {
-    public static void main(String arg[]) throws IOException
+    private CreateCheckBox()
+    {
+    }
+
+    public static void main(String[] args) throws IOException
     {
         try (PDDocument document = new PDDocument())
         {
