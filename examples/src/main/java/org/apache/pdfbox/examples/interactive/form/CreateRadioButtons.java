@@ -46,6 +46,10 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
  */
 public class CreateRadioButtons
 {
+    private CreateRadioButtons()
+    {
+    }
+
     public static void main(String[] args) throws IOException
     {
         try (PDDocument document = new PDDocument())
