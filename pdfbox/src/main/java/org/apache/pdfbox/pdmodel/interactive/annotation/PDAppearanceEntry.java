@@ -80,7 +80,7 @@ public class PDAppearanceEntry implements COSObjectable
     {
         if (!isStream())
         {
-            throw new IllegalStateException();
+            throw new IllegalStateException("This entry is not an appearance stream");
         }
         return new PDAppearanceStream((COSStream) entry);
     }
@@ -94,7 +94,7 @@ public class PDAppearanceEntry implements COSObjectable
     {
         if (!isSubDictionary())
         {
-            throw new IllegalStateException();
+            throw new IllegalStateException("This entry is not an appearance subdictionary");
         }
 
         COSDictionary dict = (COSDictionary) entry;
