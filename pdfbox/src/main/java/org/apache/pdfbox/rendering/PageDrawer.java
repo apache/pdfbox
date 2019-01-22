@@ -18,10 +18,8 @@ package org.apache.pdfbox.rendering;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.DisplayMode;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Paint;
 import java.awt.Point;
@@ -145,7 +143,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // if greater zero the content is hidden and wil not be rendered
     private int nestedHiddenOCGCount;
 
-    private final RenderDestination destination; 
+    private final RenderDestination destination;
+    private final RenderingHints renderingHints;
 
     /**
     * Default annotations filter, returns all annotations
@@ -171,6 +170,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         this.renderer = parameters.getRenderer();
         this.subsamplingAllowed = parameters.isSubsamplingAllowed();
         this.destination = parameters.getDestination();
+        this.renderingHints = parameters.getRenderingHints();
     }
 
     /**
@@ -224,34 +224,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
      */
     private void setRenderingHints()
     {
-        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                  RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        graphics.setRenderingHint(RenderingHints.KEY_RENDERING,
-                                  RenderingHints.VALUE_RENDER_QUALITY);
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                  isBitonal() ?
-                                        RenderingHints.VALUE_ANTIALIAS_OFF :
-                                        RenderingHints.VALUE_ANTIALIAS_ON);
-    }
-
-    private boolean isBitonal()
-    {
-        GraphicsConfiguration deviceConfiguration = graphics.getDeviceConfiguration();
-        if (deviceConfiguration == null)
-        {
-            return false;
-        }
-        GraphicsDevice device = deviceConfiguration.getDevice();
-        if (device == null)
-        {
-            return false;
-        }
-        DisplayMode displayMode = device.getDisplayMode();
-        if (displayMode == null)
-        {
-            return false;
-        }
-        return displayMode.getBitDepth() == 1;
+        graphics.addRenderingHints(renderingHints);
     }
 
     /**
