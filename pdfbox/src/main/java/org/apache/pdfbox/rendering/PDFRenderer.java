@@ -17,7 +17,11 @@
 package org.apache.pdfbox.rendering;
 
 import java.awt.Color;
+import java.awt.DisplayMode;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -278,7 +282,9 @@ public class PDFRenderer
         transform(g, page, scale, scale);
 
         // the end-user may provide a custom PageDrawer
-        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed, destination);
+        RenderingHints renderingHints = createDefaultRenderingHints(g);
+        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed,
+                                                                   destination, renderingHints);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(g, page.getCropBox());       
         
@@ -362,7 +368,9 @@ public class PDFRenderer
         graphics.clearRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
 
         // the end-user may provide a custom PageDrawer
-        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed, destination);
+        RenderingHints renderingHints = createDefaultRenderingHints(graphics);
+        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed,
+                                                                   destination, renderingHints);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
     }
@@ -409,6 +417,38 @@ public class PDFRenderer
             graphics.translate(translateX, translateY);
             graphics.rotate((float) Math.toRadians(rotationAngle));
         }
+    }
+
+
+    private boolean isBitonal(Graphics2D graphics)
+    {
+        GraphicsConfiguration deviceConfiguration = graphics.getDeviceConfiguration();
+        if (deviceConfiguration == null)
+        {
+            return false;
+        }
+        GraphicsDevice device = deviceConfiguration.getDevice();
+        if (device == null)
+        {
+            return false;
+        }
+        DisplayMode displayMode = device.getDisplayMode();
+        if (displayMode == null)
+        {
+            return false;
+        }
+        return displayMode.getBitDepth() == 1;
+    }
+
+    private RenderingHints createDefaultRenderingHints(Graphics2D graphics)
+    {
+        RenderingHints r = new RenderingHints(null);
+        r.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        r.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        r.put(RenderingHints.KEY_ANTIALIASING, isBitonal(graphics) ?
+                                        RenderingHints.VALUE_ANTIALIAS_OFF :
+                                        RenderingHints.VALUE_ANTIALIAS_ON);
+        return r;
     }
 
     /**
