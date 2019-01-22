@@ -688,6 +688,10 @@ public class PDFMergerUtility
         {
             destCatalog.getCOSObject().setItem(COSName.OCPROPERTIES, cloner.cloneForNewDocument(srcOCP));
         }
+        else if (destOCP != null && srcOCP != null)
+        {
+            cloner.cloneMerge(srcOCP, destOCP);
+        }
 
         mergeOutputIntents(cloner, srcCatalog, destCatalog);
 

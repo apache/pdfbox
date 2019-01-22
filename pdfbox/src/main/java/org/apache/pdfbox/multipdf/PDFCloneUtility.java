@@ -184,7 +184,7 @@ class PDFCloneUtility
               {
                   cloneMerge(((COSObject) base).getObject(),((COSObject) target).getObject() );
               }
-              else if(target instanceof COSDictionary)
+              else if (target instanceof COSDictionary || target instanceof COSArray)
               {
                   cloneMerge(((COSObject) base).getObject(), target);
               }
