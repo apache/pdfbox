@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.rendering;
 
+import java.awt.RenderingHints;
+
 import org.apache.pdfbox.pdmodel.PDPage;
 
 /**
@@ -32,16 +34,19 @@ public final class PageDrawerParameters
     private final PDPage page;
     private final boolean subsamplingAllowed;
     private final RenderDestination destination; 
+    private final RenderingHints renderingHints;
 
     /**
      * Package-private constructor.
      */
-    PageDrawerParameters(PDFRenderer renderer, PDPage page, boolean subsamplingAllowed, RenderDestination destination)
+    PageDrawerParameters(PDFRenderer renderer, PDPage page, boolean subsamplingAllowed,
+                         RenderDestination destination, RenderingHints renderingHints)
     {
         this.renderer = renderer;
         this.page = page;
         this.subsamplingAllowed = subsamplingAllowed;
         this.destination = destination;
+        this.renderingHints = renderingHints;
     }
 
     /**
@@ -76,4 +81,11 @@ public final class PageDrawerParameters
         return this.destination;
     }
 
+    /**
+     * @return the rendering hints.
+     */
+    public RenderingHints getRenderingHints()
+    {
+        return renderingHints;
+    }
 }
