@@ -70,8 +70,10 @@ public class PDFRenderer
 
     private RenderDestination defaultDestination;
 
+    private RenderingHints renderingHints = null;
+
     private BufferedImage pageImage;
-    
+
     private static boolean kcmsLogged = false;
 
     /**
@@ -142,7 +144,7 @@ public class PDFRenderer
     /**
      * @return the defaultDestination
      */
-    public RenderDestination getDefaultDestination() 
+    public RenderDestination getDefaultDestination()
     {
         return defaultDestination;
     }
@@ -150,9 +152,31 @@ public class PDFRenderer
     /**
      * @param defaultDestination the defaultDestination to set
      */
-    public void setDefaultDestination(RenderDestination defaultDestination) 
+    public void setDefaultDestination(RenderDestination defaultDestination)
     {
         this.defaultDestination = defaultDestination;
+    }
+
+    /**
+     * Get the rendering hints.
+     *
+     * @return the rendering hints or null if none are set.
+     */
+    public RenderingHints getRenderingHints()
+    {
+        return renderingHints;
+    }
+
+    /**
+     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set
+     * them yourself or pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the
+     * destination.
+     *
+     * @param renderingHints
+     */
+    public void setRenderingHints(RenderingHints renderingHints)
+    {
+        this.renderingHints = renderingHints;
     }
 
     /**
@@ -282,9 +306,10 @@ public class PDFRenderer
         transform(g, page, scale, scale);
 
         // the end-user may provide a custom PageDrawer
-        RenderingHints renderingHints = createDefaultRenderingHints(g);
+        RenderingHints actualRenderingHints =
+                renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
         PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed,
-                                                                   destination, renderingHints);
+                                                                   destination, actualRenderingHints);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(g, page.getCropBox());       
         
@@ -368,9 +393,10 @@ public class PDFRenderer
         graphics.clearRect(0, 0, (int) cropBox.getWidth(), (int) cropBox.getHeight());
 
         // the end-user may provide a custom PageDrawer
-        RenderingHints renderingHints = createDefaultRenderingHints(graphics);
+        RenderingHints actualRenderingHints =
+                renderingHints == null ? createDefaultRenderingHints(graphics) : renderingHints;
         PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed,
-                                                                   destination, renderingHints);
+                                                                   destination, actualRenderingHints);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
     }

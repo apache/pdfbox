@@ -21,6 +21,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
@@ -49,6 +50,7 @@ public final class PDFPrintable implements Printable
     private final float dpi;
     private final boolean center;
     private boolean subsamplingAllowed = false;
+    private RenderingHints renderingHints = null;
 
     /**
      * Creates a new PDFPrintable.
@@ -146,6 +148,28 @@ public final class PDFPrintable implements Printable
         this.subsamplingAllowed = subsamplingAllowed;
     }
 
+    /**
+     * Get the rendering hints.
+     *
+     * @return the rendering hints or null if none are set.
+     */
+    public RenderingHints getRenderingHints()
+    {
+        return renderingHints;
+    }
+
+    /**
+     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set
+     * them yourself or pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the
+     * destination.
+     *
+     * @param renderingHints
+     */
+    public void setRenderingHints(RenderingHints renderingHints)
+    {
+        this.renderingHints = renderingHints;
+    }
+
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex)
             throws PrinterException
@@ -218,7 +242,8 @@ public final class PDFPrintable implements Printable
             AffineTransform transform = (AffineTransform)graphics2D.getTransform().clone();
             graphics2D.setBackground(Color.WHITE);
             renderer.setSubsamplingAllowed(subsamplingAllowed);
-            renderer.renderPageToGraphics(pageIndex, graphics2D, (float)scale, (float)scale, RenderDestination.PRINT);
+            renderer.setRenderingHints(renderingHints);
+            renderer.renderPageToGraphics(pageIndex, graphics2D, (float) scale, (float) scale, RenderDestination.PRINT);
 
             // draw crop box
             if (showPageBorder)
