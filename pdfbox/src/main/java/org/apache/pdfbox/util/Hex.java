@@ -189,7 +189,7 @@ public final class Hex
      *
      * @throws IllegalArgumentException if this isn't a base64 encoded string.
      */
-    public static byte[] decodeBase64(String base64Value) throws IllegalArgumentException
+    public static byte[] decodeBase64(String base64Value)
     {
         // https://stackoverflow.com/questions/469695/decode-base64-data-in-java
         try
