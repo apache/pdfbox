@@ -35,21 +35,6 @@
             <skip-bavaria>true</skip-bavaria>
         </properties>
 
-        <profiles>
-            <profile>
-                <activation>
-                    <jdk>[11,)</jdk>
-                </activation>
-                <dependencies>
-                    <dependency>
-                        <groupId>javax.xml.bind</groupId>
-                        <artifactId>jaxb-api</artifactId>
-                        <scope>provided</scope>
-                    </dependency>
-                </dependencies>
-            </profile>
-        </profiles>
-
 	<build>
 		<plugins>
 			<plugin>
