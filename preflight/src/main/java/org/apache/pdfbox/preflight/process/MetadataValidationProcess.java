@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -46,6 +45,7 @@ import org.apache.pdfbox.preflight.metadata.RDFAboutAttributeConcordanceValidati
 import org.apache.pdfbox.preflight.metadata.SynchronizedMetaDataValidation;
 import org.apache.pdfbox.preflight.metadata.XpacketParsingException;
 import org.apache.pdfbox.preflight.utils.COSUtils;
+import org.apache.pdfbox.util.Hex;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.XMPBasicSchema;
 import org.apache.xmpbox.type.BadFieldValueException;
@@ -195,7 +195,7 @@ public class MetadataValidationProcess extends AbstractProcess
         byte[] binImage;
         try
         {
-            binImage = DatatypeConverter.parseBase64Binary(tb.getImage());
+            binImage = Hex.decodeBase64(tb.getImage());
         }
         catch (IllegalArgumentException e)
         {
