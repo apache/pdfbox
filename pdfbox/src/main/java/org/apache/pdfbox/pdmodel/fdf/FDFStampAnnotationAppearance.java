@@ -77,8 +77,6 @@ class FDFStampAnnotationAppearance implements COSObjectable
         LOG.debug("Build dictionary for Appearance based on the appearanceXML");
 
         NodeList nodeList = appearanceXML.getChildNodes();
-        Node node = null;
-        Element child = null;
         String parentAttrKey = appearanceXML.getAttribute("KEY");
         LOG.debug("Appearance Root - tag: " + appearanceXML.getTagName() + ", name: " + 
                 appearanceXML.getNodeName() + ", key: " + parentAttrKey + ", children: " + 
@@ -89,10 +87,10 @@ class FDFStampAnnotationAppearance implements COSObjectable
         {
             for (int i = 0; i < nodeList.getLength(); i++)
             {
-                node = nodeList.item(i);
+                Node node = nodeList.item(i);
                 if (node instanceof Element)
                 {
-                    child = (Element) node;
+                    Element child = (Element) node;
                     if ("STREAM".equalsIgnoreCase(child.getTagName()))
                     {
                         LOG.debug(parentAttrKey +
@@ -127,18 +125,16 @@ class FDFStampAnnotationAppearance implements COSObjectable
         COSStream stream = new COSStream();
 
         NodeList nodeList = streamEl.getChildNodes();
-        Node node;
-        Element child;
         String childAttrKey;
         String childAttrVal;
         String parentAttrKey = streamEl.getAttribute("KEY");
 
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            node = nodeList.item(i);
+            Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                child = (Element) node;
+                Element child = (Element) node;
                 childAttrKey = child.getAttribute("KEY");
                 childAttrVal = child.getAttribute("VAL");
                 LOG.debug(parentAttrKey + " => reading child: " + child.getTagName() +
@@ -218,8 +214,6 @@ class FDFStampAnnotationAppearance implements COSObjectable
         LOG.debug("Parse " + arrayEl.getAttribute("KEY") + " Array");
         COSArray array = new COSArray();
         NodeList nodeList = arrayEl.getElementsByTagName("FIXED");
-        Node node;
-        Element el;
         String elAttrKey = arrayEl.getAttribute("KEY");
 
         if ("BBox".equals(elAttrKey))
@@ -243,10 +237,10 @@ class FDFStampAnnotationAppearance implements COSObjectable
 
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            node = nodeList.item(i);
+            Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                el = (Element) node;
+                Element el = (Element) node;
                 LOG.debug(elAttrKey + " value(" + i + "): " + el.getAttribute("VAL"));
                 array.add(new COSFloat(el.getAttribute("VAL")));
             }
@@ -261,20 +255,16 @@ class FDFStampAnnotationAppearance implements COSObjectable
         COSDictionary dict = new COSDictionary();
 
         NodeList nodeList = dictEl.getChildNodes();
-        Node node;
-        Element child;
-        String childAttrKey;
-        String childAttrVal;
         String parentAttrKey = dictEl.getAttribute("KEY");
 
         for (int i = 0; i < nodeList.getLength(); i++)
         {
-            node = nodeList.item(i);
+            Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                child = (Element) node;
-                childAttrKey = child.getAttribute("KEY");
-                childAttrVal = child.getAttribute("VAL");
+                Element child = (Element) node;
+                String childAttrKey = child.getAttribute("KEY");
+                String childAttrVal = child.getAttribute("VAL");
 
                 if ("DICT".equals(child.getTagName()))
                 {
