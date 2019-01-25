@@ -117,7 +117,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
             Element appearanceEl = stampAppearance.getDocumentElement();
 
             // Is the root node have tag as DICT, error otherwise
-            if (!appearanceEl.getNodeName().equalsIgnoreCase("dict"))
+            if (!"dict".equalsIgnoreCase(appearanceEl.getNodeName()))
             {
                 throw new IOException("Error while reading stamp document, "
                         + "root should be 'dict' and not '" + appearanceEl.getNodeName() + "'");
