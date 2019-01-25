@@ -99,25 +99,25 @@ class FDFStampAnnotationAppearance implements COSObjectable
                 if (node instanceof Element)
                 {
                     child = (Element) node;
-                    if ("STREAM".equalsIgnoreCase(child.getTagName()) &&
-                             "N".equalsIgnoreCase(child.getAttribute("KEY")))
+                    if ("STREAM".equalsIgnoreCase(child.getTagName()))
                     {
                         LOG.debug(parentAttrKey +
-                                "Process N item in the dictionary after processing the " + 
+                                " => Process " + child.getAttribute("KEY") + 
+                                " item in the dictionary after processing the " + 
                                 child.getTagName());
-                        dictionary.setItem(COSName.N, parseStreamElement(child));
-                        LOG.debug(parentAttrKey + "Set N");
+                        dictionary.setItem(child.getAttribute("KEY"), parseStreamElement(child));
+                        LOG.debug(parentAttrKey + " => Set " + child.getAttribute("KEY"));
                     }
                     else
                     {
-                        LOG.warn(parentAttrKey + "Not handling element: " + child.getTagName());
+                        LOG.warn(parentAttrKey + " => Not handling element: " + child.getTagName());
                     }
                 }
             }
         }
         else
         {
-            LOG.warn(parentAttrKey + "Not handling element: " + appearanceXML.getTagName() + 
+            LOG.warn(parentAttrKey + " => Not handling element: " + appearanceXML.getTagName() + 
                                      " with key: " + appearanceXML.getAttribute("KEY"));
         }
     }
@@ -141,44 +141,44 @@ class FDFStampAnnotationAppearance implements COSObjectable
                 child = (Element) node;
                 childAttrKey = child.getAttribute("KEY");
                 childAttrVal = child.getAttribute("VAL");
-                LOG.debug(parentAttrKey + "reading child: " + child.getTagName() +
+                LOG.debug(parentAttrKey + " => reading child: " + child.getTagName() +
                            " with key: " + childAttrKey);
                 if ("INT".equalsIgnoreCase(child.getTagName()))
                 {
                     if (!"Length".equals(childAttrKey))
                     {
                         stream.setInt(COSName.getPDFName(childAttrKey), Integer.parseInt(childAttrVal));
-                        LOG.debug(parentAttrKey + "Set " + childAttrKey + ": " + childAttrVal);
+                        LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
                     }
                 }
                 else if ("NAME".equalsIgnoreCase(child.getTagName()))
                 {
                     stream.setName(COSName.getPDFName(childAttrKey), childAttrVal);
-                    LOG.debug(parentAttrKey + "Set " + childAttrKey + ": " + childAttrVal);
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
                 }
                 else if ("BOOL".equalsIgnoreCase(child.getTagName()))
                 {
                     stream.setBoolean(COSName.getPDFName(childAttrKey), Boolean.parseBoolean(childAttrVal));
-                    LOG.debug(parentAttrKey + "Set Interpolate: " + childAttrVal);
+                    LOG.debug(parentAttrKey + " => Set Interpolate: " + childAttrVal);
                 }
                 else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
                 {
                     stream.setItem(COSName.getPDFName(childAttrKey), parseArrayElement(child));
-                    LOG.debug(parentAttrKey + "Set " + childAttrKey);
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey);
                 }
                 else if ("DICT".equalsIgnoreCase(child.getTagName()))
                 {
                     stream.setItem(COSName.getPDFName(childAttrKey), parseDictElement(child));
-                    LOG.debug(parentAttrKey + "Set " + childAttrKey);
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey);
                 }
                 else if ("STREAM".equalsIgnoreCase(child.getTagName()))
                 {
                     stream.setItem(COSName.getPDFName(childAttrKey), parseStreamElement(child));
-                    LOG.debug(parentAttrKey + "Set " + childAttrKey);
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey);
                 }
                 else if ("DATA".equalsIgnoreCase(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + "Handling DATA with encoding: " +
+                    LOG.debug(parentAttrKey + " => Handling DATA with encoding: " +
                             child.getAttribute("ENCODING"));
                     if ("HEX".equals(child.getAttribute("ENCODING")))
                     {
@@ -187,7 +187,7 @@ class FDFStampAnnotationAppearance implements COSObjectable
                         {
                             os = stream.createRawOutputStream();
                             os.write(Hex.decodeHex(child.getTextContent()));
-                            LOG.debug(parentAttrKey + "Data was streamed");
+                            LOG.debug(parentAttrKey + " => Data was streamed");
                         }
                         finally
                         {
@@ -199,13 +199,13 @@ class FDFStampAnnotationAppearance implements COSObjectable
                     }
                     else
                     {
-                        LOG.warn(parentAttrKey + "Not handling element DATA encoding: " +
+                        LOG.warn(parentAttrKey + " => Not handling element DATA encoding: " +
                                 child.getAttribute("ENCODING"));
                     }
                 }
                 else
                 {
-                    LOG.warn(parentAttrKey + "Not handling child element: " + child.getTagName());
+                    LOG.warn(parentAttrKey + " => Not handling child element: " + child.getTagName());
                 }
             }
         }
@@ -278,24 +278,24 @@ class FDFStampAnnotationAppearance implements COSObjectable
 
                 if ("DICT".equals(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + "Handling DICT element with key: " + childAttrKey);
+                    LOG.debug(parentAttrKey + " => Handling DICT element with key: " + childAttrKey);
                     dict.setItem(COSName.getPDFName(childAttrKey), parseDictElement(child));
-                    LOG.debug(parentAttrKey + "Set " + childAttrKey);
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey);
                 }
                 else if ("STREAM".equals(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + "Handling STREAM element with key: " + childAttrKey);
+                    LOG.debug(parentAttrKey + " => Handling STREAM element with key: " + childAttrKey);
                     dict.setItem(COSName.getPDFName(childAttrKey), parseStreamElement(child));
                 }
                 else if ("NAME".equals(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + "Handling NAME element with key: " + childAttrKey);
+                    LOG.debug(parentAttrKey + " => Handling NAME element with key: " + childAttrKey);
                     dict.setName(COSName.getPDFName(childAttrKey), childAttrVal);
-                    LOG.debug(parentAttrKey + "Set " + childAttrKey + ": " + childAttrVal);
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
                 }
                 else
                 {
-                    LOG.warn(parentAttrKey + "NOT handling child element: " + child.getTagName());
+                    LOG.warn(parentAttrKey + " => NOT handling child element: " + child.getTagName());
                 }
             }
         }
