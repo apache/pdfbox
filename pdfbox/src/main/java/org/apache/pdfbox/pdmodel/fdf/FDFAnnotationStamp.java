@@ -16,19 +16,35 @@
  */
 package org.apache.pdfbox.pdmodel.fdf;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.util.Hex;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
  * This represents a Stamp FDF annotation.
  *
  * @author Ben Litchfield
+ * @author Andrew Hung
  */
 public class FDFAnnotationStamp extends FDFAnnotation
 {
+    private static final Log LOG = LogFactory.getLog(FDFAnnotationStamp.class);
+
     /**
      * COS Model value for SubType entry.
      */
@@ -64,5 +80,60 @@ public class FDFAnnotationStamp extends FDFAnnotation
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
+
+        // PDFBOX-4437: Initialize the Stamp appearance from the XFDF
+        // https://www.immagic.com/eLibrary/ARCHIVES/TECH/ADOBE/A070914X.pdf
+        // appearance is only defined for stamps
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        try
+        {
+            // Set the Appearance to the annotation
+            LOG.info("Get the DOM Document for the stamp appearance");
+            String ap = xpath.evaluate("appearance", element);
+            if (ap != null && !ap.isEmpty())
+            {
+                Document stampAppearance = getStampAppearanceDocument(Hex.decodeBase64(ap));
+
+                Element appearanceEl = stampAppearance.getDocumentElement();
+
+                // Is the root node have tag as DICT, error otherwise
+                if (!appearanceEl.getNodeName().equalsIgnoreCase("dict"))
+                {
+                    throw new IOException("Error while reading stamp document, root should be 'dict' and not '" + appearanceEl.getNodeName() + "'");
+                }
+
+                LOG.info("Generate and set the appearance dictionary to the stamp annotation");
+                annot.setItem(COSName.AP, new FDFStampAnnotationAppearance(appearanceEl));
+            }
+        }
+        catch (XPathExpressionException e)
+        {
+            LOG.debug("Error while evaluating XPath expression for appearance: " + e);
+        }
+        catch (Exception ex)
+        {
+            LOG.debug("Error while processing appearance: " + ex);
+            throw new IOException(ex);
+        }
     }
+    
+    /**
+     * Parse the <param>xmlString</param> to DOM Document tree from XML content
+     */
+    private Document getStampAppearanceDocument(byte[] xml) throws Exception
+    {
+        try
+        {
+            // Obtain DOM Document instance and create DocumentBuilder with default configuration
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
+            // Parse the content to Document object
+            return builder.parse(new ByteArrayInputStream(xml));
+        }
+        catch (Exception e)
+        {
+            LOG.debug("Error while converting appearance xml to document: " + e);
+        }
+        return null;
+    }    
 }
