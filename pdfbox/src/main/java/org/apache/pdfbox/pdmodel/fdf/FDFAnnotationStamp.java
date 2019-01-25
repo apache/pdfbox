@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -34,6 +35,7 @@ import org.apache.pdfbox.util.Hex;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * This represents a Stamp FDF annotation.
@@ -55,7 +57,6 @@ public class FDFAnnotationStamp extends FDFAnnotation
      */
     public FDFAnnotationStamp()
     {
-        super();
         annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
@@ -85,42 +86,51 @@ public class FDFAnnotationStamp extends FDFAnnotation
         // https://www.immagic.com/eLibrary/ARCHIVES/TECH/ADOBE/A070914X.pdf
         // appearance is only defined for stamps
         XPath xpath = XPathFactory.newInstance().newXPath();
+
+        // Set the Appearance to the annotation
+        LOG.debug("Get the DOM Document for the stamp appearance");
+        String base64EncodedAppearance;
         try
         {
-            // Set the Appearance to the annotation
-            LOG.info("Get the DOM Document for the stamp appearance");
-            String ap = xpath.evaluate("appearance", element);
-            if (ap != null && !ap.isEmpty())
-            {
-                Document stampAppearance = getStampAppearanceDocument(Hex.decodeBase64(ap));
-
-                Element appearanceEl = stampAppearance.getDocumentElement();
-
-                // Is the root node have tag as DICT, error otherwise
-                if (!appearanceEl.getNodeName().equalsIgnoreCase("dict"))
-                {
-                    throw new IOException("Error while reading stamp document, root should be 'dict' and not '" + appearanceEl.getNodeName() + "'");
-                }
-
-                LOG.info("Generate and set the appearance dictionary to the stamp annotation");
-                annot.setItem(COSName.AP, new FDFStampAnnotationAppearance(appearanceEl));
-            }
+            base64EncodedAppearance = xpath.evaluate("appearance", element);
         }
         catch (XPathExpressionException e)
         {
-            LOG.debug("Error while evaluating XPath expression for appearance: " + e);
+            // should not happen
+            LOG.error("Error while evaluating XPath expression for appearance: " + e);
+            return;
         }
-        catch (Exception ex)
+        byte[] decodedAppearanceXML;
+        try
         {
-            LOG.debug("Error while processing appearance: " + ex);
-            throw new IOException(ex);
+            decodedAppearanceXML = Hex.decodeBase64(base64EncodedAppearance);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            LOG.error("Bad base64 encoded appearance ignored", ex);
+            return;
+        }
+        if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
+        {
+            Document stampAppearance = getStampAppearanceDocument(decodedAppearanceXML);
+
+            Element appearanceEl = stampAppearance.getDocumentElement();
+
+            // Is the root node have tag as DICT, error otherwise
+            if (!appearanceEl.getNodeName().equalsIgnoreCase("dict"))
+            {
+                throw new IOException("Error while reading stamp document, "
+                        + "root should be 'dict' and not '" + appearanceEl.getNodeName() + "'");
+            }
+            LOG.debug("Generate and set the appearance dictionary to the stamp annotation");
+            annot.setItem(COSName.AP, new FDFStampAnnotationAppearance(appearanceEl));
         }
     }
-    
+
     /**
      * Parse the <param>xmlString</param> to DOM Document tree from XML content
      */
-    private Document getStampAppearanceDocument(byte[] xml) throws Exception
+    private Document getStampAppearanceDocument(byte[] xml) throws IOException
     {
         try
         {
@@ -130,10 +140,15 @@ public class FDFAnnotationStamp extends FDFAnnotation
             // Parse the content to Document object
             return builder.parse(new ByteArrayInputStream(xml));
         }
-        catch (Exception e)
+        catch (ParserConfigurationException ex)
         {
-            LOG.debug("Error while converting appearance xml to document: " + e);
+            LOG.error("Error while converting appearance xml to document: " + ex);
+            throw new IOException(ex);
         }
-        return null;
+        catch (SAXException ex)
+        {
+            LOG.error("Error while converting appearance xml to document: " + ex);
+            throw new IOException(ex);
+        }
     }    
 }
