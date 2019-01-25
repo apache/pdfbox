@@ -140,12 +140,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
             // Parse the content to Document object
             return builder.parse(new ByteArrayInputStream(xml));
         }
-        catch (ParserConfigurationException ex)
-        {
-            LOG.error("Error while converting appearance xml to document: " + ex);
-            throw new IOException(ex);
-        }
-        catch (SAXException ex)
+        catch (ParserConfigurationException | SAXException ex)
         {
             LOG.error("Error while converting appearance xml to document: " + ex);
             throw new IOException(ex);
