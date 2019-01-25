@@ -66,12 +66,6 @@ class FDFStampAnnotationAppearance implements COSObjectable
         this.dictionary = dictionary;
     }
 
-    @Override
-    public COSDictionary getCOSObject()
-    {
-        return dictionary;
-    }
-
     /**
      * This will create an Appearance dictionary from an appearance XML document.
      *
@@ -120,6 +114,12 @@ class FDFStampAnnotationAppearance implements COSObjectable
             LOG.warn(parentAttrKey + " => Not handling element: " + appearanceXML.getTagName() + 
                                      " with key: " + appearanceXML.getAttribute("KEY"));
         }
+    }
+
+    @Override
+    public COSDictionary getCOSObject()
+    {
+        return dictionary;
     }
 
     private COSStream parseStreamElement(Element streamEl) throws IOException
