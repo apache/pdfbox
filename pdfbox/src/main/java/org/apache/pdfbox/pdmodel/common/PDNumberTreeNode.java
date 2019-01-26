@@ -30,6 +30,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNull;
 
 /**
  * This class represents a PDF Number tree. See the PDF Reference 1.7 section
@@ -251,7 +252,7 @@ public class PDNumberTreeNode implements COSObjectable
             {
                 array.add( COSInteger.get( key ) );
                 COSObjectable obj = numbers.get( key );
-                array.add( obj );
+                array.add(obj == null ? COSNull.NULL : obj);
             }
             Integer lower = null;
             Integer upper = null;
