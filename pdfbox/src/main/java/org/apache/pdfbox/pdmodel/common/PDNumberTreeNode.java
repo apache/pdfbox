@@ -189,8 +189,7 @@ public class PDNumberTreeNode implements COSObjectable
                 }
                 COSInteger key = (COSInteger) base;
                 COSBase cosValue = numbersArray.getObject(i + 1);
-                COSObjectable pdValue = convertCOSToPD( cosValue );
-                indices.put( key.intValue(), pdValue );
+                indices.put(key.intValue(), cosValue == null ? null : convertCOSToPD(cosValue));
             }
             indices = Collections.unmodifiableMap(indices);
         }
