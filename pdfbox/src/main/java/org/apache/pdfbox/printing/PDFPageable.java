@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.printing;
 
+import java.awt.RenderingHints;
 import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
@@ -36,6 +37,8 @@ public final class PDFPageable extends Book
     private final boolean showPageBorder;
     private final float dpi;
     private final Orientation orientation;
+    private boolean subsamplingAllowed = false;
+    private RenderingHints renderingHints = null;
 
     /**
      * Creates a new PDFPageable.
@@ -87,6 +90,56 @@ public final class PDFPageable extends Book
         this.orientation = orientation;
         this.showPageBorder = showPageBorder;
         this.dpi = dpi;
+    }
+
+    /**
+     * Get the rendering hints.
+     *
+     * @return the rendering hints or null if none are set.
+     */
+    public RenderingHints getRenderingHints()
+    {
+        return renderingHints;
+    }
+
+    /**
+     * Set the rendering hints. Use this to influence rendering quality and speed. If you don't set
+     * them yourself or pass null, PDFBox will decide <b><u>at runtime</u></b> depending on the
+     * destination.
+     *
+     * @param renderingHints
+     */
+    public void setRenderingHints(RenderingHints renderingHints)
+    {
+        this.renderingHints = renderingHints;
+    }
+
+    /**
+     * Value indicating if the renderer is allowed to subsample images before drawing, according to
+     * image dimensions and requested scale.
+     *
+     * Subsampling may be faster and less memory-intensive in some cases, but it may also lead to
+     * loss of quality, especially in images with high spatial frequency.
+     *
+     * @return true if subsampling of images is allowed, false otherwise.
+     */
+    public boolean isSubsamplingAllowed()
+    {
+        return subsamplingAllowed;
+    }
+
+    /**
+     * Sets a value instructing the renderer whether it is allowed to subsample images before
+     * drawing. The subsampling frequency is determined according to image size and requested scale.
+     *
+     * Subsampling may be faster and less memory-intensive in some cases, but it may also lead to
+     * loss of quality, especially in images with high spatial frequency.
+     *
+     * @param subsamplingAllowed The new value indicating if subsampling is allowed.
+     */
+    public void setSubsamplingAllowed(boolean subsamplingAllowed)
+    {
+        this.subsamplingAllowed = subsamplingAllowed;
     }
 
     @Override
@@ -162,6 +215,9 @@ public final class PDFPageable extends Book
         {
             throw new IndexOutOfBoundsException(i + " >= " + getNumberOfPages());
         }
-        return new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
+        PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
+        printable.setSubsamplingAllowed(subsamplingAllowed);
+        printable.setRenderingHints(renderingHints);
+        return printable;
     }
 }
