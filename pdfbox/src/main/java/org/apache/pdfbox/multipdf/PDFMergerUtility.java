@@ -1215,6 +1215,10 @@ public class PDFMergerUtility
     {
         for (COSObjectable obj : numberTreeAsMap.values())
         {
+            if (obj == null)
+            {
+                continue;
+            }
             PDParentTreeValue val = (PDParentTreeValue) obj;
             COSBase base = val.getCOSObject();
             if (base instanceof COSArray)
