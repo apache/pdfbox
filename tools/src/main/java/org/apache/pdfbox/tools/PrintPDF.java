@@ -171,10 +171,14 @@ public final class PrintPDF
                     }
                 }
             }
-            printJob.setPageable(new PDFPageable(document, orientation, showPageBorder, dpi));
-            PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
-            printable.setRenderingHints(renderingHints);
-            printJob.setPrintable(printable);
+            PDFPageable pageable = new PDFPageable(document, orientation, showPageBorder, dpi);
+            pageable.setRenderingHints(renderingHints);
+            printJob.setPageable(pageable);
+
+            // We're not using PDFPrintable, because then
+            // "the PageFormat for each page is the default page format"
+            // which results in the image appearing in the middle of the page, and padded
+            // when printing on XPS. Also PDFPageable.getPageFormat() won't be called.
 
             if (silentPrint || printJob.printDialog())
             {
