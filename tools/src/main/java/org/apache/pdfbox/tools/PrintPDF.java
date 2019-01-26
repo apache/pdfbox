@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.awt.RenderingHints;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
@@ -27,6 +28,8 @@ import javax.print.PrintService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
+import org.apache.pdfbox.printing.PDFPrintable;
+import org.apache.pdfbox.printing.Scaling;
 
 /**
  * This is a command line program that will print a PDF document.
@@ -41,6 +44,7 @@ public final class PrintPDF
     private static final String ORIENTATION = "-orientation";
     private static final String BORDER = "-border";
     private static final String DPI = "-dpi";
+    private static final String NOCOLOROPT = "-noColorOpt";
 
     /**
      * private constructor.
@@ -73,6 +77,8 @@ public final class PrintPDF
         orientationMap.put("auto", Orientation.AUTO);
         orientationMap.put("landscape", Orientation.LANDSCAPE);
         orientationMap.put("portrait", Orientation.PORTRAIT);
+        RenderingHints renderingHints = null;
+
         for (int i = 0; i < args.length; i++)
         {
             if (args[i].equals(PASSWORD))
@@ -113,6 +119,16 @@ public final class PrintPDF
             else if (args[i].equals(BORDER))
             {
                 showPageBorder = true;
+            }
+            else if (args[i].equals(NOCOLOROPT))
+            {
+                renderingHints = new RenderingHints(null);
+                renderingHints.put(RenderingHints.KEY_INTERPOLATION,
+                                   RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                renderingHints.put(RenderingHints.KEY_RENDERING,
+                                   RenderingHints.VALUE_RENDER_QUALITY);
+                renderingHints.put(RenderingHints.KEY_ANTIALIASING,
+                                   RenderingHints.VALUE_ANTIALIAS_OFF);
             }
             else if (args[i].equals(DPI))
             {
@@ -156,7 +172,10 @@ public final class PrintPDF
                 }
             }
             printJob.setPageable(new PDFPageable(document, orientation, showPageBorder, dpi));
-            
+            PDFPrintable printable = new PDFPrintable(document, Scaling.ACTUAL_SIZE, showPageBorder, dpi);
+            printable.setRenderingHints(renderingHints);
+            printJob.setPrintable(printable);
+
             if (silentPrint || printJob.printDialog())
             {
                 printJob.print();
@@ -185,6 +204,8 @@ public final class PrintPDF
                 + "  -border                              : Print with border\n"
                 + "  -dpi                                 : Render into intermediate image with\n"
                 + "                                           specific dpi and then print\n"
+                + "  -noColorOpt                          : Disable color optimizations\n"
+                + "                                           (useful when printing barcodes)\n"
                 + "  -silentPrint                         : Print without printer dialog box\n";
         
         System.err.println(message);
