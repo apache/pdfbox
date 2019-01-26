@@ -572,6 +572,8 @@ public final class ShowSignature
     private static void usage()
     {
         System.err.println( "usage: java " + ShowSignature.class.getName() +
-                            "<password> <inputfile>" );
+                            " <password (usually empty)> <inputfile>" );
+        // The password is for encrypted files and has nothing to do with the signature.
+        // (A PDF can be both encrypted and signed)
     }
 }
