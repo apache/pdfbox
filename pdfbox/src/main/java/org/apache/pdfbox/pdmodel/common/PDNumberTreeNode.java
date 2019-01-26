@@ -214,9 +214,6 @@ public class PDNumberTreeNode implements COSObjectable
         }
         catch( Exception t )
         {
-            System.out.println("valueType: " + valueType);
-            System.out.println("base: " + base);
-            System.out.println("Exception: " + t);
             throw new IOException("Error while trying to create value in number tree:" + t.getMessage(), t);
         }
     }
