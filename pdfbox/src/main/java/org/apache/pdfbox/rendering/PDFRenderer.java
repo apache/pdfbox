@@ -468,7 +468,9 @@ public class PDFRenderer
     private RenderingHints createDefaultRenderingHints(Graphics2D graphics)
     {
         RenderingHints r = new RenderingHints(null);
-        r.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        r.put(RenderingHints.KEY_INTERPOLATION, isBitonal(graphics) ?
+                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR :
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         r.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         r.put(RenderingHints.KEY_ANTIALIASING, isBitonal(graphics) ?
                                         RenderingHints.VALUE_ANTIALIAS_OFF :
