@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import java.net.URL;
 import java.util.Arrays;
 
 import org.apache.pdfbox.cos.COSName;
