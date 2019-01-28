@@ -72,6 +72,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocume
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 
 /**
  * This class will take a list of pdf documents and merge them, saving the
@@ -840,6 +841,59 @@ public class PDFMergerUtility
             mergeRoleMap(srcStructTree, destStructTree);
             mergeIDTree(cloner, srcStructTree, destStructTree);
             mergeMarkInfo(destCatalog, srcCatalog);
+            mergeLanguage(destCatalog, srcCatalog);
+            mergeViewerPreferences(destCatalog, srcCatalog);
+        }
+    }
+
+    private void mergeViewerPreferences(PDDocumentCatalog destCatalog, PDDocumentCatalog srcCatalog)
+    {
+        PDViewerPreferences srcViewerPreferences = srcCatalog.getViewerPreferences();
+        if (srcViewerPreferences == null)
+        {
+            return;
+        }
+        PDViewerPreferences destViewerPreferences = destCatalog.getViewerPreferences();
+        if (destViewerPreferences == null)
+        {
+            destViewerPreferences = new PDViewerPreferences(new COSDictionary());
+            destCatalog.setViewerPreferences(destViewerPreferences);
+        }
+        mergeInto(srcViewerPreferences.getCOSObject(), destViewerPreferences.getCOSObject(),
+                  Collections.<COSName>emptySet());
+
+        // check the booleans - set to true if one is set and true
+        if (srcViewerPreferences.hideToolbar() || destViewerPreferences.hideToolbar())
+        {
+            destViewerPreferences.setHideToolbar(true);
+        }
+        if (srcViewerPreferences.hideMenubar() || destViewerPreferences.hideMenubar())
+        {
+            destViewerPreferences.setHideMenubar(true);
+        }
+        if (srcViewerPreferences.hideWindowUI() || destViewerPreferences.hideWindowUI())
+        {
+            destViewerPreferences.setHideWindowUI(true);
+        }
+        if (srcViewerPreferences.fitWindow() || destViewerPreferences.fitWindow())
+        {
+            destViewerPreferences.setFitWindow(true);
+        }
+        if (srcViewerPreferences.centerWindow() || destViewerPreferences.centerWindow())
+        {
+            destViewerPreferences.setCenterWindow(true);
+        }
+        if (srcViewerPreferences.displayDocTitle() || destViewerPreferences.displayDocTitle())
+        {
+            destViewerPreferences.setDisplayDocTitle(true);
+        }
+    }
+
+    private void mergeLanguage(PDDocumentCatalog destCatalog, PDDocumentCatalog srcCatalog)
+    {
+        if (destCatalog.getLanguage() == null && srcCatalog.getLanguage() != null)
+        {
+            destCatalog.setLanguage(srcCatalog.getLanguage());
         }
     }
 
