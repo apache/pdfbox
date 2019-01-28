@@ -417,12 +417,12 @@ public class CMapParser
      */
     protected InputStream getExternalCMap(String name) throws IOException
     {
-        URL url = getClass().getResource(name);
-        if (url == null)
+        InputStream is = getClass().getResourceAsStream(name);
+        if (is == null)
         {
             throw new IOException("Error: Could not find referenced cmap stream " + name);
         }
-        return url.openStream();
+        return is;
     }
 
     private Object parseNextToken(PushbackInputStream is) throws IOException
