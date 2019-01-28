@@ -18,8 +18,10 @@
 package org.apache.pdfbox.util;
 
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.Properties;
+
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * Exposes PDFBox version.
@@ -39,20 +41,25 @@ public final class Version
      */
     public static String getVersion()
     {
+        InputStream is = null;
         try
         {
-            URL url = Version.class.getResource(PDFBOX_VERSION_PROPERTIES);
-            if (url == null)
+            is = Version.class.getResourceAsStream(PDFBOX_VERSION_PROPERTIES);
+            if (is == null)
             {
                 return null;
             }
             Properties properties = new Properties();
-            properties.load(url.openStream());
+            properties.load(is);
             return properties.getProperty("pdfbox.version", null);
         }
         catch (IOException io)
         {
             return null;
+        }
+        finally
+        {
+            IOUtils.closeQuietly(is);
         }
     }
 }

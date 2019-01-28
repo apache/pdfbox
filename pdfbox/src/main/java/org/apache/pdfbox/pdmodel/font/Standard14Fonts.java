@@ -114,24 +114,20 @@ final class Standard14Fonts
         }
 
         String resourceName = "/org/apache/pdfbox/resources/afm/" + afmName + ".afm";
-        URL url = PDType1Font.class.getResource(resourceName);
-        if (url != null)
-        {
-            InputStream afmStream = url.openStream();
-            try
-            {
-                AFMParser parser = new AFMParser(afmStream);
-                FontMetrics metric = parser.parse(true);
-                STANDARD14_AFM_MAP.put(fontName, metric);
-            }
-            finally
-            {
-                afmStream.close();
-            }
-        }
-        else
+        InputStream afmStream = PDType1Font.class.getResourceAsStream(resourceName);
+        if (afmStream == null)
         {
             throw new IOException(resourceName + " not found");
+        }
+        try
+        {
+            AFMParser parser = new AFMParser(afmStream);
+            FontMetrics metric = parser.parse(true);
+            STANDARD14_AFM_MAP.put(fontName, metric);
+        }
+        finally
+        {
+            afmStream.close();
         }
     }
 
