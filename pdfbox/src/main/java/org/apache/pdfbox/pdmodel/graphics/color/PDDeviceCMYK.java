@@ -97,15 +97,13 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
 
         String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
 
-        URL url = PDDeviceCMYK.class.getResource(name);
-        if (url == null)
+        try (InputStream is = PDDeviceCMYK.class.getResourceAsStream(name))
         {
-            throw new IOException("Error loading resource: " + name);
-        }
-
-        try (InputStream input = url.openStream())
-        {
-            return ICC_Profile.getInstance(input);
+            if (is == null)
+            {
+                throw new IOException("Error loading resource: " + name);
+            }
+            return ICC_Profile.getInstance(is);
         }
     }
 
