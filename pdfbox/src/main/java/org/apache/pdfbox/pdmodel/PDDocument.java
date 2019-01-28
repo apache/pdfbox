@@ -705,9 +705,10 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * This will get the document info dictionary. This is guaranteed to not return null.
-     * 
-     * @return The documents /Info dictionary
+     * This will get the document info dictionary. If it doesn't exist, an empty document info
+     * dictionary is created in the document trailer.
+     *
+     * @return The documents /Info dictionary, never null.
      */
     public PDDocumentInformation getDocumentInformation()
     {
