@@ -1195,7 +1195,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
         lastClip = null;
-        //TODO support more annotation flags (Invisible, NoZoom, NoRotate)
+        //TODO support more annotation flags (Invisible, NoZoom)
         // Example for NoZoom can be found in p5 of PDFBOX-2348
         int deviceType = -1;
         if (graphics.getDeviceConfiguration() != null && 
@@ -1240,7 +1240,21 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // TODO: Improve memory consumption by passing a ScratchFile
             annotation.constructAppearances();
         }
-        super.showAnnotation(annotation);
+        if (annotation.isNoRotate() && getCurrentPage().getRotation() != 0)
+        {
+            PDRectangle rect = annotation.getRectangle();
+            AffineTransform savedTransform = graphics.getTransform();
+            // "The upper-left corner of the annotation remains at the same point in
+            //  default user space; the annotation pivots around that point."
+            graphics.rotate(Math.toRadians(getCurrentPage().getRotation()),
+                    rect.getLowerLeftX(), rect.getUpperRightY());
+            super.showAnnotation(annotation);
+            graphics.setTransform(savedTransform);
+        }
+        else
+        {
+            super.showAnnotation(annotation);
+        }
     }
 
     /**
