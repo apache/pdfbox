@@ -634,9 +634,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private void adjustRectangle(Rectangle2D r)
     {
         Matrix m = new Matrix(xform);
-        double scaleX = m.getScalingFactorX();
-        double scaleY = m.getScalingFactorY();
-        
+        double scaleX = Math.abs(m.getScalingFactorX());
+        double scaleY = Math.abs(m.getScalingFactorY());
+
         AffineTransform adjustedTransform = new AffineTransform(xform);
         adjustedTransform.scale(1.0 / scaleX, 1.0 / scaleY);
         r.setRect(adjustedTransform.createTransformedShape(r).getBounds2D());
@@ -647,8 +647,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         AffineTransform at = new AffineTransform(xform);
         Matrix m = new Matrix(at);
-        at.scale(1.0 / m.getScalingFactorX(), 1.0 / m.getScalingFactorY());
-        
+        at.scale(1.0 / Math.abs(m.getScalingFactorX()), 1.0 / Math.abs(m.getScalingFactorY()));
+
         Rectangle originalBounds = new Rectangle(gray.getWidth(), gray.getHeight());
         Rectangle2D transformedBounds = at.createTransformedShape(originalBounds).getBounds2D();
         at.preConcatenate(AffineTransform.getTranslateInstance(-transformedBounds.getMinX(), 
@@ -1689,7 +1689,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             g.transform(dpiTransform);
 
             AffineTransform xformOriginal = xform;
-            xform = AffineTransform.getScaleInstance(m.getScalingFactorX(), m.getScalingFactorY());
+            xform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
             PDRectangle pageSizeOriginal = pageSize;
             pageSize = new PDRectangle(minX / Math.abs(m.getScalingFactorX()), 
                                        minY / Math.abs(m.getScalingFactorY()),
@@ -1806,8 +1806,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
             size = dpiTransform.transform(size, size);
             // Flip y
-            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * m.getScalingFactorX(),
-                    size.getY() - minY - height + pageSize.getLowerLeftY() * m.getScalingFactorY(),
+            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * Math.abs(m.getScalingFactorX()),
+                    size.getY() - minY - height + pageSize.getLowerLeftY() * Math.abs(m.getScalingFactorY()),
                     width, height);
         }
     }
