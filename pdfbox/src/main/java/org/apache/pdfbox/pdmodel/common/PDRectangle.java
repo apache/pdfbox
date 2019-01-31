@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.common;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
+import java.util.Arrays;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -128,7 +129,7 @@ public class PDRectangle implements COSObjectable
      */
     public PDRectangle( COSArray array )
     {
-        float[] values = array.toFloatArray();
+        float[] values = Arrays.copyOf(array.toFloatArray(), 4);
         rectArray = new COSArray();
         // we have to start with the lower left corner
         rectArray.add( new COSFloat( Math.min(values[0],values[2] )) );
