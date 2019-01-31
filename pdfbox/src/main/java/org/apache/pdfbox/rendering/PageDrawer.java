@@ -1592,7 +1592,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             Point2D size = new Point2D.Double(pageSize.getWidth(), pageSize.getHeight());
             // apply the underlying Graphics2D device's DPI transform and y-axis flip
-            Matrix m = new Matrix(xform);
             AffineTransform dpiTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
             size = dpiTransform.transform(size, size);
             // Flip y
