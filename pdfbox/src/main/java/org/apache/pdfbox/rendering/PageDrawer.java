@@ -634,8 +634,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private void adjustRectangle(Rectangle2D r)
     {
         Matrix m = new Matrix(xform);
-        double scaleX = Math.abs(m.getScalingFactorX());
-        double scaleY = Math.abs(m.getScalingFactorY());
+        float scaleX = Math.abs(m.getScalingFactorX());
+        float scaleY = Math.abs(m.getScalingFactorY());
 
         AffineTransform adjustedTransform = new AffineTransform(xform);
         adjustedTransform.scale(1.0 / scaleX, 1.0 / scaleY);
@@ -659,7 +659,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         BufferedImage transformedGray = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY); 
         
         Graphics2D g2 = (Graphics2D) transformedGray.getGraphics();
-
         g2.drawImage(gray, at, null);
         g2.dispose();
         return transformedGray;
@@ -1568,6 +1567,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         private final int maxY;
         private final int width;
         private final int height;
+        private final float scaleX;
+        private final float scaleY;
 
         /**
          * Creates a buffered image for a transparency group result.
@@ -1597,6 +1598,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Area clip = (Area)getGraphicsState().getCurrentClippingPath().clone();
             clip.intersect(new Area(transformedBox));
             Rectangle2D clipRect = clip.getBounds2D();
+            Matrix m = new Matrix(xform);
+            scaleX = Math.abs(m.getScalingFactorX());
+            scaleY = Math.abs(m.getScalingFactorY());
             if (clipRect.isEmpty())
             {
                 image = null;
@@ -1613,8 +1617,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                                         (float)clipRect.getWidth(), (float)clipRect.getHeight());
 
             // apply the underlying Graphics2D device's DPI transform
-            Matrix m = new Matrix(xform);
-            AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
+            AffineTransform dpiTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
             Rectangle2D bounds = dpiTransform.createTransformedShape(clip.getBounds2D()).getBounds2D();
 
             minX = (int) Math.floor(bounds.getMinX());
@@ -1634,7 +1637,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             }
-            
+
             boolean needsBackdrop = !isSoftMask && !form.getGroup().isIsolated() &&
                 hasBlendMode(form, new HashSet<COSBase>());
             BufferedImage backdropImage = null;
@@ -1689,12 +1692,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             g.transform(dpiTransform);
 
             AffineTransform xformOriginal = xform;
-            xform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
+            xform = AffineTransform.getScaleInstance(scaleX, scaleY);
             PDRectangle pageSizeOriginal = pageSize;
-            pageSize = new PDRectangle(minX / Math.abs(m.getScalingFactorX()), 
-                                       minY / Math.abs(m.getScalingFactorY()),
-                        (float) bounds.getWidth() / Math.abs(m.getScalingFactorX()),
-                        (float) bounds.getHeight() / Math.abs(m.getScalingFactorY()));
+            pageSize = new PDRectangle(minX / scaleX, 
+                                       minY / scaleY,
+                        (float) bounds.getWidth() / scaleX,
+                        (float) bounds.getHeight() / scaleY);
             int clipWindingRuleOriginal = clipWindingRule;
             clipWindingRule = -1;
             GeneralPath linePathOriginal = linePath;
@@ -1747,9 +1750,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
              */
             int[] bandOffsets = new int[] {1, 0};
             int bands = bandOffsets.length;
-            
+
             /**
-             * Color Model usesd for raw GRAY + ALPHA
+             * Color Model used for raw GRAY + ALPHA
              */
             final ColorModel CM_GRAY_ALPHA
                 = new ComponentColorModel(
@@ -1803,11 +1806,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             Point2D size = new Point2D.Double(pageSize.getWidth(), pageSize.getHeight());
             // apply the underlying Graphics2D device's DPI transform and y-axis flip
             Matrix m = new Matrix(xform);
-            AffineTransform dpiTransform = AffineTransform.getScaleInstance(Math.abs(m.getScalingFactorX()), Math.abs(m.getScalingFactorY()));
+            AffineTransform dpiTransform = AffineTransform.getScaleInstance(scaleX, scaleY);
             size = dpiTransform.transform(size, size);
             // Flip y
-            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * Math.abs(m.getScalingFactorX()),
-                    size.getY() - minY - height + pageSize.getLowerLeftY() * Math.abs(m.getScalingFactorY()),
+            return new Rectangle2D.Double(minX - pageSize.getLowerLeftX() * scaleX,
+                    size.getY() - minY - height + pageSize.getLowerLeftY() * scaleY,
                     width, height);
         }
     }
