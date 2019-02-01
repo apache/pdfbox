@@ -28,8 +28,6 @@ import javax.print.PrintService;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
-import org.apache.pdfbox.printing.PDFPrintable;
-import org.apache.pdfbox.printing.Scaling;
 
 /**
  * This is a command line program that will print a PDF document.
