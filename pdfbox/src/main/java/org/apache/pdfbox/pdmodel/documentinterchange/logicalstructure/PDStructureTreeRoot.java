@@ -21,7 +21,6 @@ import java.util.Hashtable;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
@@ -64,36 +63,6 @@ public class PDStructureTreeRoot extends PDStructureNode
     public PDStructureTreeRoot(COSDictionary dic)
     {
         super(dic);
-    }
-
-    /**
-     * Returns the K array entry.
-     * 
-     * @return the K array entry
-     *
-     * @deprecated use {@link #getK()} only. /K can be a dictionary or an array, and the next level
-     * can also be a dictionary. See file 054080.pdf in PDFBOX-4417 and read "Entries in the
-     * structure tree root" in the PDF specification.
-     */
-    @Deprecated
-    public COSArray getKArray()
-    {
-        COSBase k = this.getCOSObject().getDictionaryObject(COSName.K);
-        if (k instanceof COSDictionary)
-        {
-            COSDictionary kdict = (COSDictionary) k;
-            k = kdict.getDictionaryObject(COSName.K);
-            if (k instanceof COSArray)
-            {
-                return (COSArray) k;
-            }
-        }
-        else if (k instanceof COSArray)
-        {
-            return (COSArray) k;
-        }
-
-        return null;
     }
 
     /**
