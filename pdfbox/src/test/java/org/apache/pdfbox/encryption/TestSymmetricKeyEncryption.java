@@ -276,37 +276,41 @@ public class TestSymmetricKeyEncryption extends TestCase
     {
         final int TESTCOUNT = 1000;
         File file = new File(testResultsDir,"PDFBOX-4453.pdf");
-        PDDocument doc = new PDDocument();
-        doc.addPage(new PDPage());
-        for (int i = 0; i < TESTCOUNT; ++i)
+        try (PDDocument doc = new PDDocument())
         {
-            // strings must be in different dictionaries so that the actual
-            // encryption key changes
-            COSDictionary dict = new COSDictionary();
-            doc.getPage(0).getCOSObject().setItem(COSName.getPDFName("_Test-" + i), dict);
-            // need two different keys so that there are both encrypted and decrypted COSStrings
-            // with value "0"
-            dict.setString("key1", "3");
-            dict.setString("key2", "0");
+            doc.addPage(new PDPage());
+            for (int i = 0; i < TESTCOUNT; ++i)
+            {
+                // strings must be in different dictionaries so that the actual
+                // encryption key changes
+                COSDictionary dict = new COSDictionary();
+                doc.getPage(0).getCOSObject().setItem(COSName.getPDFName("_Test-" + i), dict);
+                // need two different keys so that there are both encrypted and decrypted COSStrings
+                // with value "0"
+                dict.setString("key1", "3");
+                dict.setString("key2", "0");
+            }
+            
+            //RC4-40
+            StandardProtectionPolicy spp =
+                    new StandardProtectionPolicy("12345", "", new AccessPermission());
+            spp.setEncryptionKeyLength(40);
+            spp.setPreferAES(false);
+            doc.protect(spp);
+            doc.save(file);
         }
 
-        //RC4-40
-        StandardProtectionPolicy spp = new StandardProtectionPolicy("12345", "",new AccessPermission());
-        spp.setEncryptionKeyLength(40);
-        spp.setPreferAES(false);
-        doc.protect(spp);
-        doc.save(file);
-        doc.close();
-
-        doc = PDDocument.load(file);
-        Assert.assertTrue(doc.isEncrypted());
-        for (int i = 0; i < TESTCOUNT; ++i)
+        try (PDDocument doc = PDDocument.load(file))
         {
-            COSDictionary dict = doc.getPage(0).getCOSObject().getCOSDictionary(COSName.getPDFName("_Test-" + i));
-            Assert.assertEquals("3", dict.getString("key1"));
-            Assert.assertEquals("0", dict.getString("key2"));
+            Assert.assertTrue(doc.isEncrypted());
+            for (int i = 0; i < TESTCOUNT; ++i)
+            {
+                COSDictionary dict =
+                        doc.getPage(0).getCOSObject().getCOSDictionary(COSName.getPDFName("_Test-" + i));
+                Assert.assertEquals("3", dict.getString("key1"));
+                Assert.assertEquals("0", dict.getString("key2"));
+            }
         }
-        doc.close();
     }
 
     private void testSymmEncrForKeySize(int keyLength, boolean preferAES,
