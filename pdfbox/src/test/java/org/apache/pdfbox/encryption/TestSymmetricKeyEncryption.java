@@ -272,7 +272,7 @@ public class TestSymmetricKeyEncryption extends TestCase
      * 
      * @throws IOException 
      */
-    public void t_estPDFBox4453() throws IOException
+    public void testPDFBox4453() throws IOException
     {
         final int TESTCOUNT = 1000;
         File file = new File(testResultsDir,"PDFBOX-4453.pdf");
