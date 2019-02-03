@@ -368,7 +368,7 @@ public class ValidationResult
             if (details != null)
             {
                 StringBuilder sb = new StringBuilder(this.details.length() + details.length() + 2);
-                sb.append(this.details).append(", ").append(details);
+                this.details = sb.length() > 400 ? sb.substring(0, 400) : sb.toString();
                 this.details = sb.toString();
             }
             this.cause = cause;
