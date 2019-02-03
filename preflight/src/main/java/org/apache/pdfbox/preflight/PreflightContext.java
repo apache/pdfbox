@@ -23,11 +23,14 @@ package org.apache.pdfbox.preflight;
 
 import java.io.Closeable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
@@ -75,6 +78,8 @@ public class PreflightContext implements Closeable
     private PreflightConfiguration config = null;
 
     private PreflightPath validationPath = new PreflightPath();
+
+    private final Set<COSObjectable> processedSet = new HashSet<>();
 
     private Integer currentPageNumber = null;
     
@@ -286,5 +291,26 @@ public class PreflightContext implements Closeable
     public long getFileLen()
     {
         return fileLen;
+    }
+
+    /**
+     * Add the argument to the set of processed elements,
+     *
+     * @param cos
+     */
+    public void addToProcessedSet(COSObjectable cos)
+    {
+        processedSet.add(cos);
+    }
+
+    /**
+     * Tell if the argument is in the set of processed elements.
+     *
+     * @param cos
+     * @return true if in the set, false if not.
+     */
+    public boolean isInProcessedSet(COSObjectable cos)
+    {
+        return processedSet.contains(cos);
     }
 }

@@ -21,7 +21,10 @@
 
 package org.apache.pdfbox.preflight.utils;
 
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_PDF_PROCESSING;
@@ -77,7 +80,22 @@ public final class ContextHelper
         {
             return;
         }
-        
+        // avoid checking certain elements twice. This can't be generalized,
+        // because some are checked by several processes.
+        if (element instanceof COSObjectable && 
+                // PDFBOX-4450 catch undetected recursions
+                (PreflightConfiguration.GRAPHIC_PROCESS.equals(processName) || 
+                 PreflightConfiguration.FONT_PROCESS.equals(processName))) // for speed
+        {
+            // don't check PDObjects, only their COSObject
+            COSBase cos = ((COSObjectable) element).getCOSObject();
+            if (context.isInProcessedSet(cos))
+            {
+                return;
+            }
+            context.addToProcessedSet(cos);
+        }
+
         boolean needPop = validationPath.pushObject(element);
         PreflightConfiguration config = context.getConfig();
         ValidationProcess process = config.getInstanceOfProcess(processName);
@@ -91,17 +109,18 @@ public final class ContextHelper
     // detect recursion that would lead to stack overflow
     private static boolean hasRecursion(PreflightContext context, Object element, PreflightPath validationPath)
     {
-        if (element instanceof PDResources)
+        if (element instanceof PDResources || element instanceof PDFormXObject)
         {
             for (int i = 0; i < validationPath.size(); ++i)
             {
                 Object obj = validationPath.getPathElement(i, Object.class);
-                if (obj instanceof PDResources)
+                if (obj instanceof COSObjectable)
                 {
-                    PDResources pdRes = (PDResources) obj;
-                    if (pdRes.getCOSObject() == ((PDResources) element).getCOSObject())
+                    COSObjectable cos = (COSObjectable) obj;
+                    if (cos.getCOSObject() == ((COSObjectable) element).getCOSObject())
                     {
-                        context.addValidationError(new ValidationError(ERROR_PDF_PROCESSING, "Resources recursion"));
+                        context.addValidationError(new ValidationError(ERROR_PDF_PROCESSING, 
+                                element.getClass().getSimpleName() + " recursion"));
                         return true;
                     }
                 }               
