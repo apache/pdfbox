@@ -712,9 +712,15 @@ public class COSParser extends BaseParser
                                     }
                                     else
                                     {
-                                        throw new IOException(
+                                        String msg =
                                                 "Invalid object stream xref object reference for key '"
-                                                        + objKey + "': " + fileOffset);
+                                                        + objKey + "': " + fileOffset;
+                                        if (isLenient && fileOffset == null)
+                                        {
+                                            LOG.warn(msg);
+                                            continue;
+                                        }
+                                        throw new IOException(msg);
                                     }
                                 }
 
