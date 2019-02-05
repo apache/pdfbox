@@ -20,11 +20,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
@@ -39,6 +41,7 @@ import org.junit.Test;
 public class MergeAcroFormsTest
 {
     private static final File OUT_DIR = new File("target/test-output/merge/");
+    private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
     @Before
     public void setUp()
@@ -51,32 +54,39 @@ public class MergeAcroFormsTest
      */
     @Test
     public void testAnnotsEntry() throws IOException {
-        
+
+        InputStream s1 = null;
+        InputStream s2 = null;
         // Merge the PDFs form PDFBOX-1031
         PDFMergerUtility merger = new PDFMergerUtility();
-        
-        URL url1 = new URL("https://issues.apache.org/jira/secure/attachment/12481683/1.pdf");
-        InputStream is1 = url1.openStream();
+        try {
+            File f1 = new File(TARGET_PDF_DIR, "PDFBOX-1031-1.pdf");
+            s1 = new FileInputStream(f1);
 
-        URL url2 = new URL("https://issues.apache.org/jira/secure/attachment/12481684/2.pdf");
-        InputStream is2 = url2.openStream();
-        File pdfOutput = new File(OUT_DIR,"PDFBOX-1031.pdf");
-        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
-        merger.addSource(is1);
-        merger.addSource(is2);
-        merger.mergeDocuments(null);
-        
-        // Test merge result
-        PDDocument mergedPDF = PDDocument.load(pdfOutput);
-        assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
-        
-        assertNotNull("There shall be an /Annots entry for the first page", mergedPDF.getPage(0).getCOSObject().getDictionaryObject(COSName.ANNOTS));
-        assertEquals("There shall be 1 annotation for the first page", 1, mergedPDF.getPage(0).getAnnotations().size());
-        
-        assertNotNull("There shall be an /Annots entry for the second page", mergedPDF.getPage(1).getCOSObject().getDictionaryObject(COSName.ANNOTS));
-        assertEquals("There shall be 1 annotation for the second page", 1, mergedPDF.getPage(0).getAnnotations().size());
+            File f2 = new File(TARGET_PDF_DIR, "PDFBOX-1031-2.pdf");
+            s2 = new FileInputStream(f2);
 
-        mergedPDF.close();
+            File pdfOutput = new File(OUT_DIR, "PDFBOX-1031.pdf");
+            merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+            merger.addSource(s1);
+            merger.addSource(s2);
+            merger.mergeDocuments(null);
+
+            // Test merge result
+            PDDocument mergedPDF = PDDocument.load(pdfOutput);
+            assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
+
+            assertNotNull("There shall be an /Annots entry for the first page", mergedPDF.getPage(0).getCOSObject().getDictionaryObject(COSName.ANNOTS));
+            assertEquals("There shall be 1 annotation for the first page", 1, mergedPDF.getPage(0).getAnnotations().size());
+
+            assertNotNull("There shall be an /Annots entry for the second page", mergedPDF.getPage(1).getCOSObject().getDictionaryObject(COSName.ANNOTS));
+            assertEquals("There shall be 1 annotation for the second page", 1, mergedPDF.getPage(0).getAnnotations().size());
+
+            mergedPDF.close();
+        } finally {
+            IOUtils.closeQuietly(s1);
+            IOUtils.closeQuietly(s2);
+        }
     }
     
     /*
@@ -84,35 +94,42 @@ public class MergeAcroFormsTest
      */
     @Test
     public void testAPEntry() throws IOException {
-        
+
+        InputStream is1 = null;
+        InputStream is2 = null;
         // Merge the PDFs form PDFBOX-1100
         PDFMergerUtility merger = new PDFMergerUtility();
-        
-        URL url1 = new URL("https://issues.apache.org/jira/secure/attachment/12490774/a.pdf");
-        InputStream is1 = url1.openStream();
 
-        URL url2 = new URL("https://issues.apache.org/jira/secure/attachment/12490775/b.pdf");
-        InputStream is2 = url2.openStream();
-        File pdfOutput = new File(OUT_DIR,"PDFBOX-1100.pdf");
-        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
-        merger.addSource(is1);
-        merger.addSource(is2);
-        merger.mergeDocuments(null);
-        
-        // Test merge result
-        PDDocument mergedPDF = PDDocument.load(pdfOutput);
-        assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
-        
-        PDAcroForm acroForm = mergedPDF.getDocumentCatalog().getAcroForm();
-        
-        PDField formField = acroForm.getField("Testfeld");
-        assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
-        assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+        try {
+            File file1 = new File(TARGET_PDF_DIR, "PDFBOX-1100-1.pdf");
+            is1 = new FileInputStream(file1);
 
-        formField = acroForm.getField("Testfeld2");
-        assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
-        assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+            File file2 = new File(TARGET_PDF_DIR, "PDFBOX-1100-2.pdf");
+            is2 = new FileInputStream(file2);
+            File pdfOutput = new File(OUT_DIR, "PDFBOX-1100.pdf");
+            merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+            merger.addSource(is1);
+            merger.addSource(is2);
+            merger.mergeDocuments(null);
 
-        mergedPDF.close();
+            // Test merge result
+            PDDocument mergedPDF = PDDocument.load(pdfOutput);
+            assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
+
+            PDAcroForm acroForm = mergedPDF.getDocumentCatalog().getAcroForm();
+
+            PDField formField = acroForm.getField("Testfeld");
+            assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
+            assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+
+            formField = acroForm.getField("Testfeld2");
+            assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
+            assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+
+            mergedPDF.close();
+        } finally {
+            IOUtils.closeQuietly(is1);
+            IOUtils.closeQuietly(is2);
+        }
     }
 }
