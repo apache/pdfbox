@@ -41,11 +41,11 @@ import org.junit.Test;
  */
 public class PDButtonTest
 {
-    
-    
+
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     private static final String NAME_OF_PDF = "AcroFormsBasicFields.pdf";
-    
+    private static final File TARGET_PDF_DIR = new File("target/pdfs");
+
     private PDDocument document;
     private PDAcroForm acroForm;
 
@@ -108,15 +108,14 @@ public class PDButtonTest
      */
     public void testRadioButtonWithOptions()
     {
-        URL url;
+        File file;
         PDDocument pdfDocument = null;
         
         try
         {
-            url = new URL("https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf");
-            InputStream is = url.openStream();
+            file = new File(TARGET_PDF_DIR, "PDFBOX-3656.pdf");
             
-            pdfDocument = PDDocument.load(is);
+            pdfDocument = PDDocument.load(file);
             
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("Checking/Savings");
             radioButton.setValue("Off");
@@ -158,15 +157,14 @@ public class PDButtonTest
      */
     public void testOptionsAndNamesNotNumbers()
     {
-        URL url;
+        File file;
         PDDocument pdfDocument = null;
         
         try
         {
-            url = new URL("https://issues.apache.org/jira/secure/attachment/12852207/test.pdf");
-            InputStream is = url.openStream();
-            
-            pdfDocument = PDDocument.load(is);
+            file = new File(TARGET_PDF_DIR, "PDFBOX-3682.pdf");
+
+            pdfDocument = PDDocument.load(file);
             
             pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton").setValue("c");
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton");
