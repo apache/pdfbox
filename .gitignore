@@ -4,3 +4,4 @@ bin/
 .classpath
 .project
 .idea/
+*.iml
