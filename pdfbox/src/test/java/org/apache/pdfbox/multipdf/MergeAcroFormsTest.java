@@ -22,6 +22,7 @@ import static org.junit.Assert.assertNull;
 
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -45,6 +46,7 @@ public class MergeAcroFormsTest
 {
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
     private static final File OUT_DIR = new File("target/test-output/merge/");
+    private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
     @Before
     public void setUp()
@@ -125,16 +127,16 @@ public class MergeAcroFormsTest
      */
     @Test
     public void testAnnotsEntry() throws IOException {
-        
+
         // Merge the PDFs form PDFBOX-1031
         PDFMergerUtility merger = new PDFMergerUtility();
-        
-        URL url1 = new URL("https://issues.apache.org/jira/secure/attachment/12481683/1.pdf");
-        URL url2 = new URL("https://issues.apache.org/jira/secure/attachment/12481684/2.pdf");
+
+        File f1 = new File(TARGET_PDF_DIR, "PDFBOX-1031-1.pdf");
+        File f2 = new File(TARGET_PDF_DIR, "PDFBOX-1031-2.pdf");
         File pdfOutput = new File(OUT_DIR,"PDFBOX-1031.pdf");
 
-        try (InputStream is1 = url1.openStream();
-                InputStream is2 = url2.openStream())
+        try (InputStream is1 = new FileInputStream(f1);
+             InputStream is2 = new FileInputStream(f2))
         {
             
             merger.setDestinationFileName(pdfOutput.getAbsolutePath());
@@ -161,16 +163,16 @@ public class MergeAcroFormsTest
      */
     @Test
     public void testAPEntry() throws IOException {
-        
+
+        File file1 = new File(TARGET_PDF_DIR, "PDFBOX-1100-1.pdf");
+        File file2 = new File(TARGET_PDF_DIR, "PDFBOX-1100-2.pdf");
         // Merge the PDFs form PDFBOX-1100
         PDFMergerUtility merger = new PDFMergerUtility();
         
-        URL url1 = new URL("https://issues.apache.org/jira/secure/attachment/12490774/a.pdf");
-        URL url2 = new URL("https://issues.apache.org/jira/secure/attachment/12490775/b.pdf");
         File pdfOutput = new File(OUT_DIR,"PDFBOX-1100.pdf");
 
-        try (InputStream is1 = url1.openStream();
-                InputStream is2 = url2.openStream())
+        try (InputStream is1 = new FileInputStream(file1);
+                InputStream is2 = new FileInputStream(file2))
         {
             merger.setDestinationFileName(pdfOutput.getAbsolutePath());
             merger.addSource(is1);

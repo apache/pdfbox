@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -47,7 +48,8 @@ public class PDButtonTest
     
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     private static final String NAME_OF_PDF = "AcroFormsBasicFields.pdf";
-    
+    private static final File TARGET_PDF_DIR = new File("target/pdfs");
+
     private PDDocument document;
     private PDAcroForm acroForm;
 
@@ -110,10 +112,10 @@ public class PDButtonTest
      */
     public void testRadioButtonWithOptions() throws MalformedURLException
     {
-        URL url = new URL("https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf");
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-3656.pdf");
         
-        try (InputStream is = url.openStream();
-            PDDocument pdfDocument = PDDocument.load(is))
+        try (InputStream is = new FileInputStream(file);
+             PDDocument pdfDocument = PDDocument.load(is))
         {   
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("Checking/Savings");
             radioButton.setValue("Off");
@@ -141,9 +143,8 @@ public class PDButtonTest
      */
     public void testOptionsAndNamesNotNumbers() throws MalformedURLException
     {
-        URL url = new URL("https://issues.apache.org/jira/secure/attachment/12852207/test.pdf");
-        
-        try (InputStream is = url.openStream();
+        File file = new File(TARGET_PDF_DIR, "PDFBOX-3682.pdf");
+        try (InputStream is = new FileInputStream(file);
                 PDDocument pdfDocument = PDDocument.load(is))
         {            
             pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton").setValue("c");
