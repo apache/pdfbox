@@ -39,7 +39,9 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -90,11 +92,55 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     /**
      * Creates a new ICC color space using the PDF array.
      *
-     * @param iccArray the ICC stream object
-     * @throws IOException if there is an error reading the ICC profile or if the parameter
-     * is invalid.
+     * @param iccArray the ICC stream object.
+     * @throws IOException if there is an error reading the ICC profile or if the parameter is
+     * invalid.
      */
-    public PDICCBased(COSArray iccArray) throws IOException
+    private PDICCBased(COSArray iccArray) throws IOException
+    {
+        checkArray(iccArray);
+        useOnlyAlternateColorSpace = System
+                .getProperty("org.apache.pdfbox.rendering.UseAlternateInsteadOfICCColorSpace") != null;
+        array = iccArray;
+        stream = new PDStream((COSStream) iccArray.getObject(1));
+        loadICCProfile();
+    }
+
+    /**
+     * Creates a new ICC color space using the PDF array, optionally using a resource cache.
+     *
+     * @param iccArray the ICC stream object.
+     * @param resources resources to use as cache, or null for no caching.
+     * @return an ICC color space.
+     * @throws IOException if there is an error reading the ICC profile or if the parameter is
+     * invalid.
+     */
+    public static PDICCBased create(COSArray iccArray, PDResources resources) throws IOException
+    {
+        checkArray(iccArray);
+        COSBase base = iccArray.get(1);
+        COSObject indirect = null;
+        if (base instanceof COSObject)
+        {
+            indirect = (COSObject) base;
+        }
+        if (indirect != null && resources != null && resources.getResourceCache() != null)
+        {
+            PDColorSpace space = resources.getResourceCache().getColorSpace(indirect);
+            if (space != null && space instanceof PDICCBased)
+            {
+                return (PDICCBased) space;
+            }
+        }
+        PDICCBased space = new PDICCBased(iccArray);
+        if (indirect != null && resources != null && resources.getResourceCache() != null)
+        {
+            resources.getResourceCache().put(indirect, space);
+        }
+        return space;
+    }
+
+    private static void checkArray(COSArray iccArray) throws IOException
     {
         if (iccArray.size() < 2)
         {
@@ -104,11 +150,6 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         {
             throw new IOException("ICCBased colorspace array must have a stream as second element");
         }
-        useOnlyAlternateColorSpace = System
-                .getProperty("org.apache.pdfbox.rendering.UseAlternateInsteadOfICCColorSpace") != null;
-        array = iccArray;
-        stream = new PDStream((COSStream) iccArray.getObject(1));
-        loadICCProfile();
     }
 
     @Override
