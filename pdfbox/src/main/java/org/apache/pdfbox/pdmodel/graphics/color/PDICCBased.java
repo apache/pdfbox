@@ -98,7 +98,6 @@ public final class PDICCBased extends PDCIEBasedColorSpace
      */
     private PDICCBased(COSArray iccArray) throws IOException
     {
-        checkArray(iccArray);
         useOnlyAlternateColorSpace = System
                 .getProperty("org.apache.pdfbox.rendering.UseAlternateInsteadOfICCColorSpace") != null;
         array = iccArray;
