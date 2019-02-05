@@ -185,6 +185,84 @@
                 <artifactId>download-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>PDFBOX-1031-1</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12481683/1.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-1031-1.pdf</outputFileName>
+                            <sha512>f943df43cc2a6929caa484c79eafa44b06a5902e325139e19e1f1ebda7c5fd0c86cc221311659d68351c0ff56d921350ff61e97b9d2c425180d810842c963a5b</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-1031-2</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12481684/2.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-1031-2.pdf</outputFileName>
+                            <sha512>8a9e836ad77c3e9e1e75476f4b46ff4b8958c099970bf57a0b4789fd37236b2bed7e1f14909fa0e3bbacf1a867c1a5c56cbe293383275c1b9c6c0396bec51085</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-1065-1</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12486525/1_testfile1.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-1065-1.pdf</outputFileName>
+                            <sha512>6b44f363653a9c0cba049495d0ed67659f98b2622b25d647ae556dc4a708847f6c3e4428aa5de2fa0d67f5e8ba08183abf9e8e640e474c6b00c544782e3bba3e</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-1065-2</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12486526/2_testfile1.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-1065-2.pdf</outputFileName>
+                            <sha512>3b19a2a4c35fbacb36774553bedc0b3f2caf60d96aa021a9151d1f18a248577f13229f101ed7ed4375f36b9f481c0488ceb5ac00e4669d6802cd7cee1b0b4ad7</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-1100-1</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12490774/a.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-1100-1.pdf</outputFileName>
+                            <sha512>9e59c8eb5cde5823a78e8e773bab393ab52eb5ac3f3a576b5d665d0267dca9c677abe08bb3b503a8ebf43479b4e6f61725ad85affd95803e12009c0b1919111a</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-1100-2</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12490775/b.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-1100-2.pdf</outputFileName>
+                            <sha512>f55ec23a9b7350410eef95e6bd6de3c3605fa3dc2e9f9c28dfd2f6007bd693da252787350ad6d1d49570ee07fbbfcaba1f8638c1d7e63d4a8875f44c39867e6f</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>PDFBOX-3208</id>
                         <phase>generate-test-resources</phase>
                         <goals>
@@ -194,6 +272,32 @@
                             <url>https://issues.apache.org/jira/secure/attachment/12784025/PDFBOX-3208-L33MUTT2SVCWGCS6UIYL5TH3PNPXHIS6.pdf</url>
                             <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
                             <sha512>5aa19dff76b980ad43c873b7a47f089b3914468e0eaca320d67e18cbfa121c99b9e65bfb86d1b106b034bc6e6833f79c54b3d0c064695f5eac5a2797da687ef2</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-3656</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-3656.pdf</outputFileName>
+                            <sha512>031d958a84cbd9eb520e5af308f635b37c48b77f7df4e43ecbcdabd04f4ba8574fac71b62548594b0f26e9e4e7fa3c1c7679d66c2a8e4bf141157fb6e50df97d</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-3682</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12852207/test.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-3682.pdf</outputFileName>
+                            <sha512>b57628fc15898c1fbd5947c93659aa40b34071a2e8cf04e46ff787cb01687668456e59a13c3fba8b56ab0ef76c933408b3b0f3a781990bfd475cd8fa4325d730</sha512>
                         </configuration>
                     </execution>
                     <execution>
