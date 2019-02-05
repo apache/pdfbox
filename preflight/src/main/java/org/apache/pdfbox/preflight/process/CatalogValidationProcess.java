@@ -465,7 +465,7 @@ public class CatalogValidationProcess extends AbstractProcess
         COSArray array = new COSArray();
         array.add(COSName.ICCBASED);
         array.add(stream);
-        PDICCBased iccBased = new PDICCBased(array);
+        PDICCBased iccBased = PDICCBased.create(array, null);
         PDColorSpace altCS = iccBased.getAlternateColorSpace();
         if (altCS != null && altCS.getNumberOfComponents() != iccBased.getNumberOfComponents())
         {
