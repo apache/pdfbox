@@ -273,10 +273,10 @@ final class FileSystemFontProvider extends FontProvider
     private File getDiskCacheFile()
     {
         String path = System.getProperty("pdfbox.fontcache");
-        if (path == null)
+        if (path == null || !new File(path).isDirectory() || !new File(path).canWrite())
         {
             path = System.getProperty("user.home");
-            if (path == null)
+            if (path == null || !new File(path).isDirectory() || !new File(path).canWrite())
             {
                 path = System.getProperty("java.io.tmpdir");
             }
