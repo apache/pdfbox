@@ -158,15 +158,20 @@ public final class PrintPDF
 
             if (printerName != null)
             {
-                PrintService[] printService = PrinterJob.lookupPrintServices();
+                PrintService[] printServices = PrinterJob.lookupPrintServices();
                 boolean printerFound = false;
-                for (int i = 0; !printerFound && i < printService.length; i++)
+                for (int i = 0; !printerFound && i < printServices.length; i++)
                 {
-                    if (printService[i].getName().contains(printerName))
+                    if (printServices[i].getName().equals(printerName))
                     {
-                        printJob.setPrintService(printService[i]);
+                        printJob.setPrintService(printServices[i]);
                         printerFound = true;
                     }
+                }
+                if (!printerFound)
+                {
+                    System.err.println("printer '" + printerName + "' not found, using default");
+                    showAvailablePrinters();
                 }
             }
             PDFPageable pageable = new PDFPageable(document, orientation, showPageBorder, dpi);
@@ -209,8 +214,18 @@ public final class PrintPDF
                 + "  -noColorOpt                          : Disable color optimizations\n"
                 + "                                           (useful when printing barcodes)\n"
                 + "  -silentPrint                         : Print without printer dialog box\n";
-        
         System.err.println(message);
+        showAvailablePrinters();
         System.exit(1);
+    }
+
+    private static void showAvailablePrinters()
+    {
+        System.err.println("Available printer names:");
+        PrintService[] printServices = PrinterJob.lookupPrintServices();
+        for (PrintService printService : printServices)
+        {
+            System.err.println("    " + printService.getName());
+        }
     }
 }
