@@ -262,7 +262,7 @@ public class PDNonTerminalField extends PDField
     @Override
     public List<PDAnnotationWidget> getWidgets()
     {
-        //TODO shouldn't we return a non modifiable list?
-        return Collections.emptyList();
+        List<PDAnnotationWidget> emptyList = Collections.emptyList();
+        return Collections.unmodifiableList(emptyList);
     }
 }
