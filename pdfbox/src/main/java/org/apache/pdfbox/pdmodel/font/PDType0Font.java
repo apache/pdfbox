@@ -150,7 +150,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     * Loads a TTF to be embedded into a document as a Type 0 font.
     *
     * @param doc The PDF document that will hold the embedded font.
-    * @param input A TrueType font.
+    * @param input An input stream of a TrueType font. It will be closed before returning.
     * @return A Type0 font with a CIDFontType2 descendant.
     * @throws IOException If there is an error reading the font stream.
     */
@@ -163,7 +163,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
      * Loads a TTF to be embedded into a document as a Type 0 font.
      *
      * @param doc The PDF document that will hold the embedded font.
-     * @param input A TrueType font.
+     * @param input An input stream of a TrueType font. It will be closed before returning.
      * @param embedSubset True if the font will be subset before embedding
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
