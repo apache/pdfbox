@@ -345,7 +345,8 @@ public class PDCIDFontType2 extends PDCIDFont
             // otherwise we require an explicit ToUnicode CMap
             if (cid == -1)
             {
-                // todo: invert the ToUnicode CMap?
+                //TODO: invert the ToUnicode CMap?
+                // see also PDFBOX-4233
                 cid = 0;
             }
         }
