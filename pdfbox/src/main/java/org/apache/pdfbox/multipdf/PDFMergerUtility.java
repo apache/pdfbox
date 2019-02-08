@@ -95,6 +95,7 @@ public class PDFMergerUtility
     private PDMetadata destinationMetadata = null;
 
     private DocumentMergeMode documentMergeMode = DocumentMergeMode.PDFBOX_LEGACY_MODE;
+    private AcroFormMergeMode acroFormMergeMode = AcroFormMergeMode.PDFBOX_LEGACY_MODE;
 
     /**
      * The mode to use when merging documents:
@@ -117,12 +118,42 @@ public class PDFMergerUtility
         PDFBOX_LEGACY_MODE
     }
 
+        /**
+     * The mode to use when merging AcroForm between documents:
+     * 
+     * <ul>
+     * <li>{@link AcroFormMergeMode#JOIN_FORM_FIELDS_MODE} fields with the same fully qualified name
+     *      will be merged into one with the widget annotations of the merged fields 
+     *      becoming part of the same field.
+     * <li>{@link AcroFormMergeMode#PDFBOX_LEGACY_MODE} fields with the same fully qualified name
+     *      will be renamed and treated as independent. This mode was used in versions
+     *      of PDFBox up to 2.x.
+     * </ul>
+     */
+    public enum AcroFormMergeMode
+    {
+        JOIN_FORM_FIELDS_MODE,
+        PDFBOX_LEGACY_MODE
+    }
+
     /**
      * Instantiate a new PDFMergerUtility.
      */
     public PDFMergerUtility()
     {
         sources = new ArrayList<Object>();
+    }
+
+
+
+    /**
+     * Set the mode to be used for merging the documents
+     * 
+     * {@link AcroFormMergeMode}
+     */
+    public void setAcroFormMergeMode(AcroFormMergeMode theAcroFormMergeMode)
+    {
+        this.acroFormMergeMode = theAcroFormMergeMode;
     }
 
     /**
