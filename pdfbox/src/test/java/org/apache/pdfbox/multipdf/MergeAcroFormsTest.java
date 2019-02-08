@@ -17,6 +17,7 @@
 package org.apache.pdfbox.multipdf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -24,8 +25,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.multipdf.PDFMergerUtility.AcroFormMergeMode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
@@ -34,11 +38,12 @@ import org.junit.Test;
 
 /**
  * Test merging different PDFs with AcroForms.
- * 
- * 
+ *
+ *
  */
 public class MergeAcroFormsTest
 {
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
     private static final File OUT_DIR = new File("target/test-output/merge/");
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
@@ -47,7 +52,86 @@ public class MergeAcroFormsTest
     {
         OUT_DIR.mkdirs();
     }
-    
+
+    /*
+     * Test LegacyMode merge
+     */
+    @Test
+    public void testLegacyModeMerge() throws IOException
+    {
+        PDFMergerUtility merger = new PDFMergerUtility();
+        File toBeMerged = new File(IN_DIR,"AcroFormForMerge.pdf");
+        File pdfOutput = new File(OUT_DIR,"PDFBoxLegacyMerge-SameMerged.pdf");
+        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+        merger.addSource(toBeMerged);
+        merger.addSource(toBeMerged);
+        merger.mergeDocuments(null);
+        merger.setAcroFormMergeMode(AcroFormMergeMode.PDFBOX_LEGACY_MODE);
+
+        PDDocument compliantDocument = null;
+        PDDocument toBeCompared = null;
+
+
+        try
+        {
+            compliantDocument = PDDocument.load(new File(IN_DIR,"PDFBoxLegacyMerge-SameMerged.pdf"));
+            toBeCompared = PDDocument.load(new File(OUT_DIR,"PDFBoxLegacyMerge-SameMerged.pdf"));
+
+
+            PDAcroForm compliantAcroForm = compliantDocument.getDocumentCatalog().getAcroForm();
+            PDAcroForm toBeComparedAcroForm = toBeCompared.getDocumentCatalog().getAcroForm();
+
+            assertEquals("There shall be the same number of root fields",
+                    compliantAcroForm.getFields().size(),
+                    toBeComparedAcroForm.getFields().size());
+
+            for (PDField compliantField : compliantAcroForm.getFieldTree())
+            {
+                assertNotNull("There shall be a field with the same FQN", toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName()));
+                PDField toBeComparedField = toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName());
+                compareFieldProperties(compliantField, toBeComparedField);
+            }
+
+            for (PDField toBeComparedField : toBeComparedAcroForm.getFieldTree())
+            {
+                assertNotNull("There shall be a field with the same FQN", compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName()));
+                PDField compliantField = compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName());
+                compareFieldProperties(toBeComparedField, compliantField);
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(compliantDocument);
+            IOUtils.closeQuietly(toBeCompared);
+        }
+    }
+
+    private void compareFieldProperties(PDField sourceField, PDField toBeComapredField)
+    {
+        // List of keys for comparison
+        // Don't include too complex properties such as AP as this will fail the test because
+        // of a stack overflow when
+        final String[] keys = {"FT", "T", "TU", "TM", "Ff", "V", "DV", "Opts", "TI", "I", "Rect", "DA", };
+
+        COSDictionary sourceFieldCos = sourceField.getCOSObject();
+        COSDictionary toBeComparedCos = toBeComapredField.getCOSObject();
+
+        for (String key : keys)
+        {
+            COSBase sourceBase = sourceFieldCos.getDictionaryObject(key);
+            COSBase toBeComparedBase = toBeComparedCos.getDictionaryObject(key);
+
+            if (sourceBase != null)
+            {
+                assertEquals("The content of the field properties shall be the same",sourceBase.toString(), toBeComparedBase.toString());
+            }
+            else
+            {
+                assertNull("If the source property is null the compared property shall be null too", toBeComparedBase);
+            }
+        }
+    }    
+
     /*
      * PDFBOX-1031 Ensure that after merging the PDFs there is an Annots entry per page.
      */
@@ -87,7 +171,7 @@ public class MergeAcroFormsTest
             IOUtils.closeQuietly(s2);
         }
     }
-    
+
     /*
      * PDFBOX-1100 Ensure that after merging the PDFs there is an AP and V entry.
      */
