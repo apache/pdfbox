@@ -27,13 +27,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.List;
 
@@ -61,6 +60,10 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDSignatureField;
 import org.apache.pdfbox.util.Hex;
 import org.apache.pdfbox.util.Matrix;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
 
 /**
  * This is a second example for visual signing a pdf. It doesn't use the "design pattern" influenced
@@ -241,7 +244,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
         // register signature dictionary and sign interface
         signatureOptions = new SignatureOptions();
-        signatureOptions.setVisualSignature(createVisualSignatureTemplate(doc, 0, rect));
+        signatureOptions.setVisualSignature(createVisualSignatureTemplate(doc, 0, rect, signature));
         signatureOptions.setPage(0);
         doc.addSignature(signature, signatureInterface, signatureOptions);
 
@@ -338,7 +341,8 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
     }
 
     // create a template PDF document with empty signature and return it as a stream.
-    private InputStream createVisualSignatureTemplate(PDDocument srcDoc, int pageNum, PDRectangle rect) throws IOException
+    private InputStream createVisualSignatureTemplate(PDDocument srcDoc, int pageNum,
+            PDRectangle rect, PDSignature signature) throws IOException
     {
         PDDocument doc = new PDDocument();
 
@@ -425,11 +429,25 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         cs.setNonStrokingColor(Color.black);
         cs.newLineAtOffset(fontSize, height - leading);
         cs.setLeading(leading);
-        cs.showText("(Signature very wide line 1)");
+
+        X509Certificate cert = (X509Certificate) getCertificateChain()[0];
+
+        // https://stackoverflow.com/questions/2914521/
+        X500Name x500Name = new X500Name(cert.getSubjectX500Principal().getName());
+        RDN cn = x500Name.getRDNs(BCStyle.CN)[0];
+        String name = IETFUtils.valueToString(cn.getFirst().getValue());
+
+        // See https://stackoverflow.com/questions/12575990
+        // for better date formatting
+        String date = signature.getSignDate().getTime().toString();
+        String reason = signature.getReason();
+
+        cs.showText("Signer: " + name);
         cs.newLine();
-        cs.showText("(Signature very wide line 2)");
+        cs.showText(date);
         cs.newLine();
-        cs.showText("(Signature very wide line 3)");
+        cs.showText("Reason: " + reason);
+
         cs.endText();
 
         cs.close();
