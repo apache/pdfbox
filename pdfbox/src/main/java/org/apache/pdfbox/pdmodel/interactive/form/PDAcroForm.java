@@ -265,8 +265,17 @@ public final class PDAcroForm implements COSObjectable
     public void flatten(List<PDField> fields, boolean refreshAppearances) throws IOException
     {
         // Nothing to flatten if there are no fields provided
-        if (fields.isEmpty()) {
+        if (fields.isEmpty())
+        {
             return;
+        }
+        
+        if (!refreshAppearances && getNeedAppearances())
+        {
+            LOG.warn("acroForm.getNeedAppearances() returns true, " +
+                     "visual field appearances may not have been set");
+            LOG.warn("call acroForm.refreshAppearances() or " +
+                     "use the flatten() method with refreshAppearances parameter");
         }
         
         // for dynamic XFA forms there is no flatten as this would mean to do a rendering
