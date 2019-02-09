@@ -118,7 +118,7 @@ public class PDFMergerUtility
         PDFBOX_LEGACY_MODE
     }
 
-        /**
+    /**
      * The mode to use when merging AcroForm between documents:
      * 
      * <ul>
@@ -145,9 +145,18 @@ public class PDFMergerUtility
     }
 
 
+    /**
+     * Get the merge mode to be used for merging AcroForms between documents
+     * 
+     * {@link AcroFormMergeMode}
+     */
+    public AcroFormMergeMode getAcroFormMergeMode()
+    {
+        return acroFormMergeMode;
+    }
 
     /**
-     * Set the mode to be used for merging the documents
+     * Set the merge mode to be used for merging AcroForms between documents
      * 
      * {@link AcroFormMergeMode}
      */
