@@ -1241,7 +1241,7 @@ public class PDFMergerUtility
     }
 
     /**
-     * Get the mode to be used for merging AcroForms
+     * Get the merge mode to be used for merging AcroForms between documents
      * 
      * {@link AcroFormMergeMode}
      */
@@ -1251,7 +1251,7 @@ public class PDFMergerUtility
     }
     
     /**
-     * Set the mode to be used for merging AcroForms
+     * Set the merge mode to be used for merging AcroForms between documents
      * 
      * {@link AcroFormMergeMode}
      */
