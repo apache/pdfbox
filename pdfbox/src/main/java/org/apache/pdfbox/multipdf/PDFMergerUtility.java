@@ -548,34 +548,7 @@ public class PDFMergerUtility
         }
 
         PDFCloneUtility cloner = new PDFCloneUtility(destination);
-
-        try
-        {
-            PDAcroForm destAcroForm = destCatalog.getAcroForm();
-            PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
-            
-            if (destAcroForm == null && srcAcroForm != null)
-            {
-                destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
-                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));     
-                
-            }
-            else
-            {
-                if (srcAcroForm != null)
-                {
-                    mergeAcroForm(cloner, destAcroForm, srcAcroForm);
-                }
-            }
-        }
-        catch (IOException e)
-        {
-            // if we are not ignoring exceptions, we'll re-throw this
-            if (!ignoreAcroFormErrors)
-            {
-                throw new IOException(e);
-            }
-        }
+        mergeAcroForm(cloner, destCatalog, srcCatalog);
 
         COSArray destThreads = (COSArray) destCatalog.getCOSObject().getDictionaryObject(COSName.THREADS);
         COSArray srcThreads = (COSArray) cloner.cloneForNewDocument(destCatalog.getCOSObject().getDictionaryObject(
@@ -1143,8 +1116,6 @@ public class PDFMergerUtility
         }
     }
 
-    private int nextFieldNum = 1;
-
     /**
      * Merge the contents of the source form into the destination form for the
      * destination file.
@@ -1154,7 +1125,70 @@ public class PDFMergerUtility
      * @param srcAcroForm the source form
      * @throws IOException If an error occurs while adding the field.
      */
-    private void mergeAcroForm(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
+    private void mergeAcroForm(PDFCloneUtility cloner, PDDocumentCatalog destCatalog,
+            PDDocumentCatalog srcCatalog ) throws IOException
+    {
+        try
+        {
+            PDAcroForm destAcroForm = destCatalog.getAcroForm();
+            PDAcroForm srcAcroForm = srcCatalog.getAcroForm();
+            
+            if (destAcroForm == null && srcAcroForm != null)
+            {
+                destCatalog.getCOSObject().setItem(COSName.ACRO_FORM,
+                        cloner.cloneForNewDocument(srcAcroForm.getCOSObject()));       
+                
+            }
+            else
+            {
+                if (srcAcroForm != null)
+                {
+                    if (acroFormMergeMode == AcroFormMergeMode.PDFBOX_LEGACY_MODE)
+                    {
+                        acroFormLegacyMode(cloner, destAcroForm, srcAcroForm);
+                    }
+                    else if (acroFormMergeMode == AcroFormMergeMode.JOIN_FORM_FIELDS_MODE)
+                    {
+                        acroFormJoinFieldsMode(cloner, destAcroForm, srcAcroForm);
+                    }
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            // if we are not ignoring exceptions, we'll re-throw this
+            if (!ignoreAcroFormErrors)
+            {
+                throw new IOException(e);
+            }
+        }
+    }
+
+    /*
+     * Merge the contents of the source form into the destination form for the
+     * destination file.
+     *
+     * @param cloner the object cloner for the destination document
+     * @param destAcroForm the destination form
+     * @param srcAcroForm the source form
+     * @throws IOException If an error occurs while adding the field.
+     */
+    private void acroFormJoinFieldsMode(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
+            throws IOException
+    {
+        acroFormLegacyMode(cloner, destAcroForm, srcAcroForm);
+    }
+
+    /*
+     * Merge the contents of the source form into the destination form for the
+     * destination file.
+     *
+     * @param cloner the object cloner for the destination document
+     * @param destAcroForm the destination form
+     * @param srcAcroForm the source form
+     * @throws IOException If an error occurs while adding the field.
+     */
+    private void acroFormLegacyMode(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {
         List<PDField> srcFields = srcAcroForm.getFields();
@@ -1203,6 +1237,8 @@ public class PDFMergerUtility
             destAcroForm.getCOSObject().setItem(COSName.FIELDS,destFields);
         }
     }
+
+    private int nextFieldNum = 1;
 
     /**
      * Indicates if acroform errors are ignored or not.
