@@ -106,6 +106,60 @@ public class MergeAcroFormsTest
         }
     }
 
+    /*
+     * Test Join Field Merge for text fields only and same source documents
+     */
+    @Test
+    public void testJoinFieldsMerge_TextFieldsOnly_SameMerged() throws IOException
+    {
+        PDFMergerUtility merger = new PDFMergerUtility();
+        File toBeMerged = new File(IN_DIR,"AcroFormForMerge-TextFieldsOnly.pdf");
+        File pdfOutput = new File(OUT_DIR,"PDFBoxJoinFieldsMerge-TextFieldsOnly-SameMerged.pdf");
+        merger.setDestinationFileName(pdfOutput.getAbsolutePath());
+        merger.addSource(toBeMerged);
+        merger.addSource(toBeMerged);
+        merger.setAcroFormMergeMode(AcroFormMergeMode.JOIN_FORM_FIELDS_MODE);
+        merger.mergeDocuments(null);
+
+        PDDocument compliantDocument = null;
+        PDDocument toBeCompared = null;
+
+
+        try
+        {
+            compliantDocument = PDDocument.load(new File(IN_DIR,"AcrobatMerge-TextFieldsOnly-SameMerged.pdf"));
+            toBeCompared = PDDocument.load(new File(OUT_DIR,"PDFBoxJoinFieldsMerge-TextFieldsOnly-SameMerged.pdf"));
+
+
+            PDAcroForm compliantAcroForm = compliantDocument.getDocumentCatalog().getAcroForm();
+            PDAcroForm toBeComparedAcroForm = toBeCompared.getDocumentCatalog().getAcroForm();
+
+            assertEquals("There shall be the same number of root fields",
+                    compliantAcroForm.getFields().size(),
+                    toBeComparedAcroForm.getFields().size());
+
+            for (PDField compliantField : compliantAcroForm.getFieldTree())
+            {
+                assertNotNull("There shall be a field with the same FQN", toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName()));
+                PDField toBeComparedField = toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName());
+                compareFieldProperties(compliantField, toBeComparedField);
+            }
+
+            for (PDField toBeComparedField : toBeComparedAcroForm.getFieldTree())
+            {
+                assertNotNull("There shall be a field with the same FQN", compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName()));
+                PDField compliantField = compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName());
+                compareFieldProperties(toBeComparedField, compliantField);
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(compliantDocument);
+            IOUtils.closeQuietly(toBeCompared);
+        }
+    }
+
+
     private void compareFieldProperties(PDField sourceField, PDField toBeComapredField)
     {
         // List of keys for comparison

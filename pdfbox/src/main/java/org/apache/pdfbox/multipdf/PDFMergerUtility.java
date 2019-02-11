@@ -66,12 +66,14 @@ import org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure.PDStructur
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDNonTerminalField;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 
 /**
@@ -124,7 +126,10 @@ public class PDFMergerUtility
      * <ul>
      * <li>{@link AcroFormMergeMode#JOIN_FORM_FIELDS_MODE} fields with the same fully qualified name
      *      will be merged into one with the widget annotations of the merged fields 
-     *      becoming part of the same field.
+     *      becoming part of the same field.<br>
+     *      <strong>Although the API is finalized processing of different form field types is still in
+     *      development.</strong> Currently only (nested) text fields do work with intermediate nodes
+     *      being existent.
      * <li>{@link AcroFormMergeMode#PDFBOX_LEGACY_MODE} fields with the same fully qualified name
      *      will be renamed and treated as independent. This mode was used in versions
      *      of PDFBox up to 2.x.
@@ -1176,7 +1181,136 @@ public class PDFMergerUtility
     private void acroFormJoinFieldsMode(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {
-        acroFormLegacyMode(cloner, destAcroForm, srcAcroForm);
+        List<PDField> srcFields = srcAcroForm.getFields();
+        COSArray destFields;
+
+        if (srcFields != null && !srcFields.isEmpty())
+        {           
+            // get the destinations root fields. Could be that the entry doesn't exist
+            // or is of wrong type
+            COSBase base = destAcroForm.getCOSObject().getItem(COSName.FIELDS);
+            if (base instanceof COSArray)
+            {
+                destFields = (COSArray) base;
+            }
+            else
+            {
+                destFields = new COSArray();
+            }
+            
+            for (PDField srcField : srcAcroForm.getFieldTree())
+            {
+                // if the form already has a field with this name then we need to rename this field
+                // to prevent merge conflicts.
+                PDField destinationField = destAcroForm.getField(srcField.getFullyQualifiedName());
+                if (destinationField == null)
+                {
+                    // field doesn't exist - can savely add it
+                    COSDictionary importedField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
+                    destFields.add(importedField);
+                }
+                else
+                {
+                    mergeFields(cloner, destinationField, srcField);
+                }
+            }
+            destAcroForm.getCOSObject().setItem(COSName.FIELDS,destFields);
+        }
+    }
+
+    private void mergeFields(PDFCloneUtility cloner, PDField destField, PDField srcField)
+    {
+        if (destField instanceof PDNonTerminalField && srcField instanceof PDNonTerminalField)
+        {
+            LOG.info("Skipping non terminal field " + srcField.getFullyQualifiedName());
+            return;
+        }
+
+        if (destField.getFieldType() == "Tx" && destField.getFieldType() == "Tx")
+        {
+            // if the field already has multiple widgets we can add to the array
+            if (destField.getCOSObject().containsKey(COSName.KIDS))
+            {
+                COSArray widgets = destField.getCOSObject().getCOSArray(COSName.KIDS);
+                for (PDAnnotationWidget srcWidget : srcField.getWidgets())
+                {
+                    try
+                    {
+                        widgets.add(cloner.cloneForNewDocument(srcWidget.getCOSObject()));
+                    }
+                    catch (IOException ioe)
+                    {
+                        LOG.warn("Unable to clone widget for source field " + srcField.getFullyQualifiedName());
+                    }
+                    
+                }
+            }
+            else
+            {
+                COSArray widgets = new COSArray();
+                try 
+                {
+                    COSDictionary widgetAsCOS = (COSDictionary) cloner.cloneForNewDocument(destField.getWidgets().get(0));
+                    cleanupWidgetCOSDictionary(widgetAsCOS, true);
+                    widgetAsCOS.setItem(COSName.PARENT, destField);
+                    widgets.add(widgetAsCOS);
+                    for (PDAnnotationWidget srcWidget : srcField.getWidgets())
+                    {
+                        try
+                        {
+                            widgetAsCOS = (COSDictionary) cloner.cloneForNewDocument(srcWidget.getCOSObject());
+                            cleanupWidgetCOSDictionary(widgetAsCOS, false);
+                            widgetAsCOS.setItem(COSName.PARENT, destField);
+                            widgets.add(widgetAsCOS);
+                        }
+                        catch (IOException ioe)
+                        {
+                            LOG.warn("Unable to clone widget for source field " + srcField.getFullyQualifiedName());
+                        }
+                        
+                    }
+                    destField.getCOSObject().setItem(COSName.KIDS, widgets);
+                    cleanupFieldCOSDictionary(destField.getCOSObject());
+                }
+                catch (IOException ioe)
+                {
+                    LOG.warn("Unable to clone widget for destination field " + destField.getFullyQualifiedName());
+                }
+            }
+        }
+        else
+        {
+            LOG.info("Only merging two text fields is currently supported");
+            LOG.info("Skipping merging of " + srcField.getFullyQualifiedName() + " into " + destField.getFullyQualifiedName());
+        }
+    }
+
+    // Remove entries from field dictionary which belong to a widget
+    // Needed when splitting a joint field/widget dictionary
+    private void cleanupFieldCOSDictionary(COSDictionary fieldCos)
+    {
+        //TODO: align that list with the PDF spec. Vurrently only based on sample forms
+        fieldCos.removeItem(COSName.F);
+        fieldCos.removeItem(COSName.MK);
+        fieldCos.removeItem(COSName.P);
+        fieldCos.removeItem(COSName.RECT);
+        fieldCos.removeItem(COSName.SUBTYPE);
+        fieldCos.removeItem(COSName.TYPE);
+    }
+
+    // remove entries from widget dictionary which belong to fields
+    // Needed when splitting a joint field/widget dictionary
+    private void cleanupWidgetCOSDictionary(COSDictionary widgetCos, boolean removeDAEntry)
+    {
+        //TODO: align that list with the PDF spec. Vurrently only based on sample forms
+        // Acrobat removes the DA entry only for the first widget
+        if (removeDAEntry)
+        {
+            widgetCos.removeItem(COSName.DA);
+        }
+        widgetCos.removeItem(COSName.FT);
+        widgetCos.removeItem(COSName.T);
+        widgetCos.removeItem(COSName.V);
     }
 
     /*
