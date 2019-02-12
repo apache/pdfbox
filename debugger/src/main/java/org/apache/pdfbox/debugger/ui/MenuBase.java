@@ -31,7 +31,7 @@ abstract class MenuBase
 {
     private JMenu menu = null;
 
-    protected void setMenu(JMenu menu)
+    final void setMenu(JMenu menu)
     {
         this.menu = menu;
     }
