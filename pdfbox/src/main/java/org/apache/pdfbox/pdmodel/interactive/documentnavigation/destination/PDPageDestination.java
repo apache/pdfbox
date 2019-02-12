@@ -165,18 +165,27 @@ public abstract class PDPageDestination extends PDDestination
             }
             else if (page instanceof COSDictionary)
             {
-                //TODO make this a static utility method of PDPageTree?
-                COSBase parent = page;
-                while (((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P) != null)
-                {
-                    parent = ((COSDictionary) parent).getDictionaryObject(COSName.PARENT, COSName.P);
-                }
-                // now parent is the pages node
-                PDPageTree pages = new PDPageTree((COSDictionary) parent);
-                return pages.indexOf(new PDPage((COSDictionary) page));
+                return indexOfPageTree((COSDictionary) page);
             }
         }
         return retval;
+    }
+
+    // climb up the page tree up to the top to be able to call PageTree.indexOf for a page dictionary
+    private int indexOfPageTree(COSDictionary pageDict)
+    {
+        COSDictionary parent = pageDict;
+        while (parent.getDictionaryObject(COSName.PARENT, COSName.P) instanceof COSDictionary)
+        {
+            parent = (COSDictionary) parent.getDictionaryObject(COSName.PARENT, COSName.P);
+        }
+        if (parent.containsKey(COSName.KIDS) && COSName.PAGES.equals(parent.getItem(COSName.TYPE)))
+        {
+            // now parent is the highest pages node
+            PDPageTree pages = new PDPageTree(parent);
+            return pages.indexOf(new PDPage(pageDict));
+        }
+        return -1;
     }
 
     /**
