@@ -48,19 +48,19 @@ import org.apache.pdfbox.util.Matrix;
  */
 final class DebugTextOverlay
 {
-    private PDDocument document;
-    private int pageIndex;
-    private float scale;
-    private boolean showTextStripper;
-    private boolean showTextStripperBeads;
-    private boolean showFontBBox;
+    private final PDDocument document;
+    private final int pageIndex;
+    private final float scale;
+    private final boolean showTextStripper;
+    private final boolean showTextStripperBeads;
+    private final boolean showFontBBox;
         
     private class DebugTextStripper extends PDFTextStripper
     {
-        private Graphics2D graphics;
+        private final Graphics2D graphics;
         private AffineTransform flip;
         
-        public DebugTextStripper(Graphics2D graphics) throws IOException
+        DebugTextStripper(Graphics2D graphics) throws IOException
         {
             this.graphics = graphics;
         }
@@ -191,7 +191,7 @@ final class DebugTextOverlay
         }
     }
 
-    public DebugTextOverlay(PDDocument document, int pageIndex, float scale,
+    DebugTextOverlay(PDDocument document, int pageIndex, float scale,
                             boolean showTextStripper, boolean showTextStripperBeads,
                             boolean showFontBBox)
     {
