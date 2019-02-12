@@ -42,7 +42,7 @@ public class ViewMenu extends MenuBase
     private JCheckBoxMenuItem showGlyphBounds;
     private JCheckBoxMenuItem allowSubsampling;
     
-    private PDFDebugger pdfDebugger;
+    private final PDFDebugger pdfDebugger;
 
     /**
      * Constructor.
@@ -55,6 +55,8 @@ public class ViewMenu extends MenuBase
 
     /**
      * Provides the ViewMenu instance.
+     *
+     * @param pdfDebugger PDFDebugger instance.
      *
      * @return ViewMenu instance.
      */
