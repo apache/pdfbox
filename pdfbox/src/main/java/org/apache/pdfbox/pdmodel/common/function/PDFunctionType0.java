@@ -433,6 +433,7 @@ public class PDFunctionType0 extends PDFunction
 
         int[] inputPrev = new int[numberOfInputValues];
         int[] inputNext = new int[numberOfInputValues];
+        input = input.clone(); // PDFBOX-4461
 
         for (int i = 0; i < numberOfInputValues; i++)
         {
