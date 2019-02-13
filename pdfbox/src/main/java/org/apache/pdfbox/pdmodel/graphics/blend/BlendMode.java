@@ -207,8 +207,9 @@ public abstract class BlendMode
         }
     };
 
-    // these maps *must* come after the BlendMode.* constant declarations, otherwise their values would be null
+    // these maps *must* come after the declarations above, otherwise its values will be null
     private static final Map<COSName, BlendMode> BLEND_MODES = createBlendModeMap();
+    private static final Map<BlendMode, COSName> BLEND_MODE_NAMES = createBlendModeNamesMap();
 
     BlendMode()
     {
@@ -245,6 +246,17 @@ public abstract class BlendMode
             return result;
         }
         return BlendMode.NORMAL;
+    }
+
+    /**
+     * Determines the blend mode name from the BM object.
+     *
+     * @param bm Blend mode.
+     * @return name of blend mode.
+     */
+    public static COSName getCOSName(BlendMode bm)
+    {
+        return BLEND_MODE_NAMES.get(bm);
     }
 
     private static int get255Value(float val)
@@ -393,6 +405,30 @@ public abstract class BlendMode
         map.put(COSName.SATURATION, BlendMode.SATURATION);
         map.put(COSName.LUMINOSITY, BlendMode.LUMINOSITY);
         map.put(COSName.COLOR, BlendMode.COLOR);
+        return map;
+    }
+
+    private static Map<BlendMode, COSName> createBlendModeNamesMap()
+    {
+        Map<BlendMode, COSName> map = new HashMap<BlendMode, COSName>(13);
+        map.put(BlendMode.NORMAL, COSName.NORMAL);
+        // BlendMode.COMPATIBLE should not be used
+        map.put(BlendMode.COMPATIBLE, COSName.NORMAL);
+        map.put(BlendMode.MULTIPLY, COSName.MULTIPLY);
+        map.put(BlendMode.SCREEN, COSName.SCREEN);
+        map.put(BlendMode.OVERLAY, COSName.OVERLAY);
+        map.put(BlendMode.DARKEN, COSName.DARKEN);
+        map.put(BlendMode.LIGHTEN, COSName.LIGHTEN);
+        map.put(BlendMode.COLOR_DODGE, COSName.COLOR_DODGE);
+        map.put(BlendMode.COLOR_BURN, COSName.COLOR_BURN);
+        map.put(BlendMode.HARD_LIGHT, COSName.HARD_LIGHT);
+        map.put(BlendMode.SOFT_LIGHT, COSName.SOFT_LIGHT);
+        map.put(BlendMode.DIFFERENCE, COSName.DIFFERENCE);
+        map.put(BlendMode.EXCLUSION, COSName.EXCLUSION);
+        map.put(BlendMode.HUE, COSName.HUE);
+        map.put(BlendMode.SATURATION, COSName.SATURATION);
+        map.put(BlendMode.LUMINOSITY, COSName.LUMINOSITY);
+        map.put(BlendMode.COLOR, COSName.COLOR);
         return map;
     }
 }

@@ -563,6 +563,16 @@ public class PDExtendedGraphicsState implements COSObjectable
     }
 
     /**
+     * Set the blending mode.
+     * 
+     * @param bm 
+     */
+    public void setBlendMode(BlendMode bm)
+    {
+        dict.setItem(COSName.BM, BlendMode.getCOSName(bm));
+    }
+
+    /**
      * Returns the soft mask stored in the COS dictionary
      *
      * @return the soft mask
