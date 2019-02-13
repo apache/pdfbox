@@ -148,17 +148,18 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private void collectFieldLocations()
     {
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
-        if (acroForm != null)
+        if (acroForm == null)
         {
-            for (PDField field : acroForm.getFieldTree())
+            return;
+        }
+        for (PDField field : acroForm.getFieldTree())
+        {
+            String fullyQualifiedName = field.getFullyQualifiedName();
+            for (PDAnnotationWidget widget : field.getWidgets())
             {
-                String fullyQualifiedName = field.getFullyQualifiedName();
-                for (PDAnnotationWidget widget : field.getWidgets())
+                if (page.equals(widget.getPage()))
                 {
-                    if (page.equals(widget.getPage()))
-                    {
-                        rectMap.put(widget.getRectangle(), "Field name: " + fullyQualifiedName);
-                    }
+                    rectMap.put(widget.getRectangle(), "Field name: " + fullyQualifiedName);
                 }
             }
         }
