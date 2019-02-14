@@ -311,6 +311,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @param text Any Unicode text.
      * @return Array of PDF content stream bytes.
      * @throws IOException If the text could not be encoded.
+     * @throws IllegalArgumentException if a character isn't supported by the font.
      */
     public final byte[] encode(String text) throws IOException
     {
@@ -338,6 +339,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @param unicode Unicode code point.
      * @return Array of 1 to 4 PDF content stream bytes.
      * @throws IOException If the text could not be encoded.
+     * @throws IllegalArgumentException if a character isn't supported by the font.
      */
     protected abstract byte[] encode(int unicode) throws IOException;
 
@@ -347,6 +349,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @param text The text to get the width of.
      * @return The width of the string in 1/1000 units of text space.
      * @throws IOException If there is an error getting the width information.
+     * @throws IllegalArgumentException if a character isn't supported by the font.
      */
     public float getStringWidth(String text) throws IOException
     {
