@@ -76,6 +76,9 @@ public class EmbeddedMultipleFonts
             }
 
             document.save("example.pdf");
+            
+            ttc2.close();
+            ttc3.close();
         }
     }
 
