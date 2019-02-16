@@ -77,6 +77,9 @@ public class EmbeddedMultipleFonts
 
         document.save("example.pdf");
         document.close();
+        
+        ttc2.close();
+        ttc3.close();
     }
 
     static void showTextMultiple(PDPageContentStream cs, String text, List<PDFont> fonts, float size)
