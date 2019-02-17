@@ -1560,7 +1560,7 @@ public class NonSequentialPDFParser extends PDFParser
      * @param dict the dictionary to be decrypted
      * @param objNr the object number
      * @param objGenNr the object generation number
-     * @throws IOException ff something went wrong
+     * @throws IOException if something went wrong
      */
     protected final void decryptDictionary(COSDictionary dict, long objNr, long objGenNr) throws IOException
     {
@@ -1570,7 +1570,11 @@ public class NonSequentialPDFParser extends PDFParser
             return;
         }
         COSBase type = dict.getDictionaryObject(COSName.TYPE);
-        boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type);
+        boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type) ||
+                // PDFBOX-4466: /Type is optional, see
+                // https://ec.europa.eu/cefdigital/tracker/browse/DSS-1538
+                (dict.getDictionaryObject(COSName.CONTENTS) instanceof COSString && 
+                 dict.getDictionaryObject(COSName.BYTERANGE) instanceof COSArray);
         for (Entry<COSName, COSBase> entry : dict.entrySet())
         {
             if (isSignature && COSName.CONTENTS.equals(entry.getKey()))
