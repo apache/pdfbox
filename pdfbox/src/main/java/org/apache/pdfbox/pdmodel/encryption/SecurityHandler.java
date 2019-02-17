@@ -550,7 +550,11 @@ public abstract class SecurityHandler
             IOException
     {
         COSBase type = dictionary.getDictionaryObject(COSName.TYPE);
-        boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type);
+        boolean isSignature = COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type) ||
+                // PDFBOX-4466: /Type is optional, see
+                // https://ec.europa.eu/cefdigital/tracker/browse/DSS-1538
+                (dictionary.getDictionaryObject(COSName.CONTENTS) instanceof COSString && 
+                 dictionary.getDictionaryObject(COSName.BYTERANGE) instanceof COSArray);
         for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
         {
             if (isSignature && COSName.CONTENTS.equals(entry.getKey()))
