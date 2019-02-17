@@ -48,15 +48,15 @@ public class EmbeddedMultipleFonts
 
     public static void main(String[] args) throws IOException
     {
-        try (PDDocument document = new PDDocument())
+        try (PDDocument document = new PDDocument();
+             TrueTypeCollection ttc2 = new TrueTypeCollection(new File("c:/windows/fonts/batang.ttc"));
+             TrueTypeCollection ttc3 = new TrueTypeCollection(new File("c:/windows/fonts/mingliu.ttc")))
         {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
 
             PDFont font1 = PDType1Font.HELVETICA; // always have a simple font as first one
-            TrueTypeCollection ttc2 = new TrueTypeCollection(new File("c:/windows/fonts/batang.ttc"));
             PDType0Font font2 = PDType0Font.load(document, ttc2.getFontByName("Batang"), true); // Korean
-            TrueTypeCollection ttc3 = new TrueTypeCollection(new File("c:/windows/fonts/mingliu.ttc"));
             PDType0Font font3 = PDType0Font.load(document, ttc3.getFontByName("MingLiU"), true); // Chinese
             PDType0Font font4 = PDType0Font.load(document, new File("c:/windows/fonts/mangal.ttf")); // Indian
             PDType0Font font5 = PDType0Font.load(document, new File("c:/windows/fonts/ArialUni.ttf")); // Fallback
@@ -76,9 +76,6 @@ public class EmbeddedMultipleFonts
             }
 
             document.save("example.pdf");
-            
-            ttc2.close();
-            ttc3.close();
         }
     }
 
