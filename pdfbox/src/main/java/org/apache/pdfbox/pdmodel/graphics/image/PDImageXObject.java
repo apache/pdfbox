@@ -536,6 +536,11 @@ public final class PDImageXObject extends PDXObject implements PDImage
             height = mask.getHeight();
             image = scaleImage(image, width, height);
         }
+        else if (image.getRaster().getPixel(0, 0, (int[]) null).length < 3)
+        {
+            // PDFBOX-4470 bitonal image has only one element => copy into RGB
+            image = scaleImage(image, width, height);
+        }
 
         // compose to ARGB
         BufferedImage masked = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -555,7 +560,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
                 rgba[0] = rgb[0];
                 rgba[1] = rgb[1];
                 rgba[2] = rgb[2];
-                
+
                 alphaPixel = alpha.getPixel(x, y, alphaPixel);
                 if (isSoft)
                 {
