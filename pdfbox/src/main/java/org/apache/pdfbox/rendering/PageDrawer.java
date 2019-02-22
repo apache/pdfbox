@@ -1217,23 +1217,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             return;
         }
 
-        //TODO DRY-refactor this and the code from beginMarkedContentSequence() when PDFBOX-4399 is mostly done
-        PDPropertyList propertyList = annotation.getOptionalContent();
-        if (propertyList instanceof PDOptionalContentGroup)
+        if (isHiddenOCG(annotation.getOptionalContent()))
         {
-            PDOptionalContentGroup group = (PDOptionalContentGroup) propertyList;
-            RenderState printState = group.getRenderState(destination);
-            if (printState == null)
-            {
-                if (!getRenderer().isGroupEnabled(group))
-                {
-                    return;
-                }
-            }
-            else if (RenderState.OFF.equals(printState))
-            {
-                return;
-            }
+            return;
         }
 
         PDAppearanceDictionary appearance = annotation.getAppearance();
@@ -1668,22 +1654,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
-        PDPropertyList propertyList = getPage().getResources().getProperties(tag);
-        if (propertyList instanceof PDOptionalContentGroup)
+        if (isHiddenOCG(getPage().getResources().getProperties(tag)))
         {
-            PDOptionalContentGroup group = (PDOptionalContentGroup) propertyList;
-            RenderState printState = group.getRenderState(destination);
-            if (printState == null)
-            {
-                if (!getRenderer().isGroupEnabled(group))
-                {
-                    nestedHiddenOCGCount = 1;
-                }
-            }
-            else if (RenderState.OFF.equals(printState))
-            {
-                nestedHiddenOCGCount = 1;
-            }
+            nestedHiddenOCGCount = 1;
         }
     }
 
@@ -1702,5 +1675,26 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private boolean isContentRendered()
     {
         return nestedHiddenOCGCount <= 0;
+    }
+
+    private boolean isHiddenOCG(PDPropertyList propertyList)
+    {
+        if (propertyList instanceof PDOptionalContentGroup)
+        {
+            PDOptionalContentGroup group = (PDOptionalContentGroup) propertyList;
+            RenderState printState = group.getRenderState(destination);
+            if (printState == null)
+            {
+                if (!getRenderer().isGroupEnabled(group))
+                {
+                    return true;
+                }
+            }
+            else if (RenderState.OFF.equals(printState))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
