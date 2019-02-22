@@ -96,6 +96,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -1262,8 +1263,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void showAnnotation(PDAnnotation annotation) throws IOException
     {
         lastClip = null;
-        //TODO support more annotation flags (Invisible, NoZoom, NoRotate)
-        // Example for NoZoom can be found in p5 of PDFBOX-2348
         int deviceType = -1;
         if (graphics.getDeviceConfiguration() != null && 
             graphics.getDeviceConfiguration().getDevice() != null)
@@ -1282,6 +1281,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
+        if (annotation.isInvisible() && annotation instanceof PDAnnotationUnknown)
+        {
+            // "If set, do not display the annotation if it does not belong to one
+            // of the standard annotation types and no annotation handler is available."
+            return;
+        }
+        //TODO support NoZoom, example can be found in p5 of PDFBOX-2348
 
         if (isHiddenOCG(annotation.getOptionalContent()))
         {
