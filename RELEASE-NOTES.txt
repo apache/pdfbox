@@ -1,71 +1,83 @@
-Release Notes -- Apache PDFBox -- Version 2.0.13
+Release Notes -- Apache PDFBox -- Version 2.0.14
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.12 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.13 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
+Sub-task
+
+[PDFBOX-4460] - Show URL or page destination in PDFDebugger on mouse move
+
 Bug
 
-[PDFBOX-3646] - Annotations parsed from XFDF containing ampersand characters are not properly imported
-[PDFBOX-4163] - Java 11 compile error
-[PDFBOX-4326] - PDF with JPEG2000 image can't be rendered
-[PDFBOX-4327] - NullPointerException in PDFStreamEngine.processSoftMask() when running ExtractImages
-[PDFBOX-4330] - NumberFormatException in CFFParser.readRealNumber()
-[PDFBOX-4331] - Make jdk9 profile activation automatic
-[PDFBOX-4333] - ClassCastException when loading PDF
-[PDFBOX-4336] - "CMap is invalid" exception thrown
-[PDFBOX-4338] - ArrayIndexOutOfBoundsException in COSParser
-[PDFBOX-4339] - NullPointerException in COSParser
-[PDFBOX-4343] - Prevent calling addSignature twice
-[PDFBOX-4345] - FDFAnnotation.richContentsToString does not evaluate text nodes which have siblings in the XML
-[PDFBOX-4347] - ArrayIndexOutOfBoundsException in PDFXrefStreamParser
-[PDFBOX-4348] - ClassCastException in COSParser
-[PDFBOX-4349] - ClassCastException in COSParser
-[PDFBOX-4350] - IllegalArgumentException in PDFObjectStreamParser
-[PDFBOX-4351] - IndexOutOfBoundsException when reading from InputStreamSource
-[PDFBOX-4352] - NullPointerException in COSParser
-[PDFBOX-4353] - NullPointerException in PDFXrefStreamParser
-[PDFBOX-4354] - NumberFormatException in COSParser
-[PDFBOX-4355] - PDFTextStripperByArea dies on Chinese/Japanese files
-[PDFBOX-4357] - IllegalArgumentException "root cannot be null"
-[PDFBOX-4359] - Bad sizing of signature field inside rotated page
-[PDFBOX-4360] - ArrayIndexOutOfBoundsException in ASCIIHexFilter
-[PDFBOX-4361] - ArrayIndexOutOfBoundsException in COSParser
-[PDFBOX-4364] - example AddValidationInformation fails with scratchfile error
-[PDFBOX-4365] - PDFDebugger: JComboBox does not take generic parameters in Java 1.6
-[PDFBOX-4366] - NullPointerException in PDButton.updateByValue() when appearance missing
-[PDFBOX-4367] - Error expected floating point number actual='18-5'
-[PDFBOX-4369] - unsupported ExtractText -force option still appears in online 2.0 docs
-[PDFBOX-4372] - Stack overflow around PDFStreamEngine.processStream
-[PDFBOX-4374] - Switch from log4j to slf4j
-[PDFBOX-4377] - Verify CRL in AddValidation example
-[PDFBOX-4381] - Revocation CRL check should be done at signing time in AddValidation example
-[PDFBOX-4383] - PDFMergerUtility seems to leave source file open
-[PDFBOX-4384] - PDF/A Document Validation out of memory
+[PDFBOX-3973] - OCG Layers partly lost after merge
+[PDFBOX-4003] - Can't retrieve number tree from structure tree
+[PDFBOX-4009] - Structure tree lost when merging from the command line
+[PDFBOX-4149] - PDF consisting on one page with 5 MB renders until the end of time using renderImageWithDPI
+[PDFBOX-4193] - StackOverflow
+[PDFBOX-4233] - Flatten does not work properly on field with type 0 font
+[PDFBOX-4303] - Helv and ZaDb overridden
+[PDFBOX-4390] - ExtractText loses spaces when rotationMagic option is used
+[PDFBOX-4391] - Page to image rendering in pdfbox 2.0: Poor quality compared to 1.8
+[PDFBOX-4392] - PDF completely blow up the RAM on amazon instances
+[PDFBOX-4393] - PDF signature invalid after second interactive field signed
+[PDFBOX-4395] - Accent positioning in Type1 fonts
+[PDFBOX-4399] - Disabled optional content groups are rendered
+[PDFBOX-4400] - jlink loading police.afm files
+[PDFBOX-4406] - PrintBookmarks does not support named destinations
+[PDFBOX-4407] - ParentTree Objects do not match KArray objects after merge
+[PDFBOX-4408] - Object StructParent property does not match entry in parent tree
+[PDFBOX-4415] - Structure tree RoleMap isn't merged
+[PDFBOX-4416] - Structure tree IDTree isn't merged
+[PDFBOX-4417] - Merged file has several structure trees
+[PDFBOX-4418] - ParentTree can't be merged if it has several levels
+[PDFBOX-4419] - Merging doesn't consider MarkInfo properly
+[PDFBOX-4422] - PDF with OutputIntent with alternative colorspace with incorrect component count validates
+[PDFBOX-4423] - Merge test checkWithNumberTree() fails when widget has no StructParent
+[PDFBOX-4428] - pdfbox called by Lotus Notes/Domino agent can't load afm fonts
+[PDFBOX-4429] - Bogus /StructParent(s) entries are kept when merging with file that has a structure tree
+[PDFBOX-4435] - Poor quality printing of PDF label
+[PDFBOX-4437] - Import XFDF stamp annotation loses appearance
+[PDFBOX-4444] - NPE in PDNumberTreeNode.convertCOSToPD()
+[PDFBOX-4445] - Language and Viewer Preferences are not properly merged
+[PDFBOX-4446] - Tolerate some incorrect Xref in PDF file
+[PDFBOX-4449] - Rotated pages produce matrix value like -0.999999999999999 instead of -1
+[PDFBOX-4450] - java.lang.OutOfMemoryError when validating pdf
+[PDFBOX-4451] - ArrayIndexOutOfBoundsException in PDRectangle constructor
+[PDFBOX-4452] - ClassCastException in PDPageTree
+[PDFBOX-4453] - Encrypted string not decrypted
+[PDFBOX-4456] - PrintPDF doesn't support 1:1 printer name matching
+[PDFBOX-4459] - PDPageDestination.retrievePageNumber() returns 0 on isolated page
+[PDFBOX-4461] - PDFunctionType0.eval() damages its input
+[PDFBOX-4466] - Signature without /Type /Sig can't be read
+[PDFBOX-4470] - Red areas around text when converting a pdf to png with pdfbox
 
 Improvement
 
-[PDFBOX-4335] - Overlay should implement Closeable
-[PDFBOX-4363] - [Patch] Add a common interface PDShadingPaint for all shading paints
-[PDFBOX-4371] - Improve ExtractText utility so that it can extract rotated text automatically
-[PDFBOX-4375] - Change visibility of Overlay#loadPDF to protected
-
-Test
-
-[PDFBOX-4373] - Add additional unit tests
+[PDFBOX-4231] - cache file fallback if not writable
+[PDFBOX-4394] - Encrypt CLI default key length should be strong
+[PDFBOX-4397] - made enum fromString() less error-prone
+[PDFBOX-4411] - Support caching of ICC based color spaces
+[PDFBOX-4413] - Add support for AES256 encryption for public key
+[PDFBOX-4420] - Correct javadoc comment
+[PDFBOX-4434] - Create flexible CheckBox and RadioButtons example
+[PDFBOX-4455] - empty widget list of non terminal field should be non modifiable
+[PDFBOX-4457] - Multiple Fonts with fallback technology
+[PDFBOX-4462] - Add watermark example
+[PDFBOX-4463] - Add PDExtendedGraphicsState.setBlendMode() to 2.0
 
 Task
 
-[PDFBOX-4358] - Prevent stack overflow in COSDictionary.toString()
-[PDFBOX-4362] - Create simple text extraction example
+[PDFBOX-4388] - Update several tests to cache downloaded test files with download-maven-plugin
+[PDFBOX-4401] - Fine-tune KCMS warning message + update documentation
 
 
 Release Contents
