@@ -368,6 +368,10 @@ final class Type1Parser
     {
         List<Token> value = new ArrayList<>();
         Token token = lexer.nextToken();
+        if (lexer.peekToken() == null)
+        {
+            return value;
+        }
         value.add(token);
 
         if (token.getKind() == Token.START_ARRAY)
@@ -375,6 +379,10 @@ final class Type1Parser
             int openArray = 1;
             while (true)
             {
+                if (lexer.peekToken() == null)
+                {
+                    return value;
+                }
                 if (lexer.peekToken().getKind() == Token.START_ARRAY)
                 {
                     openArray++;
@@ -821,7 +829,7 @@ final class Type1Parser
     private Token readMaybe(Token.Kind kind, String name) throws IOException
     {
         Token token = lexer.peekToken();
-        if (token.getKind() == kind && token.getText().equals(name))
+        if (token != null && token.getKind() == kind && token.getText().equals(name))
         {
             return lexer.nextToken();
         }
