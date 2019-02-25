@@ -419,6 +419,12 @@ final class Type1Parser
             return value;
         }
 
+        readPostScriptWrapper(value);
+        return value;
+    }
+
+    private void readPostScriptWrapper(List<Token> value) throws IOException
+    {
         // postscript wrapper (not in the Type 1 spec)
         if (lexer.peekToken().getText().equals("systemdict"))
         {
@@ -443,7 +449,6 @@ final class Type1Parser
 
             read(Token.NAME, "if");
         }
-        return value;
     }
 
     /**
