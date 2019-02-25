@@ -162,9 +162,9 @@ public class OS2WindowsMetricsTable extends TTFTable
 
     /**
      * Editable embedding: the font may be embedded but must only be installed temporarily on other
-     * systems. Documents may be editied and changes saved.
+     * systems. Documents may be edited and changes saved.
      */
-    public static final short FSTYPE_EDITIBLE = 0x0004;
+    public static final short FSTYPE_EDITIBLE = 0x0008;
 
     /**
      * No subsetting: the font must not be subsetted prior to embedding.
