@@ -503,6 +503,10 @@ public final class ShowSignature
             }
         }
         CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true, signDate);
+        //TODO check whether the root certificate is in our trusted list.
+        // For the EU, get a list here:
+        // https://ec.europa.eu/digital-single-market/en/eu-trusted-lists-trust-service-providers
+        // ( getRootCertificates() is not helpful because these are SSL certificates)
     }
 
     private void validateTimestampToken(TimeStampToken timeStampToken)
