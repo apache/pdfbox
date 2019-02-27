@@ -206,7 +206,7 @@ public final class PDTextField extends PDVariableText
     }
 
     /**
-     * Sets the plain text value of this field.
+     * Set the plain text value of this field, and try to update the visual appearance.
      * 
      * @param value Plain text
      * @throws IOException if the value could not be set

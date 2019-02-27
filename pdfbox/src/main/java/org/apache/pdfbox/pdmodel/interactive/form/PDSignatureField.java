@@ -125,8 +125,6 @@ public class PDSignatureField extends PDTerminalField
     }
     
     /**
-     * Sets the value of this field.
-     * 
      * <b>This will throw an UnsupportedOperationException if used as the signature fields
      * value can't be set using a String</b>
      * 

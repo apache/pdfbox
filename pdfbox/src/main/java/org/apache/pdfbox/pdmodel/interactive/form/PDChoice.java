@@ -369,7 +369,7 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
-     * Sets the selected value of this field.
+     * Set the selected value of this field, and try to update the visual appearance.
      *
      * @param value The name of the selected item.
      * @throws IOException if the value could not be set
