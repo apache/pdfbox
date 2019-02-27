@@ -206,8 +206,9 @@ public final class PDTextField extends PDVariableText
     }
 
     /**
-     * Sets the plain text value of this field.
-     * 
+     * Sets the plain text value of this field. It also tries to update the visual appearance,
+     * unless {@link PDAcroForm#getNeedAppearances()} is true.
+     *
      * @param value Plain text
      * @throws IOException if the value could not be set
      */

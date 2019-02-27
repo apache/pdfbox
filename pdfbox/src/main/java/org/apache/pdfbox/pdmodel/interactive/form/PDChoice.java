@@ -369,7 +369,8 @@ public abstract class PDChoice extends PDVariableText
     }
 
     /**
-     * Sets the selected value of this field.
+     * Sets the selected value of this field. It also tries to update the visual appearance, unless
+     * {@link PDAcroForm#getNeedAppearances()} is true.
      *
      * @param value The name of the selected item.
      * @throws IOException if the value could not be set
