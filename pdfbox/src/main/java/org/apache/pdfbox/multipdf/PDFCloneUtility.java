@@ -100,13 +100,11 @@ class PDFCloneUtility
           else if( base instanceof COSObjectable && !(base instanceof COSBase) )
           {
               retval = cloneForNewDocument( ((COSObjectable)base).getCOSObject() );
-              clonedVersion.put( base, retval );
           }
           else if( base instanceof COSObject )
           {
               COSObject object = (COSObject)base;
               retval = cloneForNewDocument( object.getObject() );
-              clonedVersion.put( base, retval );
           }
           else if( base instanceof COSArray )
           {
@@ -117,7 +115,6 @@ class PDFCloneUtility
                   newArray.add( cloneForNewDocument( array.get( i ) ) );
               }
               retval = newArray;
-              clonedVersion.put( base, retval );
           }
           else if( base instanceof COSStream )
           {
@@ -180,7 +177,6 @@ class PDFCloneUtility
           if (!(base instanceof COSBase))
           {
               cloneMerge(base.getCOSObject(), target.getCOSObject());
-              clonedVersion.put(base, retval);
           }
           else if( base instanceof COSObject )
           {
@@ -192,7 +188,6 @@ class PDFCloneUtility
               {
                   cloneMerge(((COSObject) base).getObject(), target);
               }
-              clonedVersion.put( base, retval );
           }
           else if( base instanceof COSArray )
           {
@@ -201,7 +196,6 @@ class PDFCloneUtility
               {
                   ((COSArray)target).add( cloneForNewDocument( array.get( i ) ) );
               }
-              clonedVersion.put( base, retval );
           }
           else if( base instanceof COSStream )
           {
