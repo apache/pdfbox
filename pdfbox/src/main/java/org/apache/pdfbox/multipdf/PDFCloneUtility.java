@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -41,6 +43,7 @@ class PDFCloneUtility
 {
     private final PDDocument destination;
     private final Map<Object,COSBase> clonedVersion = new HashMap<>();
+    private final Set<COSBase> clonedValues = new HashSet<>();
 
     /**
      * Creates a new instance for the given target document.
@@ -79,7 +82,7 @@ class PDFCloneUtility
               //we are done, it has already been converted.
               return retval;
           }
-          if (base instanceof COSBase && clonedVersion.containsValue(base))
+          if (base instanceof COSBase && clonedValues.contains(base))
           {
               // Don't clone a clone
               return (COSBase) base;
@@ -149,6 +152,7 @@ class PDFCloneUtility
               retval = (COSBase)base;
           }
           clonedVersion.put( base, retval );
+          clonedValues.add(retval);
           return retval;
       }
 
@@ -238,5 +242,6 @@ class PDFCloneUtility
               retval = (COSBase)base;
           }
           clonedVersion.put( base, retval );
+          clonedValues.add(retval);
       }
 }
