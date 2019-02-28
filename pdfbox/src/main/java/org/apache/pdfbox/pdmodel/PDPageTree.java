@@ -156,7 +156,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
             else
             {
                 LOG.warn("COSDictionary expected, but got " +
-                        (base == null ? " null" : base.getClass().getSimpleName()));
+                        (base == null ? "null" : base.getClass().getSimpleName()));
             }
         }
 
