@@ -394,26 +394,30 @@ public abstract class SecurityHandler
      */
     public void decrypt(COSBase obj, long objNum, long genNum) throws IOException
     {
-        if (!objects.contains(obj))
+        if (!(obj instanceof COSString || obj instanceof COSDictionary || obj instanceof COSArray))
         {
-            objects.add(obj);
-
-            if (obj instanceof COSString)
-            {
-                decryptString((COSString) obj, objNum, genNum);
-            }
-            else if (obj instanceof COSStream)
-            {
-                decryptStream((COSStream) obj, objNum, genNum);
-            }
-            else if (obj instanceof COSDictionary)
-            {
-                decryptDictionary((COSDictionary) obj, objNum, genNum);
-            }
-            else if (obj instanceof COSArray)
-            {
-                decryptArray((COSArray) obj, objNum, genNum);
-            }
+            return;
+        }
+        if (objects.contains(obj))
+        {
+            return;
+        }
+        objects.add(obj);
+        if (obj instanceof COSString)
+        {
+            decryptString((COSString) obj, objNum, genNum);
+        }
+        else if (obj instanceof COSStream)
+        {
+            decryptStream((COSStream) obj, objNum, genNum);
+        }
+        else if (obj instanceof COSDictionary)
+        {
+            decryptDictionary((COSDictionary) obj, objNum, genNum);
+        }
+        else if (obj instanceof COSArray)
+        {
+            decryptArray((COSArray) obj, objNum, genNum);
         }
     }
 
