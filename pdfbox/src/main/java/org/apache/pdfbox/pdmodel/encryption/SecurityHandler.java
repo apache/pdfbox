@@ -28,11 +28,11 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -84,7 +84,13 @@ public abstract class SecurityHandler
     /** indicates if the Metadata have to be decrypted of not. */
     private boolean decryptMetadata;
 
-    private final Map<COSBase, List<COSBase>> objects = new HashMap<COSBase, List<COSBase>>();
+    // PDFBOX-4453, PDFBOX-4477: Originally this was just a Set. This failed in rare cases
+    // when a decrypted string was identical to an encrypted string.
+    // Because COSString.equals() checks the contents, decryption was then skipped.
+    // This solution keeps all different "equal" objects.
+    // IdentityHashMap solves this problem and is also faster than a HashMap
+    private final Set<COSBase> objects =
+            Collections.newSetFromMap(new IdentityHashMap<COSBase, Boolean>());
 
     private boolean useAES;
 
@@ -388,46 +394,26 @@ public abstract class SecurityHandler
      */
     public void decrypt(COSBase obj, long objNum, long genNum) throws IOException
     {
-        // PDFBOX-4453: Originally this was just a Set. This failed in rare cases
-        // when a decrypted string was identical to an encrypted string.
-        // Because COSString.equals() checks the contents, decryption was then skipped.
-        // This solution keeps all different "equal" objects.
-        // Please do not replace this with a solution using System.identityHashCode(),
-        // because this is still a hash code and is NOT guaranteed to be unique.
-        List<COSBase> list = objects.get(obj);
-        if (list == null)
+        if (!objects.contains(obj))
         {
-            list = new ArrayList<COSBase>();
-            objects.put(obj, list);
-        }
-        else
-        {
-            // check whether the exact object is in the list
-            for (COSBase base : list)
-            {
-                if (base == obj)
-                {
-                    return;
-                }
-            }
-        }
-        list.add(obj);
+            objects.add(obj);
 
-        if (obj instanceof COSString)
-        {
-            decryptString((COSString) obj, objNum, genNum);
-        }
-        else if (obj instanceof COSStream)
-        {
-            decryptStream((COSStream) obj, objNum, genNum);
-        }
-        else if (obj instanceof COSDictionary)
-        {
-            decryptDictionary((COSDictionary) obj, objNum, genNum);
-        }
-        else if (obj instanceof COSArray)
-        {
-            decryptArray((COSArray) obj, objNum, genNum);
+            if (obj instanceof COSString)
+            {
+                decryptString((COSString) obj, objNum, genNum);
+            }
+            else if (obj instanceof COSStream)
+            {
+                decryptStream((COSStream) obj, objNum, genNum);
+            }
+            else if (obj instanceof COSDictionary)
+            {
+                decryptDictionary((COSDictionary) obj, objNum, genNum);
+            }
+            else if (obj instanceof COSArray)
+            {
+                decryptArray((COSArray) obj, objNum, genNum);
+            }
         }
     }
 
