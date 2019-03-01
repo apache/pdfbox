@@ -30,11 +30,14 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBoolean;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.util.Hex;
 
 import org.w3c.dom.Document;
@@ -118,6 +121,8 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
         {
+            LOG.debug("Decoded XML: " + decodedAppearanceXML);
+
             Document stampAppearance = getStampAppearanceDocument(decodedAppearanceXML);
 
             Element appearanceEl = stampAppearance.getDocumentElement();
@@ -209,6 +214,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
 
     private COSStream parseStreamElement(Element streamEl) throws IOException
     {
+        LOG.debug("Parse " + streamEl.getAttribute("KEY") + " Stream");
         COSStream stream = new COSStream();
 
         NodeList nodeList = streamEl.getChildNodes();
@@ -232,6 +238,11 @@ public class FDFAnnotationStamp extends FDFAnnotation
                         LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
                     }
                 }
+                else if ("FIXED".equalsIgnoreCase(child.getTagName()))
+                {
+                    stream.setFloat(COSName.getPDFName(childAttrKey), Float.parseFloat(childAttrVal));
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
+                }
                 else if ("NAME".equalsIgnoreCase(child.getTagName()))
                 {
                     stream.setName(COSName.getPDFName(childAttrKey), childAttrVal);
@@ -240,7 +251,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
                 else if ("BOOL".equalsIgnoreCase(child.getTagName()))
                 {
                     stream.setBoolean(COSName.getPDFName(childAttrKey), Boolean.parseBoolean(childAttrVal));
-                    LOG.debug(parentAttrKey + " => Set Interpolate: " + childAttrVal);
+                    LOG.debug(parentAttrKey + " => Set " + childAttrVal);
                 }
                 else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
                 {
@@ -272,10 +283,22 @@ public class FDFAnnotationStamp extends FDFAnnotation
                         }
                         finally
                         {
-                            if (os != null)
-                            {
-                                os.close();
-                            }
+                            IOUtils.closeQuietly(os);
+                        }
+                    }
+                    else if ("ASCII".equals(child.getAttribute("ENCODING")))
+                    {
+                        OutputStream os = null;
+                        try
+                        {
+                            os = stream.createOutputStream();
+                            // not sure about charset
+                            os.write(child.getTextContent().getBytes());
+                            LOG.debug(parentAttrKey + " => Data was streamed");
+                        }
+                        finally
+                        {
+                            IOUtils.closeQuietly(os);
                         }
                     }
                     else
@@ -298,10 +321,11 @@ public class FDFAnnotationStamp extends FDFAnnotation
     {
         LOG.debug("Parse " + arrayEl.getAttribute("KEY") + " Array");
         COSArray array = new COSArray();
-        NodeList nodeList = arrayEl.getElementsByTagName("FIXED");
-        String elAttrKey = arrayEl.getAttribute("KEY");
 
-        if ("BBox".equals(elAttrKey))
+        NodeList nodeList = arrayEl.getChildNodes();
+        String parentAttrKey = arrayEl.getAttribute("KEY");
+
+        if ("BBox".equals(parentAttrKey))
         {
             if (nodeList.getLength() < 4)
             {
@@ -309,7 +333,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
                         nodeList.getLength());
             }
         }
-        else if ("Matrix".equals(elAttrKey))
+        else if ("Matrix".equals(parentAttrKey))
         {
             if (nodeList.getLength() < 6)
             {
@@ -318,16 +342,55 @@ public class FDFAnnotationStamp extends FDFAnnotation
             }
         }
 
-        LOG.debug("There are " + nodeList.getLength() + " FIXED elements");
-
         for (int i = 0; i < nodeList.getLength(); i++)
         {
             Node node = nodeList.item(i);
             if (node instanceof Element)
             {
-                Element el = (Element) node;
-                LOG.debug(elAttrKey + " value(" + i + "): " + el.getAttribute("VAL"));
-                array.add(new COSFloat(el.getAttribute("VAL")));
+                Element child = (Element) node;
+                String childAttrKey = child.getAttribute("KEY");
+                String childAttrVal = child.getAttribute("VAL");
+                LOG.debug(parentAttrKey + " => reading child: " + child.getTagName() +
+                           " with key: " + childAttrKey);
+                if ("INT".equalsIgnoreCase(child.getTagName()))
+                {
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    array.add(COSFloat.get(childAttrVal));
+                }
+                else if ("FIXED".equalsIgnoreCase(child.getTagName()))
+                {
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    array.add(COSInteger.get(childAttrVal));
+                }
+                else if ("NAME".equalsIgnoreCase(child.getTagName()))
+                {
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    array.add(COSName.getPDFName(childAttrVal));
+                }
+                else if ("BOOL".equalsIgnoreCase(child.getTagName()))
+                {
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    array.add(COSBoolean.getBoolean(Boolean.parseBoolean(childAttrVal)));
+                }
+                else if ("DICT".equalsIgnoreCase(child.getTagName()))
+                {
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    array.add(parseDictElement(child));
+                }
+                else if ("STREAM".equalsIgnoreCase(child.getTagName()))
+                {
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    array.add(parseStreamElement(child));
+                }
+                else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
+                {
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    array.add(parseArrayElement(child));
+                }
+                else
+                {
+                    LOG.warn(parentAttrKey + " => Not handling child element: " + child.getTagName());
+                }
             }
         }
 
@@ -367,6 +430,26 @@ public class FDFAnnotationStamp extends FDFAnnotation
                     LOG.debug(parentAttrKey + " => Handling NAME element with key: " + childAttrKey);
                     dict.setName(COSName.getPDFName(childAttrKey), childAttrVal);
                     LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
+                }
+                else if ("INT".equalsIgnoreCase(child.getTagName()))
+                {
+                    dict.setInt(COSName.getPDFName(childAttrKey), Integer.parseInt(childAttrVal));
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
+                }
+                else if ("FIXED".equalsIgnoreCase(child.getTagName()))
+                {
+                    dict.setFloat(COSName.getPDFName(childAttrKey), Float.parseFloat(childAttrVal));
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey + ": " + childAttrVal);
+                }
+                else if ("BOOL".equalsIgnoreCase(child.getTagName()))
+                {
+                    dict.setBoolean(COSName.getPDFName(childAttrKey), Boolean.parseBoolean(childAttrVal));
+                    LOG.debug(parentAttrKey + " => Set " + childAttrVal);
+                }
+                else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
+                {
+                    dict.setItem(COSName.getPDFName(childAttrKey), parseArrayElement(child));
+                    LOG.debug(parentAttrKey + " => Set " + childAttrKey);
                 }
                 else
                 {
