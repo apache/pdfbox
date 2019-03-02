@@ -44,6 +44,9 @@ class PDFCloneUtility
     private final PDDocument destination;
     private final Map<Object,COSBase> clonedVersion = new HashMap<>();
     private final Set<COSBase> clonedValues = new HashSet<>();
+    // It might be useful to use IdentityHashMap like in PDFBOX-4477 for speed,
+    // but we need a really huge file to test this. A test with the file from PDFBOX-4477
+    // did not show a noticeable speed difference.
 
     /**
      * Creates a new instance for the given target document.
