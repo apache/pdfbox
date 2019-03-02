@@ -378,17 +378,23 @@ public abstract class SecurityHandler
         {
             return;
         }
-        if (objects.contains(obj))
-        {
-            return;
-        }
-        objects.add(obj);
+        // PDFBOX-4477: only cache strings and streams, this improves speed and memory footprint
         if (obj instanceof COSString)
         {
+            if (objects.contains(obj))
+            {
+                return;
+            }
+            objects.add(obj);
             decryptString((COSString) obj, objNum, genNum);
         }
         else if (obj instanceof COSStream)
         {
+            if (objects.contains(obj))
+            {
+                return;
+            }
+            objects.add(obj);
             decryptStream((COSStream) obj, objNum, genNum);
         }
         else if (obj instanceof COSDictionary)
