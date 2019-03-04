@@ -20,6 +20,7 @@ package org.apache.pdfbox.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -201,11 +202,27 @@ public final class Hex
             Method decodeMethod = base64Decoder.getClass().getMethod("decode", String.class);
             return (byte[]) decodeMethod.invoke(base64Decoder, base64Value.replaceAll("\\s", ""));
         }
-        catch (ReflectiveOperationException ex)
+        catch (ClassNotFoundException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (NoSuchMethodException ex)
         {
             LOG.debug(ex);
         }
         catch (SecurityException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (InvocationTargetException ex)
         {
             LOG.debug(ex);
         }
@@ -216,11 +233,27 @@ public final class Hex
             Method parseBase64BinaryMethod = datatypeConverterClass.getMethod("parseBase64Binary", String.class);
             return (byte[]) parseBase64BinaryMethod.invoke(null, base64Value);
         }
-        catch (ReflectiveOperationException ex)
+        catch (ClassNotFoundException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (IllegalArgumentException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (NoSuchMethodException ex)
         {
             LOG.debug(ex);
         }
         catch (SecurityException ex)
+        {
+            LOG.debug(ex);
+        }
+        catch (InvocationTargetException ex)
         {
             LOG.debug(ex);
         }
