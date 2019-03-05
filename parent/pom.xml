@@ -54,6 +54,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <bouncycastle.version>1.60</bouncycastle.version>
+        
+        <!-- PDFBOX-4479 to build on jdk6 on newer Jenkins -->
+        <jdk.path>${env.JAVA_HOME}</jdk.path>
     </properties>
 
     <dependencyManagement>
@@ -199,6 +202,8 @@
                     <target>1.6</target>
                     <source>1.6</source>
                     <encoding>UTF-8</encoding>
+                    <executable>${jdk.path}/bin/javac</executable>
+                    <fork>true</fork>
                 </configuration>
             </plugin>
             <plugin>
