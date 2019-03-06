@@ -202,11 +202,13 @@
                     <target>1.6</target>
                     <source>1.6</source>
                     <encoding>UTF-8</encoding>
+                    <!-- https://maven.apache.org/plugins/maven-compiler-plugin/examples/compile-using-different-jdk.html -->
                     <executable>${jdk.path}/bin/javac</executable>
                     <fork>true</fork>
+                    <!-- enable these when getting CompilationFailureException without explanatin:
                     <compilerArgument>-verbose</compilerArgument>
                     <verbose>true</verbose>
-                    <!-- https://maven.apache.org/plugins/maven-compiler-plugin/examples/compile-using-different-jdk.html -->
+                    -->
                 </configuration>
             </plugin>
             <plugin>
