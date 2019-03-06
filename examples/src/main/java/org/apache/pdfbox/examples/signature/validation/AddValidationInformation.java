@@ -387,7 +387,7 @@ public class AddValidationInformation
                 certInfo.getCertificate(),
                 signDate.getTime(),
                 certInfo.getIssuerCertificate(),
-                new HashSet<X509Certificate>(certInformationHelper.getCertificatesMap().values()),
+                new HashSet<X509Certificate>(certInformationHelper.getCertificateSet()),
                 certInfo.getOcspUrl());
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
@@ -447,7 +447,7 @@ public class AddValidationInformation
         X509Certificate issuerCertificate = certInfo.getIssuerCertificate();
 
         // find the issuer certificate (usually issuer of signature certificate)
-        for (X509Certificate certificate : certInformationHelper.getCertificatesMap().values())
+        for (X509Certificate certificate : certInformationHelper.getCertificateSet())
         {
             if (certificate.getSubjectX500Principal().equals(crl.getIssuerX500Principal()))
             {
@@ -557,7 +557,7 @@ public class AddValidationInformation
     {
         try
         {
-            for (X509Certificate cert : certInformationHelper.getCertificatesMap().values())
+            for (X509Certificate cert : certInformationHelper.getCertificateSet())
             {
                 COSStream stream = writeDataToStream(cert.getEncoded());
                 certs.add(stream);
