@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -189,16 +190,36 @@ public class AddValidationInformation
         {
             try
             {
-                result = clazz.newInstance();
+                result = clazz.getDeclaredConstructor().newInstance();
             }
-            catch (InstantiationException e)
+            catch (InstantiationException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), e);
+                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
                 return null;
             }
-            catch (IllegalAccessException e)
+            catch (IllegalAccessException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), e);
+                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+                return null;
+            }
+            catch (NoSuchMethodException ex)
+            {
+                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+                return null;
+            }
+            catch (SecurityException ex)
+            {
+                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+                return null;
+            }
+            catch (IllegalArgumentException ex)
+            {
+                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
+                return null;
+            }
+            catch (InvocationTargetException ex)
+            {
+                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
                 return null;
             }
             result.setDirect(false);
