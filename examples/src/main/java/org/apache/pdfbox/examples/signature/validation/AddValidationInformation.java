@@ -188,9 +188,9 @@ public class AddValidationInformation
         {
             try
             {
-                result = clazz.newInstance();
+                result = clazz.getDeclaredConstructor().newInstance();
             }
-            catch (InstantiationException | IllegalAccessException e)
+            catch (ReflectiveOperationException | SecurityException e)
             {
                 LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), e);
                 return null;
