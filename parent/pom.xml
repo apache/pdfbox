@@ -204,6 +204,9 @@
                     <encoding>UTF-8</encoding>
                     <executable>${jdk.path}/bin/javac</executable>
                     <fork>true</fork>
+                    <compilerArgument>-verbose</compilerArgument>
+                    <verbose>true</verbose>
+                    <!-- https://maven.apache.org/plugins/maven-compiler-plugin/examples/compile-using-different-jdk.html -->
                 </configuration>
             </plugin>
             <plugin>
