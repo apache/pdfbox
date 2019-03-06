@@ -230,7 +230,7 @@ public class TTFSubsetterTest
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TrueTypeFont ttf = new TTFParser().parse(testFile);
         TTFSubsetter ttfSubsetter = new TTFSubsetter(ttf);
-        ttfSubsetter.add('Ö');
+        ttfSubsetter.add('\u00D6'); // 'Ö' doesn't work with jdk6 (PDFBOX-3757)?
         ttfSubsetter.add('\u200A');
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ttfSubsetter.writeToStream(baos);
