@@ -20,7 +20,6 @@ package org.apache.pdfbox.examples.signature.validation;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -32,8 +31,8 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,7 +56,7 @@ import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 
 /**
- * This Class helps to extract Data/Information from a signature. The information is held in
+ * This class helps to extract data/information from a signature. The information is held in
  * CertSignatureInformation. Some information is needed for validation processing of the
  * participating certificates.
  *
@@ -70,7 +69,7 @@ public class CertInformationCollector
 
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
 
-    private final Map<BigInteger, X509Certificate> certificatesMap = new HashMap<>();
+    private final Set<X509Certificate> certificateSet = new HashSet<>();
 
     private final JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
 
@@ -178,7 +177,7 @@ public class CertInformationCollector
      * not yet practicable.
      *
      * @param certificatesStore To get the certificate information from. Certificates will be saved
-     * in certificatesMap.
+     * in certificateSet.
      * @param signedData data from which to get the SignerInformation
      * @param certInfo where to add certificate information
      * @return Signer Information of the processed certificatesStore for further usage.
@@ -197,6 +196,7 @@ public class CertInformationCollector
                 .getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
 
         X509Certificate certificate = getCertFromHolder(matches.iterator().next());
+        certificateSet.add(certificate);
 
         Collection<X509CertificateHolder> allCerts = certificatesStore.getMatches(null);
         addAllCerts(allCerts);
@@ -252,7 +252,7 @@ public class CertInformationCollector
             return;
         }
 
-        for (X509Certificate issuer : certificatesMap.values())
+        for (X509Certificate issuer : certificateSet)
         {
             if (certificate.getIssuerX500Principal().equals(issuer.getSubjectX500Principal()))
             {
@@ -301,7 +301,7 @@ public class CertInformationCollector
             {
                 X509Certificate altIssuerCert = (X509Certificate) certFactory
                         .generateCertificate(in);
-                addCertToCertificatesMap(altIssuerCert);
+                certificateSet.add(altIssuerCert);
 
                 certInfo.alternativeCertChain = new CertSignatureInformation();
                 traverseChain(altIssuerCert, certInfo.alternativeCertChain, maxDepth - 1);
@@ -314,51 +314,29 @@ public class CertInformationCollector
     }
 
     /**
-     * Adds the given Certificate to the certificatesMap, if not yet containing.
-     * 
-     * @param certificate to add to the certificatesMap
-     */
-    private void addCertToCertificatesMap(X509Certificate certificate)
-    {
-        if (!certificatesMap.containsKey(certificate.getSerialNumber()))
-        {
-            certificatesMap.put(certificate.getSerialNumber(), certificate);
-        }
-    }
-
-    /**
-     * Gets the X509Certificate out of the X509CertificateHolder and add it to certificatesMap.
+     * Gets the X509Certificate out of the X509CertificateHolder.
      *
      * @param certificateHolder to get the certificate from
      * @return a X509Certificate or <code>null</code> when there was an Error with the Certificate
-     * @throws CertificateProccessingException on failed conversion from X509CertificateHolder to X509Certificate
+     * @throws CertificateProccessingException on failed conversion from X509CertificateHolder to
+     * X509Certificate
      */
     private X509Certificate getCertFromHolder(X509CertificateHolder certificateHolder)
             throws CertificateProccessingException
     {
-        //TODO getCertFromHolder violates "do one thing" rule (adds to the map and returns a certificate)
-        if (!certificatesMap.containsKey(certificateHolder.getSerialNumber()))
+        try
         {
-            try
-            {
-                X509Certificate certificate = certConverter.getCertificate(certificateHolder);
-                certificatesMap.put(certificate.getSerialNumber(), certificate);
-                return certificate;
-            }
-            catch (CertificateException e)
-            {
-                LOG.error("Certificate Exception getting Certificate from certHolder.", e);
-                throw new CertificateProccessingException(e);
-            }
+            return certConverter.getCertificate(certificateHolder);
         }
-        else
+        catch (CertificateException e)
         {
-            return certificatesMap.get(certificateHolder.getSerialNumber());
+            LOG.error("Certificate Exception getting Certificate from certHolder.", e);
+            throw new CertificateProccessingException(e);
         }
     }
 
     /**
-     * Adds multiple Certificates out of a Collection of X509CertificateHolder into certificatesMap.
+     * Adds multiple Certificates out of a Collection of X509CertificateHolder into certificateSet.
      *
      * @param certHolders Collection of X509CertificateHolder
      */
@@ -368,7 +346,8 @@ public class CertInformationCollector
         {
             try
             {
-                getCertFromHolder(certificateHolder);
+                X509Certificate certificate = getCertFromHolder(certificateHolder);
+                certificateSet.add(certificate);
             }
             catch (CertificateProccessingException e)
             {
@@ -379,7 +358,7 @@ public class CertInformationCollector
 
     /**
      * Gets a list of X509Certificate out of an array of X509CertificateHolder. The certificates
-     * will be added to certificatesMap.
+     * will be added to certificateSet.
      *
      * @param certHolders Array of X509CertificateHolder
      * @throws CertificateProccessingException when one of the Certificates could not be parsed.
@@ -412,13 +391,13 @@ public class CertInformationCollector
     }
 
     /**
-     * Get the map of all processed certificates until now.
+     * Get the set of all processed certificates until now.
      * 
-     * @return a map of serial numbers to certificates.
+     * @return a set of serial numbers to certificates.
      */
-    public Map<BigInteger, X509Certificate> getCertificatesMap()
+    public Set<X509Certificate> getCertificateSet()
     {
-        return certificatesMap;
+        return certificateSet;
     }
 
     /**
