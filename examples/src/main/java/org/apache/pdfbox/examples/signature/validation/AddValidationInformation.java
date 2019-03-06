@@ -558,9 +558,6 @@ public class AddValidationInformation
 
     public static void main(String[] args) throws IOException, GeneralSecurityException
     {
-args = new String[]{"C:\\Users\\Tilman\\Downloads\\SampleSignedPDFDocument.pdf"};
-args = new String[]{"C:\\Users\\Tilman\\Downloads\\QV_RCA1_RCA3_CPCPS_V4_11.pdf"};
-
         if (args.length != 1)
         {
             usage();
