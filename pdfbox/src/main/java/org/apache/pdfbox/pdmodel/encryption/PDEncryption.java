@@ -509,7 +509,7 @@ public class PDEncryption
             dictionary.setItem(COSName.CF, cfDictionary);
         }
         cfDictionary.setDirect(true); // PDFBOX-4436 direct obj needed for Adobe Reader on Android
-        cfDictionary.setItem(cryptFilterName, cryptFilterDictionary.getCOSDictionary());
+        cfDictionary.setItem(cryptFilterName, cryptFilterDictionary.getCOSObject());
     }
     
     /**
@@ -519,7 +519,7 @@ public class PDEncryption
      */
     public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)
     {
-        cryptFilterDictionary.getCOSDictionary().setDirect(true); // PDFBOX-4436
+        cryptFilterDictionary.getCOSObject().setDirect(true); // PDFBOX-4436
         setCryptFilterDictionary(COSName.STD_CF, cryptFilterDictionary);
     }
 
@@ -530,7 +530,7 @@ public class PDEncryption
      */
     public void setDefaultCryptFilterDictionary(PDCryptFilterDictionary defaultFilterDictionary)
     {
-        defaultFilterDictionary.getCOSDictionary().setDirect(true); // PDFBOX-4436
+        defaultFilterDictionary.getCOSObject().setDirect(true); // PDFBOX-4436
         setCryptFilterDictionary(COSName.DEFAULT_CRYPT_FILTER, defaultFilterDictionary);
     }
 
