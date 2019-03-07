@@ -502,13 +502,13 @@ public class PDEncryption
      */
     public void setCryptFilterDictionary(COSName cryptFilterName, PDCryptFilterDictionary cryptFilterDictionary)
     {
-        COSDictionary cfDictionary = (COSDictionary)dictionary.getDictionaryObject( COSName.CF );
+        COSDictionary cfDictionary = dictionary.getCOSDictionary(COSName.CF);
         if (cfDictionary == null)
         {
             cfDictionary = new COSDictionary();
             dictionary.setItem(COSName.CF, cfDictionary);
         }
-        
+        cfDictionary.setDirect(true); // PDFBOX-4436 direct obj needed for Adobe Reader on Android
         cfDictionary.setItem(cryptFilterName, cryptFilterDictionary.getCOSDictionary());
     }
     
@@ -519,16 +519,18 @@ public class PDEncryption
      */
     public void setStdCryptFilterDictionary(PDCryptFilterDictionary cryptFilterDictionary)
     {
+        cryptFilterDictionary.getCOSDictionary().setDirect(true); // PDFBOX-4436
         setCryptFilterDictionary(COSName.STD_CF, cryptFilterDictionary);
     }
 
     /**
      * Sets the default crypt filter (for public-key security handler).
-     * 
+     *
      * @param defaultFilterDictionary the standard crypt filter to set
      */
     public void setDefaultCryptFilterDictionary(PDCryptFilterDictionary defaultFilterDictionary)
     {
+        defaultFilterDictionary.getCOSDictionary().setDirect(true); // PDFBOX-4436
         setCryptFilterDictionary(COSName.DEFAULT_CRYPT_FILTER, defaultFilterDictionary);
     }
 
