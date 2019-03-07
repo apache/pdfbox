@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.encryption;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
  * This class is a specialized view of the crypt filter dictionary of a PDF document.
@@ -26,7 +27,7 @@ import org.apache.pdfbox.cos.COSName;
  * manage its fields.
  *
  */
-public class PDCryptFilterDictionary
+public class PDCryptFilterDictionary implements COSObjectable
 {
 
     /**
@@ -56,7 +57,7 @@ public class PDCryptFilterDictionary
      *
      * @return The COS dictionary that this object wraps.
      */
-    public COSDictionary getCOSDictionary()
+    public COSDictionary getCOSObject()
     {
         return cryptFilterDictionary;
     }
