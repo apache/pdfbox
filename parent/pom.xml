@@ -148,6 +148,7 @@
             <artifactId>animal-sniffer-maven-plugin</artifactId>
             <version>1.17</version>
             <configuration>
+              <skip>${skipTests}</skip>
               <signature>
                 <groupId>org.codehaus.mojo.signature</groupId>
                 <artifactId>java15</artifactId>
