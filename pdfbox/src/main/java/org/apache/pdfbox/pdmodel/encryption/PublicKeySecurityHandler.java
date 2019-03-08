@@ -156,7 +156,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             if (array == null)
             {
                 PDCryptFilterDictionary defaultCryptFilterDictionary = encryption.getDefaultCryptFilterDictionary();
-                array = (COSArray) defaultCryptFilterDictionary.getCOSDictionary().getItem(COSName.RECIPIENTS);
+                array = (COSArray) defaultCryptFilterDictionary.getCOSObject().getItem(COSName.RECIPIENTS);
             }
             byte[][] recipientFieldsBytes = new byte[array.size()][];
             //TODO encryption.getRecipientsLength() and getRecipientStringAt() should be deprecated
@@ -418,11 +418,11 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         {
             array.add(new COSString(recipient));
         }
-        cryptFilterDictionary.getCOSDictionary().setItem(COSName.RECIPIENTS, array);
+        cryptFilterDictionary.getCOSObject().setItem(COSName.RECIPIENTS, array);
         encryptionDictionary.setDefaultCryptFilterDictionary(cryptFilterDictionary);
         encryptionDictionary.setStreamFilterName(COSName.DEFAULT_CRYPT_FILTER);
         encryptionDictionary.setStringFilterName(COSName.DEFAULT_CRYPT_FILTER);
-        cryptFilterDictionary.getCOSDictionary().setDirect(true);
+        cryptFilterDictionary.getCOSObject().setDirect(true);
         setAES(true);
     }
 
