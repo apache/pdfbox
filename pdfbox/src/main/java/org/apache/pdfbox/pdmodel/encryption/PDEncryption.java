@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
  * This class is a specialized view of the encryption dictionary of a PDF document.
@@ -37,7 +38,7 @@ import org.apache.pdfbox.cos.COSString;
  * @author Ben Litchfield
  * @author Benoit Guillon
  */
-public class PDEncryption
+public class PDEncryption implements COSObjectable
 {
     /**
      * See PDF Reference 1.4 Table 3.13.
@@ -134,7 +135,8 @@ public class PDEncryption
      *
      * @return The COS dictionary that this object wraps.
      */
-    public COSDictionary getCOSDictionary()
+    @Override
+    public COSDictionary getCOSObject()
     {
         return dictionary;
     }
