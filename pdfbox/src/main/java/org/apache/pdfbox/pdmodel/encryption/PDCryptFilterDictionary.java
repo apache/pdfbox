@@ -69,6 +69,7 @@ public class PDCryptFilterDictionary implements COSObjectable
      *
      * @return The COS dictionary that this object wraps.
      */
+    @Override
     public COSDictionary getCOSObject()
     {
         return cryptFilterDictionary;
