@@ -47,6 +47,8 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
@@ -124,7 +126,12 @@ public final class ShowSignature
             PDDocument document = null;
             try
             {
-                document = PDDocument.load(infile, password);
+                // use old-style document loading to disable leniency
+                RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(infile);
+                PDFParser parser = new PDFParser(raFile, password);
+                parser.setLenient(false);
+                parser.parse();
+                document = parser.getPDDocument();
                 for (PDSignature sig : document.getSignatureDictionaries())
                 {
                     COSDictionary sigDict = sig.getCOSObject();
