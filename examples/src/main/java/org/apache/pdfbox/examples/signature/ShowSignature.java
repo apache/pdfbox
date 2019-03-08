@@ -127,6 +127,7 @@ public final class ShowSignature
             try
             {
                 // use old-style document loading to disable leniency
+                // see also https://www.pdf-insecurity.org/
                 RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(infile);
                 PDFParser parser = new PDFParser(raFile, password);
                 parser.setLenient(false);
