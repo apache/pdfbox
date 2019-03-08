@@ -399,7 +399,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
 
         document.setEncryptionDictionary( encryptionDictionary );
-        document.getDocument().setEncryptionDictionary(encryptionDictionary.getCOSDictionary());
+        document.getDocument().setEncryptionDictionary(encryptionDictionary.getCOSObject());
     }
 
     private void prepareEncryptionDictRev6(String ownerPassword, String userPassword,
