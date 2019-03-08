@@ -152,7 +152,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             byte[] envelopedData = null;
 
             // the bytes of each recipient in the recipients array
-            COSArray array = (COSArray) encryption.getCOSDictionary().getItem(COSName.RECIPIENTS);
+            COSArray array = (COSArray) encryption.getCOSObject().getItem(COSName.RECIPIENTS);
             if (array == null)
             {
                 PDCryptFilterDictionary defaultCryptFilterDictionary = encryption.getDefaultCryptFilterDictionary();
@@ -384,7 +384,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             System.arraycopy(mdResult, 0, this.encryptionKey, 0, this.keyLength/8);
 
             doc.setEncryptionDictionary(dictionary);
-            doc.getDocument().setEncryptionDictionary(dictionary.getCOSDictionary());
+            doc.getDocument().setEncryptionDictionary(dictionary.getCOSObject());
         }
         catch(GeneralSecurityException e)
         {
