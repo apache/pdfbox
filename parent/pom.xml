@@ -263,6 +263,9 @@
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
                 <version>1.3.0</version>
+                <configuration>
+                    <skip>${skipTests}</skip>
+                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
