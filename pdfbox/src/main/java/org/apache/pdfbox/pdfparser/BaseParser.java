@@ -1331,7 +1331,9 @@ public abstract class BaseParser
         catch( NumberFormatException e )
         {
             seqSource.unread(intBuffer.toString().getBytes(ISO_8859_1));
-            throw new IOException( "Error: Expected an integer type at offset "+ seqSource.getPosition(), e);
+            throw new IOException("Error: Expected an integer type at offset " +
+                                  seqSource.getPosition() +
+                                  ", instead got '" + intBuffer + "'", e);
         }
         return retval;
     }
