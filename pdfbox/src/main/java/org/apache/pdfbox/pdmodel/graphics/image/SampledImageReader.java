@@ -243,6 +243,9 @@ final class SampledImageReader
         InputStream iis = null;
         try
         {
+            // create stream
+            iis = pdImage.createInputStream(options);
+
             final int inputWidth;
             final int startx;
             final int starty;
@@ -281,9 +284,6 @@ final class SampledImageReader
             }
             output = ((DataBufferByte) raster.getDataBuffer()).getData();
             final boolean isIndexed = colorSpace instanceof PDIndexed;
-
-            // create stream
-            iis = pdImage.createInputStream(options);
 
             int rowLen = inputWidth / 8;
             if (inputWidth % 8 > 0)
@@ -464,6 +464,8 @@ final class SampledImageReader
         ImageInputStream iis = null;
         try
         {
+            iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options));
+
             final int inputWidth;
             final int startx;
             final int starty;
@@ -490,7 +492,6 @@ final class SampledImageReader
             }
             // create stream
             final float sampleMax = (float) Math.pow(2, bitsPerComponent) - 1f;
-            iis = new MemoryCacheImageInputStream(pdImage.createInputStream(options));
             final boolean isIndexed = colorSpace instanceof PDIndexed;
 
             // init color key mask
