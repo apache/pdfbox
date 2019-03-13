@@ -85,7 +85,9 @@ public interface PDImage extends COSObjectable
     InputStream createInputStream(List<String> stopFilters) throws IOException;
 
     /**
-     * Returns an InputStream, passing additional options to each filter
+     * Returns an InputStream, passing additional options to each filter. As a side effect, the
+     * filterSubsampled flag is set in {@link DecodeOptions}.
+     *
      * @param options Additional decoding options passed to the filters used
      * @return Decoded stream
      * @throws IOException if the data could not be read
