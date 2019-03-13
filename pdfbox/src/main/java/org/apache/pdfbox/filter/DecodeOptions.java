@@ -190,7 +190,7 @@ public class DecodeOptions
      * Flag used by the filter to specify if it performed subsampling.
      *
      * Some filters may be unable or unwilling to apply subsampling, and so the caller must check
-     * this flag after decoding.
+     * this flag <b>after</b> decoding.
      *
      * @return True if the filter applied the options specified by this instance, false otherwise.
      */
