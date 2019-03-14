@@ -149,7 +149,6 @@ public class PDFMergerUtility
         sources = new ArrayList<Object>();
     }
 
-
     /**
      * Get the merge mode to be used for merging AcroForms between documents
      * 
@@ -168,6 +167,26 @@ public class PDFMergerUtility
     public void setAcroFormMergeMode(AcroFormMergeMode theAcroFormMergeMode)
     {
         this.acroFormMergeMode = theAcroFormMergeMode;
+    }
+
+    /**
+     * Set the merge mode to be used for merging documents
+     * 
+     * {@link DocumentMergeMode}
+     */
+    public void setDocumentMergeMode(DocumentMergeMode theDocumentMergeMode)
+    {
+        this.documentMergeMode = theDocumentMergeMode;
+    }
+
+    /**
+     * Get the merge mode to be used for merging documents
+     * 
+     * {@link DocumentMergeMode}
+     */
+    public DocumentMergeMode getDocumentMergeMode()
+    {
+        return documentMergeMode;
     }
 
     /**
