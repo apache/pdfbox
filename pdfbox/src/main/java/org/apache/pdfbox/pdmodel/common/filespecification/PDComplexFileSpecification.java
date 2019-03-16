@@ -131,7 +131,9 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
 
     /**
-     * This will set unicode file name.
+     * This will set the unicode file name. If you call this, then do not forget to also call
+     * {@link #setFile(java.lang.String) setFile(String)} or the attachment will not be visible on
+     * some viewers.
      *
      * @param file The name of the file.
      */
@@ -152,7 +154,9 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
 
     /**
-     * This will set the file name.
+     * This will set the file name. You should also call
+     * {@link #setFileUnicode(java.lang.String) setFileUnicode(String)} for cross-platform and
+     * cross-language compatibility.
      *
      * @param file The name of the file.
      */
@@ -176,7 +180,9 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * This will set name representing a dos file.
      *
      * @param file The name of the file.
+     * @deprecated This method is obsolescent and should not be used by conforming writers.
      */
+    @Deprecated
     public void setFileDos( String file )
     {
         fs.setString( COSName.DOS, file );
@@ -196,7 +202,9 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * This will set name representing a Mac file.
      *
      * @param file The name of the file.
+     * @deprecated This method is obsolescent and should not be used by conforming writers.
      */
+    @Deprecated
     public void setFileMac( String file )
     {
         fs.setString( COSName.MAC, file );
@@ -216,7 +224,9 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * This will set name representing a Unix file.
      *
      * @param file The name of the file.
+     * @deprecated This method is obsolescent and should not be used by conforming writers.
      */
+    @Deprecated
     public void setFileUnix( String file )
     {
         fs.setString( COSName.UNIX, file );
