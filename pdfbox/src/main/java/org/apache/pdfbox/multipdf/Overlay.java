@@ -96,8 +96,8 @@ public class Overlay implements Closeable
     /**
      * This will add overlays to a document.
      *
-     * @param specificPageOverlayFile map of overlay files for specific pages. The page numbers are
-     * 1-based.
+     * @param specificPageOverlayFile Optional map of overlay files for specific pages. The page
+     * numbers are 1-based. The map must be empty (but not null) if no specific mappings are used.
      *
      * @return The modified input PDF document, which has to be saved and closed by the caller. If
      * the input document was passed by {@link #setInputPDF(PDDocument) setInputPDF(PDDocument)}
@@ -129,8 +129,9 @@ public class Overlay implements Closeable
     /**
      * This will add overlays documents to a document.
      *
-     * @param specificPageOverlayDocuments map of overlay documents for specific pages. The page
-     * numbers are 1-based.
+     * @param specificPageOverlayDocuments Optional map of overlay documents for specific pages. The
+     * page numbers are 1-based. The map must be empty (but not null) if no specific mappings are
+     * used.
      *
      * @return The modified input PDF document, which has to be saved and closed by the caller. If
      * the input document was passed by {@link #setInputPDF(PDDocument) setInputPDF(PDDocument)}
