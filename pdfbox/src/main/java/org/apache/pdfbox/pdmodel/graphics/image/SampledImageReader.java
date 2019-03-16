@@ -168,7 +168,7 @@ final class SampledImageReader
      * @param region The region of the source image to get, or null if the entire image is needed.
      *               The actual region will be clipped to the dimensions of the source image.
      * @param subsampling The amount of rows and columns to advance for every output pixel, a value
-     *                  of 1 meaning every pixel will be read
+     * of 1 meaning every pixel will be read. It must not be larger than the image width or height.
      * @param colorKey an optional color key mask
      * @return content of this image as an (A)RGB buffered image
      * @throws IOException if the image cannot be read
