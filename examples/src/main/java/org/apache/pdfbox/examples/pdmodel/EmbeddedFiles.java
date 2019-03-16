@@ -80,7 +80,11 @@ public class EmbeddedFiles
 
             //first create the file specification, which holds the embedded file
             PDComplexFileSpecification fs = new PDComplexFileSpecification();
+
+            // use both methods for backwards, cross-platform and cross-language compatibility.
             fs.setFile( "Test.txt" );
+            fs.setFileUnicode("Test.txt");
+
             //create a dummy file stream, this would probably normally be a FileInputStream
             byte[] data = "This is the contents of the embedded file".getBytes("ISO-8859-1");
             ByteArrayInputStream fakeFile =
