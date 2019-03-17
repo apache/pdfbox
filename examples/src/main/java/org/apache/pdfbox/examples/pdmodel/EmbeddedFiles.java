@@ -44,7 +44,7 @@ public class EmbeddedFiles
     /**
      * Constructor.
      */
-    public EmbeddedFiles()
+    private EmbeddedFiles()
     {
     }
 
