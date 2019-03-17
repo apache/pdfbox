@@ -180,6 +180,14 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
             {
                 glyphHeight = capHeight;
             }
+            // PDFBOX-3464, PDFBOX-448:
+            // sometimes even CapHeight has very high value, but Ascent and Descent are ok
+            float ascent = fontDescriptor.getAscent();
+            float descent = fontDescriptor.getDescent();
+            if (ascent > 0 && descent < 0 && ((ascent - descent) / 2 < glyphHeight || glyphHeight == 0))
+            {
+                glyphHeight = (ascent - descent) / 2;
+            }
         }
 
         // transformPoint from glyph space -> text space
