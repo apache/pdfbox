@@ -16,8 +16,6 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
@@ -29,6 +27,7 @@ import java.util.Map;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
@@ -133,45 +132,39 @@ class Type3Font extends FontPane
     // Isn't called if no bounds are available
     private BufferedImage renderType3Glyph(PDType3Font font, int index) throws IOException
     {
-        PDDocument doc = new PDDocument();
-        int scale = 1;
-        if (fontBBox.getWidth() < 72 || fontBBox.getHeight() < 72)
+        try (PDDocument doc = new PDDocument())
         {
-            // e.g. T4 font of PDFBOX-2959
-            scale = (int) (72 / Math.min(fontBBox.getWidth(), fontBBox.getHeight()));
-        }
-        PDPage page = new PDPage(new PDRectangle(fontBBox.getWidth() * scale, fontBBox.getHeight() * scale));
-        page.setResources(resources);
-        try
-        {
-            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            int scale = 1;
+            if (fontBBox.getWidth() < 72 || fontBBox.getHeight() < 72)
             {
-                cs.transform(Matrix.getTranslateInstance(-fontBBox.getLowerLeftX(), -fontBBox.getLowerLeftY()));
-                try
-                {
-                    AffineTransform at = font.getFontMatrix().createAffineTransform();
-                    if (!at.isIdentity())
-                    {
-                        at.invert();
-                        cs.transform(new Matrix(at));
-                    }
-                }
-                catch (NoninvertibleTransformException ex)
-                {
-                    // "shouldn't happen"
-                }
+                // e.g. T4 font of PDFBOX-2959
+                scale = (int) (72 / Math.min(fontBBox.getWidth(), fontBBox.getHeight()));
+            }
+            PDPage page = new PDPage(new PDRectangle(fontBBox.getWidth() * scale, fontBBox.getHeight() * scale));
+            page.setResources(resources);
+
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page, AppendMode.APPEND, false))
+            {
+                // any changes here must be done carefully and each file must be tested again
+                // just inverting didn't work with
+                // https://www.treasury.gov/ofac/downloads/sdnlist.pdf (has rotated matrix)
+                // also test PDFBOX-4228-type3.pdf (identity matrix)
+                // Root/Pages/Kids/[0]/Resources/XObject/X1/Resources/XObject/X3/Resources/Font/F10
+                // PDFBOX-1794-vattenfall.pdf (scale 0.001)
+                float scalingFactorX = font.getFontMatrix().getScalingFactorX();
+                float scalingFactorY = font.getFontMatrix().getScalingFactorY();
+                float translateX = scalingFactorX > 0 ? -fontBBox.getLowerLeftX() : fontBBox.getUpperRightX();
+                float translateY = scalingFactorY > 0 ? -fontBBox.getLowerLeftY() : fontBBox.getUpperRightY();
+                cs.transform(Matrix.getTranslateInstance(translateX * scale, translateY * scale));
                 cs.beginText();
-                cs.setFont(font, scale);
+                cs.setFont(font, scale / Math.min(Math.abs(scalingFactorX), Math.abs(scalingFactorY)));
                 //TODO support type3 font encoding in PDType3Font.encode
                 cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(Charsets.ISO_8859_1));
                 cs.endText();
             }
             doc.addPage(page);
+            // for debug you can save the PDF here
             return new PDFRenderer(doc).renderImage(0);
-        }
-        finally
-        {
-            doc.close();
         }
     }
 
