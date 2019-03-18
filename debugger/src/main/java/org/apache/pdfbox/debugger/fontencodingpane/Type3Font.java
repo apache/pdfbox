@@ -16,8 +16,6 @@
 
 package org.apache.pdfbox.debugger.fontencodingpane;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -142,26 +140,23 @@ class Type3Font extends FontPane
         }
         PDPage page = new PDPage(new PDRectangle(fontBBox.getWidth() * scale, fontBBox.getHeight() * scale));
         page.setResources(resources);
+
+        PDPageContentStream cs = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND, false);
         try
         {
-            PDPageContentStream cs = new PDPageContentStream(doc, page);
-            cs.transform(Matrix.getTranslateInstance(-fontBBox.getLowerLeftX(), -fontBBox.getLowerLeftY()));
-            try
-            {
-                AffineTransform at = font.getFontMatrix().createAffineTransform();
-                if (!at.isIdentity())
-                {
-                    at.invert();
-                    cs.transform(new Matrix(at));
-                }
-            }
-            catch (NoninvertibleTransformException ex)
-            {
-                // "shouldn't happen"
-            }
+            // any changes here must be done carefully and each file must be tested again
+            // just inverting didn't work with
+            // https://www.treasury.gov/ofac/downloads/sdnlist.pdf (has rotated matrix)
+            // also PDFBOX-4228-type3.pdf (identity matrix)
+            // Root/Pages/Kids/[0]/Resources/XObject/X1/Resources/XObject/X3/Resources/Font/F10
+            // PDFBOX-1794-vattenfall.pdf (scale 0.001)
+            float scalingFactorX = font.getFontMatrix().getScalingFactorX();
+            float scalingFactorY = font.getFontMatrix().getScalingFactorY();
+            float translateX = scalingFactorX > 0 ? -fontBBox.getLowerLeftX() : fontBBox.getUpperRightX();
+            float translateY = scalingFactorY > 0 ? -fontBBox.getLowerLeftY() : fontBBox.getUpperRightY();
+            cs.transform(Matrix.getTranslateInstance(translateX * scale, translateY * scale));
             cs.beginText();
-            cs.setFont(font, scale);
-            //TODO support type3 font encoding in PDType3Font.encode
+            cs.setFont(font, scale / Math.min(Math.abs(scalingFactorX), Math.abs(scalingFactorY)));
             cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(Charsets.ISO_8859_1));
             cs.endText();
             cs.close();
