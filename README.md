@@ -13,7 +13,7 @@ Binary Downloads
 ----------------
 
 You can download binary versions for releases currently under development or older
-releases from out [Download Page](http://pdfbox.apache.org/download.cgi).
+releases from our [Download Page](http://pdfbox.apache.org/download.cgi).
 
 Build
 -----
