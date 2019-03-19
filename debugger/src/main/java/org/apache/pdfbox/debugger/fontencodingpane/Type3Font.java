@@ -158,7 +158,7 @@ class Type3Font extends FontPane
                 cs.transform(Matrix.getTranslateInstance(translateX * scale, translateY * scale));
                 cs.beginText();
                 cs.setFont(font, scale / Math.min(Math.abs(scalingFactorX), Math.abs(scalingFactorY)));
-                //TODO support type3 font encoding in PDType3Font.encode
+                // can't use showText() because there's no guarantee we have the unicode
                 cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(Charsets.ISO_8859_1));
                 cs.endText();
             }
