@@ -421,11 +421,25 @@ public final class ShowSignature
         CMSProcessable signedContent = new CMSProcessableByteArray(byteArray);
         CMSSignedData signedData = new CMSSignedData(signedContent, contents.getBytes());
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
+        if (certificatesStore.getMatches(null).isEmpty())
+        {
+            throw new IOException("No certificates in signature");
+        }
         Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
+        if (signers.isEmpty())
+        {
+            throw new IOException("No signers in signature");
+        }
         SignerInformation signerInformation = signers.iterator().next();
         @SuppressWarnings("unchecked")
         Collection<X509CertificateHolder> matches =
                 certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
+        if (matches.isEmpty())
+        {
+            throw new IOException("Signer '" + signerInformation.getSID().getIssuer() + 
+                                  ", serial# " + signerInformation.getSID().getSerialNumber() + 
+                                  " does not match any certificates");
+        }
         X509CertificateHolder certificateHolder = matches.iterator().next();
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
         System.out.println("certFromSignedData: " + certFromSignedData);
