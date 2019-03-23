@@ -115,7 +115,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                 {
                     for (int y = boundary[2]; y <= boundary[3]; y++)
                     {
-                        Point p = new Point(x, y);
+                        Point p = new IntPoint(x, y);
                         if (tri.contains(p))
                         {
                             map.put(p, evalFunctionAndConvertToRGB(tri.calcColor(p)));
@@ -167,7 +167,7 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
             {
                 for (int col = 0; col < w; col++)
                 {
-                    Point p = new Point(x + col, y + row);
+                    Point p = new IntPoint(x + col, y + row);
                     int value;
                     Integer v = pixelTable.get(p);
                     if (v != null)
