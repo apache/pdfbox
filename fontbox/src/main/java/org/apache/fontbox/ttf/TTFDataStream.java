@@ -116,7 +116,7 @@ abstract class TTFDataStream implements Closeable
     public int readSignedByte() throws IOException
     {
         int signedByte = read();
-        return signedByte < 127 ? signedByte : signedByte - 256;
+        return signedByte <= 127 ? signedByte : signedByte - 256;
     }
 
     /**
