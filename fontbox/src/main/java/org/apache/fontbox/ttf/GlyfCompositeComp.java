@@ -95,11 +95,13 @@ public class GlyfCompositeComp
         // Get the arguments as just their raw values
         if ((flags & ARG_1_AND_2_ARE_WORDS) != 0)
         {
+            // If this is set, the arguments are 16-bit (uint16 or int16)
             argument1 = bais.readSignedShort();
             argument2 = bais.readSignedShort();
         }
         else
         {
+            // otherwise, they are bytes (uint8 or int8).
             argument1 = (short) bais.readSignedByte();
             argument2 = (short) bais.readSignedByte();
         }
@@ -107,12 +109,19 @@ public class GlyfCompositeComp
         // Assign the arguments according to the flags
         if ((flags & ARGS_ARE_XY_VALUES) != 0)
         {
+            // If this is set, the arguments are signed xy values
             xtranslate = argument1;
             ytranslate = argument2;
         }
         else
         {
-            // TODO unused?
+            // otherwise, they are unsigned point numbers.
+            //TODO why unused?
+            // https://docs.microsoft.com/en-us/typography/opentype/spec/glyf
+            // "In the latter case, the first point number indicates the point that is to be matched
+            // to the new glyph. The second number indicates the new glyph’s “matched” point.
+            // Once a glyph is added, its point numbers begin directly after the last glyphs
+            // (endpoint of first glyph + 1).
             point1 = argument1;
             point2 = argument2;
         }
