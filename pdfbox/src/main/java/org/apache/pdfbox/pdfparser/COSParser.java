@@ -2022,6 +2022,12 @@ public class COSParser extends BaseParser
                         long objNumber = Long.parseLong(numbers[i * 2]);
                         COSObjectKey objKey = new COSObjectKey(objNumber, 0);
                         Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                        if (existingOffset != null && existingOffset < 0)
+                        {
+                            // translate stream object key to its offset
+                            COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
+                            existingOffset = bfSearchCOSObjectKeyOffsets.get(objStmKey);
+                        }
                         if (existingOffset == null || offset > existingOffset)
                         {
                             bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
