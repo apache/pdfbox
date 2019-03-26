@@ -163,11 +163,13 @@ public abstract class BaseParser
         readExpectedChar('R');
         if (!(value instanceof COSInteger))
         {
-            throw new IOException("expected number, actual=" + value + " at offset " + numOffset);
+            LOG.error("expected number, actual=" + value + " at offset " + numOffset);
+            return COSNull.NULL;
         }
         if (!(generationNumber instanceof COSInteger))
         {
-            throw new IOException("expected number, actual=" + value + " at offset " + genOffset);
+            LOG.error("expected number, actual=" + value + " at offset " + genOffset);
+            return COSNull.NULL;
         }
         COSObjectKey key = new COSObjectKey(((COSInteger) value).longValue(),
                 ((COSInteger) generationNumber).intValue());
