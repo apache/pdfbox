@@ -661,22 +661,33 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     private float[] getDashArray(PDLineDashPattern dashPattern)
     {
         float[] dashArray = dashPattern.getDashArray();
-        float scalingFactorX = new Matrix(xform).getScalingFactorX();
-        for (int i = 0; i < dashArray.length; ++i)
+        if (JAVA_VERSION < 10)
         {
-            // apply the CTM
-            float w = transformWidth(dashArray[i]);
-            // minimum line dash width avoids JVM crash,
-            // see PDFBOX-2373, PDFBOX-2929, PDFBOX-3204, PDFBOX-3813
-            // also avoid 0 in array like "[ 0 1000 ] 0 d", see PDFBOX-3724
-            if (scalingFactorX < 0.5f)
+            float scalingFactorX = new Matrix(xform).getScalingFactorX();
+            for (int i = 0; i < dashArray.length; ++i)
             {
-                // PDFBOX-4492
-                dashArray[i] = Math.max(w, 0.2f);
+                // apply the CTM
+                float w = transformWidth(dashArray[i]);
+                // minimum line dash width avoids JVM crash,
+                // see PDFBOX-2373, PDFBOX-2929, PDFBOX-3204, PDFBOX-3813
+                // also avoid 0 in array like "[ 0 1000 ] 0 d", see PDFBOX-3724
+                if (scalingFactorX < 0.5f)
+                {
+                    // PDFBOX-4492
+                    dashArray[i] = Math.max(w, 0.2f);
+                }
+                else
+                {
+                    dashArray[i] = Math.max(w, 0.062f);
+                }
             }
-            else
+        }
+        else
+        {
+            for (int i = 0; i < dashArray.length; ++i)
             {
-                dashArray[i] = Math.max(w, 0.062f);
+                // apply the CTM
+                dashArray[i] = transformWidth(dashArray[i]);
             }
         }
         return dashArray;
