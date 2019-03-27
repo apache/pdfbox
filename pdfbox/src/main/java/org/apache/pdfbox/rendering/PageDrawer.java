@@ -631,25 +631,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         PDLineDashPattern dashPattern = state.getLineDashPattern();
         int phaseStart = dashPattern.getPhase();
-        float[] dashArray = dashPattern.getDashArray();
-        float scalingFactorX = new Matrix(xform).getScalingFactorX();
-        for (int i = 0; i < dashArray.length; ++i)
-        {
-            // apply the CTM
-            float w = transformWidth(dashArray[i]);
-            // minimum line dash width avoids JVM crash,
-            // see PDFBOX-2373, PDFBOX-2929, PDFBOX-3204, PDFBOX-3813
-            // also avoid 0 in array like "[ 0 1000 ] 0 d", see PDFBOX-3724
-            if (scalingFactorX < 0.5f)
-            {
-                // PDFBOX-4492
-                dashArray[i] = Math.max(w, 0.2f);
-            }
-            else
-            {
-                dashArray[i] = Math.max(w, 0.062f);
-            }
-        }
+        float[] dashArray = getDashArray(dashPattern);
         phaseStart = (int) transformWidth(phaseStart);
 
         // empty dash array is illegal
@@ -671,6 +653,30 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         return new BasicStroke(lineWidth, state.getLineCap(), state.getLineJoin(),
                                state.getMiterLimit(), dashArray, phaseStart);
+    }
+
+    private float[] getDashArray(PDLineDashPattern dashPattern)
+    {
+        float[] dashArray = dashPattern.getDashArray();
+        float scalingFactorX = new Matrix(xform).getScalingFactorX();
+        for (int i = 0; i < dashArray.length; ++i)
+        {
+            // apply the CTM
+            float w = transformWidth(dashArray[i]);
+            // minimum line dash width avoids JVM crash,
+            // see PDFBOX-2373, PDFBOX-2929, PDFBOX-3204, PDFBOX-3813
+            // also avoid 0 in array like "[ 0 1000 ] 0 d", see PDFBOX-3724
+            if (scalingFactorX < 0.5f)
+            {
+                // PDFBOX-4492
+                dashArray[i] = Math.max(w, 0.2f);
+            }
+            else
+            {
+                dashArray[i] = Math.max(w, 0.062f);
+            }
+        }
+        return dashArray;
     }
 
     @Override
