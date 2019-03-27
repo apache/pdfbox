@@ -428,7 +428,7 @@ public class PageDrawer extends PDFStreamEngine
                     float w = transformWidth(dashArray[i]);
                     dashArray[i] = Math.max(w, 0.062f);
                 }
-                phaseStart = (int)transformWidth(phaseStart);
+                phaseStart = transformWidth(phaseStart);
 
                 // empty dash array is illegal
                 // avoid also infinite and NaN values (PDFBOX-3360)
