@@ -633,9 +633,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
 
         PDLineDashPattern dashPattern = state.getLineDashPattern();
-        int phaseStart = dashPattern.getPhase();
+        float phaseStart = dashPattern.getPhase();
         float[] dashArray = getDashArray(dashPattern);
-        phaseStart = (int) transformWidth(phaseStart);
+        phaseStart = transformWidth(phaseStart);
 
         // empty dash array is illegal
         // avoid also infinite and NaN values (PDFBOX-3360)
