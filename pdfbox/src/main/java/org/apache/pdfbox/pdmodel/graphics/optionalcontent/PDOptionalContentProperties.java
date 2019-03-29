@@ -143,7 +143,8 @@ public class PDOptionalContentProperties implements COSObjectable
     }
 
     /**
-     * Returns the optional content group of the given name.
+     * Returns the first optional content group of the given name.
+     *
      * @param name the group name
      * @return the optional content group or null, if there is no such group
      */
