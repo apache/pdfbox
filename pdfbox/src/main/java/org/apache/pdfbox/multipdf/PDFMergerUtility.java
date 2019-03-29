@@ -951,9 +951,9 @@ public class PDFMergerUtility
     {
         // make new /K with array that has the input /K entries
         COSArray newKArray = new COSArray();
-        if (srcStructTree.getK() != null)
+        if (destStructTree.getK() != null)
         {
-            COSBase base = cloner.cloneForNewDocument(srcStructTree.getK());
+            COSBase base = destStructTree.getK();
             if (base instanceof COSArray)
             {
                 newKArray.addAll((COSArray) base);
@@ -963,9 +963,9 @@ public class PDFMergerUtility
                 newKArray.add(base);
             }
         }
-        if (destStructTree.getK() != null)
+        if (srcStructTree.getK() != null)
         {
-            COSBase base = destStructTree.getK();
+            COSBase base = cloner.cloneForNewDocument(srcStructTree.getK());
             if (base instanceof COSArray)
             {
                 newKArray.addAll((COSArray) base);
