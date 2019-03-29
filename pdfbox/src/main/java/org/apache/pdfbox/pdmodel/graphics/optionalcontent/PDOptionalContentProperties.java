@@ -254,13 +254,30 @@ public class PDOptionalContentProperties implements COSObjectable
     }
 
     /**
-     * Indicates whether an optional content group is enabled.
+     * Indicates whether <em>at least one</em> optional content group with this name is enabled.
+     * There may be disabled optional content groups with this name even if this function returns
+     * true
+     *
      * @param groupName the group name
-     * @return true if the group is enabled
+     * @return true if at least one group is enabled
      */
     public boolean isGroupEnabled(String groupName)
     {
-        return isGroupEnabled(getGroup(groupName));
+        boolean result = false;
+        COSArray ocgs = getOCGs();
+        for (COSBase o : ocgs)
+        {
+            COSDictionary ocg = toDictionary(o);
+            String name = ocg.getString(COSName.NAME);
+            if (groupName.equals(name))
+            {
+                if (isGroupEnabled(new PDOptionalContentGroup(ocg)))
+                {
+                    result = true;
+                }
+            }
+        }
+        return result;
     }
 
     /**
@@ -325,14 +342,30 @@ public class PDOptionalContentProperties implements COSObjectable
     }
 
     /**
-     * Enables or disables an optional content group.
+     * Enables or disables all optional content groups with the given name.
+     *
      * @param groupName the group name
      * @param enable true to enable, false to disable
-     * @return true if the group already had an on or off setting, false otherwise
+     * @return true if at least one group with this name already had an on or off setting, false
+     * otherwise
      */
     public boolean setGroupEnabled(String groupName, boolean enable)
     {
-        return setGroupEnabled(getGroup(groupName), enable);
+        boolean result = false;
+        COSArray ocgs = getOCGs();
+        for (COSBase o : ocgs)
+        {
+            COSDictionary ocg = toDictionary(o);
+            String name = ocg.getString(COSName.NAME);
+            if (groupName.equals(name))
+            {
+                if (setGroupEnabled(new PDOptionalContentGroup(ocg), enable))
+                {
+                    result = true;
+                }
+            }
+        }
+        return result;
     }
 
     /**
