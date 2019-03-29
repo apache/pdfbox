@@ -821,7 +821,7 @@ public abstract class PDFStreamEngine
     /**
      * Called when a marked content group begins
      *
-     * @param tag content tag
+     * @param tag indicates the role or significance of the sequence
      * @param properties optional properties
      */
     public void beginMarkedContentSequence(COSName tag, COSDictionary properties)
