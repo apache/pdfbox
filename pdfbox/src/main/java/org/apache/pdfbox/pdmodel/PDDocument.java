@@ -1000,10 +1000,10 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf.
-     * Unrestricted main memory will be used for buffering PDF streams.
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the
+     * pdf. Unrestricted main memory will be used for buffering PDF streams.
      * 
-     * @param input stream that contains the document.
+     * @param input stream that contains the document. Don't forget to close it after loading.
      * 
      * @return loaded document
      * 
@@ -1016,12 +1016,11 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses a PDF. Depending on the memory settings parameter the given input
-     * stream is either copied to main memory or to a temporary file to enable
-     * random access to the pdf.
+     * Parses a PDF. Depending on the memory settings parameter the given input stream is either
+     * copied to main memory or to a temporary file to enable random access to the pdf.
      * 
-     * @param input stream that contains the document.
-     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams 
+     * @param input stream that contains the document. Don't forget to close it after loading.
+     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
      * 
      * @return loaded document
      * 
@@ -1035,12 +1034,12 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf.
-     * Unrestricted main memory will be used for buffering PDF streams.
-     * 
-     * @param input stream that contains the document.
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the
+     * pdf. Unrestricted main memory will be used for buffering PDF streams.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
-     * 
+     *
      * @return loaded document
      * 
      * @throws InvalidPasswordException If the password is incorrect.
@@ -1053,10 +1052,10 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf.
-     * Unrestricted main memory will be used for buffering PDF streams.
-     * 
-     * @param input stream that contains the document.
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the
+     * pdf. Unrestricted main memory will be used for buffering PDF streams.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security 
      * @param alias alias to be used for decryption when using public key security
@@ -1072,11 +1071,10 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Parses a PDF. Depending on the memory settings parameter the given input
-     * stream is either copied to main memory or to a temporary file to enable
-     * random access to the pdf.
-     * 
-     * @param input stream that contains the document.
+     * Parses a PDF. Depending on the memory settings parameter the given input stream is either
+     * copied to main memory or to a temporary file to enable random access to the pdf.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
      * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams 
      * 
@@ -1092,11 +1090,10 @@ public class PDDocument implements Closeable
     }
     
     /**
-     * Parses a PDF. Depending on the memory settings parameter the given input
-     * stream is either copied to memory or to a temporary file to enable
-     * random access to the pdf.
-     * 
-     * @param input stream that contains the document.
+     * Parses a PDF. Depending on the memory settings parameter the given input stream is either
+     * copied to memory or to a temporary file to enable random access to the pdf.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security 
      * @param alias alias to be used for decryption when using public key security
