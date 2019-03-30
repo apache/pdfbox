@@ -257,7 +257,7 @@ public class PDOptionalContentProperties implements COSObjectable
     /**
      * Indicates whether <em>at least one</em> optional content group with this name is enabled.
      * There may be disabled optional content groups with this name even if this function returns
-     * true
+     * true.
      *
      * @param groupName the group name
      * @return true if at least one group is enabled
@@ -270,12 +270,9 @@ public class PDOptionalContentProperties implements COSObjectable
         {
             COSDictionary ocg = toDictionary(o);
             String name = ocg.getString(COSName.NAME);
-            if (groupName.equals(name))
+            if (groupName.equals(name) && isGroupEnabled(new PDOptionalContentGroup(ocg)))
             {
-                if (isGroupEnabled(new PDOptionalContentGroup(ocg)))
-                {
-                    result = true;
-                }
+                result = true;
             }
         }
         return result;
@@ -358,12 +355,9 @@ public class PDOptionalContentProperties implements COSObjectable
         {
             COSDictionary ocg = toDictionary(o);
             String name = ocg.getString(COSName.NAME);
-            if (groupName.equals(name))
+            if (groupName.equals(name) && setGroupEnabled(new PDOptionalContentGroup(ocg), enable))
             {
-                if (setGroupEnabled(new PDOptionalContentGroup(ocg), enable))
-                {
-                    result = true;
-                }
+                result = true;
             }
         }
         return result;
