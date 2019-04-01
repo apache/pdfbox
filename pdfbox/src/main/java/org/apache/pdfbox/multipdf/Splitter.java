@@ -143,10 +143,9 @@ public class Splitter
     {
         for (int i = 0; i < sourceDocument.getNumberOfPages(); i++)
         {
-            PDPage page = sourceDocument.getPage(i);
             if (currentPageNumber + 1 >= startPage && currentPageNumber + 1 <= endPage)
             {
-                processPage(page);
+                processPage(sourceDocument.getPage(i));
                 currentPageNumber++;
             }
             else
