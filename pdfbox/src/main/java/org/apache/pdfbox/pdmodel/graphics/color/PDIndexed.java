@@ -124,8 +124,17 @@ public final class PDIndexed extends PDSpecialColorSpace
 
         // convert the color table into a 1-row BufferedImage in the base color space,
         // using a writable raster for high performance
-        WritableRaster baseRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
-                actualMaxIndex + 1, 1, numBaseComponents, new Point(0, 0));
+        WritableRaster baseRaster;
+        try
+        {
+            baseRaster = Raster.createBandedRaster(DataBuffer.TYPE_BYTE,
+                    actualMaxIndex + 1, 1, numBaseComponents, new Point(0, 0));
+        }
+        catch (IllegalArgumentException ex)
+        {
+            // PDFBOX-4503: when stream is empty or null
+            throw new IOException(ex);
+        }
 
         int[] base = new int[numBaseComponents];
         for (int i = 0, n = actualMaxIndex; i <= n; i++)
