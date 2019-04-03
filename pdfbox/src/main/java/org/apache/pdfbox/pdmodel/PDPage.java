@@ -178,7 +178,7 @@ public class PDPage implements COSObjectable, PDContentStream
     }
 
     /**
-     * Returns true if this page has contents.
+     * Returns true if this page has one or more content streams.
      */
     public boolean hasContents()
     {
