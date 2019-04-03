@@ -121,7 +121,7 @@ public class FDFAnnotationStamp extends FDFAnnotation
         }
         if (base64EncodedAppearance != null && !base64EncodedAppearance.isEmpty())
         {
-            LOG.debug("Decoded XML: " + decodedAppearanceXML);
+            LOG.debug("Decoded XML: " + new String(decodedAppearanceXML));
 
             Document stampAppearance = getStampAppearanceDocument(decodedAppearanceXML);
 
