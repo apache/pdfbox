@@ -1090,6 +1090,12 @@ public class PDFMergerUtility
         }
         for (Map.Entry<COSName, COSBase> entry : srcDict.entrySet())
         {
+            COSBase destValue = destDict.getDictionaryObject(entry.getKey());
+            if (destValue != null && destValue.equals(entry.getValue()))
+            {
+                // already exists, but identical
+                continue;
+            }
             if (destDict.containsKey(entry.getKey()))
             {
                 LOG.warn("key " + entry.getKey() + " already exists in destination RoleMap");
