@@ -440,6 +440,7 @@ public class PDEncryption implements COSObjectable
             array.add(recip);
         }
         dictionary.setItem(COSName.RECIPIENTS, array);
+        array.setDirect(true);
     }
 
     /**
