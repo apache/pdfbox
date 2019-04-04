@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.pdfbox.pdmodel.fdf;
+package org.apache.pdfbox.util;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import org.xml.sax.SAXException;
  *
  * @author Ben Litchfield
  */
-final class XMLUtil
+public final class XMLUtil
 {
     /**
      * Utility class, should not be instantiated.
@@ -55,15 +55,32 @@ final class XMLUtil
      */
     public static Document parse(InputStream is) throws IOException
     {
+        return parse(is, false);
+    }
+
+    /**
+     * This will parse an XML stream and create a DOM document.
+     *
+     * @param is The stream to get the XML from.
+     * @param nsAware activates namespace awareness of the parser
+     * @return The DOM document.
+     * @throws IOException It there is an error creating the dom.
+     */
+    public static Document parse(InputStream is, boolean nsAware) throws IOException
+    {
         try
         {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            builderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            builderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            builderFactory.setFeature("http://xml.org/sax/features/external-general-entities",
+                    false);
+            builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities",
+                    false);
+            builderFactory.setFeature(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
             builderFactory.setXIncludeAware(false);
             builderFactory.setExpandEntityReferences(false);
+            builderFactory.setNamespaceAware(nsAware);
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             return builder.parse(is);
         }
@@ -94,4 +111,5 @@ final class XMLUtil
         }
         return sb.toString();
     }
+
 }
