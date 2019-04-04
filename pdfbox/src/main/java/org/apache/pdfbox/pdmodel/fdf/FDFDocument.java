@@ -33,6 +33,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -239,8 +240,7 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument loadXFDF(InputStream input) throws IOException
     {
-        Document doc = XMLUtil.parse(input);
-        return new FDFDocument(doc);
+        return new FDFDocument(XMLUtil.parse(input));
     }
 
     /**
