@@ -238,8 +238,7 @@ public class FDFDocument implements Closeable
      */
     public static FDFDocument loadXFDF(InputStream input) throws IOException
     {
-        Document doc = XMLUtil.parse(input);
-        return new FDFDocument(doc);
+        return new FDFDocument(org.apache.pdfbox.util.XMLUtil.parse(input));
     }
 
     /**

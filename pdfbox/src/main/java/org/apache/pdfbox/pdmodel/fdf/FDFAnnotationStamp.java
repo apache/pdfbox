@@ -20,9 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -44,7 +41,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * This represents a Stamp FDF annotation.
@@ -123,7 +119,8 @@ public class FDFAnnotationStamp extends FDFAnnotation
         {
             LOG.debug("Decoded XML: " + new String(decodedAppearanceXML));
 
-            Document stampAppearance = getStampAppearanceDocument(decodedAppearanceXML);
+            Document stampAppearance = org.apache.pdfbox.util.XMLUtil
+                    .parse(new ByteArrayInputStream(decodedAppearanceXML));
 
             Element appearanceEl = stampAppearance.getDocumentElement();
 
@@ -137,31 +134,6 @@ public class FDFAnnotationStamp extends FDFAnnotation
             annot.setItem(COSName.AP, parseStampAnnotationAppearanceXML(appearanceEl));
         }
     }
-
-    /**
-     * Parse the <param>xmlString</param> to DOM Document tree from XML content
-     */
-    private Document getStampAppearanceDocument(byte[] xml) throws IOException
-    {
-        try
-        {
-            // Obtain DOM Document instance and create DocumentBuilder with default configuration
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-            // Parse the content to Document object
-            return builder.parse(new ByteArrayInputStream(xml));
-        }
-        catch (ParserConfigurationException ex)
-        {
-            LOG.error("Error while converting appearance xml to document: " + ex);
-            throw new IOException(ex);
-        }
-        catch (SAXException ex)
-        {
-            LOG.error("Error while converting appearance xml to document: " + ex);
-            throw new IOException(ex);
-        }
-    }    
 
     /**
      * This will create an Appearance dictionary from an appearance XML document.
