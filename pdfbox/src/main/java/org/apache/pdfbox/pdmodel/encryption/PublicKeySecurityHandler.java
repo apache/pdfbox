@@ -427,6 +427,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             array.add(new COSString(recipient));
         }
         cryptFilterDictionary.getCOSObject().setItem(COSName.RECIPIENTS, array);
+        array.setDirect(true);
         encryptionDictionary.setDefaultCryptFilterDictionary(cryptFilterDictionary);
         encryptionDictionary.setStreamFilterName(COSName.DEFAULT_CRYPT_FILTER);
         encryptionDictionary.setStringFilterName(COSName.DEFAULT_CRYPT_FILTER);
