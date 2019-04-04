@@ -943,6 +943,20 @@ public class COSWriter implements ICOSVisitor, Closeable
                     writeReference( current );
                 }
             }
+            else if (current instanceof COSArray)
+            {
+                if (current.isDirect())
+                {
+                    // If the object should be written direct, we need
+                    // to pass the array to the visitor again.
+                    visitFromArray((COSArray) current);
+                }
+                else
+                {
+                    addObjectToWrite(current);
+                    writeReference(current);
+                }
+            }
             else if( current instanceof COSObject )
             {
                 COSBase subValue = ((COSObject)current).getObject();
@@ -1043,6 +1057,20 @@ public class COSWriter implements ICOSVisitor, Closeable
                     {
                         addObjectToWrite( dict );
                         writeReference( dict );
+                    }
+                }
+                else if (value instanceof COSArray)
+                {
+                    if (value.isDirect())
+                    {
+                        // If the object should be written direct, we need
+                        // to pass the array to the visitor again.
+                        visitFromArray((COSArray) value);
+                    }
+                    else
+                    {
+                        addObjectToWrite(value);
+                        writeReference(value);
                     }
                 }
                 else if( value instanceof COSObject )
