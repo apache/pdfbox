@@ -114,7 +114,7 @@ public class PDOptionalContentProperties implements COSObjectable
 
     private COSArray getOCGs()
     {
-        COSArray ocgs = (COSArray)this.dict.getItem(COSName.OCGS);
+        COSArray ocgs = this.dict.getCOSArray(COSName.OCGS);
         if (ocgs == null)
         {
             ocgs = new COSArray();
