@@ -85,11 +85,11 @@ public class FDFField implements COSObjectable
                 Element child = (Element) node;
                 if (child.getTagName().equals("value"))
                 {
-                    setValue(XMLUtil.getNodeValue(child));
+                    setValue(org.apache.pdfbox.util.XMLUtil.getNodeValue(child));
                 }
                 else if (child.getTagName().equals("value-richtext"))
                 {
-                    setRichText(new COSString(XMLUtil.getNodeValue(child)));
+                    setRichText(new COSString(org.apache.pdfbox.util.XMLUtil.getNodeValue(child)));
                 }
                 else if (child.getTagName().equals("field"))
                 {
