@@ -1252,7 +1252,9 @@ public class PDDocument implements Closeable
 
     /**
      * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
-     * file or a stream, not if the document was created in PDFBox itself.
+     * file or a stream, not if the document was created in PDFBox itself. There must be a path of
+     * objects that have {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document
+     * catalog. For signatures this is taken care by PDFBox itself.
      *
      * @param output stream to write to. It will be closed when done. It
      * <i><b>must never</b></i> point to the source file or that one will be
