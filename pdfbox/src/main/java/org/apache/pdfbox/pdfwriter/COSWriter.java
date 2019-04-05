@@ -595,7 +595,9 @@ public class COSWriter implements ICOSVisitor, Closeable
         }
         // Remove a checksum if present
         trailer.removeItem( COSName.DOC_CHECKSUM );
-        
+
+        ((COSArray) trailer.getItem(COSName.ID)).setDirect(true);
+
         trailer.accept(this);
     }
 
@@ -1388,7 +1390,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             idArray = new COSArray();
             idArray.add( firstID );
             idArray.add( secondID );
-            trailer.setItem( COSName.ID, idArray );
+            trailer.setItem(COSName.ID, idArray);
         }
         cosDoc.accept(this);
     }
