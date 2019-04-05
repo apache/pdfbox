@@ -284,6 +284,7 @@ public class PDSignature implements COSObjectable
         }
 
         dictionary.setItem(COSName.BYTERANGE, ary);
+        ary.setDirect(true);
     }
 
     /**
