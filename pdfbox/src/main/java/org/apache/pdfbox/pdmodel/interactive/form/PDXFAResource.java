@@ -21,15 +21,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
  * An XML Forms Architecture (XFA) resource.
@@ -129,8 +126,6 @@ public final class PDXFAResource implements COSObjectable
      * 
      * @return the XFA content
      * 
-     * @throws ParserConfigurationException parser exception.
-     * @throws SAXException parser exception.
      * @throws IOException if something went wrong when reading the XFA content.
      * 
      */        
