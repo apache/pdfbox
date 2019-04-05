@@ -256,7 +256,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * COSWriter constructor for incremental updates with a list of objects to write. This allows to
      * include objects even if there is no path of objects that have
-     * {@link COSUpdateInfo#isNeedToBeUpdated()} set. This makes the update smaller.
+     * {@link COSUpdateInfo#isNeedToBeUpdated()} set so the incremental update gets smaller. Only
+     * dictionaries are supported; if you need to update other objects classes, then add their
+     * parent dictionary.
      *
      * @param outputStream output stream where the new PDF data will be written. It will be closed
      * when this object is closed.
@@ -265,7 +267,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @throws IOException if something went wrong
      */
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData,
-            List<COSBase> objectsToWrite) throws IOException
+            Set<COSDictionary> objectsToWrite) throws IOException
     {
         this(outputStream, inputData);
         this.objectsToWrite.addAll(objectsToWrite);

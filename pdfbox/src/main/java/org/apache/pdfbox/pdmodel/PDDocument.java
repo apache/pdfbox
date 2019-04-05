@@ -44,6 +44,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBuffer;
@@ -1350,7 +1351,6 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */
-    
     public void saveIncremental(OutputStream output) throws IOException
     {
         COSWriter writer = null;
@@ -1376,7 +1376,9 @@ public class PDDocument implements Closeable
      * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
      * file or a stream, not if the document was created in PDFBox itself. This allows to include
      * objects even if there is no path of objects that have
-     * {@link COSUpdateInfo#isNeedToBeUpdated()} set. This makes the update smaller.
+     * {@link COSUpdateInfo#isNeedToBeUpdated()} set so the incremental update gets smaller. Only
+     * dictionaries are supported; if you need to update other objects classes, then add their
+     * parent dictionary.
      *
      * @param output stream to write to. It will be closed when done. It
      * <i><b>must never</b></i> point to the source file or that one will be harmed!
@@ -1384,7 +1386,7 @@ public class PDDocument implements Closeable
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */
-    public void saveIncremental(OutputStream output, List<COSBase> objectsToWrite) throws IOException
+    public void saveIncremental(OutputStream output, Set<COSDictionary> objectsToWrite) throws IOException
     {
         if (pdfSource == null)
         {
