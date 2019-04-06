@@ -269,6 +269,19 @@ public class COSWriter implements ICOSVisitor, Closeable
     public COSWriter(OutputStream outputStream, RandomAccessRead inputData,
             Set<COSDictionary> objectsToWrite) throws IOException
     {
+        // Implementation notes / summary of April 2019 comments in PDFBOX-45:
+        // we allow only COSDictionary in objectsToWrite because other types, 
+        // especially COSArray, are written directly. If we'd allow them with the current
+        // COSWriter implementation, they would be written twice,
+        // once directly and once indirectly as orphan.
+        // One could improve visitFromArray and visitFromDictionary (see commit 1856891)
+        // to handle arrays like dictionaries so that arrays are written indirectly,
+        // but this produces very inefficient files.
+        // If there is every a real need to update arrays, then a future implementation could
+        // recommit change 1856891 (also needs to move the byteRange position detection code)
+        // and also set isDirect in arrays to true by default, to avoid inefficient files.
+        // COSArray.setDirect(true) is called at some places in the current implementation for
+        // documentational purposes only.
         this(outputStream, inputData);
         this.objectsToWrite.addAll(objectsToWrite);
     }
