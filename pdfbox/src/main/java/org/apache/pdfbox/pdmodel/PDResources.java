@@ -477,6 +477,7 @@ public final class PDResources implements COSObjectable
         {
             return (COSObject)base;
         }
+        // not an indirect object. Resource may have been added at runtime.
         return null;
     }
     
