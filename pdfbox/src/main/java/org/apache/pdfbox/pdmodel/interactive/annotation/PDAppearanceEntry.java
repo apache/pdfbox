@@ -50,7 +50,7 @@ public class PDAppearanceEntry implements COSObjectable
     }
 
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return entry;
     }
