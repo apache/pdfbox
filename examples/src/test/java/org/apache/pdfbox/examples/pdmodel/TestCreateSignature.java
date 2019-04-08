@@ -16,9 +16,12 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -33,10 +36,14 @@ import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
@@ -45,6 +52,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.Hex;
 import org.apache.wink.client.MockHttpServer;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -383,5 +392,121 @@ public class TestCreateSignature
         Assert.assertTrue("IllegalStateException should have been thrown", caught);
         signature.setByteRange(reserveByteRange);
         Assert.assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent()));
+    }
+
+    /**
+     * Create a simple form PDF, sign it, reload it, change a field value, incrementally save it.
+     * This should not break the signature, and the value and its display must have changed as
+     * expected. Do this both for the old and new incremental save methods.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSaveIncrementalAfterSign() throws Exception
+    {
+        BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
+        DataBufferInt expectedData;
+        DataBufferInt actualData;
+        PDField field;
+        FileOutputStream fileOutputStream;
+
+        CreateSimpleForm.main(new String[0]); // creates "target/SimpleForm.pdf"
+
+        // load the keystore
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+
+        // sign PDF
+        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+        signing.setExternalSigning(externallySign);
+
+        final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf");
+        final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf");
+        final String fileNameResaved2 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved2.pdf");
+        signing.signDetached(new File("target/SimpleForm.pdf"), new File(outDir + fileNameSigned));
+
+        checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameSigned));
+
+        PDDocument doc = PDDocument.load(new File(outDir, fileNameSigned));
+
+        oldImage = new PDFRenderer(doc).renderImage(0);
+
+        fileOutputStream = new FileOutputStream(new File(outDir, fileNameResaved1));
+        field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+        field.setValue("New Value 1");
+
+        expectedImage1 = new PDFRenderer(doc).renderImage(0);
+
+        // compare images, image must has changed
+        Assert.assertEquals(oldImage.getWidth(), expectedImage1.getWidth());
+        Assert.assertEquals(oldImage.getHeight(), expectedImage1.getHeight());
+        Assert.assertEquals(oldImage.getType(), expectedImage1.getType());
+        expectedData = (DataBufferInt) oldImage.getRaster().getDataBuffer();
+        actualData = (DataBufferInt) expectedImage1.getRaster().getDataBuffer();
+        Assert.assertEquals(expectedData.getData().length, actualData.getData().length);
+        Assert.assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
+
+        // new style incremental save: create a "path" from the root to the objects that need an update
+        doc.getDocumentCatalog().getCOSObject().setNeedToBeUpdated(true);
+        doc.getDocumentCatalog().getAcroForm().getCOSObject().setNeedToBeUpdated(true);
+        field.getCOSObject().setNeedToBeUpdated(true);
+        field.getWidgets().get(0).getAppearance().getCOSObject().setNeedToBeUpdated(true);
+        ((COSDictionary) field.getWidgets().get(0).getAppearance().getNormalAppearance().getCOSObject()).setNeedToBeUpdated(true);
+        doc.saveIncremental(fileOutputStream);
+        doc.close();
+        checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameResaved1));
+
+        doc = PDDocument.load(new File(outDir, fileNameResaved1));
+
+        field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+        Assert.assertEquals("New Value 1", field.getValueAsString());
+        actualImage1 = new PDFRenderer(doc).renderImage(0);
+        // compare images, equality proves that the appearance has been updated too
+        Assert.assertEquals(expectedImage1.getWidth(), actualImage1.getWidth());
+        Assert.assertEquals(expectedImage1.getHeight(), actualImage1.getHeight());
+        Assert.assertEquals(expectedImage1.getType(), actualImage1.getType());
+        expectedData = (DataBufferInt) expectedImage1.getRaster().getDataBuffer();
+        actualData = (DataBufferInt) actualImage1.getRaster().getDataBuffer();
+        Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+        doc.close();
+
+        doc = PDDocument.load(new File(outDir, fileNameSigned));
+
+        fileOutputStream = new FileOutputStream(new File(outDir, fileNameResaved2));
+        field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+        field.setValue("New Value 2");
+        expectedImage2 = new PDFRenderer(doc).renderImage(0);
+
+        // compare images, image must has changed
+        Assert.assertEquals(oldImage.getWidth(), expectedImage2.getWidth());
+        Assert.assertEquals(oldImage.getHeight(), expectedImage2.getHeight());
+        Assert.assertEquals(oldImage.getType(), expectedImage2.getType());
+        expectedData = (DataBufferInt) oldImage.getRaster().getDataBuffer();
+        actualData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
+        Assert.assertEquals(expectedData.getData().length, actualData.getData().length);
+        Assert.assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
+
+        // new style incremental save: add only the objects that have changed
+        Set<COSDictionary> objectsToWrite = new HashSet<COSDictionary>();
+        objectsToWrite.add(field.getCOSObject());
+        objectsToWrite.add(field.getWidgets().get(0).getAppearance().getCOSObject());
+        objectsToWrite.add((COSDictionary) field.getWidgets().get(0).getAppearance().getNormalAppearance().getCOSObject());
+        doc.saveIncremental(fileOutputStream, objectsToWrite);
+        doc.close();
+
+        checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameResaved2));
+        doc = PDDocument.load(new File(outDir, fileNameResaved2));
+
+        field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+        Assert.assertEquals("New Value 2", field.getValueAsString());
+        actualImage2 = new PDFRenderer(doc).renderImage(0);
+        // compare images, equality proves that the appearance has been updated too
+        Assert.assertEquals(expectedImage2.getWidth(), actualImage2.getWidth());
+        Assert.assertEquals(expectedImage2.getHeight(), actualImage2.getHeight());
+        Assert.assertEquals(expectedImage2.getType(), actualImage2.getType());
+        expectedData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
+        actualData = (DataBufferInt) actualImage2.getRaster().getDataBuffer();
+        Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+        doc.close();
     }
 }
