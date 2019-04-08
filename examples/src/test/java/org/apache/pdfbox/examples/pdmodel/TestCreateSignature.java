@@ -446,7 +446,7 @@ public class TestCreateSignature
         Assert.assertEquals(expectedData.getData().length, actualData.getData().length);
         Assert.assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
 
-        // new style incremental save: create a "path" from the root to the objects that need an update
+        // old style incremental save: create a "path" from the root to the objects that need an update
         doc.getDocumentCatalog().getCOSObject().setNeedToBeUpdated(true);
         doc.getDocumentCatalog().getAcroForm().getCOSObject().setNeedToBeUpdated(true);
         field.getCOSObject().setNeedToBeUpdated(true);
