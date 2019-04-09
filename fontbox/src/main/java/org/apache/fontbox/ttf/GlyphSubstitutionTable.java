@@ -113,10 +113,20 @@ public class GlyphSubstitutionTable extends TTFTable
         int langSysCount = data.readUnsignedShort();
         LangSysRecord[] langSysRecords = new LangSysRecord[langSysCount];
         int[] langSysOffsets = new int[langSysCount];
+        String prevLangSysTag = "";
         for (int i = 0; i < langSysCount; i++)
         {
             LangSysRecord langSysRecord = new LangSysRecord();
             langSysRecord.langSysTag = data.readString(4);
+            if (i > 0 && langSysRecord.langSysTag.compareTo(prevLangSysTag) < 0)
+            {
+                // PDFBOX-4489: catch corrupt file
+                // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#slTbl_sRec
+                LOG.error("LangSysRecords not alphabetically sorted by LangSys tag: " +
+                          langSysRecord.langSysTag + " <= " + prevLangSysTag);
+                scriptTable.langSysTables = new LinkedHashMap<String, LangSysTable>();
+                return scriptTable;
+            }
             langSysOffsets[i] = data.readUnsignedShort();
             langSysRecords[i] = langSysRecord;
         }
