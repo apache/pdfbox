@@ -214,7 +214,11 @@ class AppearanceGeneratorHelper
                     PDRectangle bbox = new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
                     appearanceStream.setBBox(bbox);
 
-                    appearanceStream.setMatrix(calculateMatrix(bbox, rotation));
+                    AffineTransform at = calculateMatrix(bbox, rotation);
+                    if (!at.isIdentity())
+                    {
+                        appearanceStream.setMatrix(at);
+                    }
                     appearanceStream.setFormType(1);
 
                     appearanceStream.setResources(new PDResources());
@@ -442,16 +446,16 @@ class AppearanceGeneratorHelper
         {
             insertGeneratedListboxSelectionHighlight(contents, appearanceStream, font, fontSize);
         }
-        
+
         // start the text output
         contents.beginText();
 
-        // write the /DA string
+        // write font and color from the /DA string, with the calculated font size
         defaultAppearance.writeTo(contents, fontSize);
-       
+
         // calculate the y-position of the baseline
         float y;
-        
+
         // calculate font metrics at font size
         float fontScaleY = fontSize / FONTSCALE;
         float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
