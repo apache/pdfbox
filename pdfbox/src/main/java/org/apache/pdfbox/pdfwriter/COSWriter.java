@@ -613,7 +613,11 @@ public class COSWriter implements ICOSVisitor, Closeable
         // Remove a checksum if present
         trailer.removeItem( COSName.DOC_CHECKSUM );
 
-        ((COSArray) trailer.getItem(COSName.ID)).setDirect(true);
+        COSArray idArray = trailer.getCOSArray(COSName.ID);
+        if (idArray != null)
+        {
+            idArray.setDirect(true);
+        }
 
         trailer.accept(this);
     }
