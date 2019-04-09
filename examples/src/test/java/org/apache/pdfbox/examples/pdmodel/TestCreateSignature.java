@@ -436,6 +436,12 @@ public class TestCreateSignature
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             field.setValue("New Value 1");
 
+            // Test of PDFBOX-4509: only "Helv" font should be there
+            Collection<COSName> fonts = (Collection<COSName>) field.getWidgets().get(0).getAppearance().
+                    getNormalAppearance().getAppearanceStream().getResources().getFontNames();
+            Assert.assertTrue(fonts.contains(COSName.HELV));
+            Assert.assertEquals(1, fonts.size());
+
             expectedImage1 = new PDFRenderer(doc).renderImage(0);
 
             // compare images, image must has changed
