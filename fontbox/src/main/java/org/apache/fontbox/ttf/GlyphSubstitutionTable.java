@@ -118,7 +118,7 @@ public class GlyphSubstitutionTable extends TTFTable
         {
             LangSysRecord langSysRecord = new LangSysRecord();
             langSysRecord.langSysTag = data.readString(4);
-            if (i > 0 && langSysRecord.langSysTag.compareTo(prevLangSysTag) < 0)
+            if (i > 0 && langSysRecord.langSysTag.compareTo(prevLangSysTag) <= 0)
             {
                 // PDFBOX-4489: catch corrupt file
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#slTbl_sRec
