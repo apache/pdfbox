@@ -713,12 +713,10 @@ public final class PDResources implements COSObjectable
         {
             for (Map.Entry<COSName, COSBase> entry : dict.entrySet())
             {
-                if (entry.getValue() instanceof COSObject)
+                if (entry.getValue() instanceof COSObject &&
+                    object.getCOSObject() == ((COSObject) entry.getValue()).getObject())
                 {
-                    if (object.getCOSObject() == ((COSObject) entry.getValue()).getObject())
-                    {
-                        return entry.getKey();
-                    }
+                    return entry.getKey();
                 }
             }
         }
