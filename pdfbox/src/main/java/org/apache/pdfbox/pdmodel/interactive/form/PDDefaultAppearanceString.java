@@ -320,7 +320,7 @@ class PDDefaultAppearanceString
             appearanceStream.setResources(streamResources);
         }
         
-        if (streamResources.getFont(getFontName()) == null)
+        if (streamResources.getFont(fontName) == null)
         {
             streamResources.put(fontName, getFont());
         }
