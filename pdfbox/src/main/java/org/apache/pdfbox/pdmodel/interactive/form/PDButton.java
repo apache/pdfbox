@@ -386,7 +386,7 @@ public abstract class PDButton extends PDTerminalField
                 continue;
             }
             PDAppearanceEntry appearanceEntry = widget.getAppearance().getNormalAppearance();
-            if (((COSDictionary) appearanceEntry.getCOSObject()).containsKey(value))
+            if (appearanceEntry.getCOSObject().containsKey(value))
             {
                 widget.setAppearanceState(value);
             }
