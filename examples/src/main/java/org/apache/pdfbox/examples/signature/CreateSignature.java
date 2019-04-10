@@ -140,7 +140,6 @@ public class CreateSignature extends CreateSignatureBase
 
         if (isExternalSigning())
         {
-            System.out.println("Sign externally...");
             document.addSignature(signature);
             ExternalSigningSupport externalSigning =
                     document.saveIncrementalForExternalSigning(output);
