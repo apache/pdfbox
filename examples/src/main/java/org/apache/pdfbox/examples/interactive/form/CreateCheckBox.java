@@ -92,7 +92,7 @@ public class CreateCheckBox
             widget.setAppearance(ap);
             PDAppearanceEntry normalAppearance = ap.getNormalAppearance();
             
-            COSDictionary normalAppearanceDict = (COSDictionary) normalAppearance.getCOSObject();
+            COSDictionary normalAppearanceDict = normalAppearance.getCOSObject();
             normalAppearanceDict.setItem(COSName.Off, createRadioButtonAppearanceStream(document, widget, false));
             normalAppearanceDict.setItem(COSName.YES, createRadioButtonAppearanceStream(document, widget, true));
             
