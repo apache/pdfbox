@@ -250,7 +250,6 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
         if (isExternalSigning())
         {
-            System.out.println("Signing externally " + signedFile.getName());
             ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(fos);
             // invoke external signature service
             byte[] cmsSignature = sign(externalSigning.getContent());
