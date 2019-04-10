@@ -18,10 +18,12 @@ package org.apache.pdfbox.debugger.fontencodingpane;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -94,26 +96,50 @@ class Type3Font extends FontPane
             maxY = Math.max(maxY, glyphBBox.getUpperRightY());
         }
         fontBBox = new PDRectangle((float) minX, (float) minY, (float) (maxX - minX), (float) (maxY - minY));
+        if (fontBBox.getWidth() <= 0 || fontBBox.getHeight() <= 0)
+        {
+            // less reliable, but good as a fallback solution for PDF.js issue 10717
+            BoundingBox boundingBox = font.getBoundingBox();
+            fontBBox = new PDRectangle(boundingBox.getLowerLeftX(), 
+                                       boundingBox.getLowerLeftY(),
+                                       boundingBox.getWidth(),
+                                       boundingBox.getHeight());
+        }
     }
 
     private Object[][] getGlyphs(PDType3Font font) throws IOException
     {
+        boolean isEmpty = fontBBox.toGeneralPath().getBounds2D().isEmpty();
         Object[][] glyphs = new Object[256][4];
+
+        // map needed to lessen memory footprint for files with duplicates
+        // e.g. PDF.js issue 10717
+        Map<String, BufferedImage> map = new HashMap<String, BufferedImage>();
 
         for (int index = 0; index <= 255; index++)
         {
             glyphs[index][0] = index;
             if (font.getEncoding().contains(index))
             {
-                glyphs[index][1] = font.getEncoding().getName(index);
+                String name = font.getEncoding().getName(index);
+                glyphs[index][1] = name;
                 glyphs[index][2] = font.toUnicode(index);
-                if (fontBBox.toGeneralPath().getBounds2D().isEmpty())
+                if (isEmpty)
                 {
                     glyphs[index][3] = NO_GLYPH;
                 }
                 else
                 {
-                    glyphs[index][3] = renderType3Glyph(font, index);
+                    if (map.containsKey(name))
+                    {
+                        glyphs[index][3] = map.get(name);
+                    }
+                    else
+                    {
+                        BufferedImage image = renderType3Glyph(font, index);
+                        map.put(name, image);
+                        glyphs[index][3] = image;
+                    }
                 }
                 totalAvailableGlyph++;
             }
