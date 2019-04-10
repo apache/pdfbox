@@ -1344,6 +1344,10 @@ public class PDDocument implements Closeable
      * file or a stream, not if the document was created in PDFBox itself. There must be a path of
      * objects that have {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document
      * catalog. For signatures this is taken care by PDFBox itself.
+     *<p>
+     * Other usages of this method are for experienced users only. You will usually never need it.
+     * It is useful only if you are required to keep the current revision and append the changes. A
+     * typical use case is changing a signed file without invalidating the signature.
      *
      * @param output stream to write to. It will be closed when done. It
      * <i><b>must never</b></i> point to the source file or that one will be
@@ -1379,6 +1383,13 @@ public class PDDocument implements Closeable
      * {@link COSUpdateInfo#isNeedToBeUpdated()} set so the incremental update gets smaller. Only
      * dictionaries are supported; if you need to update other objects classes, then add their
      * parent dictionary.
+     * <p>
+     * This method is for experienced users only. You will usually never need it. It is useful only
+     * if you are required to keep the current revision and append the changes. A typical use case
+     * is changing a signed file without invalidating the signature. To know which objects are
+     * getting changed, you need to have some understanding of the PDF specification, and look at
+     * the saved file with an editor to verify that you are updating the correct objects. You should
+     * also inspect the page and document structures of the file with PDFDebugger.
      *
      * @param output stream to write to. It will be closed when done. It
      * <i><b>must never</b></i> point to the source file or that one will be harmed!
