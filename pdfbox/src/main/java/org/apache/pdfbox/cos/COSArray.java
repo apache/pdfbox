@@ -520,6 +520,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
       return needToBeUpdated;
     }
     
+    /**
+     * {@inheritDoc}
+     *<p>
+     * Although the state is set, it has no effect on COSWriter behavior because arrays are always
+     * written as direct object. If an array is to be part of an incremental save, then the method
+     * should be called for its holding dictionary.
+     *
+     * @param flag
+     */
     @Override
     public void setNeedToBeUpdated(boolean flag) 
     {
