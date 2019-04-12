@@ -203,25 +203,7 @@ class AppearanceGeneratorHelper
                 }
                 else
                 {
-                    appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
-
-                    // Calculate the entries for the bounding box and the transformation matrix
-                    // settings for the appearance stream
-                    int rotation = resolveRotation(widget);
-                    Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0);
-                    Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
-
-                    PDRectangle bbox = new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
-                    appearanceStream.setBBox(bbox);
-
-                    AffineTransform at = calculateMatrix(bbox, rotation);
-                    if (!at.isIdentity())
-                    {
-                        appearanceStream.setMatrix(at);
-                    }
-                    appearanceStream.setFormType(1);
-
-                    appearanceStream.setResources(new PDResources());
+                    appearanceStream = prepareNormalAppearanceStream(widget);
 
                     appearanceDict.setNormalAppearance(appearanceStream);
                     // TODO support appearances other than "normal"
@@ -244,6 +226,30 @@ class AppearanceGeneratorHelper
             // restore the field level appearance
             defaultAppearance =  acroFormAppearance;
         }
+    }
+
+    private PDAppearanceStream prepareNormalAppearanceStream(PDAnnotationWidget widget)
+    {
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(field.getAcroForm().getDocument());
+
+        // Calculate the entries for the bounding box and the transformation matrix
+        // settings for the appearance stream
+        int rotation = resolveRotation(widget);
+        PDRectangle rect = widget.getRectangle();
+        Matrix matrix = Matrix.getRotateInstance(Math.toRadians(rotation), 0, 0);
+        Point2D.Float point2D = matrix.transformPoint(rect.getWidth(), rect.getHeight());
+
+        PDRectangle bbox = new PDRectangle(Math.abs((float) point2D.getX()), Math.abs((float) point2D.getY()));
+        appearanceStream.setBBox(bbox);
+
+        AffineTransform at = calculateMatrix(bbox, rotation);
+        if (!at.isIdentity())
+        {
+            appearanceStream.setMatrix(at);
+        }
+        appearanceStream.setFormType(1);
+        appearanceStream.setResources(new PDResources());
+        return appearanceStream;
     }
 
     private PDDefaultAppearanceString getWidgetDefaultAppearanceString(PDAnnotationWidget widget) throws IOException
