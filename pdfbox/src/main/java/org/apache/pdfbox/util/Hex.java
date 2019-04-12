@@ -273,6 +273,11 @@ public final class Hex
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         for (int i = 0; i < s.length() - 1; i += 2)
         {
+            if (s.charAt(i) == '\n' || s.charAt(i) == '\r')
+            {
+                --i;
+                continue;
+            }
             String hexByte = s.substring(i, i + 2);
             try
             {
