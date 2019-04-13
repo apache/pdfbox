@@ -271,22 +271,26 @@ public final class Hex
     public static byte[] decodeHex(String s) throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        for (int i = 0; i < s.length() - 1; i += 2)
+        int i = 0;
+        while (i < s.length() - 1)
         {
             if (s.charAt(i) == '\n' || s.charAt(i) == '\r')
             {
-                --i;
-                continue;
+                ++i;
             }
-            String hexByte = s.substring(i, i + 2);
-            try
+            else
             {
-                baos.write(Integer.parseInt(hexByte, 16)); // Byte.parseByte won't work with "9C"
-            }
-            catch (NumberFormatException ex)
-            {
-                LOG.error("Can't parse " + hexByte + ", aborting decode", ex);
-                break;
+                String hexByte = s.substring(i, i + 2);
+                try
+                {
+                    baos.write(Integer.parseInt(hexByte, 16)); // Byte.parseByte won't work with "9C"
+                }
+                catch (NumberFormatException ex)
+                {
+                    LOG.error("Can't parse " + hexByte + ", aborting decode", ex);
+                    break;
+                }
+                i += 2;
             }
         }
         return baos.toByteArray();
