@@ -67,7 +67,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
     {
         PDAnnotationFreeText annotation = (PDAnnotationFreeText) getAnnotation();
         float[] pathsArray = new float[0];
-        if ("FreeTextCallout".equals(annotation.getIntent()))
+        if (PDAnnotationFreeText.IT_FREE_TEXT_CALLOUT.equals(annotation.getIntent()))
         {
             pathsArray = annotation.getCallout();
             if (pathsArray == null || pathsArray.length != 4 && pathsArray.length != 6)
