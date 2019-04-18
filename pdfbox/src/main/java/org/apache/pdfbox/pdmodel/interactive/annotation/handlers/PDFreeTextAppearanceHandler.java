@@ -128,7 +128,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             }
 
             // paint the styles here and after line(s) draw, to avoid line crossing a filled shape       
-            if ("FreeTextCallout".equals(annotation.getIntent())
+            if (PDAnnotationFreeText.IT_FREE_TEXT_CALLOUT.equals(annotation.getIntent())
                     // check only needed to avoid q cm Q if LE_NONE
                     && !LE_NONE.equals(annotation.getLineEndingStyle())
                     && pathsArray.length >= 4)
