@@ -269,6 +269,9 @@ public final class AddAnnotations
             freeTextAnnotation.setDefaultAppearance("0 0 1 rg /Helv 20 Tf");
             // Quadding does not have any effect?!
             freeTextAnnotation.setQ(PDVariableText.QUADDING_RIGHT);
+            freeTextAnnotation.setIntent(PDAnnotationFreeText.IT_FREE_TEXT_CALLOUT);
+            freeTextAnnotation.setCallout(new float[]{0, ph - 9 * INCH, 3 * INCH, ph - 9 * INCH, 4 * INCH, ph - 8 * INCH});
+            freeTextAnnotation.setLineEndingStyle(PDAnnotationLine.LE_OPEN_ARROW);
             annotations.add(freeTextAnnotation);
 
             PDAnnotationPolygon polygon = new PDAnnotationPolygon();
