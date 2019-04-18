@@ -242,6 +242,41 @@ public final class AddAnnotations
             pageLink.setAction(actionGoto);
             annotations.add(pageLink);
 
+            PDAnnotationMarkup freeTextAnnotation = new PDAnnotationMarkup();
+            freeTextAnnotation.getCOSObject().setName(COSName.SUBTYPE, PDAnnotationMarkup.SUB_TYPE_FREETEXT);
+            PDColor yellow = new PDColor(new float[] { 1, 1, 0 }, PDDeviceRGB.INSTANCE);
+            // this sets background only (contradicts PDF specification)
+            freeTextAnnotation.setColor(yellow);
+            position = new PDRectangle();
+            position.setLowerLeftX(1 * INCH);
+            position.setLowerLeftY(ph - 5f * INCH - 3 * INCH);
+            position.setUpperRightX(pw - INCH);
+            position.setUpperRightY(ph - 5f * INCH);
+            freeTextAnnotation.setRectangle(position);
+            freeTextAnnotation.setTitlePopup("Sophia Lorem");
+            freeTextAnnotation.setSubject("Lorem ipsum");
+            freeTextAnnotation.setContents("Lorem ipsum dolor sit amet, consetetur sadipscing elitr,"
+                    + " sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+                    + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
+                    + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
+                    + "dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, "
+                    + "sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam "
+                    + "erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea "
+                    + "rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum "
+                    + "dolor sit amet.");
+            // Text and border in blue RGB color, "Helv" font, 20 point
+            // setDefaultAppearance() missing in 2.0
+            freeTextAnnotation.getCOSObject().setString(COSName.DA, "0 0 1 rg /Helv 20 Tf");
+            freeTextAnnotation.setIntent("FreeTextCallout");
+            COSArray newCallout = new COSArray();
+            newCallout.setFloatArray(new float[]{0, ph - 9 * INCH, 3 * INCH, ph - 9 * INCH, 4 * INCH, ph - 8 * INCH});
+            // setCallout() missing in 2.0
+            freeTextAnnotation.getCOSObject().setItem(COSName.CL, newCallout);
+            freeTextAnnotation.getCOSObject();
+            // setLineEndingStyle() missing in 2.0
+            freeTextAnnotation.getCOSObject().setName(COSName.LE, PDAnnotationLine.LE_OPEN_ARROW);
+            annotations.add(freeTextAnnotation);
+
             // create a polygon annotation. Yes this is clunky, it will be easier in 3.0
             PDAnnotationMarkup polygon = new PDAnnotationMarkup();
             polygon.getCOSObject().setName(COSName.SUBTYPE, PDAnnotationMarkup.SUB_TYPE_POLYGON);
