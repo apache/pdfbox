@@ -121,7 +121,31 @@ abstract class TriangleBasedShadingContext extends ShadingContext implements Pai
                             map.put(p, evalFunctionAndConvertToRGB(tri.calcColor(p)));
                         }
                     }
-                }         
+                }
+
+                // "fatten" triangle by drawing the borders with Bresenham's line algorithm
+                // Inspiration: Raph Levien in http://bugs.ghostscript.com/show_bug.cgi?id=219588
+                Point p0 = new Point((int) Math.round(tri.corner[0].getX()),
+                                     (int) Math.round(tri.corner[0].getY()));
+                Point p1 = new Point((int) Math.round(tri.corner[1].getX()),
+                                     (int) Math.round(tri.corner[1].getY()));
+                Point p2 = new Point((int) Math.round(tri.corner[2].getX()),
+                                     (int) Math.round(tri.corner[2].getY()));
+                Line l1 = new Line(p0, p1, tri.color[0], tri.color[1]);
+                Line l2 = new Line(p1, p2, tri.color[1], tri.color[2]);
+                Line l3 = new Line(p2, p0, tri.color[2], tri.color[0]);
+                for (Point p : l1.linePoints)
+                {
+                    map.put(p, evalFunctionAndConvertToRGB(l1.calcColor(p)));
+                }
+                for (Point p : l2.linePoints)
+                {
+                    map.put(p, evalFunctionAndConvertToRGB(l2.calcColor(p)));
+                }
+                for (Point p : l3.linePoints)
+                {
+                    map.put(p, evalFunctionAndConvertToRGB(l3.calcColor(p)));
+                }
             }
         }
     }
