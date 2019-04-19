@@ -19,6 +19,8 @@ package org.apache.pdfbox.pdmodel;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 
 import org.apache.pdfbox.cos.COSName;
@@ -115,13 +117,13 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         switch (numComponents)
         {
         case 1:
-            writeOperator("G");
+            writeOperator(OperatorName.STROKING_COLOR_GRAY);
             break;
         case 3:
-            writeOperator("RG");
+            writeOperator(OperatorName.STROKING_COLOR_RGB);
             break;
         case 4:
-            writeOperator("K");
+            writeOperator(OperatorName.STROKING_COLOR_CMYK);
             break;
         default:
             break;
@@ -174,13 +176,13 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         switch (numComponents)
         {
         case 1:
-            writeOperator("g");
+            writeOperator(OperatorName.NON_STROKING_GRAY);
             break;
         case 3:
-            writeOperator("rg");
+            writeOperator(OperatorName.NON_STROKING_RGB);
             break;
         case 4:
-            writeOperator("k");
+            writeOperator(OperatorName.NON_STROKING_CMYK);
             break;
         default:
             break;
@@ -271,7 +273,7 @@ public final class PDAppearanceContentStream extends PDAbstractContentStream imp
         }
         else
         {
-            writeOperator("n");
+            writeOperator(OperatorName.ENDPATH);
         }
     }
 }

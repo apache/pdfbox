@@ -24,6 +24,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -423,7 +424,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         transform(new Matrix(transform));
 
         writeOperand(objMapping);
-        writeOperator("Do");
+        writeOperator(OperatorName.DRAW_OBJECT);
 
         restoreGraphicsState();
     }
@@ -471,7 +472,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         setStrokingColorSpaceStack(colorSpace);
         writeOperand(getName(colorSpace));
-        writeOperator("CS");
+        writeOperator(OperatorName.STROKING_COLORSPACE);
     }
 
     /**
@@ -487,7 +488,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         setNonStrokingColorSpaceStack(colorSpace);
         writeOperand(getName(colorSpace));
-        writeOperator("cs");
+        writeOperator(OperatorName.NON_STROKING_COLORSPACE);
     }
 
     /**
@@ -516,11 +517,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             currentStrokingColorSpace instanceof PDPattern ||
             currentStrokingColorSpace instanceof PDICCBased)
         {
-            writeOperator("SCN");
+            writeOperator(OperatorName.STROKING_COLOR_N);
         }
         else
         {
-            writeOperator("SC");
+            writeOperator(OperatorName.STROKING_COLOR);
         }
     }
 
@@ -590,11 +591,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
             currentNonStrokingColorSpace instanceof PDPattern ||
             currentNonStrokingColorSpace instanceof PDICCBased)
         {
-            writeOperator("scn");
+            writeOperator(OperatorName.NON_STROKING_COLOR_N);
         }
         else
         {
-            writeOperator("sc");
+            writeOperator(OperatorName.NON_STROKING_COLOR);
         }
     }
 
@@ -845,15 +846,15 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
         switch (windingRule)
         {
             case PathIterator.WIND_NON_ZERO:
-                writeOperator("W");
+            writeOperator(OperatorName.CLIP_NON_ZERO);
                 break;
             case PathIterator.WIND_EVEN_ODD:
-                writeOperator("W*");
+            writeOperator(OperatorName.CLIP_EVEN_ODD);
                 break;
             default:
                 throw new IllegalArgumentException("Error: unknown value for winding rule");
         }
-        writeOperator("n");
+        writeOperator(OperatorName.ENDPATH);
     }
 
     /**
@@ -883,7 +884,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
     {
         writeOperand(tag);
         writeOperand(propsName);
-        writeOperator("BDC");
+        writeOperator(OperatorName.BEGIN_MARKED_CONTENT_SEQ);
     }
 
     /**
