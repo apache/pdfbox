@@ -292,6 +292,8 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                 
                 // need to set the BBox too, because rectangle modification came later
                 annotation.getNormalAppearanceStream().setBBox(getRectangle());
+                
+                //TODO when callout is used, /RD should be so that the result is the writable part
             }
         }
         catch (IOException ex)
