@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import java.io.IOException;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
@@ -34,7 +35,7 @@ public class ShowTextAdjusted extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        if (arguments.size() < 1)
+        if (arguments.isEmpty())
         {
             return;
         }
@@ -55,6 +56,6 @@ public class ShowTextAdjusted extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "TJ";
+        return OperatorName.SHOW_TEXT_ADJUSTED;
     }
 }

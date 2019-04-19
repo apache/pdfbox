@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,6 +44,6 @@ public class SetNonStrokingDeviceRGBColor extends SetNonStrokingColor
     @Override
     public String getName()
     {
-        return "rg";
+        return OperatorName.NON_STROKING_RGB;
     }
 }

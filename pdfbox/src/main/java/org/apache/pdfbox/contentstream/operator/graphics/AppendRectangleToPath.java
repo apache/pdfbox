@@ -24,6 +24,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * re Appends a rectangle to the path.
@@ -66,6 +67,6 @@ public final class AppendRectangleToPath extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "re";
+        return OperatorName.APPEND_RECT;
     }
 }

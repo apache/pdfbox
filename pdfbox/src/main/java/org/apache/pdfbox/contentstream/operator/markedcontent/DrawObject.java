@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.List;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
@@ -40,7 +41,7 @@ public class DrawObject extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        if (arguments.size() < 1)
+        if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
@@ -67,6 +68,6 @@ public class DrawObject extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "Do";
+        return OperatorName.DRAW_OBJECT;
     }
 }

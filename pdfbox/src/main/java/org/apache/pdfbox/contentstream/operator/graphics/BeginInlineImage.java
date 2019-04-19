@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * BI Begins an inline image.
@@ -47,6 +48,6 @@ public final class BeginInlineImage extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "BI";
+        return OperatorName.BEGIN_INLINE_IMAGE;
     }
 }

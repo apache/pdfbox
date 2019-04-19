@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class SetTextRise extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        if (arguments.size() < 1)
+        if (arguments.isEmpty())
         {
             return;
         }
@@ -51,6 +52,6 @@ public class SetTextRise extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "Ts";
+        return OperatorName.SET_TEXT_RISE;
     }
 }

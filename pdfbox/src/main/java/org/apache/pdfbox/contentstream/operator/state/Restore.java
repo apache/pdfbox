@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.cos.COSBase;
 
@@ -47,6 +48,6 @@ public class Restore extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "Q";
+        return OperatorName.RESTORE;
     }
 }

@@ -26,6 +26,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * l Append straight line segment to path.
@@ -73,6 +74,6 @@ public class LineTo extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "l";
+        return OperatorName.LINE_TO;
     }
 }

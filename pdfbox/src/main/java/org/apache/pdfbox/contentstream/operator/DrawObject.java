@@ -36,7 +36,7 @@ public class DrawObject extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        if (arguments.size() < 1)
+        if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
@@ -69,6 +69,6 @@ public class DrawObject extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "Do";
+        return OperatorName.DRAW_OBJECT;
     }
 }

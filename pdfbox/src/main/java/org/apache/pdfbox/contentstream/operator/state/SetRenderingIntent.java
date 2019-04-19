@@ -23,6 +23,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingIntent;
 
@@ -36,7 +37,7 @@ public class SetRenderingIntent extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        if (operands.size() < 1)
+        if (operands.isEmpty())
         {
             throw new MissingOperandException(operator, operands);
         }
@@ -52,6 +53,6 @@ public class SetRenderingIntent extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "ri";
+        return OperatorName.SET_RENDERINGINTENT;
     }
 }

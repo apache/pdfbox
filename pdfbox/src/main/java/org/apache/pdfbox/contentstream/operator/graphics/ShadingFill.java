@@ -23,6 +23,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * sh Fills the clipping area with the given shading pattern.
@@ -34,7 +35,7 @@ public final class ShadingFill extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        if (operands.size() < 1)
+        if (operands.isEmpty())
         {
             throw new MissingOperandException(operator, operands);
         }
@@ -44,6 +45,6 @@ public final class ShadingFill extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "sh";
+        return OperatorName.SHADING_FILL;
     }
 }

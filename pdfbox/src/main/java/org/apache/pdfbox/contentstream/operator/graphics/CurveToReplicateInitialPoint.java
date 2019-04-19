@@ -26,6 +26,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * v Append curved segment to path with the initial point replicated.
@@ -73,6 +74,6 @@ public class CurveToReplicateInitialPoint extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "v";
+        return OperatorName.CURVE_TO_REPLICATE_INITIAL_POINT;
     }
 }
