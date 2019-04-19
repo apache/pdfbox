@@ -60,7 +60,8 @@ public final class Operator
     public static Operator getOperator( String operator )
     {
         Operator operation;
-        if (operator.equals("ID") || OperatorName.BEGIN_INLINE_IMAGE.equals(operator))
+        if (operator.equals(OperatorName.BEGIN_INLINE_IMAGE_DATA)
+                || OperatorName.BEGIN_INLINE_IMAGE.equals(operator))
         {
             //we can't cache the ID operators.
             operation = new Operator( operator );
