@@ -24,20 +24,13 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import org.apache.pdfbox.contentstream.operator.OperatorName;
+
 /**
  * @author Khyrul Bashar
  */
 final class OperatorMarker
 {
-    public static final String BEGIN_TEXT_OBJECT = "BT";
-    public static final String END_TEXT_OBJECT = "ET";
-    public static final String SAVE_GRAPHICS_STATE = "q";
-    public static final String RESTORE_GRAPHICS_STATE = "Q";
-    public static final String CONCAT = "cm";
-    public static final String INLINE_IMAGE_BEGIN = "BI";
-    public static final String IMAGE_DATA = "ID";
-    public static final String INLINE_IMAGE_END = "EI";
-
     private static final Map<String, Style> operatorStyleMap;
 
     static
@@ -64,14 +57,14 @@ final class OperatorMarker
 
         Map<String, Style> styleMap = new HashMap<>();
 
-        styleMap.put(BEGIN_TEXT_OBJECT, textObjectStyle);
-        styleMap.put(END_TEXT_OBJECT, textObjectStyle);
-        styleMap.put(SAVE_GRAPHICS_STATE, graphicsStyle);
-        styleMap.put(RESTORE_GRAPHICS_STATE, graphicsStyle);
-        styleMap.put(CONCAT, concatStyle);
-        styleMap.put(INLINE_IMAGE_BEGIN, inlineImage);
-        styleMap.put(IMAGE_DATA, imageData);
-        styleMap.put(INLINE_IMAGE_END, inlineImage);
+        styleMap.put(OperatorName.BEGIN_TEXT, textObjectStyle);
+        styleMap.put(OperatorName.END_TEXT, textObjectStyle);
+        styleMap.put(OperatorName.SAVE, graphicsStyle);
+        styleMap.put(OperatorName.RESTORE, graphicsStyle);
+        styleMap.put(OperatorName.CONCAT, concatStyle);
+        styleMap.put(OperatorName.BEGIN_INLINE_IMAGE, inlineImage);
+        styleMap.put(OperatorName.BEGIN_INLINE_IMAGE_DATA, imageData);
+        styleMap.put(OperatorName.END_INLINE_IMAGE, inlineImage);
 
         operatorStyleMap = styleMap;
     }
