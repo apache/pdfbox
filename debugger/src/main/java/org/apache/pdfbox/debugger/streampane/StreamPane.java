@@ -44,6 +44,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -67,17 +68,6 @@ import org.apache.pdfbox.util.Charsets;
  */
 public class StreamPane implements ActionListener
 {
-    public static final String BEGIN_TEXT_OBJECT = "BT";
-    public static final String END_TEXT_OBJECT = "ET";
-    public static final String SAVE_GRAPHICS_STATE = "q";
-    public static final String RESTORE_GRAPHICS_STATE = "Q";
-    public static final String INLINE_IMAGE_BEGIN = "BI";
-    public static final String IMAGE_DATA = "ID";
-    public static final String INLINE_IMAGE_END = "EI";
-    public static final String BEGIN_MARKED_CONTENT1 = "BMC";
-    public static final String BEGIN_MARKED_CONTENT2 = "BDC";
-    public static final String END_MARKED_CONTENT = "EMC";
-
     private static final StyleContext CONTEXT = StyleContext.getDefaultStyleContext();
     private static final Style OPERATOR_STYLE = CONTEXT.addStyle("operator", null);
     private static final Style NUMBER_STYLE = CONTEXT.addStyle("number", null);
@@ -449,17 +439,17 @@ public class StreamPane implements ActionListener
         {
             Operator op = (Operator) obj;
 
-            if (op.getName().equals(END_TEXT_OBJECT)
-                    || op.getName().equals(RESTORE_GRAPHICS_STATE)
-                    || op.getName().equals(END_MARKED_CONTENT))
+            if (op.getName().equals(OperatorName.END_TEXT)
+                    || op.getName().equals(OperatorName.RESTORE)
+                    || op.getName().equals(OperatorName.END_MARKED_CONTENT))
             {
                 indent--;
             }
             writeIndent(docu);
 
-            if (op.getName().equals(INLINE_IMAGE_BEGIN))
+            if (op.getName().equals(OperatorName.BEGIN_INLINE_IMAGE))
             {
-                docu.insertString(docu.getLength(), INLINE_IMAGE_BEGIN + "\n", OPERATOR_STYLE);
+                docu.insertString(docu.getLength(), OperatorName.BEGIN_INLINE_IMAGE + "\n", OPERATOR_STYLE);
                 COSDictionary dic = op.getImageParameters();
                 for (COSName key : dic.keySet())
                 {
@@ -469,10 +459,10 @@ public class StreamPane implements ActionListener
                     docu.insertString(docu.getLength(), "\n", null);
                 }
                 String imageString = new String(op.getImageData(), Charsets.ISO_8859_1);
-                docu.insertString(docu.getLength(), IMAGE_DATA + "\n", INLINE_IMAGE_STYLE);
+                docu.insertString(docu.getLength(), OperatorName.BEGIN_INLINE_IMAGE_DATA + "\n", INLINE_IMAGE_STYLE);
                 docu.insertString(docu.getLength(), imageString, null);
                 docu.insertString(docu.getLength(), "\n", null);
-                docu.insertString(docu.getLength(), INLINE_IMAGE_END + "\n", OPERATOR_STYLE);
+                docu.insertString(docu.getLength(), OperatorName.END_INLINE_IMAGE + "\n", OPERATOR_STYLE);
             }
             else
             {
@@ -480,10 +470,10 @@ public class StreamPane implements ActionListener
                 docu.insertString(docu.getLength(), operator + "\n", OPERATOR_STYLE);
 
                 // nested opening operators
-                if (op.getName().equals(BEGIN_TEXT_OBJECT) ||
-                    op.getName().equals(SAVE_GRAPHICS_STATE) ||
-                    op.getName().equals(BEGIN_MARKED_CONTENT1) ||
-                    op.getName().equals(BEGIN_MARKED_CONTENT2))
+                if (op.getName().equals(OperatorName.BEGIN_TEXT) ||
+                    op.getName().equals(OperatorName.SAVE) ||
+                    op.getName().equals(OperatorName.BEGIN_MARKED_CONTENT) ||
+                    op.getName().equals(OperatorName.BEGIN_MARKED_CONTENT_SEQ))
                 {
                     indent++;
                 }
