@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
@@ -48,12 +49,12 @@ public class BeginMarkedContentSequenceWithProperties extends OperatorProcessor
                 properties = (COSDictionary) argument;
             }
         }
-        this.context.beginMarkedContentSequence(tag, properties);
+        context.beginMarkedContentSequence(tag, properties);
     }
 
     @Override
     public String getName()
     {
-        return "BDC";
+        return OperatorName.BEGIN_MARKED_CONTENT_SEQ;
     }
 }

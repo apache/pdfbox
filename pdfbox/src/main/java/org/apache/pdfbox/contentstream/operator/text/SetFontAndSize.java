@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 import java.io.IOException;
@@ -64,6 +65,6 @@ public class SetFontAndSize extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "Tf";
+        return OperatorName.SET_FONT_AND_SIZE;
     }
 }

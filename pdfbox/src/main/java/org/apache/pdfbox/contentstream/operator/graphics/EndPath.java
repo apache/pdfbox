@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * n End the path.
@@ -38,6 +39,6 @@ public final class EndPath extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "n";
+        return OperatorName.ENDPATH;
     }
 }

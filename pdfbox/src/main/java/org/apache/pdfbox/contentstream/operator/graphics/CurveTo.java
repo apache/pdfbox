@@ -26,6 +26,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * c Append curved segment to path.
@@ -74,6 +75,6 @@ public class CurveTo extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "c";
+        return OperatorName.CURVE_TO;
     }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * f Fill path using non zero winding rule.
@@ -39,6 +40,6 @@ public class FillNonZeroRule extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "f";
+        return OperatorName.FILL_NON_ZERO;
     }
 }

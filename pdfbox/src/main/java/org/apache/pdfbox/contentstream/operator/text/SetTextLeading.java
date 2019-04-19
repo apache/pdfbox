@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
@@ -40,6 +41,6 @@ public class SetTextLeading extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "TL";
+        return OperatorName.SET_TEXT_LEADING;
     }
 }
