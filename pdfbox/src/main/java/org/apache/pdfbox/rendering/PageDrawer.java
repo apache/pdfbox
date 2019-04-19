@@ -64,6 +64,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
@@ -431,7 +432,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             cache = new GlyphCache(vectorFont);
             glyphCaches.put(font, cache);
         }
-        
+
         GeneralPath path = cache.getPathForCharacterCode(code);
         drawGlyph(path, font, code, displacement, at);
     }
@@ -450,7 +451,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
-        
+
         if (path != null)
         {
             // Stretch non-embedded glyph if it does not match the height/width contained in the PDF.
@@ -499,7 +500,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
     }
-    
+
+    @Override
+    protected void showType3Glyph(Matrix textRenderingMatrix, PDType3Font font, int code,
+            String unicode, Vector displacement) throws IOException
+    {
+        PDGraphicsState state = getGraphicsState();
+        RenderingMode renderingMode = state.getTextState().getRenderingMode();
+        if (!RenderingMode.NEITHER.equals(renderingMode))
+        {
+            super.showType3Glyph(textRenderingMatrix, font, code, unicode, displacement);
+        }
+    }
+
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3)
     {
