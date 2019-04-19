@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * h Close the path.
@@ -47,6 +48,6 @@ public final class ClosePath extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "h";
+        return OperatorName.CLOSE_PATH;
     }
 }

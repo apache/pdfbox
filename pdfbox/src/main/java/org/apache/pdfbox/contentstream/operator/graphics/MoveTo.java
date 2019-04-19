@@ -24,6 +24,7 @@ import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * m Begins a new subpath.
@@ -58,6 +59,6 @@ public final class MoveTo extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "m";
+        return OperatorName.MOVE_TO;
     }
 }

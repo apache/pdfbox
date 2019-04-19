@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 import java.io.IOException;
 
@@ -39,6 +40,6 @@ public final class StrokePath extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "S";
+        return OperatorName.STROKE_PATH;
     }
 }

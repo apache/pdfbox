@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 /**
  * W Set the clipping path using non zero winding rule.
@@ -39,6 +40,6 @@ public class ClipNonZeroRule extends GraphicsOperatorProcessor
     @Override
     public String getName()
     {
-        return "W";
+        return OperatorName.CLIP_NON_ZERO;
     }
 }

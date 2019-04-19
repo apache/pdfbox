@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
@@ -46,6 +47,6 @@ public class SetNonStrokingColorSpace extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "cs";
+        return OperatorName.NON_STROKING_COLORSPACE;
     }
 }

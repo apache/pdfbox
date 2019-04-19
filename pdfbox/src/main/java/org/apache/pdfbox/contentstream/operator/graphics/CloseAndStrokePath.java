@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 
 import java.io.IOException;
 
@@ -33,13 +34,13 @@ public class CloseAndStrokePath extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        context.processOperator( "h", arguments );
-        context.processOperator( "S", arguments );
+        context.processOperator(OperatorName.CLOSE_PATH, arguments);
+        context.processOperator(OperatorName.STROKE_PATH, arguments);
     }
 
     @Override
     public String getName()
     {
-        return "s";
+        return OperatorName.CLOSE_AND_STROKE;
     }
 }

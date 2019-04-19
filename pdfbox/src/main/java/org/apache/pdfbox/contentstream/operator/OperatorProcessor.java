@@ -76,7 +76,7 @@ public abstract class OperatorProcessor
      * @param clazz The expected class.
      * @return the boolean
      */
-    public boolean checkArrayTypesClass(List<COSBase> operands, Class clazz)
+    public boolean checkArrayTypesClass(List<COSBase> operands, Class<?> clazz)
     {
         for (COSBase base : operands)
         {

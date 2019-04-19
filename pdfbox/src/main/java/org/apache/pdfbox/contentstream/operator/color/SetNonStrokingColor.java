@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.contentstream.operator.color;
 
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
@@ -59,6 +60,6 @@ public class SetNonStrokingColor extends SetColor
     @Override
     public String getName()
     {
-        return "sc";
+        return OperatorName.NON_STROKING_COLOR;
     }
 }

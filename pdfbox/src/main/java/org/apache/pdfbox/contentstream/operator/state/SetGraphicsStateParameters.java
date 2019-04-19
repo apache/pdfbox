@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 
@@ -40,7 +41,7 @@ public class SetGraphicsStateParameters extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        if (arguments.size() < 1)
+        if (arguments.isEmpty())
         {
             throw new MissingOperandException(operator, arguments);
         }
@@ -64,6 +65,6 @@ public class SetGraphicsStateParameters extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "gs";
+        return OperatorName.SET_GRAPHICS_STATE_PARAMS;
     }
 }

@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -87,6 +88,6 @@ public class SetLineDashPattern extends OperatorProcessor
     @Override
     public String getName()
     {
-        return "d";
+        return OperatorName.SET_LINE_DASHPATTERN;
     }
 }
