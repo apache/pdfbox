@@ -461,9 +461,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     protected void doWriteBody(COSDocument doc) throws IOException
     {
         COSDictionary trailer = doc.getTrailer();
-        COSDictionary root = (COSDictionary)trailer.getDictionaryObject( COSName.ROOT );
-        COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
-        COSDictionary encrypt = (COSDictionary)trailer.getDictionaryObject( COSName.ENCRYPT );
+        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        COSDictionary info = trailer.getCOSDictionary(COSName.INFO);
+        COSDictionary encrypt = trailer.getCOSDictionary(COSName.ENCRYPT);
         if( root != null )
         {
             addObjectToWrite( root );
