@@ -310,22 +310,22 @@ public class COSDocument extends COSBase implements Closeable
     public boolean isEncrypted()
     {
         boolean encrypted = false;
-        if( trailer != null )
+        if (trailer != null)
         {
-            encrypted = trailer.getDictionaryObject( COSName.ENCRYPT ) != null;
+            encrypted = trailer.getDictionaryObject(COSName.ENCRYPT) instanceof COSDictionary;
         }
         return encrypted;
     }
 
     /**
-     * This will get the encryption dictionary if the document is encrypted or null
-     * if the document is not encrypted.
+     * This will get the encryption dictionary if the document is encrypted or null if the document
+     * is not encrypted.
      *
      * @return The encryption dictionary.
      */
     public COSDictionary getEncryptionDictionary()
     {
-        return (COSDictionary)trailer.getDictionaryObject( COSName.ENCRYPT );
+        return trailer.getCOSDictionary(COSName.ENCRYPT);
     }
 
     /**
@@ -346,7 +346,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSArray getDocumentID()
     {
-        return (COSArray) getTrailer().getDictionaryObject(COSName.ID);
+        return getTrailer().getCOSArray(COSName.ID);
     }
 
     /**
