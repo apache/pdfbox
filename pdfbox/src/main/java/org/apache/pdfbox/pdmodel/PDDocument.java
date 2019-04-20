@@ -794,7 +794,7 @@ public class PDDocument implements Closeable
         if (documentInformation == null)
         {
             COSDictionary trailer = document.getTrailer();
-            COSDictionary infoDic = (COSDictionary) trailer.getDictionaryObject(COSName.INFO);
+            COSDictionary infoDic = trailer.getCOSDictionary(COSName.INFO);
             if (infoDic == null)
             {
                 infoDic = new COSDictionary();
