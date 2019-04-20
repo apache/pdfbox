@@ -1396,7 +1396,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             // we don't have path or size, so do the best we can
             md5.update( Long.toString(idTime).getBytes(Charsets.ISO_8859_1) );
 
-            COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
+            COSDictionary info = trailer.getCOSDictionary(COSName.INFO);
             if( info != null )
             {
                 for (COSBase cosBase : info.getValues())
