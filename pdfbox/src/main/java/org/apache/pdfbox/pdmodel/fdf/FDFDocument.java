@@ -127,7 +127,7 @@ public class FDFDocument implements Closeable
     {
         FDFCatalog retval = null;
         COSDictionary trailer = document.getTrailer();
-        COSDictionary root = (COSDictionary) trailer.getDictionaryObject(COSName.ROOT);
+        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
         if (root == null)
         {
             retval = new FDFCatalog();
