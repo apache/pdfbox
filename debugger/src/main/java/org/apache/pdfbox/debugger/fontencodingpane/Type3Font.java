@@ -128,18 +128,15 @@ class Type3Font extends FontPane
                 {
                     glyphs[index][3] = NO_GLYPH;
                 }
+                else if (map.containsKey(name))
+                {
+                    glyphs[index][3] = map.get(name);
+                }
                 else
                 {
-                    if (map.containsKey(name))
-                    {
-                        glyphs[index][3] = map.get(name);
-                    }
-                    else
-                    {
-                        BufferedImage image = renderType3Glyph(font, index);
-                        map.put(name, image);
-                        glyphs[index][3] = image;
-                    }
+                    BufferedImage image = renderType3Glyph(font, index);
+                    map.put(name, image);
+                    glyphs[index][3] = image;
                 }
                 totalAvailableGlyph++;
             }
