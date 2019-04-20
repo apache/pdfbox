@@ -102,7 +102,7 @@ public class FDFPage implements COSObjectable
     public FDFPageInfo getPageInfo()
     {
         FDFPageInfo retval = null;
-        COSDictionary dict = (COSDictionary) page.getDictionaryObject(COSName.INFO);
+        COSDictionary dict = page.getCOSDictionary(COSName.INFO);
         if (dict != null)
         {
             retval = new FDFPageInfo(dict);
