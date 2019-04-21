@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSFloat;
@@ -143,7 +144,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         /*
          * Process Specific Validation. The Generic Processing is useless for PDF/A validation
          */
-        if ("BI".equals(operator.getName()))
+        if (OperatorName.BEGIN_INLINE_IMAGE.equals(operator.getName()))
         {
             validateInlineImageFilter(operator);
             validateInlineImageColorSpace(operator);
@@ -175,12 +176,13 @@ public class PreflightContentStream extends PreflightStreamEngine
     protected void checkShowTextOperators(Operator operator, List<?> arguments) throws IOException
     {
         String op = operator.getName();
-        if ("Tj".equals(op) || "'".equals(op) || "\"".equals(op))
+        if (OperatorName.SHOW_TEXT.equals(op) || OperatorName.SHOW_TEXT_LINE.equals(op)
+                || OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(op))
         {
             validateStringDefinition(operator, arguments);
         }
 
-        if ("TJ".equals(op))
+        if (OperatorName.SHOW_TEXT_ADJUSTED.equals(op))
         {
             validateStringArray(operator, arguments);
         }
@@ -201,7 +203,7 @@ public class PreflightContentStream extends PreflightStreamEngine
         /*
          * For a Text operator, the arguments list should contain only one COSString object
          */
-        if ("\"".equals(operator.getName()))
+        if (OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(operator.getName()))
         {
             if (arguments.size() != 3)
             {

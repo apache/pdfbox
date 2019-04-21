@@ -39,6 +39,8 @@ public final class OperatorName
     public static final String BEGIN_MARKED_CONTENT_SEQ = "BDC";
     public static final String BEGIN_MARKED_CONTENT = "BMC";
     public static final String END_MARKED_CONTENT = "EMC";
+    public static final String MARKED_CONTENT_POINT_WITH_PROPS = "DP";
+    public static final String MARKED_CONTENT_POINT = "MP";
     public static final String DRAW_OBJECT = "Do";
 
     // state
@@ -97,6 +99,14 @@ public final class OperatorName
     public static final String SHOW_TEXT_ADJUSTED = "TJ";
     public static final String SHOW_TEXT_LINE = "'";
     public static final String SHOW_TEXT_LINE_AND_SPACE = "\"";
+
+    // type3 font
+    public static final String TYPE3_D0 = "d0";
+    public static final String TYPE3_D1 = "d1";
+
+    // compatibility section
+    public static final String BEGIN_COMPATIBILITY_SECTION = "BX";
+    public static final String END_COMPATIBILITY_SECTION = "EX";
 
     /**
      * private constructor

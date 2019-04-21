@@ -45,6 +45,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.operator.OperatorProcessor;
 
 /**
@@ -69,168 +70,69 @@ public class StubOperator extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        String op = operator.getName();
-        if ("S".equals(op))
+        switch (operator.getName())
         {
+        case OperatorName.STROKE_PATH:
+        case OperatorName.FILL_NON_ZERO:
+        case OperatorName.LEGACY_FILL_NON_ZERO:
+        case OperatorName.FILL_EVEN_ODD:
+        case OperatorName.FILL_NON_ZERO_AND_STROKE:
+        case OperatorName.FILL_EVEN_ODD_AND_STROKE:
+        case OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE:
+        case OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE:
+        case OperatorName.CLOSE_AND_STROKE:
+        case OperatorName.END_MARKED_CONTENT:
+        case OperatorName.CLOSE_PATH:
+        case OperatorName.CLIP_NON_ZERO:
+        case OperatorName.CLIP_EVEN_ODD:
+        case OperatorName.ENDPATH:
             checkNoOperands(arguments);
-        }
-        else if ("B".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("f".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("F".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("f*".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("b".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("B*".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("b*".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("s".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("EMC".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("BMC".equals(op))
-        {
+            break;
+        case OperatorName.BEGIN_MARKED_CONTENT:
+        case OperatorName.SET_GRAPHICS_STATE_PARAMS:
+        case OperatorName.SET_RENDERINGINTENT:
+        case OperatorName.SHADING_FILL:
+        case OperatorName.SHOW_TEXT:
+        case OperatorName.SHOW_TEXT_LINE:
+        case OperatorName.MARKED_CONTENT_POINT:
             checkStringOperands(arguments, 1);
-        }
-        else if ("BDC".equals(op))
-        {
+            break;
+        case OperatorName.BEGIN_MARKED_CONTENT_SEQ:
+        case OperatorName.MARKED_CONTENT_POINT_WITH_PROPS:
             checkTagAndPropertyOperands(arguments);
-        }
-        else if ("DP".equals(op))
-        {
-            checkTagAndPropertyOperands(arguments);
-        }
-        else if ("c".equals(op))
-        {
+            break;
+        case OperatorName.CURVE_TO:
+        case OperatorName.TYPE3_D1:
             checkNumberOperands(arguments, 6);
-        }
-        else if ("v".equals(op))
-        {
+            break;
+        case OperatorName.CURVE_TO_REPLICATE_FINAL_POINT:
+        case OperatorName.CURVE_TO_REPLICATE_INITIAL_POINT:
+        case OperatorName.APPEND_RECT:
             checkNumberOperands(arguments, 4);
-        }
-        else if ("y".equals(op))
-        {
-            checkNumberOperands(arguments, 4);
-        }
-        else if ("d0".equals(op))
-        {
+            break;
+        case OperatorName.MOVE_TO:
+        case OperatorName.LINE_TO:
+        case OperatorName.TYPE3_D0:
             checkNumberOperands(arguments, 2);
-        }
-        else if ("d1".equals(op))
-        {
-            checkNumberOperands(arguments, 6);
-        }
-        else if ("g".equals(op))
-        {
+            break;
+        case OperatorName.NON_STROKING_GRAY:
+        case OperatorName.STROKING_COLOR_GRAY:
+        case OperatorName.SET_FLATNESS:
+        case OperatorName.SET_LINE_MITERLIMIT:
             checkNumberOperands(arguments, 1);
-        }
-        else if ("G".equals(op))
-        {
-            checkNumberOperands(arguments, 1);
-        }
-        else if ("gs".equals(op))
-        {
-            checkStringOperands(arguments, 1);
-        }
-        else if ("h".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("i".equals(op))
-        {
-            checkNumberOperands(arguments, 1);
-        }
-        else if ("l".equals(op))
-        {
-            checkNumberOperands(arguments, 2);
-        }
-        else if ("m".equals(op))
-        {
-            checkNumberOperands(arguments, 2);
-        }
-        else if ("M".equals(op))
-        {
-            checkNumberOperands(arguments, 1);
-        }
-        else if ("MP".equals(op))
-        {
-            checkStringOperands(arguments, 1);
-        }
-        else if ("n".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("re".equals(op))
-        {
-            checkNumberOperands(arguments, 4);
-        }
-        else if ("ri".equals(op))
-        {
-            checkStringOperands(arguments, 1);
-        }
-        else if ("s".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("S".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("sh".equals(op))
-        {
-            checkStringOperands(arguments, 1);
-        }
-        else if ("'".equals(op))
-        {
-            checkStringOperands(arguments, 1);
-        }
-        else if ("Tj".equals(op))
-        {
-            checkStringOperands(arguments, 1);
-        }
-        else if ("TJ".equals(op))
-        {
+            break;
+        case OperatorName.SHOW_TEXT_ADJUSTED:
             checkArrayOperands(arguments, 1);
-        }
-        else if ("W".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("W*".equals(op))
-        {
-            checkNoOperands(arguments);
-        }
-        else if ("\"".equals(op))
-        {
+            break;
+        case OperatorName.SHOW_TEXT_LINE_AND_SPACE:
             checkNumberOperands(arguments.subList(0, 2), 2);
             checkStringOperands(arguments.subList(2, arguments.size()), 1);
+            break;
+        default:
+            // ---- Some operators are processed by PDFBox Objects.
+            // ---- Other operators are authorized but not used.
+            break;
         }
-        // else
-        // ---- Some operators are processed by PDFBox Objects.
-        // ---- Other operators are authorized but it isn't used.
-
     }
 
     /**
@@ -328,9 +230,8 @@ public class StubOperator extends OperatorProcessor
             throw createInvalidArgumentsError();
         }
 
-        for (int i = 0; i < length; ++i)
+        for (COSBase arg : arguments)
         {
-            COSBase arg = arguments.get(i);
             if (!(arg instanceof COSFloat) && !(arg instanceof COSInteger))
             {
                 throw createInvalidArgumentsError();
