@@ -603,6 +603,20 @@ public class PDType1Font extends PDSimpleFont
                     {
                         return uniName;
                     }
+                    // PDFBOX-4017: no postscript table on Windows 10, and the low uni00NN
+                    // names are not found. What works is using the PDF code plus 0xF000
+                    // while disregarding encoding from the PDF (because of file from PDFBOX-1606;
+                    // makes sense because this segment is about finding the name in a standard font)
+                    //TODO bring up better solution than this
+                    if ("SymbolMT".equals(genericFont.getName()))
+                    {
+                        int code = SymbolEncoding.INSTANCE.getNameToCodeMap().get(name);
+                        uniName = getUniNameOfCodePoint(code + 0xF000);
+                        if (genericFont.hasGlyph(uniName))
+                        {
+                            return uniName;
+                        }
+                    }
                 }
             }
         }
