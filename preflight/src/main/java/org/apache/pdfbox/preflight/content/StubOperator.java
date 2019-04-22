@@ -35,6 +35,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_POSITIVE_FLOAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_STRING_LENGTH;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
@@ -56,6 +57,39 @@ public class StubOperator extends OperatorProcessor
 {
     private final String name;
 
+    private static final List<String> CHECK_NO_OPERANDS = Arrays.asList( //
+            OperatorName.STROKE_PATH, OperatorName.FILL_NON_ZERO, OperatorName.LEGACY_FILL_NON_ZERO,
+            OperatorName.FILL_EVEN_ODD, OperatorName.FILL_NON_ZERO_AND_STROKE,
+            OperatorName.FILL_EVEN_ODD_AND_STROKE, OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE,
+            OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE, OperatorName.CLOSE_AND_STROKE,
+            OperatorName.END_MARKED_CONTENT, OperatorName.CLOSE_PATH, OperatorName.CLIP_NON_ZERO,
+            OperatorName.CLIP_EVEN_ODD, OperatorName.ENDPATH);
+
+    private static final List<String> CHECK_STRING_OPERANDS = Arrays.asList( //
+            OperatorName.BEGIN_MARKED_CONTENT, OperatorName.SET_GRAPHICS_STATE_PARAMS,
+            OperatorName.SET_RENDERINGINTENT, OperatorName.SHADING_FILL, OperatorName.SHOW_TEXT,
+            OperatorName.SHOW_TEXT_LINE, OperatorName.MARKED_CONTENT_POINT);
+
+    private static final List<String> CHECK_TAG_AND_PROPERTY_OPERANDS = Arrays.asList( //
+            OperatorName.BEGIN_MARKED_CONTENT_SEQ, OperatorName.MARKED_CONTENT_POINT_WITH_PROPS);
+
+    private static final List<String> CHECK_NUMBER_OPERANDS_6 = Arrays.asList( //
+            OperatorName.CURVE_TO, OperatorName.TYPE3_D1);
+
+    private static final List<String> CHECK_NUMBER_OPERANDS_4 = Arrays.asList( //
+            OperatorName.CURVE_TO_REPLICATE_FINAL_POINT,
+            OperatorName.CURVE_TO_REPLICATE_INITIAL_POINT, OperatorName.APPEND_RECT);
+
+    private static final List<String> CHECK_NUMBER_OPERANDS_2 = Arrays.asList( //
+            OperatorName.MOVE_TO, OperatorName.LINE_TO, OperatorName.TYPE3_D0);
+
+    private static final List<String> CHECK_NUMBER_OPERANDS = Arrays.asList( //
+            OperatorName.NON_STROKING_GRAY, OperatorName.STROKING_COLOR_GRAY,
+            OperatorName.SET_FLATNESS, OperatorName.SET_LINE_MITERLIMIT);
+
+    private static final List<String> CHECK_ARRAY_OPERANDS = Arrays.asList( //
+            OperatorName.SHOW_TEXT_ADJUSTED);
+
     public StubOperator(String name)
     {
         this.name = name;
@@ -70,69 +104,46 @@ public class StubOperator extends OperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
-        switch (operator.getName())
+        String opName = operator.getName();
+        if (CHECK_NO_OPERANDS.contains(opName))
         {
-        case OperatorName.STROKE_PATH:
-        case OperatorName.FILL_NON_ZERO:
-        case OperatorName.LEGACY_FILL_NON_ZERO:
-        case OperatorName.FILL_EVEN_ODD:
-        case OperatorName.FILL_NON_ZERO_AND_STROKE:
-        case OperatorName.FILL_EVEN_ODD_AND_STROKE:
-        case OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE:
-        case OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE:
-        case OperatorName.CLOSE_AND_STROKE:
-        case OperatorName.END_MARKED_CONTENT:
-        case OperatorName.CLOSE_PATH:
-        case OperatorName.CLIP_NON_ZERO:
-        case OperatorName.CLIP_EVEN_ODD:
-        case OperatorName.ENDPATH:
             checkNoOperands(arguments);
-            break;
-        case OperatorName.BEGIN_MARKED_CONTENT:
-        case OperatorName.SET_GRAPHICS_STATE_PARAMS:
-        case OperatorName.SET_RENDERINGINTENT:
-        case OperatorName.SHADING_FILL:
-        case OperatorName.SHOW_TEXT:
-        case OperatorName.SHOW_TEXT_LINE:
-        case OperatorName.MARKED_CONTENT_POINT:
+        }
+        else if (CHECK_STRING_OPERANDS.contains(opName))
+        {
             checkStringOperands(arguments, 1);
-            break;
-        case OperatorName.BEGIN_MARKED_CONTENT_SEQ:
-        case OperatorName.MARKED_CONTENT_POINT_WITH_PROPS:
+        }
+        else if (CHECK_TAG_AND_PROPERTY_OPERANDS.contains(opName))
+        {
             checkTagAndPropertyOperands(arguments);
-            break;
-        case OperatorName.CURVE_TO:
-        case OperatorName.TYPE3_D1:
+        }
+        else if (CHECK_NUMBER_OPERANDS_6.contains(opName))
+        {
             checkNumberOperands(arguments, 6);
-            break;
-        case OperatorName.CURVE_TO_REPLICATE_FINAL_POINT:
-        case OperatorName.CURVE_TO_REPLICATE_INITIAL_POINT:
-        case OperatorName.APPEND_RECT:
+        }
+        else if (CHECK_NUMBER_OPERANDS_4.contains(opName))
+        {
             checkNumberOperands(arguments, 4);
-            break;
-        case OperatorName.MOVE_TO:
-        case OperatorName.LINE_TO:
-        case OperatorName.TYPE3_D0:
+        }
+        else if (CHECK_NUMBER_OPERANDS_2.contains(opName))
+        {
             checkNumberOperands(arguments, 2);
-            break;
-        case OperatorName.NON_STROKING_GRAY:
-        case OperatorName.STROKING_COLOR_GRAY:
-        case OperatorName.SET_FLATNESS:
-        case OperatorName.SET_LINE_MITERLIMIT:
+        }
+        else if (CHECK_NUMBER_OPERANDS.contains(opName))
+        {
             checkNumberOperands(arguments, 1);
-            break;
-        case OperatorName.SHOW_TEXT_ADJUSTED:
+        }
+        else if (CHECK_ARRAY_OPERANDS.contains(opName))
+        {
             checkArrayOperands(arguments, 1);
-            break;
-        case OperatorName.SHOW_TEXT_LINE_AND_SPACE:
+        }
+        else if (OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(opName))
+        {
             checkNumberOperands(arguments.subList(0, 2), 2);
             checkStringOperands(arguments.subList(2, arguments.size()), 1);
-            break;
-        default:
-            // ---- Some operators are processed by PDFBox Objects.
-            // ---- Other operators are authorized but not used.
-            break;
         }
+        // ---- Some operators are processed by PDFBox Objects.
+        // ---- Other operators are authorized but not used.
     }
 
     /**
