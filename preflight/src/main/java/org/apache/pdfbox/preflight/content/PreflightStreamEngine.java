@@ -56,6 +56,7 @@ import org.apache.pdfbox.preflight.utils.FilterHelper;
 import org.apache.pdfbox.preflight.utils.RenderingIntents;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.contentstream.operator.color.SetNonStrokingColorN;
 import org.apache.pdfbox.contentstream.operator.color.SetStrokingColorN;
@@ -164,53 +165,53 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
          * Do not use the PDFBox Operator, because of the PageDrawer class cast Or because the Operator doesn't exist
          */
 
-        addOperator(new StubOperator("l"));
-        addOperator(new StubOperator("re"));
-        addOperator(new StubOperator("c"));
-        addOperator(new StubOperator("y"));
-        addOperator(new StubOperator("v"));
-        addOperator(new StubOperator("n"));
-        addOperator(new StubOperator("BI"));
-        addOperator(new StubOperator("ID"));
-        addOperator(new StubOperator("EI"));
-        addOperator(new StubOperator("m"));
-        addOperator(new StubOperator("W*"));
-        addOperator(new StubOperator("W"));
-        addOperator(new StubOperator("h"));
+        addOperator(new StubOperator(OperatorName.LINE_TO));
+        addOperator(new StubOperator(OperatorName.APPEND_RECT));
+        addOperator(new StubOperator(OperatorName.CURVE_TO));
+        addOperator(new StubOperator(OperatorName.CURVE_TO_REPLICATE_FINAL_POINT));
+        addOperator(new StubOperator(OperatorName.CURVE_TO_REPLICATE_INITIAL_POINT));
+        addOperator(new StubOperator(OperatorName.ENDPATH));
+        addOperator(new StubOperator(OperatorName.BEGIN_INLINE_IMAGE));
+        addOperator(new StubOperator(OperatorName.BEGIN_INLINE_IMAGE_DATA));
+        addOperator(new StubOperator(OperatorName.END_INLINE_IMAGE));
+        addOperator(new StubOperator(OperatorName.MOVE_TO));
+        addOperator(new StubOperator(OperatorName.CLIP_EVEN_ODD));
+        addOperator(new StubOperator(OperatorName.CLIP_NON_ZERO));
+        addOperator(new StubOperator(OperatorName.CLOSE_PATH));
 
-        addOperator(new StubOperator("Tj"));
-        addOperator(new StubOperator("TJ"));
-        addOperator(new StubOperator("'"));
-        addOperator(new StubOperator("\""));
+        addOperator(new StubOperator(OperatorName.SHOW_TEXT));
+        addOperator(new StubOperator(OperatorName.SHOW_TEXT_ADJUSTED));
+        addOperator(new StubOperator(OperatorName.SHOW_TEXT_LINE));
+        addOperator(new StubOperator(OperatorName.SHOW_TEXT_LINE_AND_SPACE));
 
-        addOperator(new StubOperator("b"));
-        addOperator(new StubOperator("B"));
-        addOperator(new StubOperator("b*"));
-        addOperator(new StubOperator("B*"));
+        addOperator(new StubOperator(OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE));
+        addOperator(new StubOperator(OperatorName.FILL_NON_ZERO_AND_STROKE));
+        addOperator(new StubOperator(OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE));
+        addOperator(new StubOperator(OperatorName.FILL_EVEN_ODD_AND_STROKE));
 
-        addOperator(new StubOperator("BDC"));
-        addOperator(new StubOperator("BMC"));
-        addOperator(new StubOperator("DP"));
-        addOperator(new StubOperator("EMC"));
-        addOperator(new StubOperator("BX"));
-        addOperator(new StubOperator("EX"));
+        addOperator(new StubOperator(OperatorName.BEGIN_MARKED_CONTENT_SEQ));
+        addOperator(new StubOperator(OperatorName.BEGIN_MARKED_CONTENT));
+        addOperator(new StubOperator(OperatorName.MARKED_CONTENT_POINT_WITH_PROPS));
+        addOperator(new StubOperator(OperatorName.END_MARKED_CONTENT));
+        addOperator(new StubOperator(OperatorName.BEGIN_COMPATIBILITY_SECTION));
+        addOperator(new StubOperator(OperatorName.END_COMPATIBILITY_SECTION));
 
-        addOperator(new StubOperator("d0"));
-        addOperator(new StubOperator("d1"));
+        addOperator(new StubOperator(OperatorName.TYPE3_D0));
+        addOperator(new StubOperator(OperatorName.TYPE3_D1));
 
-        addOperator(new StubOperator("f"));
-        addOperator(new StubOperator("F"));
-        addOperator(new StubOperator("f*"));
+        addOperator(new StubOperator(OperatorName.FILL_NON_ZERO));
+        addOperator(new StubOperator(OperatorName.LEGACY_FILL_NON_ZERO));
+        addOperator(new StubOperator(OperatorName.FILL_EVEN_ODD));
 
-        addOperator(new StubOperator("M"));
-        addOperator(new StubOperator("MP"));
+        addOperator(new StubOperator(OperatorName.SET_LINE_MITERLIMIT));
+        addOperator(new StubOperator(OperatorName.MARKED_CONTENT_POINT));
 
-        addOperator(new StubOperator("i"));
+        addOperator(new StubOperator(OperatorName.SET_FLATNESS));
 
-        addOperator(new StubOperator("ri"));
-        addOperator(new StubOperator("s"));
-        addOperator(new StubOperator("S"));
-        addOperator(new StubOperator("sh"));
+        addOperator(new StubOperator(OperatorName.SET_RENDERINGINTENT));
+        addOperator(new StubOperator(OperatorName.CLOSE_AND_STROKE));
+        addOperator(new StubOperator(OperatorName.STROKE_PATH));
+        addOperator(new StubOperator(OperatorName.SHADING_FILL));
     }
 
     /**
@@ -226,7 +227,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      */
     protected void validateRenderingIntent(Operator operator, List<COSBase> arguments) throws ContentStreamException
     {
-        if ("ri".equals(operator.getName()))
+        if (OperatorName.SET_RENDERINGINTENT.equals(operator.getName()))
         {
             String riArgument0 = "";
             if (arguments.get(0) instanceof COSName)
@@ -250,7 +251,7 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      */
     protected void validateNumberOfGraphicStates(Operator operator) throws ContentStreamException
     {
-        if ("q".equals(operator.getName()))
+        if (OperatorName.SAVE.equals(operator.getName()))
         {
             int numberOfGraphicStates = this.getGraphicsStackSize();
             if (numberOfGraphicStates > MAX_GRAPHIC_STATES)
@@ -382,23 +383,31 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     {
         PDColorSpace cs = getColorSpace(operation);
 
-        if (("rg".equals(operation) || "RG".equals(operation)) 
+        if ((OperatorName.NON_STROKING_RGB.equals(operation)
+                || OperatorName.STROKING_COLOR_RGB.equals(operation))
                 && !validColorSpace(cs, ColorSpaceType.RGB))
         {
             registerError("The operator \"" + operation + "\" can't be used with CMYK Profile",
                     ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB);
             return;
         }
-        if (("k".equals(operation) || "K".equals(operation)) 
+        if ((OperatorName.NON_STROKING_CMYK.equals(operation)
+                || OperatorName.STROKING_COLOR_CMYK.equals(operation))
                 && !validColorSpace(cs, ColorSpaceType.CMYK))
         {
             registerError("The operator \"" + operation + "\" can't be used with RGB Profile",
                     ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK);
             return;
         }
-        if (("g".equals(operation) || "G".equals(operation)
-                || "f".equals(operation) || "F".equals(operation) || "f*".equals(operation)
-                || "B".equals(operation) || "B*".equals(operation) || "b".equals(operation) || "b*".equals(operation))
+        if ((OperatorName.NON_STROKING_GRAY.equals(operation)
+                || OperatorName.STROKING_COLOR_GRAY.equals(operation)
+                || OperatorName.FILL_NON_ZERO.equals(operation)
+                || OperatorName.LEGACY_FILL_NON_ZERO.equals(operation)
+                || OperatorName.FILL_EVEN_ODD.equals(operation)
+                || OperatorName.FILL_NON_ZERO_AND_STROKE.equals(operation)
+                || OperatorName.FILL_EVEN_ODD_AND_STROKE.equals(operation)
+                || OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE.equals(operation)
+                || OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE.equals(operation))
                 && !validColorSpace(cs, ColorSpaceType.ALL))
         {
             registerError("The operator \"" + operation + "\" can't be used without Color Profile",
@@ -417,7 +426,9 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     {
         boolean v = false;
         String op = operator.getName();
-        if ("Tj".equals(op) || "TJ".equals(op) || "'".equals(op) || "\"".equals(op))
+        if (OperatorName.SHOW_TEXT.equals(op) || OperatorName.SHOW_TEXT_ADJUSTED.equals(op)
+                || OperatorName.SHOW_TEXT_LINE.equals(op)
+                || OperatorName.SHOW_TEXT_LINE_AND_SPACE.equals(op))
         {
             RenderingMode rm = getGraphicsState().getTextState().getRenderingMode();
             if (rm.isFill() && 
@@ -432,15 +443,24 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             }
         }
         // fills
-        if (("f".equals(op) || "F".equals(op) || "f*".equals(op) || 
-            "B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op)) &&
+        if ((OperatorName.FILL_NON_ZERO.equals(op) || OperatorName.LEGACY_FILL_NON_ZERO.equals(op)
+                || OperatorName.FILL_EVEN_ODD.equals(op)
+                || OperatorName.FILL_NON_ZERO_AND_STROKE.equals(op)
+                || OperatorName.FILL_EVEN_ODD_AND_STROKE.equals(op)
+                || OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE.equals(op)
+                || OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE.equals(op))
+                &&
                 getGraphicsState().getNonStrokingColor().getColorSpace() instanceof PDDeviceGray)
         {
             v = true;
         }
         // strokes
-        if (("B".equals(op) || "B*".equals(op) || "b".equals(op) || "b*".equals(op) || 
-            "s".equals(op) || "S".equals(op)) &&
+        if ((OperatorName.FILL_NON_ZERO_AND_STROKE.equals(op)
+                || OperatorName.FILL_EVEN_ODD_AND_STROKE.equals(op)
+                || OperatorName.CLOSE_FILL_NON_ZERO_AND_STROKE.equals(op)
+                || OperatorName.CLOSE_FILL_EVEN_ODD_AND_STROKE.equals(op)
+                || OperatorName.CLOSE_AND_STROKE.equals(op) || OperatorName.STROKE_PATH.equals(op))
+                &&
                 getGraphicsState().getStrokingColor().getColorSpace() instanceof PDDeviceGray)
         {
             v = true;
@@ -565,7 +585,8 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      */
     protected void checkSetColorSpaceOperators(Operator operator, List<COSBase> arguments) throws IOException
     {
-        if (!("CS".equals(operator.getName()) || "cs".equals(operator.getName())))
+        if (!OperatorName.STROKING_COLORSPACE.equals(operator.getName())
+                && !OperatorName.NON_STROKING_COLORSPACE.equals(operator.getName()))
         {
             return;
         }

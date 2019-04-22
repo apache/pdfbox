@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.content.PreflightStreamEngine;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSBase;
 
 /**
@@ -91,7 +92,7 @@ public class PreflightType3Stream extends PreflightStreamEngine
         super.processOperator(operator, operands);
         String operation = operator.getName();
 
-        if (operation.equals("BI"))
+        if (operation.equals(OperatorName.BEGIN_INLINE_IMAGE))
         {
             image = new PDInlineImage(operator.getImageParameters(),
                                       operator.getImageData(),
@@ -101,11 +102,11 @@ public class PreflightType3Stream extends PreflightStreamEngine
             validateInlineImageColorSpace(operator);
         }
 
-        if (operation.equals("d0"))
+        if (operation.equals(OperatorName.TYPE3_D0))
         {
             checkType3FirstOperator(operands);
         }
-        else if (operation.equals("d1"))
+        else if (operation.equals(OperatorName.TYPE3_D1))
         {
             COSNumber llx = (COSNumber) operands.get(2);
             COSNumber lly = (COSNumber) operands.get(3);
