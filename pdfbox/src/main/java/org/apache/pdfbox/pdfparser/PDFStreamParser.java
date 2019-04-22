@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -276,7 +277,7 @@ public class PDFStreamParser extends BaseParser
             {
                 String next = readString();
                 retval = Operator.getOperator(next);
-                if( next.equals( "BI" ) )
+            if (next.equals(OperatorName.BEGIN_INLINE_IMAGE))
                 {
                     Operator beginImageOP = (Operator)retval;
                     COSDictionary imageParams = new COSDictionary();
@@ -304,7 +305,7 @@ public class PDFStreamParser extends BaseParser
             {
                 //Special case for ID operator
                 String id = "" + (char) seqSource.read() + (char) seqSource.read();
-                if( !id.equals( "ID" ) )
+            if (!id.equals(OperatorName.BEGIN_INLINE_IMAGE_DATA))
                 {
                     throw new IOException( "Error: Expected operator 'ID' actual='" + id +
                                            "' at stream offset " + seqSource.getPosition());
@@ -332,7 +333,7 @@ public class PDFStreamParser extends BaseParser
                     currentByte = seqSource.read();
                 }
                 // the EI operator isn't unread, as it won't be processed anyway
-                retval = Operator.getOperator("ID");
+            retval = Operator.getOperator(OperatorName.BEGIN_INLINE_IMAGE_DATA);
                 // save the image data to the operator, so that it can be accessed later
                 ((Operator)retval).setImageData( imageData.toByteArray() );
                 break;

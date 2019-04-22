@@ -58,6 +58,8 @@ public final class OperatorName
     // graphics
     public static final String APPEND_RECT = "re";
     public static final String BEGIN_INLINE_IMAGE = "BI";
+    public static final String BEGIN_INLINE_IMAGE_DATA = "ID";
+    public static final String END_INLINE_IMAGE = "EI";
     public static final String CLIP_EVEN_ODD = "W*";
     public static final String CLIP_NON_ZERO = "W";
     public static final String CLOSE_AND_STROKE = "s";
