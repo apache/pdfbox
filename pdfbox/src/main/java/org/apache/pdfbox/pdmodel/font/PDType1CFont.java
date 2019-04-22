@@ -164,6 +164,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     public boolean hasGlyph(int code) throws IOException
     {
         String name = getEncoding().getName(code);
+        name = getNameInFont(name);
         return hasGlyph(name);
     }
 
@@ -171,6 +172,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     public GeneralPath getPath(int code) throws IOException
     {
         String name = getEncoding().getName(code);
+        name = getNameInFont(name);
         return getPath(name);
     }
 
@@ -178,6 +180,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     public GeneralPath getNormalizedPath(int code) throws IOException
     {
         String name = getEncoding().getName(code);
+        name = getNameInFont(name);
         GeneralPath path = getPath(name);
         if (path == null)
         {
@@ -297,6 +300,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     public float getWidthFromFont(int code) throws IOException
     {
         String name = codeToName(code);
+        name = getNameInFont(name);
         float width = genericFont.getWidth(name);
 
         Point2D p = new Point2D.Float(width, 0);
