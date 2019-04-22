@@ -283,6 +283,7 @@ public class PDType1CFont extends PDSimpleFont
     public float getWidthFromFont(int code) throws IOException
     {
         String name = codeToName(code);
+        name = getNameInFont(name);
         float width = genericFont.getWidth(name);
 
         Point2D p = new Point2D.Float(width, 0);
