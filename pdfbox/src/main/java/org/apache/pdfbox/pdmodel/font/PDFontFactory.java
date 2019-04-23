@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 
 /**
  * Creates the appropriate font subtype based on information in the dictionary.
@@ -44,6 +45,19 @@ public final class PDFontFactory
      * @throws IOException if something goes wrong
      */
     public static PDFont createFont(COSDictionary dictionary) throws IOException
+    {
+        return createFont(dictionary, null);
+    }
+
+    /**
+     * Creates a new PDFont instance with the appropriate subclass.
+     *
+     * @param dictionary a font dictionary
+     * @param resourceCache resource cache, only useful for type 3 fonts, can be null
+     * @return a PDFont instance, based on the SubType entry of the dictionary
+     * @throws IOException if something goes wrong
+     */
+    public static PDFont createFont(COSDictionary dictionary, ResourceCache resourceCache) throws IOException
     {
         COSName type = dictionary.getCOSName(COSName.TYPE, COSName.FONT);
         if (!COSName.FONT.equals(type))
@@ -76,7 +90,7 @@ public final class PDFontFactory
         }
         else if (COSName.TYPE3.equals(subType))
         {
-            return new PDType3Font(dictionary);
+            return new PDType3Font(dictionary, resourceCache);
         }
         else if (COSName.TYPE0.equals(subType))
         {
