@@ -143,7 +143,7 @@ public final class PDResources implements COSObjectable
         COSDictionary dict = (COSDictionary)get(COSName.FONT, name);
         if (dict != null)
         {
-            font = PDFontFactory.createFont(dict);
+            font = PDFontFactory.createFont(dict, cache);
         }
         
         if (cache != null && indirect != null)
