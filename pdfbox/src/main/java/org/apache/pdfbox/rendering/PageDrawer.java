@@ -606,7 +606,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (COSName.LUMINOSITY.equals(softMask.getSubType()))
         {
             COSArray backdropColorArray = softMask.getBackdropColor();
-            PDColorSpace colorSpace = softMask.getGroup().getGroup().getColorSpace();
+            PDTransparencyGroup form = softMask.getGroup();
+            PDColorSpace colorSpace = form.getGroup().getColorSpace(form.getResources());
             if (colorSpace != null && backdropColorArray != null)
             {
                 backdropColor = new PDColor(backdropColorArray, colorSpace);
