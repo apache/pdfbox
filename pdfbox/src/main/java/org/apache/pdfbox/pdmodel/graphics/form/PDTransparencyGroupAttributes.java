@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 
@@ -65,9 +66,21 @@ public final class PDTransparencyGroupAttributes implements COSObjectable
      */
     public PDColorSpace getColorSpace() throws IOException
     {
+        return getColorSpace(null);
+    }
+
+    /**
+     * Returns the group color space or null if it isn't defined.
+     *
+     * @param resources useful for its cache. Can be null.
+     * @return the group color space.
+     * @throws IOException
+     */
+    public PDColorSpace getColorSpace(PDResources resources) throws IOException
+    {
         if (colorSpace == null && getCOSObject().containsKey(COSName.CS))
         {
-            colorSpace = PDColorSpace.create(getCOSObject().getDictionaryObject(COSName.CS));
+            colorSpace = PDColorSpace.create(getCOSObject().getDictionaryObject(COSName.CS), resources);
         }
         return colorSpace;
     }
