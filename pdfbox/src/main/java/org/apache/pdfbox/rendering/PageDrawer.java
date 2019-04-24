@@ -1663,7 +1663,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             height = maxY - minY;
 
             // FIXME - color space
-            if (isGray(form.getGroup().getColorSpace()))
+            if (isGray(form.getGroup().getColorSpace(form.getResources())))
             {
                 image = create2ByteGrayAlphaImage(width, height);
             }
