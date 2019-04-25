@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentMembershipDictionary;
 
 /**
  * A property list is a dictionary containing private information meaningful to the conforming
@@ -41,6 +42,10 @@ public class PDPropertyList implements COSObjectable
         if (COSName.OCG.equals(dict.getItem(COSName.TYPE)))
         {
             return new PDOptionalContentGroup(dict);
+        }
+        else if (COSName.OCMD.equals(dict.getItem(COSName.TYPE)))
+        {
+            return new PDOptionalContentMembershipDictionary(dict);
         }
         else
         {
