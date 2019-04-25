@@ -86,6 +86,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDTransparencyGroup;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup.RenderState;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentMembershipDictionary;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDShadingPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
@@ -1955,7 +1956,68 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 return true;
             }
         }
+        else if (propertyList instanceof PDOptionalContentMembershipDictionary)
+        {
+            return isHiddenOCMD((PDOptionalContentMembershipDictionary) propertyList);
+        }
         return false;
+    }
+
+    private boolean isHiddenOCMD(PDOptionalContentMembershipDictionary ocmd)
+    {
+        if (ocmd.getCOSObject().getCOSArray(COSName.VE) != null)
+        {
+            // support seems to be optional, and is approximated by /P and /OCGS
+            LOG.info("/VE entry ignored in Optional Content Membership Dictionary");
+        }
+        List<Boolean> visibles = new ArrayList<Boolean>();
+        for (PDPropertyList prop : ocmd.getOCGs())
+        {
+            visibles.add(!isHiddenOCG(prop));
+        }
+        COSName visibilityPolicy = ocmd.getVisibilityPolicy();
+        if (COSName.ANY_OFF.equals(visibilityPolicy))
+        {
+            for (boolean visible : visibles)
+            {
+                if (!visible)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (COSName.ALL_ON.equals(visibilityPolicy))
+        {
+            for (boolean visible : visibles)
+            {
+                if (!visible)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (COSName.ALL_OFF.equals(visibilityPolicy))
+        {
+            for (boolean visible : visibles)
+            {
+                if (visible)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // AnyOn is default
+        for (boolean visible : visibles)
+        {
+            if (visible)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static int getJavaVersion()
