@@ -81,6 +81,9 @@ public final class PDFBox
                 case "PDFToImage":
                     PDFToImage.main(arguments);
                     break;
+                case "ImageToPDF":
+                    ImageToPDF.main(arguments);
+                    break;
                 case "TextToPDF":
                     TextToPDF.main(arguments);
                     break;
@@ -111,6 +114,7 @@ public final class PDFBox
                 + "  Encrypt\n"
                 + "  ExtractText\n"
                 + "  ExtractImages\n"
+                + "  ImageToPDF\n"
                 + "  OverlayPDF\n"
                 + "  PrintPDF\n"
                 + "  PDFDebugger\n"
