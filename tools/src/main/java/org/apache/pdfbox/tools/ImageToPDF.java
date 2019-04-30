@@ -31,9 +31,9 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 public final class ImageToPDF
 {
-
     private PDRectangle mediaBox = PDRectangle.LETTER;
     private boolean landscape = false;
+    private boolean autoOrientation = false;
     private boolean resize = false;
 
     private ImageToPDF()
@@ -73,6 +73,10 @@ public final class ImageToPDF
                 {
                     app.setLandscape(true);
                 }
+                else if ("-autoOrientation".equals(args[i]))
+                {
+                    app.setAutoOrientation(true);
+                }
                 else if ("-pageSize".equals(args[i]))
                 {
                     i++;
@@ -103,20 +107,20 @@ public final class ImageToPDF
 
     void createPDFFromImages(PDDocument doc, List<String> imageFilenames) throws IOException
     {
-        PDRectangle actualMediaBox = mediaBox;
-        if (landscape)
-        {
-            actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
-        }
-
         for (String imageFileName : imageFilenames)
         {
+            PDImageXObject pdImage = PDImageXObject.createFromFile(imageFileName, doc);
+
+            PDRectangle actualMediaBox = mediaBox;
+            if ((autoOrientation && pdImage.getWidth() > pdImage.getHeight()) || landscape)
+            {
+                actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
+            }
             PDPage page = new PDPage(actualMediaBox);
             doc.addPage(page);
 
             try (PDPageContentStream contents = new PDPageContentStream(doc, page))
             {
-                PDImageXObject pdImage = PDImageXObject.createFromFile(imageFileName, doc);
                 if (resize)
                 {
                     contents.drawImage(pdImage, 0, 0, actualMediaBox.getWidth(), actualMediaBox.getHeight());
@@ -214,6 +218,28 @@ public final class ImageToPDF
     }
 
     /**
+     * Gets whether page orientation (portrait / landscape) should be decided automatically for each
+     * page depending on image proportion.
+     *
+     * @return true if auto, false if not.
+     */
+    public boolean isAutoOrientation()
+    {
+        return autoOrientation;
+    }
+
+    /**
+     * Sets whether page orientation (portrait / landscape) should be decided automatically for each
+     * page depending on image proportion.
+     *
+     * @param autoOrientation true if auto, false if not.
+     */
+    public void setAutoOrientation(boolean autoOrientation)
+    {
+        this.autoOrientation = autoOrientation;
+    }
+
+    /**
      * This will print out a message telling how to use this example.
      */
     private void usage()
@@ -231,7 +257,8 @@ public final class ImageToPDF
         message.append("                         A4\n");
         message.append("                         A5\n");
         message.append("                         A6\n");
-        message.append("  -landscape           : sets orientation to landscape");
+        message.append("  -landscape           : sets orientation to landscape\n");
+        message.append("  -autoOrientation     : sets orientation depending of image proportion\n");
 
         System.err.println(message.toString());
         System.exit(1);
