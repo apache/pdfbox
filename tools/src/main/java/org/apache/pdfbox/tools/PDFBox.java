@@ -88,6 +88,10 @@ public final class PDFBox
             {
                 PDFToImage.main(arguments);
             }
+            else if (command.equals("ImageToPDF"))
+            {
+                ImageToPDF.main(arguments);
+            }
             else if (command.equals("TextToPDF"))
             {
                 TextToPDF.main(arguments);
