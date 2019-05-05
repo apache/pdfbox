@@ -634,6 +634,19 @@
                             <sha512>42a61d0061b0b3b0bcc92c9f3ddc78daca79e9d5ea56c19796270316fb7cf3858db9f51efafa3776e1fef17f85202b35c8eed0e88ba6b7ebc7bb05c6014b9fc8</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4517</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12966453/cryptfilter.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4517-cryptfilter.pdf</outputFileName>
+                            <sha512>ed55a65bad6f91104846d28e9e7dcb18b11efbf980a74781350551428bbaecba375d9e22af02edf0f91263c7f668e93ec7c52d397898b7640c2d60e7dd3ae940</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
