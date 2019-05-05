@@ -173,6 +173,12 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             throw new IOException("Decryption material is not compatible with the document");
         }
+        
+        // This is only used with security version 4 and 5.
+        if (encryption.getVersion() >= 4) {
+	        setStreamFilterName(encryption.getStreamFilterName());
+	        setStringFilterName(encryption.getStreamFilterName());
+        }
         setDecryptMetadata(encryption.isEncryptMetaData());
         StandardDecryptionMaterial material = (StandardDecryptionMaterial)decryptionMaterial;
 
