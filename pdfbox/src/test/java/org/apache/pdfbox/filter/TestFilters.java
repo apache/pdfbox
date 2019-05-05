@@ -18,6 +18,7 @@ package org.apache.pdfbox.filter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
@@ -27,6 +28,7 @@ import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This will test all of the filters in the PDFBox system.
@@ -115,6 +117,17 @@ public class TestFilters extends TestCase
         }
     }
     
+    /**
+     * This will test the use of identity filter to decode stream and string.
+     * This test threw an IOException before the correction.
+     * 
+     * @throws IOException
+     */
+    public void testPDFBOX4517() throws IOException
+    {
+        PDDocument.load(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
+                "userpassword1234");
+    }
 
     /**
      * This will test the LZW filter with the sequence that failed in PDFBOX-1777.
