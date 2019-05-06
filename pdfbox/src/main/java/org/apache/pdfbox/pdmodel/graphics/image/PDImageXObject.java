@@ -379,7 +379,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDMetadata getMetadata()
     {
-        COSStream cosStream = (COSStream) getCOSObject().getDictionaryObject(COSName.METADATA);
+        COSStream cosStream = getCOSObject().getCOSStream(COSName.METADATA);
         if (cosStream != null)
         {
             return new PDMetadata(cosStream);
@@ -623,7 +623,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         }
         else
         {
-            COSStream cosStream = (COSStream) getCOSObject().getDictionaryObject(COSName.MASK);
+            COSStream cosStream = getCOSObject().getCOSStream(COSName.MASK);
             if (cosStream != null)
             {
                 // always DeviceGray
@@ -654,7 +654,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public PDImageXObject getSoftMask() throws IOException
     {
-        COSStream cosStream = (COSStream) getCOSObject().getDictionaryObject(COSName.SMASK);
+        COSStream cosStream = getCOSObject().getCOSStream(COSName.SMASK);
         if (cosStream != null)
         {
             // always DeviceGray
