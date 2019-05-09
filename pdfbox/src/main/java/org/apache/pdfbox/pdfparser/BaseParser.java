@@ -54,6 +54,8 @@ public abstract class BaseParser
 
     static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
 
+    private final CharsetDecoder utf8Decoder = Charsets.UTF_8.newDecoder();
+
     /**
      * Log instance.
      */
@@ -780,10 +782,9 @@ public abstract class BaseParser
      */
     private boolean isValidUTF8(byte[] input)
     {
-        CharsetDecoder cs = Charsets.UTF_8.newDecoder();
         try
         {
-            cs.decode(ByteBuffer.wrap(input));
+            utf8Decoder.decode(ByteBuffer.wrap(input));
             return true;
         }
         catch (CharacterCodingException e)
