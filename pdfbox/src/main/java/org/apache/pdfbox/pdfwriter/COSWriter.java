@@ -891,14 +891,12 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             actual = ((COSObject)obj).getObject();
         }
-        COSObjectKey key = null;
-        if( actual != null )
+        // PDFBOX-4540: because objectKeys is accessible from outside, it is possible
+        // that a COSObject obj is already in the objectKeys map.
+        COSObjectKey key = objectKeys.get(obj);
+        if( key == null && actual != null )
         {
             key = objectKeys.get(actual);
-        }
-        if( key == null )
-        {
-            key = objectKeys.get(obj);
         }
         if (key == null)
         {
