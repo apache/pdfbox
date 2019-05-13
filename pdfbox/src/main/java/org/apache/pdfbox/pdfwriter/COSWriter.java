@@ -569,11 +569,11 @@ public class COSWriter implements ICOSVisitor, Closeable
         String headerString;
         if (fdfDocument != null)
         {
-            headerString = "%FDF-"+ Float.toString(fdfDocument.getDocument().getVersion());
+            headerString = "%FDF-"+ Float.toString(doc.getVersion());
         }
         else
         {
-            headerString = "%PDF-"+ Float.toString(pdDocument.getDocument().getVersion());
+            headerString = "%PDF-"+ Float.toString(doc.getVersion());
         }
         getStandardOutput().write( headerString.getBytes(Charsets.ISO_8859_1) );
         
