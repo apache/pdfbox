@@ -27,6 +27,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -95,7 +96,7 @@ public final class AddAnnotations
             float ph = page1.getMediaBox().getUpperRightY();
             
             // First add some text, two lines we'll add some annotations to this later
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            PDFont font = Type1Fonts.HELVETICA_BOLD.font();
             try (PDPageContentStream contents = new PDPageContentStream(document, page1))
             {
                 contents.beginText();
@@ -305,7 +306,7 @@ public final class AddAnnotations
                 dr = new PDResources();
                 acroForm.setDefaultResources(dr);
             }
-            dr.put(COSName.getPDFName("Helv"), PDType1Font.HELVETICA);
+            dr.put(COSName.getPDFName("Helv"), Type1Fonts.HELVETICA.font());
 
             // Create the appearance streams.
             // Adobe Reader will always display annotations without appearance streams nicely,
@@ -334,7 +335,7 @@ public final class AddAnnotations
         {
             float pageWidth = page.getMediaBox().getWidth();
             float pageHeight = page.getMediaBox().getHeight();
-            PDFont font = PDType1Font.HELVETICA;
+            PDFont font = Type1Fonts.HELVETICA.font();
             contents.setFont(font, fontSize);
             float textWidth = font.getStringWidth(pageText) / 1000 * fontSize;
             contents.beginText();

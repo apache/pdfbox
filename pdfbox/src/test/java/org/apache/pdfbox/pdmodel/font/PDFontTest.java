@@ -29,6 +29,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -192,16 +193,16 @@ public class PDFontTest
     {
         try
         {
-            PDType1Font.HELVETICA_BOLD.encode("\u0080");
+        	Type1Fonts.HELVETICA_BOLD.font().encode("\u0080");
             Assert.fail("should have thrown IllegalArgumentException");
         }
         catch (IllegalArgumentException ex)
         {
         }
-        PDType1Font.HELVETICA_BOLD.encode("€");
+        Type1Fonts.HELVETICA_BOLD.font().encode("€");
         try
         {
-            PDType1Font.HELVETICA_BOLD.encode("\u0080");
+        	Type1Fonts.HELVETICA_BOLD.font().encode("\u0080");
             Assert.fail("should have thrown IllegalArgumentException");
         }
         catch (IllegalArgumentException ex)

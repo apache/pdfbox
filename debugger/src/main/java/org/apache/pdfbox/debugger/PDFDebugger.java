@@ -115,6 +115,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
@@ -253,7 +254,7 @@ public class PDFDebugger extends JFrame
 
         // trigger premature initializations for more accurate rendering benchmarks
         // See discussion in PDFBOX-3988
-        if (PDType1Font.COURIER.isStandard14())
+        if (Type1Fonts.COURIER.font().isStandard14())
         {
             // Yes this is always true
             PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );

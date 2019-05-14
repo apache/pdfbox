@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 
 /**
  * Creates a "Hello World" PDF using the built-in Helvetica font.
@@ -53,7 +54,7 @@ public final class HelloWorld
             PDPage page = new PDPage();
             doc.addPage(page);
             
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            PDFont font = Type1Fonts.HELVETICA_BOLD.font();
 
             try (PDPageContentStream contents = new PDPageContentStream(doc, page))
             {

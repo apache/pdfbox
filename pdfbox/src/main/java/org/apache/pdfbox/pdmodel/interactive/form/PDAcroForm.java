@@ -44,6 +44,7 @@ import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -135,13 +136,13 @@ public final class PDAcroForm implements COSObjectable
         }
         if (!fontDict.containsKey(COSName.HELV))
         {
-            defaultResources.put(COSName.HELV, PDType1Font.HELVETICA);
+            defaultResources.put(COSName.HELV, Type1Fonts.HELVETICA.font());
             defaultResources.getCOSObject().setNeedToBeUpdated(true);
             fontDict.setNeedToBeUpdated(true);
         }
         if (!fontDict.containsKey(COSName.ZA_DB))
         {
-            defaultResources.put(COSName.ZA_DB, PDType1Font.ZAPF_DINGBATS);
+            defaultResources.put(COSName.ZA_DB, Type1Fonts.ZAPF_DINGBATS.font());
             defaultResources.getCOSObject().setNeedToBeUpdated(true);
             fontDict.setNeedToBeUpdated(true);
         }
