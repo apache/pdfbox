@@ -362,6 +362,11 @@ public class CMapParser
             }
             byte[] startCode = (byte[]) nextToken;
             byte[] endCode = (byte[]) parseNextToken(cmapStream);
+            if (startCode.length != endCode.length)
+            {
+                // PDFBOX-4550: likely corrupt stream
+                continue;
+            }
             nextToken = parseNextToken(cmapStream);
             List<byte[]> array = null;
             byte[] tokenBytes;
