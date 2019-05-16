@@ -93,8 +93,8 @@ public class CreateCheckBox
             PDAppearanceEntry normalAppearance = ap.getNormalAppearance();
             
             COSDictionary normalAppearanceDict = normalAppearance.getCOSObject();
-            normalAppearanceDict.setItem(COSName.Off, createRadioButtonAppearanceStream(document, widget, false));
-            normalAppearanceDict.setItem(COSName.YES, createRadioButtonAppearanceStream(document, widget, true));
+            normalAppearanceDict.setItem(COSName.Off, createAppearanceStream(document, widget, false));
+            normalAppearanceDict.setItem(COSName.YES, createAppearanceStream(document, widget, true));
             
             // If we ever decide to implement a /D (down) appearance, just
             // replace the background colors c with c * 0.75
@@ -108,7 +108,7 @@ public class CreateCheckBox
         }
     }
 
-    private static PDAppearanceStream createRadioButtonAppearanceStream(
+    private static PDAppearanceStream createAppearanceStream(
             final PDDocument document, PDAnnotationWidget widget, boolean on) throws IOException
     {
         PDRectangle rect = widget.getRectangle();
