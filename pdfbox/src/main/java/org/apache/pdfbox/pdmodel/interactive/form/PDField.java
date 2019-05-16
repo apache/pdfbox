@@ -420,8 +420,10 @@ public abstract class PDField implements COSObjectable
     }
 
     /**
-     * Gets the alternate name of the field.
-     * 
+     * Gets the alternate name of the field ("shall be used in place of the actual field name
+     * wherever the field shall be identified in the user interface (such as in error or status
+     * messages referring to the field)").
+     *
      * @return the alternate name of the field
      */
     public String getAlternateFieldName()
@@ -430,9 +432,12 @@ public abstract class PDField implements COSObjectable
     }
 
     /**
-     * This will set the alternate name of the field.
-     * 
-     * @param alternateFieldName the alternate name of the field
+     * This will set the alternate name of the field ("shall be used in place of the actual field
+     * name wherever the field shall be identified in the user interface (such as in error or status
+     * messages referring to the field)"). The text appears as a tool tip in Adobe Reader. Because
+     * of the usage for error or status messages, it should be different for each field.
+     *
+     * @param alternateFieldName the alternate name of the field.
      */
     public void setAlternateFieldName(String alternateFieldName)
     {
