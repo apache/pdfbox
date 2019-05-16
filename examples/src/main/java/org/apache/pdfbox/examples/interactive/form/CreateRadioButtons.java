@@ -88,8 +88,8 @@ public class CreateRadioButtons
                 widget.setPage(page);
                 
                 COSDictionary apNDict = new COSDictionary();
-                apNDict.setItem(COSName.Off, createCheckBoxAppearanceStream(document, widget, false));
-                apNDict.setItem(options.get(i), createCheckBoxAppearanceStream(document, widget, true));
+                apNDict.setItem(COSName.Off, createAppearanceStream(document, widget, false));
+                apNDict.setItem(options.get(i), createAppearanceStream(document, widget, true));
                 
                 PDAppearanceDictionary appearance = new PDAppearanceDictionary();
                 PDAppearanceEntry appearanceNEntry = new PDAppearanceEntry(apNDict);
@@ -122,7 +122,7 @@ public class CreateRadioButtons
         }
     }
 
-    private static PDAppearanceStream createCheckBoxAppearanceStream(
+    private static PDAppearanceStream createAppearanceStream(
             final PDDocument document, PDAnnotationWidget widget, boolean on) throws IOException
     {
         PDRectangle rect = widget.getRectangle();
