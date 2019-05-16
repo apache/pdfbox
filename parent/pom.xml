@@ -90,6 +90,8 @@
               <configuration>
                   <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                   <suppressionFile>suppressions.xml</suppressionFile>
+                  <!-- https://github.com/jeremylong/DependencyCheck/issues/1574 -->
+                  <skipSystemScope>true</skipSystemScope>
               </configuration>
               <executions>
                   <execution>
