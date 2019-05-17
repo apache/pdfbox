@@ -138,6 +138,12 @@ public abstract class PDFont implements COSObjectable, PDFontLike
                 if (cmap != null && !cmap.hasUnicodeMappings())
                 {
                     LOG.warn("Invalid ToUnicode CMap in font " + getName());
+                    if (COSName.IDENTITY_H.equals(dict.getDictionaryObject(COSName.ENCODING)) &&
+                        COSName.IDENTITY_H.getName().equals(cmap.getOrdering()))
+                    {
+                        // assume that if encoding is identity, then the reverse is also true
+                        cmap = CMapManager.getPredefinedCMap(COSName.IDENTITY_H.getName());
+                    }
                 }
             }
             catch (IOException ex)
