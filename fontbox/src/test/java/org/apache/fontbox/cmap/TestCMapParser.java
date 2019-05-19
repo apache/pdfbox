@@ -45,19 +45,31 @@ public class TestCMapParser extends TestCase
 
         // char mappings
         byte[] bytes1 = {0, 1};
-        assertEquals("bytes 00 01 from bfrange <0001> <0009> <0041>", "A", cMap.toUnicode(toInt(bytes1,bytes1.length)));
+        assertEquals("bytes 00 01 from bfrange <0001> <0005> <0041>", "A",
+                cMap.toUnicode(toInt(bytes1, bytes1.length)));
 
         byte[] bytes2 = {1, 00};
         String str2 = "0";
-        assertEquals("bytes 01 00 from bfrange <0100> <0109> <0030>", str2, cMap.toUnicode(toInt(bytes2,bytes2.length)));
+        assertEquals("bytes 01 00 from bfrange <0100> <0109> <0030>", str2,
+                cMap.toUnicode(toInt(bytes2, bytes2.length)));
 
-        byte[] bytes3 = {0, 10};
-        String str3 = "*";
-        assertEquals("bytes 00 0A from bfchar <000A> <002A>", str3, cMap.toUnicode(toInt(bytes3,bytes3.length)));
+        byte[] bytes3 = { 1, 32 };
+        assertEquals("bytes 01 00 from bfrange <0100> <0109> <0030>", "P",
+                cMap.toUnicode(toInt(bytes3, bytes3.length)));
 
-        byte[] bytes4 = {1, 10};
-        String str4 = "+";
-        assertEquals("bytes 01 0A from bfchar <010A> <002B>", str4, cMap.toUnicode(toInt(bytes4,bytes4.length)));
+        byte[] bytes4 = { 1, 33 };
+        assertEquals("bytes 01 00 from bfrange <0100> <0109> <0030>", "R",
+                cMap.toUnicode(toInt(bytes4, bytes4.length)));
+
+        byte[] bytes5 = { 0, 10 };
+        String str5 = "*";
+        assertEquals("bytes 00 0A from bfchar <000A> <002A>", str5,
+                cMap.toUnicode(toInt(bytes5, bytes5.length)));
+
+        byte[] bytes6 = { 1, 10 };
+        String str6 = "+";
+        assertEquals("bytes 01 0A from bfchar <010A> <002B>", str6,
+                cMap.toUnicode(toInt(bytes6, bytes6.length)));
 
         // CID mappings
         int cid1 = 65;
