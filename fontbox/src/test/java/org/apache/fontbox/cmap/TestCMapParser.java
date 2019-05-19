@@ -110,4 +110,37 @@ public class TestCMapParser extends TestCase
 
         assertNotNull("Failed to parse nasty CMap file", cMap);
     }
+
+    public void testParserWithMalformedbfrange1() throws IOException
+    {
+        CMap cMap = new CMapParser()
+                .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange1"));
+
+        assertNotNull("Failed to parse malformed CMap file", cMap);
+
+        byte[] bytes1 = { 0, 1 };
+        assertEquals("bytes 00 01 from bfrange <0001> <0009> <0041>", "A",
+                cMap.toUnicode(toInt(bytes1, bytes1.length)));
+
+        byte[] bytes2 = { 1, 00 };
+        assertNull(cMap.toUnicode(toInt(bytes2, bytes2.length)));
+
+    }
+
+    public void testParserWithMalformedbfrange2() throws IOException
+    {
+        CMap cMap = new CMapParser()
+                .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange2"));
+
+        assertNotNull("Failed to parse malformed CMap file", cMap);
+
+        byte[] bytes1 = { 0, 1 };
+        assertEquals("bytes 00 01 from bfrange <0001> <0009> <0041>", "A",
+                cMap.toUnicode(toInt(bytes1, bytes1.length)));
+
+        byte[] bytes2 = { 2, 00 };
+        assertNull(cMap.toUnicode(toInt(bytes2, bytes2.length)));
+
+    }
+
 }

@@ -362,10 +362,10 @@ public class CMapParser
             }
             byte[] startCode = (byte[]) nextToken;
             byte[] endCode = (byte[]) parseNextToken(cmapStream);
-            if (startCode.length != endCode.length)
+            if (!checkBoundaries(startCode, endCode))
             {
                 // PDFBOX-4550: likely corrupt stream
-                continue;
+                break;
             }
             nextToken = parseNextToken(cmapStream);
             List<byte[]> array = null;
@@ -416,6 +416,15 @@ public class CMapParser
                 }
             }
         }
+    }
+
+    private boolean checkBoundaries(byte[] startCode, byte[] endCode)
+    {
+        int start = CMap.toInt(startCode, startCode.length);
+        int end = CMap.toInt(endCode, endCode.length);
+        // end has to be bigger than start or equal
+        // the range can not represent more that 255 values
+        return end >= start && (end - start) < 256;
     }
 
     /**
@@ -714,7 +723,7 @@ public class CMapParser
         return intValue;
     }
 
-    private String createStringFromBytes(byte[] bytes) throws IOException
+    private String createStringFromBytes(byte[] bytes)
     {
         return new String(bytes, bytes.length == 1 ? Charsets.ISO_8859_1 : Charsets.UTF_16BE);
     }
