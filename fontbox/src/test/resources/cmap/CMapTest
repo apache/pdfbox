@@ -26,9 +26,10 @@ endcodespacerange
 <010A> <002B>
 endbfchar
 
-2 beginbfrange
-<0001> <0009> <0041>
+3 beginbfrange
+<0001> <0005> <0041>
 <0100> <0109> <0030>
+<0120> <0122> [<0050> <0052> <0054>]
 endbfrange
 
 3 begincidchar
