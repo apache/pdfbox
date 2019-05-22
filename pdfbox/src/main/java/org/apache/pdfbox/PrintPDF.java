@@ -24,6 +24,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageable;
 
 import java.io.File;
+import java.io.IOException;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 
 /**
  * This is a command line program that will print a PDF document.
@@ -102,6 +104,12 @@ public class PrintPDF
             if( document.isEncrypted() )
             {
                 document.decrypt( password );
+
+                AccessPermission ap = document.getCurrentAccessPermission();
+                if (!ap.canPrint())
+                {
+                    throw new IOException("You do not have permission to print");
+                }
             }
 
             PrinterJob printJob = PrinterJob.getPrinterJob();
