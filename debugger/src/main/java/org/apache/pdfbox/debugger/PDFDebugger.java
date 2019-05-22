@@ -110,6 +110,7 @@ import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
@@ -1120,6 +1121,12 @@ public class PDFDebugger extends JFrame
     {
         if (document == null)
         {
+            return;
+        }
+        AccessPermission ap = document.getCurrentAccessPermission();
+        if (!ap.canPrint())
+        {
+            JOptionPane.showMessageDialog(this, "You do not have permission to print");
             return;
         }
 
