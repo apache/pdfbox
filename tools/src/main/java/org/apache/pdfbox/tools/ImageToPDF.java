@@ -18,7 +18,10 @@ package org.apache.pdfbox.tools;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -31,6 +34,8 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 public final class ImageToPDF
 {
+    private static final Log LOG = LogFactory.getLog(ImageToPDF.class);
+
     private PDRectangle mediaBox = PDRectangle.LETTER;
     private boolean landscape = false;
     private boolean autoOrientation = false;
@@ -42,6 +47,7 @@ public final class ImageToPDF
 
     public static void main(String[] args) throws IOException
     {
+        LOG.info("Args: " + Arrays.toString(args));
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
