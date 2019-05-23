@@ -367,8 +367,7 @@ public class AccessPermission
     /**
      * This will tell if the user can insert/rotate/delete pages.
      *
-     * @return true If supplied with the user password they are allowed to extract content
-     *              from the PDF document
+     * @return true If supplied with the user password they are allowed to assemble the document.
      */
     public boolean canAssembleDocument()
     {
