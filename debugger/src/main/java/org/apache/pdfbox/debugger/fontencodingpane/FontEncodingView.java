@@ -32,7 +32,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.Map;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -160,14 +159,17 @@ class FontEncodingView
                 return new JLabel(new HighResolutionImageIcon(
                                    bim, 
                                    (int) Math.ceil(bim.getWidth() / DEFAULT_TRANSFORM.getScaleX()), 
-                                   (int) Math.ceil(bim.getHeight() / DEFAULT_TRANSFORM.getScaleX())), 
+                                   (int) Math.ceil(bim.getHeight() / DEFAULT_TRANSFORM.getScaleY())), 
                                   SwingConstants.CENTER);
             }
             if (o instanceof BufferedImage)
             {
                 Rectangle cellRect = jTable.getCellRect(row, col, false);
                 BufferedImage glyphImage = (BufferedImage) o;
-                BufferedImage cellImage = new BufferedImage((int) cellRect.getWidth(), (int) cellRect.getHeight(), BufferedImage.TYPE_INT_RGB);
+                BufferedImage cellImage = new BufferedImage(
+                        (int) (cellRect.getWidth() * DEFAULT_TRANSFORM.getScaleX()),
+                        (int) (cellRect.getHeight() * DEFAULT_TRANSFORM.getScaleY()),
+                        BufferedImage.TYPE_INT_RGB);
                 Graphics2D g = (Graphics2D) cellImage.getGraphics();
                 g.setBackground(Color.white);
                 g.clearRect(0, 0, cellImage.getWidth(), cellImage.getHeight());
@@ -175,17 +177,20 @@ class FontEncodingView
                 double scale = 1 / (glyphImage.getHeight() / cellRect.getHeight());
 
                 // horizontal center
-                g.translate((cellRect.getWidth() - glyphImage.getWidth() * scale) / 2, 0);
+                g.translate((cellRect.getWidth() - glyphImage.getWidth() * scale) / 2 * DEFAULT_TRANSFORM.getScaleX(), 0);
 
                 // scale from the glyph to the cell
-                g.scale(scale, scale);
+                g.scale(scale * DEFAULT_TRANSFORM.getScaleX(), scale * DEFAULT_TRANSFORM.getScaleY());
 
                 g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
                 g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);              
                 g.drawImage(glyphImage, 0, 0, null);
                 g.dispose();
-                return new JLabel(new ImageIcon(cellImage));
+                return new JLabel(new HighResolutionImageIcon(
+                                   cellImage,
+                                   (int) Math.ceil(cellImage.getWidth() / DEFAULT_TRANSFORM.getScaleX()), 
+                                   (int) Math.ceil(cellImage.getHeight() / DEFAULT_TRANSFORM.getScaleY())));
             }
             if (o != null)
             {
