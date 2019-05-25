@@ -29,16 +29,19 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.pdfbox.debugger.PDFDebugger;
+import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 
 /**
  * @author Khyrul Bashar
@@ -48,6 +51,9 @@ import org.apache.pdfbox.debugger.PDFDebugger;
 class FontEncodingView
 {
     private JPanel panel;
+
+    private static final AffineTransform DEFAULT_TRANSFORM = GraphicsEnvironment.getLocalGraphicsEnvironment().
+                        getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
 
     /**
      * Constructor.
@@ -159,7 +165,11 @@ class FontEncodingView
                 }
                 Rectangle cellRect = jTable.getCellRect(row, col, false);
                 BufferedImage bim = renderGlyph(path, bounds2D, cellRect);
-                return new JLabel(new ImageIcon(bim), SwingConstants.CENTER);
+                return new JLabel(new HighResolutionImageIcon(
+                                   bim, 
+                                   (int) Math.ceil(bim.getWidth() / DEFAULT_TRANSFORM.getScaleX()), 
+                                   (int) Math.ceil(bim.getHeight() / DEFAULT_TRANSFORM.getScaleX())), 
+                                  SwingConstants.CENTER);
             }
             if (o instanceof BufferedImage)
             {
@@ -203,7 +213,10 @@ class FontEncodingView
 
         private BufferedImage renderGlyph(GeneralPath path, Rectangle2D bounds2D, Rectangle cellRect)
         {
-            BufferedImage bim = new BufferedImage((int) cellRect.getWidth(), (int) cellRect.getHeight(), BufferedImage.TYPE_INT_RGB);
+            BufferedImage bim = new BufferedImage(
+                    (int) (cellRect.getWidth() * DEFAULT_TRANSFORM.getScaleX()),
+                    (int) (cellRect.getHeight() * DEFAULT_TRANSFORM.getScaleY()),
+                    BufferedImage.TYPE_INT_RGB);
             Graphics2D g = (Graphics2D) bim.getGraphics();
             g.setBackground(Color.white);
             g.clearRect(0, 0, bim.getWidth(), bim.getHeight());
@@ -215,10 +228,10 @@ class FontEncodingView
             g.translate(0, -bim.getHeight());
 
             // horizontal center
-            g.translate((cellRect.getWidth() - bounds2D.getWidth() * scale) / 2, 0);
+            g.translate((cellRect.getWidth() - bounds2D.getWidth() * scale) / 2 * DEFAULT_TRANSFORM.getScaleX(), 0);
 
             // scale from the glyph to the cell
-            g.scale(scale, scale);
+            g.scale(scale * DEFAULT_TRANSFORM.getScaleX(), scale * DEFAULT_TRANSFORM.getScaleY());
 
             // Adjust for negative y min bound
             g.translate(0, -yBounds[0]);
