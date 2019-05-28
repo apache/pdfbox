@@ -22,7 +22,10 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-
+/**
+ * A filtered stream that excludes the bytes that are in the (begin,length) intervals passed in the
+ * constructor.
+ */
 public class COSFilterInputStream extends FilterInputStream
 {
   int[] byteRange;
