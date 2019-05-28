@@ -42,6 +42,12 @@ public class COSFilterInputStream extends FilterInputStream
     this.byteRange = byteRange;
   }
 
+  public COSFilterInputStream(byte[] in, int offset, int length, int[] byteRange)
+  {
+    super(new ByteArrayInputStream(in, offset, length));
+    this.byteRange = byteRange;
+  }
+
   public COSFilterInputStream(byte[] in, int[] byteRange)
   {
     super(new ByteArrayInputStream(in));
