@@ -25,7 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 
-
+/**
+ * A filtered stream that excludes the bytes that are in the (begin,length) intervals passed in the
+ * constructor.
+ */
 public class COSFilterInputStream extends FilterInputStream
 {
   /**
