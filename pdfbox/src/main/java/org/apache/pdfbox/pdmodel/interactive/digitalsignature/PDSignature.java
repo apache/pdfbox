@@ -316,7 +316,7 @@ public class PDSignature implements COSObjectable
         int begin = byteRange[0]+byteRange[1]+1;
         int len = byteRange[2]-begin;
 
-        return getContents(new COSFilterInputStream(pdfFile,new int[] {begin,len}));
+        return getConvertedContents(new COSFilterInputStream(pdfFile,new int[] {begin,len}));
     }
 
     /**
@@ -332,10 +332,10 @@ public class PDSignature implements COSObjectable
         int begin = byteRange[0]+byteRange[1]+1;
         int len = byteRange[2]-begin;
 
-        return getContents(new COSFilterInputStream(pdfFile,new int[] {begin,len}));
+        return getConvertedContents(new COSFilterInputStream(pdfFile,new int[] {begin,len}));
     }
 
-    private byte[] getContents(COSFilterInputStream fis) throws IOException
+    private byte[] getConvertedContents(COSFilterInputStream fis) throws IOException
     {
         ByteArrayOutputStream byteOS = new ByteArrayOutputStream(1024);
         byte[] buffer = new byte[1024];
