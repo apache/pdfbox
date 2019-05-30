@@ -381,7 +381,7 @@ public class PDSignature implements COSObjectable
      * <a href="https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/Acrobat_DigitalSignatures_in_PDF.pdf#page=5">Digital
      * Signatures in a PDF</a>.
      *
-     * @param pdfFile The signed pdf file as InputStream
+     * @param pdfFile The signed pdf file as InputStream. It will be closed in this method.
      * @return a byte array containing only the signed part of the content
      * @throws IOException if the pdfFile can't be read
      */
