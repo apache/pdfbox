@@ -130,6 +130,9 @@ public final class ShowSignature
                 // use old-style document loading to disable leniency
                 // see also https://www.pdf-insecurity.org/
                 RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(infile);
+                // If your files are not too large, you can also download the PDF into a byte array
+                // with IOUtils.toByteArray() and pass a RandomAccessBuffer() object to the
+                // PDFParser constructor.
                 PDFParser parser = new PDFParser(raFile, password);
                 parser.setLenient(false);
                 parser.parse();
@@ -144,7 +147,7 @@ public final class ShowSignature
                     byte[] buf = null;
                     try
                     {
-                        buf = sig.getSignedContent(fis);
+                        buf = sig.getSignedContent(fis); // alternatively, pass a byte array here
                     }
                     finally
                     {
