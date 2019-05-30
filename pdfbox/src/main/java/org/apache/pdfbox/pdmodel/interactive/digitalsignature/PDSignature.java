@@ -335,12 +335,12 @@ public class PDSignature implements COSObjectable
         return getConvertedContents(new COSFilterInputStream(pdfFile,new int[] {begin,len}));
     }
 
-    private byte[] getConvertedContents(COSFilterInputStream fis) throws IOException
+    private byte[] getConvertedContents(InputStream is) throws IOException
     {
         ByteArrayOutputStream byteOS = new ByteArrayOutputStream(1024);
         byte[] buffer = new byte[1024];
         int c;
-        while ((c = fis.read(buffer)) != -1)
+        while ((c = is.read(buffer)) != -1)
         {
             // Filter < and (
             if(buffer[0]==0x3C || buffer[0]==0x28)
@@ -357,7 +357,7 @@ public class PDSignature implements COSObjectable
                 byteOS.write(buffer, 0, c);
             }
         }
-        fis.close();
+        is.close();
 
         return COSString.parseHex(byteOS.toString("ISO-8859-1")).getBytes();
     }
