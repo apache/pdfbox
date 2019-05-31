@@ -317,11 +317,9 @@ public class TestCreateSignature
             for (PDSignature sig : document.getSignatureDictionaries())
             {
                 COSString contents = (COSString) sig.getCOSObject().getDictionaryObject(COSName.CONTENTS);
-                byte[] buf;
-                try (FileInputStream fis = new FileInputStream(signedFile))
-                {
-                    buf = sig.getSignedContent(fis);
-                }
+
+                byte[] buf = sig.getSignedContent(new FileInputStream(signedFile));
+
                 // inspiration:
                 // http://stackoverflow.com/a/26702631/535646
                 // http://stackoverflow.com/a/9261365/535646
