@@ -312,6 +312,21 @@ public class TestCreateSignature
             
             byte[] buf = sig.getSignedContent(new FileInputStream(signedFile));
 
+            // verify that getSignedContent() brings the same content
+            // regardless whether from an InputStream or from a byte array
+            FileInputStream fis2 = new FileInputStream(signedFile);
+            byte[] buf2 = sig.getSignedContent(IOUtils.toByteArray(fis2));
+            Assert.assertArrayEquals(buf, buf2);
+            fis2.close();
+
+            // verify that all getContents() methods returns the same content
+            FileInputStream fis3 = new FileInputStream(signedFile);
+            byte[] contents2 = sig.getContents(IOUtils.toByteArray(fis3));
+            Assert.assertArrayEquals(contents.getBytes(), contents2);
+            fis3.close();
+            byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
+            Assert.assertArrayEquals(contents.getBytes(), contents3);
+
             // inspiration:
             // http://stackoverflow.com/a/26702631/535646
             // http://stackoverflow.com/a/9261365/535646
