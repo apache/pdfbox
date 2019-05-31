@@ -306,7 +306,7 @@ public class PDSignature implements COSObjectable
     /**
      * Will return the embedded signature between the byterange gap.
      *
-     * @param pdfFile The signed pdf file as InputStream
+     * @param pdfFile The signed pdf file as InputStream. It will be closed in this method.
      * @return a byte array containing the signature
      * @throws IOException if the pdfFile can't be read
      */
