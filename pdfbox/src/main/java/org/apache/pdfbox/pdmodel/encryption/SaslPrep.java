@@ -98,8 +98,8 @@ class SaslPrep
             // 3. Prohibit
             if (prohibited(codepoint))
             {
-                throw new IllegalArgumentException("Prohibited character '" +
-                        Character.getName(codepoint) + "' at position " + i);
+                throw new IllegalArgumentException("Prohibited character " +
+                        codepoint + " at position " + i);
             }
 
             // 4. Check bidi
