@@ -202,7 +202,12 @@ public final class StandardSecurityHandler extends SecurityHandler
             ue = encryption.getUserEncryptionKey();
             oe = encryption.getOwnerEncryptionKey();
         }
-        
+
+        if (dicRevision == 6)
+        {
+            password = SaslPrep.saslPrepQuery(password); // PDFBOX-4155
+        }
+
         AccessPermission currentAccessPermission;
 
         if( isOwnerPassword(password.getBytes(passwordCharset), userKey, ownerKey,
@@ -372,7 +377,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             userPassword = "";
         }
- 
+
         // If no owner password is set, use the user password instead.
         if (ownerPassword.isEmpty())
         {
@@ -387,6 +392,9 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         if (revision == 6)
         {
+            // PDFBOX-4155
+            ownerPassword = SaslPrep.saslPrepStored(ownerPassword);
+            userPassword = SaslPrep.saslPrepStored(userPassword);
             prepareEncryptionDictRev6(ownerPassword, userPassword, encryptionDictionary, permissionInt);
         }
         else
