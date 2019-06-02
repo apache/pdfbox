@@ -26,6 +26,10 @@ import java.text.Normalizer;
 class SaslPrep
 {
 
+    private SaslPrep()
+    {
+    }
+
     /**
      * Return the {@code SASLPrep}-canonicalised version of the given {@code str} for use as a query
      * string. This implements the {@code SASLPrep} algorithm defined in
@@ -67,7 +71,7 @@ class SaslPrep
 
         // 1. Map
         // non-ASCII space chars mapped to space
-        for (int i = 0, j = 0; i < str.length(); i++)
+        for (int i = 0; i < str.length(); i++)
         {
             char ch = str.charAt(i);
             if (nonAsciiSpace(ch))
