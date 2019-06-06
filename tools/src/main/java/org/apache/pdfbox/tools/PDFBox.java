@@ -24,8 +24,6 @@ import org.apache.pdfbox.debugger.PDFDebugger;
 /**
  * Simple wrapper around all the command line utilities included in PDFBox.
  * Used as the main class in the runnable standalone PDFBox jar.
- *
- * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-687">PDFBOX-687</a>
  */
 public final class PDFBox 
 {
@@ -39,10 +37,12 @@ public final class PDFBox
      * Main method.
      * 
      * @param args command line arguments
+     * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception
     {
-        LOG.info("Args: " + Arrays.toString(args));
+        LOG.debug("Args: " + Arrays.toString(args));
+
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
