@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.util.Arrays;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.debugger.PDFDebugger;
 
 /**
@@ -26,6 +29,7 @@ import org.apache.pdfbox.debugger.PDFDebugger;
  */
 public final class PDFBox 
 {
+    private static final Log LOG = LogFactory.getLog(PDFBox.class);
 
     private PDFBox()
     {
@@ -35,9 +39,12 @@ public final class PDFBox
      * Main method.
      * 
      * @param args command line arguments
+     * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception
     {
+        LOG.debug("Args: " + Arrays.toString(args));
+
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
