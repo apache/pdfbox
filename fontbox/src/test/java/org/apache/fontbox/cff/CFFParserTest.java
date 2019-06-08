@@ -40,28 +40,34 @@ public class CFFParserTest
     {
         List<CFFFont> fonts = readFont(new FileInputStream("target/pdfs/SourceSansProBold.otf"));
         CFFType1Font font = (CFFType1Font) fonts.get(0);
+        @SuppressWarnings("unchecked")
         List<Number> blues = (List<Number>)font.getPrivateDict().get("BlueValues");
 
         // Expected values found for this font
         assertNumberList("Blue values are different than expected: " + blues.toString(),                     
                 new int[]{-12, 0, 496, 508, 578, 590, 635, 647, 652, 664, 701, 713}, blues);
 
+        @SuppressWarnings("unchecked")
         List<Number> otherBlues = (List<Number>)font.getPrivateDict().get("OtherBlues");
         assertNumberList("Other blues are different than expected: " + otherBlues.toString(),                     
                 new int[]{-196, -184}, otherBlues);
 
+        @SuppressWarnings("unchecked")
         List<Number> familyBlues = (List<Number>)font.getPrivateDict().get("FamilyBlues");
         assertNumberList("Other blues are different than expected: " + familyBlues.toString(),                     
                 new int[]{-12, 0, 486, 498, 574, 586, 638, 650, 656, 668, 712, 724}, familyBlues);
 
+        @SuppressWarnings("unchecked")
         List<Number> familyOtherBlues = (List<Number>)font.getPrivateDict().get("FamilyOtherBlues");
         assertNumberList("Other blues are different than expected: " + familyOtherBlues.toString(),                     
                 new int[]{-217, -205}, familyOtherBlues);
 
+        @SuppressWarnings("unchecked")
         List<Number> stemSnapH = (List<Number>)font.getPrivateDict().get("StemSnapH");
         assertNumberList("StemSnapH values are different than expected: " + stemSnapH.toString(),                     
                 new int[]{115}, stemSnapH);
 
+        @SuppressWarnings("unchecked")
         List<Number> stemSnapV = (List<Number>)font.getPrivateDict().get("StemSnapV");
         assertNumberList("StemSnapV values are different than expected: " + stemSnapV.toString(),                     
                 new int[]{146, 150}, stemSnapV);
