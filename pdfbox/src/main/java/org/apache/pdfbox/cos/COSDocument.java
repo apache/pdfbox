@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This is the in-memory representation of the PDF document.  You need to call
@@ -359,23 +360,6 @@ public class COSDocument extends COSBase implements Closeable
         getTrailer().setItem(COSName.ID, id);
     }
     
-    /**
-     * This will get the document catalog.
-     *
-     * @return The catalog that is the root of the document; never null.
-     *
-     * @throws IOException If no catalog can be found.
-     */
-    public COSObject getCatalog() throws IOException
-    {
-        COSObject catalog = getObjectByType( COSName.CATALOG );
-        if( catalog == null )
-        {
-            throw new IOException( "Catalog cannot be found" );
-        }
-        return catalog;
-    }
-
     /**
      * This will get a list of all available objects.
      *
