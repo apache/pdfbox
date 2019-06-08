@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This is the in-memory representation of the PDF document.  You need to call
@@ -369,6 +370,8 @@ public class COSDocument extends COSBase implements Closeable
      * @return The catalog is the root of the document; never null.
      *
      * @throws IOException If no catalog can be found.
+     * 
+     * @deprecated use {@link PDDocument#getDocumentCatalog()} instead.
      */
     public COSObject getCatalog() throws IOException
     {

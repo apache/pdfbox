@@ -35,6 +35,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -64,7 +66,7 @@ public class MetadataValidationProcess extends AbstractProcess
         {
             PDDocument document = ctx.getDocument();
 
-            InputStream is = getXpacket(document.getDocument());
+            InputStream is = getXpacket(document);
             DomXmpParser builder = new DomXmpParser();
             XMPMetadata metadata = builder.parse(is);
             is.close();
@@ -251,37 +253,38 @@ public class MetadataValidationProcess extends AbstractProcess
     /**
      * Return the xpacket from the dictionary's stream
      */
-    private static InputStream getXpacket(COSDocument cdocument) throws IOException, XpacketParsingException
+    private static InputStream getXpacket(PDDocument document)
+            throws IOException, XpacketParsingException
     {
-        COSObject catalog = cdocument.getCatalog();
-        COSBase cb = catalog.getDictionaryObject(COSName.METADATA);
-        if (cb == null)
+        PDDocumentCatalog catalog = document.getDocumentCatalog();
+        PDMetadata metadata = catalog.getMetadata();
+        if (metadata == null)
         {
+            COSBase metaObject = catalog.getCOSObject().getDictionaryObject(COSName.METADATA);
+            if (!(metaObject instanceof COSStream))
+            {
+                // the Metadata object isn't a stream
+                ValidationError error = new ValidationError(
+                        PreflightConstants.ERROR_METADATA_FORMAT, "Metadata is not a stream");
+                throw new XpacketParsingException("Failed while retrieving xpacket", error);
+            }
             // missing Metadata Key in catalog
             ValidationError error = new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
                     "Missing Metadata Key in catalog");
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
         }
+
         // no filter key
-        COSDictionary metadataDictionnary = COSUtils.getAsDictionary(cb, cdocument);
-        if (metadataDictionnary.getItem(COSName.FILTER) != null)
+        if (metadata.getFilters() != null)
         {
             // should not be defined
-            ValidationError error = new ValidationError(PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
+            ValidationError error = new ValidationError(
+                    PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
                     "Filter specified in metadata dictionnary");
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
         }
-        
-        if (!(metadataDictionnary instanceof COSStream))
-        {
-            // missing Metadata Key in catalog
-            ValidationError error = new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
-                    "Metadata is not a stream");
-            throw new XpacketParsingException("Failed while retrieving xpacket", error);
-        }
 
-        COSStream stream = (COSStream) metadataDictionnary;
-        return stream.createInputStream();
+        return metadata.exportXMPMetadata();
     }
 
     /**
