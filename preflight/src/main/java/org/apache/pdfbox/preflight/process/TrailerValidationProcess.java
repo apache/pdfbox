@@ -29,12 +29,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINE
 import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_O;
 import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_T;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_ENCRYPT;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_ID;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_INFO;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_PREV;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_ROOT;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRAILER_DICTIONARY_KEY_SIZE;
 
 import java.util.List;
 
@@ -42,6 +36,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
@@ -51,7 +46,6 @@ import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 public class TrailerValidationProcess extends AbstractProcess
 {
@@ -106,14 +100,12 @@ public class TrailerValidationProcess extends AbstractProcess
         else
         {
             COSDictionary last = ctx.getXrefTrailerResolver().getLastTrailer();
-            COSDocument cosDoc = new COSDocument();
             checkMainTrailer(ctx, first);
-            if (!compareIds(first, last, cosDoc))
+            if (!compareIds(first, last))
             {
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
                         "ID is different in the first and the last trailer"));
             }
-            COSUtils.closeDocumentQuietly(cosDoc);
         }
     }
 
@@ -160,7 +152,7 @@ public class TrailerValidationProcess extends AbstractProcess
             }
 
             checkMainTrailer(ctx, firstTrailer);
-            if (!compareIds(firstTrailer, lastTrailer, cosDocument))
+            if (!compareIds(firstTrailer, lastTrailer))
             {
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_ID_CONSISTENCY,
                         "ID is different in the first and the last trailer"));
@@ -174,34 +166,27 @@ public class TrailerValidationProcess extends AbstractProcess
      * 
      * @param first the first dictionary for comparison.
      * @param last the last dictionary for comparison.
-     * @param cosDocument the document.
      * @return true if the IDs of the first and last dictionary are the same.
      */
-    protected boolean compareIds(COSDictionary first, COSDictionary last, COSDocument cosDocument)
+    protected boolean compareIds(COSDictionary first, COSDictionary last)
     {
-        COSBase idFirst = first.getItem(COSName.getPDFName(TRAILER_DICTIONARY_KEY_ID));
-        COSBase idLast = last.getItem(COSName.getPDFName(TRAILER_DICTIONARY_KEY_ID));
+        COSBase idFirst = first.getDictionaryObject(COSName.ID);
+        COSBase idLast = last.getDictionaryObject(COSName.ID);
         // According to the revised PDF/A specification the IDs have to be identical
         // if both are present, otherwise everything is fine
         if (idFirst != null && idLast != null)
         {
-    
-            // ---- cast two COSBase to COSArray.
-            COSArray af = COSUtils.getAsArray(idFirst, cosDocument);
-            COSArray al = COSUtils.getAsArray(idLast, cosDocument);
-    
             // ---- if one COSArray is null, the PDF/A isn't valid
-            if ((af == null) || (al == null))
+            if (!(idFirst instanceof COSArray) || !(idLast instanceof COSArray))
             {
                 return false;
             }
-    
             // ---- compare both arrays
             boolean isEqual = true;
-            for (Object of : af.toList())
+            for (COSBase of : ((COSArray) idFirst).toList())
             {
                 boolean oneIsEquals = false;
-                for (Object ol : al.toList())
+                for (COSBase ol : ((COSArray) idLast).toList())
                 {
                     // ---- according to PDF Reference 1-4, ID is an array containing two
                     // strings
@@ -214,7 +199,7 @@ public class TrailerValidationProcess extends AbstractProcess
                         break;
                     }
                 }
-                isEqual = isEqual && oneIsEquals;
+                isEqual &= oneIsEquals;
                 if (!isEqual)
                 {
                     break;
@@ -243,43 +228,34 @@ public class TrailerValidationProcess extends AbstractProcess
         boolean info = false;
         boolean encrypt = false;
 
-        for (Object key : trailer.keySet())
+        for (COSName cosName : trailer.keySet())
         {
-            if (!(key instanceof COSName))
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_DICTIONARY_KEY_INVALID,
-                        "Invalid key in The trailer dictionary"));
-                return;
-            }
-
-            String cosName = ((COSName) key).getName();
-            if (cosName.equals(TRAILER_DICTIONARY_KEY_ENCRYPT))
+            if (cosName.equals(COSName.ENCRYPT))
             {
                 encrypt = true;
             }
-            if (cosName.equals(TRAILER_DICTIONARY_KEY_SIZE))
+            if (cosName.equals(COSName.SIZE))
             {
                 size = true;
             }
-            if (cosName.equals(TRAILER_DICTIONARY_KEY_PREV))
+            if (cosName.equals(COSName.PREV))
             {
                 prev = true;
             }
-            if (cosName.equals(TRAILER_DICTIONARY_KEY_ROOT))
+            if (cosName.equals(COSName.ROOT))
             {
                 root = true;
             }
-            if (cosName.equals(TRAILER_DICTIONARY_KEY_INFO))
+            if (cosName.equals(COSName.INFO))
             {
                 info = true;
             }
-            if (cosName.equals(TRAILER_DICTIONARY_KEY_ID))
+            if (cosName.equals(COSName.ID))
             {
                 id = true;
             }
         }
 
-        COSDocument cosDocument = ctx.getDocument().getDocument();
         // PDF/A Trailer dictionary must contain the ID key
         if (!id)
         {
@@ -288,8 +264,8 @@ public class TrailerValidationProcess extends AbstractProcess
         }
         else
         {
-            COSBase trailerId = trailer.getItem(TRAILER_DICTIONARY_KEY_ID);
-            if (!COSUtils.isArray(trailerId, cosDocument))
+            COSBase trailerId = trailer.getDictionaryObject(COSName.ID);
+            if (!(trailerId instanceof COSArray))
             {
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_TYPE_INVALID,
                         "The trailer dictionary contains an id but it isn't an array"));
@@ -309,8 +285,8 @@ public class TrailerValidationProcess extends AbstractProcess
         }
         else
         {
-            COSBase trailerSize = trailer.getItem(TRAILER_DICTIONARY_KEY_SIZE);
-            if (!COSUtils.isInteger(trailerSize, cosDocument))
+            COSBase trailerSize = trailer.getDictionaryObject(COSName.SIZE);
+            if (!(trailerSize instanceof COSInteger))
             {
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_TYPE_INVALID,
                         "The trailer dictionary contains a size but it isn't an integer"));
@@ -325,8 +301,8 @@ public class TrailerValidationProcess extends AbstractProcess
         }
         else
         {
-            COSBase trailerRoot = trailer.getItem(TRAILER_DICTIONARY_KEY_ROOT);
-            if (!COSUtils.isDictionary(trailerRoot, cosDocument))
+            COSBase trailerRoot = trailer.getDictionaryObject(COSName.ROOT);
+            if (!(trailerRoot instanceof COSDictionary))
             {
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_TYPE_INVALID,
                         "The trailer dictionary contains a root but it isn't a dictionary"));
@@ -335,8 +311,8 @@ public class TrailerValidationProcess extends AbstractProcess
         // PDF Trailer dictionary may contain the Prev key
         if (prev)
         {
-            COSBase trailerPrev = trailer.getItem(TRAILER_DICTIONARY_KEY_PREV);
-            if (!COSUtils.isInteger(trailerPrev, cosDocument))
+            COSBase trailerPrev = trailer.getDictionaryObject(COSName.PREV);
+            if (!(trailerPrev instanceof COSInteger))
             {
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_TYPE_INVALID,
                         "The trailer dictionary contains a prev but it isn't an integer"));
@@ -345,8 +321,8 @@ public class TrailerValidationProcess extends AbstractProcess
         // PDF Trailer dictionary may contain the Info key
         if (info)
         {
-            COSBase trailerInfo = trailer.getItem(TRAILER_DICTIONARY_KEY_INFO);
-            if (!COSUtils.isDictionary(trailerInfo, cosDocument))
+            COSBase trailerInfo = trailer.getDictionaryObject(COSName.INFO);
+            if (!(trailerInfo instanceof COSDictionary))
             {
                 addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_TRAILER_TYPE_INVALID,
                         "The trailer dictionary contains an info but it isn't a dictionary"));
@@ -365,10 +341,10 @@ public class TrailerValidationProcess extends AbstractProcess
     {
         // ---- Get Ref to obj
         COSDocument cDoc = document.getDocument();
-        List<?> lObj = cDoc.getObjects();
-        for (Object object : lObj)
+        List<COSObject> lObj = cDoc.getObjects();
+        for (COSObject object : lObj)
         {
-            COSBase curObj = ((COSObject) object).getObject();
+            COSBase curObj = object.getObject();
             if (curObj instanceof COSDictionary
                     && ((COSDictionary) curObj).keySet().contains(COSName.getPDFName(DICTIONARY_KEY_LINEARIZED)))
             {
@@ -395,16 +371,9 @@ public class TrailerValidationProcess extends AbstractProcess
         boolean n = false;
         boolean t = false;
 
-        for (Object key : linearizedDict.keySet())
+        for (COSName key : linearizedDict.keySet())
         {
-            if (!(key instanceof COSName))
-            {
-                addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_SYNTAX_DICTIONARY_KEY_INVALID,
-                        "Invalid key in The Linearized dictionary"));
-                return;
-            }
-
-            String cosName = ((COSName) key).getName();
+            String cosName = key.getName();
             if (cosName.equals(DICTIONARY_KEY_LINEARIZED_L))
             {
                 l = true;

@@ -18,9 +18,9 @@ package org.apache.pdfbox.preflight.process.reflect;
 import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_DICT_INVALID;
@@ -29,7 +29,6 @@ import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
  *
@@ -57,8 +56,7 @@ public class DestinationValidationProcess extends AbstractProcess
         // "A destination may be specified either explicitly by 
         // an array of parameters defining its properties or indirectly by name."
 
-        COSDocument cosDocument = ctx.getDocument().getDocument();
-        if (!(dest instanceof COSName || COSUtils.isString(dest, cosDocument) || COSUtils.isArray(dest, cosDocument)))
+        if (!(dest instanceof COSName || dest instanceof COSString || dest instanceof COSArray))
         {
             ctx.addValidationError(new ValidationResult.ValidationError(ERROR_SYNTAX_DICT_INVALID, 
                     "Destination type entry " + dest.getClass().getSimpleName() + " is invalid"));

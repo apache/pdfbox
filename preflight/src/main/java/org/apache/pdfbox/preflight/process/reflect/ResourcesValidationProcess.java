@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -43,7 +43,6 @@ import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 
@@ -54,7 +53,6 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.SHADING_PATTERN
 import static org.apache.pdfbox.preflight.PreflightConfiguration.TILING_PATTERN_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_PATTERN_DEFINITION;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_MAIN;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE;
 
 public class ResourcesValidationProcess extends AbstractProcess
 {
@@ -145,10 +143,8 @@ public class ResourcesValidationProcess extends AbstractProcess
      */
     protected void validateExtGStates(PreflightContext context, PDResources resources) throws ValidationException
     {
-        COSBase egsEntry = resources.getCOSObject().getItem(TRANSPARENCY_DICTIONARY_KEY_EXTGSTATE);
-        COSDocument cosDocument = context.getDocument().getDocument();
-        COSDictionary extGState = COSUtils.getAsDictionary(egsEntry, cosDocument);
-        if (egsEntry != null)
+        COSDictionary extGState = resources.getCOSObject().getCOSDictionary(COSName.EXT_G_STATE);
+        if (extGState != null)
         {
             ContextHelper.validateElement(context, extGState, EXTGSTATE_PROCESS);
         }
@@ -205,34 +201,39 @@ public class ResourcesValidationProcess extends AbstractProcess
 
     protected void validateXObjects(PreflightContext context, PDResources resources) throws ValidationException
     {
-        COSDocument cosDocument = context.getDocument().getDocument();
-        COSDictionary mapOfXObj = COSUtils.getAsDictionary(resources.getCOSObject().getItem(COSName.XOBJECT),
-                cosDocument);
+        COSDictionary mapOfXObj = resources.getCOSObject().getCOSDictionary(COSName.XOBJECT);
         if (mapOfXObj != null)
         {
             for (Entry<COSName, COSBase> entry : mapOfXObj.entrySet())
             {
                 COSBase xobj = entry.getValue();
-                if (xobj != null && COSUtils.isStream(xobj, cosDocument))
+                if (xobj != null)
                 {
-                    try
+                    if (xobj instanceof COSObject)
                     {
-                        COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
-                        PDXObject pdXObject = PDXObject.createXObject(stream, resources);
-                        if (pdXObject != null)
-                        {
-                            ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
-                        }
-                        else
-                        {
-                            ContextHelper.validateElement(context, stream, GRAPHIC_PROCESS);
-                        }
+                        xobj = ((COSObject) xobj).getObject();
                     }
-                    catch (IOException e)
+                    if (xobj instanceof COSStream) 
                     {
-                        context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
-                                e.getMessage() + " for entry '"
-                                + entry.getKey().getName() + "'", e));
+                        try
+                        {
+                            COSStream stream = (COSStream) xobj;
+                            PDXObject pdXObject = PDXObject.createXObject(stream, resources);
+                            if (pdXObject != null)
+                            {
+                                ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
+                            }
+                            else
+                            {
+                                ContextHelper.validateElement(context, stream, GRAPHIC_PROCESS);
+                            }
+                        }
+                        catch (IOException e)
+                        {
+                            context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
+                                    e.getMessage() + " for entry '"
+                                    + entry.getKey().getName() + "'", e));
+                        }
                     }
                 }
             }

@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
@@ -43,7 +42,6 @@ import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.FilterHelper;
 import org.apache.pdfbox.util.Charsets;
 
@@ -54,13 +52,10 @@ public class StreamValidationProcess extends AbstractProcess
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocument pdfDoc = ctx.getDocument();
-        COSDocument cDoc = pdfDoc.getDocument();
 
-        List<?> lCOSObj = cDoc.getObjects();
-        for (Object o : lCOSObj)
+        List<COSObject> lCOSObj = pdfDoc.getDocument().getObjects();
+        for (COSObject cObj : lCOSObj)
         {
-            COSObject cObj = (COSObject) o;
-            
             // If this object represents a Stream, the Dictionary must contain the Length key
             COSBase cBase = cObj.getObject();
             if (cBase instanceof COSStream)
@@ -96,8 +91,7 @@ public class StreamValidationProcess extends AbstractProcess
         COSBase bFilter = stream.getDictionaryObject(COSName.FILTER);
         if (bFilter != null)
         {
-            COSDocument cosDocument = context.getDocument().getDocument();
-            if (COSUtils.isArray(bFilter, cosDocument))
+            if (bFilter instanceof COSArray)
             {
                 COSArray afName = (COSArray) bFilter;
                 for (int i = 0; i < afName.size(); ++i)

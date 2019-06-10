@@ -31,7 +31,6 @@ import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
@@ -48,7 +47,6 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 
@@ -164,7 +162,7 @@ public class CatalogValidationProcess extends AbstractProcess
     {
         ContextHelper.validateElement(ctx, catalog.getCOSObject(), ACTIONS_PROCESS);
         // AA entry if forbidden in PDF/A-1
-        COSBase aa = catalog.getCOSObject().getItem(DICTIONARY_KEY_ADDITIONAL_ACTION);
+        COSBase aa = catalog.getCOSObject().getItem(COSName.AA);
         if (aa != null)
         {
             addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTION,
@@ -241,14 +239,11 @@ public class CatalogValidationProcess extends AbstractProcess
      */
     public void validateOutputIntent(PreflightContext ctx) throws ValidationException
     {
-        COSDocument cosDocument = ctx.getDocument().getDocument();
-        COSBase cBase = catalog.getCOSObject().getItem(COSName.getPDFName(DOCUMENT_DICTIONARY_KEY_OUTPUT_INTENTS));
-        COSArray outputIntents = COSUtils.getAsArray(cBase, cosDocument);
-
+        COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
         Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
         for (int i = 0; outputIntents != null && i < outputIntents.size(); ++i)
         {
-            COSDictionary outputIntentDict = COSUtils.getAsDictionary(outputIntents.get(i), cosDocument);
+            COSDictionary outputIntentDict = (COSDictionary) outputIntents.getObject(i);
 
             if (outputIntentDict == null)
             {
@@ -284,7 +279,7 @@ public class CatalogValidationProcess extends AbstractProcess
                  * Because of PDF/A conforming file needs to specify the color characteristics, the DestOutputProfile is
                  * checked even if the OutputConditionIdentifier isn't "Custom"
                  */
-                COSBase destOutputProfile = outputIntentDict.getItem(OUTPUT_INTENT_DICTIONARY_KEY_DEST_OUTPUT_PROFILE);
+                COSBase destOutputProfile = outputIntentDict.getItem(COSName.DEST_OUTPUT_PROFILE);
                 validateICCProfile(destOutputProfile, tmpDestOutputProfile, ctx);
 
                 PreflightConfiguration config = ctx.getConfig();
@@ -297,7 +292,6 @@ public class CatalogValidationProcess extends AbstractProcess
                                 "The Info entry of a OutputIntent dictionary is missing");
                         error.setWarning(true);
                         addValidationError(ctx, error);
-                        continue;
                     }
                 }
             }
@@ -351,8 +345,12 @@ public class CatalogValidationProcess extends AbstractProcess
 
             // keep reference to avoid multiple profile definition
             mapDestOutputProfile.put(new COSObjectKey((COSObject) destOutputProfile), true);
-            COSDocument cosDocument = ctx.getDocument().getDocument();
-            COSStream stream = COSUtils.getAsStream(destOutputProfile, cosDocument);
+            if (destOutputProfile instanceof COSObject) 
+            {
+                destOutputProfile = ((COSObject)destOutputProfile).getObject();
+            }
+            COSStream stream = destOutputProfile instanceof COSStream
+                    ? (COSStream) destOutputProfile : null;
             if (stream == null)
             {
                 addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,

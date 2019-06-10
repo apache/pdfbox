@@ -25,9 +25,9 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_INVALID_TYPE;
@@ -37,7 +37,6 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
  * ActionManager for the GoToRemote action. GoToRemoteAction is valid if the F entry is present.
@@ -75,8 +74,7 @@ public class GoToRemoteAction extends GoToAction
             return false;
         }
 
-        COSDocument cosDocument = this.context.getDocument().getDocument();
-        if (!(dest instanceof COSName || COSUtils.isString(dest, cosDocument) || COSUtils.isArray(dest, cosDocument)))
+        if (!(dest instanceof COSName || dest instanceof COSString || dest instanceof COSArray))
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, 
                     "Type " + dest.getClass().getSimpleName() + " of /D entry is invalid"));

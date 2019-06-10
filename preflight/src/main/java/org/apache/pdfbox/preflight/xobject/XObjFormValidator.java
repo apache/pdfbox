@@ -27,10 +27,8 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_MISSI
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TRANSPARENCY_GROUP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_KEY;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
-import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_KEY_GROUP;
-import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY;
 
-import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -42,7 +40,6 @@ import org.apache.pdfbox.preflight.PreflightPath;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.content.PreflightContentStream;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 /**
@@ -93,12 +90,11 @@ public class XObjFormValidator extends AbstractXObjValidator
             return;
         }
 
-        COSBase bbBase = this.xobject.getItem(COSName.BBOX);
+        COSArray bbArray = this.xobject.getCOSArray(COSName.BBOX);
         // ---- BBox is an Array (Rectangle)
-        if (bbBase == null || !COSUtils.isArray(bbBase, cosDocument))
+        if (bbArray == null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_BBOX));
-            return;
         }
     }
 
@@ -120,23 +116,21 @@ public class XObjFormValidator extends AbstractXObjValidator
      */
     protected void checkGroup()
     {
-        COSBase baseGroup = this.xobject.getItem(XOBJECT_DICTIONARY_KEY_GROUP);
-        COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, cosDocument);
+        COSDictionary groupDictionary = this.xobject.getCOSDictionary(COSName.GROUP);
         if (groupDictionary != null)
         {
-            if (!XOBJECT_DICTIONARY_KEY_GROUP.equals(groupDictionary.getNameAsString(COSName.TYPE)))
+            if (!COSName.GROUP.equals(groupDictionary.getCOSName(COSName.TYPE)))
             {
                 context.addValidationError(new ValidationError(PreflightConstants.ERROR_GRAPHIC_MISSING_FIELD, 
                         "The Group dictionary hasn't Group as Type value"));
             } 
             else 
             {
-                String sVal = groupDictionary.getNameAsString(COSName.S);
-                if (sVal == null || XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
+                COSName sVal = groupDictionary.getCOSName(COSName.S);
+                if (sVal == null || COSName.TRANSPARENCY.equals(sVal))
                 {
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP, 
                             "Group has a transparency S entry or the S entry is null ["+xobject.toString()+"]"));
-                    return;
                 }
             }
         }
@@ -148,11 +142,10 @@ public class XObjFormValidator extends AbstractXObjValidator
     protected void checkPS()
     {
         // 6.2.4 and 6.2.5 no PS
-        if (this.xobject.getItem(COSName.getPDFName("PS")) != null)
+        if (this.xobject.getItem(COSName.PS) != null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY, 
                     "Unexpected 'PS' Key"));
-            return;
         }
     }
 
@@ -167,7 +160,6 @@ public class XObjFormValidator extends AbstractXObjValidator
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
                     "Unexpected 'PS' value for 'Subtype2' Key"));
-            return;
         }
     }
 
