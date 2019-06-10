@@ -23,8 +23,10 @@ package org.apache.pdfbox.preflight.annotation;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -32,7 +34,6 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 
@@ -53,7 +54,6 @@ public abstract class AnnotationValidator
     private AnnotationValidatorFactory annotFact = null;
 
     protected PreflightContext ctx = null;
-    private COSDocument cosDocument = null;
     /**
      * COSDictionary of the annotation
      */
@@ -67,7 +67,6 @@ public abstract class AnnotationValidator
     {
         this.ctx = context;
         this.annotDictionary = annotDictionary;
-        this.cosDocument = this.ctx.getDocument().getDocument();
     }
 
     /**
@@ -106,10 +105,10 @@ public abstract class AnnotationValidator
      */
     protected boolean checkCA()
     {
-        COSBase ca = this.pdAnnot.getCOSObject().getItem(COSName.CA);
-        if (ca != null)
+        COSBase ca = this.pdAnnot.getCOSObject().getDictionaryObject(COSName.CA);
+        if (ca instanceof COSFloat)
         {
-            float caf = COSUtils.getAsFloat(ca, cosDocument);
+            float caf = ((COSFloat) ca).floatValue();
             if (Float.compare(caf, 1.0f) != 0)
             { // ---- Only 1.0 is authorized as value
                 ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_CA,
@@ -187,53 +186,59 @@ public abstract class AnnotationValidator
             }
             else
             {
-                COSBase apn = apDict.getItem(COSName.N);
-                COSBase subtype = annotDictionary.getItem(COSName.SUBTYPE);
+                COSBase apn = apDict.getDictionaryObject(COSName.N);
+                COSName subtype = annotDictionary.getCOSName(COSName.SUBTYPE);
                 COSBase ft = getFieldType();
                 if (COSName.WIDGET.equals(subtype) && COSName.BTN.equals(ft))
                 {
                     // TECHNICAL CORRIGENDUM 2 for ISO 19005-1:2005 (PDF/A-1) 
                     // added a clause for Widget Annotations:
                     // the value of the N key shall be an appearance subdictionary
-                    if (COSUtils.isStream(apn, cosDocument))
+                    if (apn instanceof COSStream)
                     {
                         ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
                                 "The N Appearance of a Btn widget must not be a stream, but an appearance subdictionary"));
                         // But validate it anyway, for isartor-6-3-4-t01-fail-f.pdf
                         // Appearance stream is a XObjectForm, check it.
-                        ContextHelper.validateElement(ctx, new PDFormXObject(
-                                COSUtils.getAsStream(apn, cosDocument)),
+                        ContextHelper.validateElement(ctx, new PDFormXObject((COSStream) apn),
                                 GRAPHIC_PROCESS);
                         return false;
                     }
-                    if (!COSUtils.isDictionary(apn, cosDocument))
+                    if (apn instanceof COSDictionary)
+                    {
+                        for (COSBase val : ((COSDictionary) apn).getValues())
+                        {
+                            // Appearance stream is a XObjectForm, check it.
+                            if (val instanceof COSObject)
+                            {
+                                val = ((COSObject) val).getObject();
+                            }
+                            ContextHelper.validateElement(ctx,
+                                    new PDFormXObject((COSStream) val), GRAPHIC_PROCESS);
+                        }
+                    }
+                    else
                     {
                         ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
                                 "The N Appearance must be an appearance subdictionary"));
                         return false;
                     }
-                    COSDictionary apnDict = COSUtils.getAsDictionary(apn, cosDocument);
-                    for (COSBase val : apnDict.getValues())
-                    {
-                        // Appearance stream is a XObjectForm, check it.
-                        ContextHelper.validateElement(ctx, new PDFormXObject(
-                                COSUtils.getAsStream(val, cosDocument)),
-                                GRAPHIC_PROCESS);
-                    }
                 }
                 else
                 {
                     // the N entry must be a stream (Dictionaries are forbidden)
-                    if (!COSUtils.isStream(apn, cosDocument))
+                    if (apn instanceof COSStream)
+                    {
+                        // Appearance stream is a XObjectForm, check it.
+                        ContextHelper.validateElement(ctx,
+                                new PDFormXObject((COSStream) apn), GRAPHIC_PROCESS);
+                    }
+                    else
                     {
                         ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
                                 "The N Appearance must be a Stream"));
                         return false;
                     }
-                    // Appearance stream is a XObjectForm, check it.
-                    ContextHelper.validateElement(ctx, new PDFormXObject(
-                            COSUtils.getAsStream(apn, cosDocument)),
-                            GRAPHIC_PROCESS);
                 }
             }
         }
@@ -264,17 +269,18 @@ public abstract class AnnotationValidator
      */
     protected boolean checkPopup() throws ValidationException
     {
-        COSBase cosPopup = this.annotDictionary.getItem(ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP);
+        COSBase cosPopup = this.annotDictionary
+                .getDictionaryObject(COSName.getPDFName(ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP));
         if (cosPopup != null)
         {
-            COSDictionary popupDict = COSUtils.getAsDictionary(cosPopup, cosDocument);
-            if (popupDict == null)
+            if (!(cosPopup instanceof COSDictionary))
             {
                 ctx.addValidationError(new ValidationError(ERROR_SYNTAX_DICT_INVALID,
                         "An Annotation has a Popup entry, but the value is missing or isn't a dictionary"));
                 return false;
             }
-            AnnotationValidator popupVal = this.annotFact.getAnnotationValidator(ctx, popupDict);
+            AnnotationValidator popupVal = this.annotFact.getAnnotationValidator(ctx,
+                    (COSDictionary) cosPopup);
             return popupVal.validate();
         }
         return true;

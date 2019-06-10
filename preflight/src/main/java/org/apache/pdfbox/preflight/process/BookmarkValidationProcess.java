@@ -25,23 +25,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConfiguration.DESTINATION_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER_OUTLINES_INVALID;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
-import static org.apache.pdfbox.preflight.PreflightConfiguration.DESTINATION_PROCESS;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class BookmarkValidationProcess extends AbstractProcess
@@ -109,9 +108,8 @@ public class BookmarkValidationProcess extends AbstractProcess
      */
     private boolean isCountEntryPositive(PreflightContext ctx, COSDictionary outline)
     {
-        COSBase countBase = outline.getItem(COSName.COUNT);
-        COSDocument cosDocument = ctx.getDocument().getDocument();
-        return COSUtils.isInteger(countBase, cosDocument) && (COSUtils.getAsInteger(countBase, cosDocument) > 0);
+        COSBase countBase = outline.getDictionaryObject(COSName.COUNT);
+        return countBase instanceof COSInteger && ((COSInteger) countBase).intValue() > 0;
     }
 
     /**

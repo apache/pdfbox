@@ -28,9 +28,6 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.RESOURCES_PROCE
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TRANSPARENCY_GROUP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_UNKOWN_ERROR;
-import static org.apache.pdfbox.preflight.PreflightConstants.PAGE_DICTIONARY_VALUE_THUMB;
-import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_KEY_GROUP;
-import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,7 +57,6 @@ import org.apache.pdfbox.preflight.graphic.ColorSpaceHelper;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRestriction;
 import org.apache.pdfbox.preflight.process.AbstractProcess;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class SinglePageValidationProcess extends AbstractProcess
@@ -148,7 +144,7 @@ public class SinglePageValidationProcess extends AbstractProcess
      */
     protected void validateGraphicObjects(PreflightContext context, PDPage page) throws ValidationException
     {
-        COSBase thumbBase = page.getCOSObject().getItem(PAGE_DICTIONARY_VALUE_THUMB);
+        COSBase thumbBase = page.getCOSObject().getItem(COSName.THUMB);
         if (thumbBase != null)
         {
             try
@@ -235,12 +231,11 @@ public class SinglePageValidationProcess extends AbstractProcess
      */
     protected void validateGroupTransparency(PreflightContext context, PDPage page) throws ValidationException
     {
-        COSBase baseGroup = page.getCOSObject().getItem(XOBJECT_DICTIONARY_KEY_GROUP);
-        COSDictionary groupDictionary = COSUtils.getAsDictionary(baseGroup, context.getDocument().getDocument());
+        COSDictionary groupDictionary = page.getCOSObject().getCOSDictionary(COSName.GROUP);
         if (groupDictionary != null)
         {
-            String sVal = groupDictionary.getNameAsString(COSName.S);
-            if (XOBJECT_DICTIONARY_VALUE_S_TRANSPARENCY.equals(sVal))
+            COSName sVal = groupDictionary.getCOSName(COSName.S);
+            if (COSName.S.equals(sVal))
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP,
                         "Group has a transparency S entry or the S entry is null"));

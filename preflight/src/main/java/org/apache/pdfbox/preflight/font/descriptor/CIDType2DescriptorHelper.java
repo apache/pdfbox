@@ -24,10 +24,8 @@ package org.apache.pdfbox.preflight.font.descriptor;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDSET_MISSING_FOR_SUBSET;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_CIDSET;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -37,7 +35,6 @@ import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.CIDType2Container;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Container>
 {
@@ -57,9 +54,8 @@ public class CIDType2DescriptorHelper extends FontDescriptorHelper<CIDType2Conta
     {
         if (isSubSet(pfDescriptor.getFontName()))
         {
-            COSDocument cosDocument = context.getDocument().getDocument();
-            COSBase cidset = pfDescriptor.getCOSObject().getItem(COSName.getPDFName(FONT_DICTIONARY_KEY_CIDSET));
-            if (cidset == null || !COSUtils.isStream(cidset, cosDocument))
+            COSBase cidset = pfDescriptor.getCOSObject().getDictionaryObject(COSName.CID_SET);
+            if (!(cidset instanceof COSStream))
             {
                 this.fContainer.push(new ValidationResult.ValidationError(ERROR_FONTS_CIDSET_MISSING_FOR_SUBSET,
                         pfDescriptor.getFontName() + ": The CIDSet entry is missing for the Composite Subset"));

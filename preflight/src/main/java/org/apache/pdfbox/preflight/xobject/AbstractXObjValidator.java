@@ -24,17 +24,13 @@ package org.apache.pdfbox.preflight.xobject;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TRANSPARENCY_SMASK;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_KEY;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
-import static org.apache.pdfbox.preflight.PreflightConstants.TRANSPARENCY_DICTIONARY_VALUE_SOFT_MASK_NONE;
-import static org.apache.pdfbox.preflight.PreflightConstants.XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
  * This class processes commons validations of XObjects.
@@ -49,16 +45,11 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      * The validation context which contains useful information to process validation.
      */
     protected PreflightContext context = null;
-    /**
-     * The PDF document as COSDocument.
-     */
-    protected COSDocument cosDocument = null;
 
     public AbstractXObjValidator(PreflightContext context, COSStream xobj)
     {
         this.xobject = xobj;
         this.context = context;
-        this.cosDocument = context.getDocument().getDocument();
     }
 
     /**
@@ -70,10 +61,9 @@ public abstract class AbstractXObjValidator implements XObjectValidator
      */
     protected void checkSMask()
     {
-        COSBase smask = xobject.getItem(COSName.SMASK);
+        COSBase smask = xobject.getCOSDictionary(COSName.SMASK);
         if (smask != null
-                && !(COSUtils.isString(smask, cosDocument) && TRANSPARENCY_DICTIONARY_VALUE_SOFT_MASK_NONE
-                        .equals(COSUtils.getAsString(smask, cosDocument))))
+                && !(smask instanceof COSName && COSName.NONE.equals(smask)))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_SMASK,
                     "Soft Mask must be null or None ["+xobject.toString()+"]"));
@@ -118,18 +108,16 @@ public abstract class AbstractXObjValidator implements XObjectValidator
     protected void checkPostscriptXObject()
     {
         // 6.2.7 No PostScript XObjects
-        String subtype = this.xobject.getNameAsString(COSName.SUBTYPE);
-        if (XOBJECT_DICTIONARY_VALUE_SUBTYPE_POSTSCRIPT.equals(subtype))
+        COSName subtype = this.xobject.getCOSName(COSName.SUBTYPE);
+        if (COSName.PS.equals(subtype))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
                     "No Postscript XObject allowed in PDF/A"));
-            return;
         }
-        if (this.xobject.getItem(COSName.getPDFName("Subtype2")) != null)
+        else if (this.xobject.getItem(COSName.getPDFName("Subtype2")) != null)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
                     "No Postscript XObject allowed in PDF/A (Subtype2)"));
-            return;
         }
     }
 

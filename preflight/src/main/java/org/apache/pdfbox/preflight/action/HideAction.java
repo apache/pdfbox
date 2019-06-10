@@ -25,13 +25,13 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_HIDE_H
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_INVALID_TYPE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_MISING_KEY;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 /**
  * ActionManager for the Hide action. The Hide action isn't specifically prohibited by PDF/A-1, but should have been. So
@@ -63,7 +63,7 @@ public class HideAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        COSBase t = this.actionDictionnary.getItem(COSName.T);
+        COSBase t = this.actionDictionnary.getDictionaryObject(COSName.T);
         // ---- T entry is mandatory
         if (t == null)
         {
@@ -72,9 +72,8 @@ public class HideAction extends AbstractActionManager
             return false;
         }
 
-        COSDocument cosDocument = this.context.getDocument().getDocument();
-        if (!(COSUtils.isDictionary(t, cosDocument) || COSUtils.isArray(t, cosDocument) || COSUtils.isString(t,
-                cosDocument)))
+        if (!(t instanceof COSDictionary || t instanceof COSArray || t instanceof COSString
+                || t instanceof COSName))
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_INVALID_TYPE, "T entry type is invalid"));
             return false;

@@ -22,14 +22,13 @@
 package org.apache.pdfbox.preflight.font;
 
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.Type1Container;
 import org.apache.pdfbox.preflight.font.descriptor.Type1DescriptorHelper;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING;
@@ -55,13 +54,12 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
     @Override
     protected void checkEncoding()
     {
-        COSBase encoding = fontDictionary.getItem(COSName.ENCODING);
+        COSBase encoding = fontDictionary.getDictionaryObject(COSName.ENCODING);
         if (encoding != null)
         {
-            COSDocument cosDocument = context.getDocument().getDocument();
-            if (COSUtils.isString(encoding, cosDocument))
+            if (encoding instanceof COSName)
             {
-                String encodingName = COSUtils.getAsString(encoding, cosDocument);
+                String encodingName = ((COSName) encoding).getName();
                 if (!(encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC)
                         || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP)
                         || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_WIN)
@@ -71,7 +69,7 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
                     this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
                 }
             }
-            else if (!COSUtils.isDictionary(encoding, cosDocument))
+            else if (!(encoding instanceof COSDictionary))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
             }

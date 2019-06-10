@@ -29,12 +29,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.DataSource;
 import org.apache.xmpbox.XMPMetadata;
 
@@ -216,7 +216,7 @@ public class PreflightContext implements Closeable
     @Override
     public void close()
     {
-        COSUtils.closeDocumentQuietly(document);
+        IOUtils.closeQuietly(document);
     }
 
     /**

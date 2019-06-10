@@ -24,29 +24,25 @@ package org.apache.pdfbox.preflight.font;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYED_CIDTOGID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CIDKEYED_SYSINFO;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY;
 
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.FontContainer;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 
 public abstract class DescendantFontValidator<T extends FontContainer> extends SimpleFontValidator<T>
 {
-    protected COSDocument cosDocument = null;
 
     public DescendantFontValidator(PreflightContext context, PDCIDFont font, T fContainer)
     {
         super(context, font, font.getCOSObject(), fContainer);
-        cosDocument = context.getDocument().getDocument();
     }
 
     @Override
@@ -64,8 +60,8 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
                     font.getName() + ": Required keys are missing"));
         }
 
-        checkCIDSystemInfo(fontDictionary.getItem(COSName.CIDSYSTEMINFO));
-        checkCIDToGIDMap(fontDictionary.getItem(COSName.CID_TO_GID_MAP));
+        checkCIDSystemInfo(fontDictionary.getCOSDictionary(COSName.CIDSYSTEMINFO));
+        checkCIDToGIDMap(fontDictionary.getDictionaryObject(COSName.CID_TO_GID_MAP));
     }
 
     /**
@@ -78,17 +74,15 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      * 
      * @param sysinfo
      */
-    protected void checkCIDSystemInfo(COSBase sysinfo)
+    protected void checkCIDSystemInfo(COSDictionary sysinfo)
     {
-        COSDictionary cidSysInfo = COSUtils.getAsDictionary(sysinfo, cosDocument);
-        if (cidSysInfo != null)
+        if (sysinfo != null)
         {
-            COSBase reg = cidSysInfo.getItem(COSName.REGISTRY);
-            COSBase ord = cidSysInfo.getItem(COSName.ORDERING);
-            COSBase sup = cidSysInfo.getItem(COSName.SUPPLEMENT);
+            String reg = sysinfo.getString(COSName.REGISTRY);
+            String ord = sysinfo.getString(COSName.ORDERING);
+            COSBase sup = sysinfo.getDictionaryObject(COSName.SUPPLEMENT);
 
-            if (!(COSUtils.isString(reg, cosDocument) && COSUtils.isString(ord, cosDocument) && COSUtils.isInteger(sup,
-                    cosDocument)))
+            if (!(reg != null && ord != null && sup instanceof COSInteger))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_SYSINFO));
             }
@@ -124,24 +118,21 @@ public abstract class DescendantFontValidator<T extends FontContainer> extends S
      */
     protected void checkCIDToGIDMap(COSBase ctog, boolean mandatory)
     {
-        if (COSUtils.isString(ctog, cosDocument))
+        if (ctog instanceof COSName)
         {
             // ---- valid only if the string is Identity
-            String ctogStr = COSUtils.getAsString(ctog, cosDocument);
-            if (!FONT_DICTIONARY_VALUE_CMAP_IDENTITY.equals(ctogStr))
+            if (!COSName.IDENTITY.equals(ctog))
             {
                 this.fontContainer.push(new ValidationError(ERROR_FONTS_CIDKEYED_CIDTOGID,
                         font.getName() + ": The CIDToGID entry is invalid"));
             }
         }
-        else if (COSUtils.isStream(ctog, cosDocument))
+        else if (ctog instanceof COSStream)
         {
             try
             {
-                COSStream stream = COSUtils.getAsStream(ctog, cosDocument);
-
                 // todo: check the map's content? (won't pdfbox do this?)
-                InputStream is = stream.createInputStream();
+                InputStream is = ((COSStream) ctog).createInputStream();
                 is.close();
             }
             catch (IOException e)

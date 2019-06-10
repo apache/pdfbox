@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -51,7 +50,6 @@ import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory;
 import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRestriction;
 import org.apache.pdfbox.preflight.graphic.ColorSpaces;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.FilterHelper;
 import org.apache.pdfbox.preflight.utils.RenderingIntents;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
@@ -107,13 +105,11 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
     }
 
     protected PreflightContext context = null;
-    protected COSDocument cosDocument = null;
     protected PDPage processedPage = null;
 
     public PreflightStreamEngine(PreflightContext context, PDPage page)
     {
         this.context = context;
-        this.cosDocument = context.getDocument().getDocument();
         this.processedPage = page;
 
         // Graphics operators
@@ -273,9 +269,8 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         /*
          * Search a Filter declaration in the InlinedImage dictionary. The LZWDecode Filter is forbidden.
          */
-        COSBase filter = dict.getDictionaryObject(COSName.F, COSName.FILTER);
-        FilterHelper
-                .isAuthorizedFilter(context, COSUtils.getAsString(filter, this.context.getDocument().getDocument()));
+        COSName filter = dict.getCOSName(COSName.F, COSName.FILTER);
+        FilterHelper.isAuthorizedFilter(context, filter != null ? filter.getName() : null);
     }
 
     /**
@@ -293,11 +288,11 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         ColorSpaceHelper csHelper = null;
         if (csInlinedBase != null)
         {
-            if (COSUtils.isString(csInlinedBase, cosDocument))
+            if (csInlinedBase instanceof COSName)
             {
                 // In InlinedImage only DeviceGray/RGB/CMYK and restricted Indexed
                 // color spaces are allowed.
-                String colorSpace = COSUtils.getAsString(csInlinedBase, cosDocument);
+                String colorSpace = ((COSName) csInlinedBase).getName();
                 ColorSpaces cs = null;
 
                 try
