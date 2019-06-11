@@ -235,7 +235,7 @@ public class SinglePageValidationProcess extends AbstractProcess
         if (groupDictionary != null)
         {
             COSName sVal = groupDictionary.getCOSName(COSName.S);
-            if (COSName.S.equals(sVal))
+            if (COSName.TRANSPARENCY.equals(sVal))
             {
                 context.addValidationError(new ValidationError(ERROR_GRAPHIC_TRANSPARENCY_GROUP,
                         "Group has a transparency S entry or the S entry is null"));
