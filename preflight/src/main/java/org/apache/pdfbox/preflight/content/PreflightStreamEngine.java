@@ -269,8 +269,9 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
         /*
          * Search a Filter declaration in the InlinedImage dictionary. The LZWDecode Filter is forbidden.
          */
-        COSName filter = dict.getCOSName(COSName.F, COSName.FILTER);
-        FilterHelper.isAuthorizedFilter(context, filter != null ? filter.getName() : null);
+        COSBase filter = dict.getDictionaryObject(COSName.F, COSName.FILTER);
+        FilterHelper.isAuthorizedFilter(context,
+                filter instanceof COSName ? ((COSName) filter).getName() : null);
     }
 
     /**
