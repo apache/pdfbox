@@ -718,7 +718,7 @@ public class PreflightParser extends PDFParser
         final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
         final COSObject pdfObject = document.getObjectFromPool(objKey);
 
-        if (pdfObject.getObject() == null)
+        if (pdfObject.isObjectNull())
         {
             // not previously parsed
             // ---- read offset or object stream object number from xref table
@@ -737,7 +737,9 @@ public class PreflightParser extends PDFParser
             if (offsetOrObjstmObNr == null)
             {
                 // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
-                pdfObject.setObject(COSNull.NULL);
+                // remove parser to avoid endless recursion
+                pdfObject.setToNull();
+
             }
             else if (offsetOrObjstmObNr == 0)
             {

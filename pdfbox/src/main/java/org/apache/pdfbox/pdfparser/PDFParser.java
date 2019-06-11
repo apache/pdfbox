@@ -21,10 +21,10 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
@@ -141,6 +141,7 @@ public class PDFParser extends COSParser
             }
         }
         document = new COSDocument(scratchFile);
+        document.parser = this;
     }
     
     /**
@@ -170,28 +171,21 @@ public class PDFParser extends COSParser
     {
         COSDictionary trailer = retrieveTrailer();
     
-        COSBase base = parseTrailerValuesDynamically(trailer);
-        if (!(base instanceof COSDictionary))
+        COSObject rootObj = trailer.getCOSObject(COSName.ROOT);
+        if (rootObj == null)
         {
-            throw new IOException("Expected root dictionary, but got this: " + base);
+            throw new IOException("Missing root object specification in trailer.");
         }
-        COSDictionary root = (COSDictionary) base;
+        COSDictionary root = (COSDictionary) rootObj.getObject();
         // in some pdfs the type value "Catalog" is missing in the root object
         if (isLenient() && !root.containsKey(COSName.TYPE))
         {
             root.setItem(COSName.TYPE, COSName.CATALOG);
         }
-        // parse all objects, starting at the root dictionary
-        parseDictObjects(root, (COSName[]) null);
-        // parse all objects of the info dictionary
-        COSBase infoBase = trailer.getDictionaryObject(COSName.INFO);
-        if (infoBase instanceof COSDictionary)
-        {
-            parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
-        }
         // check pages dictionaries
         checkPages(root);
         document.setDecrypted();
+        document.parser = this;
         initialParseDone = true;
     }
 

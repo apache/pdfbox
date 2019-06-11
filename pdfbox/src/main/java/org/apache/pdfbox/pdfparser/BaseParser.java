@@ -924,7 +924,7 @@ public abstract class BaseParser
         }
         case 'R':
             seqSource.read();
-            retval = new COSObject(null);
+            retval = new COSObject(null, this);
             break;
         case (char)-1:
             return null;
@@ -1155,6 +1155,17 @@ public abstract class BaseParser
     protected boolean isEOL() throws IOException
     {
         return isEOL(seqSource.peek());
+    }
+
+    /**
+     * This will tell if the end of the data is reached.
+     * 
+     * @return true if the end of the data is reached.
+     * @throws IOException If there is an error reading from the stream.
+     */
+    protected boolean isEOF() throws IOException
+    {
+        return seqSource.isEOF();
     }
 
     /**

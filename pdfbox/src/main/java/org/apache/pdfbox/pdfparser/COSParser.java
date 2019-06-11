@@ -772,6 +772,42 @@ public class COSParser extends BaseParser
         }
     }
 
+    public boolean dereferenceCOSObject(COSObject obj)
+    {
+        COSBase parsedObj = null;
+        long currentPos = 0;
+        try
+        {
+            currentPos = source.getPosition();
+            parsedObj = parseObjectDynamically(obj, false);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            // parsedObj = COSBroken.BROKEN;
+        }
+        finally
+        {
+            if (currentPos > 0)
+                try
+                {
+                    source.seek(currentPos);
+                }
+                catch (IOException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+        }
+        if (parsedObj != null)
+        {
+            obj.setObject(parsedObj);
+            return true;
+        }
+        return false;
+    }
+
     // add objects not to be parsed to list of already parsed objects
     private void addExcludedToList(COSName[] excludeObjects, COSDictionary dict, final Set<Long> parsedObjects)
     {
@@ -826,7 +862,7 @@ public class COSParser extends BaseParser
         final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
         final COSObject pdfObject = document.getObjectFromPool(objKey);
 
-        if (pdfObject.getObject() == null)
+        if (pdfObject.isObjectNull())
         {
             // not previously parsed
             // ---- read offset or object stream object number from xref table
@@ -855,7 +891,8 @@ public class COSParser extends BaseParser
             if (offsetOrObjstmObNr == null)
             {
                 // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
-                pdfObject.setObject(COSNull.NULL);
+                // remove parser to avoid endless recursion
+                pdfObject.setToNull();
             }
             else if (offsetOrObjstmObNr > 0)
             {
@@ -935,7 +972,14 @@ public class COSParser extends BaseParser
             securityHandler.decrypt(pb, objKey.getNumber(), objKey.getGeneration());
         }
 
-        pdfObject.setObject(pb);
+        if (pb != null)
+        {
+            pdfObject.setObject(pb);
+        }
+        else
+        {
+            pdfObject.setToNull();
+        }
 
         if (!endObjectKey.startsWith(ENDOBJ_STRING))
         {
@@ -2768,7 +2812,7 @@ public class COSParser extends BaseParser
             xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
             xrefTrailerResolver.setTrailer( stream );
         }        
-        PDFXrefStreamParser parser = new PDFXrefStreamParser( stream, document, xrefTrailerResolver );
+        PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, document, xrefTrailerResolver);
         parser.parse();
     }
 

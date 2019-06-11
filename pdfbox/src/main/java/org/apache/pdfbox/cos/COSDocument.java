@@ -27,7 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.ScratchFile;
-import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
+import org.apache.pdfbox.pdfparser.COSParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -89,6 +89,8 @@ public class COSDocument extends COSBase implements Closeable
      * Used for incremental saving, to avoid XRef object numbers from being reused.
      */
     private long highestXRefObjectNumber;
+
+    public COSParser parser;
 
     /**
      * Constructor. Uses main memory to buffer PDF streams.
@@ -447,10 +449,14 @@ public class COSDocument extends COSBase implements Closeable
             // close all open I/O streams
             for (COSObject object : getObjects())
             {
-                COSBase cosObject = object.getObject();
-                if (cosObject instanceof COSStream)
+                if (!object.isObjectNull())
                 {
-                    firstException = IOUtils.closeAndLogException((COSStream) cosObject, LOG, "COSStream", firstException);
+                    COSBase cosObject = object.getObject();
+                    if (cosObject instanceof COSStream)
+                    {
+                        firstException = IOUtils.closeAndLogException((COSStream) cosObject, LOG,
+                                "COSStream", firstException);
+                    }
                 }
             }
 
@@ -513,34 +519,6 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This method will search the list of objects for types of ObjStm.  If it finds
-     * them then it will parse out all of the objects from the stream that is contains.
-     *
-     * @throws IOException If there is an error parsing the stream.
-     */
-    public void dereferenceObjectStreams() throws IOException
-    {
-        for( COSObject objStream : getObjectsByType( COSName.OBJ_STM ) )
-        {
-            COSStream stream = (COSStream)objStream.getObject();
-            PDFObjectStreamParser parser = new PDFObjectStreamParser(stream, this);
-            parser.parse();
-            for (COSObject next : parser.getObjects())
-            {
-                COSObjectKey key = new COSObjectKey(next);
-                if (objectPool.get(key) == null || objectPool.get(key).getObject() == null
-                        // xrefTable stores negated objNr of objStream for objects in objStreams
-                        || (xrefTable.containsKey(key)
-                            && xrefTable.get(key) == -objStream.getObjectNumber()))
-                {
-                    COSObject obj = getObjectFromPool(key);
-                    obj.setObject(next.getObject());
-                }
-            }
-        }
-    }
-
-    /**
      * This will get an object from the pool.
      *
      * @param key The object key.
@@ -557,7 +535,7 @@ public class COSDocument extends COSBase implements Closeable
         if (obj == null)
         {
             // this was a forward reference, make "proxy" object
-            obj = new COSObject(null);
+            obj = new COSObject(null, parser);
             if( key != null )
             {
                 obj.setObjectNumber(key.getNumber());

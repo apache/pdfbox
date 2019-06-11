@@ -87,7 +87,7 @@ public class PDFObjectStreamParser extends BaseParser
             int objectCounter = 0;
             while( (cosObject = parseDirObject()) != null )
             {
-                object = new COSObject(cosObject);
+                object = new COSObject(cosObject, null);
                 object.setGenerationNumber(0);
                 if (objectCounter >= objectNumbers.size())
                 {
@@ -103,7 +103,7 @@ public class PDFObjectStreamParser extends BaseParser
                 // According to the spec objects within an object stream shall not be enclosed 
                 // by obj/endobj tags, but there are some pdfs in the wild using those tags 
                 // skip endobject marker if present
-                if (!seqSource.isEOF() && seqSource.peek() == 'e')
+                if (!isEOF() && seqSource.peek() == 'e')
                 {
                     readLine();
                 }
@@ -125,4 +125,22 @@ public class PDFObjectStreamParser extends BaseParser
     {
         return streamObjects;
     }
+
+    public boolean dereferenceCOSObject(COSObject obj)
+    {
+        if (streamObjects != null) 
+        {
+            long objectNumber = obj.getObjectNumber();
+            for (COSObject cosObject : streamObjects)
+            {
+                if (cosObject.getObjectNumber() == objectNumber)
+                {
+                    obj.setObject(cosObject);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

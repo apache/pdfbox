@@ -18,6 +18,9 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.pdfparser.BaseParser;
+import org.apache.pdfbox.pdfparser.COSParser;
+
 /**
  * This class represents a PDF object.
  *
@@ -30,6 +33,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private long objectNumber;
     private int generationNumber;
     private boolean needToBeUpdated;
+    private BaseParser parser;
 
     /**
      * Constructor.
@@ -37,9 +41,11 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param object The object that this encapsulates.
      *
      */
-    public COSObject(COSBase object)
+    public COSObject(COSBase object, BaseParser parser)
+    // public COSObject(COSBase object)
     {
         setObject( object );
+        this.parser = parser;
     }
 
     /**
@@ -77,6 +83,10 @@ public class COSObject extends COSBase implements COSUpdateInfo
         return retval;
     }
 
+    public boolean isObjectNull()
+    {
+        return baseObject == null;
+    }
     /**
      * This will get the object that this object encapsulates.
      *
@@ -84,6 +94,18 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSBase getObject()
     {
+        if (baseObject == null || baseObject instanceof COSNull)
+        {
+            if (parser instanceof COSParser)
+            {
+                boolean returnValue = ((COSParser) parser).dereferenceCOSObject(this);
+                if (!returnValue)
+                {
+                    // remove parser to avoid endless recursions
+                    parser = null;
+                }
+            }
+        }
         return baseObject;
     }
 
@@ -95,6 +117,12 @@ public class COSObject extends COSBase implements COSUpdateInfo
     public final void setObject(COSBase object)
     {
         baseObject = object;
+    }
+
+    public final void setToNull()
+    {
+        baseObject = COSNull.NULL;
+        parser = null;
     }
 
     /**

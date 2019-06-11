@@ -191,7 +191,7 @@ public class PDFStreamParser extends BaseParser
                 String line = readString();
                 if( line.equals( "R" ) )
                 {
-                    retval = new COSObject( null );
+                retval = new COSObject(null, this);
                 }
                 else
                 {
@@ -295,8 +295,8 @@ public class PDFStreamParser extends BaseParser
                 while( !(lastByte == 'E' &&
                          currentByte == 'I' &&
                          hasNextSpaceOrReturn() &&
-                         hasNoFollowingBinData(seqSource)) &&
-                       !seqSource.isEOF() )
+                    hasNoFollowingBinData()) &&
+                    !isEOF())
                 {
                     imageData.write( lastByte );
                     lastByte = currentByte;
@@ -344,10 +344,10 @@ public class PDFStreamParser extends BaseParser
      * @return <code>true</code> if next bytes are probably printable ASCII
      * characters starting with a PDF operator, otherwise <code>false</code>
      */
-    private boolean hasNoFollowingBinData(SequentialSource pdfSource) throws IOException
+    private boolean hasNoFollowingBinData() throws IOException
     {
         // as suggested in PDFBOX-1164
-        final int readBytes = pdfSource.read(binCharTestArr, 0, MAX_BIN_CHAR_TEST_LENGTH);
+        final int readBytes = seqSource.read(binCharTestArr, 0, MAX_BIN_CHAR_TEST_LENGTH);
         boolean noBinData = true;
         int startOpIdx = -1;
         int endOpIdx = -1;
@@ -399,12 +399,12 @@ public class PDFStreamParser extends BaseParser
                     noBinData = false;
                 }
             }
-            pdfSource.unread(binCharTestArr, 0, readBytes);
+            seqSource.unread(binCharTestArr, 0, readBytes);
         }
         if (!noBinData)
         {
             LOG.warn("ignoring 'EI' assumed to be in the middle of inline image at stream offset " + 
-                    pdfSource.getPosition());
+                    seqSource.getPosition());
         }
         return noBinData;
     }
