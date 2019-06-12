@@ -669,7 +669,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
             }
         }
-        return new BasicStroke(lineWidth, state.getLineCap(), state.getLineJoin(),
+        int lineCap = Math.min(2, Math.max(0, state.getLineCap()));
+        int lineJoin = Math.min(2, Math.max(0, state.getLineJoin()));
+        return new BasicStroke(lineWidth, lineCap, lineJoin,
                                state.getMiterLimit(), dashArray, phaseStart);
     }
 
