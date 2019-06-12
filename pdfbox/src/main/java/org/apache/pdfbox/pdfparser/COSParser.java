@@ -785,7 +785,6 @@ public class COSParser extends BaseParser
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            // parsedObj = COSBroken.BROKEN;
         }
         finally
         {
@@ -972,7 +971,7 @@ public class COSParser extends BaseParser
             securityHandler.decrypt(pb, objKey.getNumber(), objKey.getGeneration());
         }
 
-        if (pb != null)
+        if (pb != null && pb != COSNull.NULL)
         {
             pdfObject.setObject(pb);
         }
