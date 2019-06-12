@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
@@ -189,6 +190,56 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
             return new PDBorderStyleDictionary((COSDictionary) bs);
         }
         return null;
+    }
+
+    /**
+     * This will set the difference between the annotations "outer" rectangle defined by /Rect and
+     * the border.
+     *
+     * <p>
+     * This will set an equal difference for all sides</p>
+     *
+     * @param difference from the annotations /Rect entry
+     */
+    public void setRectDifferences(float difference)
+    {
+        setRectDifferences(difference, difference, difference, difference);
+    }
+    
+    /**
+     * This will set the difference between the annotations "outer" rectangle defined by
+     * /Rect and the border.
+     * 
+     * @param differenceLeft left difference from the annotations /Rect entry
+     * @param differenceTop top difference from the annotations /Rect entry
+     * @param differenceRight right difference from  the annotations /Rect entry
+     * @param differenceBottom bottom difference from the annotations /Rect entry
+     * 
+     */
+    public void setRectDifferences(float differenceLeft, float differenceTop, float differenceRight, float differenceBottom)
+    {
+        COSArray margins = new COSArray();
+        margins.add(new COSFloat(differenceLeft));
+        margins.add(new COSFloat(differenceTop));
+        margins.add(new COSFloat(differenceRight));
+        margins.add(new COSFloat(differenceBottom));
+        getCOSObject().setItem(COSName.RD, margins);    
+    }
+    
+    /**
+     * This will get the differences between the annotations "outer" rectangle defined by
+     * /Rect and the border.
+     * 
+     * @return the differences. If the entry hasn't been set am empty array is returned.
+     */
+    public float[] getRectDifferences()
+    {
+        COSBase margin = getCOSObject().getItem(COSName.RD);
+        if (margin instanceof COSArray)
+        {
+            return ((COSArray) margin).toFloatArray();
+        }
+        return new float[]{};
     }
 
 }
