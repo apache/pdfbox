@@ -216,7 +216,7 @@ public class ScratchFile implements Closeable
      * if no new pages could be added because we reached the maximum of
      * {@link Integer#MAX_VALUE} pages.
      * 
-     * <p>If scratch file uage is allowed and scratch file does not exist already
+     * <p>If scratch file usage is allowed and scratch file does not exist already
      * it will be created.</p>
      * 
      * <p>Only to be called under synchronization on {@link #freePages}.</p>
