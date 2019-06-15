@@ -70,7 +70,7 @@ public class BookmarkValidationProcess extends AbstractProcess
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
                             "Outline Hierarchy doesn't have Count entry"));
                 }
-                else if (isCountEntryPositive(ctx, dict)
+                else if (isCountEntryPositive(dict)
                         && (outlineHierarchy.getFirstChild() == null || outlineHierarchy.getLastChild() == null))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_OUTLINES_INVALID,
@@ -106,7 +106,7 @@ public class BookmarkValidationProcess extends AbstractProcess
      * @param outline the dictionary representing the document outline.
      * @return true if the Count entry &gt; 0.
      */
-    private boolean isCountEntryPositive(PreflightContext ctx, COSDictionary outline)
+    private boolean isCountEntryPositive(COSDictionary outline)
     {
         COSBase countBase = outline.getDictionaryObject(COSName.COUNT);
         return countBase instanceof COSInteger && ((COSInteger) countBase).intValue() > 0;
