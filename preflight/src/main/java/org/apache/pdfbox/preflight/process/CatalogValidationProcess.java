@@ -325,10 +325,11 @@ public class CatalogValidationProcess extends AbstractProcess
                 return;
             }
 
+            COSBase localDestOutputProfile = destOutputProfile;
             // destOutputProfile should be an instance of COSObject because of this is a object reference
-            if (destOutputProfile instanceof COSObject)
+            if (localDestOutputProfile instanceof COSObject)
             {
-                if (mapDestOutputProfile.containsKey(new COSObjectKey((COSObject) destOutputProfile)))
+                if (mapDestOutputProfile.containsKey(new COSObjectKey((COSObject) localDestOutputProfile)))
                 {
                     // the profile is already checked. continue
                     return;
@@ -340,23 +341,21 @@ public class CatalogValidationProcess extends AbstractProcess
                             "More than one ICCProfile is defined"));
                     return;
                 }
-                // else the profile will be kept in the tmpDestOutputProfile if it is valid
+                // else the profile will be kept in the mapDestOutputProfile if it is valid
+
+                localDestOutputProfile = ((COSObject) localDestOutputProfile).getObject();
             }
 
             // keep reference to avoid multiple profile definition
             mapDestOutputProfile.put(new COSObjectKey((COSObject) destOutputProfile), true);
-            if (destOutputProfile instanceof COSObject) 
-            {
-                destOutputProfile = ((COSObject)destOutputProfile).getObject();
-            }
-            COSStream stream = destOutputProfile instanceof COSStream
-                    ? (COSStream) destOutputProfile : null;
-            if (stream == null)
+
+            if (!(localDestOutputProfile instanceof COSStream))
             {
                 addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                        "OutputIntent object uses a NULL Object"));
+                        "OutputIntent object must be a stream"));
                 return;
             }
+            COSStream stream = (COSStream) localDestOutputProfile;
 
             ICC_Profile iccp;
             try (InputStream is = stream.createInputStream())
