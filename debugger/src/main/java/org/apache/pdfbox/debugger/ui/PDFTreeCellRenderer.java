@@ -102,7 +102,7 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
             else
             {
                 ArrayEntry entry = (ArrayEntry) nodeValue;
-                key = "" + entry.getIndex();
+                key = Integer.toString(entry.getIndex());
                 object = toTreeObject(entry.getValue());
                 value = entry.getValue();
                 item = entry.getItem();
@@ -125,15 +125,15 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         }
         else if (nodeValue instanceof COSBoolean)
         {
-            result = "" + ((COSBoolean) nodeValue).getValue();
+            result = Boolean.toString(((COSBoolean) nodeValue).getValue());
         }
         else if (nodeValue instanceof COSFloat)
         {
-            result = "" + ((COSFloat) nodeValue).floatValue();
+            result = Float.toString(((COSFloat) nodeValue).floatValue());
         }
         else if (nodeValue instanceof COSInteger)
         {
-            result = "" + ((COSInteger) nodeValue).intValue();
+            result = Integer.toString(((COSInteger) nodeValue).intValue());
         }
         else if (nodeValue instanceof COSString)
         {
