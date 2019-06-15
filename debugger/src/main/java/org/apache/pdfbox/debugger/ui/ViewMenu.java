@@ -34,6 +34,7 @@ public class ViewMenu extends MenuBase
     private static final String SHOW_FONT_BBOX = "Show Approximate Text Bounds";
     private static final String SHOW_GLYPH_BOUNDS = "Show Glyph Bounds";
     private static final String ALLOW_SUBSAMPLING = "Allow subsampling";            
+    private static final String EXTRACT_TEXT = "Extract Text";            
 
     private JMenuItem viewModeItem;
     private JCheckBoxMenuItem showTextStripper;
@@ -41,6 +42,7 @@ public class ViewMenu extends MenuBase
     private JCheckBoxMenuItem showFontBBox;
     private JCheckBoxMenuItem showGlyphBounds;
     private JCheckBoxMenuItem allowSubsampling;
+    private static JMenuItem extractTextMenuItem;
     
     private final PDFDebugger pdfDebugger;
 
@@ -123,7 +125,18 @@ public class ViewMenu extends MenuBase
     {
         return instance.showGlyphBounds.isSelected();
     }
-    
+
+    /**
+     * Tell whether the "Extract Text" menu entry was hit.
+     *
+     * @param actionEvent
+     * @return true if the "Extract Text" menu entry was hit.
+     */
+    public static boolean isExtractText(ActionEvent actionEvent)
+    {
+        return extractTextMenuItem.equals(actionEvent.getSource());
+    }
+
     /**
      * State if subsampling for image rendering shall be used.
      * 
@@ -201,6 +214,12 @@ public class ViewMenu extends MenuBase
         allowSubsampling = new JCheckBoxMenuItem(ALLOW_SUBSAMPLING);
         allowSubsampling.setEnabled(false);
         viewMenu.add(allowSubsampling);
+
+        viewMenu.addSeparator();
+
+        extractTextMenuItem = new JMenuItem(EXTRACT_TEXT);
+        extractTextMenuItem.setEnabled(false);
+        viewMenu.add(extractTextMenuItem);
 
         return viewMenu;
     }
