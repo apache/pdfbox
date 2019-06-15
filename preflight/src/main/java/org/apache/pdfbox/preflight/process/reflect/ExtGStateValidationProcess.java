@@ -80,7 +80,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
         else
         {
             COSDictionary extGStatesDict = (COSDictionary) vPath.peek();
-            List<COSDictionary> listOfExtGState = extractExtGStateDictionaries(context, extGStatesDict);
+            List<COSDictionary> listOfExtGState = extractExtGStateDictionaries(extGStatesDict);
             validateTransparencyRules(context, listOfExtGState);
             validateFonts(context, listOfExtGState);
         }
@@ -89,12 +89,11 @@ public class ExtGStateValidationProcess extends AbstractProcess
     /**
      * Create a list of ExtGState dictionaries using the given Resource dictionary and the COSDocument.
      * 
-     * @param context the context which contains the Resource dictionary.
      * @param extGStates a resource COSDictionary.
      * @return the list of ExtGState dictionaries.
      * @throws ValidationException thrown if an Extended Graphic State isn't valid.
      */
-    public List<COSDictionary> extractExtGStateDictionaries(PreflightContext context,
+    public List<COSDictionary> extractExtGStateDictionaries(
             COSDictionary extGStates)
             throws ValidationException
     {
