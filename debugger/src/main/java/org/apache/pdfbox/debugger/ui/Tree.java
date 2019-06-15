@@ -310,16 +310,15 @@ public class Tree extends JTree
             {
                 try
                 {
-                    byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
                     File temp = File.createTempFile("pdfbox", "." + extension);
                     temp.deleteOnExit();
 
-                    try (FileOutputStream outputStream = new FileOutputStream(temp))
+                    try (InputStream is = cosStream.createInputStream();
+                         FileOutputStream os = new FileOutputStream(temp))
                     {
-                        outputStream.write(bytes);
-
-                        Desktop.getDesktop().open(temp);
+                        IOUtils.copy(is, os);
                     }
+                    Desktop.getDesktop().open(temp);
                 }
                 catch (IOException e)
                 {
