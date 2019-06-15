@@ -42,7 +42,7 @@ public class ViewMenu extends MenuBase
     private JCheckBoxMenuItem showFontBBox;
     private JCheckBoxMenuItem showGlyphBounds;
     private JCheckBoxMenuItem allowSubsampling;
-    private static JMenuItem extractTextMenuItem;
+    private JMenuItem extractTextMenuItem;
     
     private final PDFDebugger pdfDebugger;
 
@@ -134,7 +134,7 @@ public class ViewMenu extends MenuBase
      */
     public static boolean isExtractText(ActionEvent actionEvent)
     {
-        return extractTextMenuItem.equals(actionEvent.getSource());
+        return EXTRACT_TEXT.equals(actionEvent.getActionCommand());
     }
 
     /**
