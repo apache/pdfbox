@@ -41,7 +41,8 @@ public final class ImageUtil
     {
         int width = image.getWidth();
         int height = image.getHeight();
-        double x = 0, y = 0;
+        double x = 0;
+        double y = 0;
         BufferedImage rotatedImage;
         switch (rotation % 360)
         {
