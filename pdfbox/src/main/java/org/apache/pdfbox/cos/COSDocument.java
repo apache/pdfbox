@@ -28,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.COSParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * This is the in-memory representation of the PDF document.  You need to call
