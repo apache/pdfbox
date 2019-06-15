@@ -31,17 +31,6 @@ import javax.swing.JTextPane;
 public class TextDialog extends JDialog
 {
     private static TextDialog instance;
-
-    public static void init(Frame owner)
-    {
-        instance = new TextDialog(owner);
-    }
-
-    public static TextDialog instance()
-    {
-        return instance;
-    }
-
     private final JTextPane textPane;
     private final JScrollPane scrollPane;
 
@@ -53,6 +42,16 @@ public class TextDialog extends JDialog
         scrollPane = new JScrollPane(textPane);
         getContentPane().add(scrollPane);
         pack();
+    }
+
+    public static void init(Frame owner)
+    {
+        instance = new TextDialog(owner);
+    }
+
+    public static TextDialog instance()
+    {
+        return instance;
     }
 
     public void clear()
