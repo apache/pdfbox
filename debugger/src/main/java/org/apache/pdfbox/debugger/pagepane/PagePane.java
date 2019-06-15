@@ -53,6 +53,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
+import org.apache.pdfbox.debugger.ui.TextDialog;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -65,6 +66,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
  * Display the page number and a page rendering.
@@ -225,6 +227,30 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             ViewMenu.isRenderingOptions(actionCommand))
         {
             startRendering();
+        }
+        else if (ViewMenu.isExtractText(actionEvent))
+        {
+            startExtracting();
+        }
+    }
+
+    private void startExtracting()
+    {
+        TextDialog textDialog = TextDialog.instance();
+        textDialog.setSize(800, 400);
+        textDialog.setVisible(true);
+        textDialog.setLocation(getPanel().getLocationOnScreen().x + getPanel().getWidth() / 2,
+                               getPanel().getLocationOnScreen().y + getPanel().getHeight() / 2);
+        try
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setStartPage(pageIndex + 1);
+            stripper.setEndPage(pageIndex + 1);
+            textDialog.setText(stripper.getText(document));
+        }
+        catch (IOException ex)
+        {
+            throw new RuntimeException(ex);
         }
     }
 
