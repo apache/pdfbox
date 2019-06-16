@@ -22,12 +22,15 @@ import java.util.Calendar;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDCaretAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolygonAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolylineAppearanceHandler;
 
 /**
  * This class represents the additional fields of a Markup type Annotation. See section 12.5.6 of ISO32000-1:2008
@@ -417,6 +420,54 @@ public class PDAnnotationMarkup extends PDAnnotation
     }
 
     /**
+     * This will set the difference between the annotations "outer" rectangle defined by
+     * /Rect and boundaries of the underlying.
+     * 
+     * <p>This will set an equal difference for all sides</p>
+     * 
+     * @param difference from the annotations /Rect entry
+     */
+    public void setRectDifferences(float difference) {
+        setRectDifferences(difference, difference, difference, difference);
+    }
+    
+    /**
+     * This will set the difference between the annotations "outer" rectangle defined by
+     * /Rect and the border.
+     * 
+     * @param differenceLeft left difference from the annotations /Rect entry
+     * @param differenceTop top difference from the annotations /Rect entry
+     * @param differenceRight right difference from  the annotations /Rect entry
+     * @param differenceBottom bottom difference from the annotations /Rect entry
+     * 
+     */
+    public void setRectDifferences(float differenceLeft, float differenceTop, float differenceRight, float differenceBottom)
+    {
+        COSArray margins = new COSArray();
+        margins.add(new COSFloat(differenceLeft));
+        margins.add(new COSFloat(differenceTop));
+        margins.add(new COSFloat(differenceRight));
+        margins.add(new COSFloat(differenceBottom));
+        getCOSObject().setItem(COSName.RD, margins);    
+    }
+    
+    /**
+     * This will get the margin between the annotations "outer" rectangle defined by
+     * /Rect and the boundaries of the underlying caret.
+     * 
+     * @return the differences. If the entry hasn't been set am empty array is returned.
+     */
+    public float[] getRectDifferences()
+    {
+        COSBase margin = getCOSObject().getItem(COSName.RD);
+        if (margin instanceof COSArray)
+        {
+            return ((COSArray) margin).toFloatArray();
+        }
+        return new float[]{};
+    }
+
+    /**
      * This will set the line ending style for the start point, see the LE_ constants for the possible values.
      *
      * @param style The new style.
@@ -572,14 +623,22 @@ public class PDAnnotationMarkup extends PDAnnotation
     {
         if (customAppearanceHandler == null)
         {
+            PDAppearanceHandler appearanceHandler = null;
+            if (SUB_TYPE_CARET.equals(getSubtype()))
+            {
+                appearanceHandler = new PDCaretAppearanceHandler(this);
+            }
             if (SUB_TYPE_POLYGON.equals(getSubtype()))
             {
-                PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this);
-                appearanceHandler.generateAppearanceStreams();
+                appearanceHandler = new PDPolygonAppearanceHandler(this);
             }
             else if (SUB_TYPE_POLYLINE.equals(getSubtype()))
             {
-                PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this);
+                appearanceHandler = new PDPolylineAppearanceHandler(this);
+            }
+
+            if (appearanceHandler != null)
+            {
                 appearanceHandler.generateAppearanceStreams();
             }
         }
