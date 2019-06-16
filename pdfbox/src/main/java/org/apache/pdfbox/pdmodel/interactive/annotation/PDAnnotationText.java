@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDTextAppearanceHandler;
 
 /**
  * This is the class that represents a text annotation.
@@ -26,6 +28,7 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDAnnotationText extends PDAnnotationMarkup
 {
+    private PDAppearanceHandler customAppearanceHandler;
 
     /*
      * The various values of the Text as defined in the PDF 1.7 reference Table 172
@@ -65,6 +68,51 @@ public class PDAnnotationText extends PDAnnotationMarkup
      * Constant for the name of a text annotation.
      */
     public static final String NAME_INSERT = "Insert";
+
+    /**
+     * Constant for the name of a circle annotation.
+     */
+    public static final String NAME_CIRCLE = "Circle";
+
+    /**
+     * Constant for the name of a cross annotation.
+     */
+    public static final String NAME_CROSS = "Cross";
+    
+    /**
+     * Constant for the name of a star annotation.
+     */
+    public static final String NAME_STAR = "Star";
+
+    /**
+     * Constant for the name of a check annotation.
+     */
+    public static final String NAME_CHECK = "Check";
+
+    /**
+     * Constant for the name of a right arrow annotation.
+     */
+    public static final String NAME_RIGHT_ARROW = "RightArrow";
+
+    /**
+     * Constant for the name of a right pointer annotation.
+     */
+    public static final String NAME_RIGHT_POINTER = "RightPointer";
+
+    /**
+     * Constant for the name of a crosshairs annotation.
+     */
+    public static final String NAME_UP_ARROW = "UpArrow";        
+
+    /**
+     * Constant for the name of a crosshairs annotation.
+     */
+    public static final String NAME_UP_LEFT_ARROW = "UpLeftArrow";        
+
+    /**
+     * Constant for the name of a crosshairs annotation.
+     */
+    public static final String NAME_CROSS_HAIRS = "CrossHairs";        
 
     /**
      * The type of annotation.
@@ -169,6 +217,30 @@ public class PDAnnotationText extends PDAnnotationMarkup
     public void setStateModel(String stateModel)
     {
         this.getCOSObject().setString(COSName.STATE_MODEL, stateModel);
+    }
+
+    /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param appearanceHandler
+     */
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    {
+        customAppearanceHandler = appearanceHandler;
+    }
+
+    @Override
+    public void constructAppearances()
+    {
+        if (customAppearanceHandler == null)
+        {
+            PDTextAppearanceHandler appearanceHandler = new PDTextAppearanceHandler(this);
+            appearanceHandler.generateAppearanceStreams();
+        }
+        else
+        {
+            customAppearanceHandler.generateAppearanceStreams();
+        }
     }
 
 }
