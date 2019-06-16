@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDHighlightAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDSquigglyAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDUnderlineAppearanceHandler;
 
 /**
@@ -147,6 +148,10 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
             if (SUB_TYPE_HIGHLIGHT.equals(getSubtype()))
             {
                 appearanceHandler = new PDHighlightAppearanceHandler(this);
+            }
+            else if  (SUB_TYPE_SQUIGGLY.equals(getSubtype()))
+            {
+                appearanceHandler = new PDSquigglyAppearanceHandler(this);
             }
             else if  (SUB_TYPE_UNDERLINE.equals(getSubtype()))
             {
