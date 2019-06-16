@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDCaretAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFreeTextAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDInkAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolygonAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolylineAppearanceHandler;
 
@@ -462,6 +463,60 @@ public class PDAnnotationMarkup extends PDAnnotation
     }
 
     /**
+     * Sets the paths that make this annotation.
+     *
+     * @param inkList An array of arrays, each representing a stroked path. Each array shall be a
+     * series of alternating horizontal and vertical coordinates. If the parameter is null the entry
+     * will be removed.
+     */
+    public void setInkList(float[][] inkList)
+    {
+        if (inkList == null)
+        {
+            getCOSObject().removeItem(COSName.INKLIST);
+            return;
+        }
+        COSArray array = new COSArray();
+        for (float[] path : inkList)
+        {
+            COSArray innerArray = new COSArray();
+            innerArray.setFloatArray(path);
+            array.add(innerArray);
+        }
+        getCOSObject().setItem(COSName.INKLIST, array);
+    }
+
+    /**
+     * Get one or more disjoint paths that make this annotation.
+     *
+     * @return An array of arrays, each representing a stroked path. Each array shall be a series of
+     * alternating horizontal and vertical coordinates.
+     */
+    public float[][] getInkList()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.INKLIST);
+        if (base instanceof COSArray)
+        {
+            COSArray array = (COSArray) base;
+            float[][] inkList = new float[array.size()][];
+            for (int i = 0; i < array.size(); ++i)
+            {
+                COSBase base2 = array.getObject(i);
+                if (base2 instanceof COSArray)
+                {
+                    inkList[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                }
+                else
+                {
+                    inkList[i] = new float[0];
+                }
+            }
+            return inkList;
+        }
+        return new float[0][0];
+    }
+
+    /**
      * Get the default appearance.
      * 
      * @return a string describing the default appearance.
@@ -808,6 +863,10 @@ public class PDAnnotationMarkup extends PDAnnotation
             else if (SUB_TYPE_FREETEXT.equals(getSubtype()))
             {
                 appearanceHandler = new PDFreeTextAppearanceHandler(this);
+            }
+            else if (SUB_TYPE_INK.equals(getSubtype()))
+            {
+                appearanceHandler = new PDInkAppearanceHandler(this);
             }
             else if (SUB_TYPE_POLYGON.equals(getSubtype()))
             {
