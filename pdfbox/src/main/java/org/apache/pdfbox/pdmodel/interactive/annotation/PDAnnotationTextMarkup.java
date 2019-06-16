@@ -153,6 +153,10 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
             {
                 appearanceHandler = new PDSquigglyAppearanceHandler(this);
             }
+            else if  (SUB_TYPE_STRIKEOUT.equals(getSubtype()))
+            {
+                appearanceHandler = new PDStrikeoutAppearanceHandler(this);
+            }
             else if  (SUB_TYPE_UNDERLINE.equals(getSubtype()))
             {
                 appearanceHandler = new PDUnderlineAppearanceHandler(this);
