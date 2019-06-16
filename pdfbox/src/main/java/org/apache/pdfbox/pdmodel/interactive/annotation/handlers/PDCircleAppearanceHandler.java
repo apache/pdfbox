@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
@@ -120,6 +121,9 @@ public class PDCircleAppearanceHandler extends PDAbstractAppearanceHandler
         catch (IOException e)
         {
             LOG.error(e);
+        }
+        finally{
+            IOUtils.closeQuietly(contentStream);
         }
     }
 
