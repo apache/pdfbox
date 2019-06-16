@@ -100,6 +100,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
@@ -1338,6 +1339,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (isHiddenOCG(annotation.getOptionalContent()))
         {
             return;
+        }
+       
+        PDAppearanceDictionary appearance = annotation.getAppearance();
+        if (appearance == null || appearance.getNormalAppearance() == null)
+        {
+            // TODO: Improve memory consumption by passing a ScratchFile
+            annotation.constructAppearances();
         }
 
         super.showAnnotation(annotation);

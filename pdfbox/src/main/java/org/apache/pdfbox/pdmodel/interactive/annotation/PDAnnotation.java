@@ -774,4 +774,14 @@ public abstract class PDAnnotation implements COSObjectable
         return null;
     }
 
+    /**
+     * Create the appearance entry for this annotation. Not having it may prevent display in some
+     * viewers. This method is for overriding in subclasses, the default implementation does
+     * nothing.
+     * 
+     */
+    public void constructAppearances()
+    {
+    }
+    
 }
