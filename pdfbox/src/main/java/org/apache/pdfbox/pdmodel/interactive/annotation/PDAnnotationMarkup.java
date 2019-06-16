@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFreeTextAppea
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDInkAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolygonAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolylineAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDSoundAppearanceHandler;
 
 /**
  * This class represents the additional fields of a Markup type Annotation. See section 12.5.6 of ISO32000-1:2008
@@ -875,6 +876,10 @@ public class PDAnnotationMarkup extends PDAnnotation
             else if (SUB_TYPE_POLYLINE.equals(getSubtype()))
             {
                 appearanceHandler = new PDPolylineAppearanceHandler(this);
+            }
+            else if (SUB_TYPE_SOUND.equals(getSubtype()))
+            {
+                appearanceHandler = new PDSoundAppearanceHandler(this);
             }
 
             if (appearanceHandler != null)
