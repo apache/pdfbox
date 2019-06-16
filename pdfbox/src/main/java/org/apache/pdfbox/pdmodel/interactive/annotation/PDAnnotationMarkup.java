@@ -26,9 +26,11 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDCaretAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDFreeTextAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolygonAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolylineAppearanceHandler;
 
@@ -67,6 +69,25 @@ public class PDAnnotationMarkup extends PDAnnotation
      * Constant for an Sound type of annotation.
      */
     public static final String SUB_TYPE_SOUND = "Sound";
+
+    /*
+     * The various values of the free text annotation as defined in the PDF 1.7 reference Table 170
+     */
+    
+    /**
+     * A plain free-text annotation, also known as a text box comment.
+     */
+    public static final String IT_FREE_TEXT = "FreeText";
+
+    /**
+     * A callout, associated with an area on the page through the callout line specified.
+     */
+    public static final String IT_FREE_TEXT_CALLOUT = "FreeTextCallout";
+
+    /**
+     * The annotation is intended to function as a click-to-type or typewriter object.
+     */
+    public static final String IT_FREE_TEXT_TYPE_WRITER = "FreeTextTypeWriter";
 
     /*
      * The various values of the reply type as defined in the PDF 1.7 reference Table 170
@@ -365,6 +386,27 @@ public class PDAnnotationMarkup extends PDAnnotation
         return null;
     }
 
+    /**
+     * This will set the line ending style.
+     *
+     * @param style The new style.
+     */
+    public final void setLineEndingStyle(String style)
+    {
+        getCOSObject().setName(COSName.LE, style);
+    }
+
+    /**
+     * This will retrieve the line ending style.
+     *
+     * @return The line ending style, possible values shown in the LE_ constants section, LE_NONE if
+     * missing, never null.
+     */
+    public String getLineEndingStyle()
+    {
+        return getCOSObject().getNameAsString(COSName.LE, PDAnnotationLine.LE_NONE);
+    }
+
     // PDF 32000 specification has "the interior color with which to fill the annotation’s line endings"
     // but it is the inside of the polygon.
     
@@ -420,6 +462,106 @@ public class PDAnnotationMarkup extends PDAnnotation
     }
 
     /**
+     * Get the default appearance.
+     * 
+     * @return a string describing the default appearance.
+     */
+    public String getDefaultAppearance()
+    {
+        return getCOSObject().getString(COSName.DA);
+    }
+
+    /**
+     * Set the default appearance.
+     *
+     * @param daValue a string describing the default appearance.
+     */
+    public void setDefaultAppearance(String daValue)
+    {
+        getCOSObject().setString(COSName.DA, daValue);
+    }
+
+    /**
+     * Get the default style string.
+     *
+     * The default style string defines the default style for rich text fields.
+     *
+     * @return the DS element of the dictionary object
+     */
+    public String getDefaultStyleString()
+    {
+        return getCOSObject().getString(COSName.DS);
+    }
+
+    /**
+     * Set the default style string.
+     *
+     * Providing null as the value will remove the default style string.
+     *
+     * @param defaultStyleString a string describing the default style.
+     */
+    public void setDefaultStyleString(String defaultStyleString)
+    {
+        getCOSObject().setString(COSName.DS, defaultStyleString);
+    }
+
+    /**
+     * This will get the 'quadding' or justification of the text to be displayed.
+     * <br>
+     * 0 - Left (default)<br>
+     * 1 - Centered<br>
+     * 2 - Right<br>
+     * Please see the QUADDING_CONSTANTS in {@link PDVariableText }.
+     *
+     * @return The justification of the text strings.
+     */
+    public int getQ()
+    {
+        return getCOSObject().getInt(COSName.Q, 0);
+    }
+
+    /**
+     * This will set the quadding/justification of the text. Please see the QUADDING_CONSTANTS
+     * in {@link PDVariableText }.
+     *
+     * @param q The new text justification.
+     */
+    public void setQ(int q)
+    {
+        getCOSObject().setInt(COSName.Q, q);
+    }
+
+    /**
+     * This will set the rectangle difference rectangle. Giving the difference between the
+     * annotations rectangle and where the drawing occurs. (To take account of any effects applied
+     * through the BE entry for example)
+     *
+     * @param rd the rectangle difference
+     *
+     */
+    public void setRectDifference(PDRectangle rd)
+    {
+        getCOSObject().setItem(COSName.RD, rd);
+    }
+
+    /**
+     * This will get the rectangle difference rectangle. Giving the difference between the
+     * annotations rectangle and where the drawing occurs. (To take account of any effects applied
+     * through the BE entry for example)
+     *
+     * @return the rectangle difference
+     */
+    public PDRectangle getRectDifference()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.RD);
+        if (base instanceof COSArray)
+        {
+            return new PDRectangle((COSArray) base);
+        }
+        return null;
+    }
+
+    /**
      * This will set the difference between the annotations "outer" rectangle defined by
      * /Rect and boundaries of the underlying.
      * 
@@ -465,6 +607,41 @@ public class PDAnnotationMarkup extends PDAnnotation
             return ((COSArray) margin).toFloatArray();
         }
         return new float[]{};
+    }
+
+    /**
+     * This will set the coordinates of the callout line. (PDF 1.6 and higher) Only relevant if the
+     * intent is FreeTextCallout.
+     *
+     * @param callout An array of four or six numbers specifying a callout line attached to the free
+     * text annotation. Six numbers [ x1 y1 x2 y2 x3 y3 ] represent the starting, knee point, and
+     * ending coordinates of the line in default user space, four numbers [ x1 y1 x2 y2 ] represent
+     * the starting and ending coordinates of the line.
+     */
+    public final void setCallout(float[] callout)
+    {
+        COSArray newCallout = new COSArray();
+        newCallout.setFloatArray(callout);
+        getCOSObject().setItem(COSName.CL, newCallout);
+    }
+
+    /**
+     * This will get the coordinates of the callout line. (PDF 1.6 and higher) Only relevant if the
+     * intent is FreeTextCallout.
+     *
+     * @return An array of four or six numbers specifying a callout line attached to the free text
+     * annotation. Six numbers [ x1 y1 x2 y2 x3 y3 ] represent the starting, knee point, and ending
+     * coordinates of the line in default user space, four numbers [ x1 y1 x2 y2 ] represent the
+     * starting and ending coordinates of the line.
+     */
+    public float[] getCallout()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.CL);
+        if (base instanceof COSArray)
+        {
+            return ((COSArray) base).toFloatArray();
+        }
+        return null;
     }
 
     /**
@@ -628,7 +805,11 @@ public class PDAnnotationMarkup extends PDAnnotation
             {
                 appearanceHandler = new PDCaretAppearanceHandler(this);
             }
-            if (SUB_TYPE_POLYGON.equals(getSubtype()))
+            else if (SUB_TYPE_FREETEXT.equals(getSubtype()))
+            {
+                appearanceHandler = new PDFreeTextAppearanceHandler(this);
+            }
+            else if (SUB_TYPE_POLYGON.equals(getSubtype()))
             {
                 appearanceHandler = new PDPolygonAppearanceHandler(this);
             }
