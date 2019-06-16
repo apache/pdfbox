@@ -18,11 +18,16 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.io.IOException;
 import java.util.Calendar;
+
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
+import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDPolygonAppearanceHandler;
 
 /**
  * This class represents the additional fields of a Markup type Annotation. See section 12.5.6 of ISO32000-1:2008
@@ -32,6 +37,9 @@ import org.apache.pdfbox.cos.COSString;
  */
 public class PDAnnotationMarkup extends PDAnnotation
 {
+
+    private PDAppearanceHandler customAppearanceHandler;
+    
     /**
      * Constant for a FreeText type of annotation.
      */
@@ -353,5 +361,233 @@ public class PDAnnotationMarkup extends PDAnnotation
         }
         return null;
     }
+
+    // PDF 32000 specification has "the interior color with which to fill the annotation’s line endings"
+    // but it is the inside of the polygon.
+    
+    /**
+     * This will set interior color.
+     *
+     * @param ic color.
+     */
+    public void setInteriorColor(PDColor ic)
+    {
+        getCOSObject().setItem(COSName.IC, ic.toCOSArray());
+    }
+
+    /**
+     * This will retrieve the interior color.
+     *
+     * @return object representing the color.
+     */
+    public PDColor getInteriorColor()
+    {
+        return getColor(COSName.IC);
+    }
+
+    /**
+     * This will set the border effect dictionary, specifying effects to be applied when drawing the
+     * line. This is supported by PDF 1.5 and higher.
+     *
+     * @param be The border effect dictionary to set.
+     *
+     */
+    public void setBorderEffect(PDBorderEffectDictionary be)
+    {
+        getCOSObject().setItem(COSName.BE, be);
+    }
+
+    /**
+     * This will retrieve the border effect dictionary, specifying effects to be applied used in
+     * drawing the line.
+     *
+     * @return The border effect dictionary
+     */
+    public PDBorderEffectDictionary getBorderEffect()
+    {
+        COSDictionary be = (COSDictionary) getCOSObject().getDictionaryObject(COSName.BE);
+        if (be != null)
+        {
+            return new PDBorderEffectDictionary(be);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    /**
+     * This will set the line ending style for the start point, see the LE_ constants for the possible values.
+     *
+     * @param style The new style.
+     */
+    public void setStartPointEndingStyle(String style)
+    {
+        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        COSArray array;
+        if (!(base instanceof COSArray) || ((COSArray) base).size() == 0)
+        {
+            array = new COSArray();
+            array.add(COSName.getPDFName(actualStyle));
+            array.add(COSName.getPDFName(PDAnnotationLine.LE_NONE));
+            getCOSObject().setItem(COSName.LE, array);
+        }
+        else
+        {
+            array = (COSArray) base;
+            array.setName(0, actualStyle);
+        }
+    }
+
+    /**
+     * This will retrieve the line ending style for the start point, possible values shown in the LE_ constants section.
+     *
+     * @return The ending style for the start point, LE_NONE if missing, never null.
+     */
+    public String getStartPointEndingStyle()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        if (base instanceof COSArray && ((COSArray) base).size() >= 2)
+        {
+            return ((COSArray) base).getName(0, PDAnnotationLine.LE_NONE);
+        }
+        return PDAnnotationLine.LE_NONE;
+    }
+
+    /**
+     * This will set the line ending style for the end point, see the LE_ constants for the possible values.
+     *
+     * @param style The new style.
+     */
+    public void setEndPointEndingStyle(String style)
+    {
+        String actualStyle = style == null ? PDAnnotationLine.LE_NONE : style;
+        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        COSArray array;
+        if (!(base instanceof COSArray) || ((COSArray) base).size() < 2)
+        {
+            array = new COSArray();
+            array.add(COSName.getPDFName(PDAnnotationLine.LE_NONE));
+            array.add(COSName.getPDFName(actualStyle));
+            getCOSObject().setItem(COSName.LE, array);
+        }
+        else
+        {
+            array = (COSArray) base;
+            array.setName(1, actualStyle);
+        }
+    }
+
+    /**
+     * This will retrieve the line ending style for the end point, possible values shown in the LE_ constants section.
+     *
+     * @return The ending style for the end point, LE_NONE if missing, never null.
+     */
+    public String getEndPointEndingStyle()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.LE);
+        if (base instanceof COSArray && ((COSArray) base).size() >= 2)
+        {
+            return ((COSArray) base).getName(1, PDAnnotationLine.LE_NONE);
+        }
+        return PDAnnotationLine.LE_NONE;
+    }
+
+
+    /**
+     * This will retrieve the numbers that shall represent the alternating horizontal and vertical
+     * coordinates.
+     *
+     * @return An array of floats representing the alternating horizontal and vertical coordinates.
+     */
+    public float[] getVertices()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.VERTICES);
+        if (base instanceof COSArray)
+        {
+            return ((COSArray) base).toFloatArray();
+        }
+        return null;
+    }
+
+    /**
+     * This will set the numbers that shall represent the alternating horizontal and vertical
+     * coordinates.
+     *
+     * @param points an array with the numbers that shall represent the alternating horizontal and
+     * vertical coordinates.
+     */
+    public void setVertices(float[] points)
+    {
+        COSArray ar = new COSArray();
+        ar.setFloatArray(points);
+        getCOSObject().setItem(COSName.VERTICES, ar);
+    }
+
+
+    /**
+     * PDF 2.0: This will retrieve the arrays that shall represent the alternating horizontal
+     * and vertical coordinates for path building.
+     *
+     * @return An array of float arrays, each supplying the operands for a path building operator
+     * (m, l or c). The first array should have 2 elements, the others should have 2 or 6 elements.
+     */
+    public float[][] getPath()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.PATH);
+        if (base instanceof COSArray)
+        {
+            COSArray array = (COSArray) base;
+            float[][] pathArray = new float[array.size()][];
+            for (int i = 0; i < array.size(); ++i)
+            {
+                COSBase base2 = array.getObject(i);
+                if (base2 instanceof COSArray)
+                {
+                    pathArray[i] = ((COSArray) array.getObject(i)).toFloatArray();
+                }
+                else
+                {
+                    pathArray[i] = new float[0];
+                }
+            }
+            return pathArray;
+        }
+        return null;
+    }
+
+    /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param appearanceHandler
+     */
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    {
+        customAppearanceHandler = appearanceHandler;
+    }
+
+    @Override
+    public void constructAppearances()
+    {
+        if (customAppearanceHandler == null)
+        {
+            if (SUB_TYPE_POLYGON.equals(getSubtype()))
+            {
+                PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this);
+                appearanceHandler.generateAppearanceStreams();
+            }
+            else if (SUB_TYPE_POLYLINE.equals(getSubtype()))
+            {
+                PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this);
+                appearanceHandler.generateAppearanceStreams();
+            }
+        }
+        else
+        {
+            customAppearanceHandler.generateAppearanceStreams();
+        }
+    }
+
 
 }
