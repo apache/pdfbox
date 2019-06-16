@@ -25,6 +25,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDLinkAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 
 /**
@@ -35,7 +37,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDe
  */
 public class PDAnnotationLink extends PDAnnotation
 {
-
+    private PDAppearanceHandler customAppearanceHandler;
+    
     /**
      * Constant values of the Text as defined in the PDF 1.6 reference Table 8.19.
      */
@@ -225,5 +228,29 @@ public class PDAnnotationLink extends PDAnnotation
         }
         // Should never happen as this is a required item
         return null; 
+    }
+
+        /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param appearanceHandler
+     */
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    {
+        customAppearanceHandler = appearanceHandler;
+    }
+
+    @Override
+    public void constructAppearances()
+    {
+        if (customAppearanceHandler == null)
+        {
+            PDLinkAppearanceHandler appearanceHandler = new PDLinkAppearanceHandler(this);
+            appearanceHandler.generateAppearanceStreams();
+        }
+        else
+        {
+            customAppearanceHandler.generateAppearanceStreams();
+        }
     }
 }
