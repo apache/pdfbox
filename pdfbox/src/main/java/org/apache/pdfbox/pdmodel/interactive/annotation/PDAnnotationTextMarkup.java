@@ -20,6 +20,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDHighlightAppearanceHandler;
 
 /**
  * This is the abstract class that represents a text markup annotation Introduced in PDF 1.3 specification, except
@@ -29,7 +31,8 @@ import org.apache.pdfbox.cos.COSName;
  */
 public class PDAnnotationTextMarkup extends PDAnnotationMarkup
 {
-
+    private PDAppearanceHandler customAppearanceHandler;
+    
     /**
      * The types of annotation.
      */
@@ -124,4 +127,35 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
         return getCOSObject().getNameAsString(COSName.SUBTYPE);
     }
 
+        /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param appearanceHandler
+     */
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    {
+        customAppearanceHandler = appearanceHandler;
+    }
+
+    @Override
+    public void constructAppearances()
+    {
+        if (customAppearanceHandler == null)
+        {
+            PDAppearanceHandler appearanceHandler = null;
+            if (SUB_TYPE_HIGHLIGHT.equals(getSubtype()))
+            {
+                appearanceHandler = new PDHighlightAppearanceHandler(this);
+            }
+
+            if (appearanceHandler != null)
+            {
+                appearanceHandler.generateAppearanceStreams();
+            }
+        }
+        else
+        {
+            customAppearanceHandler.generateAppearanceStreams();
+        }
+    }
 }
