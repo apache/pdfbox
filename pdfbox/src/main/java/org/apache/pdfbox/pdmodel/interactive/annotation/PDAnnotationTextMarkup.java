@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDHighlightAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDUnderlineAppearanceHandler;
 
 /**
  * This is the abstract class that represents a text markup annotation Introduced in PDF 1.3 specification, except
@@ -146,6 +147,10 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
             if (SUB_TYPE_HIGHLIGHT.equals(getSubtype()))
             {
                 appearanceHandler = new PDHighlightAppearanceHandler(this);
+            }
+            else if  (SUB_TYPE_UNDERLINE.equals(getSubtype()))
+            {
+                appearanceHandler = new PDUnderlineAppearanceHandler(this);
             }
 
             if (appearanceHandler != null)
