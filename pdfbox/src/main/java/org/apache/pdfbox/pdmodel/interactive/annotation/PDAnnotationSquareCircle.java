@@ -23,6 +23,9 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDCircleAppearanceHandler;
+import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDSquareAppearanceHandler;
 
 /**
  * This is the class that represents a rectangular or eliptical annotation Introduced in PDF 1.3 specification .
@@ -40,6 +43,8 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * Constant for an elliptical type of annotation.
      */
     public static final String SUB_TYPE_CIRCLE = "Circle";
+
+    private PDAppearanceHandler customAppearanceHandler;
 
     /**
      * Creates a Circle or Square annotation of the specified sub type.
@@ -240,6 +245,38 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
             return ((COSArray) margin).toFloatArray();
         }
         return new float[]{};
+    }
+
+        /**
+     * Set a custom appearance handler for generating the annotations appearance streams.
+     * 
+     * @param appearanceHandler
+     */
+    public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
+    {
+        customAppearanceHandler = appearanceHandler;
+    }
+
+    @Override
+    public void constructAppearances()
+    {
+        if (customAppearanceHandler == null)
+        {
+            if (SUB_TYPE_CIRCLE.equals(getSubtype()))
+            {
+                PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this);
+                appearanceHandler.generateAppearanceStreams();
+            }
+            else if (SUB_TYPE_SQUARE.equals(getSubtype()))
+            {
+                PDSquareAppearanceHandler appearanceHandler = new PDSquareAppearanceHandler(this);
+                appearanceHandler.generateAppearanceStreams();
+            }
+        }
+        else
+        {
+            customAppearanceHandler.generateAppearanceStreams();
+        }
     }
 
 }
