@@ -18,9 +18,6 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.pdfparser.BaseParser;
-import org.apache.pdfbox.pdfparser.COSParser;
-
 /**
  * This class represents a PDF object.
  *
@@ -33,7 +30,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private long objectNumber;
     private int generationNumber;
     private boolean needToBeUpdated;
-    private BaseParser parser;
+    private ICOSParser parser;
 
     /**
      * Constructor.
@@ -41,13 +38,25 @@ public class COSObject extends COSBase implements COSUpdateInfo
      * @param object The object that this encapsulates.
      *
      */
-    public COSObject(COSBase object, BaseParser parser)
+    public COSObject(COSBase object)
+    {
+        setObject(object);
+        parser = null;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param object The object that this encapsulates.
+     * @param parser The parser to be used to load the object on demand
+     *
+     */
+    public COSObject(COSBase object, ICOSParser parser)
     // public COSObject(COSBase object)
     {
         setObject( object );
         this.parser = parser;
     }
-
     /**
      * This will get the dictionary object in this object that has the name key and
      * if it is a pdfobjref then it will dereference that and return it.
@@ -96,9 +105,9 @@ public class COSObject extends COSBase implements COSUpdateInfo
     {
         if (baseObject == null || baseObject instanceof COSNull)
         {
-            if (parser instanceof COSParser)
+            if (parser != null)
             {
-                boolean returnValue = ((COSParser) parser).dereferenceCOSObject(this);
+                boolean returnValue = parser.dereferenceCOSObject(this);
                 if (!returnValue)
                 {
                     // remove parser to avoid endless recursions

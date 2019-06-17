@@ -50,6 +50,7 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.ICOSParser;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
@@ -70,7 +71,7 @@ import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
  * This class is a much enhanced version of <code>QuickParser</code> presented in <a
  * href="https://issues.apache.org/jira/browse/PDFBOX-1104">PDFBOX-1104</a> by Jeremy Villalobos.
  */
-public class COSParser extends BaseParser
+public class COSParser extends BaseParser implements ICOSParser
 {
     private static final String PDF_HEADER = "%PDF-";
     private static final String FDF_HEADER = "%FDF-";

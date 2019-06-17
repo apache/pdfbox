@@ -191,7 +191,7 @@ public class PDFStreamParser extends BaseParser
                 String line = readString();
                 if( line.equals( "R" ) )
                 {
-                retval = new COSObject(null, this);
+                retval = new COSObject(null);
                 }
                 else
                 {

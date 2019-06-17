@@ -87,7 +87,7 @@ public class PDFObjectStreamParser extends BaseParser
             int objectCounter = 0;
             while( (cosObject = parseDirObject()) != null )
             {
-                object = new COSObject(cosObject, null);
+                object = new COSObject(cosObject);
                 object.setGenerationNumber(0);
                 if (objectCounter >= objectNumbers.size())
                 {

@@ -924,7 +924,7 @@ public abstract class BaseParser
         }
         case 'R':
             seqSource.read();
-            retval = new COSObject(null, this);
+            retval = new COSObject(null);
             break;
         case (char)-1:
             return null;
