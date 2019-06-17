@@ -1348,7 +1348,21 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             annotation.constructAppearances();
         }
 
-        super.showAnnotation(annotation);
+        if (annotation.isNoRotate() && getCurrentPage().getRotation() != 0)
+        {
+            PDRectangle rect = annotation.getRectangle();
+            AffineTransform savedTransform = graphics.getTransform();
+            // "The upper-left corner of the annotation remains at the same point in
+            //  default user space; the annotation pivots around that point."
+            graphics.rotate(Math.toRadians(getCurrentPage().getRotation()),
+                    rect.getLowerLeftX(), rect.getUpperRightY());
+            super.showAnnotation(annotation);
+            graphics.setTransform(savedTransform);
+        }
+        else
+        {
+            super.showAnnotation(annotation);
+        }
 
         if (annotation.getAppearance() == null)
         {
