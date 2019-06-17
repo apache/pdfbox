@@ -15,14 +15,10 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 
 public class PDSoundAppearanceHandler extends PDAbstractAppearanceHandler
 {
-    private static final Log LOG = LogFactory.getLog(PDSoundAppearanceHandler.class);
-
     public PDSoundAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
