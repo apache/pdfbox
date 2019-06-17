@@ -300,6 +300,14 @@ public final class AddAnnotations
             polygon.setContents("Polygon annotation");
             annotations.add(polygon);
 
+            // Create the appearance streams.
+            // Adobe Reader will always display annotations without appearance streams nicely,
+            // but other applications may not.
+            for (PDAnnotation ann : annotations)
+            {
+                ann.constructAppearances();
+            }
+
             showPageNo(document, page1, "Page 1");
             showPageNo(document, page2, "Page 2");
             showPageNo(document, page3, "Page 3");
