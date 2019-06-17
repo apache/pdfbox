@@ -43,7 +43,7 @@ public class TestCOSUpdateInfo
 
         // COSObject
         COSUpdateInfo testCOSObject;
-        testCOSObject = new COSObject(null, null);
+        testCOSObject = new COSObject(null);
         testCOSObject.setNeedToBeUpdated(true);
         assertTrue(testCOSObject.isNeedToBeUpdated());
         testCOSObject.setNeedToBeUpdated(false);
