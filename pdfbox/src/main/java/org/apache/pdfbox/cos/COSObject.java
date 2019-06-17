@@ -40,8 +40,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSObject(COSBase object)
     {
-        setObject(object);
-        parser = null;
+        this(object, null);
     }
 
     /**
@@ -52,7 +51,6 @@ public class COSObject extends COSBase implements COSUpdateInfo
      *
      */
     public COSObject(COSBase object, ICOSParser parser)
-    // public COSObject(COSBase object)
     {
         setObject( object );
         this.parser = parser;
