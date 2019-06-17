@@ -224,7 +224,7 @@ public class CreateVisibleSignature implements SignatureInterface
    * [0] key store
    * [1] pin
    * [2] document that will be signed
-   * [3] image of visible signature
+   * [3] image of visible signature (must be JPEG)
    */
   public static void main(String[] args) throws KeyStoreException, NoSuchAlgorithmException, CertificateException,
       FileNotFoundException, IOException, COSVisitorException, SignatureException
