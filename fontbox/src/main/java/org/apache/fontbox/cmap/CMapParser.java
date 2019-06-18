@@ -359,8 +359,7 @@ public class CMapParser
             int start = CMap.toInt(startCode, startCode.length);
             int end = CMap.toInt(endCode, endCode.length);
             // end has to be bigger than start or equal
-            // the range can not represent more that 255 values
-            if (end < start || (end - start) > 255)
+            if (end < start)
             {
                 // PDFBOX-4550: likely corrupt stream
                 break;
@@ -378,6 +377,12 @@ public class CMapParser
             // PDFBOX-3807: ignore null
             else if (nextToken instanceof byte[])
             {
+                // the range can not represent more that 255 values
+                if ((end - start) > 255)
+                {
+                    // PDFBOX-4550: likely corrupt stream
+                    break;
+                }
                 byte[] tokenBytes = (byte[]) nextToken;
                 // PDFBOX-3450: ignore <>
                 if (tokenBytes.length > 0)
