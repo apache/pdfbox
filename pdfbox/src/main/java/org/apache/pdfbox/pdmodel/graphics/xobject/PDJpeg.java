@@ -130,7 +130,8 @@ public class PDJpeg extends PDXObjectImage
             }
             else
             {
-                throw new IllegalStateException("");
+                throw new IllegalStateException("Image must have 1 or 3 color components, this one has " +
+                        image.getColorModel().getNumComponents());
             }
         }
         setHeight( image.getHeight() );
