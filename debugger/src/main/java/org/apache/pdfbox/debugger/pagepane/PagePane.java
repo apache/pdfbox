@@ -29,7 +29,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -152,14 +154,27 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             return;
         }
+        Set<COSDictionary> dictionarySet = new HashSet<COSDictionary>();
+        try
+        {
+            for (PDAnnotation annotation : page.getAnnotations())
+            {
+                dictionarySet.add(annotation.getCOSObject());
+            }
+        }
+        catch (IOException ex)
+        {
+            return;
+        }
         for (PDField field : acroForm.getFieldTree())
         {
-            String fullyQualifiedName = field.getFullyQualifiedName();
             for (PDAnnotationWidget widget : field.getWidgets())
             {
-                if (page.equals(widget.getPage()))
+                // check if the annotation widget is on this page
+                // (checking widget.getPage() also works, but it is sometimes null)
+                if (dictionarySet.contains(widget.getCOSObject()))
                 {
-                    rectMap.put(widget.getRectangle(), "Field name: " + fullyQualifiedName);
+                    rectMap.put(widget.getRectangle(), "Field name: " + field.getFullyQualifiedName());
                 }
             }
         }
