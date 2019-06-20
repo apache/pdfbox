@@ -114,7 +114,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
         catch (IOException ex)
         {
-            LOG.info(ex.getMessage(), ex);
+            LOG.error(ex.getMessage(), ex);
         }
     }
 
@@ -261,7 +261,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
         catch (IOException ex)
         {
-            throw new RuntimeException(ex);
+            LOG.error(ex.getMessage(), ex);
         }
     }
 
