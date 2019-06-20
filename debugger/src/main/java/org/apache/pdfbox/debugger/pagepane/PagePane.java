@@ -54,6 +54,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 import org.apache.pdfbox.debugger.ui.TextDialog;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -78,6 +80,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
  */
 public class PagePane implements ActionListener, AncestorListener, MouseMotionListener, MouseListener
 {
+    private static final Log LOG = LogFactory.getLog(PagePane.class);
     private final PDDocument document;
     private final JLabel statuslabel;
     private final PDPage page;
@@ -107,11 +110,11 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         try
         {
             collectFieldLocations();
-            collectLinkLocations();            
+            collectLinkLocations();
         }
         catch (IOException ex)
         {
-            // ignore
+            LOG.info(ex.getMessage(), ex);
         }
     }
 
@@ -157,7 +160,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
     }
 
-    private void collectFieldLocations()
+    private void collectFieldLocations() throws IOException
     {
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
         if (acroForm == null)
@@ -165,16 +168,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             return;
         }
         Set<COSDictionary> dictionarySet = new HashSet<>();
-        try
+        for (PDAnnotation annotation : page.getAnnotations())
         {
-            for (PDAnnotation annotation : page.getAnnotations())
-            {
-                dictionarySet.add(annotation.getCOSObject());
-            }
-        }
-        catch (IOException ex)
-        {
-            return;
+            dictionarySet.add(annotation.getCOSObject());
         }
         for (PDField field : acroForm.getFieldTree())
         {
