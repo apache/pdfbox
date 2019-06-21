@@ -27,9 +27,9 @@ public class DebugLog implements Log
     private final String name;
     
     // hardcoded, but kept to aid with debugging custom builds
-    private final boolean INFO = true;
-    private final boolean TRACE = false;
-    private final boolean DEBUG = false;
+    private static final boolean INFO = true;
+    private static final boolean TRACE = false;
+    private static final boolean DEBUG = false;
 
     public DebugLog(String name)
     {
