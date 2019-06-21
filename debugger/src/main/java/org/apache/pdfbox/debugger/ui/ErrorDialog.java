@@ -50,7 +50,7 @@ import javax.swing.KeyStroke;
  * package</a>.
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial","squid:MaximumInheritanceDepth"})
 public class ErrorDialog extends JDialog
 {
     private static final List<String> FILTERS = Arrays.asList(
