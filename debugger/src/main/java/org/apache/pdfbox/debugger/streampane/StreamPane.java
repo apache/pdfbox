@@ -178,7 +178,7 @@ public class StreamPane implements ActionListener
     @Override
     public void actionPerformed(ActionEvent actionEvent)
     {
-        if (actionEvent.getActionCommand().equals("comboBoxChanged"))
+        if ("comboBoxChanged".equals(actionEvent.getActionCommand()))
         {
             JComboBox comboBox = (JComboBox) actionEvent.getSource();
             String currentFilter = (String) comboBox.getSelectedItem();
