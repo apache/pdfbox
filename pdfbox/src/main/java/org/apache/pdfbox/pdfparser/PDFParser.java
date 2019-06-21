@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
@@ -171,12 +170,11 @@ public class PDFParser extends COSParser
     {
         COSDictionary trailer = retrieveTrailer();
     
-        COSObject rootObj = trailer.getCOSObject(COSName.ROOT);
-        if (rootObj == null)
+        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        if (root == null)
         {
             throw new IOException("Missing root object specification in trailer.");
         }
-        COSDictionary root = (COSDictionary) rootObj.getObject();
         // in some pdfs the type value "Catalog" is missing in the root object
         if (isLenient() && !root.containsKey(COSName.TYPE))
         {
