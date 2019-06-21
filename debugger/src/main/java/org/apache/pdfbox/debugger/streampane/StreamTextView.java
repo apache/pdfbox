@@ -89,6 +89,7 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     @Override
     public void mouseDragged(MouseEvent mouseEvent)
     {
+        // do nothing
     }
 
     @Override
@@ -126,5 +127,6 @@ class StreamTextView implements MouseMotionListener, AncestorListener
     @Override
     public void ancestorMoved(AncestorEvent ancestorEvent)
     {
+        // do nothing
     }
 }
