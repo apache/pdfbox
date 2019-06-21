@@ -28,6 +28,7 @@ import javax.swing.JTextPane;
  * @author Tilman Hausherr
  * @author John Hewson
  */
+@SuppressWarnings({"serial","squid:MaximumInheritanceDepth"})
 public class TextDialog extends JDialog
 {
     private static TextDialog instance;
