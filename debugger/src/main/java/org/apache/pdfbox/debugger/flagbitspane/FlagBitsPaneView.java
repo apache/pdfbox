@@ -35,11 +35,11 @@ import javax.swing.JTable;
  */
 class FlagBitsPaneView
 {
-    final private JPanel panel;
-    final private String flagHeader;
-    final private String flagValue;
-    final private Object[][] tableData;
-    final private String[] columnNames;
+    private final JPanel panel;
+    private final String flagHeader;
+    private final String flagValue;
+    private final Object[][] tableData;
+    private final String[] columnNames;
 
     /**
      * Constructor
