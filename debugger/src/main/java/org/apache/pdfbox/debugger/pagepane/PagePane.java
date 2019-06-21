@@ -338,11 +338,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void ancestorMoved(AncestorEvent ancestorEvent)
     {
+        // do nothing
     }
 
     @Override
     public void mouseDragged(MouseEvent e)
     {
+        // do nothing
     }
 
     /**
@@ -360,7 +362,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         float zoomScale = zoomMenu.getPageZoomScale();
         float x = e.getX() / zoomScale * (float) defaultTransform.getScaleX();
         float y = e.getY() / zoomScale * (float) defaultTransform.getScaleY();
-        int x1, y1;
+        int x1;
+        int y1;
         switch ((RotationMenu.getRotationDegrees() + page.getRotation()) % 360)
         {
             case 90:
@@ -399,21 +402,25 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseClicked(MouseEvent e)
     {
+        // do nothing
     }
 
     @Override
     public void mousePressed(MouseEvent e)
     {
+        // do nothing
     }
 
     @Override
     public void mouseReleased(MouseEvent e)
     {
+        // do nothing
     }
 
     @Override
     public void mouseEntered(MouseEvent e)
     {
+        // do nothing
     }
 
     @Override
