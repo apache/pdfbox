@@ -170,15 +170,15 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
      */
     private int getIndexForPoint(Point point)
     {
-        if (point.x <= 20 || point.x >= (16 * HexView.CHAR_WIDTH)+20 )
+        if (point.x <= 20 || point.x >= (16 * HexView.CHAR_WIDTH) + 20)
         {
             return -1;
         }
         int y = point.y;
-        int lineNumber = (y+ (HexView.CHAR_HEIGHT -(y % HexView.CHAR_HEIGHT)))/ HexView.CHAR_HEIGHT;
+        int lineNumber = (y + (HexView.CHAR_HEIGHT - (y % HexView.CHAR_HEIGHT))) / HexView.CHAR_HEIGHT;
         int x = point.x - 20;
-        int elementNumber = (x / HexView.CHAR_WIDTH);
-        return  (lineNumber-1) * 16 + elementNumber;
+        int elementNumber = x / HexView.CHAR_WIDTH;
+        return (lineNumber - 1) * 16 + elementNumber;
     }
 
     /**
