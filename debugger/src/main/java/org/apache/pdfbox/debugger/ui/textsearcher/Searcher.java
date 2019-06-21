@@ -234,13 +234,13 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
     @Override
     public void componentResized(ComponentEvent componentEvent)
     {
-
+        // do nothing
     }
 
     @Override
     public void componentMoved(ComponentEvent componentEvent)
     {
-
+        // do nothing
     }
 
     @Override
