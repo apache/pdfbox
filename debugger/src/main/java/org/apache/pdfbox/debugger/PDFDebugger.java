@@ -128,6 +128,7 @@ import org.apache.pdfbox.printing.PDFPageable;
  * @author Ben Litchfield
  * @author Khyrul Bashar
  */
+@SuppressWarnings({"serial","squid:MaximumInheritanceDepth"})
 public class PDFDebugger extends JFrame
 {
     private static final Set<COSName> SPECIALCOLORSPACES =
