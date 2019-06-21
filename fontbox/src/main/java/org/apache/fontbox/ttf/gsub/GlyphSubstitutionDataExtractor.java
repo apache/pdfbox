@@ -152,7 +152,8 @@ public class GlyphSubstitutionDataExtractor
             }
             else
             {
-                LOG.warn("The type " + lookupSubTable + " is not yet supported, will be ignored");
+                // usually null, due to being skipped in GlyphSubstitutionTable.readLookupTable()
+                LOG.debug("The type " + lookupSubTable + " is not yet supported, will be ignored");
             }
         }
 
