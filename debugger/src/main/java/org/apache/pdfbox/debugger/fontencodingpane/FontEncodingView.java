@@ -114,7 +114,7 @@ class FontEncodingView
             while (keys.hasNext())
             {
                 int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
-                                    "headerFontSize", "" + headerPanel.getFont().getSize()));
+                                    "headerFontSize", Integer.toString(headerPanel.getFont().getSize())));
                 String key = keys.next();
                 JLabel encodingNameLabel = new JLabel(key + ": " + attributes.get(key));
                 encodingNameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
@@ -157,7 +157,7 @@ class FontEncodingView
                 {
                     JLabel label = new JLabel(SimpleFont.NO_GLYPH, SwingConstants.CENTER);
                     int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
-                                        "encodingFontSize", "" + label.getFont().getSize()));
+                                        "encodingFontSize", Integer.toString(label.getFont().getSize())));
                     label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                     label.setForeground(Color.GRAY);
                     return label;
@@ -204,7 +204,7 @@ class FontEncodingView
             {
                 JLabel label = new JLabel(o.toString(), SwingConstants.CENTER);
                 int fontSize = Integer.parseInt(PDFDebugger.configuration.getProperty(
-                        "encodingFontSize", "" + label.getFont().getSize()));
+                        "encodingFontSize", Integer.toString(label.getFont().getSize())));
                 label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
                 if (SimpleFont.NO_GLYPH.equals(o) || ".notdef".equals(o))
                 {
