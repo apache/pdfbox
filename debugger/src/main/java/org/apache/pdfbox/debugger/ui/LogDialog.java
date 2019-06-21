@@ -36,6 +36,7 @@ import javax.swing.text.StyledDocument;
  *
  * @author John Hewson
  */
+@SuppressWarnings({"serial","squid:MaximumInheritanceDepth"})
 public class LogDialog extends JDialog
 {
     private static LogDialog instance;
