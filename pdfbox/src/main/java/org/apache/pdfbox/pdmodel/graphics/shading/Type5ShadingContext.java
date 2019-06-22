@@ -99,7 +99,7 @@ class Type5ShadingContext extends GouraudShadingContext
                 break;
             }
         }
-        int sz = vlist.size(), rowNum = sz / numPerRow;
+        int rowNum = vlist.size() / numPerRow;
         Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
         if (rowNum < 2)
         {
