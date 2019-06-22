@@ -22,19 +22,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.commons.logging.Log;
@@ -580,199 +574,6 @@ public class COSParser extends BaseParser implements ICOSParser
         this.isLenient = lenient;
     }
 
-    /**
-     * Creates a unique object id using object number and object generation
-     * number. (requires object number &lt; 2^31))
-     */
-    private long getObjectId(final COSObject obj)
-    {
-        return obj.getObjectNumber() << 32 | obj.getGenerationNumber();
-    }
-
-    /**
-     * Adds all from newObjects to toBeParsedList if it is not an COSObject or
-     * we didn't add this COSObject already (checked via addedObjects).
-     */
-    private void addNewToList(final Queue<COSBase> toBeParsedList,
-            final Collection<COSBase> newObjects, final Set<Long> addedObjects)
-    {
-        for (COSBase newObject : newObjects)
-        {
-            addNewToList(toBeParsedList, newObject, addedObjects);
-        }
-    }
-
-    /**
-     * Adds newObject to toBeParsedList if it is not an COSObject or we didn't
-     * add this COSObject already (checked via addedObjects). Simple objects are
-     * not added because nothing is done with them when toBeParsedList is
-     * processed.
-     */
-    private void addNewToList(final Queue<COSBase> toBeParsedList, final COSBase newObject,
-            final Set<Long> addedObjects)
-    {
-        if (newObject instanceof COSObject)
-        {
-            final long objId = getObjectId((COSObject) newObject);
-            if (!addedObjects.add(objId))
-            {
-                return;
-            }
-            toBeParsedList.add(newObject);
-        }
-        else if (newObject instanceof COSDictionary || newObject instanceof COSArray)
-        {
-            toBeParsedList.add(newObject);
-        }
-    }
-
-    /**
-     * Will parse every object necessary to load a single page from the pdf document. We try our
-     * best to order objects according to offset in file before reading to minimize seek operations.
-     *
-     * @param dict the COSObject from the parent pages.
-     * @param excludeObjects dictionary object reference entries with these names will not be parsed
-     *
-     * @throws IOException if something went wrong
-     */
-    protected void parseDictObjects(COSDictionary dict, COSName... excludeObjects) throws IOException
-    {
-        // ---- create queue for objects waiting for further parsing
-        final Queue<COSBase> toBeParsedList = new LinkedList<>();
-        // offset ordered object map
-        final TreeMap<Long, List<COSObject>> objToBeParsed = new TreeMap<>();
-        // in case of compressed objects offset points to stmObj
-        final Set<Long> parsedObjects = new HashSet<>();
-        final Set<Long> addedObjects = new HashSet<>();
-
-        addExcludedToList(excludeObjects, dict, parsedObjects);
-        addNewToList(toBeParsedList, dict.getValues(), addedObjects);
-
-        // ---- go through objects to be parsed
-        while (!(toBeParsedList.isEmpty() && objToBeParsed.isEmpty()))
-        {
-            // -- first get all COSObject from other kind of objects and
-            // put them in objToBeParsed; afterwards toBeParsedList is empty
-            COSBase baseObj;
-            while ((baseObj = toBeParsedList.poll()) != null)
-            {
-                if (baseObj instanceof COSDictionary)
-                {
-                    addNewToList(toBeParsedList, ((COSDictionary) baseObj).getValues(), addedObjects);
-                }
-                else if (baseObj instanceof COSArray)
-                {
-                    for (COSBase cosBase : ((COSArray) baseObj))
-                    {
-                        addNewToList(toBeParsedList, cosBase, addedObjects);
-                    }
-                }
-                else if (baseObj instanceof COSObject)
-                {
-                    COSObject obj = (COSObject) baseObj;
-                    long objId = getObjectId(obj);
-                    COSObjectKey objKey = new COSObjectKey(obj.getObjectNumber(), obj.getGenerationNumber());
-
-                    if (!parsedObjects.contains(objId))
-                    {
-                        Long fileOffset = document.getXrefTable().get(objKey);
-                        if (fileOffset == null && isLenient)
-                        {
-                            Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
-                            fileOffset = bfCOSObjectKeyOffsets.get(objKey);
-                            if (fileOffset != null)
-                            {
-                                LOG.debug("Set missing " + fileOffset + " for object " + objKey);
-                                document.getXrefTable().put(objKey, fileOffset);
-                            }
-                        }
-
-                        // it is allowed that object references point to null, thus we have to test
-                        if (fileOffset != null && fileOffset != 0)
-                        {
-                            if (fileOffset > 0)
-                            {
-                                objToBeParsed.put(fileOffset, Collections.singletonList(obj));
-                            }
-                            else
-                            {
-                                // negative offset means we have a compressed
-                                // object within object stream;
-                                // get offset of object stream
-                                COSObjectKey key = new COSObjectKey((int) -fileOffset, 0);
-                                fileOffset = document.getXrefTable().get(key);
-                                if ((fileOffset == null) || (fileOffset <= 0))
-                                {
-                                    if (isLenient)
-                                    {
-                                        Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
-                                        fileOffset = bfCOSObjectKeyOffsets.get(key);
-                                        if (fileOffset != null)
-                                        {
-                                            LOG.debug("Set missing " + fileOffset + " for object "
-                                                    + key);
-                                            document.getXrefTable().put(key, fileOffset);
-                                        }
-                                        else
-                                        {
-                                            LOG.warn("Invalid object stream xref object reference for key '"
-                                                        + objKey + "': " + fileOffset);
-                                            continue;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        throw new IOException(
-                                                "Invalid object stream xref object reference for key '"
-                                                        + objKey + "': " + fileOffset);
-                                    }
-                                }
-
-                                List<COSObject> stmObjects = objToBeParsed.get(fileOffset);
-                                if (stmObjects == null)
-                                {
-                                    stmObjects = new ArrayList<>();
-                                    objToBeParsed.put(fileOffset, stmObjects);
-                                }
-                                // java does not have a test for immutable
-                                else if (!(stmObjects instanceof ArrayList))
-                                {
-                                    throw new IOException(obj + " cannot be assigned to offset " +
-                                            fileOffset + ", this belongs to " + stmObjects.get(0));
-                                }
-                                stmObjects.add(obj);
-                            }
-                        }
-                        else
-                        {
-                            // NULL object
-                            COSObject pdfObject = document.getObjectFromPool(objKey);
-                            pdfObject.setObject(COSNull.NULL);
-                        }
-                    }
-                }
-            }
-
-            // ---- read first COSObject with smallest offset
-            // resulting object will be added to toBeParsedList
-            if (objToBeParsed.isEmpty())
-            {
-                break;
-            }
-
-            for (COSObject obj : objToBeParsed.remove(objToBeParsed.firstKey()))
-            {
-                COSBase parsedObj = parseObjectDynamically(obj, false);
-                if (parsedObj != null)
-                {
-                    obj.setObject(parsedObj);
-                    addNewToList(toBeParsedList, parsedObj, addedObjects);
-                    parsedObjects.add(getObjectId(obj));
-                }
-            }
-        }
-    }
-
     public boolean dereferenceCOSObject(COSObject obj)
     {
         COSBase parsedObj = null;
@@ -806,22 +607,6 @@ public class COSParser extends BaseParser implements ICOSParser
             return true;
         }
         return false;
-    }
-
-    // add objects not to be parsed to list of already parsed objects
-    private void addExcludedToList(COSName[] excludeObjects, COSDictionary dict, final Set<Long> parsedObjects)
-    {
-        if (excludeObjects != null)
-        {
-            for (COSName objName : excludeObjects)
-            {
-                COSBase baseObj = dict.getItem(objName);
-                if (baseObj instanceof COSObject)
-                {
-                    parsedObjects.add(getObjectId((COSObject) baseObj));
-                }
-            }
-        }
     }
 
     /**
@@ -2865,34 +2650,6 @@ public class COSParser extends BaseParser implements ICOSParser
                     "You must parse the document first before calling getAccessPermission()");
         }
         return accessPermission;
-    }
-
-    /**
-     * Parse the values of the trailer dictionary and return the root object.
-     *
-     * @param trailer The trailer dictionary.
-     * @return The parsed root object.
-     * @throws IOException If an IO error occurs or if the root object is missing in the trailer dictionary.
-     */
-    protected COSBase parseTrailerValuesDynamically(COSDictionary trailer) throws IOException
-    {
-        // PDFBOX-1557 - ensure that all COSObject are loaded in the trailer
-        // PDFBOX-1606 - after securityHandler has been instantiated
-        for (COSBase trailerEntry : trailer.getValues())
-        {
-            if (trailerEntry instanceof COSObject)
-            {
-                COSObject tmpObj = (COSObject) trailerEntry;
-                parseObjectDynamically(tmpObj, false);
-            }
-        }
-        // parse catalog or root object
-        COSObject root = trailer.getCOSObject(COSName.ROOT);
-        if (root == null)
-        {
-            throw new IOException("Missing root object specification in trailer.");
-        }
-        return root.getObject();
     }
 
     /**
