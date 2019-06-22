@@ -208,32 +208,26 @@ public class ResourcesValidationProcess extends AbstractProcess
         COSDocument cosDocument = context.getDocument().getDocument();
         COSDictionary mapOfXObj = COSUtils.getAsDictionary(resources.getCOSObject().getItem(COSName.XOBJECT),
                 cosDocument);
-        if (mapOfXObj != null)
+        if (mapOfXObj == null)
         {
-            for (Entry<COSName, COSBase> entry : mapOfXObj.entrySet())
+            return;
+        }
+        for (Entry<COSName, COSBase> entry : mapOfXObj.entrySet())
+        {
+            COSBase xobj = entry.getValue();
+            if (xobj != null && COSUtils.isStream(xobj, cosDocument))
             {
-                COSBase xobj = entry.getValue();
-                if (xobj != null && COSUtils.isStream(xobj, cosDocument))
+                try
                 {
-                    try
-                    {
-                        COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
-                        PDXObject pdXObject = PDXObject.createXObject(stream, resources);
-                        if (pdXObject != null)
-                        {
-                            ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
-                        }
-                        else
-                        {
-                            ContextHelper.validateElement(context, stream, GRAPHIC_PROCESS);
-                        }
-                    }
-                    catch (IOException e)
-                    {
-                        context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
-                                e.getMessage() + " for entry '"
-                                + entry.getKey().getName() + "'", e));
-                    }
+                    COSStream stream = COSUtils.getAsStream(xobj, cosDocument);
+                    PDXObject pdXObject = PDXObject.createXObject(stream, resources);
+                    ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
+                }
+                catch (IOException e)
+                {
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
+                            e.getMessage() + " for entry '"
+                            + entry.getKey().getName() + "'", e));
                 }
             }
         }
