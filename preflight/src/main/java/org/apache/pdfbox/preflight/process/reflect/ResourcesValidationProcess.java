@@ -202,39 +202,28 @@ public class ResourcesValidationProcess extends AbstractProcess
     protected void validateXObjects(PreflightContext context, PDResources resources) throws ValidationException
     {
         COSDictionary mapOfXObj = resources.getCOSObject().getCOSDictionary(COSName.XOBJECT);
-        if (mapOfXObj != null)
+        if (mapOfXObj == null)
         {
-            for (Entry<COSName, COSBase> entry : mapOfXObj.entrySet())
+            return;
+        }
+        for (Entry<COSName, COSBase> entry : mapOfXObj.entrySet())
+        {
+            COSBase xobj = entry.getValue();
+            if (xobj instanceof COSObject)
             {
-                COSBase xobj = entry.getValue();
-                if (xobj != null)
+                xobj = ((COSObject) xobj).getObject();
+            }
+            if (xobj instanceof COSStream)
+            {
+                try
                 {
-                    if (xobj instanceof COSObject)
-                    {
-                        xobj = ((COSObject) xobj).getObject();
-                    }
-                    if (xobj instanceof COSStream) 
-                    {
-                        try
-                        {
-                            COSStream stream = (COSStream) xobj;
-                            PDXObject pdXObject = PDXObject.createXObject(stream, resources);
-                            if (pdXObject != null)
-                            {
-                                ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
-                            }
-                            else
-                            {
-                                ContextHelper.validateElement(context, stream, GRAPHIC_PROCESS);
-                            }
-                        }
-                        catch (IOException e)
-                        {
-                            context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
-                                    e.getMessage() + " for entry '"
-                                    + entry.getKey().getName() + "'", e));
-                        }
-                    }
+                    PDXObject pdXObject = PDXObject.createXObject(xobj, resources);
+                    ContextHelper.validateElement(context, pdXObject, GRAPHIC_PROCESS);
+                }
+                catch (IOException e)
+                {
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_MAIN,
+                            e.getMessage() + " for entry '" + entry.getKey().getName() + "'", e));
                 }
             }
         }
