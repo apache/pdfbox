@@ -108,7 +108,7 @@ class Type5ShadingContext extends GouraudShadingContext
                 }
             }
         }
-        int sz = vlist.size(), rowNum = sz / numPerRow;
+        int rowNum = vlist.size() / numPerRow;
         Vertex[][] latticeArray = new Vertex[rowNum][numPerRow];
         List<ShadedTriangle> list = new ArrayList<>();
         if (rowNum < 2)
