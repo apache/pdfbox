@@ -22,7 +22,6 @@ import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
@@ -102,6 +101,7 @@ public class FDFParser extends COSParser
             }
         }
         document = new COSDocument();
+        document.parser = this;
     }
 
     /**
@@ -115,13 +115,10 @@ public class FDFParser extends COSParser
     {
         COSDictionary trailer = retrieveTrailer();
     
-        COSBase rootObject = parseTrailerValuesDynamically(trailer);
-    
-        // resolve all objects
-        // A FDF doesn't have a catalog, all FDF fields are within the root object
-        if (rootObject instanceof COSDictionary)
+        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        if (root == null)
         {
-            parseDictObjects((COSDictionary) rootObject, (COSName[]) null);
+            throw new IOException("Missing root object specification in trailer.");
         }
         initialParseDone = true;
     }
