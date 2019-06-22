@@ -40,6 +40,7 @@ import javax.swing.JPanel;
  * HexPane shows the byte in a Grid table where every row has 16 bytes. It only draws bytes those are
  * only visible at a given time.
  */
+@SuppressWarnings("squid:S1948")
 class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionListener, HexModelChangeListener
 {
     private final HexModel model;

@@ -31,6 +31,7 @@ import javax.swing.JRadioButtonMenuItem;
  */
 public final class ZoomMenu extends MenuBase
 {
+    @SuppressWarnings("squid:MaximumInheritanceDepth")
     private static class ZoomMenuItem extends JRadioButtonMenuItem
     {
         private final int zoom;
