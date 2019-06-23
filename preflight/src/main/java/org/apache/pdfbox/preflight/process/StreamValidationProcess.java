@@ -22,6 +22,7 @@
 package org.apache.pdfbox.preflight.process;
 
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_DAMAGED;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_DELIMITER;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_FX_KEYS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID;
@@ -229,14 +230,12 @@ public class StreamValidationProcess extends AbstractProcess
                 {
                     int c = ra.read();
                     // "stream" has to be followed by a LF or CRLF
-                    if (c != '\r' && c != '\n')
+                    if ((c != '\r' && c != '\n') //
+                            || (c == '\r' && ra.read() != '\n'))
                     {
-                        addStreamLengthValidationError(context, cObj, length, "");
-                        return;
-                    }
-                    if (c == '\r' && ra.read() != '\n')
-                    {
-                        addStreamLengthValidationError(context, cObj, length, "");
+                        addValidationError(context,
+                                new ValidationError(ERROR_SYNTAX_STREAM_DELIMITER,
+                                        "Expected 'EOL' after the stream keyword not found"));
                         return;
                     }
                     // ---- Here is the true beginning of the Stream Content.
@@ -280,6 +279,9 @@ public class StreamValidationProcess extends AbstractProcess
                             || (buffer2[0] == '\n' && buffer2[1] != 'e') //
                             || !endStream.contains(ENDSTREAM))
                     {
+                        // TODO in some cases it is hard to say if the reason for this issue is a missing EOL or a wrong
+                        // stream length, see isartor-6-1-7-t03-fail-a.pdf
+                        // the implementation has to be adjusted similar to PreflightParser#parseCOSStream
                         addStreamLengthValidationError(context, cObj, length, endStream);
                     }
                 }
