@@ -205,6 +205,42 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
+     * 
+     * @param doc The COSDocument that this document wraps.
+     */
+    public PDDocument(COSDocument doc)
+    {
+        this(doc, null);
+    }
+
+    /**
+     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
+     * 
+     * @param doc The COSDocument that this document wraps.
+     * @param source the parser which is used to read the pdf
+     */
+    public PDDocument(COSDocument doc, RandomAccessRead source)
+    {
+        this(doc, source, null);
+    }
+
+    /**
+     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
+     * 
+     * @param doc The COSDocument that this document wraps.
+     * @param source the parser which is used to read the pdf
+     * @param permission he access permissions of the pdf
+     * 
+     */
+    public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
+    {
+        document = doc;
+        pdfSource = source;
+        accessPermission = permission;
+    }
+
+    /**
      * This will add a page to the document. This is a convenience method, that will add the page to the root of the
      * hierarchy and set the parent of the page to the root.
      * 
@@ -657,42 +693,6 @@ public class PDDocument implements Closeable
             LOG.warn("call importedPage.setResources(page.getResources()) to do this");
         }
         return importedPage;
-    }
-
-    /**
-     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
-     * 
-     * @param doc The COSDocument that this document wraps.
-     */
-    public PDDocument(COSDocument doc)
-    {
-        this(doc, null);
-    }
-
-    /**
-     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
-     * 
-     * @param doc The COSDocument that this document wraps.
-     * @param source the parser which is used to read the pdf
-     */
-    public PDDocument(COSDocument doc, RandomAccessRead source)
-    {
-        this(doc, source, null);
-    }
-
-    /**
-     * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
-     * 
-     * @param doc The COSDocument that this document wraps.
-     * @param source the parser which is used to read the pdf
-     * @param permission he access permissions of the pdf
-     * 
-     */
-    public PDDocument(COSDocument doc, RandomAccessRead source, AccessPermission permission)
-    {
-        document = doc;
-        pdfSource = source;
-        accessPermission = permission;
     }
 
     /**
