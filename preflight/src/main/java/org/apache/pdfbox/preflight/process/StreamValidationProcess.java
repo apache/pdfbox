@@ -50,6 +50,8 @@ import org.apache.pdfbox.util.Charsets;
 public class StreamValidationProcess extends AbstractProcess
 {
 
+    private static final String ENDSTREAM = "endstream";
+
     @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
@@ -226,12 +228,17 @@ public class StreamValidationProcess extends AbstractProcess
                 if (readUntilStream(ra))
                 {
                     int c = ra.read();
-                    if (c == '\r')
+                    // "stream" has to be followed by a LF or CRLF
+                    if (c != '\r' && c != '\n')
                     {
-                        ra.read();
+                        addStreamLengthValidationError(context, cObj, length, "");
+                        return;
                     }
-                    // else c is '\n' no more character to read
-
+                    if (c == '\r' && ra.read() != '\n')
+                    {
+                        addStreamLengthValidationError(context, cObj, length, "");
+                        return;
+                    }
                     // ---- Here is the true beginning of the Stream Content.
                     // ---- Read the given length of bytes and check the 10 next bytes
                     // ---- to see if there are endstream.
@@ -261,42 +268,19 @@ public class StreamValidationProcess extends AbstractProcess
                     }
                     while (nbBytesToRead > 0);
 
-                    int len = "endstream".length() + 2;
+                    int len = ENDSTREAM.length() + 2;
                     byte[] buffer2 = new byte[len];
-                    for (int i = 0; i < len; ++i)
-                    {
-                        buffer2[i] = (byte) ra.read();
-                    }
+                    ra.read(buffer2);
 
                     // ---- check the content of 10 last characters
+                    // there has to be an proceeding EOL (LF or CRLF)
                     String endStream = new String(buffer2, Charsets.ISO_8859_1);
-                    if (buffer2[0] == '\r' && buffer2[1] == '\n')
+                    if ((buffer2[0] != '\r' && buffer2[0] != '\n') //
+                            || (buffer2[0] == '\r' && buffer2[1] != '\n') //
+                            || (buffer2[0] == '\n' && buffer2[1] != 'e') //
+                            || !endStream.contains(ENDSTREAM))
                     {
-                        if (!endStream.contains("endstream"))
-                        {
-                            addStreamLengthValidationError(context, cObj, length, endStream);
-                        }
-                    }
-                    else if (buffer2[0] == '\r' && buffer2[1] == 'e')
-                    {
-                        if (!endStream.contains("endstream"))
-                        {
-                            addStreamLengthValidationError(context, cObj, length, endStream);
-                        }
-                    }
-                    else if (buffer2[0] == '\n' && buffer2[1] == 'e')
-                    {
-                        if (!endStream.contains("endstream"))
-                        {
-                            addStreamLengthValidationError(context, cObj, length, endStream);
-                        }
-                    }
-                    else
-                    {
-                        if (!endStream.startsWith("endStream"))
-                        {
-                             addStreamLengthValidationError(context, cObj, length, endStream);
-                        }
+                        addStreamLengthValidationError(context, cObj, length, endStream);
                     }
                 }
                 else
