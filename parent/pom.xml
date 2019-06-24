@@ -33,7 +33,7 @@
 
     <groupId>org.apache.pdfbox</groupId>
     <artifactId>pdfbox-parent</artifactId>
-    <version>2.0.16-SNAPSHOT</version>
+    <version>2.0.16</version>
     <packaging>pom</packaging>
 
     <name>PDFBox parent</name>
@@ -498,8 +498,8 @@
     </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/branches/2.0/pdfbox-parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/branches/2.0/pdfbox-parent</developerConnection>
-    <url>http://svn.apache.org/viewvc/maven/pom/branches/2.0/pdfbox-parent</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/pom/tags/2.0.16/pdfbox-parent</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/pom/tags/2.0.16/pdfbox-parent</developerConnection>
+    <url>http://svn.apache.org/viewvc/maven/pom/tags/2.0.16/pdfbox-parent</url>
   </scm>
 </project>
