@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.15
+Release Notes -- Apache PDFBox -- Version 2.0.16
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.14 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.15 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,37 +14,54 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-4436] - Error opening encrypted PDF in Acrobat IOS/Android
-[PDFBOX-4473] - OS2WindowsMetricsTable.FSTYPE_EDITIBLE should be 8 instead of 4
-[PDFBOX-4474] - NPE in Type1Parser.readValue()
-[PDFBOX-4475] - PDFMergerUtility is very slow, almost in dead loop
-[PDFBOX-4476] - Need handle the NullPointerException in PDPageTree
-[PDFBOX-4477] - Large encrypted file takes days to be parsed
-[PDFBOX-4478] - Import XFDF stamp annotation has malformed appearance
-[PDFBOX-4479] - Java 6 error
-[PDFBOX-4480] - Problem extracting text in newline characters and spaces beetween words
-[PDFBOX-4484] - Some JBIG2 images are corrupted when subsampling is enabled
-[PDFBOX-4485] - Adobe reader on android can not see attachments
-[PDFBOX-4487] - Cannot set documentMergeMode
-[PDFBOX-4488] - NegativeArraySizeException with image with extreme width
-[PDFBOX-4490] - .getNumberofPages() returns incorrect value
-[PDFBOX-4492] - JVM crashes on PDFRenderer.renderImage
-[PDFBOX-4493] - InputStream not closed after reading
-[PDFBOX-4494] - Problem with google noto bold font and hungarian characters
-[PDFBOX-4495] - Expected number, actual=COSFloat
-[PDFBOX-4496] - OCG enablement with string parameter is not well defined
-[PDFBOX-4497] - dash phase start should be float
-[PDFBOX-4500] - K Array order in structure tree reversed when merging
-[PDFBOX-4503] - Width 0 during pdf rendering
-[PDFBOX-4504] - Warnings when structure tree RoleMap is merged if the key is already existing in destination directory
+[PDFBOX-3819] - TrueType glyphs not displayed in rendering on Windows 10
+[PDFBOX-4017] - Symbol font glyphs not found on Windows 10 fall creators update
+[PDFBOX-4155] - Password Security with Unicode needs SASLprep
+[PDFBOX-4489] - Memory issue on org.apache.fontbox.ttf.GlyphSubstitutionTable.readLangSysTable(GlyphSubstitutionTable.java:147)
+[PDFBOX-4513] - FDFAnnotationStamp fails to parse some appearance streams
+[PDFBOX-4517] - Unable to decrypt PDF with String and Stream filter to identity
+[PDFBOX-4518] - NegativeArraySizeException thrown when converting PDF to Image
+[PDFBOX-4520] - PDFBox PDFToImage shows black bars on scanned text
+[PDFBOX-4521] - Missing Info value from file trailer: org.apache.pdfbox.cos.COSName cannot be cast to org.apache.pdfbox.cos.COSDictionary
+[PDFBOX-4525] - PDF completely blow up the RAM on RedHat
+[PDFBOX-4526] - Optional Content Membership Dictionaries (OCMD) not supported
+[PDFBOX-4535] - java.lang.ClassCastException in PDImageXObject.getMask()
+[PDFBOX-4540] - COSWriter sometimes retrieves wrong ObjectKey
+[PDFBOX-4543] - PDLineDashPattern fails as float[] is converted to List<float[]> instead of List<Float>
+[PDFBOX-4549] - No Unicode mapping
+[PDFBOX-4550] - Poor performance with corrupt ToUnicode stream
+[PDFBOX-4551] - Prevent printing from CL applications when not authorized
+[PDFBOX-4553] - Break of backward compatibility from 2.0.14 to 2.0.15
+[PDFBOX-4571] - IllegalArgumentException: illegal line join value
+
+New Feature
+
+[PDFBOX-4563] - Port Appearance Handler from 3.0 back to 2.0
+
+Sub-task
+
+[PDFBOX-4564] - Port interface and base handler
+[PDFBOX-4573] - Add dummy call to create appearance to annotations
+[PDFBOX-4574] - Port individual appearance handlers
+[PDFBOX-4575] - Add appearance generation to annotation example code
+[PDFBOX-4576] - Update PageDrawer to match appearance handling in trunk
 
 Improvement
 
-[PDFBOX-4491] - slow rendering for PDF
-[PDFBOX-4502] - Performance issue with splitter and huge files
-[PDFBOX-4505] - DRY: unify the usage of a XML Parser
-[PDFBOX-4508] - Unexpected slowness filling forms with CJK
+[PDFBOX-4458] - Subclasses of OperatorProcessor dont use constants
+[PDFBOX-4509] - Font appears twice in resources of field widget
+[PDFBOX-4510] - Don't write identity matrix in form XObjects of field widgets appearance stream
+[PDFBOX-4519] - Reduce artefacts in shadings
+[PDFBOX-4522] - Resources cache should be passed to type 3 fonts
+[PDFBOX-4529] - ImageToPDF as Command Line
+[PDFBOX-4539] - Cache CharsetDecoder
+[PDFBOX-4544] - COSWriter.doWriteHeader(COSDocument) should use the document specified as parameter
+[PDFBOX-4562] - Remove the usage of COSDocument.getCatalog
+[PDFBOX-4578] - Overhaul StreamValidationProcess
 
+Wish
+
+[PDFBOX-4515] - Support for Add Text Callout Annotation tool.
 
 
 Release Contents
