@@ -311,7 +311,7 @@ public class GlyphSubstitutionTable extends TTFTable
             return new LookupTypeSingleSubstFormat2(substFormat, coverageTable, substituteGlyphIDs);
         }
         default:
-            throw new IllegalArgumentException("Unknown substFormat: " + substFormat);
+            throw new IOException("Unknown substFormat: " + substFormat);
         }
     }
 
@@ -323,7 +323,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
         if (substFormat != 1)
         {
-            throw new IllegalArgumentException(
+            throw new IOException(
                     "The expected SubstFormat for LigatureSubstitutionTable is 1");
         }
 
@@ -341,7 +341,7 @@ public class GlyphSubstitutionTable extends TTFTable
 
         if (ligSetCount != coverageTable.getSize())
         {
-            throw new IllegalArgumentException(
+            throw new IOException(
                     "According to the OpenTypeFont specifications, the coverage count should be equal to the no. of LigatureSetTables");
         }
 
@@ -439,7 +439,7 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         default:
             // Should not happen (the spec indicates only format 1 and format 2)
-            throw new IllegalArgumentException("Unknown coverage format: " + coverageFormat);
+            throw new IOException("Unknown coverage format: " + coverageFormat);
         }
     }
 
