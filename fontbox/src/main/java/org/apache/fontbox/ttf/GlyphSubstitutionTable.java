@@ -275,7 +275,7 @@ public class GlyphSubstitutionTable extends TTFTable
             return lookupSubTable;
         }
         default:
-            throw new IllegalArgumentException("Unknown substFormat: " + substFormat);
+            throw new IOException("Unknown substFormat: " + substFormat);
         }
     }
 
@@ -312,7 +312,7 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         default:
             // Should not happen (the spec indicates only format 1 and format 2)
-            throw new IllegalArgumentException("Unknown coverage format: " + coverageFormat);
+            throw new IOException("Unknown coverage format: " + coverageFormat);
         }
     }
 
