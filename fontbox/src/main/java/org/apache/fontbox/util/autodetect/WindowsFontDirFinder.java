@@ -94,7 +94,7 @@ public class WindowsFontDirFinder implements FontDirFinder
         }
         File osFontsDir;
         File psFontsDir;
-        if (windir != null)
+        if (windir != null && windir.length() > 2)
         {
             // remove any trailing '/'
             if (windir.endsWith("/"))
