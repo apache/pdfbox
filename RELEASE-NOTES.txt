@@ -14,8 +14,6 @@ For more details on these changes and all the other fixes and improvements
 included in this release, please refer to the following issues on the
 PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
-Bug
-
 [PDFBOX-XXXX] - TODO
 
 
