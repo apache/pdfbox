@@ -167,12 +167,22 @@ public class GlyphSubstitutionTable extends TTFTable
         int featureCount = data.readUnsignedShort();
         FeatureRecord[] featureRecords = new FeatureRecord[featureCount];
         int[] featureOffsets = new int[featureCount];
+        String prevFeatureTag = "";
         for (int i = 0; i < featureCount; i++)
         {
             FeatureRecord featureRecord = new FeatureRecord();
             featureRecord.featureTag = data.readString(4);
+            if (i > 0 && featureRecord.featureTag.compareTo(prevFeatureTag) < 0)
+            {
+                // catch corrupt file
+                // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#flTbl
+                LOG.error("FeatureRecord array not alphabetically sorted by FeatureTag: " +
+                           featureRecord.featureTag + " < " + prevFeatureTag);
+                return new FeatureRecord[0];
+            }
             featureOffsets[i] = data.readUnsignedShort();
             featureRecords[i] = featureRecord;
+            prevFeatureTag = featureRecord.featureTag;
         }
         for (int i = 0; i < featureCount; i++)
         {
