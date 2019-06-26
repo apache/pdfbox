@@ -267,10 +267,16 @@ public class PDJpeg extends PDXObjectImage
             }
             else 
             {
+                // should be FF D8 FF
+                // https://en.wikipedia.org/wiki/List_of_file_signatures
+                if (img.length < 3 ||
+                    img[0] != (byte) 0xFF || img[1] != (byte) 0xD8 || img[2] != (byte) 0xFF)
+                {
+                    throw new IOException("Not a JPEG file");
+                }
                 ByteArrayInputStream bai = new ByteArrayInputStream(img);
                 bi = ImageIO.read(bai);
             }
-                
         }
         catch(IIOException exception) 
         {
