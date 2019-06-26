@@ -165,12 +165,12 @@ public abstract class BaseParser
         readExpectedChar('R');
         if (!(value instanceof COSInteger))
         {
-            LOG.error("expected number, actual=" + value + " at offset " + numOffset);
+            LOG.warn("expected number, actual=" + value + " at offset " + numOffset);
             return COSNull.NULL;
         }
         if (!(generationNumber instanceof COSInteger))
         {
-            LOG.error("expected number, actual=" + value + " at offset " + genOffset);
+            LOG.warn("expected number, actual=" + value + " at offset " + genOffset);
             return COSNull.NULL;
         }
         COSObjectKey key = new COSObjectKey(((COSInteger) value).longValue(),
