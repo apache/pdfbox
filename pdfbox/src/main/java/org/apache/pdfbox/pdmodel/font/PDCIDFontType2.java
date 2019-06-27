@@ -115,12 +115,6 @@ public class PDCIDFontType2 extends PDCIDFont
                         fontIsDamaged = true;
                         LOG.warn("Found CFF/OTF but expected embedded TTF font " + fd.getFontName());
                     }
-    
-                    if (otf.hasLayoutTables())
-                    {
-                        LOG.info("OpenType Layout tables used in font " + getBaseFont() +
-                                  " are not implemented in PDFBox and will be ignored");
-                    }
                 }
                 catch (NullPointerException e) // TTF parser is buggy
                 {
