@@ -359,7 +359,7 @@ public class PDCIDFontType2 extends PDCIDFont
         if (cid == 0)
         {
             throw new IllegalArgumentException(
-                    String.format("No glyph for U+%04X in font %s", unicode, getName()));
+                    String.format("No glyph for U+%04X (%c) in font %s", unicode, (char) unicode, getName()));
         }
 
         return encodeGlyphId(cid);
