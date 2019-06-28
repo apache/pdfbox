@@ -103,7 +103,7 @@ class Type3Font extends FontPane
         for (int index = 0; index <= 255; index++)
         {
             glyphs[index][0] = index;
-            if (font.getEncoding().contains(index))
+            if (font.getEncoding().contains(index) || font.toUnicode(index) != null)
             {
                 glyphs[index][1] = font.getEncoding().getName(index);
                 glyphs[index][2] = font.toUnicode(index);
