@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectForm;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -63,7 +64,6 @@ public abstract class AnnotationValidator
 
     public AnnotationValidator(PreflightContext context, COSDictionary annotDictionary)
     {
-        super();
         this.ctx = context;
         this.annotDictionary = annotDictionary;
         this.cosDocument = this.ctx.getDocument().getDocument();
@@ -199,7 +199,17 @@ public abstract class AnnotationValidator
                 ContextHelper.validateElement(ctx, new PDXObjectForm(COSUtils.getAsStream(apn, cosDocument)),
                         GRAPHIC_PROCESS);
             }
-        } // else ok, nothing to check,this field is optional
+        }
+        else if (this.pdAnnot instanceof PDAnnotationWidget && this.pdAnnot.getAppearance() == null)
+        {
+            // https://www.pdfa.org/wp-content/uploads/2017/07/TechNote0010.pdf
+            // "An ISO 19005-1 validator shall FAIL otherwise conforming files in which a
+            //  widget annotation lacks an appearance dictionary." (page 17)
+            ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
+                    "widget annotation lacks an appearance dictionary"));
+            return false;
+        }
+        // else ok, nothing to check, this field is optional
         return true;
     }
 
