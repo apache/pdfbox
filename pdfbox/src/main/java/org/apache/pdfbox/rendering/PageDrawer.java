@@ -144,6 +144,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     // last clipping path
     private Area lastClip;
 
+    // clip when drawPage() is called, can be null, must be intersected when clipping
+    private Shape initialClip;
+
     // shapes of glyphs being drawn to be used for clipping
     private List<Shape> textClippings;
 
@@ -254,6 +257,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     {
         graphics = (Graphics2D) g;
         xform = graphics.getTransform();
+        initialClip = graphics.getClip();
         this.pageSize = pageSize;
 
         setRenderingHints();
@@ -297,6 +301,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         Area oldLastClip = lastClip;
         lastClip = null;
+        Shape oldInitialClip = initialClip;
+        initialClip = null;
 
         boolean oldFlipTG = flipTG;
         flipTG = true;
@@ -308,6 +314,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics = oldGraphics;
         linePath = oldLinePath;
         lastClip = oldLastClip;
+        initialClip = oldInitialClip;
         clipWindingRule = oldClipWindingRule;
     }
 
@@ -374,6 +381,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (clippingPath != lastClip)
         {
             graphics.setClip(clippingPath);
+            if (initialClip != null)
+            {
+                // apply the remembered initial clip, but transform it first
+                graphics.clip(graphics.getTransform().createTransformedShape(initialClip));
+            }
             lastClip = clippingPath;
         }
     }
@@ -1625,6 +1637,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             Graphics2D g2dOriginal = graphics;
             Area lastClipOriginal = lastClip;
+            Shape oldInitialClip = initialClip;
 
             // get the CTM x Form Matrix transform
             Matrix transform = Matrix.concatenate(ctm, form.getMatrix());
@@ -1768,6 +1781,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 lastClip = lastClipOriginal;
                 graphics.dispose();
                 graphics = g2dOriginal;
+                initialClip = oldInitialClip;
                 clipWindingRule = clipWindingRuleOriginal;
                 linePath = linePathOriginal;
                 pageSize = pageSizeOriginal;
