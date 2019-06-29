@@ -266,7 +266,7 @@ class SaslPrep
     private static boolean privateUse(int codepoint)
     {
         return 0xE000 <= codepoint && codepoint <= 0xF8FF
-                || 0xF000 <= codepoint && codepoint <= 0xFFFFD
+                || 0xF0000 <= codepoint && codepoint <= 0xFFFFD
                 || 0x100000 <= codepoint && codepoint <= 0x10FFFD;
     }
 
