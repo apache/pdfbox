@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.action.pdfa1b;
 
+import java.io.File;
 import java.util.List;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -49,10 +50,10 @@ public abstract class AbstractTestAction
      */
     protected PreflightContext createContext() throws Exception
     {
-        DataSource ds = new FileDataSource("src/test/resources/pdfa-with-annotations-square.pdf");
-        PDDocument doc = PDDocument.load(ds.getInputStream());
+        PDDocument doc = PDDocument
+                .load(new File("src/test/resources/pdfa-with-annotations-square.pdf"));
         PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
-        PreflightContext ctx = new PreflightContext(ds);
+        PreflightContext ctx = new PreflightContext();
         ctx.setDocument(preflightDocument);
         preflightDocument.setContext(ctx);
         return ctx;
