@@ -34,8 +34,6 @@ import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.action.AbstractActionManager;
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
-import org.apache.pdfbox.preflight.utils.DataSource;
-import org.apache.pdfbox.preflight.utils.FileDataSource;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -50,10 +48,10 @@ public abstract class AbstractTestAction
      */
     protected PreflightContext createContext() throws Exception
     {
-        DataSource ds = new FileDataSource(new File("src/test/resources/pdfa-with-annotations-square.pdf"));
-        PDDocument doc = PDDocument.load(ds.getInputStream());
+        PDDocument doc = PDDocument
+                .load(new File("src/test/resources/pdfa-with-annotations-square.pdf"));
         PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
-        PreflightContext ctx = new PreflightContext(ds);
+        PreflightContext ctx = new PreflightContext();
         ctx.setDocument(preflightDocument);
         preflightDocument.setContext(ctx);
         return ctx;
