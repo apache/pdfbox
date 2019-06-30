@@ -96,7 +96,8 @@ class SaslPrep
         boolean containsRandALCat = false;
         boolean containsLCat = false;
         boolean initialRandALCat = false;
-        for (int i = 0; i < normalized.length();)
+        int i = 0;
+        while (i < normalized.length())
         {
             final int codepoint = normalized.codePointAt(i);
             // 3. Prohibit
