@@ -70,6 +70,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NAME_T
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NUMERIC_RANGE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_DELIMITER;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_LENGTH_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TOO_MANY_ENTRIES;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER_EOF;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_ARRAY_ELEMENTS;
@@ -277,7 +278,7 @@ public class PreflightParser extends PDFParser
      */
     protected void createContext()
     {
-        this.ctx = new PreflightContext(this.dataSource);
+        ctx = new PreflightContext();
         ctx.setDocument(preflightDocument);
         preflightDocument.setContext(ctx);
         ctx.setXrefTrailerResolver(xrefTrailerResolver);
@@ -510,9 +511,9 @@ public class PreflightParser extends PDFParser
     @Override
     protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
-        checkStreamKeyWord();
+        long startOffset = checkStreamKeyWord();
         COSStream result = super.parseCOSStream(dic);
-        checkEndstreamKeyWord();
+        checkEndstreamKeyWord(dic, startOffset);
         return result;
     }
 
@@ -521,7 +522,7 @@ public class PreflightParser extends PDFParser
      * 
      * @throws IOException
      */
-    protected void checkStreamKeyWord() throws IOException
+    private long checkStreamKeyWord() throws IOException
     {
         String streamV = readString();
         if (!streamV.equals("stream"))
@@ -529,14 +530,24 @@ public class PreflightParser extends PDFParser
             addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_DELIMITER,
                     "Expected 'stream' keyword but found '" + streamV + "' at offset "+source.getPosition()));
         }
+        long startOffset = source.getPosition();
         int nextChar = source.read();
-        if (!((nextChar == 13 && source.peek() == 10) || nextChar == 10))
+        if (nextChar == 13 && source.peek() == 10)
+        {
+            startOffset += 2;
+        }
+        else if (nextChar == 10)
+        {
+            startOffset++;
+        }
+        else
         {
             addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_DELIMITER,
                     "Expected 'EOL' after the stream keyword at offset "+source.getPosition()));
         }
         // set the offset before stream
         source.seek(source.getPosition() - 7);
+        return startOffset;
     }
 
     /**
@@ -544,19 +555,52 @@ public class PreflightParser extends PDFParser
      * 
      * @throws IOException
      */
-    protected void checkEndstreamKeyWord() throws IOException
+    private void checkEndstreamKeyWord(COSDictionary dic, long startOffset)
+            throws IOException
     {
         source.seek(source.getPosition() - 10);
-        if (!nextIsEOL())
+        long endOffset = source.getPosition();
+        int nextChar = source.read();
+        boolean eolFound = false;
+        boolean crlfFound = false;
+        // LF found
+        if (nextChar == '\n')
+        {
+            eolFound = true;
+            // check if the LF is part of a CRLF
+            source.rewind(2);
+            if (source.read() == '\r')
+            {
+                endOffset--;
+                crlfFound = true;
+            }
+            source.read();
+        }
+        boolean addStreamLengthErrorMessage = false;
+        long actualLength = endOffset - startOffset;
+        if (!eolFound)
         {
             addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_DELIMITER,
                     "Expected 'EOL' before the endstream keyword at offset "+source.getPosition()+" but found '"+source.peek()+"'"));
+            addStreamLengthErrorMessage = true;
         }
         String endstreamV = readString();
         if (!endstreamV.equals("endstream"))
         {
             addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_DELIMITER,
                     "Expected 'endstream' keyword at offset "+source.getPosition()+" but found '" + endstreamV + "'"));
+            addStreamLengthErrorMessage = true;
+        }
+
+        int length = dic.getInt(COSName.LENGTH);
+        if (addStreamLengthErrorMessage || //
+                (length > -1 && ((!crlfFound && length - actualLength != 0)
+                        || (crlfFound && length - actualLength > 1))))
+        {
+            addValidationError(new ValidationError(ERROR_SYNTAX_STREAM_LENGTH_INVALID,
+                    "Stream length is invalid [dic=" + dic + "; defined length=" + length
+                            + "; actual length=" + actualLength + ", starting offset="
+                            + startOffset));
         }
     }
 
