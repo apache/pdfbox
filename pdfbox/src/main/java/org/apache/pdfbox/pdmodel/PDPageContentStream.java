@@ -111,6 +111,8 @@ public final class PDPageContentStream implements Closeable
     private final NumberFormat formatDecimal = NumberFormat.getNumberInstance(Locale.US);
     private final byte[] formatBuffer = new byte[32];
 
+    private boolean sourcePageHadContents = false;
+
     /**
      * Create a new PDPage content stream. This constructor overwrites all existing content streams
      * of this page.
@@ -122,6 +124,10 @@ public final class PDPageContentStream implements Closeable
     public PDPageContentStream(PDDocument document, PDPage sourcePage) throws IOException
     {
         this(document, sourcePage, AppendMode.OVERWRITE, true, false);
+        if (sourcePageHadContents)
+        {
+            LOG.warn("You are overwriting an existing content, you should use the append mode");
+        }
     }
 
     /**
@@ -256,10 +262,7 @@ public final class PDPageContentStream implements Closeable
         }
         else
         {
-            if (sourcePage.hasContents())
-            {
-                LOG.warn("You are overwriting an existing content, you should use the append mode");
-            }
+            sourcePageHadContents = sourcePage.hasContents();
             PDStream contents = new PDStream(document);
             sourcePage.setContents(contents);
             output = contents.createOutputStream(filter);
