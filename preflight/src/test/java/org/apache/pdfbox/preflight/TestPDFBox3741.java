@@ -28,7 +28,7 @@ import org.junit.Test;
  *
  * @author Tilman Hausherr
  */
-public class TestPDFBox3743
+public class TestPDFBox3741
 {
     /**
      * Test whether use of default colorspace without output intent for text output is detected.
