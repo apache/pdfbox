@@ -287,31 +287,31 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     void drawTilingPattern(Graphics2D g, PDTilingPattern pattern, PDColorSpace colorSpace,
                                   PDColor color, Matrix patternMatrix) throws IOException
     {
-        Graphics2D oldGraphics = graphics;
+        Graphics2D savedGraphics = graphics;
         graphics = g;
 
-        GeneralPath oldLinePath = linePath;
+        GeneralPath savedLinePath = linePath;
         linePath = new GeneralPath();
-        int oldClipWindingRule = clipWindingRule;
+        int savedClipWindingRule = clipWindingRule;
         clipWindingRule = -1;
 
-        Area oldLastClip = lastClip;
+        Area savedLastClip = lastClip;
         lastClip = null;
-        Shape oldInitialClip = initialClip;
+        Shape savedInitialClip = initialClip;
         initialClip = null;
 
-        boolean oldFlipTG = flipTG;
+        boolean savedFlipTG = flipTG;
         flipTG = true;
 
         setRenderingHints();
         processTilingPattern(pattern, color, colorSpace, patternMatrix);
 
-        flipTG = oldFlipTG;
-        graphics = oldGraphics;
-        linePath = oldLinePath;
-        lastClip = oldLastClip;
-        initialClip = oldInitialClip;
-        clipWindingRule = oldClipWindingRule;
+        flipTG = savedFlipTG;
+        graphics = savedGraphics;
+        linePath = savedLinePath;
+        lastClip = savedLastClip;
+        initialClip = savedInitialClip;
+        clipWindingRule = savedClipWindingRule;
     }
 
     private float clampColor(float color)
@@ -1406,7 +1406,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         // both the DPI xform and the CTM were already applied to the group, so all we do
         // here is draw it directly onto the Graphics2D device at the appropriate position
         PDRectangle bbox = group.getBBox();
-        AffineTransform prev = graphics.getTransform();
+        AffineTransform savedTransform = graphics.getTransform();
 
         Matrix m = new Matrix(xform);
         float xScale = Math.abs(m.getScalingFactorX());
@@ -1459,7 +1459,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
         }
 
-        graphics.setTransform(prev);
+        graphics.setTransform(savedTransform);
     }
 
     /**
@@ -1494,9 +1494,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         private TransparencyGroup(PDTransparencyGroup form, boolean isSoftMask, Matrix ctm, 
                 PDColor backdropColor) throws IOException
         {
-            Graphics2D g2dOriginal = graphics;
-            Area lastClipOriginal = lastClip;
-            Shape oldInitialClip = initialClip;
+            Graphics2D savedGraphics = graphics;
+            Area savedLastClip = lastClip;
+            Shape savedInitialClip = initialClip;
 
             // get the CTM x Form Matrix transform
             Matrix transform = Matrix.concatenate(ctm, form.getMatrix());
@@ -1594,7 +1594,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             g.translate(0, image.getHeight());
             g.scale(1, -1);
 
-            boolean oldFlipTG = flipTG;
+            boolean savedFlipTG = flipTG;
             flipTG = false;
 
             // apply device transform (DPI)
@@ -1636,11 +1636,11 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             finally 
             {
-                flipTG = oldFlipTG;
-                lastClip = lastClipOriginal;
+                flipTG = savedFlipTG;
+                lastClip = savedLastClip;
                 graphics.dispose();
-                graphics = g2dOriginal;
-                initialClip = oldInitialClip;
+                graphics = savedGraphics;
+                initialClip = savedInitialClip;
                 clipWindingRule = clipWindingRuleOriginal;
                 linePath = linePathOriginal;
                 pageSize = pageSizeOriginal;
