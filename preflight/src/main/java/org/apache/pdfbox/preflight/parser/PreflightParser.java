@@ -499,7 +499,7 @@ public class PreflightParser extends PDFParser
 
     /**
      * Wraps the {@link PDFParser#parseCOSStream} to check rules on 'stream' and 'endstream'
-     * keywords. {@link #checkStreamKeyWord()} and {@link #checkEndstreamKeyWord()}
+     * keywords. {@link #checkStreamKeyWord()} and {@link #checkEndstreamKeyWord(org.apache.pdfbox.cos.COSDictionary, long)}
      *
      * @param dic dictionary that goes with this stream.
      *
