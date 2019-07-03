@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author Tilman Hausherr
  */
-public class TestPDFBox3743
+public class TestPDFBox3741
 {
     /**
      * Test whether use of default colorspace without output intent for text output is detected.
@@ -37,9 +37,9 @@ public class TestPDFBox3743
      * @throws IOException
      */
     @Test
-    public void testPDFBox3743() throws IOException
+    public void testPDFBox3741() throws IOException
     {
-        DataSource ds = new FileDataSource(new File("src/test/resources/PDFBOX-3743.pdf"));
+        DataSource ds = new FileDataSource(new File("src/test/resources/PDFBOX-3741.pdf"));
         PreflightParser parser = new PreflightParser(ds);
         parser.parse();
         ValidationResult result;
@@ -51,7 +51,7 @@ public class TestPDFBox3743
 
         // Error should be:
         // 2.4.3: Invalid Color space, /DeviceGray default for operator "Tj" can't be used without Color Profile
-        Assert.assertFalse("File PDFBOX-3743.pdf should be detected as not PDF/A-1b", result.isValid());
+        Assert.assertFalse("File PDFBOX-3741.pdf should be detected as not PDF/A-1b", result.isValid());
         Assert.assertEquals("List should contain one result", 1, result.getErrorsList().size());
         Assert.assertEquals("2.4.3", result.getErrorsList().get(0).getErrorCode());
     }
