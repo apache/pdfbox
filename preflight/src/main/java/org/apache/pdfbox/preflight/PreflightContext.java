@@ -81,8 +81,6 @@ public class PreflightContext implements Closeable
 
     /**
      * Create the DocumentHandler using the DataSource which represent the PDF file to check.
-     * 
-     * @param dataSource
      */
     public PreflightContext()
     {
