@@ -1447,7 +1447,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             if (isContentRendered())
             {
-                graphics.drawImage(image, null, null);
+                try
+                {
+                    graphics.drawImage(image, null, null);
+                }
+                catch (InternalError ie)
+                {
+                    LOG.error("Exception drawing image, see JDK-6689349, " +
+                              "try rendering into a BufferedImage instead", ie);
+                }
             }
         }
 
