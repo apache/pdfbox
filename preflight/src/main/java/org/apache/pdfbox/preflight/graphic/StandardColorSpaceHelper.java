@@ -308,15 +308,12 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             if (attr != null)
             {
                 final Map<String, PDSeparation> colorants = attr.getColorants();
-                if (colorants != null)
+                numberOfColorants = colorants.size();
+                for (PDSeparation col : colorants.values())
                 {
-                    numberOfColorants = colorants.size();
-                    for (PDSeparation col : colorants.values())
+                    if (col != null)
                     {
-                        if (col != null)
-                        {
-                            processAllColorSpace(col);
-                        }
+                        processAllColorSpace(col);
                     }
                 }
                 PDDeviceNProcess process = attr.getProcess();
