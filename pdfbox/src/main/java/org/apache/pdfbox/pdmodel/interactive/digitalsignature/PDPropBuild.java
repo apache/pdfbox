@@ -75,7 +75,7 @@ public class PDPropBuild implements COSObjectable
     public PDPropBuildDataDict getFilter()
     {
         PDPropBuildDataDict filter = null;
-        COSDictionary filterDic = (COSDictionary)dictionary.getDictionaryObject(COSName.FILTER);
+        COSDictionary filterDic = dictionary.getCOSDictionary(COSName.FILTER);
         if (filterDic != null)
         {
             filter = new PDPropBuildDataDict(filterDic);
@@ -103,7 +103,7 @@ public class PDPropBuild implements COSObjectable
     public PDPropBuildDataDict getPubSec()
     {
         PDPropBuildDataDict pubSec = null;
-        COSDictionary pubSecDic = (COSDictionary)dictionary.getDictionaryObject(COSName.PUB_SEC);
+        COSDictionary pubSecDic = dictionary.getCOSDictionary(COSName.PUB_SEC);
         if (pubSecDic != null)
         {
             pubSec = new PDPropBuildDataDict(pubSecDic);
@@ -130,7 +130,7 @@ public class PDPropBuild implements COSObjectable
     public PDPropBuildDataDict getApp()
     {
         PDPropBuildDataDict app = null;
-        COSDictionary appDic = (COSDictionary)dictionary.getDictionaryObject(COSName.APP);
+        COSDictionary appDic = dictionary.getCOSDictionary(COSName.APP);
         if (appDic != null)
         {
             app = new PDPropBuildDataDict(appDic);
