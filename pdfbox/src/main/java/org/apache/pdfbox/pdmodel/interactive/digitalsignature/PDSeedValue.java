@@ -446,7 +446,7 @@ public class PDSeedValue implements COSObjectable
      */
     public PDSeedValueMDP getMDP()
     {
-        COSDictionary dict = (COSDictionary)dictionary.getDictionaryObject(COSName.MDP);
+        COSDictionary dict = dictionary.getCOSDictionary(COSName.MDP);
         PDSeedValueMDP mdp = null;
         if (dict != null)
         {
@@ -514,7 +514,7 @@ public class PDSeedValue implements COSObjectable
      */
     public PDSeedValueTimeStamp getTimeStamp()
     {
-        COSDictionary dict = (COSDictionary)dictionary.getDictionaryObject(COSName.TIME_STAMP);
+        COSDictionary dict = dictionary.getCOSDictionary(COSName.TIME_STAMP);
         PDSeedValueTimeStamp timestamp = null;
         if (dict != null)
         {
