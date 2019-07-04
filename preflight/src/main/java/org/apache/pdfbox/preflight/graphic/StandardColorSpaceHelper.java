@@ -206,7 +206,7 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
     }
 
     /**
-     * Method called by the processAllColorSpace if the ColorSpace to check is a Clibrated Color (CalGary, CalRGB, Lab).
+     * Method called by the processAllColorSpace if the ColorSpace to check is a calibrated color (CalGray, CalRGB, Lab).
      * 
      */
     protected void processCalibratedColorSpace(PDColorSpace pdcs)
