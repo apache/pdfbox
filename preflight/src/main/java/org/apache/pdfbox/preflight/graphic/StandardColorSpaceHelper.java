@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceNAttributes;
+import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceNProcess;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
@@ -318,6 +319,11 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                             processAllColorSpace(col);
                         }
                     }
+                }
+                PDDeviceNProcess process = attr.getProcess();
+                if (process != null)
+                {
+                    processAllColorSpace(process.getColorSpace());
                 }
             }
             int numberOfComponents = deviceN.getNumberOfComponents();
