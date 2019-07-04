@@ -439,7 +439,7 @@ public class PDSignature implements COSObjectable
     public PDPropBuild getPropBuild()
     {
         PDPropBuild propBuild = null;
-        COSDictionary propBuildDic = (COSDictionary)dictionary.getDictionaryObject(COSName.PROP_BUILD);
+        COSDictionary propBuildDic = dictionary.getCOSDictionary(COSName.PROP_BUILD);
         if (propBuildDic != null)
         {
             propBuild = new PDPropBuild(propBuildDic);

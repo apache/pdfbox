@@ -70,7 +70,7 @@ public final class PDDeviceNAttributes
     public Map<String, PDSeparation> getColorants() throws IOException
     {
         Map<String,PDSeparation> actuals = new HashMap<String, PDSeparation>();
-        COSDictionary colorants = (COSDictionary)dictionary.getDictionaryObject(COSName.COLORANTS);
+        COSDictionary colorants = dictionary.getCOSDictionary(COSName.COLORANTS);
         if(colorants == null)
         {
             colorants = new COSDictionary();
@@ -90,7 +90,7 @@ public final class PDDeviceNAttributes
      */
     public PDDeviceNProcess getProcess()
     {
-        COSDictionary process = (COSDictionary)dictionary.getDictionaryObject(COSName.PROCESS);
+        COSDictionary process = dictionary.getCOSDictionary(COSName.PROCESS);
         if (process == null)
         {
             return null;
