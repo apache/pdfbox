@@ -295,11 +295,11 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                     }
                 }
 
-                throw new IllegalStateException("Index not found: " + pageNum);
+                throw new IllegalStateException("1-based index not found: " + pageNum);
             }
             else
             {
-                throw new IndexOutOfBoundsException("Index out of bounds: " + pageNum);
+                throw new IndexOutOfBoundsException("1-based index out of bounds: " + pageNum);
             }
         }
         else
@@ -310,7 +310,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
             }
             else
             {
-                throw new IllegalStateException("Index not found: " + pageNum);
+                throw new IllegalStateException("1-based index not found: " + pageNum);
             }
         }
     }
