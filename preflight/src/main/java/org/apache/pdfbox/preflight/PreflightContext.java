@@ -71,7 +71,7 @@ public class PreflightContext implements Closeable
      */
     private XMPMetadata metadata = null;
 
-    private PreflightConfiguration config = null;
+    private PreflightConfiguration config;
 
     private PreflightPath validationPath = new PreflightPath();
 
@@ -83,11 +83,10 @@ public class PreflightContext implements Closeable
 
     /**
      * Create the DocumentHandler using the DataSource which represent the PDF file to check.
-     * 
-     * @param dataSource
      */
     public PreflightContext()
     {
+        this.config = null;
     }
 
     public PreflightContext(PreflightConfiguration configuration)
