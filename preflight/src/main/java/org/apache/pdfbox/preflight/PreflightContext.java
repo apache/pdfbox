@@ -69,7 +69,7 @@ public class PreflightContext implements Closeable
      */
     private XMPMetadata metadata = null;
 
-    private PreflightConfiguration config = null;
+    private PreflightConfiguration config;
 
     private PreflightPath validationPath = new PreflightPath();
 
@@ -84,6 +84,7 @@ public class PreflightContext implements Closeable
      */
     public PreflightContext()
     {
+        this.config = null;
     }
 
     public PreflightContext(PreflightConfiguration configuration)
