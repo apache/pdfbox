@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -105,6 +106,7 @@ import org.apache.pdfbox.debugger.ui.ReaderBottomPanel;
 import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
+import org.apache.pdfbox.debugger.ui.WindowPrefs;
 import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
@@ -143,6 +145,7 @@ public class PDFDebugger extends JFrame
     
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
+    private WindowPrefs windowPrefs;
     private boolean isPageMode;
 
     private PDDocument document;
@@ -226,10 +229,10 @@ public class PDFDebugger extends JFrame
             }
         });
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        windowPrefs = new WindowPrefs(this.getClass());
+
         jScrollPane1.setBorder(new BevelBorder(BevelBorder.RAISED));
-        jScrollPane1.setPreferredSize(new Dimension(screenSize.width / 8, 500));
-        jSplitPane1.setDividerLocation(screenSize.width / 8);
+        jSplitPane1.setDividerLocation(windowPrefs.getDividerLocation());
         tree.addTreeSelectionListener(new TreeSelectionListener()
         {
             @Override
@@ -244,7 +247,6 @@ public class PDFDebugger extends JFrame
         jSplitPane1.setRightComponent(jScrollPane2);
         jSplitPane1.setDividerSize(3);
 
-        jScrollPane2.setPreferredSize(new Dimension(screenSize.width / 8 * 7, 500));
         jScrollPane2.setViewportView(jTextPane1);
 
         jSplitPane1.setLeftComponent(jScrollPane1);
@@ -269,7 +271,8 @@ public class PDFDebugger extends JFrame
         menuBar.add(createViewMenu());
         setJMenuBar(menuBar);
 
-        setBounds(screenSize.width / 4, screenSize.height / 4, screenSize.width / 2, screenSize.height / 2);
+        setExtendedState(windowPrefs.getExtendedState());
+        setBounds(windowPrefs.getBounds());
 
         // drag and drop to open files
         setTransferHandler(new TransferHandler()
@@ -1106,6 +1109,10 @@ public class PDFDebugger extends JFrame
                 throw new RuntimeException(e);
             }
         }
+        windowPrefs.setExtendedState(getExtendedState());
+        this.setExtendedState(Frame.NORMAL);
+        windowPrefs.setBounds(getBounds());
+        windowPrefs.setDividerLocation(jSplitPane1.getDividerLocation());
         performApplicationExit();
     }
 
