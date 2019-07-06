@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * This program will just take all of the stream objects in a PDF and dereference
@@ -100,16 +101,7 @@ public final class DecompressObjectstreams
         }
         finally
         {
-            if(doc != null)
-            {
-                try
-                { 
-                    doc.close();
-                }
-                catch(Exception e)
-                {
-                }
-            }
+            IOUtils.closeQuietly(doc);
         }
     }
 
