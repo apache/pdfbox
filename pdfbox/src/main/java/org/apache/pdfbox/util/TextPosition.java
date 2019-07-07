@@ -731,14 +731,14 @@ public class TextPosition
             }
             //diacritic completely covers this character and therefore we assume that
             //this is the character the diacritic belongs to
-            else if(diacXStart < currCharXStart && diacXEnd > currCharXEnd)
+            else if (diacXStart < currCharXStart)
             {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
             }
             //Otherwise, The diacritic modifies this character because its completely
             //contained by the character width
-            else if(diacXStart >= currCharXStart && diacXEnd <= currCharXEnd)
+            else if (diacXEnd <= currCharXEnd)
             {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
@@ -746,7 +746,7 @@ public class TextPosition
             /*
              * Last character in the TextPosition so we add diacritic to the end
              */
-            else if(diacXStart >= currCharXStart && diacXEnd > currCharXEnd && i == (strLen - 1))
+            else if (i == strLen - 1)
             {
                 insertDiacritic(i, diacritic, normalize);
                 wasAdded = true;
