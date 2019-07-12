@@ -384,7 +384,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             if (initialClip != null)
             {
                 // apply the remembered initial clip, but transform it first
-                graphics.clip(graphics.getTransform().createTransformedShape(initialClip));
+                //TODO see PDFBOX-4583
             }
             lastClip = clippingPath;
         }
