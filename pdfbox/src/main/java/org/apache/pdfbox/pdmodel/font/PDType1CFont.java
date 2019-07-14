@@ -301,11 +301,15 @@ public class PDType1CFont extends PDSimpleFont
     public float getHeight(int code) throws IOException
     {
         String name = codeToName(code);
-        float height = 0;
+        float height;
         if (!glyphHeights.containsKey(name))
         {
             height = (float)cffFont.getType1CharString(name).getBounds().getHeight(); // todo: cffFont could be null
             glyphHeights.put(name, height);
+        }
+        else
+        {
+            height = glyphHeights.get(name);
         }
         return height;
     }
