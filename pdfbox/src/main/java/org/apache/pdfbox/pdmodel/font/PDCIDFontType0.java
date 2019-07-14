@@ -442,7 +442,7 @@ public class PDCIDFontType0 extends PDCIDFont
     {
         int cid = codeToCID(code);
 
-        float height = 0;
+        float height;
         if (!glyphHeights.containsKey(cid))
         {
             height = (float) getType2CharString(cid).getBounds().getHeight();
