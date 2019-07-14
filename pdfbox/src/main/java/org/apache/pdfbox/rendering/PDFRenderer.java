@@ -392,7 +392,7 @@ public class PDFRenderer
      * <a href="https://bugs.openjdk.java.net/browse/JDK-6689349">JDK-6689349</a>. Rendering will
      * not abort, but the pages will be rendered incorrectly.</li>
      * <li>Clipping the Graphics2D will not work properly, see
-     * <a href="https://issues.apache.org/jira/browse/PDFBOX-4583">PDFBOX-4583</a></li>.
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-4583">PDFBOX-4583</a>.</li>
      * </ul>
      * If you encounter these problems, then you should render into an image by using the
      * {@link #renderImage(int) renderImage} methods.
