@@ -272,12 +272,14 @@ public class Overlay implements Closeable
         private final PDRectangle overlayMediaBox;
         private final COSStream overlayContentStream;
         private final COSDictionary overlayResources;
+        private final int overlayRotation;
 
-        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources)
+        private LayoutPage(PDRectangle mediaBox, COSStream contentStream, COSDictionary resources, int rotation)
         {
             overlayMediaBox = mediaBox;
             overlayContentStream = contentStream;
             overlayResources = resources;
+            overlayRotation = rotation;
         }
     }
 
@@ -291,7 +293,7 @@ public class Overlay implements Closeable
             resources = new PDResources();
         }
         return new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents),
-                resources.getCOSObject());
+                resources.getCOSObject(), page.getRotation());
     }
     
     private Map<Integer,LayoutPage> getLayoutPages(PDDocument doc) throws IOException
@@ -308,7 +310,7 @@ public class Overlay implements Closeable
                 resources = new PDResources();
             }
             layoutPages.put(i, new LayoutPage(page.getMediaBox(), createCombinedContentStream(contents), 
-                    resources.getCOSObject()));
+                    resources.getCOSObject(), page.getRotation()));
         }
         return layoutPages;
     }
@@ -473,7 +475,7 @@ public class Overlay implements Closeable
         PDFormXObject xobjForm = new PDFormXObject(contentStream);
         xobjForm.setResources(new PDResources(layoutPage.overlayResources));
         xobjForm.setFormType(1);
-        xobjForm.setBBox( layoutPage.overlayMediaBox.createRetranslatedRectangle());
+        xobjForm.setBBox(layoutPage.overlayMediaBox.createRetranslatedRectangle());
         xobjForm.setMatrix(new AffineTransform());
         PDResources resources = page.getResources();
         return resources.add(xobjForm, "OL");
