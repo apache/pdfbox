@@ -432,7 +432,7 @@ public class Overlay implements Closeable
             resources = new PDResources();
             page.setResources(resources);
         }
-        COSName xObjectId = createOverlayXObject(page, layoutPage, layoutPage.overlayContentStream);
+        COSName xObjectId = createOverlayXObject(page, layoutPage);
         array.add(createOverlayStream(page, layoutPage, xObjectId));
     }
 
@@ -471,9 +471,9 @@ public class Overlay implements Closeable
         return layoutPage;
     }
 
-    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage, COSStream contentStream)
+    private COSName createOverlayXObject(PDPage page, LayoutPage layoutPage)
     {
-        PDFormXObject xobjForm = new PDFormXObject(contentStream);
+        PDFormXObject xobjForm = new PDFormXObject(layoutPage.overlayContentStream);
         xobjForm.setResources(new PDResources(layoutPage.overlayResources));
         xobjForm.setFormType(1);
         xobjForm.setBBox(layoutPage.overlayMediaBox.createRetranslatedRectangle());
