@@ -1149,8 +1149,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         // prepare transfer functions (either one per color or one for all) 
         // and maps (actually arrays[256] to be faster) to avoid calculating values several times
-        Integer rMap[], gMap[], bMap[];
-        PDFunction rf, gf, bf;
+        Integer rMap[];
+        Integer gMap[];
+        Integer bMap[];
+        PDFunction rf;
+        PDFunction gf;
+        PDFunction bf;
         if (transfer instanceof COSArray)
         {
             COSArray ar = (COSArray) transfer;
@@ -1181,7 +1185,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 int ri = (rgb >> 16) & 0xFF;
                 int gi = (rgb >> 8) & 0xFF;
                 int bi = rgb & 0xFF;
-                int ro, go, bo;
+                int ro;
+                int go;
+                int bo;
                 if (rMap[ri] != null)
                 {
                     ro = rMap[ri];
