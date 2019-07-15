@@ -100,7 +100,7 @@ public class PDType1CFont extends PDSimpleFont
             {
                 // note: this could be an OpenType file, fortunately CFFParser can handle that
                 CFFParser cffParser = new CFFParser();
-                cffEmbedded = (CFFType1Font)cffParser.parse(bytes, new ByteSource()).get(0);
+                cffEmbedded = (CFFType1Font)cffParser.parse(bytes, new FF3ByteSource()).get(0);
             }
         }
         catch (IOException e)
@@ -133,13 +133,12 @@ public class PDType1CFont extends PDSimpleFont
         fontMatrixTransform.scale(1000, 1000);
     }
     
-    private class ByteSource implements CFFParser.ByteSource
+    private class FF3ByteSource implements CFFParser.ByteSource
     {
         @Override
         public byte[] getBytes() throws IOException
         {
-            PDStream ff3Stream = getFontDescriptor().getFontFile3();
-            return IOUtils.toByteArray(ff3Stream.createInputStream());
+            return getFontDescriptor().getFontFile3().toByteArray();
         }
     }
 
