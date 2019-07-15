@@ -50,7 +50,7 @@ public class CFFTable extends TTFTable
         byte[] bytes = data.read((int)getLength());
 
         CFFParser parser = new CFFParser();
-        cffFont = parser.parse(bytes, new ByteSource(font)).get(0);
+        cffFont = parser.parse(bytes, new CFFBytesource(font)).get(0);
 
         initialized = true;
     }
@@ -66,11 +66,11 @@ public class CFFTable extends TTFTable
     /**
      * Allows bytes to be re-read later by CFFParser.
      */
-    private static class ByteSource implements CFFParser.ByteSource
+    private static class CFFBytesource implements CFFParser.ByteSource
     {
         private final TrueTypeFont ttf;
         
-        ByteSource(TrueTypeFont ttf)
+        CFFBytesource(TrueTypeFont ttf)
         {
            this.ttf = ttf; 
         }
