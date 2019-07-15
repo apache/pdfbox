@@ -43,13 +43,14 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
@@ -146,7 +147,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private final TilingPaintFactory tilingPaintFactory = new TilingPaintFactory(this);
     
-    private final Stack<TransparencyGroup> transparencyGroupStack = new Stack<>();
+    private final Deque<TransparencyGroup> transparencyGroupStack = new ArrayDeque<>();
 
     // if greater zero the content is hidden and wil not be rendered
     private int nestedHiddenOCGCount;
@@ -438,7 +439,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         at.concatenate(font.getFontMatrix().createAffineTransform());
 
         // create cache if it does not exist
-        PDVectorFont vectorFont = ((PDVectorFont)font);
+        PDVectorFont vectorFont = (PDVectorFont) font;
         GlyphCache cache = glyphCaches.get(font);
         if (cache == null)
         {
@@ -853,6 +854,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     return false;
 
                 case PathIterator.SEG_CLOSE:
+                    break;
+
+                default:
                     break;
             }
             iter.next();
