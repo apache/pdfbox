@@ -83,7 +83,7 @@ public class PDType1CFont extends PDSimpleFont
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                bytes = IOUtils.toByteArray(ff3Stream.createInputStream());
+                bytes = ff3Stream.toByteArray();
                 if (bytes.length == 0)
                 {
                     LOG.error("Invalid data for embedded Type1C font " + getName());
