@@ -80,7 +80,7 @@ public class PDCIDFontType0 extends PDCIDFont
             PDStream ff3Stream = fd.getFontFile3();
             if (ff3Stream != null)
             {
-                bytes = IOUtils.toByteArray(ff3Stream.createInputStream());
+                bytes = ff3Stream.toByteArray();
             }
         }
 
