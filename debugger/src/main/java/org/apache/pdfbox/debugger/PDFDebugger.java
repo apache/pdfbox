@@ -145,6 +145,7 @@ public class PDFDebugger extends JFrame
     
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
+    @SuppressWarnings("squid:S1948")
     private WindowPrefs windowPrefs;
     private boolean isPageMode;
 
