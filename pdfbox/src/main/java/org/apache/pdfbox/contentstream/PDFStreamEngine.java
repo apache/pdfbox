@@ -22,11 +22,12 @@ import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -80,7 +81,7 @@ public abstract class PDFStreamEngine
     private Matrix textMatrix;
     private Matrix textLineMatrix;
 
-    private Stack<PDGraphicsState> graphicsStack = new Stack<PDGraphicsState>();
+    private Deque<PDGraphicsState> graphicsStack = new ArrayDeque<PDGraphicsState>();
 
     private PDResources resources;
     private PDPage currentPage;
@@ -216,7 +217,7 @@ public abstract class PDFStreamEngine
         }
 
         PDResources parent = pushResources(group);
-        Stack<PDGraphicsState> savedStack = saveGraphicsStack();
+        Deque<PDGraphicsState> savedStack = saveGraphicsStack();
         
         Matrix parentMatrix = initialMatrix;
 
@@ -262,7 +263,7 @@ public abstract class PDFStreamEngine
         }
 
         PDResources parent = pushResources(charProc);
-        Stack<PDGraphicsState> savedStack = saveGraphicsStack();
+        Deque<PDGraphicsState> savedStack = saveGraphicsStack();
 
         // replace the CTM with the TRM
         getGraphicsState().setCurrentTransformationMatrix(textRenderingMatrix);
@@ -299,7 +300,7 @@ public abstract class PDFStreamEngine
             throws IOException
     {
         PDResources parent = pushResources(appearance);
-        Stack<PDGraphicsState> savedStack = saveGraphicsStack();
+        Deque<PDGraphicsState> savedStack = saveGraphicsStack();
 
         PDRectangle bbox = appearance.getBBox();
         PDRectangle rect = annotation.getRectangle();
@@ -376,7 +377,7 @@ public abstract class PDFStreamEngine
         initialMatrix = Matrix.concatenate(initialMatrix, patternMatrix);
 
         // save the original graphics state
-        Stack<PDGraphicsState> savedStack = saveGraphicsStack();
+        Deque<PDGraphicsState> savedStack = saveGraphicsStack();
 
         // save a clean state (new clipping path, line path, etc.)
         Rectangle2D bbox = tilingPattern.getBBox().transform(patternMatrix).getBounds2D();
@@ -463,7 +464,7 @@ public abstract class PDFStreamEngine
     private void processStream(PDContentStream contentStream) throws IOException
     {
         PDResources parent = pushResources(contentStream);
-        Stack<PDGraphicsState> savedStack = saveGraphicsStack();
+        Deque<PDGraphicsState> savedStack = saveGraphicsStack();
         Matrix parentMatrix = initialMatrix;
 
         // transform the CTM using the stream's matrix
@@ -622,7 +623,8 @@ public abstract class PDFStreamEngine
                 float tj = ((COSNumber)obj).floatValue();
 
                 // calculate the combined displacements
-                float tx, ty;
+                float tx;
+                float ty;
                 if (isVertical)
                 {
                     tx = 0;
@@ -739,7 +741,8 @@ public abstract class PDFStreamEngine
             restoreGraphicsState();
 
             // calculate the combined displacements
-            float tx, ty;
+            float tx;
+            float ty;
             if (font.isVertical())
             {
                 tx = 0;
@@ -947,10 +950,10 @@ public abstract class PDFStreamEngine
      * 
      * @return the saved graphics state stack.
      */
-    protected final Stack<PDGraphicsState> saveGraphicsStack()
+    protected final Deque<PDGraphicsState> saveGraphicsStack()
     {
-        Stack<PDGraphicsState> savedStack = graphicsStack;
-        graphicsStack = new Stack<PDGraphicsState>();
+        Deque<PDGraphicsState> savedStack = graphicsStack;
+        graphicsStack = new ArrayDeque<PDGraphicsState>();
         graphicsStack.add(savedStack.peek().clone());
         return savedStack;
     }
@@ -960,7 +963,7 @@ public abstract class PDFStreamEngine
      * 
      * @param snapshot the graphics state stack to be restored.
      */
-    protected final void restoreGraphicsStack(Stack<PDGraphicsState> snapshot)
+    protected final void restoreGraphicsStack(Deque<PDGraphicsState> snapshot)
     {
         graphicsStack = snapshot;
     }
