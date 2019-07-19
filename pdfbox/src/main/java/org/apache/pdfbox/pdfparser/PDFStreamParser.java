@@ -303,7 +303,7 @@ public class PDFStreamParser extends BaseParser
             case 'I':
             {
                 //Special case for ID operator
-                String id = "" + (char) seqSource.read() + (char) seqSource.read();
+                String id = Character.toString((char) seqSource.read()) + (char) seqSource.read();
                 if( !id.equals( "ID" ) )
                 {
                     throw new IOException( "Error: Expected operator 'ID' actual='" + id +
