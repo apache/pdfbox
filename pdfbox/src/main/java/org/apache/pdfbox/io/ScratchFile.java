@@ -240,10 +240,12 @@ public class ScratchFile implements Closeable
                 // enlarge if we do not overflow
                 if (pageCount + ENLARGE_PAGE_COUNT > pageCount)
                 {
+                    LOG.debug("fileLen before: " + fileLen + ", raf length: " + raf.length());
+                    LOG.debug("file: " + file + ", length: " + file.length());
                     fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
-        
+
                     raf.setLength(fileLen);
-        
+                    LOG.debug("fileLen after:  " + fileLen + ", raf length: " + raf.length());
                     freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
                 }
             }
