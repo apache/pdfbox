@@ -1389,7 +1389,7 @@ public abstract class BaseParser
      */
     protected final StringBuilder readStringNumber() throws IOException
     {
-        int lastByte = 0;
+        int lastByte;
         StringBuilder buffer = new StringBuilder();
         while( (lastByte = seqSource.read() ) != ASCII_SPACE &&
                 lastByte != ASCII_LF &&
