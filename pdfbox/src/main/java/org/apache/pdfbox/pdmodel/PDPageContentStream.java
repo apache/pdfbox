@@ -978,7 +978,10 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
-     * The cm operator. Concatenates the given matrix with the CTM.
+     * The cm operator. Concatenates the given matrix with the current transformation matrix (CTM),
+     * which maps user space coordinates used within a PDF content stream into output device
+     * coordinates. More details on coordinates can be found in the PDF 32000 specification, 8.3.2
+     * Coordinate Spaces.
      *
      * @param matrix the transformation matrix
      * @throws IOException If there is an error writing to the stream.
