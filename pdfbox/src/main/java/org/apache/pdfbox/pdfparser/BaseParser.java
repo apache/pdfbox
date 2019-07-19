@@ -803,7 +803,7 @@ public abstract class BaseParser
      */
     protected COSBoolean parseBoolean() throws IOException
     {
-        COSBoolean retval = null;
+        COSBoolean retval;
         char c = (char) seqSource.peek();
         if( c == 't' )
         {
