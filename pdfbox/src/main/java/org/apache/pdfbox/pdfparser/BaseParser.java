@@ -723,7 +723,7 @@ public abstract class BaseParser
                 // valid hex digits.
                 if (isHexDigit((char)ch1) && isHexDigit((char)ch2))
                 {
-                    String hex = "" + (char)ch1 + (char)ch2;
+                    String hex = Character.toString((char) ch1) + (char) ch2;
                     try
                     {
                         buffer.write(Integer.parseInt(hex, 16));
