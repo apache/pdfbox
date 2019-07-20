@@ -47,54 +47,12 @@ public final class COSString extends COSBase
 {
     private static final Log LOG = LogFactory.getLog(COSString.class);
 
+    private byte[] bytes;
+    private boolean forceHexForm;
+
     // legacy behaviour for old PDFParser
     public static final boolean FORCE_PARSING =
             Boolean.getBoolean("org.apache.pdfbox.forceParsing");
-
-    /**
-     * This will create a COS string from a string of hex characters.
-     *
-     * @param hex A hex string.
-     * @return A cos string with the hex characters converted to their actual bytes.
-     * @throws IOException If there is an error with the hex string.
-     */
-    public static COSString parseHex(String hex) throws IOException
-    {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        StringBuilder hexBuffer = new StringBuilder(hex.trim());
-
-        // if odd number then the last hex digit is assumed to be 0
-        if (hexBuffer.length() % 2 != 0)
-        {
-            hexBuffer.append('0');
-        }
-
-        int length = hexBuffer.length();
-        for (int i = 0; i < length; i += 2)
-        {
-            try
-            {
-                bytes.write(Integer.parseInt(hexBuffer.substring(i, i + 2), 16));
-            }
-            catch (NumberFormatException e)
-            {
-                if (FORCE_PARSING)
-                {
-                    LOG.warn("Encountered a malformed hex string");
-                    bytes.write('?'); // todo: what does Acrobat do? Any example PDFs?
-                }
-                else
-                {
-                    throw new IOException("Invalid hex string: " + hex, e);
-                }
-            }
-        }
-
-        return new COSString(bytes.toByteArray());
-    }
-
-    private byte[] bytes;
-    private boolean forceHexForm;
 
     /**
      * Creates a new PDF string from a byte array. This method can be used to read a string from
@@ -148,6 +106,48 @@ public final class COSString extends COSBase
             }
             bytes = out.toByteArray();
         }
+    }
+
+    /**
+     * This will create a COS string from a string of hex characters.
+     *
+     * @param hex A hex string.
+     * @return A cos string with the hex characters converted to their actual bytes.
+     * @throws IOException If there is an error with the hex string.
+     */
+    public static COSString parseHex(String hex) throws IOException
+    {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        StringBuilder hexBuffer = new StringBuilder(hex.trim());
+
+        // if odd number then the last hex digit is assumed to be 0
+        if (hexBuffer.length() % 2 != 0)
+        {
+            hexBuffer.append('0');
+        }
+
+        int length = hexBuffer.length();
+        for (int i = 0; i < length; i += 2)
+        {
+            try
+            {
+                bytes.write(Integer.parseInt(hexBuffer.substring(i, i + 2), 16));
+            }
+            catch (NumberFormatException e)
+            {
+                if (FORCE_PARSING)
+                {
+                    LOG.warn("Encountered a malformed hex string");
+                    bytes.write('?'); // todo: what does Acrobat do? Any example PDFs?
+                }
+                else
+                {
+                    throw new IOException("Invalid hex string: " + hex, e);
+                }
+            }
+        }
+
+        return new COSString(bytes.toByteArray());
     }
 
     /**
