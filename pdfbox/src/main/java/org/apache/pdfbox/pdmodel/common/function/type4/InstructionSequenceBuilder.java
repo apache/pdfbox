@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
  */
 public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandler
 {
+    private static final Pattern INTEGER_PATTERN = Pattern.compile("[\\+\\-]?\\d+");
+    private static final Pattern REAL_PATTERN = Pattern.compile("[\\-]?\\d*\\.\\d*([Ee]\\-?\\d+)?");
 
     private final InstructionSequence mainSequence = new InstructionSequence();
     private final Stack<InstructionSequence> seqStack = new Stack<InstructionSequence>();
@@ -61,9 +63,6 @@ public final class InstructionSequenceBuilder extends Parser.AbstractSyntaxHandl
     {
         return this.seqStack.peek();
     }
-
-    private static final Pattern INTEGER_PATTERN = Pattern.compile("[\\+\\-]?\\d+");
-    private static final Pattern REAL_PATTERN = Pattern.compile("[\\-]?\\d*\\.\\d*([Ee]\\-?\\d+)?");
 
     /** {@inheritDoc} */
     @Override
