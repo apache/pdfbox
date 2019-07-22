@@ -68,7 +68,7 @@ class BitwiseOperators
         @Override
         protected boolean applyForBoolean(boolean bool1, boolean bool2)
         {
-            return bool1 & bool2;
+            return bool1 && bool2;
         }
 
         @Override
@@ -148,7 +148,7 @@ class BitwiseOperators
         @Override
         protected boolean applyForBoolean(boolean bool1, boolean bool2)
         {
-            return bool1 | bool2;
+            return bool1 || bool2;
         }
 
         @Override
