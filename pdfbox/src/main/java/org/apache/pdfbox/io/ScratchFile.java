@@ -234,18 +234,29 @@ public class ScratchFile implements Closeable
                 
                 if (expectedFileLen != fileLen)
                 {
-                    throw new IOException("Expected scratch file size of " + expectedFileLen + " but found " + fileLen);
+                    throw new IOException("Expected scratch file size of " + expectedFileLen +
+                                          " but found " + fileLen + " in file " + file);
                 }
                     
-                // enlarge if we do not overflow
+                // enlarge if we do not int overflow
                 if (pageCount + ENLARGE_PAGE_COUNT > pageCount)
                 {
-                    LOG.debug("fileLen before: " + fileLen + ", raf length: " + raf.length());
-                    LOG.debug("file: " + file + ", length: " + file.length());
+                    LOG.debug("file: " + file);
+                    LOG.debug("fileLen before: " + fileLen + ", raf length: " + raf.length() + ", file length: " + file.length());
                     fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
 
                     raf.setLength(fileLen);
-                    LOG.debug("fileLen after:  " + fileLen + ", raf length: " + raf.length());
+                    LOG.debug("fileLen after1:  " + fileLen + ", raf length: " + raf.length() + ", file length: " + file.length());
+                    if (fileLen != raf.length() || fileLen != file.length())
+                    {
+                        // PDFBOX-4601 possible AWS lambda bug that setLength() doesn't throw
+                        // if not enough space
+                        long origFilePointer = raf.getFilePointer();
+                        raf.seek(fileLen - 1);
+                        raf.write(0);
+                        raf.seek(origFilePointer);
+                        LOG.debug("fileLen after2:  " + fileLen + ", raf length: " + raf.length() + ", file length: " + file.length());
+                    }
                     freePages.set(pageCount, pageCount + ENLARGE_PAGE_COUNT);
                 }
             }
