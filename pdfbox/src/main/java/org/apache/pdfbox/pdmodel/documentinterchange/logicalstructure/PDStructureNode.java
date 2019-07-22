@@ -111,7 +111,7 @@ public abstract class PDStructureNode implements COSObjectable
         COSBase k = this.getCOSObject().getDictionaryObject(COSName.K);
         if (k instanceof COSArray)
         {
-            for (COSBase kid : ((COSArray) k))
+            for (COSBase kid : (COSArray) k)
             {
                 Object kidObject = this.createObject(kid);
                 if (kidObject != null)
