@@ -33,15 +33,6 @@ public class PDMarkedContentReference implements COSObjectable
     private final COSDictionary dictionary;
     
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public COSDictionary getCOSObject()
-    {
-        return this.dictionary;
-    }
-
-    /**
      * Default constructor
      */
     public PDMarkedContentReference()
@@ -58,6 +49,15 @@ public class PDMarkedContentReference implements COSObjectable
     public PDMarkedContentReference(COSDictionary dictionary)
     {
         this.dictionary = dictionary;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public COSDictionary getCOSObject()
+    {
+        return this.dictionary;
     }
 
     /**

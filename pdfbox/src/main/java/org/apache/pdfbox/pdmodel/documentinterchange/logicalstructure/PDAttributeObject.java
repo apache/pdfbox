@@ -36,6 +36,23 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
 {
 
     /**
+     * Default constructor.
+     */
+    public PDAttributeObject()
+    {
+    }
+
+    /**
+     * Creates a new attribute object with a given dictionary.
+     * 
+     * @param dictionary the dictionary
+     */
+    public PDAttributeObject(COSDictionary dictionary)
+    {
+        super(dictionary);
+    }
+
+    /**
      * Creates an attribute object.
      * 
      * @param dictionary the dictionary
@@ -98,25 +115,6 @@ public abstract class PDAttributeObject extends PDDictionaryWrapper
     {
         this.structureElement = structureElement;
     }
-
-
-    /**
-     * Default constructor.
-     */
-    public PDAttributeObject()
-    {
-    }
-
-    /**
-     * Creates a new attribute object with a given dictionary.
-     * 
-     * @param dictionary the dictionary
-     */
-    public PDAttributeObject(COSDictionary dictionary)
-    {
-        super(dictionary);
-    }
-
 
     /**
      * Returns the owner of the attributes.
