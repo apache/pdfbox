@@ -30,6 +30,13 @@ public class Revisions<T>
     private List<T> objects;
     private List<Integer> revisionNumbers;
 
+    /**
+     * Constructor.
+     */
+    public Revisions()
+    {
+    }
+
     private List<T> getObjects()
     {
         if (this.objects == null)
@@ -46,13 +53,6 @@ public class Revisions<T>
             this.revisionNumbers = new ArrayList<>();
         }
         return this.revisionNumbers;
-    }
-
-    /**
-     * 
-     */
-    public Revisions()
-    {
     }
 
     /**

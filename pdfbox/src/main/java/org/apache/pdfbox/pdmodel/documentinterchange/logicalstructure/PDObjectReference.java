@@ -52,17 +52,6 @@ public class PDObjectReference implements COSObjectable
     private final COSDictionary dictionary;
 
     /**
-     * Returns the underlying dictionary.
-     * 
-     * @return the dictionary
-     */
-    @Override
-    public COSDictionary getCOSObject()
-    {
-        return this.dictionary;
-    }
-
-    /**
      * Default Constructor.
      *
      */
@@ -80,6 +69,17 @@ public class PDObjectReference implements COSObjectable
     public PDObjectReference(COSDictionary theDictionary)
     {
         dictionary = theDictionary;
+    }
+
+    /**
+     * Returns the underlying dictionary.
+     * 
+     * @return the dictionary
+     */
+    @Override
+    public COSDictionary getCOSObject()
+    {
+        return this.dictionary;
     }
 
     /**
