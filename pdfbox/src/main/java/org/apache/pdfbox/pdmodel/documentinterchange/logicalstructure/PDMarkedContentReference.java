@@ -31,15 +31,6 @@ public class PDMarkedContentReference implements COSObjectable
     public static final String TYPE = "MCR";
 
     private final COSDictionary dictionary;
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public COSDictionary getCOSObject()
-    {
-        return this.dictionary;
-    }
 
     /**
      * Default constructor
@@ -58,6 +49,15 @@ public class PDMarkedContentReference implements COSObjectable
     public PDMarkedContentReference(COSDictionary dictionary)
     {
         this.dictionary = dictionary;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public COSDictionary getCOSObject()
+    {
+        return this.dictionary;
     }
 
     /**
