@@ -25,6 +25,11 @@ import java.util.Stack;
 class BitwiseOperators
 {
 
+    private BitwiseOperators()
+    {
+        // Private constructor.
+    }
+
     /** Abstract base class for logical operators. */
     private abstract static class AbstractLogicalOperator implements Operator
     {

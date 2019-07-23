@@ -27,6 +27,11 @@ import java.util.Stack;
 class StackOperators
 {
 
+    private StackOperators()
+    {
+        // Private constructor.
+    }
+
     /** Implements the "copy" operator. */
     static class Copy implements Operator
     {

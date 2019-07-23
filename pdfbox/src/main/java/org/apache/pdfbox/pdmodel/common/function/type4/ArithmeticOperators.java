@@ -25,6 +25,11 @@ import java.util.Stack;
 class ArithmeticOperators
 {
 
+    private ArithmeticOperators()
+    {
+        // Private constructor.
+    }
+
     /** Implements the "abs" operator. */
     static class Abs implements Operator
     {
