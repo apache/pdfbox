@@ -25,6 +25,11 @@ import java.util.Stack;
 class RelationalOperators
 {
 
+    private RelationalOperators()
+    {
+        // Private constructor.
+    }
+
     /** Implements the "eq" operator. */
     static class Eq implements Operator
     {
