@@ -25,6 +25,11 @@ import java.util.Stack;
 class ConditionalOperators
 {
 
+    private ConditionalOperators()
+    {
+        // Private constructor.
+    }
+
     /** Implements the "if" operator. */
     static class If implements Operator
     {
