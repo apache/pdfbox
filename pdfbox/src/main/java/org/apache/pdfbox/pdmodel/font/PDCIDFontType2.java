@@ -18,6 +18,8 @@ package org.apache.pdfbox.pdmodel.font;
 
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.cff.Type2CharString;
@@ -49,6 +51,7 @@ public class PDCIDFontType2 extends PDCIDFont
     private final CmapLookup cmap; // may be null
     private Matrix fontMatrix;
     private BoundingBox fontBBox;
+    private final Set<Integer> noMapping = new HashSet<Integer>();
 
     /**
      * Constructor.
@@ -245,7 +248,12 @@ public class PDCIDFontType2 extends PDCIDFont
                 String unicode = parent.toUnicode(code);
                 if (unicode == null)
                 {
-                    LOG.warn("Failed to find a character mapping for " + code + " in " + getName());
+                    if (!noMapping.contains(code))
+                    {
+                        // we keep track of which warnings have been issued, so we don't log multiple times
+                        noMapping.add(code);
+                        LOG.warn("Failed to find a character mapping for " + code + " in " + getName());
+                    }
                     // Acrobat is willing to use the CID as a GID, even when the font isn't embedded
                     // see PDFBOX-2599
                     return codeToCID(code);
