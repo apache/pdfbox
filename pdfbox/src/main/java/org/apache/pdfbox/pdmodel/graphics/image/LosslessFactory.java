@@ -563,8 +563,10 @@ public final class LosslessFactory
 
             ColorSpace srcCspace = image.getColorModel().getColorSpace();
             int srcCspaceType = srcCspace.getType();
-			PDColorSpace pdColorSpace = srcCspaceType != ColorSpace.TYPE_CMYK
-                                        ? PDDeviceRGB.INSTANCE : PDDeviceCMYK.INSTANCE;
+            PDColorSpace pdColorSpace = srcCspaceType == ColorSpace.TYPE_CMYK
+                    ? PDDeviceCMYK.INSTANCE
+                    : (srcCspaceType == ColorSpace.TYPE_GRAY
+                            ? PDDeviceGray.INSTANCE : PDDeviceRGB.INSTANCE);
 
             // Encode the image profile if the image has one
             if (srcCspace instanceof ICC_ColorSpace)
