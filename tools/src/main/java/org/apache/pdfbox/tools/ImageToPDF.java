@@ -47,7 +47,7 @@ public final class ImageToPDF
 
         ImageToPDF app = new ImageToPDF();
 
-        if (args.length <= 2)
+        if (args.length < 2)
         {
             app.usage();
         }
