@@ -561,7 +561,8 @@ public final class LosslessFactory
             int w = image.getWidth();
 
             ColorSpace srcCspace = image.getColorModel().getColorSpace();
-            PDColorSpace pdColorSpace = srcCspace.getType() != ColorSpace.TYPE_CMYK
+            int srcCspaceType = srcCspace.getType();
+			PDColorSpace pdColorSpace = srcCspaceType != ColorSpace.TYPE_CMYK
                                         ? PDDeviceRGB.INSTANCE : PDDeviceCMYK.INSTANCE;
 
             // Encode the image profile if the image has one
@@ -579,9 +580,9 @@ public final class LosslessFactory
                     pdProfile.getPDStream().getCOSObject().setInt(COSName.N,
                             srcCspace.getNumComponents());
                     pdProfile.getPDStream().getCOSObject().setItem(COSName.ALTERNATE,
-                            srcCspace.getType() == ColorSpace.TYPE_CMYK ?
-                                    COSName.DEVICECMYK :
-                                    COSName.DEVICERGB);
+                            srcCspaceType == ColorSpace.TYPE_GRAY ? COSName.DEVICEGRAY
+                                    : (srcCspaceType == ColorSpace.TYPE_CMYK ? COSName.DEVICECMYK
+                                            : COSName.DEVICERGB));
                     pdColorSpace = pdProfile;
                 }
             }
