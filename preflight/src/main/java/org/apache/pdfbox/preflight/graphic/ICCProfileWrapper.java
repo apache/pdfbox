@@ -131,17 +131,9 @@ public class ICCProfileWrapper
                     .getDictionaryObject(COSName.DEST_OUTPUT_PROFILE);
             if (destOutputProfile instanceof COSStream)
             {
-                try
+                try (InputStream is = ((COSStream) destOutputProfile).createInputStream())
                 {
-                    InputStream is = ((COSStream) destOutputProfile).createInputStream();
-                    try
-                    {
-                        return new ICCProfileWrapper(ICC_Profile.getInstance(is));
-                    }
-                    finally
-                    {
-                        is.close();
-                    }
+                    return new ICCProfileWrapper(ICC_Profile.getInstance(is));
                 }
                 catch (IllegalArgumentException e)
                 {
