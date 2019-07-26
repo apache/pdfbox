@@ -31,11 +31,11 @@ public class ColorSpaceHelperFactory
 {
 
     /**
-     * Return an instance of ColorSpaceHelper according to the ColorSpaceRestiction value.
+     * Return an instance of ColorSpaceHelper according to the ColorSpaceRestriction value.
      * <UL>
-     * <li>ColorSpaceRestiction.NO_PATTERN : returns NoPatternColorSpaceHelper
-     * <li>ColorSpaceRestiction.ONLY_DEVICE : returns DeviceColorSpaceHelper
-     * <li>default : returns StandardColorSpaceHelper
+     * <li>ColorSpaceRestriction.NO_PATTERN : returns NoPatternColorSpaceHelper
+     * <li>ColorSpaceRestriction.ONLY_DEVICE : returns DeviceColorSpaceHelper
+     * <li>ColorSpaceRestriction.NO_RESTRICTION (default) : returns StandardColorSpaceHelper
      * </UL>
      * 
      * @param context
