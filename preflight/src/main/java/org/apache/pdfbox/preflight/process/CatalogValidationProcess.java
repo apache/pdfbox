@@ -33,27 +33,27 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
-import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
+import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
+import static org.apache.pdfbox.preflight.PreflightConstants.*;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
+import org.apache.pdfbox.preflight.graphic.ColorSpaceHelper;
+import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory;
+import org.apache.pdfbox.preflight.graphic.ColorSpaceHelperFactory.ColorSpaceRestriction;
 import org.apache.pdfbox.preflight.graphic.ICCProfileWrapper;
 import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.preflight.utils.ContextHelper;
-
-
-import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.*;
 
 /**
  * This ValidationProcess check if the Catalog entries are confirming with the PDF/A-1b specification.
@@ -360,28 +360,21 @@ public class CatalogValidationProcess extends AbstractProcess
                 return;
             }
 
-            InputStream is = stream.createInputStream();
-            ICC_Profile iccp = null;
-            try
-            {
-                iccp = ICC_Profile.getInstance(is);
-            }
-            finally
-            {
-                is.close();
-            }
-            
-            if (!validateICCProfileNEntry(stream, ctx, iccp))
-            {
-                return;
-            }
-            if (!validateICCProfileVersion(iccp, ctx))
-            {
-                return;
-            }
+            COSArray array = new COSArray();
+            array.add(COSName.ICCBASED);
+            array.add(stream);
+            PDICCBased iccBased = PDICCBased.create(array, null);
+            PreflightConfiguration cfg = ctx.getConfig();
+            ColorSpaceHelperFactory csFact = cfg.getColorSpaceHelperFact();
+            ColorSpaceHelper csHelper =
+                    csFact.getColorSpaceHelper(ctx, iccBased, ColorSpaceRestriction.NO_RESTRICTION);
+            csHelper.validate();
+
             if (ctx.getIccProfileWrapper() == null)
             {
-                ctx.setIccProfileWrapper(new ICCProfileWrapper(iccp));
+                InputStream is = stream.createInputStream();
+                ctx.setIccProfileWrapper(new ICCProfileWrapper(ICC_Profile.getInstance(is)));
+                IOUtils.closeQuietly(is);
             }
         }
         catch (IllegalArgumentException e)
@@ -393,92 +386,6 @@ public class CatalogValidationProcess extends AbstractProcess
         catch (IOException e)
         {
             throw new ValidationException("Unable to parse the ICC Profile.", e);
-        }
-    }
-
-    private boolean validateICCProfileVersion(ICC_Profile iccp, PreflightContext ctx)
-    {
-        PreflightConfiguration config = ctx.getConfig();
-
-        // check the ICC Profile version (6.2.2)
-        if (iccp.getMajorVersion() == 2)
-        {
-            if (iccp.getMinorVersion() > 0x40)
-            {
-                // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
-                // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
-                // The current profile version number is "2.4.0" (encoded as 02400000h")
-                ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
-                        "Invalid version of the ICCProfile");
-                error.setWarning(config.isLazyValidation());
-                addValidationError(ctx, error);
-                return false;
-            }
-            // else OK
-        }
-        else if (iccp.getMajorVersion() > 2)
-        {
-            // in PDF 1.4, max version is 02h.40h (meaning V 3.5)
-            // see the ICCProfile specification (ICC.1:1998-09)page 13 - §6.1.3 :
-            // The current profile version number is "2.4.0" (encoded as 02400000h"
-            ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_TOO_RECENT,
-                    "Invalid version of the ICCProfile");
-            error.setWarning(config.isLazyValidation());
-            addValidationError(ctx, error);
-            return false;
-        }
-        // else seems less than 2, so correct
-        return true;
-    }
-
-    private boolean validateICCProfileNEntry(COSStream stream, PreflightContext ctx, ICC_Profile iccp)
-            throws IOException
-    {
-        COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
-        if (!streamDict.containsKey(COSName.N))
-        {
-            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                    "/N entry of ICC profile is mandatory"));
-            return false;
-        }
-        COSBase nValue = streamDict.getItem(COSName.N);
-        if (!(nValue instanceof COSNumber))
-        {
-            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                    "/N entry of ICC profile must be a number, but is " + nValue));
-            return false;
-        }
-        int nNumberValue = ((COSNumber) nValue).intValue();
-        if (nNumberValue != 1 && nNumberValue != 3 && nNumberValue != 4)
-        {
-            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                    "/N entry of ICC profile must be 1, 3 or 4, but is " + nNumberValue));
-            return false;
-        }
-        if (iccp.getNumComponents() != nNumberValue)
-        {
-            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                    "/N entry of ICC profile is " + nNumberValue + " but the ICC profile has " + iccp.getNumComponents() + " components"));
-            return false;
-        }
-        validateICCProfileAlternateEntry(stream, ctx);
-        return true;
-    }
-
-    private void validateICCProfileAlternateEntry(COSStream stream, PreflightContext ctx) throws IOException
-    {
-        COSArray array = new COSArray();
-        array.add(COSName.ICCBASED);
-        array.add(stream);
-        PDICCBased iccBased = PDICCBased.create(array, null);
-        PDColorSpace altCS = iccBased.getAlternateColorSpace();
-        if (altCS != null && altCS.getNumberOfComponents() != iccBased.getNumberOfComponents())
-        {
-            // https://github.com/veraPDF/veraPDF-library/issues/773
-            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
-                    "/N entry of ICC profile is different (" + iccBased.getNumberOfComponents()
-                    + ") than alternate entry colorspace component count ("
-                    + altCS.getNumberOfComponents() + ")"));
         }
     }
 }
