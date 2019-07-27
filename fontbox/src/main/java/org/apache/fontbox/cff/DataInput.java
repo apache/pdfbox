@@ -207,8 +207,7 @@ public class DataInput
     {
         try
         {
-            int value = inputBuffer[bufferPosition + offset] & 0xff;
-            return value;
+            return inputBuffer[bufferPosition + offset] & 0xff;
         }
         catch (RuntimeException re)
         {
