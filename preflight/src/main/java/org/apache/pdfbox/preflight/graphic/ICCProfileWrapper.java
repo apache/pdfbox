@@ -118,7 +118,7 @@ public class ICCProfileWrapper
      * @throws ValidationException
      *             if an IOException occurs during the DestOutputProfile parsing
      */
-    private static ICCProfileWrapper searchFirstICCProfile(PreflightContext context) throws ValidationException
+    private static ICCProfileWrapper searchFirstICCProfile(PreflightContext context)
     {
         PreflightDocument document = context.getDocument();
         PDDocumentCatalog catalog = document.getDocumentCatalog();
