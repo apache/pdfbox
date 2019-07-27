@@ -301,10 +301,7 @@ pardes14_Jid02_reduced.pdf=1.0.3
 stat_dis_30_fixed.pdf=3.1.2
 Funktionale_Varietaeten.pdf=3.1.4,3.1.11,7.3,2.4.2
 apogee.pdf=3.3.1
-
-# operator "g" without profile not detected by PDF-Tools validator, maybe because it aborts after the conflicting N.
-bug1771.pdf=7.1,2.1.2,1.2.1,1.2.5,2.4.3,1.2.2
-
+bug1771.pdf=7.1,2.1.2,1.2.1,1.2.5,1.2.2
 empty_word.pdf=7.2
 literat.pdf=1.2.5,7.11
 nesrin.pdf=1.2.1,1.2.2,1.2.5
