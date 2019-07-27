@@ -118,8 +118,6 @@ public class ICCProfileWrapper
      * 
      * @param context
      * @return an instance of ICCProfileWrapper or null if there are no DestOutputProfile
-     * @throws ValidationException
-     *             if an IOException occurs during the DestOutputProfile parsing
      */
     private static ICCProfileWrapper searchFirstICCProfile(PreflightContext context)
     {
