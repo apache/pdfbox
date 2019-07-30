@@ -289,8 +289,8 @@ public final class ImageIOUtil
                 // TIFF metadata
                 TIFFUtil.updateMetadata(metadata, image, dpi);
             }
-            else if ("jpeg".equals(formatName.toLowerCase())
-                    || "jpg".equals(formatName.toLowerCase()))
+            else if ("jpeg".equalsIgnoreCase(formatName)
+                    || "jpg".equalsIgnoreCase(formatName))
             {
                 // This segment must be run before other meta operations,
                 // or else "IIOInvalidTreeException: Invalid node: app0JFIF"
@@ -359,7 +359,7 @@ public final class ImageIOUtil
         // PNG writer doesn't conform to the spec which is
         // "The width of a pixel, in millimeters"
         // but instead counts the pixels per millimeter
-        float res = "PNG".equals(formatName.toUpperCase())
+        float res = "PNG".equalsIgnoreCase(formatName)
                     ? dpi / 25.4f
                     : 25.4f / dpi;
 
