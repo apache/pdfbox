@@ -339,7 +339,7 @@ public final class PDAcroForm implements COSObjectable
                                         
                     // scale the appearance stream - mainly needed for images
                     // in buttons and signatures
-                    boolean needsScaling = resolveNeedsScaling(appearanceStream);
+                    boolean needsScaling = resolveNeedsScaling(annotation);
                     
                     Matrix transformationMatrix = new Matrix();
                     boolean transformed = false;
@@ -352,19 +352,15 @@ public final class PDAcroForm implements COSObjectable
                     }
 
                     if (needsScaling)
-                    {                    
+                    {
                         PDRectangle bbox = appearanceStream.getBBox();
                         PDRectangle fieldRect = annotation.getRectangle();
-                        
-                        if (Float.compare(bbox.getWidth() - fieldRect.getWidth(), 0) != 0 && 
-                            Float.compare(bbox.getHeight() - fieldRect.getHeight(), 0) != 0)
-                        {
-                            float xScale = fieldRect.getWidth() / bbox.getWidth();
-                            float yScale = fieldRect.getHeight() / bbox.getHeight();
-                            Matrix scalingMatrix = Matrix.getScaleInstance(xScale, yScale);
-                            transformationMatrix.concatenate(scalingMatrix);
-                            transformed = true;
-                        }
+
+                        float xScale = fieldRect.getWidth() / bbox.getWidth();
+                        float yScale = fieldRect.getHeight() / bbox.getHeight();
+                        Matrix scalingMatrix = Matrix.getScaleInstance(xScale, yScale);
+                        transformationMatrix.concatenate(scalingMatrix);
+                        transformed = true;
                     }
 
                     if (transformed)
@@ -786,14 +782,22 @@ public final class PDAcroForm implements COSObjectable
     /**
      * Check if there needs to be a scaling transformation applied.
      * 
-     * @param appearanceStream
+     * @param annotation
      * @return the need for a scaling transformation.
      */    
-    private boolean resolveNeedsScaling(PDAppearanceStream appearanceStream)
+    private boolean resolveNeedsScaling(PDAnnotation annotation)
     {
+        PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
         // Check if there is a transformation within the XObjects content
         PDResources resources = appearanceStream.getResources();
-        return resources != null && resources.getXObjectNames().iterator().hasNext();
+        if (resources != null && resources.getXObjectNames().iterator().hasNext())
+        {
+            return true;
+        }
+        PDRectangle bbox = appearanceStream.getBBox();
+        PDRectangle fieldRect = annotation.getRectangle();
+        return Float.compare(bbox.getWidth(),  fieldRect.getWidth()) != 0 ||
+               Float.compare(bbox.getHeight(), fieldRect.getHeight()) != 0;
     }
     
     private Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> buildPagesWidgetsMap(List<PDField> fields)
