@@ -291,21 +291,20 @@ public final class PDAcroForm implements COSObjectable
         {
             refreshAppearances(fields);
         }
-        
-        // indicates if the original content stream
-        // has been wrapped in a q...Q pair.
-        boolean isContentStreamWrapped;
-        
+
         // the content stream to write to
         PDPageContentStream contentStream;
-        
+
         Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> pagesWidgetsMap = buildPagesWidgetsMap(fields);
         
         // preserve all non widget annotations
         for (PDPage page : document.getPages())
         {
             Map<COSDictionary,PDAnnotationWidget> widgetsForPageMap = pagesWidgetsMap.get(page.getCOSObject());
-            isContentStreamWrapped = false;
+
+            // indicates if the original content stream
+            // has been wrapped in a q...Q pair.
+            boolean isContentStreamWrapped = false;
             
             List<PDAnnotation> annotations = new ArrayList<>();
                        
@@ -317,15 +316,8 @@ public final class PDAcroForm implements COSObjectable
                 }
                 else if (!annotation.isInvisible() && !annotation.isHidden() && annotation.getNormalAppearanceStream() != null)
                 {
-                    if (!isContentStreamWrapped)
-                    {
-                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
-                        isContentStreamWrapped = true;
-                    }
-                    else
-                    {
-                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true);
-                    }
+                    contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, !isContentStreamWrapped);
+                    isContentStreamWrapped = true;
                     
                     PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
                     
