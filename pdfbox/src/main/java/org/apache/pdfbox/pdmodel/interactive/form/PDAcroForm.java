@@ -751,13 +751,12 @@ public final class PDAcroForm implements COSObjectable
         // a field without specific settings typically needs to be translated
         // to the correct position
         boolean needsTranslation = true;
-        
+
         PDResources resources = appearanceStream.getResources();
         if (resources != null && resources.getXObjectNames().iterator().hasNext())
-        {           
-            
+        {
             Iterator<COSName> xObjectNames = resources.getXObjectNames().iterator();
-            
+
             while (xObjectNames.hasNext())
             {
                 try
@@ -861,32 +860,35 @@ public final class PDAcroForm implements COSObjectable
         
         return pagesAnnotationsMap;
     }
-    
+
     private void removeFields(List<PDField> fields)
     {
-        for (PDField field : fields) {
+        for (PDField field : fields)
+        {
             if (field.getParent() == null)
             {
                 COSArray cosFields = (COSArray) dictionary.getDictionaryObject(COSName.FIELDS);
-                for (int i=0; i<cosFields.size(); i++)
+                for (int i = 0; i < cosFields.size(); i++)
                 {
                     COSDictionary element = (COSDictionary) cosFields.getObject(i);
-                    if (field.getCOSObject().equals(element)) {
+                    if (field.getCOSObject().equals(element))
+                    {
                         cosFields.remove(i);
                     }
                 }
             }
-            else 
+            else
             {
                 COSArray kids = (COSArray) field.getParent().getCOSObject().getDictionaryObject(COSName.KIDS);
-                for (int i=0; i<kids.size(); i++)
+                for (int i = 0; i < kids.size(); i++)
                 {
                     COSDictionary element = (COSDictionary) kids.getObject(i);
-                    if (field.getCOSObject().equals(element)) {
+                    if (field.getCOSObject().equals(element))
+                    {
                         kids.remove(i);
                     }
                 }
             }
-        }        
+        }
     }
 }
