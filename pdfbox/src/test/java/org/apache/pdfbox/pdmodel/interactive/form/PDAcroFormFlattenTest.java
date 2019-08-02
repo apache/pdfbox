@@ -209,6 +209,43 @@ public class PDAcroFormFlattenTest {
 		flattenAndCompare(sourceUrl, targetFileName);        
     }
 	
+
+    /**
+     * PDFBOX-4157 Filled template.
+     */
+    // @Test
+    public void testFlattenPDFBox4157() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976553/PDFBOX-4157-filled.pdf";
+        String targetFileName = "PDFBOX-4157-filled.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
+    /**
+     * PDFBOX-4172 Filled template.
+     */
+    // @Test
+    public void testFlattenPDFBox4172() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976552/PDFBOX-4172-filled.pdf";
+        String targetFileName = "PDFBOX-4172-filled.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
+    /**
+     * PDFBOX-4615 Filled template.
+     */
+    // @Test
+    public void testFlattenPDFBox4615() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976452/resetboundingbox-filled.pdf";
+        String targetFileName = "PDFBOX-4615-filled.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
 	/*
 	 * Flatten and compare with generated image samples.
 	 */
