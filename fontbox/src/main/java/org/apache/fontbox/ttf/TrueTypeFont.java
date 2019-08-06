@@ -104,7 +104,7 @@ public class TrueTypeFont
     /**
      * This will get the naming table for the true type font.
      * 
-     * @return The naming table.
+     * @return The naming table or null if it doesn't exist.
      */
     public NamingTable getNaming()
     {
@@ -119,7 +119,7 @@ public class TrueTypeFont
     /**
      * Get the postscript table for this TTF.
      * 
-     * @return The postscript table.
+     * @return The postscript table or null if it doesn't exist.
      */
     public PostScriptTable getPostScript()
     {
@@ -134,7 +134,7 @@ public class TrueTypeFont
     /**
      * Get the OS/2 table for this TTF.
      * 
-     * @return The OS/2 table.
+     * @return The OS/2 table or null if it doesn't exist.
      */
     public OS2WindowsMetricsTable getOS2Windows()
     {
@@ -149,7 +149,7 @@ public class TrueTypeFont
     /**
      * Get the maxp table for this TTF.
      * 
-     * @return The maxp table.
+     * @return The maxp table or null if it doesn't exist.
      */
     public MaximumProfileTable getMaximumProfile()
     {
@@ -164,7 +164,7 @@ public class TrueTypeFont
     /**
      * Get the head table for this TTF.
      * 
-     * @return The head table.
+     * @return The head table or null if it doesn't exist.
      */
     public HeaderTable getHeader()
     {
@@ -179,7 +179,7 @@ public class TrueTypeFont
     /**
      * Get the hhea table for this TTF.
      * 
-     * @return The hhea table.
+     * @return The hhea table or null if it doesn't exist.
      */
     public HorizontalHeaderTable getHorizontalHeader()
     {
@@ -194,7 +194,7 @@ public class TrueTypeFont
     /**
      * Get the hmtx table for this TTF.
      * 
-     * @return The hmtx table.
+     * @return The hmtx table or null if it doesn't exist.
      */
     public HorizontalMetricsTable getHorizontalMetrics()
     {
@@ -209,7 +209,7 @@ public class TrueTypeFont
     /**
      * Get the loca table for this TTF.
      * 
-     * @return The loca table.
+     * @return The loca table or null if it doesn't exist.
      */
     public IndexToLocationTable getIndexToLocation()
     {
@@ -224,7 +224,7 @@ public class TrueTypeFont
     /**
      * Get the glyf table for this TTF.
      * 
-     * @return The glyf table.
+     * @return The glyf table or null if it doesn't exist.
      */
     public GlyphTable getGlyph()
     {
@@ -239,7 +239,7 @@ public class TrueTypeFont
     /**
      * Get the cmap table for this TTF.
      * 
-     * @return The cmap table.
+     * @return The cmap table or null if it doesn't exist.
      */
     public CMAPTable getCMAP()
     {
