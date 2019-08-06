@@ -147,7 +147,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * This will get the naming table for the true type font.
      * 
-     * @return The naming table.
+     * @return The naming table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public NamingTable getNaming() throws IOException
@@ -158,7 +158,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the postscript table for this TTF.
      * 
-     * @return The postscript table.
+     * @return The postscript table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public PostScriptTable getPostScript() throws IOException
@@ -169,7 +169,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the OS/2 table for this TTF.
      * 
-     * @return The OS/2 table.
+     * @return The OS/2 table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public OS2WindowsMetricsTable getOS2Windows() throws IOException
@@ -180,7 +180,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the maxp table for this TTF.
      * 
-     * @return The maxp table.
+     * @return The maxp table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public MaximumProfileTable getMaximumProfile() throws IOException
@@ -191,7 +191,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the head table for this TTF.
      * 
-     * @return The head table.
+     * @return The head table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public HeaderTable getHeader() throws IOException
@@ -202,7 +202,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the hhea table for this TTF.
      * 
-     * @return The hhea table.
+     * @return The hhea table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public HorizontalHeaderTable getHorizontalHeader() throws IOException
@@ -213,7 +213,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the hmtx table for this TTF.
      * 
-     * @return The hmtx table.
+     * @return The hmtx table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public HorizontalMetricsTable getHorizontalMetrics() throws IOException
@@ -224,7 +224,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the loca table for this TTF.
      * 
-     * @return The loca table.
+     * @return The loca table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public IndexToLocationTable getIndexToLocation() throws IOException
@@ -235,7 +235,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the glyf table for this TTF.
      * 
-     * @return The glyf table.
+     * @return The glyf table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public GlyphTable getGlyph() throws IOException
@@ -246,7 +246,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the "cmap" table for this TTF.
      * 
-     * @return The "cmap" table.
+     * @return The "cmap" table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public CmapTable getCmap() throws IOException
@@ -257,7 +257,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the vhea table for this TTF.
      * 
-     * @return The vhea table.
+     * @return The vhea table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public VerticalHeaderTable getVerticalHeader() throws IOException
@@ -268,7 +268,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the vmtx table for this TTF.
      * 
-     * @return The vmtx table.
+     * @return The vmtx table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public VerticalMetricsTable getVerticalMetrics() throws IOException
@@ -279,7 +279,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the VORG table for this TTF.
      * 
-     * @return The VORG table.
+     * @return The VORG table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public VerticalOriginTable getVerticalOrigin() throws IOException
@@ -290,7 +290,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the "kern" table for this TTF.
      * 
-     * @return The "kern" table.
+     * @return The "kern" table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public KerningTable getKerning() throws IOException
@@ -301,7 +301,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Get the "gsub" table for this TTF.
      *
-     * @return The "gsub" table.
+     * @return The "gsub" table or null if it doesn't exist.
      * @throws IOException if there was an error reading the table.
      */
     public GlyphSubstitutionTable getGsub() throws IOException
