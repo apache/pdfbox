@@ -57,6 +57,10 @@ public class VerticalMetricsTable extends TTFTable
     public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         VerticalHeaderTable vHeader = ttf.getVerticalHeader();
+        if (vHeader == null)
+        {
+            throw new IOException("Could not get vhea table");
+        }
         numVMetrics = vHeader.getNumberOfVMetrics();
         int numGlyphs = ttf.getNumberOfGlyphs();
 
