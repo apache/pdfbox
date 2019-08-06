@@ -51,6 +51,10 @@ public class HorizontalMetricsTable extends TTFTable
     public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
+        if (hHeader == null)
+        {
+            throw new IOException("Could not get hhea table");
+        }
         numHMetrics = hHeader.getNumberOfHMetrics();
         int numGlyphs = ttf.getNumberOfGlyphs();
 
