@@ -50,6 +50,10 @@ public class IndexToLocationTable extends TTFTable
     public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         HeaderTable head = ttf.getHeader();
+        if (head == null)
+        {
+            throw new IOException("Could not get head table");
+        }
         int numGlyphs = ttf.getNumberOfGlyphs();
         offsets = new long[ numGlyphs +1];
         for( int i=0; i<numGlyphs+1; i++ )
