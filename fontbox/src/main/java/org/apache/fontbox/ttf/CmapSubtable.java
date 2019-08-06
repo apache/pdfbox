@@ -280,6 +280,7 @@ public class CmapSubtable implements CmapLookup
     protected void processSubtype13(TTFDataStream data, int numGlyphs) throws IOException
     {
         long nbGroups = data.readUnsignedInt();
+        glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<Integer, Integer>(numGlyphs);
         for (long i = 0; i < nbGroups; ++i)
         {
