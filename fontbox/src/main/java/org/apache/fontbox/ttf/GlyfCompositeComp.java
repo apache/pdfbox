@@ -87,7 +87,7 @@ public class GlyfCompositeComp
      * @param bais the stream to be read
      * @throws IOException is thrown if something went wrong
      */
-    protected GlyfCompositeComp(TTFDataStream bais) throws IOException
+    GlyfCompositeComp(TTFDataStream bais) throws IOException
     {
         flags = bais.readSignedShort();
         glyphIndex = bais.readUnsignedShort();// number of glyph in a font is uint16
