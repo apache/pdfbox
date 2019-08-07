@@ -45,13 +45,11 @@ public class CoverageTableFormat2 extends CoverageTableFormat1
 
     private static int[] getRangeRecordsAsArray(RangeRecord[] rangeRecords)
     {
-
         List<Integer> glyphIds = new ArrayList<>();
 
-        for (int i = 0; i < rangeRecords.length; i++)
+        for (RangeRecord rangeRecord : rangeRecords)
         {
-            for (int glyphId = rangeRecords[i].getStartGlyphID(); glyphId <= rangeRecords[i]
-                    .getEndGlyphID(); glyphId++)
+            for (int glyphId = rangeRecord.getStartGlyphID(); glyphId <= rangeRecord.getEndGlyphID(); glyphId++)
             {
                 glyphIds.add(glyphId);
             }
