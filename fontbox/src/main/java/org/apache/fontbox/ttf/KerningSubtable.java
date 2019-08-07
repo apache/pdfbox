@@ -63,7 +63,7 @@ public class KerningSubtable
      * @param version The version of the table to be read
      * @throws IOException If there is an error reading the data.
      */
-    public void read(TTFDataStream data, int version) throws IOException
+    void read(TTFDataStream data, int version) throws IOException
     {
         if (version == 0)
         {
