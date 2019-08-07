@@ -44,7 +44,7 @@ public class GlyphData
      * @param leftSideBearing The left side bearing for this glyph.
      * @throws IOException If there is an error reading the data.
      */
-    public void initData( GlyphTable glyphTable, TTFDataStream data, int leftSideBearing ) throws IOException
+    void initData( GlyphTable glyphTable, TTFDataStream data, int leftSideBearing ) throws IOException
     {
         numberOfContours = data.readSignedShort();
         xMin = data.readSignedShort();
