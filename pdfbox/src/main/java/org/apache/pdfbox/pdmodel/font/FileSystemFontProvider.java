@@ -369,11 +369,9 @@ final class FileSystemFontProvider extends FontProvider
      */
     private void saveDiskCache()
     {
-        File file = null;
         try
         {
-            file = getDiskCacheFile();
-
+            File file = getDiskCacheFile();
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))
             {
                 for (FSFontInfo fontInfo : fontInfoList)
@@ -387,12 +385,10 @@ final class FileSystemFontProvider extends FontProvider
                 LOG.warn("Installed fonts information will have to be reloaded for each start");
                 LOG.warn("You can assign a directory to the 'pdfbox.fontcache' property");
             }
-
         }
         catch (SecurityException e)
         {
             LOG.debug("Couldn't create writer for font cache file", e);
-            return;
         }
     }
 
