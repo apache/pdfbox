@@ -165,7 +165,7 @@ public class NameRecord
      * @param data The stream to read the data from.
      * @throws IOException If there is an error reading the data.
      */
-    public void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
+    void initData( TrueTypeFont ttf, TTFDataStream data ) throws IOException
     {
         platformId = data.readUnsignedShort();
         platformEncodingId = data.readUnsignedShort();
