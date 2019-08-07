@@ -72,7 +72,7 @@ public class HeaderTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         version = data.read32Fixed();
         fontRevision = data.read32Fixed();

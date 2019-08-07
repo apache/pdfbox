@@ -54,7 +54,7 @@ public class VerticalMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         VerticalHeaderTable vHeader = ttf.getVerticalHeader();
         if (vHeader == null)
