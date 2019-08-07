@@ -62,7 +62,7 @@ public class GlyphTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         loca = ttf.getIndexToLocation();
         numGlyphs = ttf.getNumberOfGlyphs();

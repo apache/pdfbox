@@ -57,7 +57,7 @@ public class PostScriptTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         formatType = data.read32Fixed();
         italicAngle = data.read32Fixed();
