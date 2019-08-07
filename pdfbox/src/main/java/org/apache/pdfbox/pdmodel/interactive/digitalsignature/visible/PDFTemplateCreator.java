@@ -86,88 +86,71 @@ public class PDFTemplateCreator
 
         //create template
         pdfBuilder.createTemplate(page);
-        PDDocument template = pdfStructure.getTemplate();
-        
-        //create /AcroForm
-        pdfBuilder.createAcroForm(template);
-        PDAcroForm acroForm = pdfStructure.getAcroForm();
 
-        // AcroForm contains signature fields
-        pdfBuilder.createSignatureField(acroForm);
-        PDSignatureField pdSignatureField = pdfStructure.getSignatureField();
-        
-        // create signature
-        //TODO 
-        // The line below has no effect with the CreateVisibleSignature example. 
-        // The signature field is needed as a "holder" for the /AP tree, 
-        // but the /P and /V PDSignatureField entries are ignored by PDDocument.addSignature
-        pdfBuilder.createSignature(pdSignatureField, page, ""); 
-       
-        // that is /AcroForm/DR entry
-        pdfBuilder.createAcroFormDictionary(acroForm, pdSignatureField);
-        
-        // create AffineTransform
-        pdfBuilder.createAffineTransform(properties.getTransform());
-        AffineTransform transform = pdfStructure.getAffineTransform();
-       
-        // rectangle, formatter, image. /AcroForm/DR/XObject contains that form
-        pdfBuilder.createSignatureRectangle(pdSignatureField, properties);
-        pdfBuilder.createFormatterRectangle(properties.getFormatterRectangleParameters());
-        PDRectangle bbox = pdfStructure.getFormatterRectangle();
-        pdfBuilder.createSignatureImage(template, properties.getImage());
-
-        // create form stream, form and  resource. 
-        pdfBuilder.createHolderFormStream(template);
-        PDStream holderFormStream = pdfStructure.getHolderFormStream();
-        pdfBuilder.createHolderFormResources();
-        PDResources holderFormResources = pdfStructure.getHolderFormResources();
-        pdfBuilder.createHolderForm(holderFormResources, holderFormStream, bbox);
-        
-        // that is /AP entry the appearance dictionary.
-        pdfBuilder.createAppearanceDictionary(pdfStructure.getHolderForm(), pdSignatureField);
-        
-        // inner form stream, form and resource (hlder form containts inner form)
-        pdfBuilder.createInnerFormStream(template);
-        pdfBuilder.createInnerFormResource();
-        PDResources innerFormResource = pdfStructure.getInnerFormResources();
-        pdfBuilder.createInnerForm(innerFormResource, pdfStructure.getInnerFormStream(), bbox);
-        PDFormXObject innerForm = pdfStructure.getInnerForm();
-       
-        // inner form must be in the holder form as we wrote
-        pdfBuilder.insertInnerFormToHolderResources(innerForm, holderFormResources);
-        
-        //  Image form is in this structure: /AcroForm/DR/FRM/Resources/XObject/n2
-        pdfBuilder.createImageFormStream(template);
-        PDStream imageFormStream = pdfStructure.getImageFormStream();
-        pdfBuilder.createImageFormResources();
-        PDResources imageFormResources = pdfStructure.getImageFormResources();
-        pdfBuilder.createImageForm(imageFormResources, innerFormResource, imageFormStream, bbox,
-                transform, pdfStructure.getImage());
-        
-        pdfBuilder.createBackgroundLayerForm(innerFormResource, bbox);
-       
-        // now inject procSetArray
-        pdfBuilder.injectProcSetArray(innerForm, page, innerFormResource, imageFormResources,
-                holderFormResources, pdfStructure.getProcSet());
-
-        COSName imageFormName = pdfStructure.getImageFormName();
-        COSName imageName = pdfStructure.getImageName();
-        COSName innerFormName = pdfStructure.getInnerFormName();
-
-        // now create Streams of AP
-        pdfBuilder.injectAppearanceStreams(holderFormStream, imageFormStream, imageFormStream,
-                imageFormName, imageName, innerFormName, properties);
-        pdfBuilder.createVisualSignature(template);
-        pdfBuilder.createWidgetDictionary(pdSignatureField, holderFormResources);
-        
-        InputStream in = getVisualSignatureAsStream(pdfStructure.getVisualSignature());
-        LOG.info("stream returning started, size= " + in.available());
-        
-        // we must close the document
-        template.close();
-        
-        // return result of the stream 
-        return in;
+        try (PDDocument template = pdfStructure.getTemplate())
+        {
+            //create /AcroForm
+            pdfBuilder.createAcroForm(template);
+            PDAcroForm acroForm = pdfStructure.getAcroForm();
+            // AcroForm contains signature fields
+            pdfBuilder.createSignatureField(acroForm);
+            PDSignatureField pdSignatureField = pdfStructure.getSignatureField();
+            // create signature
+            //TODO
+            // The line below has no effect with the CreateVisibleSignature example.
+            // The signature field is needed as a "holder" for the /AP tree,
+            // but the /P and /V PDSignatureField entries are ignored by PDDocument.addSignature
+            pdfBuilder.createSignature(pdSignatureField, page, "");
+            // that is /AcroForm/DR entry
+            pdfBuilder.createAcroFormDictionary(acroForm, pdSignatureField);
+            // create AffineTransform
+            pdfBuilder.createAffineTransform(properties.getTransform());
+            AffineTransform transform = pdfStructure.getAffineTransform();
+            // rectangle, formatter, image. /AcroForm/DR/XObject contains that form
+            pdfBuilder.createSignatureRectangle(pdSignatureField, properties);
+            pdfBuilder.createFormatterRectangle(properties.getFormatterRectangleParameters());
+            PDRectangle bbox = pdfStructure.getFormatterRectangle();
+            pdfBuilder.createSignatureImage(template, properties.getImage());
+            // create form stream, form and  resource.
+            pdfBuilder.createHolderFormStream(template);
+            PDStream holderFormStream = pdfStructure.getHolderFormStream();
+            pdfBuilder.createHolderFormResources();
+            PDResources holderFormResources = pdfStructure.getHolderFormResources();
+            pdfBuilder.createHolderForm(holderFormResources, holderFormStream, bbox);
+            // that is /AP entry the appearance dictionary.
+            pdfBuilder.createAppearanceDictionary(pdfStructure.getHolderForm(), pdSignatureField);
+            // inner form stream, form and resource (hlder form containts inner form)
+            pdfBuilder.createInnerFormStream(template);
+            pdfBuilder.createInnerFormResource();
+            PDResources innerFormResource = pdfStructure.getInnerFormResources();
+            pdfBuilder.createInnerForm(innerFormResource, pdfStructure.getInnerFormStream(), bbox);
+            PDFormXObject innerForm = pdfStructure.getInnerForm();
+            // inner form must be in the holder form as we wrote
+            pdfBuilder.insertInnerFormToHolderResources(innerForm, holderFormResources);
+            //  Image form is in this structure: /AcroForm/DR/FRM/Resources/XObject/n2
+            pdfBuilder.createImageFormStream(template);
+            PDStream imageFormStream = pdfStructure.getImageFormStream();
+            pdfBuilder.createImageFormResources();
+            PDResources imageFormResources = pdfStructure.getImageFormResources();
+            pdfBuilder.createImageForm(imageFormResources, innerFormResource, imageFormStream, bbox,
+                    transform, pdfStructure.getImage());
+            pdfBuilder.createBackgroundLayerForm(innerFormResource, bbox);
+            // now inject procSetArray
+            pdfBuilder.injectProcSetArray(innerForm, page, innerFormResource, imageFormResources,
+                    holderFormResources, pdfStructure.getProcSet());
+            COSName imageFormName = pdfStructure.getImageFormName();
+            COSName imageName = pdfStructure.getImageName();
+            COSName innerFormName = pdfStructure.getInnerFormName();
+            // now create Streams of AP
+            pdfBuilder.injectAppearanceStreams(holderFormStream, imageFormStream, imageFormStream,
+                    imageFormName, imageName, innerFormName, properties);
+            pdfBuilder.createVisualSignature(template);
+            pdfBuilder.createWidgetDictionary(pdSignatureField, holderFormResources);
+            InputStream in = getVisualSignatureAsStream(pdfStructure.getVisualSignature());
+            LOG.info("stream returning started, size= " + in.available());
+            // return result of the stream 
+            return in;
+        }
     }
 
     private InputStream getVisualSignatureAsStream(COSDocument visualSignature) throws IOException
