@@ -45,7 +45,7 @@ public class CFFTable extends TTFTable
      * @param data The stream to read the data from.
      * @throws java.io.IOException If there is an error reading the data.
      */
-    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         byte[] bytes = data.read((int)getLength());
 
