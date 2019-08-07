@@ -48,7 +48,7 @@ public class HorizontalMetricsTable extends TTFTable
      * @throws IOException If there is an error reading the data.
      */
     @Override
-    public void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
+    void read(TrueTypeFont ttf, TTFDataStream data) throws IOException
     {
         HorizontalHeaderTable hHeader = ttf.getHorizontalHeader();
         if (hHeader == null)
