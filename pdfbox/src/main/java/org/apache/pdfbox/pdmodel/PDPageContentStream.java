@@ -184,10 +184,11 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                 PDStream prefixStream = new PDStream(document);
 
                 // save the pre-append graphics state
-                OutputStream prefixOut = prefixStream.createOutputStream();
-                prefixOut.write("q".getBytes(Charsets.US_ASCII));
-                prefixOut.write('\n');
-                prefixOut.close();
+                try (OutputStream prefixOut = prefixStream.createOutputStream())
+                {
+                    prefixOut.write("q".getBytes(Charsets.US_ASCII));
+                    prefixOut.write('\n');
+                }
 
                 // insert the new stream at the beginning
                 array.add(0, prefixStream.getCOSObject());
