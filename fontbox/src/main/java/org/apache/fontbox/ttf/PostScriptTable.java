@@ -134,13 +134,21 @@ public class PostScriptTable extends TTFTable
             glyphNames = new String[glyphNameIndex.length];
             for (int i = 0; i < glyphNames.length; i++)
             {
-                String name = WGL4Names.MAC_GLYPH_NAMES[glyphNameIndex[i]];
-                if (name != null)
+                int index = glyphNameIndex[i];
+                if (index >= 0 && index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
                 {
-                    glyphNames[i] = name;
+                    String name = WGL4Names.MAC_GLYPH_NAMES[index];
+                    if (name != null)
+                    {
+                        glyphNames[i] = name;
+                    }
+                }
+                else
+                {
+                    LOG.debug("incorrect glyph name index " + index +
+                              ", valid numbers 0.." + WGL4Names.NUMBER_OF_MAC_GLYPHS);
                 }
             }
-
         }
         else if (formatType == 3.0f)
         {
