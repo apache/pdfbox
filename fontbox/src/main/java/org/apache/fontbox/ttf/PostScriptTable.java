@@ -107,7 +107,7 @@ public class PostScriptTable extends TTFTable
             for (int i = 0; i < numGlyphs; i++)
             {
                 int index = glyphNameIndex[i];
-                if (index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
+                if (index >= 0 && index < WGL4Names.NUMBER_OF_MAC_GLYPHS)
                 {
                     glyphNames[i] = WGL4Names.MAC_GLYPH_NAMES[index];
                 }
