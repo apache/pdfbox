@@ -380,12 +380,11 @@ final class FileSystemFontProvider extends FontProvider
     private void saveDiskCache()
     {
         BufferedWriter writer = null;
-        File file = null;
         try
         {
             try
             {
-                file = getDiskCacheFile();
+                File file = getDiskCacheFile();
                 writer = new BufferedWriter(new FileWriter(file));
             }
             catch (SecurityException e)
