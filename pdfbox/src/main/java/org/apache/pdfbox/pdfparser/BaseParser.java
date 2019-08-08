@@ -119,7 +119,7 @@ public abstract class BaseParser
     /**
      * This is the stream that will be read from.
      */
-    protected final SequentialSource seqSource;
+    final SequentialSource seqSource;
 
     /**
      * This is the document that will be parsed.
@@ -129,7 +129,7 @@ public abstract class BaseParser
     /**
      * Default constructor.
      */
-    public BaseParser(SequentialSource pdfSource)
+    BaseParser(SequentialSource pdfSource)
     {
         this.seqSource = pdfSource;
     }
