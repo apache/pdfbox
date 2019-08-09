@@ -708,6 +708,12 @@ public class COSParser extends BaseParser
                                                     + key);
                                             document.getXrefTable().put(key, fileOffset);
                                         }
+                                        else
+                                        {
+                                            LOG.warn("Invalid object stream xref object reference for key '"
+                                                        + objKey + "': " + fileOffset);
+                                            continue;
+                                        }
                                     }
                                     else
                                     {
