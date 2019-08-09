@@ -142,6 +142,11 @@ public class CmapSubtable implements CmapLookup
 
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
+        if (numGlyphs == 0)
+        {
+            LOG.warn("subtable has no glyphs");
+            return;
+        }
         // -- Read all sub header
         for (long i = 0; i < nbGroups; ++i)
         {
@@ -231,6 +236,11 @@ public class CmapSubtable implements CmapLookup
         long nbGroups = data.readUnsignedInt();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
+        if (numGlyphs == 0)
+        {
+            LOG.warn("subtable has no glyphs");
+            return;
+        }
         for (long i = 0; i < nbGroups; ++i)
         {
             long firstCode = data.readUnsignedInt();
@@ -282,6 +292,11 @@ public class CmapSubtable implements CmapLookup
         long nbGroups = data.readUnsignedInt();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
+        if (numGlyphs == 0)
+        {
+            LOG.warn("subtable has no glyphs");
+            return;
+        }
         for (long i = 0; i < nbGroups; ++i)
         {
             long firstCode = data.readUnsignedInt();
@@ -491,6 +506,11 @@ public class CmapSubtable implements CmapLookup
         long startGlyphIndexOffset = data.getCurrentPosition();
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(numGlyphs);
         characterCodeToGlyphId = new HashMap<>(numGlyphs);
+        if (numGlyphs == 0)
+        {
+            LOG.warn("subtable has no glyphs");
+            return;
+        }
         for (int i = 0; i <= maxSubHeaderIndex; ++i)
         {
             SubHeader sh = subHeaders[i];
