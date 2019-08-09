@@ -167,7 +167,7 @@ public class CmapSubtable implements CmapLookup
                 {
                     throw new IOException("[Sub Format 8] Invalid character code " + j);
                 }
-                if ((int) j / 8 == is32.length)
+                if ((int) j / 8 >= is32.length)
                 {
                     throw new IOException("[Sub Format 8] Invalid character code " + j);
                 }
