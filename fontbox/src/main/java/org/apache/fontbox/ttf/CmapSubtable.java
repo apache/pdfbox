@@ -165,7 +165,11 @@ public class CmapSubtable implements CmapLookup
                 // -- Convert the Character code in decimal
                 if (j > Integer.MAX_VALUE)
                 {
-                    throw new IOException("[Sub Format 8] Invalid Character code");
+                    throw new IOException("[Sub Format 8] Invalid character code " + j);
+                }
+                if ((int) j / 8 == is32.length)
+                {
+                    throw new IOException("[Sub Format 8] Invalid character code " + j);
                 }
 
                 int currentCharCode;
@@ -183,7 +187,7 @@ public class CmapSubtable implements CmapLookup
                     long codepoint = (lead << 10) + trail + SURROGATE_OFFSET;
                     if (codepoint > Integer.MAX_VALUE)
                     {
-                        throw new IOException("[Sub Format 8] Invalid Character code");
+                        throw new IOException("[Sub Format 8] Invalid character code " + codepoint);
                     }
                     currentCharCode = (int) codepoint;
                 }
