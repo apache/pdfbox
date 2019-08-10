@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
@@ -242,13 +243,18 @@ public class PDAnnotationLink extends PDAnnotation
     {
         customAppearanceHandler = appearanceHandler;
     }
+
+    @Override
+    public void constructAppearances(){
+        this.constructAppearances(null);
+    }
     
     @Override
-    public void constructAppearances()
+    public void constructAppearances(PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
-            PDLinkAppearanceHandler appearanceHandler = new PDLinkAppearanceHandler(this);
+            PDLinkAppearanceHandler appearanceHandler = new PDLinkAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

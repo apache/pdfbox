@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -818,6 +819,10 @@ public abstract class PDAnnotation implements COSObjectable
      * 
      */
     public void constructAppearances()
+    {
+    }
+
+    public void constructAppearances(PDDocument document)
     {
     }
 
