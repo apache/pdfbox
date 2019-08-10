@@ -18,15 +18,29 @@ package org.apache.pdfbox.pdmodel.fdf;
 
 import java.io.IOException;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
+
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This represents a Polygon FDF annotation.
  */
 public class FDFAnnotationLink extends FDFAnnotation
 {
+    private static final Log LOG = LogFactory.getLog(FDFAnnotationLink.class);
+
     /**
      * COS Model value for SubType entry.
      */
@@ -37,7 +51,6 @@ public class FDFAnnotationLink extends FDFAnnotation
      */
     public FDFAnnotationLink()
     {
-        super();
         annot.setName(COSName.SUBTYPE, SUBTYPE);
     }
 
@@ -62,5 +75,28 @@ public class FDFAnnotationLink extends FDFAnnotation
     {
         super(element);
         annot.setName(COSName.SUBTYPE, SUBTYPE);
+        XPath xpath = XPathFactory.newInstance().newXPath();
+
+        try
+        {
+            NodeList uri = (NodeList) xpath.evaluate("OnActivation/Action/URI", element,
+                    XPathConstants.NODESET);
+            if (uri.getLength() > 0)
+            {
+                Node namedItem = uri.item(0).getAttributes().getNamedItem("Name");
+                if (namedItem != null && namedItem.getNodeValue() != null)
+                {
+                    PDActionURI actionURI = new PDActionURI();
+                    actionURI.setURI(namedItem.getNodeValue());
+                    annot.setItem(COSName.A, actionURI);
+                }
+            }
+            // GoTo is more tricky, because because page destination needs page tree
+            // to convert number into PDPage object
+        }
+        catch (XPathExpressionException e)
+        {
+            LOG.debug("Error while evaluating XPath expression", e);
+        }
     }
 }
