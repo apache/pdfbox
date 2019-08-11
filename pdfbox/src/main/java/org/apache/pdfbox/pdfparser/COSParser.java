@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -2054,7 +2053,7 @@ public class COSParser extends BaseParser
         if (bfSearchXRefTablesOffsets == null)
         {
             // a pdf may contain more than one xref entry
-            bfSearchXRefTablesOffsets = new Vector<>();
+            bfSearchXRefTablesOffsets = new ArrayList<>();
             long originOffset = source.getPosition();
             source.seek(MINIMUM_SEARCH_OFFSET);
             // search for xref tables
@@ -2087,7 +2086,7 @@ public class COSParser extends BaseParser
         if (bfSearchXRefStreamsOffsets == null)
         {
             // a pdf may contain more than one /XRef entry
-            bfSearchXRefStreamsOffsets = new Vector<>();
+            bfSearchXRefStreamsOffsets = new ArrayList<>();
             long originOffset = source.getPosition();
             source.seek(MINIMUM_SEARCH_OFFSET);
             // search for XRef streams
