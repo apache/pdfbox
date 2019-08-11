@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -575,6 +575,7 @@ public class COSParser extends BaseParser implements ICOSParser
         this.isLenient = lenient;
     }
 
+    @Override
     public boolean dereferenceCOSObject(COSObject obj)
     {
         COSBase parsedObj = null;
@@ -1884,7 +1885,7 @@ public class COSParser extends BaseParser implements ICOSParser
         if (bfSearchXRefTablesOffsets == null)
         {
             // a pdf may contain more than one xref entry
-            bfSearchXRefTablesOffsets = new Vector<>();
+            bfSearchXRefTablesOffsets = new ArrayList<>();
             long originOffset = source.getPosition();
             source.seek(MINIMUM_SEARCH_OFFSET);
             // search for xref tables
@@ -1917,7 +1918,7 @@ public class COSParser extends BaseParser implements ICOSParser
         if (bfSearchXRefStreamsOffsets == null)
         {
             // a pdf may contain more than one /XRef entry
-            bfSearchXRefStreamsOffsets = new Vector<>();
+            bfSearchXRefStreamsOffsets = new ArrayList<>();
             long originOffset = source.getPosition();
             source.seek(MINIMUM_SEARCH_OFFSET);
             // search for XRef streams
