@@ -280,7 +280,14 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                     // Adobe ignores the /Q
                     //.textAlign(annotation.getQ())
                     .build();
-            formatter.format();
+            try
+            {
+                formatter.format();
+            }
+            catch (IllegalArgumentException ex)
+            {
+                throw new IOException(ex);
+            }
             cs.endText();
 
 
