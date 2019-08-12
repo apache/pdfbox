@@ -16,6 +16,8 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.util.Charsets;
@@ -47,6 +49,8 @@ import org.apache.pdfbox.util.Matrix;
 public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
 {
     private static final Log LOG = LogFactory.getLog(PDFreeTextAppearanceHandler.class);
+
+    final Pattern COLOR_PATTERN = Pattern.compile(".*color\\:\\#([0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]).*");
 
     public PDFreeTextAppearanceHandler(PDAnnotation annotation)
     {
@@ -83,8 +87,23 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             setOpacity(cs, annotation.getConstantOpacity());
 
             // Adobe uses the last non stroking color from /DA as stroking color!
+            // But if there is a color in /DS, then that one is used for text.
             PDColor strokingColor = extractNonStrokingColor(annotation);
             boolean hasStroke = cs.setStrokingColorOnDemand(strokingColor);
+            PDColor textColor = strokingColor;
+            String defaultStyleString = annotation.getDefaultStyleString();
+            if (defaultStyleString != null)
+            {
+                Matcher m = COLOR_PATTERN.matcher(defaultStyleString);
+                if (m.find())
+                {
+                    int color = Integer.parseInt(m.group(1), 16);
+                    float r = ((color >> 16) & 0xFF) / 255f;
+                    float g = ((color >> 8) & 0xFF) / 255f;
+                    float b = (color & 0xFF) / 255f;
+                    textColor = new PDColor( new float[] { r, g, b }, PDDeviceRGB.INSTANCE);
+                }
+            }
 
             if (ab.dashArray != null)
             {
@@ -243,7 +262,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
 
             cs.beginText();
             cs.setFont(font, fontSize);
-            cs.setNonStrokingColor(strokingColor.getComponents());
+            cs.setNonStrokingColor(textColor.getComponents());
             AppearanceStyle appearanceStyle = new AppearanceStyle();
             appearanceStyle.setFont(font);
             appearanceStyle.setFontSize(fontSize);
@@ -256,7 +275,14 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
                     // Adobe ignores the /Q
                     //.textAlign(annotation.getQ())
                     .build();
-            formatter.format();
+            try
+            {
+                formatter.format();
+            }
+            catch (IllegalArgumentException ex)
+            {
+                throw new IOException(ex);
+            }
             cs.endText();
 
 
