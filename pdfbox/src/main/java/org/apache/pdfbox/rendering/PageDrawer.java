@@ -1361,8 +1361,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         PDAppearanceDictionary appearance = annotation.getAppearance();
         if (appearance == null || appearance.getNormalAppearance() == null)
         {
-            // TODO: Improve memory consumption by passing a ScratchFile
-            annotation.constructAppearances();
+            annotation.constructAppearances(renderer.document);
         }
 
         if (annotation.isNoRotate() && getCurrentPage().getRotation() != 0)
