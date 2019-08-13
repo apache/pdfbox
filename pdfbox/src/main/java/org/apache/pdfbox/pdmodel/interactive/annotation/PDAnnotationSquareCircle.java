@@ -21,6 +21,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
@@ -252,6 +253,7 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
      * 
      * @param appearanceHandler
      */
+    @Override
     public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
@@ -259,6 +261,12 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
 
     @Override
     public void constructAppearances()
+    {
+        this.constructAppearances(null);
+    }
+
+    @Override
+    public void constructAppearances(PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
