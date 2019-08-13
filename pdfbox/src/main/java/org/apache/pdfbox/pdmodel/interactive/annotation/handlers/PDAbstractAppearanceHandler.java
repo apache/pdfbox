@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import org.apache.pdfbox.cos.COSDictionary;
 
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -30,6 +31,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquareCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -46,6 +48,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 {
     private final PDAnnotation annotation;
+    protected PDDocument document;
 
     /**
      * Line ending styles where the line has to be drawn shorter (minus line width).
@@ -66,7 +69,13 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
     public PDAbstractAppearanceHandler(PDAnnotation annotation)
     {
+        this(annotation, null);
+    }
+
+    public PDAbstractAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
         this.annotation = annotation;
+        this.document = document;
     }
 
     @Override
@@ -91,6 +100,11 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
     PDRectangle getRectangle()
     {
         return annotation.getRectangle();
+    }
+    
+    protected COSDictionary getDictionary()
+    {
+        return document == null ? new COSStream() : document.getDocument().createCOSStream();
     }
 
     /**
@@ -161,8 +175,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (downAppearanceEntry.isSubDictionary())
         {
-            //TODO replace with "document.getDocument().createCOSStream()" 
-            downAppearanceEntry = new PDAppearanceEntry(new COSStream());
+            downAppearanceEntry = new PDAppearanceEntry(getDictionary());
             appearanceDictionary.setDownAppearance(downAppearanceEntry);
         }
 
@@ -185,8 +198,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (rolloverAppearanceEntry.isSubDictionary())
         {
-            //TODO replace with "document.getDocument().createCOSStream()" 
-            rolloverAppearanceEntry = new PDAppearanceEntry(new COSStream());
+            rolloverAppearanceEntry = new PDAppearanceEntry(getDictionary());
             appearanceDictionary.setRolloverAppearance(rolloverAppearanceEntry);
         }
 
@@ -465,8 +477,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (normalAppearanceEntry == null || normalAppearanceEntry.isSubDictionary())
         {
-            //TODO replace with "document.getDocument().createCOSStream()" 
-            normalAppearanceEntry = new PDAppearanceEntry(new COSStream());
+            normalAppearanceEntry = new PDAppearanceEntry(getDictionary());
             appearanceDictionary.setNormalAppearance(normalAppearanceEntry);
         }
 
