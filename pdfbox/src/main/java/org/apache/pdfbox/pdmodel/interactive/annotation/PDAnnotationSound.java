@@ -17,6 +17,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDAppearanceHandler;
 import org.apache.pdfbox.pdmodel.interactive.annotation.handlers.PDSoundAppearanceHandler;
 
@@ -60,6 +61,12 @@ public class PDAnnotationSound extends PDAnnotationMarkup
 
     @Override
     public void constructAppearances()
+    {
+        this.constructAppearances(null);
+    }
+
+    @Override
+    public void constructAppearances(PDDocument document)
     {
         if (customAppearanceHandler == null)
         {
