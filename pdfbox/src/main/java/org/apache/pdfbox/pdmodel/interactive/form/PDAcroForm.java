@@ -590,7 +590,7 @@ public final class PDAcroForm implements COSObjectable
     /**
      * This will get the default resources for the AcroForm.
      *
-     * @return The default resources or null if their is none.
+     * @return The default resources or null if there is none.
      */
     public PDResources getDefaultResources()
     {
