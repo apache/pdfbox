@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDFormContentStream;
 import org.apache.pdfbox.pdmodel.PDPatternContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -47,6 +48,11 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
     public PDSquigglyAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDSquigglyAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override
