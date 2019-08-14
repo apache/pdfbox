@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnderline;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  *
@@ -35,6 +36,11 @@ public class PDUnderlineAppearanceHandler extends PDAbstractAppearanceHandler
     public PDUnderlineAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDUnderlineAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override
