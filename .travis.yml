@@ -20,8 +20,7 @@
 language: java
 
 jdk:
-  - oraclejdk8
-  - openjdk7
+  - openjdk8
   - openjdk11
 
 before_install:
