@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import static org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine.LE_NONE;
 import org.apache.pdfbox.util.Matrix;
 
@@ -41,6 +42,11 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
     public PDLineAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDLineAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override

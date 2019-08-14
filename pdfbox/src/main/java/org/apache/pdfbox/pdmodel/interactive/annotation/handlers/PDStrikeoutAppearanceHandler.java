@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  *
@@ -36,6 +37,11 @@ public class PDStrikeoutAppearanceHandler extends PDAbstractAppearanceHandler
     public PDStrikeoutAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDStrikeoutAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override

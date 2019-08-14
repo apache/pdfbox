@@ -33,6 +33,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationTextMarkup;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * 
@@ -45,6 +46,11 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
     public PDHighlightAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDHighlightAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override

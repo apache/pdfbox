@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationMarkup;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -38,6 +39,11 @@ public class PDCaretAppearanceHandler extends PDAbstractAppearanceHandler
     public PDCaretAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDCaretAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override

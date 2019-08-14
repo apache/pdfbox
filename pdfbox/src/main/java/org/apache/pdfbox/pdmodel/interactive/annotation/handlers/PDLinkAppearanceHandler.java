@@ -31,6 +31,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 
 /**
@@ -44,6 +45,11 @@ public class PDLinkAppearanceHandler extends PDAbstractAppearanceHandler
     public PDLinkAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDLinkAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
     
     @Override
