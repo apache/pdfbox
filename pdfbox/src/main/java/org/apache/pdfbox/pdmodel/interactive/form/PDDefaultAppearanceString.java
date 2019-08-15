@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
@@ -127,19 +128,19 @@ class PDDefaultAppearanceString
     {
         String name = operator.getName();
         
-        if ("Tf".equals(name))
+        if (OperatorName.SET_FONT_AND_SIZE.equals(name))
         {
             processSetFont(operands);
         }
-        else if ("g".equals(name))
+        else if (OperatorName.NON_STROKING_GRAY.equals(name))
         {
             processSetFontColor(operands);
         }
-        else if ("rg".equals(name))
+        else if (OperatorName.NON_STROKING_RGB.equals(name))
         {
             processSetFontColor(operands);
         }
-        else if ("k".equals(name))
+        else if (OperatorName.NON_STROKING_CMYK.equals(name))
         {
             processSetFontColor(operands);
         }
