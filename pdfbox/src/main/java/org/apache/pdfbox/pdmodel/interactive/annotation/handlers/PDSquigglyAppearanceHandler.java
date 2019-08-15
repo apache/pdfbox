@@ -136,7 +136,7 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
                 // Create form, BBox is mostly fixed, except for the horizontal size which is
                 // horizontal size divided by the horizontal transform factor from above
                 // (almost)
-                PDFormXObject form = new PDFormXObject(new COSStream());
+                PDFormXObject form = new PDFormXObject(createCOSStream());
                 form.setBBox(new PDRectangle(-0.5f, -0.5f, (pathsArray[i * 8 + 2] - pathsArray[i * 8]) / height * 40f + 0.5f, 13));
                 form.setResources(new PDResources());
                 form.setMatrix(AffineTransform.getTranslateInstance(0.5f, 0.5f));
