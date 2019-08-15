@@ -69,7 +69,7 @@ public class PDAnnotationCircle extends PDAnnotationSquareCircle
     {
         if (customAppearanceHandler == null)
         {
-            PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this);
+            PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

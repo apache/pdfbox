@@ -241,7 +241,7 @@ public class PDAnnotationText extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDTextAppearanceHandler appearanceHandler = new PDTextAppearanceHandler(this);
+            PDTextAppearanceHandler appearanceHandler = new PDTextAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

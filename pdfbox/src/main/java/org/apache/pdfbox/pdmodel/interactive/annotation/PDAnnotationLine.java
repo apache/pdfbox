@@ -445,7 +445,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDLineAppearanceHandler appearanceHandler = new PDLineAppearanceHandler(this);
+            PDLineAppearanceHandler appearanceHandler = new PDLineAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

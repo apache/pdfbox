@@ -121,7 +121,7 @@ public class PDAnnotationCaret extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDCaretAppearanceHandler appearanceHandler = new PDCaretAppearanceHandler(this);
+            PDCaretAppearanceHandler appearanceHandler = new PDCaretAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else
