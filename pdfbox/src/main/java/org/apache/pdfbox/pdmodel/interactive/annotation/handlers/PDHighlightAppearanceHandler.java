@@ -126,8 +126,8 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
             cs.setGraphicsStateParameters(r1);
             //TODO replace with document.getDocument().createCOSStream()
             //     or call new PDFormXObject(document)
-            PDFormXObject frm1 = new PDFormXObject(new COSStream());
-            PDFormXObject frm2 = new PDFormXObject(new COSStream());
+            PDFormXObject frm1 = new PDFormXObject(createCOSStream());
+            PDFormXObject frm2 = new PDFormXObject(createCOSStream());
             frm1.setResources(new PDResources());
             try (PDFormContentStream mwfofrmCS = new PDFormContentStream(frm1))
             {
