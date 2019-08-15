@@ -272,12 +272,12 @@ public class PDAnnotationSquareCircle extends PDAnnotationMarkup
         {
             if (SUB_TYPE_CIRCLE.equals(getSubtype()))
             {
-                PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this);
+                PDCircleAppearanceHandler appearanceHandler = new PDCircleAppearanceHandler(this, document);
                 appearanceHandler.generateAppearanceStreams();
             }
             else if (SUB_TYPE_SQUARE.equals(getSubtype()))
             {
-                PDSquareAppearanceHandler appearanceHandler = new PDSquareAppearanceHandler(this);
+                PDSquareAppearanceHandler appearanceHandler = new PDSquareAppearanceHandler(this, document);
                 appearanceHandler.generateAppearanceStreams();
             }
         }

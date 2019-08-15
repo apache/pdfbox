@@ -252,7 +252,7 @@ public class PDAnnotationLink extends PDAnnotation
     {
         if (customAppearanceHandler == null)
         {
-            PDLinkAppearanceHandler appearanceHandler = new PDLinkAppearanceHandler(this);
+            PDLinkAppearanceHandler appearanceHandler = new PDLinkAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else
