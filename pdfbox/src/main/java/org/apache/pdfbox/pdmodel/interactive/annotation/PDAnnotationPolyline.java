@@ -204,7 +204,7 @@ public class PDAnnotationPolyline extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDPolylineAppearanceHandler appearanceHandler = new PDPolylineAppearanceHandler(this);
+            PDPolylineAppearanceHandler appearanceHandler = new PDPolylineAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

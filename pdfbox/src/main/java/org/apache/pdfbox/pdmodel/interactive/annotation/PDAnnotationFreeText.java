@@ -322,7 +322,7 @@ public class PDAnnotationFreeText extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDFreeTextAppearanceHandler appearanceHandler = new PDFreeTextAppearanceHandler(this);
+            PDFreeTextAppearanceHandler appearanceHandler = new PDFreeTextAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

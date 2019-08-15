@@ -73,7 +73,7 @@ public class PDAnnotationUnderline extends PDAnnotationTextMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDUnderlineAppearanceHandler appearanceHandler = new PDUnderlineAppearanceHandler(this);
+            PDUnderlineAppearanceHandler appearanceHandler = new PDUnderlineAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else
