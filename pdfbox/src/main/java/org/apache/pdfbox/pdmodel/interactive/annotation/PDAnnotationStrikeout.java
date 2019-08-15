@@ -73,7 +73,7 @@ public class PDAnnotationStrikeout extends PDAnnotationTextMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDStrikeoutAppearanceHandler appearanceHandler = new PDStrikeoutAppearanceHandler(this);
+            PDStrikeoutAppearanceHandler appearanceHandler = new PDStrikeoutAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

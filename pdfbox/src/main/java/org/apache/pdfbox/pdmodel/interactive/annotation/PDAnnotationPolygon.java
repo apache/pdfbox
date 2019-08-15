@@ -191,7 +191,7 @@ public class PDAnnotationPolygon extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this);
+            PDPolygonAppearanceHandler appearanceHandler = new PDPolygonAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

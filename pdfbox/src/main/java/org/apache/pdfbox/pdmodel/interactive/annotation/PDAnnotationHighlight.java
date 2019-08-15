@@ -73,7 +73,7 @@ public class PDAnnotationHighlight extends PDAnnotationTextMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDHighlightAppearanceHandler appearanceHandler = new PDHighlightAppearanceHandler(this);
+            PDHighlightAppearanceHandler appearanceHandler = new PDHighlightAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

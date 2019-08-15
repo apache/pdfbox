@@ -70,7 +70,7 @@ public class PDAnnotationSound extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDSoundAppearanceHandler appearanceHandler = new PDSoundAppearanceHandler(this);
+            PDSoundAppearanceHandler appearanceHandler = new PDSoundAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else
