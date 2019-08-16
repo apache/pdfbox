@@ -24,7 +24,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 
 /**
  * @author Khyrul Bashar
- * A class that provieds tooltip text for font. This shows the name of the font.
+ * A class that provides tooltip text for font. This shows the name of the font.
  */
 final class FontToolTip implements ToolTip
 {
