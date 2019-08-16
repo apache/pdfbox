@@ -22,6 +22,9 @@ import java.util.List;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Utilities;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.pdmodel.PDResources;
 
 interface ToolTip
@@ -31,21 +34,11 @@ interface ToolTip
 
 /**
  * @author Khyrul Bashar
- * A class that provieds the tooltip for an operator.
+ * A class that provides the tooltip for an operator.
  */
 public class ToolTipController
 {
-    private static final  String FONT_OPERATOR = "Tf";
-    private static final String STROKING_COLOR = "SCN";
-    private static final String STROKING_COLOR_SPACE = "CS";
-    private static final String NON_STROKING_COLOR_SPACE = "cs";
-    private static final String NON_STROKING_COLOR = "scn";
-    private static final String RGB_STROKING_COLOR = "RG";
-    private static final String RGB_NON_STROKING_COLOR = "rg";
-    private static final String CMYK_STROKING_COLOR = "K";
-    private static final String CMYK_NON_STROKING_COLOR = "k";
-    private static final String GRAY_STROKING_COLOR = "G";
-    private static final String GRAY_NON_STROKING_COLOR = "g";
+    private static final Log LOG = LogFactory.getLog(ToolTipController.class);
 
     private final PDResources resources;
     private JTextComponent textComponent;
@@ -91,12 +84,12 @@ public class ToolTipController
             ToolTip toolTip;
             switch (word)
             {
-                case FONT_OPERATOR:
+                case OperatorName.SET_FONT_AND_SIZE:
                     toolTip = new FontToolTip(resources, rowText);
                     return toolTip.getToolTipText();
-                case STROKING_COLOR:
+                case OperatorName.STROKING_COLOR_N:
                 {
-                    String colorSpaceName = findColorSpace(offset, STROKING_COLOR_SPACE);
+                    String colorSpaceName = findColorSpace(offset, OperatorName.STROKING_COLORSPACE);
                     if (colorSpaceName != null)
                     {
                         toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
@@ -104,9 +97,9 @@ public class ToolTipController
                     }
                     break;
                 }
-                case NON_STROKING_COLOR:
+                case OperatorName.NON_STROKING_COLOR_N:
                 {
-                    String colorSpaceName = findColorSpace(offset, NON_STROKING_COLOR_SPACE);
+                    String colorSpaceName = findColorSpace(offset, OperatorName.NON_STROKING_COLORSPACE);
                     if (colorSpaceName != null)
                     {
                         toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
@@ -114,16 +107,16 @@ public class ToolTipController
                     }
                     break;
                 }
-                case RGB_STROKING_COLOR:
-                case RGB_NON_STROKING_COLOR:
+                case OperatorName.STROKING_COLOR_RGB:
+                case OperatorName.NON_STROKING_RGB:
                     toolTip = new RGToolTip(rowText);
                     return toolTip.getToolTipText();
-                case CMYK_STROKING_COLOR:
-                case CMYK_NON_STROKING_COLOR:
+                case OperatorName.STROKING_COLOR_CMYK:
+                case OperatorName.NON_STROKING_CMYK:
                     toolTip = new KToolTip(rowText);
                     return toolTip.getToolTipText();
-                case GRAY_STROKING_COLOR:
-                case GRAY_NON_STROKING_COLOR:
+                case OperatorName.STROKING_COLOR_GRAY:
+                case OperatorName.NON_STROKING_GRAY:
                     toolTip = new GToolTip(rowText);
                     return toolTip.getToolTipText();
                 default:
@@ -154,8 +147,7 @@ public class ToolTipController
         }
         catch (BadLocationException e)
         {
-            e.printStackTrace();
-            return null;
+            LOG.error(e, e);
         }
         return null;
     }
@@ -176,7 +168,7 @@ public class ToolTipController
         }
         catch (BadLocationException e)
         {
-            e.printStackTrace();
+            LOG.error(e, e);
         }
         return null;
     }
@@ -191,7 +183,7 @@ public class ToolTipController
         }
         catch (BadLocationException e)
         {
-            e.printStackTrace();
+            LOG.error(e, e);
         }
         return null;
     }
