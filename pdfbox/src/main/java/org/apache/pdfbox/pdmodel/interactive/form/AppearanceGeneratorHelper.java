@@ -197,7 +197,8 @@ class AppearanceGeneratorHelper
                 // TODO support appearances other than "normal"
                 
                 PDAppearanceStream appearanceStream;
-                if (appearance != null && appearance.isStream())
+                if (appearance != null && appearance.isStream() &&
+                        appearance.getAppearanceStream().getBBox() != null)
                 {
                     appearanceStream = appearance.getAppearanceStream();
                 }
