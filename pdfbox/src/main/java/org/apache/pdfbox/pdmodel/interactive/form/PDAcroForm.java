@@ -316,7 +316,9 @@ public final class PDAcroForm implements COSObjectable
                 {
                     annotations.add(annotation);                 
                 }
-                else if (!annotation.isInvisible() && !annotation.isHidden() && annotation.getNormalAppearanceStream() != null)
+                else if (!annotation.isInvisible() && !annotation.isHidden() &&
+                         annotation.getNormalAppearanceStream() != null && 
+                         annotation.getNormalAppearanceStream().getBBox() != null)
                 {
                     contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, !isContentStreamWrapped);
                     isContentStreamWrapped = true;
