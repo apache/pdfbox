@@ -29,6 +29,13 @@ import org.apache.pdfbox.pdmodel.common.PDPageLabels;
  */
 public class CreatePageLabels
 {
+    /**
+     * Constructor.
+     */
+    private CreatePageLabels()
+    {
+    }
+
     public static void main(String[] args) throws IOException
     {
         try (PDDocument doc = new PDDocument())
