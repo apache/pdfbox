@@ -92,19 +92,10 @@ public final class COSString extends COSBase
         {
             // UTF-16BE encoded string with a leading byte order marker
             byte[] data = text.getBytes(Charsets.UTF_16BE);
-            ByteArrayOutputStream out = new ByteArrayOutputStream(data.length + 2);
-            out.write(0xFE); // BOM
-            out.write(0xFF); // BOM
-            try
-            {
-                out.write(data);
-            }
-            catch (IOException e)
-            {
-                // should never happen
-                throw new RuntimeException(e);
-            }
-            bytes = out.toByteArray();
+            bytes = new byte[data.length + 2];
+            bytes[0] = (byte) 0xFE;
+            bytes[1] = (byte) 0xFF;
+            System.arraycopy(data, 0, bytes, 2, data.length);
         }
     }
 
