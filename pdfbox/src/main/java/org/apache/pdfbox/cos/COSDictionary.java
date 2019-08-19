@@ -1444,8 +1444,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
              * If we're at a second trailer, we have a linearized pdf file, meaning that the first Size entry represents
              * all of the objects so we don't need to grab the second.
              */
-            if (!entry.getKey().getName().equals("Size")
-                    || !items.containsKey(COSName.getPDFName("Size")))
+            if (!COSName.SIZE.equals(entry.getKey()) || !items.containsKey(COSName.SIZE))
             {
                 setItem(entry.getKey(), entry.getValue());
             }
