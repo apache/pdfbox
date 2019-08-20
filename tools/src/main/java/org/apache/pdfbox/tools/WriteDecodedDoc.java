@@ -121,6 +121,7 @@ public class WriteDecodedDoc
         System.setProperty("apple.awt.UIElement", "true");
 
         WriteDecodedDoc app = new WriteDecodedDoc();
+        @SuppressWarnings({"squid:S2068"})
         String password = "";
         String pdfFile = null;
         String outputFile = null;
