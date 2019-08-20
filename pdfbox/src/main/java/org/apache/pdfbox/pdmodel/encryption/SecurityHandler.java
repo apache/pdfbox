@@ -130,7 +130,7 @@ public abstract class SecurityHandler
      * @throws IOException If there is an error accessing data.
      */
     public abstract void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
-            DecryptionMaterial decryptionMaterial) throws InvalidPasswordException, IOException;
+            DecryptionMaterial decryptionMaterial) throws IOException;
 
     /**
      * Encrypt or decrypt a set of data.
