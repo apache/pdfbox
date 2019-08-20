@@ -226,6 +226,7 @@ public class PDFDebugger extends JFrame
 
         // open file, if any
         String filename = null;
+        @SuppressWarnings({"squid:S2068"})
         String password = "";
         boolean viewPages = true;
         

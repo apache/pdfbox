@@ -75,6 +75,7 @@ public final class PDFToImage
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
+        @SuppressWarnings({"squid:S2068"})
         String password = "";
         String pdfFile = null;
         String outputPrefix = null;

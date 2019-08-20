@@ -60,6 +60,7 @@ public final class PDFSplit
 
     private void split( String[] args ) throws IOException
     {
+        @SuppressWarnings({"squid:S2068"})
         String password = "";
         String split = null;
         String startPage = null;

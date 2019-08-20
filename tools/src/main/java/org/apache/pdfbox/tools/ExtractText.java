@@ -110,6 +110,7 @@ public final class ExtractText
         boolean separateBeads = true;
         boolean alwaysNext = false;
         boolean rotationMagic = false;
+        @SuppressWarnings({"squid:S2068"})
         String password = "";
         String encoding = STD_ENCODING;
         String pdfFile = null;
