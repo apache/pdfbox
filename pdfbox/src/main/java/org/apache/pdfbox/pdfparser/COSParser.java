@@ -93,6 +93,7 @@ public class COSParser extends BaseParser implements ICOSParser
 
     private AccessPermission accessPermission;
     private InputStream keyStoreInputStream = null;
+    @SuppressWarnings({"squid:S2068"})
     private String password = "";
     private String keyAlias = null;
 
