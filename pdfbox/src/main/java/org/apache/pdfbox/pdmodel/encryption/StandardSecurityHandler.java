@@ -170,7 +170,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     @Override
     public void prepareForDecryption(PDEncryption encryption, COSArray documentIDArray,
                                      DecryptionMaterial decryptionMaterial)
-                                     throws InvalidPasswordException, IOException
+                                     throws IOException
     {
         if(!(decryptionMaterial instanceof StandardDecryptionMaterial))
         {
