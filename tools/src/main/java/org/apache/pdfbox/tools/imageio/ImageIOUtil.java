@@ -53,7 +53,7 @@ public final class ImageIOUtil
     /**
      * Writes a buffered image to a file using the given image format. See     
      * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float quality)} for more details.
+     * OutputStream output, int dpi, float compressionQuality)} for more details.
      *
      * @param image the image to be written
      * @param filename used to construct the filename for the individual image.
@@ -71,31 +71,32 @@ public final class ImageIOUtil
     /**
      * Writes a buffered image to a file using the given image format.
      * See {@link #writeImage(BufferedImage image, String formatName,
-     * OutputStream output, int dpi, float quality)} for more details.
+     * OutputStream output, int dpi, float compressionQuality)} for more details.
      *
      * @param image the image to be written
      * @param filename used to construct the filename for the individual image. Its suffix will be
      * used as the image format.
      * @param dpi the resolution in dpi (dots per inch) to be used in metadata
-     * @param quality quality to be used when compressing the image (0 &lt; quality &lt; 1.0f)
+     * @param compressionQuality quality to be used when compressing the image (0 &lt;
+     * compressionQuality &lt; 1.0f)
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String filename,
-            int dpi, float quality) throws IOException
+            int dpi, float compressionQuality) throws IOException
     {
         File file = new File(filename);
         try (FileOutputStream output = new FileOutputStream(file))
         {
             String formatName = filename.substring(filename.lastIndexOf('.') + 1);
-            return writeImage(image, formatName, output, dpi, quality);
+            return writeImage(image, formatName, output, dpi, compressionQuality);
         }
     }
 
     /**
      * Writes a buffered image to a file using the given image format. See      
      * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float quality)} for more details.
+     * OutputStream output, int dpi, float compressionQuality)} for more details.
      *
      * @param image the image to be written
      * @param formatName the target format (ex. "png") which is also the suffix
@@ -123,7 +124,7 @@ public final class ImageIOUtil
     /**
      * Writes a buffered image to a file using the given image format. See      
      * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float quality)} for more details.
+     * OutputStream output, int dpi, float compressionQuality)} for more details.
      *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
@@ -140,7 +141,7 @@ public final class ImageIOUtil
     /**
      * Writes a buffered image to a file using the given image format. See      
      * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float quality)} for more details.
+     * OutputStream output, int dpi, float compressionQuality)} for more details.
      *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
@@ -157,7 +158,7 @@ public final class ImageIOUtil
 
     /**
      * Writes a buffered image to a file using the given image format.
-     * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the quality
+     * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the compressionQuality
      * parameter for JPG, and dependent of bit count for TIFF (a bitonal image
      * will be compressed with CCITT G4, a color image with LZW). Creating a
      * TIFF image is only supported if the jai_imageio library (or equivalent)
@@ -167,20 +168,20 @@ public final class ImageIOUtil
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
      * @param dpi the resolution in dpi (dots per inch) to be used in metadata
-     * @param quality quality to be used when compressing the image (0 &lt;
-     * quality &lt; 1.0f)
+     * @param compressionQuality quality to be used when compressing the image (0 &lt;
+     * compressionQuality &lt; 1.0f)
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
-            int dpi, float quality) throws IOException
+            int dpi, float compressionQuality) throws IOException
     {
-        return writeImage(image, formatName, output, dpi, quality, "");
+        return writeImage(image, formatName, output, dpi, compressionQuality, "");
     }
 
     /**
      * Writes a buffered image to a file using the given image format.
-     * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the quality
+     * Compression is fixed for PNG, GIF, BMP and WBMP, dependent of the compressionQuality
      * parameter for JPG, and dependent of bit count for TIFF (a bitonal image
      * will be compressed with CCITT G4, a color image with LZW). Creating a
      * TIFF image is only supported if the jai_imageio library is in the class
@@ -191,7 +192,7 @@ public final class ImageIOUtil
      * @param output the output stream to be used for writing
      * @param dpi the resolution in dpi (dots per inch) to be used in metadata
      * @param compressionQuality quality to be used when compressing the image
-     * (0 &lt; quality &lt; 1.0f)
+     * (0 &lt; compressionQuality &lt; 1.0f)
      * @param compressionType Advanced users only, and only relevant for TIFF
      * files: If null, save uncompressed; if empty string, use logic explained
      * above; other valid values are found in the javadoc of
