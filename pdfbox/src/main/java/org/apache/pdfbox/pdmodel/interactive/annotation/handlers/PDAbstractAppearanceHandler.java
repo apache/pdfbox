@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.pdfbox.cos.COSDictionary;
 
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -102,7 +101,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         return annotation.getRectangle();
     }
     
-    protected COSDictionary getDictionary()
+    protected COSStream createCOSStream()
     {
         return document == null ? new COSStream() : document.getDocument().createCOSStream();
     }
@@ -175,7 +174,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (downAppearanceEntry.isSubDictionary())
         {
-            downAppearanceEntry = new PDAppearanceEntry(getDictionary());
+            downAppearanceEntry = new PDAppearanceEntry(createCOSStream());
             appearanceDictionary.setDownAppearance(downAppearanceEntry);
         }
 
@@ -198,7 +197,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (rolloverAppearanceEntry.isSubDictionary())
         {
-            rolloverAppearanceEntry = new PDAppearanceEntry(getDictionary());
+            rolloverAppearanceEntry = new PDAppearanceEntry(createCOSStream());
             appearanceDictionary.setRolloverAppearance(rolloverAppearanceEntry);
         }
 
@@ -477,7 +476,7 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
 
         if (normalAppearanceEntry == null || normalAppearanceEntry.isSubDictionary())
         {
-            normalAppearanceEntry = new PDAppearanceEntry(getDictionary());
+            normalAppearanceEntry = new PDAppearanceEntry(createCOSStream());
             appearanceDictionary.setNormalAppearance(normalAppearanceEntry);
         }
 

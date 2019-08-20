@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationHighlight;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * 
@@ -44,6 +45,11 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
     public PDHighlightAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDHighlightAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override
@@ -120,8 +126,8 @@ public class PDHighlightAppearanceHandler extends PDAbstractAppearanceHandler
             cs.setGraphicsStateParameters(r1);
             //TODO replace with document.getDocument().createCOSStream()
             //     or call new PDFormXObject(document)
-            PDFormXObject frm1 = new PDFormXObject(new COSStream());
-            PDFormXObject frm2 = new PDFormXObject(new COSStream());
+            PDFormXObject frm1 = new PDFormXObject(createCOSStream());
+            PDFormXObject frm2 = new PDFormXObject(createCOSStream());
             frm1.setResources(new PDResources());
             try (PDFormContentStream mwfofrmCS = new PDFormContentStream(frm1))
             {

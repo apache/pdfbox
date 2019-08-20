@@ -130,7 +130,7 @@ public class PDAnnotationInk extends PDAnnotationMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDInkAppearanceHandler appearanceHandler = new PDInkAppearanceHandler(this);
+            PDInkAppearanceHandler appearanceHandler = new PDInkAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

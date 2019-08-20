@@ -97,6 +97,7 @@ public class COSParser extends BaseParser
 
     private AccessPermission accessPermission;
     private InputStream keyStoreInputStream = null;
+    @SuppressWarnings({"squid:S2068"})
     private String password = "";
     private String keyAlias = null;
 

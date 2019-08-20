@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationInk;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * Handler to generate the ink annotations appearance.
@@ -35,6 +36,11 @@ public class PDInkAppearanceHandler extends PDAbstractAppearanceHandler
     public PDInkAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDInkAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override

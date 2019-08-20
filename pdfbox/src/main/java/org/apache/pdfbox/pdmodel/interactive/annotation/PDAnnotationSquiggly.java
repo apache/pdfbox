@@ -73,7 +73,7 @@ public class PDAnnotationSquiggly extends PDAnnotationTextMarkup
     {
         if (customAppearanceHandler == null)
         {
-            PDSquigglyAppearanceHandler appearanceHandler = new PDSquigglyAppearanceHandler(this);
+            PDSquigglyAppearanceHandler appearanceHandler = new PDSquigglyAppearanceHandler(this, document);
             appearanceHandler.generateAppearanceStreams();
         }
         else

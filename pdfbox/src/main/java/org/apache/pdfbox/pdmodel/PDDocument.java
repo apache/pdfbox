@@ -886,7 +886,7 @@ public class PDDocument implements Closeable
      * @throws InvalidPasswordException If the file required a non-empty password.
      * @throws IOException in case of a file reading or parsing error
      */
-    public static PDDocument load(File file) throws InvalidPasswordException, IOException
+    public static PDDocument load(File file) throws IOException
     {
         return load(file, "", MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -903,7 +903,7 @@ public class PDDocument implements Closeable
      * @throws IOException in case of a file reading or parsing error
      */
     public static PDDocument load(File file, MemoryUsageSetting memUsageSetting)
-            throws InvalidPasswordException, IOException
+            throws IOException
     {
         return load(file, "", null, null, memUsageSetting);
     }
@@ -920,7 +920,7 @@ public class PDDocument implements Closeable
      * @throws IOException in case of a file reading or parsing error
      */
     public static PDDocument load(File file, String password)
-            throws InvalidPasswordException, IOException
+            throws IOException
     {
         return load(file, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -938,7 +938,7 @@ public class PDDocument implements Closeable
      * @throws IOException in case of a file reading or parsing error
      */
     public static PDDocument load(File file, String password, MemoryUsageSetting memUsageSetting)
-            throws InvalidPasswordException, IOException
+            throws IOException
     {
         return load(file, password, null, null, memUsageSetting);
     }
@@ -1011,7 +1011,7 @@ public class PDDocument implements Closeable
      * @throws InvalidPasswordException If the PDF required a non-empty password.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument load(InputStream input) throws InvalidPasswordException, IOException
+    public static PDDocument load(InputStream input) throws IOException
     {
         return load(input, "", null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -1029,7 +1029,7 @@ public class PDDocument implements Closeable
      * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, MemoryUsageSetting memUsageSetting)
-            throws InvalidPasswordException, IOException
+            throws IOException
     {
         return load(input, "", null, null, memUsageSetting);
     }
@@ -1047,7 +1047,7 @@ public class PDDocument implements Closeable
      * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, String password)
-            throws InvalidPasswordException, IOException
+            throws IOException
     {
         return load(input, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
@@ -1085,7 +1085,7 @@ public class PDDocument implements Closeable
      * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(InputStream input, String password, MemoryUsageSetting memUsageSetting)
-            throws InvalidPasswordException, IOException
+            throws IOException
     {
         return load(input, password, null, null, memUsageSetting);
     }
@@ -1133,7 +1133,7 @@ public class PDDocument implements Closeable
      * @throws InvalidPasswordException If the PDF required a non-empty password.
      * @throws IOException In case of a reading or parsing error.
      */
-    public static PDDocument load(byte[] input) throws InvalidPasswordException, IOException
+    public static PDDocument load(byte[] input) throws IOException
     {
         return load(input, "");
     }
@@ -1150,7 +1150,7 @@ public class PDDocument implements Closeable
      * @throws IOException In case of a reading or parsing error.
      */
     public static PDDocument load(byte[] input, String password)
-            throws InvalidPasswordException, IOException
+            throws IOException
     {
         return load(input, password, null, null);
     }

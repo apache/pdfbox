@@ -21,8 +21,8 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDFormContentStream;
 import org.apache.pdfbox.pdmodel.PDPatternContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -47,6 +47,11 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
     public PDSquigglyAppearanceHandler(PDAnnotation annotation)
     {
         super(annotation);
+    }
+
+    public PDSquigglyAppearanceHandler(PDAnnotation annotation, PDDocument document)
+    {
+        super(annotation, document);
     }
 
     @Override
@@ -125,7 +130,7 @@ public class PDSquigglyAppearanceHandler extends PDAbstractAppearanceHandler
                 // Create form, BBox is mostly fixed, except for the horizontal size which is
                 // horizontal size divided by the horizontal transform factor from above
                 // (almost)
-                PDFormXObject form = new PDFormXObject(new COSStream());
+                PDFormXObject form = new PDFormXObject(createCOSStream());
                 form.setBBox(new PDRectangle(-0.5f, -0.5f, (pathsArray[i * 8 + 2] - pathsArray[i * 8]) / height * 40f + 0.5f, 13));
                 form.setResources(new PDResources());
                 form.setMatrix(AffineTransform.getTranslateInstance(0.5f, 0.5f));
