@@ -166,7 +166,7 @@ public class PDFParser extends COSParser
      * @throws InvalidPasswordException If the password is incorrect.
      * @throws IOException If something went wrong.
      */
-    protected void initialParse() throws InvalidPasswordException, IOException
+    protected void initialParse() throws IOException
     {
         COSDictionary trailer = retrieveTrailer();
     
@@ -195,7 +195,7 @@ public class PDFParser extends COSParser
      * @throws IOException If there is an error reading from the stream or corrupt data
      * is found.
      */
-    public void parse() throws InvalidPasswordException, IOException
+    public void parse() throws IOException
     {
          // set to false if all is processed
          boolean exceptionOccurred = true; 
