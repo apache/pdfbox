@@ -19,9 +19,10 @@
 
 language: java
 
+# https://docs.travis-ci.com/user/reference/xenial/#jvm-clojure-groovy-java-scala-support
 jdk:
   - oraclejdk8
-  - openjdk7
+  - openjdk8
   - openjdk11
 
 before_install:
