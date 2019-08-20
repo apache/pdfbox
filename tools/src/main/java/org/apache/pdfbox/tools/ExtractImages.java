@@ -57,6 +57,7 @@ import org.apache.pdfbox.util.Vector;
  */
 public final class ExtractImages
 {
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
     private static final String DIRECTJPEG = "-directJPEG";
