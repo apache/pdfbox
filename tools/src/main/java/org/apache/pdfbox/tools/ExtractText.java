@@ -54,6 +54,7 @@ public final class ExtractText
 {
     private static final Log LOG = LogFactory.getLog(ExtractText.class);
 
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String ENCODING = "-encoding";
     private static final String CONSOLE = "-console";

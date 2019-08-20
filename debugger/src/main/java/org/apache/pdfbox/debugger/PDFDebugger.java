@@ -137,6 +137,7 @@ public class PDFDebugger extends JFrame
             new HashSet<COSName>(Arrays.asList(COSName.ICCBASED, COSName.PATTERN, COSName.CALGRAY,
                                  COSName.CALRGB, COSName.LAB));
 
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String VIEW_STRUCTURE = "-viewstructure";
 
