@@ -99,6 +99,7 @@ public final class ExtractImages
         else
         {
             String pdfFile = null;
+            @SuppressWarnings({"squid:S2068"})
             String password = "";
             for(int i = 0; i < args.length; i++)
             {

@@ -76,6 +76,7 @@ public final class ExtractTTFFonts
         else
         {
             String pdfFile = null;
+            @SuppressWarnings({"squid:S2068"})
             String password = "";
             String prefix = null;
             boolean addKey = false;
