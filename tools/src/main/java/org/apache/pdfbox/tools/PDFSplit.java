@@ -34,6 +34,7 @@ import org.apache.pdfbox.multipdf.Splitter;
  */
 public final class PDFSplit
 {
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String SPLIT = "-split";
     private static final String START_PAGE = "-startPage";

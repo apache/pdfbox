@@ -38,6 +38,7 @@ import org.apache.pdfbox.tools.imageio.ImageIOUtil;
  */
 public final class PDFToImage
 {
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String START_PAGE = "-startPage";
     private static final String END_PAGE = "-endPage";

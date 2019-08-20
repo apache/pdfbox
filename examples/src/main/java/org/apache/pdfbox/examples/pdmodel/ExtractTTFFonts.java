@@ -43,6 +43,7 @@ public final class ExtractTTFFonts
 {
     private int fontCounter = 1;
 
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
     private static final String ADDKEY = "-addkey";
