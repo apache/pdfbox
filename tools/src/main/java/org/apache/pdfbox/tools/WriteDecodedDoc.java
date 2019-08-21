@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 public class WriteDecodedDoc
 {
 
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String SKIPIMAGES = "-skipImages";
 

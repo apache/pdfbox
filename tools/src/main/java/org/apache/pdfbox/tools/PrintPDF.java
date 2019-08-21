@@ -37,6 +37,7 @@ import org.apache.pdfbox.printing.PDFPageable;
  */
 public final class PrintPDF
 {
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "-password";
     private static final String SILENT = "-silentPrint";
     private static final String PRINTER_NAME = "-printerName";
