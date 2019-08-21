@@ -1060,25 +1060,33 @@ public class PDDocument implements Closeable
     public static PDDocument load(File file, String password, InputStream keyStore, String alias,
                                   MemoryUsageSetting memUsageSetting) throws IOException
     {
+        @SuppressWarnings({"squid:S2095"}) // raFile not closed here, may be needed for signing
         RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
         try
         {
-            ScratchFile scratchFile = new ScratchFile(memUsageSetting);
-            try
-            {
-                PDFParser parser = new PDFParser(raFile, password, keyStore, alias, scratchFile);
-                parser.parse();
-                return parser.getPDDocument();
-            }
-            catch (IOException ioe)
-            {
-                IOUtils.closeQuietly(scratchFile);
-                throw ioe;
-            }
+            return load(raFile, password, keyStore, alias, memUsageSetting);
         }
         catch (IOException ioe)
         {
             IOUtils.closeQuietly(raFile);
+            throw ioe;
+        }
+    }
+
+    private static PDDocument load(RandomAccessBufferedFileInputStream raFile, String password,
+                                   InputStream keyStore, String alias,
+                                   MemoryUsageSetting memUsageSetting) throws IOException
+    {
+        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
+        try
+        {
+            PDFParser parser = new PDFParser(raFile, password, keyStore, alias, scratchFile);
+            parser.parse();
+            return parser.getPDDocument();
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(scratchFile);
             throw ioe;
         }
     }
