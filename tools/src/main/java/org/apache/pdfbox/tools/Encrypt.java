@@ -72,7 +72,9 @@ public final class Encrypt
             String infile = null;
             String outfile = null;
             String certFile = null;
+            @SuppressWarnings({"squid:S2068"})
             String userPassword = "";
+            @SuppressWarnings({"squid:S2068"})
             String ownerPassword = "";
 
             int keyLength = 256;

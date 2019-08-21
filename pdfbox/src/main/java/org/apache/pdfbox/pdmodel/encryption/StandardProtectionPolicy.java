@@ -36,7 +36,9 @@ package org.apache.pdfbox.pdmodel.encryption;
 public final class StandardProtectionPolicy extends ProtectionPolicy
 {
     private AccessPermission permissions;
+    @SuppressWarnings({"squid:S2068"})
     private String ownerPassword = "";
+    @SuppressWarnings({"squid:S2068"})
     private String userPassword = "";
     private boolean preferAES = false;
 
