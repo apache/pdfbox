@@ -378,7 +378,7 @@ public class PDSignature implements COSObjectable
      * Return the signed content of the document. This is not a PDF file, nor is it the PDF file
      * before signing, it is the byte sequence made of the input minus the area where the signature
      * bytes will be. See "The ByteRange and signature value" in the document
-     * <a href="https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/Acrobat_DigitalSignatures_in_PDF.pdf#page=5">Digital
+     * <a href="https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/DigitalSignaturesInPDF.pdf#page=5">Digital
      * Signatures in a PDF</a>.
      *
      * @param pdfFile The signed pdf file as InputStream. It will be closed in this method.
@@ -407,7 +407,7 @@ public class PDSignature implements COSObjectable
      * Return the signed content of the document. This is not a PDF file, nor is it the PDF file
      * before signing, it is the byte sequence made of the input minus the area where the signature
      * bytes will be. See "The ByteRange and signature value" in the document
-     * <a href="https://www.adobe.com/devnet-docs/acrobatetk/tools/DigSig/Acrobat_DigitalSignatures_in_PDF.pdf#page=5">Digital
+     * <a href="https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/DigitalSignaturesInPDF.pdf#page=5">Digital
      * Signatures in a PDF</a>.
      *
      * @param pdfFile The signed pdf file as byte array
