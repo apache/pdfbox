@@ -42,6 +42,7 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 public final class Decrypt
 {
     private static final String ALIAS = "alias";
+    @SuppressWarnings({"squid:S2068"})
     private static final String PASSWORD = "password";
     private static final String KEYSTORE = "keyStore";
     
