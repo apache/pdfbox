@@ -152,7 +152,8 @@ public class XrefTrailerResolver
      */
     public void nextXrefObj( final long startBytePos, XRefType type )
     {
-        bytePosToXrefMap.put( startBytePos, curXrefTrailerObj = new XrefTrailerObj() );
+        curXrefTrailerObj = new XrefTrailerObj();
+        bytePosToXrefMap.put(startBytePos, curXrefTrailerObj);
         curXrefTrailerObj.xrefType = type;
     }
 
