@@ -52,10 +52,10 @@ import java.util.List;
  *
  * A customized tree for PDFDebugger.
  */
+@SuppressWarnings({"serial"})
 public class Tree extends JTree
 {
     private final JPopupMenu treePopupMenu;
-    private final Component parent;
     private final Object rootNode;
 
     /**
@@ -66,8 +66,7 @@ public class Tree extends JTree
     {
         treePopupMenu = new JPopupMenu();
         setComponentPopupMenu(treePopupMenu);
-        parent = parentComponent;
-        rootNode = this.getModel().getRoot();
+        rootNode = getModel().getRoot();
     }
 
     @Override
@@ -390,7 +389,7 @@ public class Tree extends JTree
      */
     private void saveStream(byte[] bytes, FileFilter filter, String extension) throws IOException
     {
-        FileOpenSaveDialog saveDialog = new FileOpenSaveDialog(parent, filter);
+        FileOpenSaveDialog saveDialog = new FileOpenSaveDialog(getParent(), filter);
         saveDialog.saveFile(bytes, extension);
     }
 }
