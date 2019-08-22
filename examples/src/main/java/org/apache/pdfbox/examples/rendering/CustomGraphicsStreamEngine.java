@@ -42,6 +42,16 @@ import org.apache.pdfbox.util.Vector;
  */
 public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
 {
+    /**
+     * Constructor.
+     *
+     * @param page PDF Page
+     */
+    protected CustomGraphicsStreamEngine(PDPage page)
+    {
+        super(page);
+    }
+
     public static void main(String[] args) throws IOException
     {
         File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
@@ -55,16 +65,6 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         }
     }
     
-    /**
-     * Constructor.
-     *
-     * @param page PDF Page
-     */
-    protected CustomGraphicsStreamEngine(PDPage page)
-    {
-        super(page);
-    }
-
     /**
      * Runs the engine on the current page.
      *
