@@ -156,7 +156,7 @@ class ShadedTriangle
     {
         if (degree == 1)
         {
-            return overlaps(corner[0], p) | overlaps(corner[1], p) | overlaps(corner[2], p);
+            return overlaps(corner[0], p) || overlaps(corner[1], p) || overlaps(corner[2], p);
         }
         else if (degree == 2)
         {
