@@ -206,6 +206,9 @@ final class FileSystemFontProvider extends FontProvider
         {
             if (file.getName().toLowerCase().endsWith(".ttc"))
             {
+                @SuppressWarnings("squid:S2095")
+                // ttc not closed here because it is needed later when ttf is accessed,
+                // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
                 TrueTypeCollection ttc = new TrueTypeCollection(file);
                 TrueTypeFont ttf = ttc.getFontByName(postScriptName);
                 if (ttf == null)
