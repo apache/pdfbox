@@ -30,6 +30,7 @@ import javax.swing.JComponent;
  * This class shows corresponding ASCII characters for bytes. For every 16 byte there is one line.
  * This paints the only visible contents at one time.
  */
+@SuppressWarnings({"serial","squid:S1948"})
 class ASCIIPane extends JComponent implements HexModelChangeListener
 {
     private final HexModel model;
