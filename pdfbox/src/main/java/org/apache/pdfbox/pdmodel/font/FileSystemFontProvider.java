@@ -70,7 +70,7 @@ final class FileSystemFontProvider extends FontProvider
         private final int macStyle;
         private final PDPanoseClassification panose;
         private final File file;
-        private transient FileSystemFontProvider parent;
+        private final FileSystemFontProvider parent;
 
         private FSFontInfo(File file, FontFormat format, String postScriptName,
                            CIDSystemInfo cidSystemInfo, int usWeightClass, int sFamilyClass,
