@@ -340,7 +340,7 @@ public class PDFDebugger extends JFrame
     {
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new JScrollPane();
-        tree = new Tree(this);
+        tree = new Tree();
         jScrollPane2 = new JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
         
