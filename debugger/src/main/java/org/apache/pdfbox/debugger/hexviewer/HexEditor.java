@@ -45,6 +45,7 @@ import javax.swing.border.LineBorder;
  *
  * This class hosts all the UI components of Hex view and coordinates among them.
  */
+@SuppressWarnings({"serial","squid:S1948"})
 class HexEditor extends JPanel implements SelectionChangeListener
 {
     private final HexModel model;
