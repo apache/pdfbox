@@ -31,7 +31,6 @@ import javax.swing.JTree;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.tree.TreePath;
-import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Point;
 import java.awt.Toolkit;
