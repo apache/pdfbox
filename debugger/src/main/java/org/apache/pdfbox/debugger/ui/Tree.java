@@ -60,9 +60,8 @@ public class Tree extends JTree
 
     /**
      * Constructor.
-     * @param parentComponent the main UI where the Tree resides.
      */
-    public Tree(Component parentComponent)
+    public Tree()
     {
         treePopupMenu = new JPopupMenu();
         setComponentPopupMenu(treePopupMenu);
