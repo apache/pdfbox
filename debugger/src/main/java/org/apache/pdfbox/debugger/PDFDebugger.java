@@ -127,7 +127,7 @@ import org.apache.pdfbox.printing.PDFPageable;
  * @author Ben Litchfield
  * @author Khyrul Bashar
  */
-@SuppressWarnings({"serial","squid:MaximumInheritanceDepth"})
+@SuppressWarnings({"serial","squid:MaximumInheritanceDepth","squid:S1948"})
 public class PDFDebugger extends JFrame
 {
     private static final Set<COSName> SPECIALCOLORSPACES =
@@ -146,7 +146,6 @@ public class PDFDebugger extends JFrame
     
     private TreeStatusPane statusPane;
     private RecentFiles recentFiles;
-    @SuppressWarnings("squid:S1948")
     private WindowPrefs windowPrefs;
     private boolean isPageMode;
 
