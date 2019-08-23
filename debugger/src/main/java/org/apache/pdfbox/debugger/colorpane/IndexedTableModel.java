@@ -26,6 +26,7 @@ import javax.swing.table.AbstractTableModel;
 /**
  * This the table model for showing Indexed color space which extends AbstractTableModel.
  */
+@SuppressWarnings({"serial","squid:S1948"})
 public class IndexedTableModel extends AbstractTableModel
 {
 
