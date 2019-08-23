@@ -333,9 +333,11 @@ public class COSStream extends COSDictionary implements Closeable
     /**
      * This will return the filters to apply to the byte stream.
      * The method will return
-     * - null if no filters are to be applied
-     * - a COSName if one filter is to be applied
-     * - a COSArray containing COSNames if multiple filters are to be applied
+     * <ul>
+     * <li>null if no filters are to be applied
+     * <li>a COSName if one filter is to be applied
+     * <li>a COSArray containing COSNames if multiple filters are to be applied
+     * </ul>
      *
      * @return the COSBase object representing the filters
      */
