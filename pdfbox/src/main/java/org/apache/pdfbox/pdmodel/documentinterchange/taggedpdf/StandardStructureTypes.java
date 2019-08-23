@@ -37,11 +37,6 @@ public class StandardStructureTypes
      */
     private static final Log LOG = LogFactory.getLog(StandardStructureTypes.class);
     
-    private StandardStructureTypes()
-    {
-    }
-
-
     // Grouping Elements
     /**
      * Document
@@ -319,4 +314,7 @@ public class StandardStructureTypes
         Collections.sort(types);
     }
 
+    private StandardStructureTypes()
+    {
+    }
 }
