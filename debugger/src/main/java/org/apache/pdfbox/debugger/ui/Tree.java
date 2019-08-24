@@ -104,31 +104,33 @@ public class Tree extends JTree
             obj = ((ArrayEntry) obj).getValue();
         }
 
-        if (obj instanceof COSStream)
+        if (!(obj instanceof COSStream))
+        {
+            return;
+        }
+
+        treePopupMenu.addSeparator();
+
+        COSStream stream = (COSStream) obj;
+        treePopupMenu.add(getStreamSaveMenu(stream, nodePath));
+
+        if (stream.getFilters() != null)
+        {
+            if (stream.getFilters() instanceof COSArray && ((COSArray) stream.getFilters()).size() >= 2)
+            {
+                for (JMenuItem menuItem : getPartiallyDecodedStreamSaveMenu(stream))
+                {
+                    treePopupMenu.add(menuItem);
+                }
+            }
+            treePopupMenu.add(getRawStreamSaveMenu(stream));
+        }
+
+        JMenuItem open = getFileOpenMenu(stream, nodePath);
+        if (open != null)
         {
             treePopupMenu.addSeparator();
-
-            COSStream stream = (COSStream) obj;
-            treePopupMenu.add(getStreamSaveMenu(stream, nodePath));
-
-            if (stream.getFilters() != null)
-            {
-                if (stream.getFilters() instanceof COSArray && ((COSArray) stream.getFilters()).size() >= 2)
-                {
-                    for (JMenuItem menuItem : getPartiallyDecodedStreamSaveMenu(stream))
-                    {
-                        treePopupMenu.add(menuItem);
-                    }
-                }
-                treePopupMenu.add(getRawStreamSaveMenu(stream));
-            }
-
-            JMenuItem open = getFileOpenMenu(stream, nodePath);
-            if (open != null)
-            {
-                treePopupMenu.addSeparator();
-                treePopupMenu.add(open);
-            }
+            treePopupMenu.add(open);
         }
     }
 
@@ -186,23 +188,20 @@ public class Tree extends JTree
     {
         StringBuilder sb = new StringBuilder();
         COSBase filters = cosStream.getFilters();
-        if (filters != null)
+        if (filters instanceof COSName)
         {
-            if (filters instanceof COSName)
+            sb.append(((COSName) filters).getName());
+        }
+        else if (filters instanceof COSArray)
+        {
+            COSArray filterArray = (COSArray) filters;
+            for (int i = 0; i < filterArray.size(); i++)
             {
-                sb.append(((COSName) filters).getName());
-            }
-            else if (filters instanceof COSArray)
-            {
-                COSArray filterArray = (COSArray) filters;
-                for (int i = 0; i < filterArray.size(); i++)
+                if (i > 0)
                 {
-                    if (i > 0)
-                    {
-                        sb.append(", ");
-                    }
-                    sb.append(((COSName) filterArray.get(i)).getName());
+                    sb.append(", ");
                 }
+                sb.append(((COSName) filterArray.get(i)).getName());
             }
         }
         return sb.toString();
