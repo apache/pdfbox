@@ -90,6 +90,7 @@ public class CSSeparation implements ChangeListener, ActionListener
         slider.setMajorTickSpacing(50);
         slider.setPaintTicks(true);
 
+        @SuppressWarnings({"squid:S1149"})
         Dictionary<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
         JLabel lightest = new JLabel("lightest");
         lightest.setFont(new Font(Font.MONOSPACED, Font.BOLD, 10));
