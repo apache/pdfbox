@@ -402,7 +402,7 @@ public class StreamPane implements ActionListener
                     }
                     else
                     {
-                        String str = "" + (char)chr;
+                        String str = Character.toString((char) chr);
                         docu.insertString(docu.getLength(), str, STRING_STYLE);
                     }
                 }
