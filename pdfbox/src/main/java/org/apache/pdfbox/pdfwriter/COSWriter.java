@@ -30,6 +30,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -184,7 +185,8 @@ public class COSWriter implements ICOSVisitor, Closeable
     //so that null entries will not get added.
     @SuppressWarnings({"squid:S1149"})
     private final Map<COSBase,COSObjectKey> objectKeys = new Hashtable<COSBase,COSObjectKey>();
-    private final Map<COSObjectKey,COSBase> keyObject = new Hashtable<COSObjectKey,COSBase>();
+
+    private final Map<COSObjectKey,COSBase> keyObject = new HashMap<COSObjectKey,COSBase>();
 
     // the list of x ref entries to be made so far
     private final List<COSWriterXRefEntry> xRefEntries = new ArrayList<COSWriterXRefEntry>();
