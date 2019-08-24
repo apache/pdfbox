@@ -23,6 +23,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Khyrul Bashar
@@ -30,6 +32,8 @@ import javax.swing.text.JTextComponent;
  */
 class SearchEngine
 {
+    private static final Log LOG = LogFactory.getLog(SearchEngine.class);
+
     private final Document document;
     private final Highlighter highlighter;
     private final Highlighter.HighlightPainter painter;
@@ -73,7 +77,7 @@ class SearchEngine
             }
             catch (BadLocationException e)
             {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
                 return highlights;
             }
             if (!isCaseSensitive)
@@ -97,7 +101,7 @@ class SearchEngine
                 }
                 catch (BadLocationException e)
                 {
-                    e.printStackTrace();
+                    LOG.error(e.getMessage(), e);
                 }
             }
         }
