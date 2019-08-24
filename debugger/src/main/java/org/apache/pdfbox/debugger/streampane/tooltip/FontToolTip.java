@@ -18,6 +18,8 @@
 package org.apache.pdfbox.debugger.streampane.tooltip;
 
 import java.io.IOException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -28,6 +30,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
  */
 final class FontToolTip implements ToolTip
 {
+    private static final Log LOG = LogFactory.getLog(FontToolTip.class);
     private String markup;
 
     /**
@@ -54,7 +57,7 @@ final class FontToolTip implements ToolTip
                 }
                 catch (IOException e)
                 {
-                    e.printStackTrace();
+                    LOG.error(e.getMessage(), e);
                 }
             }
         }
