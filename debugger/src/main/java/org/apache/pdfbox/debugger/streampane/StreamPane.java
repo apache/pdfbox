@@ -43,6 +43,8 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
@@ -68,6 +70,8 @@ import org.apache.pdfbox.util.Charsets;
  */
 public class StreamPane implements ActionListener
 {
+    private static final Log LOG = LogFactory.getLog(StreamPane.class);
+
     @Deprecated
     public static final String BEGIN_TEXT_OBJECT = OperatorName.BEGIN_TEXT;
     @Deprecated
@@ -210,7 +214,7 @@ public class StreamPane implements ActionListener
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
         }
     }
@@ -269,7 +273,8 @@ public class StreamPane implements ActionListener
             String encoding = "ISO-8859-1";
             synchronized (stream)
             {
-                if (stream.isXmlMetadata()) {
+                if (stream.isXmlMetadata())
+                {
                     encoding = "UTF-8";
                 }
                 InputStream inputStream = stream.getStream(filterKey);
@@ -295,11 +300,11 @@ public class StreamPane implements ActionListener
             }
             catch (InterruptedException e)
             {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
             catch (ExecutionException e)
             {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
         }
 
@@ -313,7 +318,7 @@ public class StreamPane implements ActionListener
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
                 return null;
             }
         }
@@ -330,7 +335,7 @@ public class StreamPane implements ActionListener
                 }
                 catch (BadLocationException e)
                 {
-                    e.printStackTrace();
+                    LOG.error(e.getMessage(), e);
                 }
             }
             return docu;
@@ -373,7 +378,7 @@ public class StreamPane implements ActionListener
             }
             catch (BadLocationException e)
             {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
         }
 
