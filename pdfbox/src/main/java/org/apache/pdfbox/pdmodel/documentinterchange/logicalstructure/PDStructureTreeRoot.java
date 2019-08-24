@@ -17,7 +17,7 @@
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
 import java.io.IOException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -206,7 +206,7 @@ public class PDStructureTreeRoot extends PDStructureNode
                 LOG.error(e,e);
             }
         }
-        return new Hashtable<String, Object>();
+        return new HashMap<String, Object>();
     }
 
     /**

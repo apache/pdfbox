@@ -244,6 +244,7 @@ public final class CRLVerifier
             NamingException, CRLException,
             CertificateVerificationException
     {
+        @SuppressWarnings({"squid:S1149"})
         Hashtable<String, String> env = new Hashtable<String, String>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, ldapURL);
