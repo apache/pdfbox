@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -39,10 +41,12 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
  */
 public class Stream
 {
+    private static final Log LOG = LogFactory.getLog(Stream.class);
+
     public static final String DECODED = "Decoded (Plain Text)";
     public static final String IMAGE = "Image";
 
-    private final COSStream stream;
+    private final COSStream strm;
     private final boolean isThumb;
     private final boolean isImage;
     private final boolean isXmlMetadata;
@@ -57,7 +61,7 @@ public class Stream
      */
     Stream(COSStream cosStream, boolean isThumb)
     {
-        this.stream = cosStream;
+        this.strm = cosStream;
         this.isThumb = isThumb;
         this.isImage = isImageStream(cosStream, isThumb);
         this.isXmlMetadata = isXmlMetadataStream(cosStream);
@@ -107,7 +111,7 @@ public class Stream
     private String getFilteredLabel()
     {
         StringBuilder sb = new StringBuilder();
-        COSBase base = stream.getFilters();
+        COSBase base = strm.getFilters();
         if (base instanceof COSName)
         {
             sb.append(((COSName) base).getName());
@@ -139,20 +143,20 @@ public class Stream
         {
             if (DECODED.equals(key))
             {
-                return stream.createInputStream();
+                return strm.createInputStream();
             }
             else if (getFilteredLabel().equals(key))
             {
-                return stream.createRawInputStream();
+                return strm.createRawInputStream();
             }
             else
             {
-                return new PDStream(stream).createInputStream(filters.get(key));
+                return new PDStream(strm).createInputStream(filters.get(key));
             }
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
         return null;
     }
@@ -170,17 +174,17 @@ public class Stream
             PDImageXObject imageXObject;
             if (isThumb)
             {
-                imageXObject = PDImageXObject.createThumbnail(stream);
+                imageXObject = PDImageXObject.createThumbnail(strm);
             }
             else
             {
-                imageXObject = new PDImageXObject(new PDStream(stream), resources);
+                imageXObject = new PDImageXObject(new PDStream(strm), resources);
             }
             return imageXObject.getImage();
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
         return null;
     }
@@ -212,12 +216,12 @@ public class Stream
 
     private String getPartialStreamCommand(final int indexOfStopFilter)
     {
-        List<COSName> avaiablrFilters = new PDStream(stream).getFilters();
+        List<COSName> availableFilters = new PDStream(strm).getFilters();
 
         StringBuilder nameListBuilder = new StringBuilder();
-        for (int i = indexOfStopFilter; i < avaiablrFilters.size(); i++)
+        for (int i = indexOfStopFilter; i < availableFilters.size(); i++)
         {
-            nameListBuilder.append(avaiablrFilters.get(i).getName()).append(" & ");
+            nameListBuilder.append(availableFilters.get(i).getName()).append(" & ");
         }
         nameListBuilder.delete(nameListBuilder.lastIndexOf("&"), nameListBuilder.length());
 
@@ -226,10 +230,10 @@ public class Stream
 
     private List<String> getStopFilterList(final int stopFilterIndex)
     {
-        List<COSName> avaiablrFilters = new PDStream(stream).getFilters();
+        List<COSName> availableFilters = new PDStream(strm).getFilters();
 
         final List<String> stopFilters = new ArrayList<>(1);
-        stopFilters.add(avaiablrFilters.get(stopFilterIndex).getName());
+        stopFilters.add(availableFilters.get(stopFilterIndex).getName());
 
         return stopFilters;
     }
