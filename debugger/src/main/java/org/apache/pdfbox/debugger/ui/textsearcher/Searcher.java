@@ -34,6 +34,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.debugger.PDFDebugger;
 
@@ -42,6 +44,8 @@ import org.apache.pdfbox.debugger.PDFDebugger;
  */
 public class Searcher implements DocumentListener, ChangeListener, ComponentListener
 {
+    private static final Log LOG = LogFactory.getLog(Searcher.class);
+
     private static final Highlighter.HighlightPainter PAINTER =
             new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
     private static final Highlighter.HighlightPainter SELECTION_PAINTER =
@@ -139,7 +143,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         }
         catch (BadLocationException e)
         {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
     }
 
@@ -192,7 +196,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         }
         catch (BadLocationException e)
         {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
     }
 
@@ -218,7 +222,7 @@ public class Searcher implements DocumentListener, ChangeListener, ComponentList
         }
         catch (BadLocationException e)
         {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
     }
 
