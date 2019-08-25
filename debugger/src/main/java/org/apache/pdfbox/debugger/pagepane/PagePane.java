@@ -114,38 +114,42 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         {
             if (annotation instanceof PDAnnotationLink)
             {
-                PDAnnotationLink linkAnnotation = (PDAnnotationLink) annotation;
-                PDAction action = linkAnnotation.getAction();
-                if (action instanceof PDActionURI)
-                {
-                    PDActionURI uriAction = (PDActionURI) action;
-                    rectMap.put(annotation.getRectangle(), "URI: " + uriAction.getURI());
-                    continue;
-                }
-                PDDestination destination;
-                if (action instanceof PDActionGoTo)
-                {
-                    PDActionGoTo goToAction = (PDActionGoTo) action;
-                    destination = goToAction.getDestination();
-                }
-                else
-                {
-                    destination = linkAnnotation.getDestination();
-                }
-                if (destination instanceof PDNamedDestination)
-                {
-                    destination = document.getDocumentCatalog().
-                            findNamedDestinationPage((PDNamedDestination) destination);
-                }
-                if (destination instanceof PDPageDestination)
-                {
-                    PDPageDestination pageDestination = (PDPageDestination) destination;
-                    int pageNum = pageDestination.retrievePageNumber();
-                    if (pageNum != -1)
-                    {
-                        rectMap.put(annotation.getRectangle(), "Page destination: " + (pageNum + 1));
-                    }
-                }
+                collectLinkLocation((PDAnnotationLink) annotation);
+            }
+        }
+    }
+
+    private void collectLinkLocation(PDAnnotationLink linkAnnotation) throws IOException
+    {
+        PDAction action = linkAnnotation.getAction();
+        if (action instanceof PDActionURI)
+        {
+            PDActionURI uriAction = (PDActionURI) action;
+            rectMap.put(linkAnnotation.getRectangle(), "URI: " + uriAction.getURI());
+            return;
+        }
+        PDDestination destination;
+        if (action instanceof PDActionGoTo)
+        {
+            PDActionGoTo goToAction = (PDActionGoTo) action;
+            destination = goToAction.getDestination();
+        }
+        else
+        {
+            destination = linkAnnotation.getDestination();
+        }
+        if (destination instanceof PDNamedDestination)
+        {
+            destination = document.getDocumentCatalog().
+                    findNamedDestinationPage((PDNamedDestination) destination);
+        }
+        if (destination instanceof PDPageDestination)
+        {
+            PDPageDestination pageDestination = (PDPageDestination) destination;
+            int pageNum = pageDestination.retrievePageNumber();
+            if (pageNum != -1)
+            {
+                rectMap.put(linkAnnotation.getRectangle(), "Page destination: " + (pageNum + 1));
             }
         }
     }
