@@ -261,7 +261,6 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setStartPage(pageIndex + 1);
             stripper.setEndPage(pageIndex + 1);
-            //stripper.setSortByPosition(true);
             textDialog.setText(stripper.getText(document));
         }
         catch (IOException ex)
