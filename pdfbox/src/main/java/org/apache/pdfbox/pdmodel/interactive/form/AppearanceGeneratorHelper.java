@@ -97,14 +97,24 @@ class AppearanceGeneratorHelper
         this.field = field;
         validateAndEnsureAcroFormResources();
         
-        this.defaultAppearance = field.getDefaultAppearanceString();
+        try
+        {
+            this.defaultAppearance = field.getDefaultAppearanceString();
+        }
+        catch (IOException ex)
+        {
+            throw new IOException("Could not process default appearance string '" +
+                                   field.getDefaultAppearance() + "' for field '" +
+                                   field.getFullyQualifiedName() + "'", ex);
+        }
     }
     
     /*
      * Adobe Reader/Acrobat are adding resources which are at the field/widget level
      * to the AcroForm level. 
      */
-    private void validateAndEnsureAcroFormResources() {
+    private void validateAndEnsureAcroFormResources()
+    {
         // add font resources which might be available at the field 
         // level but are not at the AcroForm level to the AcroForm
         // to match Adobe Reader/Acrobat behavior        
