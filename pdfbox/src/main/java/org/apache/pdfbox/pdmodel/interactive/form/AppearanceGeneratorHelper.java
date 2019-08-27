@@ -207,8 +207,7 @@ class AppearanceGeneratorHelper
                 // TODO support appearances other than "normal"
                 
                 PDAppearanceStream appearanceStream;
-                if (appearance != null && appearance.isStream() &&
-                        appearance.getAppearanceStream().getBBox() != null)
+                if (isValidAppearanceStream(appearance))
                 {
                     appearanceStream = appearance.getAppearanceStream();
                 }
@@ -237,6 +236,24 @@ class AppearanceGeneratorHelper
             // restore the field level appearance
             defaultAppearance =  acroFormAppearance;
         }
+    }
+
+    private static boolean isValidAppearanceStream(PDAppearanceEntry appearance)
+    {
+        if (appearance == null)
+        {
+            return false;
+        }
+        if (!appearance.isStream())
+        {
+            return false;
+        }
+        PDRectangle bbox = appearance.getAppearanceStream().getBBox();
+        if (bbox == null)
+        {
+            return false;
+        }
+        return Math.abs(bbox.getWidth()) > 0 && Math.abs(bbox.getHeight()) > 0;
     }
 
     private PDAppearanceStream prepareNormalAppearanceStream(PDAnnotationWidget widget)
