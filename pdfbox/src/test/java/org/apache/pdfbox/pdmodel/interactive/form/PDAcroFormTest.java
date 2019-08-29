@@ -132,6 +132,10 @@ public class PDAcroFormTest
         	}
         }
         testPdf.getDocumentCatalog().getAcroForm().flatten();
+
+        // 36 non widget annotations shall not be flattened
+        assertEquals(36, testPdf.getPage(0).getAnnotations().size());
+
         assertTrue(testPdf.getDocumentCatalog().getAcroForm().getFields().isEmpty());
         File file = new File(OUT_DIR, "AlignmentTests-flattened-noRef.pdf");
         testPdf.save(file);
