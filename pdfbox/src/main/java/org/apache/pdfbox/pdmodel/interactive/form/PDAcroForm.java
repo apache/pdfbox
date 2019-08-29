@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -297,12 +299,12 @@ public final class PDAcroForm implements COSObjectable
         PDPageContentStream contentStream;
 
         // get the widgets per page
-        Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> pagesWidgetsMap = buildPagesWidgetsMap(fields);
+        Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields);
         
         // preserve all non widget annotations
         for (PDPage page : document.getPages())
         {
-            Map<COSDictionary,PDAnnotationWidget> widgetsForPageMap = pagesWidgetsMap.get(page.getCOSObject());
+            Set<COSDictionary> widgetsForPageMap = pagesWidgetsMap.get(page.getCOSObject());
 
             // indicates if the original content stream
             // has been wrapped in a q...Q pair.
@@ -312,7 +314,7 @@ public final class PDAcroForm implements COSObjectable
             
             for (PDAnnotation annotation: page.getAnnotations())
             {
-                if (widgetsForPageMap != null && widgetsForPageMap.get(annotation.getCOSObject()) == null)
+                if (widgetsForPageMap != null && !widgetsForPageMap.contains(annotation.getCOSObject()))
                 {
                     annotations.add(annotation);                 
                 }
@@ -811,10 +813,10 @@ public final class PDAcroForm implements COSObjectable
         }
     }
 
-    private Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> buildPagesWidgetsMap(List<PDField> fields) throws IOException
+    private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(List<PDField> fields) throws IOException
     {
-        Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> pagesAnnotationsMap =
-                new HashMap<COSDictionary,Map<COSDictionary, PDAnnotationWidget>>();
+        Map<COSDictionary,Set<COSDictionary>> pagesAnnotationsMap =
+                new HashMap<COSDictionary, Set<COSDictionary>>();
         boolean hasMissingPageRef = false;
         
         for (PDField field : fields)
@@ -856,19 +858,19 @@ public final class PDAcroForm implements COSObjectable
         return pagesAnnotationsMap;
     }
 
-    private void fillPagesAnnotationMap(Map<COSDictionary, Map<COSDictionary, PDAnnotationWidget>> pagesAnnotationsMap,
+    private void fillPagesAnnotationMap(Map<COSDictionary, Set<COSDictionary>> pagesAnnotationsMap,
             PDPage page, PDAnnotationWidget widget)
     {
         if (pagesAnnotationsMap.get(page.getCOSObject()) == null)
         {
-            Map<COSDictionary,PDAnnotationWidget> widgetsForPage = new HashMap<COSDictionary,PDAnnotationWidget>();
-            widgetsForPage.put(widget.getCOSObject(), widget);
+            Set<COSDictionary> widgetsForPage = new HashSet<COSDictionary>();
+            widgetsForPage.add(widget.getCOSObject());
             pagesAnnotationsMap.put(page.getCOSObject(), widgetsForPage);
         }
         else
         {
-            Map<COSDictionary,PDAnnotationWidget> widgetsForPage = pagesAnnotationsMap.get(page.getCOSObject());
-            widgetsForPage.put(widget.getCOSObject(), widget);
+            Set<COSDictionary> widgetsForPage = pagesAnnotationsMap.get(page.getCOSObject());
+            widgetsForPage.add(widget.getCOSObject());
         }
     }
 
