@@ -811,9 +811,10 @@ public final class PDAcroForm implements COSObjectable
         }
     }
 
-    private Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> buildPagesWidgetsMap(List<PDField> fields)
+    private Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> buildPagesWidgetsMap(List<PDField> fields) throws IOException
     {
-        Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> pagesAnnotationsMap = new HashMap<COSDictionary,Map<COSDictionary,PDAnnotationWidget>>();
+        Map<COSDictionary,Map<COSDictionary,PDAnnotationWidget>> pagesAnnotationsMap =
+                new HashMap<COSDictionary,Map<COSDictionary, PDAnnotationWidget>>();
         boolean hasMissingPageRef = false;
         
         for (PDField field : fields)
@@ -821,20 +822,10 @@ public final class PDAcroForm implements COSObjectable
             List<PDAnnotationWidget> widgets = field.getWidgets();
             for (PDAnnotationWidget widget : widgets)
             {
-                PDPage pageForWidget = widget.getPage();
-                if (pageForWidget != null)
+                PDPage page = widget.getPage();
+                if (page != null)
                 {
-                    if (pagesAnnotationsMap.get(pageForWidget.getCOSObject()) == null)
-                    {
-                        Map<COSDictionary,PDAnnotationWidget> widgetsForPage = new HashMap<COSDictionary,PDAnnotationWidget>();
-                        widgetsForPage.put(widget.getCOSObject(), widget);
-                        pagesAnnotationsMap.put(pageForWidget.getCOSObject(), widgetsForPage);
-                    }
-                    else
-                    {
-                        Map<COSDictionary,PDAnnotationWidget> widgetsForPage = pagesAnnotationsMap.get(pageForWidget.getCOSObject());
-                        widgetsForPage.put(widget.getCOSObject(), widget);
-                    }
+                    fillPagesAnnotationMap(pagesAnnotationsMap, page, widget);
                 }
                 else
                 {
@@ -842,16 +833,43 @@ public final class PDAcroForm implements COSObjectable
                 }
             }
         }
-        
-        // TODO: if there is a widget with a missing page reference 
-        // we'd need to build the map reverse i.e. form the annotations to the 
-        // widget. But this will be much slower so will be omitted for now.
-        if (hasMissingPageRef)
+
+        if (!hasMissingPageRef)
         {
-            LOG.warn("There has been a widget with a missing page reference. Please report to the PDFBox project");
+            return pagesAnnotationsMap;
         }
-        
+
+        // If there is a widget with a missing page reference we need to build the map reverse i.e. 
+        // from the annotations to the widget.
+        LOG.warn("There has been a widget with a missing page reference, will check all page annotations");
+        for (PDPage page : document.getPages())
+        {
+            for (PDAnnotation annotation : page.getAnnotations())
+            {
+                if (annotation instanceof PDAnnotationWidget)
+                {
+                    fillPagesAnnotationMap(pagesAnnotationsMap, page, (PDAnnotationWidget) annotation);
+                }
+            }
+        }
+
         return pagesAnnotationsMap;
+    }
+
+    private void fillPagesAnnotationMap(Map<COSDictionary, Map<COSDictionary, PDAnnotationWidget>> pagesAnnotationsMap,
+            PDPage page, PDAnnotationWidget widget)
+    {
+        if (pagesAnnotationsMap.get(page.getCOSObject()) == null)
+        {
+            Map<COSDictionary,PDAnnotationWidget> widgetsForPage = new HashMap<COSDictionary,PDAnnotationWidget>();
+            widgetsForPage.put(widget.getCOSObject(), widget);
+            pagesAnnotationsMap.put(page.getCOSObject(), widgetsForPage);
+        }
+        else
+        {
+            Map<COSDictionary,PDAnnotationWidget> widgetsForPage = pagesAnnotationsMap.get(page.getCOSObject());
+            widgetsForPage.put(widget.getCOSObject(), widget);
+        }
     }
 
     private void removeFields(List<PDField> fields)
