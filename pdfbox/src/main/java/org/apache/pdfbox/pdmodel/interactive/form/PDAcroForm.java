@@ -878,30 +878,18 @@ public final class PDAcroForm implements COSObjectable
     {
         for (PDField field : fields)
         {
+            COSArray array;
             if (field.getParent() == null)
             {
-                COSArray cosFields = (COSArray) dictionary.getDictionaryObject(COSName.FIELDS);
-                for (int i = 0; i < cosFields.size(); i++)
-                {
-                    COSDictionary element = (COSDictionary) cosFields.getObject(i);
-                    if (field.getCOSObject().equals(element))
-                    {
-                        cosFields.remove(i);
-                    }
-                }
+                // if the field has no parent, assume it is at root level list, remove it from there
+                array = (COSArray) dictionary.getDictionaryObject(COSName.FIELDS);
             }
             else
             {
-                COSArray kids = (COSArray) field.getParent().getCOSObject().getDictionaryObject(COSName.KIDS);
-                for (int i = 0; i < kids.size(); i++)
-                {
-                    COSDictionary element = (COSDictionary) kids.getObject(i);
-                    if (field.getCOSObject().equals(element))
-                    {
-                        kids.remove(i);
-                    }
-                }
+                // if the field has a parent, then remove from the list there
+                array = (COSArray) field.getParent().getCOSObject().getDictionaryObject(COSName.KIDS);
             }
+            array.removeObject(field.getCOSObject());
         }
     }
 }
