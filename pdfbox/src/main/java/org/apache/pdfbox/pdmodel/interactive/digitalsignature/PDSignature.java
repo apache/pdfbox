@@ -404,14 +404,18 @@ public class PDSignature implements COSObjectable
      * @return a byte array containing only the signed part of the content
      * @throws IOException if the pdfFile can't be read
      */
-    public byte[] getSignedContent(byte[] pdfFile) throws IOException
+    public byte[] getSignedContent(byte[] pdfFile, int offset, int length) throws IOException
     {
-        try (COSFilterInputStream fis = new COSFilterInputStream(pdfFile, getByteRange()))
+        try (COSFilterInputStream fis = new COSFilterInputStream(pdfFile, offset, length, getByteRange()))
         {
             return fis.toByteArray();
         }
     }
 
+    public byte[] getSignedContent(byte[] pdfFile) throws IOException
+    {
+        return getSignedContent(pdfFile, 0, pdfFile.length);
+    }
     /**
      * PDF signature build dictionary. Provides informations about the signature handler.
      *
