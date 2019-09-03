@@ -708,6 +708,10 @@ public class PDDocument implements Closeable
     /**
      * This will get the document info dictionary. If it doesn't exist, an empty document info
      * dictionary is created in the document trailer.
+     * <p>
+     * In PDF 2.0 this is deprecated except for two entries, /CreationDate and /ModDate. For any other
+     * document level metadata, a metadata stream should be used instead, see
+     * {@link PDDocumentCatalog#getMetadata()}.
      *
      * @return The documents /Info dictionary, never null.
      */
@@ -729,7 +733,11 @@ public class PDDocument implements Closeable
 
     /**
      * This will set the document information for this document.
-     * 
+     * <p>
+     * In PDF 2.0 this is deprecated except for two entries, /CreationDate and /ModDate. For any other
+     * document level metadata, a metadata stream should be used instead, see
+     * {@link PDDocumentCatalog#setMetadata(org.apache.pdfbox.pdmodel.common.PDMetadata) PDDocumentCatalog#setMetadata(PDMetadata)}.
+     *
      * @param info The updated document information.
      */
     public void setDocumentInformation(PDDocumentInformation info)
