@@ -54,26 +54,28 @@ public class PDType0Font extends PDFont implements PDVectorFont
     private TrueTypeFont ttf;
     
     /**
-    * Loads a TTF to be embedded into a document as a Type 0 font.
-    *
-    * @param doc The PDF document that will hold the embedded font.
-    * @param file A TrueType font.
-    * @return A Type0 font with a CIDFontType2 descendant.
-    * @throws IOException If there is an error reading the font file.
-    */
+     * Loads a TTF to be embedded and subset into a document as a Type 0 font. If you are loading a
+     * font for AcroForm, then use the 3-parameter constructor instead.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param file A TrueType font.
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font file.
+     */
     public static PDType0Font load(PDDocument doc, File file) throws IOException
     {
         return new PDType0Font(doc, new TTFParser().parse(file), true, true, false);
     }
 
     /**
-    * Loads a TTF to be embedded into a document as a Type 0 font.
-    *
-    * @param doc The PDF document that will hold the embedded font.
-    * @param input An input stream of a TrueType font. It will be closed before returning.
-    * @return A Type0 font with a CIDFontType2 descendant.
-    * @throws IOException If there is an error reading the font stream.
-    */
+     * Loads a TTF to be embedded and subset into a document as a Type 0 font. If you are loading a
+     * font for AcroForm, then use the 3-parameter constructor instead.
+     *
+     * @param doc The PDF document that will hold the embedded font.
+     * @param input An input stream of a TrueType font. It will be closed before returning.
+     * @return A Type0 font with a CIDFontType2 descendant.
+     * @throws IOException If there is an error reading the font stream.
+     */
     public static PDType0Font load(PDDocument doc, InputStream input) throws IOException
     {
         return new PDType0Font(doc, new TTFParser().parse(input), true, true, false);
@@ -84,7 +86,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
      *
      * @param doc The PDF document that will hold the embedded font.
      * @param input An input stream of a TrueType font. It will be closed before returning.
-     * @param embedSubset True if the font will be subset before embedding
+     * @param embedSubset True if the font will be subset before embedding. Set this to false when
+     * creating a font for AcroForm.
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
      */
@@ -99,7 +102,8 @@ public class PDType0Font extends PDFont implements PDVectorFont
      *
      * @param doc The PDF document that will hold the embedded font.
      * @param ttf A TrueType font.
-     * @param embedSubset True if the font will be subset before embedding
+     * @param embedSubset True if the font will be subset before embedding. Set this to false when
+     * creating a font for AcroForm.
      * @return A Type0 font with a CIDFontType2 descendant.
      * @throws IOException If there is an error reading the font stream.
      */
