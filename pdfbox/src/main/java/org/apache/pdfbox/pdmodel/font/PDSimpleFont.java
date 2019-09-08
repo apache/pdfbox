@@ -137,9 +137,18 @@ public abstract class PDSimpleFont extends PDFont
             // Type1 fonts are not affected as they don't have cmaps
             if (!isType1Font() && awtFont.canDisplayUpTo(string) != -1) 
             {
-                LOG.warn("Changing font on <" + string + "> from <"
-                        + awtFont.getName() + "> to the default font");
+                // https://docs.oracle.com/javase/8/docs/technotes/guides/intl/fontconfig.html
+                // On windows, see this file:
+                // C:\Program Files\Java\jdkXXXX\jre\lib\fontconfig.properties.src
+                // It is useful to have these fonts on your system:
+                // Arial, MingLiU, David, MS Gothic, Gulim
+                // For example, page 2 of https://www.unicode.org/charts/PDF/U3130.pdf
+                // will fail if MingLiU is not installed.
+                // Of course, the best is to update to PDFBox 2.0.* or later.
+                String oldName = awtFont.getName();
                 awtFont = Font.decode(null).deriveFont(1f);
+                LOG.warn("Changing font on <" + string + "> from <"
+                        + oldName + "> to the default font <" + awtFont.getName() + ">");
             }
             glyphs = awtFont.createGlyphVector(frc, string);
         }
