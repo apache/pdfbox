@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -109,7 +110,7 @@ public class CreateRadioButtons
                 for (int i = 0; i < options.size(); i++)
                 {
                     contents.beginText();
-                    contents.setFont(PDType1Font.HELVETICA, 15);
+                    contents.setFont(Type1Fonts.HELVETICA.font(), 15);
                     contents.newLineAtOffset(70, PDRectangle.A4.getHeight() - 30 - i * 35);
                     contents.showText(options.get(i));
                     contents.endText();

@@ -39,6 +39,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties.BaseState;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.Assert;
@@ -102,14 +103,14 @@ public class TestOptionalContentGroups extends TestCase
 
             //Setup page content stream and paint background/title
             PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false);
-            PDFont font = PDType1Font.HELVETICA_BOLD;
+            PDFont font = Type1Fonts.HELVETICA_BOLD.font();
             contentStream.beginMarkedContent(COSName.OC, background);
             contentStream.beginText();
             contentStream.setFont(font, 14);
             contentStream.newLineAtOffset(80, 700);
             contentStream.showText("PDF 1.5: Optional Content Groups");
             contentStream.endText();
-            font = PDType1Font.HELVETICA;
+            font = Type1Fonts.HELVETICA.font();
             contentStream.beginText();
             contentStream.setFont(font, 12);
             contentStream.newLineAtOffset(80, 680);
@@ -248,14 +249,14 @@ public class TestOptionalContentGroups extends TestCase
             //Setup page content stream and paint background/title
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
-                PDFont font = PDType1Font.HELVETICA_BOLD;
+                PDFont font = Type1Fonts.HELVETICA_BOLD.font();
                 contentStream.beginMarkedContent(COSName.OC, visible);
                 contentStream.beginText();
                 contentStream.setFont(font, 14);
                 contentStream.newLineAtOffset(80, 700);
                 contentStream.showText("PDF 1.5: Optional Content Groups");
                 contentStream.endText();
-                font = PDType1Font.HELVETICA;
+                font = Type1Fonts.HELVETICA.font();
                 contentStream.beginText();
                 contentStream.setFont(font, 12);
                 contentStream.newLineAtOffset(80, 680);
@@ -333,7 +334,7 @@ public class TestOptionalContentGroups extends TestCase
             //Setup page content stream and paint background/title
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
-                PDFont font = PDType1Font.HELVETICA_BOLD;
+                PDFont font = Type1Fonts.HELVETICA_BOLD.font();
                 contentStream.beginMarkedContent(COSName.OC, background);
                 contentStream.beginText();
                 contentStream.setFont(font, 14);
@@ -342,7 +343,7 @@ public class TestOptionalContentGroups extends TestCase
                 contentStream.endText();
                 contentStream.endMarkedContent();
                 
-                font = PDType1Font.HELVETICA;
+                font = Type1Fonts.HELVETICA.font();
                 
                 //Paint enabled layer
                 contentStream.beginMarkedContent(COSName.OC, enabled);
@@ -395,7 +396,7 @@ public class TestOptionalContentGroups extends TestCase
 
             try (PDPageContentStream contentStream = new PDPageContentStream(doc, page, AppendMode.OVERWRITE, false))
             {
-                PDFont font = PDType1Font.HELVETICA;
+                PDFont font = Type1Fonts.HELVETICA.font();
                 
                 contentStream.setNonStrokingColor(Color.RED);
                 contentStream.beginText();

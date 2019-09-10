@@ -32,6 +32,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 
 /**
  * This will take a text file and ouput a pdf with that text.
@@ -48,7 +49,7 @@ public class TextToPDF
     /**
      * The default font
      */
-    private static final PDType1Font DEFAULT_FONT = PDType1Font.HELVETICA;
+    private static final PDType1Font DEFAULT_FONT = Type1Fonts.HELVETICA.font();
 
     /**
      * The default font size
@@ -68,20 +69,20 @@ public class TextToPDF
     private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<>();
     static
     {
-        STANDARD_14.put(PDType1Font.TIMES_ROMAN.getBaseFont(), PDType1Font.TIMES_ROMAN);
-        STANDARD_14.put(PDType1Font.TIMES_BOLD.getBaseFont(), PDType1Font.TIMES_BOLD);
-        STANDARD_14.put(PDType1Font.TIMES_ITALIC.getBaseFont(), PDType1Font.TIMES_ITALIC);
-        STANDARD_14.put(PDType1Font.TIMES_BOLD_ITALIC.getBaseFont(), PDType1Font.TIMES_BOLD_ITALIC);
-        STANDARD_14.put(PDType1Font.HELVETICA.getBaseFont(), PDType1Font.HELVETICA);
-        STANDARD_14.put(PDType1Font.HELVETICA_BOLD.getBaseFont(), PDType1Font.HELVETICA_BOLD);
-        STANDARD_14.put(PDType1Font.HELVETICA_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_OBLIQUE);
-        STANDARD_14.put(PDType1Font.HELVETICA_BOLD_OBLIQUE.getBaseFont(), PDType1Font.HELVETICA_BOLD_OBLIQUE);
-        STANDARD_14.put(PDType1Font.COURIER.getBaseFont(), PDType1Font.COURIER);
-        STANDARD_14.put(PDType1Font.COURIER_BOLD.getBaseFont(), PDType1Font.COURIER_BOLD);
-        STANDARD_14.put(PDType1Font.COURIER_OBLIQUE.getBaseFont(), PDType1Font.COURIER_OBLIQUE);
-        STANDARD_14.put(PDType1Font.COURIER_BOLD_OBLIQUE.getBaseFont(), PDType1Font.COURIER_BOLD_OBLIQUE);
-        STANDARD_14.put(PDType1Font.SYMBOL.getBaseFont(), PDType1Font.SYMBOL);
-        STANDARD_14.put(PDType1Font.ZAPF_DINGBATS.getBaseFont(), PDType1Font.ZAPF_DINGBATS);
+        STANDARD_14.put(Type1Fonts.TIMES_ROMAN.fontName(), Type1Fonts.TIMES_ROMAN.font());
+        STANDARD_14.put(Type1Fonts.TIMES_BOLD.fontName(), Type1Fonts.TIMES_BOLD.font());
+        STANDARD_14.put(Type1Fonts.TIMES_ITALIC.fontName(), Type1Fonts.TIMES_ITALIC.font());
+        STANDARD_14.put(Type1Fonts.TIMES_BOLD_ITALIC.fontName(), Type1Fonts.TIMES_BOLD_ITALIC.font());
+        STANDARD_14.put(Type1Fonts.HELVETICA.fontName(), Type1Fonts.HELVETICA.font());
+        STANDARD_14.put(Type1Fonts.HELVETICA_BOLD.fontName(), Type1Fonts.HELVETICA_BOLD.font());
+        STANDARD_14.put(Type1Fonts.HELVETICA_OBLIQUE.fontName(), Type1Fonts.HELVETICA_OBLIQUE.font());
+        STANDARD_14.put(Type1Fonts.HELVETICA_BOLD_OBLIQUE.fontName(), Type1Fonts.HELVETICA_BOLD_OBLIQUE.font());
+        STANDARD_14.put(Type1Fonts.COURIER.fontName(), Type1Fonts.COURIER.font());
+        STANDARD_14.put(Type1Fonts.COURIER_BOLD.fontName(), Type1Fonts.COURIER_BOLD.font());
+        STANDARD_14.put(Type1Fonts.COURIER_OBLIQUE.fontName(), Type1Fonts.COURIER_OBLIQUE.font());
+        STANDARD_14.put(Type1Fonts.COURIER_BOLD_OBLIQUE.fontName(), Type1Fonts.COURIER_BOLD_OBLIQUE.font());
+        STANDARD_14.put(Type1Fonts.SYMBOL.fontName(), Type1Fonts.SYMBOL.font());
+        STANDARD_14.put(Type1Fonts.ZAPF_DINGBATS.fontName(), Type1Fonts.ZAPF_DINGBATS.font());
     }
 
     /**

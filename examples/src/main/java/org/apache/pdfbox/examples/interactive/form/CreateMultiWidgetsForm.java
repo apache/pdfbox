@@ -28,6 +28,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -63,7 +64,7 @@ public final class CreateMultiWidgetsForm
             
             // Adobe Acrobat uses Helvetica as a default font and
             // stores that under the name '/Helv' in the resources dictionary
-            PDFont font = PDType1Font.HELVETICA;
+            PDFont font = Type1Fonts.HELVETICA.font();
             PDResources resources = new PDResources();
             resources.put(COSName.getPDFName("Helv"), font);
             

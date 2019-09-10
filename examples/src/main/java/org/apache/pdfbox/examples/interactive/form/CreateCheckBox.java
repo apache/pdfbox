@@ -26,6 +26,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -157,9 +158,9 @@ public class CreateCheckBox
                 // The caption is not unicode, but the Zapf Dingbats code in the PDF
                 // Thus convert it back to unicode
                 // Assume that only the first character is used.
-                String name = PDType1Font.ZAPF_DINGBATS.codeToName(normalCaption.codePointAt(0));
-                String unicode = PDType1Font.ZAPF_DINGBATS.getGlyphList().toUnicode(name);
-                Rectangle2D bounds = PDType1Font.ZAPF_DINGBATS.getPath(name).getBounds2D();
+                String name = Type1Fonts.ZAPF_DINGBATS.font().codeToName(normalCaption.codePointAt(0));
+                String unicode = Type1Fonts.ZAPF_DINGBATS.font().getGlyphList().toUnicode(name);
+                Rectangle2D bounds = Type1Fonts.ZAPF_DINGBATS.font().getPath(name).getBounds2D();
                 float size = (float) Math.min(bounds.getWidth(), bounds.getHeight()) / 1000;
                 // assume that checkmark has square size
                 // the calculations approximate what Adobe is doing, i.e. put the glyph in the middle
@@ -170,7 +171,7 @@ public class CreateCheckBox
                 yOffset -= bounds.getY() / 1000 * fontSize;
                 yesAPCS.setNonStrokingColor(0);
                 yesAPCS.beginText();
-                yesAPCS.setFont(PDType1Font.ZAPF_DINGBATS, fontSize);
+                yesAPCS.setFont(Type1Fonts.ZAPF_DINGBATS.font(), fontSize);
                 yesAPCS.newLineAtOffset(xOffset, yOffset);
                 yesAPCS.showText(unicode);
                 yesAPCS.endText();

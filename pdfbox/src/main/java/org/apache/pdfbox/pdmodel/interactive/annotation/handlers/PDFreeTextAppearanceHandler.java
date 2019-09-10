@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
@@ -233,7 +234,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             float width = rotation == 90 || rotation == 270 ? borderBox.getHeight() : borderBox.getWidth();
             // strategy to write formatted text is somewhat inspired by 
             // AppearanceGeneratorHelper.insertGeneratedAppearance()
-            PDFont font = PDType1Font.HELVETICA;
+            PDFont font = Type1Fonts.HELVETICA.font();
             float clipY;
             float clipWidth = width - ab.width * 4;
             float clipHeight = rotation == 90 || rotation == 270 ? 

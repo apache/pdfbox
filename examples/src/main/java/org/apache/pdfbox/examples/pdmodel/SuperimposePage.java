@@ -23,6 +23,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.multipdf.LayerUtility;
 import org.apache.pdfbox.util.Matrix;
@@ -62,7 +63,7 @@ public final class SuperimposePage
                 try (PDPageContentStream contents = new PDPageContentStream(doc, page))
                 {
                     contents.beginText();
-                    contents.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                    contents.setFont(Type1Fonts.HELVETICA_BOLD.font(), 12);
                     contents.newLineAtOffset(2, PDRectangle.LETTER.getHeight() - 12);
                     contents.showText("Sample text");
                     contents.endText();

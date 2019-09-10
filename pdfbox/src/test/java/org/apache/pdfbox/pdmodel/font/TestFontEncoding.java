@@ -29,6 +29,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
@@ -80,7 +81,7 @@ public class TestFontEncoding extends TestCase
         PDPage page = new PDPage();
         doc.addPage(page);
         PDPageContentStream cs = new PDPageContentStream(doc, page);
-        cs.setFont(PDType1Font.HELVETICA, 20);
+        cs.setFont(Type1Fonts.HELVETICA.font(), 20);
         cs.beginText();
         cs.newLineAtOffset(100, 700);
         // first tilde is "asciitilde" (from the keyboard), 2nd tilde is "tilde"

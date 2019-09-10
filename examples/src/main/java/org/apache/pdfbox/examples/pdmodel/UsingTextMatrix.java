@@ -25,6 +25,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Type1Fonts;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -54,7 +55,7 @@ public class UsingTextMatrix
         try (PDDocument doc = new PDDocument())
         {
             // Page 1
-            PDFont font = PDType1Font.HELVETICA;
+            PDFont font = Type1Fonts.HELVETICA.font();
             PDPage page = new PDPage(PDRectangle.A4);
             doc.addPage(page);
             float fontSize = 12.0f;
