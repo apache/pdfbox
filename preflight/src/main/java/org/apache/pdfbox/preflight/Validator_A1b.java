@@ -43,7 +43,6 @@ import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.parser.XmlResultParser;
-import org.apache.pdfbox.preflight.utils.FileDataSource;
 import org.apache.pdfbox.util.Version;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -107,7 +106,7 @@ public class Validator_A1b
                     root.setAttribute("count", String.format("%d", ftp.size()));
                     for (File file : ftp)
                     {
-                        Element result = xrp.validate(document,new FileDataSource(file));
+                        Element result = xrp.validate(document, file);
                         root.appendChild(result);
                     }
                     transformer.transform(new DOMSource(document), 
@@ -118,7 +117,7 @@ public class Validator_A1b
                     // isBatch
                     for (File file : ftp)
                     {
-                        Element result = xrp.validate(new FileDataSource(file));
+                        Element result = xrp.validate(file);
                         Document document = result.getOwnerDocument();
                         document.appendChild(result);
                         transformer.transform(new DOMSource(document), 
@@ -138,7 +137,7 @@ public class Validator_A1b
             {
                 // generate xml output
                 XmlResultParser xrp = new XmlResultParser();
-                Element result = xrp.validate(new FileDataSource(new File(args[posFile])));
+                Element result = xrp.validate(new File(args[posFile]));
                 Document document = result.getOwnerDocument();
                 document.appendChild(result);
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
