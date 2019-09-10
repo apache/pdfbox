@@ -27,6 +27,7 @@ import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
@@ -205,6 +206,11 @@ public final class PDFToImage
             try
             {
                 document = PDDocument.load(new File(pdfFile), password);
+                PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+                if (acroForm != null && acroForm.getNeedAppearances())
+                {
+                    acroForm.refreshAppearances();
+                }
 
                 ImageType imageType = null;
                 if ("bilevel".equalsIgnoreCase(color))
