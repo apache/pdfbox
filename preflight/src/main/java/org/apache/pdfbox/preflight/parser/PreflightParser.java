@@ -44,6 +44,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -79,8 +80,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_NAME_SIZE;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_NEGATIVE_FLOAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_POSITIVE_FLOAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_STRING_LENGTH;
-import org.apache.pdfbox.preflight.utils.DataSource;
-import org.apache.pdfbox.preflight.utils.FileDataSource;
 
 public class PreflightParser extends PDFParser
 {
@@ -89,8 +88,6 @@ public class PreflightParser extends PDFParser
      * encoding is Cp5816
      */
     public static final Charset encoding = Charset.forName("ISO-8859-1");
-
-    protected DataSource dataSource;
 
     protected ValidationResult validationResult;
 
@@ -109,7 +106,6 @@ public class PreflightParser extends PDFParser
         // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(file));
         this.setLenient(false);
-        this.dataSource = new FileDataSource(file);
     }
 
     /**
@@ -124,7 +120,6 @@ public class PreflightParser extends PDFParser
         // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(file), scratch);
         this.setLenient(false);
-        this.dataSource = new FileDataSource(file);
     }
 
     /**
@@ -159,12 +154,11 @@ public class PreflightParser extends PDFParser
      * @param dataSource the datasource
      * @throws IOException if there is a reading error.
      */
-    public PreflightParser(DataSource dataSource) throws IOException
+    public PreflightParser(RandomAccessRead source) throws IOException
     {
         // TODO move file handling outside of the parser
-        super(new RandomAccessBufferedFileInputStream(dataSource.getInputStream()));
+        super(source);
         this.setLenient(false);
-        this.dataSource = dataSource;
     }
 
     /**
@@ -175,12 +169,11 @@ public class PreflightParser extends PDFParser
      * @param scratch
      * @throws IOException if there is a reading error.
      */
-    public PreflightParser(DataSource dataSource, ScratchFile scratch) throws IOException
+    public PreflightParser(RandomAccessRead source, ScratchFile scratch) throws IOException
     {
         // TODO move file handling outside of the parser
-        super(new RandomAccessBufferedFileInputStream(dataSource.getInputStream()), scratch);
+        super(source, scratch);
         this.setLenient(false);
-        this.dataSource = dataSource;
     }
 
     /**

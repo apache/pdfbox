@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.parser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -31,11 +32,12 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
-import org.apache.pdfbox.preflight.utils.DataSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -43,12 +45,22 @@ public class XmlResultParser
 {
 
 
-    public Element validate(DataSource dataSource) throws IOException
+    public Element validate(File file) throws IOException
+    {
+        return validate(new RandomAccessBufferedFileInputStream(file), file.getName());
+    }
+
+    public Element validate(Document rdocument, File file) throws IOException
+    {
+        return validate(rdocument, new RandomAccessBufferedFileInputStream(file), file.getName());
+    }
+
+    private Element validate(RandomAccessRead source, String name) throws IOException
     {
         try
         {
             Document rdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            return validate(rdocument,dataSource);
+            return validate(rdocument, source, name);
         }
         catch (ParserConfigurationException e)
         {
@@ -57,14 +69,15 @@ public class XmlResultParser
     }
 
 
-    public Element validate(Document rdocument, DataSource dataSource) throws IOException
+    private Element validate(Document rdocument, RandomAccessRead source, String name)
+            throws IOException
     {
         String pdfType = null;
         ValidationResult result;
         long before = System.currentTimeMillis();
         try
         {
-            PreflightParser parser = new PreflightParser(dataSource);
+            PreflightParser parser = new PreflightParser(source);
             try
             {
                 parser.parse();
@@ -83,13 +96,13 @@ public class XmlResultParser
         catch(Exception e) 
         {
             long after = System.currentTimeMillis();
-            return generateFailureResponse(rdocument, dataSource.getName(), after-before, pdfType, e);
+            return generateFailureResponse(rdocument, name, after - before, pdfType, e);
         }
 
         long after = System.currentTimeMillis();
         if (result.isValid())
         {
-            Element preflight = generateResponseSkeleton(rdocument, dataSource.getName(), after-before);
+            Element preflight = generateResponseSkeleton(rdocument, name, after - before);
             // valid ?
             Element valid = rdocument.createElement("isValid");
             valid.setAttribute("type", pdfType);
@@ -99,7 +112,7 @@ public class XmlResultParser
         }
         else
         {
-            Element preflight = generateResponseSkeleton(rdocument, dataSource.getName(), after-before);
+            Element preflight = generateResponseSkeleton(rdocument, name, after - before);
             // valid ?
             createResponseWithError(rdocument, pdfType, result, preflight);
             return preflight;
