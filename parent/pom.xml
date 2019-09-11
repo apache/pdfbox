@@ -49,7 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <bouncycastle.version>1.62</bouncycastle.version>
+        <bouncycastle.version>1.63</bouncycastle.version>
       </properties>
 
     <dependencyManagement>
