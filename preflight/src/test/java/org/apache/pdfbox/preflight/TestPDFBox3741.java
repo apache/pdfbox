@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.apache.pdfbox.preflight.utils.DataSource;
-import org.apache.pdfbox.preflight.utils.FileDataSource;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,8 +37,8 @@ public class TestPDFBox3741
     @Test
     public void testPDFBox3741() throws IOException
     {
-        DataSource ds = new FileDataSource(new File("src/test/resources/PDFBOX-3741.pdf"));
-        PreflightParser parser = new PreflightParser(ds);
+        PreflightParser parser = new PreflightParser(
+                new File("src/test/resources/PDFBOX-3741.pdf"));
         parser.parse();
         ValidationResult result;
         try (PreflightDocument document = parser.getPreflightDocument())
