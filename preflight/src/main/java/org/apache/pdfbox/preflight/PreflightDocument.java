@@ -21,7 +21,6 @@
 
 package org.apache.pdfbox.preflight;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.pdfbox.cos.COSDocument;
@@ -42,17 +41,6 @@ public class PreflightDocument extends PDDocument
     private final Format specification;
 
     /**
-     * Create an empty preflight document and load the default configuration for the given format.
-     * 
-     * @param format
-     * @throws IOException
-     */
-    public PreflightDocument(Format format) throws IOException
-    {
-        this(format, null);
-    }
-
-    /**
      * Create a preflight document based on the COSDocument and load the default configuration for the given format.
      * 
      * @param doc
@@ -61,19 +49,6 @@ public class PreflightDocument extends PDDocument
     public PreflightDocument(COSDocument doc, Format format)
     {
         this(doc, format, null);
-    }
-
-    /**
-     * Create an empty preflight document that will use the given configuration bean to process the validation. if the
-     * configuration is null, a default configuration will be load using the given format.
-     * 
-     * @param format
-     * @param cfg
-     * @throws IOException
-     */
-    public PreflightDocument(Format format, PreflightConfiguration cfg) throws IOException
-    {
-        this(new COSDocument(), format, cfg);
     }
 
     /**
