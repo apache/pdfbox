@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.16
+Release Notes -- Apache PDFBox -- Version 2.0.17
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.15 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.16 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,55 +14,47 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-3819] - TrueType glyphs not displayed in rendering on Windows 10
-[PDFBOX-4017] - Symbol font glyphs not found on Windows 10 fall creators update
-[PDFBOX-4155] - Password Security with Unicode needs SASLprep
-[PDFBOX-4489] - Memory issue on org.apache.fontbox.ttf.GlyphSubstitutionTable.readLangSysTable(GlyphSubstitutionTable.java:147)
-[PDFBOX-4513] - FDFAnnotationStamp fails to parse some appearance streams
-[PDFBOX-4517] - Unable to decrypt PDF with String and Stream filter to identity
-[PDFBOX-4518] - NegativeArraySizeException thrown when converting PDF to Image
-[PDFBOX-4520] - PDFBox PDFToImage shows black bars on scanned text
-[PDFBOX-4521] - Missing Info value from file trailer: org.apache.pdfbox.cos.COSName cannot be cast to org.apache.pdfbox.cos.COSDictionary
-[PDFBOX-4525] - PDF completely blow up the RAM on RedHat
-[PDFBOX-4526] - Optional Content Membership Dictionaries (OCMD) not supported
-[PDFBOX-4535] - java.lang.ClassCastException in PDImageXObject.getMask()
-[PDFBOX-4540] - COSWriter sometimes retrieves wrong ObjectKey
-[PDFBOX-4543] - PDLineDashPattern fails as float[] is converted to List<float[]> instead of List<Float>
-[PDFBOX-4549] - No Unicode mapping
-[PDFBOX-4550] - Poor performance with corrupt ToUnicode stream
-[PDFBOX-4551] - Prevent printing from CL applications when not authorized
-[PDFBOX-4553] - Break of backward compatibility from 2.0.14 to 2.0.15
-[PDFBOX-4571] - IllegalArgumentException: illegal line join value
+[PDFBOX-4579] - IndexOutOfBoundsException when setting DefaultFontProvider in FontMapper
+[PDFBOX-4580] - PDFTextStripper::getText() lead to OutOfMemoryError: Java heap space
+[PDFBOX-4581] - Exception XRSurfaceData.getRaster not implemented yet on Swing, Linux
+[PDFBOX-4584] - Java 7 compile error
+[PDFBOX-4585] - remove message "OpenType Layout tables used in font ... are not implemented"
+[PDFBOX-4586] - Annotation widgets without AP not detected by preflight
+[PDFBOX-4587] - SASLPrep declares that u2070E is private use
+[PDFBOX-4589] - PDPageContent stream warns about overwriting in overwrite mode
+[PDFBOX-4592] - Preflight does not check process colorspace in DeviceN
+[PDFBOX-4595] - PDCIDFontType0 getHeight return 0
+[PDFBOX-4596] - Overlays with /Rotate value appear rotated in result file
+[PDFBOX-4604] - Used type0 for cyrillic, losting font on android
+[PDFBOX-4607] - Transparent 16 bit image doesn't display in Adobe Reader
+[PDFBOX-4608] - ImageToPDF fails with single image
+[PDFBOX-4610] - Copy&Paste in IOUtils.closeAndLogException()'s Javadoc
+[PDFBOX-4611] - PDF validates despite wrong /Alternate in ICC colorspace
+[PDFBOX-4615] - AppearanceGeneratorHelper.setAppearanceValue doesn't set the bounding box on the appearance stream correctly
+[PDFBOX-4622] - Various exceptions in TTFParser.parse
+[PDFBOX-4624] - COSParser: NullPointerException
+[PDFBOX-4626] - ArrayIndexOutOfBounds exceptions in CmapSubtable parsing
+[PDFBOX-4631] - NPE due to bounding box not being set on PDAppearanceStream
+[PDFBOX-4636] - "There has been a widget with a missing page reference" and non widget annotation gets flattened
+[PDFBOX-4638] - no field content after PDAcroForm.refreshAppearances() call if BBox empty
+[PDFBOX-4646] - PDFToImage not working with certain formfields
 
 New Feature
 
-[PDFBOX-4563] - Port Appearance Handler from 3.0 back to 2.0
-
-Sub-task
-
-[PDFBOX-4564] - Port interface and base handler
-[PDFBOX-4573] - Add dummy call to create appearance to annotations
-[PDFBOX-4574] - Port individual appearance handlers
-[PDFBOX-4575] - Add appearance generation to annotation example code
-[PDFBOX-4576] - Update PageDrawer to match appearance handling in trunk
+[PDFBOX-4639] - Please add Automatic-Module-Name to MANIFEST.MF
 
 Improvement
 
-[PDFBOX-4458] - Subclasses of OperatorProcessor dont use constants
-[PDFBOX-4509] - Font appears twice in resources of field widget
-[PDFBOX-4510] - Don't write identity matrix in form XObjects of field widgets appearance stream
-[PDFBOX-4519] - Reduce artefacts in shadings
-[PDFBOX-4522] - Resources cache should be passed to type 3 fonts
-[PDFBOX-4529] - ImageToPDF as Command Line
-[PDFBOX-4539] - Cache CharsetDecoder
-[PDFBOX-4544] - COSWriter.doWriteHeader(COSDocument) should use the document specified as parameter
-[PDFBOX-4562] - Remove the usage of COSDocument.getCatalog
-[PDFBOX-4578] - Overhaul StreamValidationProcess
+[PDFBOX-4080] - Improve memory consumption of PDAbstractAppearanceHandler
+[PDFBOX-4597] - TextPosition.getX() vs getXDirAdj()
+[PDFBOX-4600] - Please clarify CTM terminology in Javadoc
+[PDFBOX-4632] - Create example of PDF creation with page labels
+[PDFBOX-4637] - improve exception message "IOException: Could not find font: /Helvetica"
+[PDFBOX-4641] - Keywords created using PDFBox are not visible in Acrobat
 
-Wish
+Task
 
-[PDFBOX-4515] - Support for Add Text Callout Annotation tool.
-
+[PDFBOX-4625] - remove Netbeans warning: Exporting non-public type through public API
 
 Release Contents
 ----------------
