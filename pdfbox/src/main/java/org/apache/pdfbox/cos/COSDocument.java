@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.ScratchFile;
-import org.apache.pdfbox.pdfparser.COSParser;
 
 /**
  * This is the in-memory representation of the PDF document.  You need to call
@@ -89,14 +88,24 @@ public class COSDocument extends COSBase implements Closeable
      */
     private long highestXRefObjectNumber;
 
-    public COSParser parser;
+    private ICOSParser parser;
 
     /**
      * Constructor. Uses main memory to buffer PDF streams.
      */
     public COSDocument()
     {
-        this(ScratchFile.getMainMemoryOnlyInstance());
+        this(ScratchFile.getMainMemoryOnlyInstance(), null);
+    }
+
+    /**
+     * Constructor. Uses main memory to buffer PDF streams.
+     * 
+     * @param parser Parser to be used to parse the document on demand
+     */
+    public COSDocument(ICOSParser parser)
+    {
+        this(ScratchFile.getMainMemoryOnlyInstance(), parser);
     }
 
     /**
@@ -108,7 +117,20 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(ScratchFile scratchFile)
     {
+        this(scratchFile, null);
+    }
+
+    /**
+     * Constructor that will use the provide memory handler for storage of the PDF streams.
+     *
+     * @param scratchFile memory handler for buffering of PDF streams
+     * @param parser Parser to be used to parse the document on demand
+     * 
+     */
+    public COSDocument(ScratchFile scratchFile, ICOSParser parser)
+    {
         this.scratchFile = scratchFile;
+        this.parser = parser;
     }
 
     /**

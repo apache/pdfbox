@@ -100,8 +100,7 @@ public class FDFParser extends COSParser
                         + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
             }
         }
-        document = new COSDocument();
-        document.parser = this;
+        document = new COSDocument(this);
     }
 
     /**

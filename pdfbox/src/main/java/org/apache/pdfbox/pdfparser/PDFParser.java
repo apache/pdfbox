@@ -139,8 +139,7 @@ public class PDFParser extends COSParser
                         + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
             }
         }
-        document = new COSDocument(scratchFile);
-        document.parser = this;
+        document = new COSDocument(scratchFile, this);
     }
     
     /**
@@ -183,7 +182,6 @@ public class PDFParser extends COSParser
         // check pages dictionaries
         checkPages(root);
         document.setDecrypted();
-        document.parser = this;
         initialParseDone = true;
     }
 
