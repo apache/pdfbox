@@ -78,7 +78,8 @@ public final class ImageIOUtil
      * used as the image format.
      * @param dpi the resolution in dpi (dots per inch) to be used in metadata
      * @param compressionQuality quality to be used when compressing the image (0 &lt;
-     * compressionQuality &lt; 1.0f)
+     * compressionQuality &lt; 1.0f). See {@link ImageWriteParam#setCompressionQuality(float)} for
+     * more details.
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
@@ -169,7 +170,8 @@ public final class ImageIOUtil
      * @param output the output stream to be used for writing
      * @param dpi the resolution in dpi (dots per inch) to be used in metadata
      * @param compressionQuality quality to be used when compressing the image (0 &lt;
-     * compressionQuality &lt; 1.0f)
+     * compressionQuality &lt; 1.0f). See {@link ImageWriteParam#setCompressionQuality(float)} for
+     * more details.
      * @return true if the image file was produced, false if there was an error.
      * @throws IOException if an I/O error occurs
      */
@@ -191,8 +193,9 @@ public final class ImageIOUtil
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
      * @param dpi the resolution in dpi (dots per inch) to be used in metadata
-     * @param compressionQuality quality to be used when compressing the image
-     * (0 &lt; compressionQuality &lt; 1.0f)
+     * @param compressionQuality quality to be used when compressing the image (0 &lt;
+     * compressionQuality &lt; 1.0f). See {@link ImageWriteParam#setCompressionQuality(float)} for
+     * more details.
      * @param compressionType Advanced users only, and only relevant for TIFF
      * files: If null, save uncompressed; if empty string, use logic explained
      * above; other valid values are found in the javadoc of
