@@ -280,7 +280,7 @@ public final class PDFToImage
         String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFToImage [options] <inputfile>\n"
             + "\nOptions:\n"
             + "  -password  <password>            : Password to decrypt document\n"
-            + "  -format <string>                 : Image format: " + getImageFormats() + "\n"
+            + "  -format <string>                 : Available image formats: " + getImageFormats() + "\n"
             + "  -prefix <string>                 : Filename prefix for image files\n"
             + "  -page <int>                      : The only page to extract (1-based)\n"
             + "  -startPage <int>                 : The first page to start extraction (1-based)\n"
@@ -300,7 +300,7 @@ public final class PDFToImage
     private static String getImageFormats()
     {
         StringBuilder retval = new StringBuilder();
-        String[] formats = ImageIO.getReaderFormatNames();
+        String[] formats = ImageIO.getWriterFormatNames();
         for( int i = 0; i < formats.length; i++ )
         {
            if (formats[i].equalsIgnoreCase(formats[i]))
