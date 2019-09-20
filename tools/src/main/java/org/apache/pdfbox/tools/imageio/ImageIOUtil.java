@@ -85,7 +85,7 @@ public final class ImageIOUtil
      */
     public static boolean writeImage(BufferedImage image, String filename,
             int dpi, float compressionQuality) throws IOException
-    { wr
+    {
         File file = new File(filename);
         FileOutputStream output = new FileOutputStream(file);
         try
