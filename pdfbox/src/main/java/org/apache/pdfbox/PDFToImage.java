@@ -269,7 +269,7 @@ public class PDFToImage
     private static String getImageFormats()
     {
         StringBuffer retval = new StringBuffer();
-        String[] formats = ImageIO.getReaderFormatNames();
+        String[] formats = ImageIO.getWriterFormatNames();
         for( int i = 0; i < formats.length; i++ )
         {
             retval.append( formats[i] );
