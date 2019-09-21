@@ -17,10 +17,11 @@
 package org.apache.pdfbox.tools.imageio;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import javax.imageio.IIOImage;
@@ -65,7 +66,14 @@ public final class ImageIOUtil
     public static boolean writeImage(BufferedImage image, String filename,
             int dpi) throws IOException
     {
-        return writeImage(image, filename, dpi, 1.0f);
+        float compressionQuality = 1f;
+        String formatName = filename.substring(filename.lastIndexOf('.') + 1);
+        if ("png".equals(formatName.toLowerCase()))
+        {
+            // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jjdk13
+            compressionQuality = 0f;
+        }
+        return writeImage(image, filename, dpi, compressionQuality);
     }
 
     /**
@@ -86,8 +94,7 @@ public final class ImageIOUtil
     public static boolean writeImage(BufferedImage image, String filename,
             int dpi, float compressionQuality) throws IOException
     {
-        File file = new File(filename);
-        FileOutputStream output = new FileOutputStream(file);
+        OutputStream output = new BufferedOutputStream(new FileOutputStream(filename));
         try
         {
             String formatName = filename.substring(filename.lastIndexOf('.') + 1);
@@ -120,8 +127,7 @@ public final class ImageIOUtil
     public static boolean writeImage(BufferedImage image, String formatName, String filename,
             int dpi) throws IOException
     {
-        File file = new File(filename + "." + formatName);
-        FileOutputStream output = new FileOutputStream(file);
+        OutputStream output = new BufferedOutputStream(new FileOutputStream(filename + "." + formatName));
         try
         {
             return writeImage(image, formatName, output, dpi);
@@ -164,7 +170,13 @@ public final class ImageIOUtil
     public static boolean writeImage(BufferedImage image, String formatName, OutputStream output,
             int dpi) throws IOException
     {
-        return writeImage(image, formatName, output, dpi, 1.0f);
+        float compressionQuality = 1f;
+        if ("png".equals(formatName.toLowerCase()))
+        {
+            // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jjdk13
+            compressionQuality = 0f;
+        }
+        return writeImage(image, formatName, output, dpi, compressionQuality);
     }
 
     /**
@@ -250,14 +262,7 @@ public final class ImageIOUtil
             if (writer == null)
             {
                 LOG.error("No ImageWriter found for '" + formatName + "' format");
-                StringBuilder sb = new StringBuilder();
-                String[] writerFormatNames = ImageIO.getWriterFormatNames();
-                for (String fmt : writerFormatNames)
-                {
-                    sb.append(fmt);
-                    sb.append(' ');
-                }
-                LOG.error("Supported formats: " + sb);
+                LOG.error("Supported formats: " + Arrays.toString(ImageIO.getWriterFormatNames()));
                 return false;
             }
 
