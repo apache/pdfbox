@@ -114,7 +114,6 @@ public class TestImageIOUtils extends TestCase
     private void doTestFile(File file, String outDir) throws IOException
     {
         PDDocument document = null;
-        String imageType = "png";
         LOG.info("Preparing to convert " + file.getName());
         try
         {
@@ -125,7 +124,8 @@ public class TestImageIOUtils extends TestCase
             checkSaveResources(document.getPage(0).getResources());
 
             // testing PNG
-            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi, 1, "");
+            String imageType = "png";
+            writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi, 0, "");
             checkResolution(outDir + file.getName() + "-1." + imageType, (int) dpi);
             checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.PNG);
 
