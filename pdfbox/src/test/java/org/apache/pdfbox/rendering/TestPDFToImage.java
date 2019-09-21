@@ -151,13 +151,13 @@ public class TestPDFToImage
 
     /**
      * Get the difference between two images, identical colors are set to white, differences are
-     * xored, the highest bit of each color is reset to avoid colors that are too light
+     * xored, the highest bit of each color is reset to avoid colors that are too light.
      *
      * @param bim1
      * @param bim2
-     * @return If the images are different, the function returns a diff image If the images are
-     * identical, the function returns null If the size is different, a black border on the botton
-     * and the right is created
+     * @return If the images are different, the function returns a diff image. If the images are
+     * identical, the function returns null. If the size is different, a black border on the bottom
+     * at the right is created.
      *
      * @throws IOException
      */
