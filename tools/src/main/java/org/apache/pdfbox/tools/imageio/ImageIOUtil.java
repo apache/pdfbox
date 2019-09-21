@@ -52,9 +52,10 @@ public final class ImageIOUtil
     }
 
     /**
-     * Writes a buffered image to a file using the given image format. See     
-     * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float compressionQuality)} for more details.
+     * Writes a buffered image to a file using the given image format. The compression is set for
+     * maximum compression for PNG and maximum quality for all other file formats. See
+     * {@link #writeImage(BufferedImage image, String formatName, OutputStream output, int dpi, float compressionQuality)}
+     * for more details.
      *
      * @param image the image to be written
      * @param filename used to construct the filename for the individual image.
@@ -129,9 +130,10 @@ public final class ImageIOUtil
     }
 
     /**
-     * Writes a buffered image to a file using the given image format. See      
-     * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float compressionQuality)} for more details.
+     * Writes a buffered image to a file using the given image format. The compression is set for
+     * maximum compression for PNG and maximum quality for all other file formats. See
+     * {@link #writeImage(BufferedImage image, String formatName, OutputStream output, int dpi, float compressionQuality)}
+     * for more details.
      *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
@@ -146,9 +148,10 @@ public final class ImageIOUtil
     }
 
     /**
-     * Writes a buffered image to a file using the given image format. See      
-     * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float compressionQuality)} for more details.
+     * Writes a buffered image to a file using the given image format. The compression is set for
+     * maximum compression for PNG and maximum quality for all other file formats. See
+     * {@link #writeImage(BufferedImage image, String formatName, OutputStream output, int dpi, float compressionQuality)}
+     * for more details.
      *
      * @param image the image to be written
      * @param formatName the target format (ex. "png")
