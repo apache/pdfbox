@@ -85,7 +85,7 @@ public final class PDFToImage
         int endPage = Integer.MAX_VALUE;
         String color = "rgb";
         int dpi;
-        float quality = 1.0f;
+        float quality = -1;
         float cropBoxLowerLeftX = 0;
         float cropBoxLowerLeftY = 0;
         float cropBoxUpperRightX = 0;
@@ -194,6 +194,10 @@ public final class PDFToImage
             {
                 outputPrefix = pdfFile.substring( 0, pdfFile.lastIndexOf( '.' ));
             }
+            if (quality < 0)
+            {
+                quality = "png".equals(imageFormat) ? 0f : 1f;
+            }
 
             try (PDDocument document = PDDocument.load(new File(pdfFile), password))
             {
@@ -287,7 +291,8 @@ public final class PDFToImage
             + "  -endPage <int>                   : The last page to extract (inclusive)\n"
             + "  -color <string>                  : The color depth (valid: bilevel, gray, rgb (default), rgba)\n"
             + "  -dpi <int>                       : The DPI of the output image, default: screen resolution or 96 if unknown\n"
-            + "  -quality <float>                 : The quality to be used when compressing the image (0 < quality <= 1 (default))\n"
+            + "  -quality <float>                 : The quality to be used when compressing the image (0 <= quality <= 1)\n"
+            + "                                     (default: 0 for PNG and 1 for the other formats)\n"
             + "  -cropbox <int> <int> <int> <int> : The page area to export\n"
             + "  -time                            : Prints timing information to stdout\n"
             + "  -subsampling                     : Activate subsampling (for PDFs with huge images)\n"
