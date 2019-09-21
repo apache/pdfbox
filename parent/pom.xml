@@ -189,17 +189,17 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <showDeprecation>true</showDeprecation>
-                    <target>1.7</target>
-                    <source>1.7</source>
+                    <target>1.8</target>
+                    <source>1.8</source>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
+                    <source>1.8</source>
                     <links>
-                        <link>https://docs.oracle.com/javase/7/docs/api/</link>
+                        <link>https://docs.oracle.com/javase/8/docs/api/</link>
                     </links>
                     <encoding>UTF-8</encoding>
                     <notimestamp>true</notimestamp>
@@ -254,7 +254,7 @@
                             <skip>${skipTests}</skip>
 	                    <signature>
 	                      <groupId>org.codehaus.mojo.signature</groupId>
-	                      <artifactId>java17</artifactId>
+	                      <artifactId>java18</artifactId>
 	                      <version>1.0</version>
 	                    </signature>
 	                  </configuration>
@@ -301,8 +301,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <!-- don't update this, because later versions require JDK8 -->
-                    <version>2.5.4</version>
+                    <version>4.2.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
