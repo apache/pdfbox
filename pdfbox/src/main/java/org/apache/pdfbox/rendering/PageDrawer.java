@@ -1019,8 +1019,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
             // if the image is scaled down, we use smooth interpolation, eg PDFBOX-2364
             // only when scaled up do we use nearest neighbour, eg PDFBOX-2302 / mori-cvpr01.pdf
-            // stencils are excluded from this rule (see survey.pdf)
-            if (isScaledUp || pdImage.isStencil())
+            if (isScaledUp)
             {
                 graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
                         RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
