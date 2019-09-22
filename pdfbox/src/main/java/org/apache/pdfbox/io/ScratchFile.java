@@ -441,7 +441,7 @@ public class ScratchFile implements Closeable
         ScratchFileBuffer buf = new ScratchFileBuffer(this);
         
         byte[] byteBuffer = new byte[8192];
-        int bytesRead = 0;
+        int bytesRead;
         while ((bytesRead = input.read(byteBuffer)) > -1)
         {
             buf.write(byteBuffer, 0, bytesRead);
