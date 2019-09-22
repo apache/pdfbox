@@ -69,7 +69,7 @@ public final class ImageIOUtil
     {
         float compressionQuality = 1f;
         String formatName = filename.substring(filename.lastIndexOf('.') + 1);
-        if ("png".equals(formatName.toLowerCase()))
+        if ("png".equalsIgnoreCase(formatName))
         {
             // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jjdk13
             compressionQuality = 0f;
@@ -164,7 +164,7 @@ public final class ImageIOUtil
             int dpi) throws IOException
     {
         float compressionQuality = 1f;
-        if ("png".equals(formatName.toLowerCase()))
+        if ("png".equalsIgnoreCase(formatName))
         {
             // PDFBOX-4655: prevent huge PNG files on jdk11 / jdk12 / jjdk13
             compressionQuality = 0f;
