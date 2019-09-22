@@ -18,7 +18,7 @@ releases from our [Download Page](http://pdfbox.apache.org/download.cgi).
 Build
 -----
 
-You need Java 7 (or higher) and Maven 3 <http://maven.apache.org/> to
+You need Java 8 (or higher) and Maven 3 <http://maven.apache.org/> to
 build PDFBox. The recommended build command is:
 
     mvn clean install
