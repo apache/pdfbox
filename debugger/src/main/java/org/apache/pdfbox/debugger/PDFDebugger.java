@@ -27,7 +27,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -36,7 +35,6 @@ import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -68,7 +66,6 @@ import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreePath;
 import org.apache.pdfbox.cos.COSArray;
@@ -214,14 +211,8 @@ public class PDFDebugger extends JFrame
         }
 
         // handle uncaught exceptions
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler()
-        {
-            @Override
-            public void uncaughtException(Thread thread, Throwable throwable)
-            {
-                new ErrorDialog(throwable).setVisible(true);
-            }
-        });
+        Thread.setDefaultUncaughtExceptionHandler(
+                (thread, throwable) -> new ErrorDialog(throwable).setVisible(true));
 
         // open file, if any
         String filename = null;
@@ -368,14 +359,7 @@ public class PDFDebugger extends JFrame
 
         jScrollPane1.setBorder(new BevelBorder(BevelBorder.RAISED));
         jSplitPane1.setDividerLocation(windowPrefs.getDividerLocation());
-        tree.addTreeSelectionListener(new TreeSelectionListener()
-        {
-            @Override
-            public void valueChanged(TreeSelectionEvent evt)
-            {
-                jTree1ValueChanged(evt);
-            }
-        });
+        tree.addTreeSelectionListener(this::jTree1ValueChanged);
 
         jScrollPane1.setViewportView(tree);
 
@@ -480,14 +464,7 @@ public class PDFDebugger extends JFrame
     {
         JMenuItem openMenuItem = new JMenuItem("Open...");
         openMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, SHORCUT_KEY_MASK));
-        openMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent evt)
-            {
-                openMenuItemActionPerformed(evt);
-            }
-        });
+        openMenuItem.addActionListener(this::openMenuItemActionPerformed);
 
         JMenu fileMenu = new JMenu("File");
         fileMenu.add(openMenuItem);
@@ -495,50 +472,42 @@ public class PDFDebugger extends JFrame
 
         JMenuItem openUrlMenuItem = new JMenuItem("Open URL...");
         openUrlMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, SHORCUT_KEY_MASK));
-        openUrlMenuItem.addActionListener(new ActionListener()
+        openUrlMenuItem.addActionListener(evt ->
         {
-            @Override
-            public void actionPerformed(ActionEvent evt)
+            String urlString = JOptionPane.showInputDialog("Enter an URL");
+            if (urlString == null || urlString.isEmpty())
             {
-                String urlString = JOptionPane.showInputDialog("Enter an URL");
-                if (urlString == null || urlString.isEmpty())
-                {
-                    return;
-                }
-                try
-                {
-                    readPDFurl(urlString, "");
-                }
-                catch (IOException e)
-                {
-                    throw new RuntimeException(e);
-                }
+                return;
+            }
+            try
+            {
+                readPDFurl(urlString, "");
+            }
+            catch (IOException e)
+            {
+                throw new RuntimeException(e);
             }
         });
         fileMenu.add(openUrlMenuItem);
         
         reopenMenuItem = new JMenuItem("Reopen");
         reopenMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, SHORCUT_KEY_MASK));
-        reopenMenuItem.addActionListener(new ActionListener()
+        reopenMenuItem.addActionListener(evt ->
         {
-            @Override
-            public void actionPerformed(ActionEvent evt)
+            try
             {
-                try
+                if (currentFilePath.startsWith("http"))
                 {
-                    if (currentFilePath.startsWith("http"))
-                    {
-                        readPDFurl(currentFilePath, "");
-                    }
-                    else
-                    {
-                        readPDFFile(currentFilePath, "");
-                    }
+                    readPDFurl(currentFilePath, "");
                 }
-                catch (IOException e)
+                else
                 {
-                    new ErrorDialog(e).setVisible(true);
+                    readPDFFile(currentFilePath, "");
                 }
+            }
+            catch (IOException e)
+            {
+                new ErrorDialog(e).setVisible(true);
             }
         });
         reopenMenuItem.setEnabled(false);
@@ -561,28 +530,14 @@ public class PDFDebugger extends JFrame
         printMenuItem = new JMenuItem("Print");
         printMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, SHORCUT_KEY_MASK));
         printMenuItem.setEnabled(false);
-        printMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent evt)
-            {
-                printMenuItemActionPerformed(evt);
-            }
-        });
+        printMenuItem.addActionListener(this::printMenuItemActionPerformed);
 
         fileMenu.addSeparator();
         fileMenu.add(printMenuItem);
 
         JMenuItem exitMenuItem = new JMenuItem("Exit");
         exitMenuItem.setAccelerator(KeyStroke.getKeyStroke("alt F4"));
-        exitMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent evt)
-            {
-                exitMenuItemActionPerformed(evt);
-            }
-        });
+        exitMenuItem.addActionListener(this::exitMenuItemActionPerformed);
 
         if (!IS_MAC_OS)
         {
@@ -719,14 +674,7 @@ public class PDFDebugger extends JFrame
             if (IS_MAC_OS)
             {
                 FileDialog openDialog = new FileDialog(this, "Open");
-                openDialog.setFilenameFilter(new FilenameFilter()
-                {
-                    @Override
-                    public boolean accept(File dir, String name)
-                    {
-                        return name.toLowerCase().endsWith(".pdf");
-                    }
-                });
+                openDialog.setFilenameFilter((dir, name) -> name.toLowerCase().endsWith(".pdf"));
                 openDialog.setVisible(true);
                 if (openDialog.getFile() != null)
                 {
