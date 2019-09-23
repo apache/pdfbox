@@ -39,7 +39,6 @@ import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 
 /**
  * Renders a PDF document to an AWT BufferedImage.
@@ -57,14 +56,7 @@ public class PDFRenderer
     /**
     * Default annotations filter, returns all annotations
     */
-    private AnnotationFilter annotationFilter = new AnnotationFilter()
-    {
-        @Override
-        public boolean accept(PDAnnotation annotation)
-        {
-            return true;
-        }
-    };
+    private AnnotationFilter annotationFilter = annotation -> true;
 
     private boolean subsamplingAllowed = false;
 

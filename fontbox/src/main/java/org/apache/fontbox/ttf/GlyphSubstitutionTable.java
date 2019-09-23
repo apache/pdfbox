@@ -151,7 +151,7 @@ public class GlyphSubstitutionTable extends TTFTable
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#slTbl_sRec
                 LOG.error("LangSysRecords not alphabetically sorted by LangSys tag: " +
                           langSysTags[i] + " <= " + langSysTags[i - 1]);
-                return new ScriptTable(null, new LinkedHashMap<String, LangSysTable>());
+                return new ScriptTable(null, new LinkedHashMap<>());
             }
             langSysOffsets[i] = data.readUnsignedShort();
         }
@@ -538,7 +538,7 @@ public class GlyphSubstitutionTable extends TTFTable
             return Collections.emptyList();
         }
         List<FeatureRecord> result = new ArrayList<>();
-        for (LangSysTable langSysTable : langSysTables)
+        langSysTables.forEach(langSysTable ->
         {
             int required = langSysTable.getRequiredFeatureIndex();
             if (required != 0xffff) // if no required features = 0xFFFF
@@ -554,7 +554,7 @@ public class GlyphSubstitutionTable extends TTFTable
                     result.add(featureListTable.getFeatureRecords()[featureIndex]);
                 }
             }
-        }
+        });
 
         // 'vrt2' supersedes 'vert' and they should not be used together
         // https://www.microsoft.com/typography/otspec/features_uz.htm
@@ -581,14 +581,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
     private boolean containsFeature(List<FeatureRecord> featureRecords, String featureTag)
     {
-        for (FeatureRecord featureRecord : featureRecords)
-        {
-            if (featureRecord.getFeatureTag().equals(featureTag))
-            {
-                return true;
-            }
-        }
-        return false;
+        return featureRecords.stream().anyMatch(
+                   featureRecord -> featureRecord.getFeatureTag().equals(featureTag));
     }
 
     private void removeFeature(List<FeatureRecord> featureRecords, String featureTag)

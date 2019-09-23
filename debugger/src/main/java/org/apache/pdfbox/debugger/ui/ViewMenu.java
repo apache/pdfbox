@@ -17,7 +17,6 @@
 package org.apache.pdfbox.debugger.ui;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
@@ -160,25 +159,21 @@ public class ViewMenu extends MenuBase
         {
             viewModeItem = new JMenuItem("Show Pages");
         }
-        viewModeItem.addActionListener(new ActionListener()
+        viewModeItem.addActionListener(actionEvent ->
         {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            if (pdfDebugger.isPageMode())
             {
-                if (pdfDebugger.isPageMode())
-                {
-                    viewModeItem.setText("Show Pages");
-                    pdfDebugger.setPageMode(false);
-                }
-                else
-                {
-                    viewModeItem.setText("Show Internal Structure");
-                    pdfDebugger.setPageMode(true);
-                }
-                if (pdfDebugger.hasDocument())
-                {
-                    pdfDebugger.initTree();
-                }
+                viewModeItem.setText("Show Pages");
+                pdfDebugger.setPageMode(false);
+            }
+            else
+            {
+                viewModeItem.setText("Show Internal Structure");
+                pdfDebugger.setPageMode(true);
+            }
+            if (pdfDebugger.hasDocument())
+            {
+                pdfDebugger.initTree();
             }
         });
         viewMenu.add(viewModeItem);

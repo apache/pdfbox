@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline;
 
-import java.util.Iterator;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -36,7 +35,6 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      */
     public PDOutlineNode()
     {
-        super();
     }
 
     /**
@@ -308,13 +306,6 @@ public abstract class PDOutlineNode extends PDDictionaryWrapper
      */
     public Iterable<PDOutlineItem> children()
     {
-        return new Iterable<PDOutlineItem>()
-        {
-            @Override
-            public Iterator<PDOutlineItem> iterator()
-            {
-                return new PDOutlineItemIterator(getFirstChild());
-            }
-        };
+        return () -> new PDOutlineItemIterator(getFirstChild());
     }
 }

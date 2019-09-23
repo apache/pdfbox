@@ -514,10 +514,7 @@ public class PDPage implements COSObjectable, PDContentStream
     public void setContents(List<PDStream> contents)
     {
         COSArray array = new COSArray();
-        for (PDStream stream : contents)
-        {
-            array.add(stream);
-        }
+        contents.forEach(stream -> array.add(stream));
         page.setItem(COSName.CONTENTS, array);
     }
 
@@ -658,14 +655,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public List<PDAnnotation> getAnnotations() throws IOException
     {
-        return getAnnotations(new AnnotationFilter()
-        {
-            @Override
-            public boolean accept(PDAnnotation annotation)
-            {
-                return true;
-            }
-        });
+        return getAnnotations(annotation -> true);
     }
 
     /**
@@ -774,10 +764,7 @@ public class PDPage implements COSObjectable, PDContentStream
             return;
         }
         COSArray array = new COSArray();
-        for (PDViewportDictionary viewport : viewports)
-        {
-            array.add(viewport);
-        }
+        viewports.forEach(viewport -> array.add(viewport));
         page.setItem(COSName.VP, array);
     }
 
