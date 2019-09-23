@@ -151,7 +151,7 @@ public class PreflightParser extends PDFParser
      * Constructor. This one is slower than the file and the filename constructors, because
      * a temporary file will be created.
      *
-     * @param dataSource the datasource
+     * @param source
      * @throws IOException if there is a reading error.
      */
     public PreflightParser(RandomAccessRead source) throws IOException
@@ -165,7 +165,7 @@ public class PreflightParser extends PDFParser
      * Constructor. This one is slower than the file and the filename constructors, because
      * a temporary file will be created.
      *
-     * @param dataSource the datasource
+     * @param source
      * @param scratch
      * @throws IOException if there is a reading error.
      */
