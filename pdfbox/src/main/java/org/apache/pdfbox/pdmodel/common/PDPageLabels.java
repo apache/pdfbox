@@ -204,16 +204,8 @@ public class PDPageLabels implements COSObjectable
      */
     public Map<String, Integer> getPageIndicesByLabels()
     {
-        final Map<String, Integer> labelMap = 
-            new HashMap<>(doc.getNumberOfPages());
-        computeLabels(new LabelHandler()
-        {
-            @Override
-            public void newLabel(int pageIndex, String label)
-            {
-                labelMap.put(label, pageIndex);
-            }
-        });
+        final Map<String, Integer> labelMap = new HashMap<>(doc.getNumberOfPages());
+        computeLabels((pageIndex, label) -> labelMap.put(label, pageIndex));
         return labelMap;
     }
 
@@ -227,15 +219,11 @@ public class PDPageLabels implements COSObjectable
     public String[] getLabelsByPageIndices()
     {
         final String[] map = new String[doc.getNumberOfPages()];
-        computeLabels(new LabelHandler()
+        computeLabels((pageIndex, label) ->
         {
-            @Override
-            public void newLabel(int pageIndex, String label)
+            if (pageIndex < doc.getNumberOfPages())
             {
-                if(pageIndex < doc.getNumberOfPages())
-                { 
-                    map[pageIndex] = label;
-                }
+                map[pageIndex] = label;
             }
         });
         return map;

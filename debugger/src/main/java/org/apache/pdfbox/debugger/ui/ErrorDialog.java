@@ -20,7 +20,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
@@ -152,52 +151,44 @@ public class ErrorDialog extends JDialog
     final JComponent createContent()
     {
         final JButton showDetails = new JButton("Show Details >>");
-        showDetails.addActionListener(new ActionListener()
+        showDetails.addActionListener(e ->
         {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            if (showingDetails)
             {
-                if (showingDetails)
-                {
-                    main.remove(details);
-                    main.validate();
-                    main.setPreferredSize(MESSAGE_SIZE);
-                }
-                else
-                {
-                    if (details == null)
-                    {
-                        details = createDetailedMessage(error);
-                        StringBuilder buffer = new StringBuilder();
-                        stacktrace.setText(generateStackTrace(error, buffer).toString());
-                        stacktrace.setCaretPosition(0);
-                        stacktrace.setBackground(main.getBackground());
-                        stacktrace.setPreferredSize(STACKTRACE_SIZE);
-                    }
-                    main.add(details, BorderLayout.CENTER);
-                    main.validate();
-                    main.setPreferredSize(TOTAL_SIZE);
-                }
-                showingDetails = !showingDetails;
-                showDetails.setText(showingDetails ? "<< Hide Details" : "Show Details >>");
-                ErrorDialog.this.pack();
+                main.remove(details);
+                main.validate();
+                main.setPreferredSize(MESSAGE_SIZE);
             }
+            else
+            {
+                if (details == null)
+                {
+                    details = createDetailedMessage(error);
+                    StringBuilder buffer = new StringBuilder();
+                    stacktrace.setText(generateStackTrace(error, buffer).toString());
+                    stacktrace.setCaretPosition(0);
+                    stacktrace.setBackground(main.getBackground());
+                    stacktrace.setPreferredSize(STACKTRACE_SIZE);
+                }
+                main.add(details, BorderLayout.CENTER);
+                main.validate();
+                main.setPreferredSize(TOTAL_SIZE);
+            }
+            showingDetails = !showingDetails;
+            showDetails.setText(showingDetails ? "<< Hide Details" : "Show Details >>");
+            ErrorDialog.this.pack();
         });
         JPanel messagePanel = new JPanel();
 
         final JCheckBox filter = new JCheckBox("Filter stack traces");
         filter.setSelected(isFiltering);
-        filter.addActionListener(new ActionListener()
+        filter.addActionListener(e ->
         {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                isFiltering = filter.isSelected();
-                StringBuilder buffer = new StringBuilder();
-                stacktrace.setText(generateStackTrace(error, buffer).toString());
-                stacktrace.setCaretPosition(0);
-                stacktrace.repaint();
-            }
+            isFiltering = filter.isSelected();
+            StringBuilder buffer = new StringBuilder();
+            stacktrace.setText(generateStackTrace(error, buffer).toString());
+            stacktrace.setCaretPosition(0);
+            stacktrace.repaint();
         });
         message.setBackground(messagePanel.getBackground());
         JPanel buttonPanel = new JPanel();
@@ -216,14 +207,7 @@ public class ErrorDialog extends JDialog
         panel.add(messagePanel, BorderLayout.NORTH);
         
         // allow closing with ESC
-        ActionListener actionListener = new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                dispose();
-            }
-        };
+        ActionListener actionListener = actionEvent -> dispose();
         KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         panel.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);        
         
@@ -292,13 +276,6 @@ public class ErrorDialog extends JDialog
      */
     private boolean isSuppressed(String className)
     {
-        for (String s : FILTERS)
-        {
-            if (className.startsWith(s))
-            {
-                return true;
-            }
-        }
-        return false;
+        return FILTERS.stream().anyMatch(s -> className.startsWith(s));
     }
 }

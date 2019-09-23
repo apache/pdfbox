@@ -36,8 +36,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -118,10 +116,7 @@ public class Tree extends JTree
         {
             if (stream.getFilters() instanceof COSArray && ((COSArray) stream.getFilters()).size() >= 2)
             {
-                for (JMenuItem menuItem : getPartiallyDecodedStreamSaveMenu(stream))
-                {
-                    treePopupMenu.add(menuItem);
-                }
+                getPartiallyDecodedStreamSaveMenu(stream).forEach(menuItem -> treePopupMenu.add(menuItem));
             }
             treePopupMenu.add(getRawStreamSaveMenu(stream));
         }
@@ -142,14 +137,10 @@ public class Tree extends JTree
     private JMenuItem getTreePathMenuItem(final TreePath path)
     {
         JMenuItem copyPathMenuItem = new JMenuItem("Copy Tree Path");
-        copyPathMenuItem.addActionListener(new ActionListener()
+        copyPathMenuItem.addActionListener(actionEvent ->
         {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
-            {
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(new StringSelection(new TreeStatus(rootNode).getStringForPath(path)), null);
-            }
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(new StringSelection(new TreeStatus(rootNode).getStringForPath(path)), null);
         });
         return copyPathMenuItem;
     }
@@ -162,20 +153,16 @@ public class Tree extends JTree
     private JMenuItem getRawStreamSaveMenu(final COSStream cosStream)
     {
         JMenuItem saveMenuItem = new JMenuItem("Save Raw Stream (" + getFilters(cosStream) + ") As...");
-        saveMenuItem.addActionListener(new ActionListener()
+        saveMenuItem.addActionListener(actionEvent ->
         {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            try
             {
-                try
-                {
-                    byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
-                    saveStream(bytes, null, null);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                byte[] bytes = IOUtils.toByteArray(cosStream.createRawInputStream());
+                saveStream(bytes, null, null);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
             }
         });
         return saveMenuItem;
@@ -248,20 +235,16 @@ public class Tree extends JTree
         }
 
         JMenuItem saveMenuItem = new JMenuItem("Save Stream As" + format + "...");
-        saveMenuItem.addActionListener(new ActionListener()
+        saveMenuItem.addActionListener(actionEvent ->
         {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            try
             {
-                try
-                {
-                    byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
-                    saveStream(bytes, fileFilter, extension);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                byte[] bytes = IOUtils.toByteArray(cosStream.createInputStream());
+                saveStream(bytes, fileFilter, extension);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
             }
         });
         return saveMenuItem;
@@ -299,27 +282,23 @@ public class Tree extends JTree
         }
 
         JMenuItem openMenuItem = new JMenuItem("Open with Default Application");
-        openMenuItem.addActionListener(new ActionListener()
+        openMenuItem.addActionListener(actionEvent ->
         {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            try
             {
-                try
+                File temp = File.createTempFile("pdfbox", "." + extension);
+                temp.deleteOnExit();
+                
+                try (InputStream is = cosStream.createInputStream();
+                        FileOutputStream os = new FileOutputStream(temp))
                 {
-                    File temp = File.createTempFile("pdfbox", "." + extension);
-                    temp.deleteOnExit();
-
-                    try (InputStream is = cosStream.createInputStream();
-                         FileOutputStream os = new FileOutputStream(temp))
-                    {
-                        IOUtils.copy(is, os);
-                    }
-                    Desktop.getDesktop().open(temp);
+                    IOUtils.copy(is, os);
                 }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                Desktop.getDesktop().open(temp);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
             }
         });
         return openMenuItem;
@@ -359,20 +338,16 @@ public class Tree extends JTree
         nameListBuilder.delete(nameListBuilder.lastIndexOf("&"), nameListBuilder.length());
         JMenuItem menuItem = new JMenuItem("Keep " + nameListBuilder.toString() + "...");
 
-        menuItem.addActionListener(new ActionListener()
+        menuItem.addActionListener(actionEvent ->
         {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent)
+            try
             {
-                try
-                {
-                    InputStream data = stream.createInputStream(stopFilters);
-                    saveStream(IOUtils.toByteArray(data), null, null);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                InputStream data = stream.createInputStream(stopFilters);
+                saveStream(IOUtils.toByteArray(data), null, null);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
             }
         });
         return menuItem;
