@@ -276,6 +276,6 @@ public class ErrorDialog extends JDialog
      */
     private boolean isSuppressed(String className)
     {
-        return FILTERS.stream().anyMatch(s -> className.startsWith(s));
+        return FILTERS.stream().anyMatch(className::startsWith);
     }
 }
