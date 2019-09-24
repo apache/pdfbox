@@ -116,7 +116,7 @@ public class Tree extends JTree
         {
             if (stream.getFilters() instanceof COSArray && ((COSArray) stream.getFilters()).size() >= 2)
             {
-                getPartiallyDecodedStreamSaveMenu(stream).forEach(menuItem -> treePopupMenu.add(menuItem));
+                getPartiallyDecodedStreamSaveMenu(stream).forEach(treePopupMenu::add);
             }
             treePopupMenu.add(getRawStreamSaveMenu(stream));
         }
