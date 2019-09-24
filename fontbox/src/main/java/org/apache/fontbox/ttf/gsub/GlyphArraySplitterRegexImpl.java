@@ -46,22 +46,14 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
         List<String> tokens = compoundCharacterTokenizer.tokenize(originalGlyphsAsText);
 
         List<List<Integer>> modifiedGlyphs = new ArrayList<>();
-
-        for (String token : tokens)
-        {
-            modifiedGlyphs.add(convertGlyphIdsToList(token));
-        }
-
+        tokens.forEach(token -> modifiedGlyphs.add(convertGlyphIdsToList(token)));
         return modifiedGlyphs;
     }
 
     private Set<String> getMatchersAsStrings(Set<List<Integer>> matchers)
     {
         Set<String> stringMatchers = new HashSet<>(matchers.size());
-        for (List<Integer> glyphIds : matchers)
-        {
-            stringMatchers.add(convertGlyphIdsToString(glyphIds));
-        }
+        matchers.forEach(glyphIds -> stringMatchers.add(convertGlyphIdsToString(glyphIds)));
         return stringMatchers;
     }
 
@@ -69,10 +61,7 @@ public class GlyphArraySplitterRegexImpl implements GlyphArraySplitter
     {
         StringBuilder sb = new StringBuilder(20);
         sb.append(GLYPH_ID_SEPARATOR);
-        for (Integer glyphId : glyphIds)
-        {
-            sb.append(glyphId).append(GLYPH_ID_SEPARATOR);
-        }
+        glyphIds.forEach(glyphId -> sb.append(glyphId).append(GLYPH_ID_SEPARATOR));
         return sb.toString();
     }
 
