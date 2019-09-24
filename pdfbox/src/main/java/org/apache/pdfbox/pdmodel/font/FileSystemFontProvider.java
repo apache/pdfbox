@@ -40,7 +40,6 @@ import org.apache.fontbox.ttf.OTFParser;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeCollection;
-import org.apache.fontbox.ttf.TrueTypeCollection.TrueTypeFontProcessor;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
@@ -567,14 +566,7 @@ final class FileSystemFontProvider extends FontProvider
     {
         try (TrueTypeCollection ttc = new TrueTypeCollection(ttcFile))
         {
-            ttc.processAllFonts(new TrueTypeFontProcessor()
-            {
-                @Override
-                public void process(TrueTypeFont ttf) throws IOException
-                {
-                    addTrueTypeFontImpl(ttf, ttcFile);
-                }
-            });
+            ttc.processAllFonts(ttf -> addTrueTypeFontImpl(ttf, ttcFile));
         }
         catch (NullPointerException | IOException e)
         {
