@@ -22,7 +22,6 @@ import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
@@ -68,28 +67,15 @@ public class TestPDPageAnnotationsFiltering
     @Test
     public void validateAllFiltered() throws IOException
     {
-        List<PDAnnotation> annotations = page.getAnnotations(new AnnotationFilter()
-        {
-            @Override
-            public boolean accept(PDAnnotation annotation)
-            {
-                return false;
-            }
-        });
+        List<PDAnnotation> annotations = page.getAnnotations(annotation -> false);
         Assert.assertEquals(0, annotations.size());
     }
 
     @Test
     public void validateSelectedFew() throws IOException
     {
-        List<PDAnnotation> annotations = page.getAnnotations(new AnnotationFilter()
-        {
-            @Override
-            public boolean accept(PDAnnotation annotation)
-            {
-                return (annotation instanceof PDAnnotationLink || annotation instanceof PDAnnotationSquare);
-            }
-        });
+        List<PDAnnotation> annotations = page.getAnnotations(annotation -> 
+            (annotation instanceof PDAnnotationLink || annotation instanceof PDAnnotationSquare));
         Assert.assertEquals(2, annotations.size());
         Assert.assertTrue(annotations.get(0) instanceof PDAnnotationSquare);
         Assert.assertTrue(annotations.get(1) instanceof PDAnnotationLink);
