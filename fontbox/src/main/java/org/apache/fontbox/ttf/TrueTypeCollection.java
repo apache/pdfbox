@@ -142,6 +142,7 @@ public class TrueTypeCollection implements Closeable
     /**
      * Implement the callback method to call {@link TrueTypeCollection#processAllFonts(TrueTypeFontProcessor)}.
      */
+    @FunctionalInterface
     public interface TrueTypeFontProcessor
     {
         void process(TrueTypeFont ttf) throws IOException;
