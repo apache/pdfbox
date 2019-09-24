@@ -22,6 +22,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
  * @author <a href="mailto:maxime.veron.pro@gmail.com">Maxime Veron</a>
  * 
  */
+@FunctionalInterface
 public interface AnnotationFilter
 {
     boolean accept(PDAnnotation annotation);
