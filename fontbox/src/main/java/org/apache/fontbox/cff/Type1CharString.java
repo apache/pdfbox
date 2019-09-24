@@ -153,13 +153,7 @@ public class Type1CharString
         path = new GeneralPath();
         leftSideBearing = new Point2D.Float(0, 0);
         width = 0;
-        CharStringHandler handler = new CharStringHandler() {
-            @Override
-            public List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
-            {
-                return Type1CharString.this.handleCommand(numbers, command);
-            }
-        };
+        CharStringHandler handler = Type1CharString.this::handleCommand;
         handler.handleSequence(type1Sequence);
     }
 
