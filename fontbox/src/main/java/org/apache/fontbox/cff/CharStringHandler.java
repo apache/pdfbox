@@ -27,6 +27,7 @@ import java.util.Stack;
  * @author John Hewson
  * 
  */
+@FunctionalInterface
 public interface CharStringHandler
 {
     /**
