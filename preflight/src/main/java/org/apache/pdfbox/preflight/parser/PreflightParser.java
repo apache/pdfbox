@@ -204,10 +204,7 @@ public class PreflightParser extends PDFParser
 
     protected void addValidationErrors(List<ValidationError> errors)
     {
-        for (ValidationError error : errors)
-        {
-            addValidationError(error);
-        }
+        errors.forEach(this::addValidationError);
     }
 
     @Override
