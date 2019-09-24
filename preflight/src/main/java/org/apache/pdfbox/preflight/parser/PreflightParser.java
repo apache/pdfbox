@@ -912,7 +912,7 @@ public class PreflightParser extends PDFParser
                     parser.parse();
 
                     // register all objects which are referenced to be contained in object stream
-                    for (COSObject next : parser.getObjects())
+                    parser.getObjects().forEach(next ->
                     {
                         COSObjectKey stmObjKey = new COSObjectKey(next);
                         Long offset = document.getXrefTable().get(stmObjKey);
@@ -921,7 +921,7 @@ public class PreflightParser extends PDFParser
                             COSObject stmObj = document.getObjectFromPool(stmObjKey);
                             stmObj.setObject(next.getObject());
                         }
-                    }
+                    });
                 }
             }
         }
