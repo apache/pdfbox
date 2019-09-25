@@ -24,11 +24,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Functional test for PDF rendering. This test simply tries to render
@@ -46,21 +45,9 @@ public class TestRendering
     @Parameters(name = "{0}")
     public static Collection<Object[]> data()
     {
-        File[] testFiles = new File(INPUT_DIR).listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.endsWith(".pdf") || name.endsWith(".ai"));
-            }
-        });
-
-        List<Object[]> params = new ArrayList<>();
-        for (File file : testFiles)
-        {
-            params.add(new Object[] { file.getName() });
-        }
-        return params;
+        File[] testFiles = new File(INPUT_DIR).listFiles(
+                (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
+        return Stream.of(testFiles).map(file -> new Object[] { file.getName() }).collect(Collectors.toList());
     }
 
     private final String fileName;
