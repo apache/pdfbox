@@ -255,8 +255,7 @@ public class Type2CharString extends Type1CharString
             }
             else
             {
-                addCommand(Arrays.asList((Number) 0f, defWidthX),
-                        new CharStringCommand(13));
+                addCommand(Arrays.asList((Number) 0f, defWidthX), new CharStringCommand(13));
             }
         }
         return numbers;
@@ -355,10 +354,7 @@ public class Type2CharString extends Type1CharString
 
     private void addCommandList(List<List<Number>> numbers, CharStringCommand command)
     {
-        for (List<Number> ns : numbers)
-        {
-            addCommand(ns, command);
-        }
+        numbers.forEach(ns -> addCommand(ns, command));
     }
 
     private void addCommand(List<Number> numbers, CharStringCommand command)

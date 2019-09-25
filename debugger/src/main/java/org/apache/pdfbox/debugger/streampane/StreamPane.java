@@ -331,10 +331,8 @@ public class StreamPane implements ActionListener
                 return null;
             }
 
-            for (Object obj : parser.getTokens())
-            {
-                writeToken(obj, docu);
-            }
+            parser.getTokens().forEach(obj -> writeToken(obj, docu));
+
             return docu;
         }
 

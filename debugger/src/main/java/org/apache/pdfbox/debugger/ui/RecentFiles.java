@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 /**
  * A class to save recent file history in preference using java Preference api.
@@ -112,15 +113,9 @@ public class RecentFiles
     {
         if (!isEmpty())
         {
-            List<String> files = new ArrayList<>();
-            for (String path : filePaths)
-            {
-                File file = new File(path);
-                if (file.exists())
-                {
-                    files.add(path);
-                }
-            }
+            List<String> files = filePaths.stream().
+                    filter(path -> new File(path).exists()).
+                    collect(Collectors.toList());
             if (files.size() > maximum)
             {
                 files.remove(0);

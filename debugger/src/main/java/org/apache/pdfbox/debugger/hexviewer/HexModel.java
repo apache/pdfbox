@@ -139,18 +139,7 @@ class HexModel implements HexChangeListener
         if (!data.get(index).equals(value))
         {
             data.set(index, value);
-            for (HexModelChangeListener listener: modelChangeListeners)
-            {
-                listener.hexModelChanged(new HexModelChangedEvent(index, HexModelChangedEvent.SINGLE_CHANGE));
-            }
-        }
-    }
-
-    private void fireModelChanged(int index)
-    {
-        for (HexModelChangeListener listener:modelChangeListeners)
-        {
-            listener.hexModelChanged(new HexModelChangedEvent(index, HexModelChangedEvent.SINGLE_CHANGE));
+            fireModelChanged(index);
         }
     }
 
@@ -163,5 +152,11 @@ class HexModel implements HexChangeListener
             data.set(index, event.getNewValue());
         }
         fireModelChanged(index);
+    }
+
+    private void fireModelChanged(int index)
+    {
+        modelChangeListeners.forEach(listener ->
+                listener.hexModelChanged(new HexModelChangedEvent(index, HexModelChangedEvent.SINGLE_CHANGE)));
     }
 }
