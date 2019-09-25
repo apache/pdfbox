@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashSet;
@@ -292,14 +291,8 @@ public class TestImageIOUtils extends TestCase
             throw new IOException("could not create output directory");
         }
 
-        File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.endsWith(".pdf") || name.endsWith(".ai"));
-            }
-        });
+        File[] testFiles = new File(inDir).listFiles(
+                (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
 
         for (File file : testFiles)
         {
