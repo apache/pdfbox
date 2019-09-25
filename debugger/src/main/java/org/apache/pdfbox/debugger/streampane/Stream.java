@@ -97,12 +97,7 @@ public class Stream
      */
     public List<String> getFilterList()
     {
-        List<String> list = new ArrayList<>();
-        for (Map.Entry<String, List<String>> entry : filters.entrySet())
-        {
-            list.add(entry.getKey());
-        }
-        return list;
+        return new ArrayList(filters.keySet());
     }
 
     /**
