@@ -43,10 +43,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
         assertEquals(Arrays.asList("12345", "HrkJj", "xabbcc", "68RetP", "xxxcfb1245678",
@@ -67,10 +64,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
         assertEquals(Arrays.asList("84_112_93_", "104_82", "_61_96_102_93_", "104_87", "_110"),
@@ -91,10 +85,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
         assertEquals(Arrays.asList("67_112_96", "_103_93_108_93"), tokens);
@@ -114,10 +105,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
         assertEquals(Arrays.asList("94_", "67_112_96", "_112_91_103"), tokens);
@@ -137,10 +125,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
         assertEquals(Arrays.asList("94_1", "67_112", "_91_103"), tokens);
@@ -159,10 +144,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
 
@@ -184,10 +166,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
         assertEquals(0, tokens.indexOf("Yx!23uyt"));
@@ -208,10 +187,7 @@ public class CompoundCharacterTokenizerTest
 
         // then
         StringBuilder sb = new StringBuilder();
-        for (String token : tokens)
-        {
-            sb.append(token);
-        }
+        tokens.forEach(token -> sb.append(token));
 
         assertEquals(text, sb.toString());
 
