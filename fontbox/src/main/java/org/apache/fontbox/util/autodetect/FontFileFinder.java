@@ -76,10 +76,7 @@ public class FontFileFinder
         }
         List<File> fontDirs = fontDirFinder.find();
         List<URI> results = new ArrayList<>();
-        for (File dir : fontDirs)
-        {
-            walk(dir, results);
-        }
+        fontDirs.forEach(dir -> walk(dir, results));
         return results;
     }
 

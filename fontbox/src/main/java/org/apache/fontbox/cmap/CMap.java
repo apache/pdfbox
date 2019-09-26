@@ -257,12 +257,9 @@ public class CMap
      * 
      * @param cmap The cmap to load mappings from.
      */
-    void useCmap( CMap cmap )
+    void useCmap(CMap cmap)
     {
-        for (CodespaceRange codespaceRange : cmap.codespaceRanges)
-        {
-            addCodespaceRange(codespaceRange);
-        }
+        cmap.codespaceRanges.forEach(this::addCodespaceRange);
         charToUnicode.putAll(cmap.charToUnicode);
         codeToCid.putAll(cmap.codeToCid);
         codeToCidRanges.addAll(cmap.codeToCidRanges);
