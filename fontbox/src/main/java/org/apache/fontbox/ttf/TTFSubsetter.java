@@ -126,10 +126,7 @@ public final class TTFSubsetter
      */
     public void addAll(Set<Integer> unicodeSet)
     {
-        for (int unicode : unicodeSet)
-        {
-            add(unicode);
-        }
+        unicodeSet.forEach(unicode -> add(unicode));
     }
 
     /**

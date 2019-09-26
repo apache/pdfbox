@@ -699,17 +699,16 @@ public class FontMetrics
         return Collections.unmodifiableList(charMetrics);
     }
 
-    /** Setter for property charMetrics.
+    /**
+     * Setter for property charMetrics.
+     *
      * @param charMetricsValue New value of property charMetrics.
      */
     public void setCharMetrics(List<CharMetric> charMetricsValue)
     {
         charMetrics = charMetricsValue;
         charMetricsMap = new HashMap<>(charMetrics.size());
-        for (CharMetric metric : charMetricsValue)
-        {
-            charMetricsMap.put( metric.getName(), metric );
-        }
+        charMetricsValue.forEach(metric -> charMetricsMap.put(metric.getName(), metric));
     }
 
     /**
