@@ -74,7 +74,26 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     static
     {
         String cmmProperty = System.getProperty("sun.java2d.cmm");
-        IS_KCMS = !isMinJdk8() || "sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty);
+        boolean result = false;
+        if (!isMinJdk8())
+        {
+            // always KCMS but class has different name
+            result = true;
+        }
+        else if ("sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
+        {
+            try
+            {
+                Class.forName("sun.java2d.cmm.kcms.KcmsServiceProvider");
+                result = true;
+            }
+            catch (ClassNotFoundException e)
+            {
+                // KCMS not available
+            }
+        }
+        // else maybe KCMS was available, but not wished
+        IS_KCMS = result;
     }
 
     /**
