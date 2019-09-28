@@ -33,7 +33,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -111,8 +110,10 @@ public class TestSymmetricKeyEncryption extends TestCase
      * standard". The restricted permissions prevent printing and text
      * extraction. In the 128 and 256 bit encrypted files, AssembleDocument,
      * ExtractForAccessibility and PrintDegraded are also disabled.
+     * 
+     * @throws java.io.IOException
      */
-    public void testPermissions() throws Exception
+    public void testPermissions() throws IOException
     {
         AccessPermission fullAP = new AccessPermission();
         AccessPermission restrAP = new AccessPermission();
@@ -167,28 +168,27 @@ public class TestSymmetricKeyEncryption extends TestCase
     private void checkPerms(byte[] inputFileAsByteArray, String password,
             AccessPermission expectedPermissions) throws IOException
     {
-        PDDocument doc = PDDocument.load(inputFileAsByteArray, password);
-
-        AccessPermission currentAccessPermission = doc.getCurrentAccessPermission();
-
-        // check permissions
-        assertEquals(expectedPermissions.isOwnerPermission(), currentAccessPermission.isOwnerPermission());
-        if (!expectedPermissions.isOwnerPermission())
+        try (PDDocument doc = PDDocument.load(inputFileAsByteArray, password))
         {
-            assertEquals(true, currentAccessPermission.isReadOnly());
+            AccessPermission currentAccessPermission = doc.getCurrentAccessPermission();
+            
+            // check permissions
+            assertEquals(expectedPermissions.isOwnerPermission(), currentAccessPermission.isOwnerPermission());
+            if (!expectedPermissions.isOwnerPermission())
+            {
+                assertEquals(true, currentAccessPermission.isReadOnly());
+            }
+            assertEquals(expectedPermissions.canAssembleDocument(), currentAccessPermission.canAssembleDocument());
+            assertEquals(expectedPermissions.canExtractContent(), currentAccessPermission.canExtractContent());
+            assertEquals(expectedPermissions.canExtractForAccessibility(), currentAccessPermission.canExtractForAccessibility());
+            assertEquals(expectedPermissions.canFillInForm(), currentAccessPermission.canFillInForm());
+            assertEquals(expectedPermissions.canModify(), currentAccessPermission.canModify());
+            assertEquals(expectedPermissions.canModifyAnnotations(), currentAccessPermission.canModifyAnnotations());
+            assertEquals(expectedPermissions.canPrint(), currentAccessPermission.canPrint());
+            assertEquals(expectedPermissions.canPrintDegraded(), currentAccessPermission.canPrintDegraded());
+            
+            new PDFRenderer(doc).renderImage(0);
         }
-        assertEquals(expectedPermissions.canAssembleDocument(), currentAccessPermission.canAssembleDocument());
-        assertEquals(expectedPermissions.canExtractContent(), currentAccessPermission.canExtractContent());
-        assertEquals(expectedPermissions.canExtractForAccessibility(), currentAccessPermission.canExtractForAccessibility());
-        assertEquals(expectedPermissions.canFillInForm(), currentAccessPermission.canFillInForm());
-        assertEquals(expectedPermissions.canModify(), currentAccessPermission.canModify());
-        assertEquals(expectedPermissions.canModifyAnnotations(), currentAccessPermission.canModifyAnnotations());
-        assertEquals(expectedPermissions.canPrint(), currentAccessPermission.canPrint());
-        assertEquals(expectedPermissions.canPrintDegraded(), currentAccessPermission.canPrintDegraded());
-
-        new PDFRenderer(doc).renderImage(0);
-
-        doc.close();
     }
 
     /**
@@ -327,36 +327,37 @@ public class TestSymmetricKeyEncryption extends TestCase
         for (int i = 0; i < numSrcPages; ++i)
         {
             srcImgTab.add(pdfRenderer.renderImage(i));
-            InputStream unfilteredStream = document.getPage(i).getContents();
-            byte[] bytes = IOUtils.toByteArray(unfilteredStream);
-            unfilteredStream.close();
-            srcContentStreamTab.add(bytes);
+            try (InputStream unfilteredStream = document.getPage(i).getContents())
+            {
+                srcContentStreamTab.add(IOUtils.toByteArray(unfilteredStream));
+            }
         }
 
-        PDDocument encryptedDoc = encrypt(keyLength, preferAES, sizePriorToEncr, document,
-                prefix, permission, userpassword, ownerpassword);
-
-        Assert.assertEquals(numSrcPages, encryptedDoc.getNumberOfPages());
-        pdfRenderer = new PDFRenderer(encryptedDoc);
-        for (int i = 0; i < encryptedDoc.getNumberOfPages(); ++i)
+        try (PDDocument encryptedDoc = encrypt(keyLength, preferAES, sizePriorToEncr, document,
+                prefix, permission, userpassword, ownerpassword))
         {
-            // compare rendering
-            BufferedImage bim = pdfRenderer.renderImage(i);
-            ValidateXImage.checkIdent(bim, srcImgTab.get(i));
-
-            // compare content streams
-            InputStream unfilteredStream = encryptedDoc.getPage(i).getContents();
-            byte[] bytes = IOUtils.toByteArray(unfilteredStream);
-            unfilteredStream.close();
-            Assert.assertArrayEquals("content stream of page " + i + " not identical",
-                    srcContentStreamTab.get(i),
-                    bytes);
+            Assert.assertEquals(numSrcPages, encryptedDoc.getNumberOfPages());
+            pdfRenderer = new PDFRenderer(encryptedDoc);
+            for (int i = 0; i < encryptedDoc.getNumberOfPages(); ++i)
+            {
+                // compare rendering
+                BufferedImage bim = pdfRenderer.renderImage(i);
+                ValidateXImage.checkIdent(bim, srcImgTab.get(i));
+                
+                // compare content streams
+                try (InputStream unfilteredStream = encryptedDoc.getPage(i).getContents())
+                {
+                    byte[] bytes = IOUtils.toByteArray(unfilteredStream);
+                    Assert.assertArrayEquals("content stream of page " + i + " not identical",
+                            srcContentStreamTab.get(i),
+                            bytes);
+                }
+            }
+            
+            File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-decrypted.pdf");
+            encryptedDoc.setAllSecurityToBeRemoved(true);
+            encryptedDoc.save(pdfFile);
         }
-
-        File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-decrypted.pdf");
-        encryptedDoc.setAllSecurityToBeRemoved(true);
-        encryptedDoc.save(pdfFile);
-        encryptedDoc.close();
     }
 
     // encrypt with keylength and permission, save, check sizes before and after encryption
@@ -432,11 +433,11 @@ public class TestSymmetricKeyEncryption extends TestCase
         PDEmbeddedFile embeddedFile = complexFileSpec.getEmbeddedFile();
 
         File resultFile = new File(testResultsDir, name);
-        FileOutputStream fos = new FileOutputStream(resultFile);
-        InputStream is = embeddedFile.createInputStream();
-        IOUtils.copy(is, fos);
-        fos.close();
-        is.close();
+        try (FileOutputStream fos = new FileOutputStream(resultFile);
+             InputStream is = embeddedFile.createInputStream())
+        {
+            IOUtils.copy(is, fos);
+        }
 
         LOG.info("  size: " + embeddedFile.getSize());
         assertEquals(embeddedFile.getSize(), resultFile.length());
@@ -450,22 +451,22 @@ public class TestSymmetricKeyEncryption extends TestCase
             String userpassword, String ownerpassword) throws IOException
     {
         PDDocument document = PDDocument.load(inputFileWithEmbeddedFileAsByteArray);
-        PDDocument encryptedDoc = encrypt(keyLength, preferAES, sizePriorToEncr, document, "ContainsEmbedded-", permission, userpassword, ownerpassword);
-
-        File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
-        encryptedDoc.setAllSecurityToBeRemoved(true);
-        encryptedDoc.save(decryptedFile);
-
-        File extractedEmbeddedFile = extractEmbeddedFile(new FileInputStream(decryptedFile), "decryptedInnerFile-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
-
-        Assert.assertEquals(keyLength + "-bit " + (preferAES ? "AES" : "RC4") + " decrypted inner attachment pdf should have same size as plain one",
-                embeddedFilePriorToEncryption.length(), extractedEmbeddedFile.length());
-
-        // compare the two embedded files
-        Assert.assertArrayEquals(
-                getFileAsByteArray(embeddedFilePriorToEncryption),
-                getFileAsByteArray(extractedEmbeddedFile));
-        encryptedDoc.close();
+        try (PDDocument encryptedDoc = encrypt(keyLength, preferAES, sizePriorToEncr, document, "ContainsEmbedded-", permission, userpassword, ownerpassword))
+        {
+            File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
+            encryptedDoc.setAllSecurityToBeRemoved(true);
+            encryptedDoc.save(decryptedFile);
+            
+            File extractedEmbeddedFile = extractEmbeddedFile(new FileInputStream(decryptedFile), "decryptedInnerFile-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");
+            
+            Assert.assertEquals(keyLength + "-bit " + (preferAES ? "AES" : "RC4") + " decrypted inner attachment pdf should have same size as plain one",
+                    embeddedFilePriorToEncryption.length(), extractedEmbeddedFile.length());
+            
+            // compare the two embedded files
+            Assert.assertArrayEquals(
+                    getFileAsByteArray(embeddedFilePriorToEncryption),
+                    getFileAsByteArray(extractedEmbeddedFile));
+        }
     }
 
     private byte[] getFileResourceAsByteArray(String testFileName) throws IOException
