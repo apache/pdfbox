@@ -97,6 +97,7 @@ import org.apache.pdfbox.debugger.ui.DocumentEntry;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
 import org.apache.pdfbox.debugger.ui.ExtensionFileFilter;
 import org.apache.pdfbox.debugger.ui.FileOpenSaveDialog;
+import org.apache.pdfbox.debugger.ui.LogDialog;
 import org.apache.pdfbox.debugger.ui.MapEntry;
 import org.apache.pdfbox.debugger.ui.OSXAdapter;
 import org.apache.pdfbox.debugger.ui.PDFTreeCellRenderer;
@@ -1213,17 +1214,6 @@ public class PDFDebugger extends JFrame
             }
         });
 
-        // trigger premature initializations for more accurate rendering benchmarks
-        // See discussion in PDFBOX-3988
-        if (PDType1Font.COURIER.isStandard14())
-        {
-            // Yes this is always true
-            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
-            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
-            IIORegistry.getDefaultInstance();
-            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
-        }
-
         // open file, if any
         String filename = null;
         @SuppressWarnings({"squid:S2068"})
@@ -1251,8 +1241,25 @@ public class PDFDebugger extends JFrame
             }
         }
         final PDFDebugger viewer = new PDFDebugger(viewPages);
-        
-        
+
+        // use our custom logger
+        // this works only if there is no "LogFactory.getLog()" in this class,
+        // and if there are no methods that call logging, even invisible
+        // use reduced file from PDFBOX-3653 to see logging
+        LogDialog.init(viewer, viewer.statusBar.getLogLabel());
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
+
+        // trigger premature initializations for more accurate rendering benchmarks
+        // See discussion in PDFBOX-3988
+        if (PDType1Font.COURIER.isStandard14())
+        {
+            // Yes this is always true
+            PDDeviceCMYK.INSTANCE.toRGB(new float[] { 0, 0, 0, 0} );
+            PDDeviceRGB.INSTANCE.toRGB(new float[] { 0, 0, 0 } );
+            IIORegistry.getDefaultInstance();
+            FilterFactory.INSTANCE.getFilter(COSName.FLATE_DECODE);
+        }
+
         if (filename != null)
         {
             File file = new File(filename);
