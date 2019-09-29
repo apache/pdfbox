@@ -384,7 +384,8 @@ public class CMapParser
             else if (nextToken instanceof byte[])
             {
                 // the range can not represent more that 255 values
-                if ((end - start) > 255)
+                // PDFBOX-4661: be more lenient and support 256 values as well
+                if ((end - start) > 256)
                 {
                     // PDFBOX-4550: likely corrupt stream
                     break;
