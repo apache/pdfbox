@@ -24,7 +24,6 @@ import java.awt.GraphicsDevice;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
@@ -549,7 +548,7 @@ public class PDFRenderer
     private static void suggestKCMS()
     {
         String cmmProperty = System.getProperty("sun.java2d.cmm");
-        if (isMinJdk8() && !"sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
+        if (!"sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
         {
             try
             {
@@ -597,27 +596,5 @@ public class PDFRenderer
             }
         }
         return false;
-    }
-
-    private static boolean isMinJdk8()
-    {
-        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
-        String version = System.getProperty("java.specification.version");
-        final StringTokenizer st = new StringTokenizer(version, ".");
-        try
-        {
-            int major = Integer.parseInt(st.nextToken());
-            int minor = 0;
-            if (st.hasMoreTokens())
-            {
-                minor = Integer.parseInt(st.nextToken());
-            }
-            return major > 1 || (major == 1 && minor >= 8);
-        }
-        catch (NumberFormatException nfe)
-        {
-            // maybe some new numbering scheme in the 22nd century
-            return true;
-        }
     }
 }

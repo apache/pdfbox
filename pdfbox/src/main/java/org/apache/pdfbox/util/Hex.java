@@ -20,7 +20,7 @@ package org.apache.pdfbox.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
+import java.util.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -191,33 +191,7 @@ public final class Hex
      */
     public static byte[] decodeBase64(String base64Value)
     {
-        // https://stackoverflow.com/questions/469695/decode-base64-data-in-java
-        try
-        {
-            // jdk8 and higher? java.util.Base64.getDecoder().decode()
-            Class<?> b64Class = Class.forName("java.util.Base64");
-            Method getDecoderMethod = b64Class.getMethod("getDecoder");
-            Object base64Decoder = getDecoderMethod.invoke(b64Class);
-            Method decodeMethod = base64Decoder.getClass().getMethod("decode", String.class);
-            return (byte[]) decodeMethod.invoke(base64Decoder, base64Value.replaceAll("\\s", ""));
-        }
-        catch (ReflectiveOperationException | SecurityException ex)
-        {
-            LOG.debug(ex);
-        }
-        try
-        {
-            // up to java7? javax.xml.bind.DatatypeConverter.parseBase64Binary()
-            Class<?> datatypeConverterClass = Class.forName("javax.xml.bind.DatatypeConverter");
-            Method parseBase64BinaryMethod = datatypeConverterClass.getMethod("parseBase64Binary", String.class);
-            return (byte[]) parseBase64BinaryMethod.invoke(null, base64Value);
-        }
-        catch (ReflectiveOperationException | SecurityException ex)
-        {
-            LOG.debug(ex);
-        }
-        LOG.error("Can't decode base64 value, try adding javax.xml.bind:jaxb-api to your build");
-        return new byte[0];
+        return Base64.getDecoder().decode(base64Value.replaceAll("\\s", ""));
     }
 
     /**
