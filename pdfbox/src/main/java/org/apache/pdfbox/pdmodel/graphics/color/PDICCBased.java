@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -75,12 +74,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     {
         String cmmProperty = System.getProperty("sun.java2d.cmm");
         boolean result = false;
-        if (!isMinJdk8())
-        {
-            // always KCMS but class has different name
-            result = true;
-        }
-        else if ("sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
+        if ("sun.java2d.cmm.kcms.KcmsServiceProvider".equals(cmmProperty))
         {
             try
             {
@@ -558,27 +552,5 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     public String toString()
     {
         return getName() + "{numberOfComponents: " + getNumberOfComponents() + "}";
-    }
-
-    private static boolean isMinJdk8()
-    {
-        // strategy from lucene-solr/lucene/core/src/java/org/apache/lucene/util/Constants.java
-        String version = System.getProperty("java.specification.version");
-        final StringTokenizer st = new StringTokenizer(version, ".");
-        try
-        {
-            int major = Integer.parseInt(st.nextToken());
-            int minor = 0;
-            if (st.hasMoreTokens())
-            {
-                minor = Integer.parseInt(st.nextToken());
-            }
-            return major > 1 || (major == 1 && minor >= 8);
-        }
-        catch (NumberFormatException nfe)
-        {
-            // maybe some new numbering scheme in the 22nd century
-            return true;
-        }
     }
 }
