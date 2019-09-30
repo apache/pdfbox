@@ -199,7 +199,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.5.1</version>
                 <!-- fails with maven 3.6.0 on jdk 6, works with 3.5.0 and 3.5.2 -->
                 <configuration>
                     <showDeprecation>true</showDeprecation>
