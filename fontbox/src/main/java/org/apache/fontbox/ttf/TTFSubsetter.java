@@ -288,14 +288,7 @@ public final class TTFSubsetter
         }
 
         List<NameRecord> nameRecords = name.getNameRecords();
-        int numRecords = 0;
-        for (NameRecord record : nameRecords)
-        {
-            if (shouldCopyNameRecord(record))
-            {
-                numRecords++;
-            }
-        }
+        int numRecords = (int) nameRecords.stream().filter(this::shouldCopyNameRecord).count();
         writeUint16(out, 0);
         writeUint16(out, numRecords);
         writeUint16(out, 2*3 + 2*6 * numRecords);
