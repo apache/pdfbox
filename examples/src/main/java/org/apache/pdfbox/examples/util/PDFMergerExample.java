@@ -97,10 +97,7 @@ public class PDFMergerExample
         }
         finally
         {
-            for (InputStream source : sources)
-            {
-                IOUtils.closeQuietly(source);
-            }
+            sources.forEach(IOUtils::closeQuietly);
             IOUtils.closeQuietly(cosStream);
             IOUtils.closeQuietly(mergedPDFOutputStream);
         }
