@@ -300,10 +300,7 @@ public final class CertificateVerifier
                 in = new URL(urlString).openStream();
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
                 Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
-                for (Certificate altCert : altCerts)
-                {
-                    resultSet.add((X509Certificate) altCert);
-                }
+                altCerts.forEach(altCert -> resultSet.add((X509Certificate) altCert));
                 LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
             }
             catch (IOException | CertificateException ex)
