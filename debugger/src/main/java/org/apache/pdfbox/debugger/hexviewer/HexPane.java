@@ -219,18 +219,12 @@ class HexPane extends JPanel implements KeyListener, MouseListener, MouseMotionL
 
     private void fireSelectionChanged(SelectEvent event)
     {
-        for (SelectionChangeListener listener:selectionChangeListeners)
-        {
-            listener.selectionChanged(event);
-        }
+        selectionChangeListeners.forEach(listener -> listener.selectionChanged(event));
     }
 
     private void fireHexValueChanged(byte value, int index)
     {
-        for (HexChangeListener listener:hexChangeListeners)
-        {
-            listener.hexChanged(new HexChangedEvent(value, index));
-        }
+        hexChangeListeners.forEach(listener -> listener.hexChanged(new HexChangedEvent(value, index)));
     }
 
     public void addSelectionChangeListener(SelectionChangeListener listener)
