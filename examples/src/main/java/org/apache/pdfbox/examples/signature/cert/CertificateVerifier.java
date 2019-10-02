@@ -50,10 +50,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERTaggedObject;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.GeneralName;
@@ -302,8 +302,8 @@ public final class CertificateVerifier
             {
                 continue;
             }
-            DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
-            DEROctetString uri = (DEROctetString) location.getObject();
+            ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
+            ASN1OctetString uri = (ASN1OctetString) location.getObject();
             InputStream in = null;
             try
             {
@@ -413,11 +413,11 @@ public final class CertificateVerifier
                 ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
                 ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
                 // accessLocation
-                DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
+                ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
                 if (oid.equals(X509ObjectIdentifiers.id_ad_ocsp)
                         && location.getTagNo() == GeneralName.uniformResourceIdentifier)
                 {
-                    DEROctetString url = (DEROctetString) location.getObject();
+                    ASN1OctetString url = (ASN1OctetString) location.getObject();
                     String ocspURL = new String(url.getOctets());
                     LOG.info("OCSP URL: " + ocspURL);
                     return ocspURL;
