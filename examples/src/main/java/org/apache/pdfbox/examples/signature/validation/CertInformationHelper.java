@@ -26,7 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1TaggedObject;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.DLSequence;
@@ -81,17 +83,17 @@ public class CertInformationHelper
             ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
             ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
             // accessLocation
-            DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
+            ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
 
             if (oid.equals(X509ObjectIdentifiers.id_ad_ocsp)
                     && location.getTagNo() == GeneralName.uniformResourceIdentifier)
             {
-                DEROctetString url = (DEROctetString) location.getObject();
+                ASN1OctetString url = (ASN1OctetString) location.getObject();
                 certInfo.setOcspUrl(new String(url.getOctets()));
             }
             else if (oid.equals(X509ObjectIdentifiers.id_ad_caIssuers))
             {
-                DEROctetString uri = (DEROctetString) location.getObject();
+                ASN1OctetString uri = (ASN1OctetString) location.getObject();
                 certInfo.setIssuerUrl(new String(uri.getOctets()));
             }
         }
@@ -122,7 +124,7 @@ public class CertInformationHelper
                 // happens with SampleSignedPDFDocument.pdf
                 continue;
             }
-            DEROctetString uri = (DEROctetString) derTagged.getObject();
+            ASN1OctetString uri = (ASN1OctetString) derTagged.getObject();
             String url = new String(uri.getOctets());
             // TODO Check for: DistributionPoint ::= SEQUENCE (see RFC 2459), multiples can be possible.
 
