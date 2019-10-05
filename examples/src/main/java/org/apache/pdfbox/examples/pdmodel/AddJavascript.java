@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public final class AddJavascript
         }
         else
         {
-            try (PDDocument document = PDDocument.load(new File(args[0])))
+            try (PDDocument document = PDFParser.load(new File(args[0])))
             {
                 PDActionJavaScript javascript = new PDActionJavaScript(
                     "app.alert( {cMsg: 'PDFBox rocks!', nIcon: 3, nType: 0, cTitle: 'PDFBox Javascript example' } );");

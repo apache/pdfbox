@@ -18,13 +18,15 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.pdfbox.pdmodel.PDDocument;
+
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.multipdf.LayerUtility;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -48,7 +50,7 @@ public final class SuperimposePage
         String sourcePath = args[0];
         String destPath = args[1];
         
-        try (PDDocument sourceDoc = PDDocument.load(new File(sourcePath)))
+        try (PDDocument sourceDoc = PDFParser.load(new File(sourcePath)))
         {
             int sourcePage = 1;
 

@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -46,7 +47,7 @@ public final class AddBorderToField
     public static void main(String[] args) throws IOException
     {
         // Load the PDF document created by SimpleForm.java
-        try (PDDocument document = PDDocument.load(new File("target/SimpleForm.pdf")))
+        try (PDDocument document = PDFParser.load(new File("target/SimpleForm.pdf")))
         {
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             
