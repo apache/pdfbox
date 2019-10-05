@@ -19,11 +19,11 @@ package org.apache.pdfbox.tools;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
  * Test suite for TextToPDF.

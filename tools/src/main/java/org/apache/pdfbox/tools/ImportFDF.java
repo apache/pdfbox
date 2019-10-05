@@ -19,7 +19,9 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -91,8 +93,8 @@ public class ImportFDF
         {
             ImportFDF importer = new ImportFDF();
 
-            try (PDDocument pdf = PDDocument.load( new File(args[0]) );
-                    FDFDocument fdf = FDFDocument.load( args[1] ))
+            try (PDDocument pdf = PDFParser.load(new File(args[0]));
+                    FDFDocument fdf = FDFParser.load(args[1]))
             {
                 importer.importFDF( pdf, fdf );
 

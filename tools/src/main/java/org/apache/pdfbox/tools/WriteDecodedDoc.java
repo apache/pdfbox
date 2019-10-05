@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -59,11 +60,12 @@ public class WriteDecodedDoc
     public void doIt(String in, String out, String password, boolean skipImages)
             throws IOException
     {
-        try (PDDocument doc = PDDocument.load(new File(in), password))
+        try (PDDocument doc = PDFParser.load(new File(in), password))
         {
             doc.setAllSecurityToBeRemoved(true);
             for (COSObject cosObject : doc.getDocument().getObjects())
             {
+                System.out.println(cosObject.getObjectNumber());
                 COSBase base = cosObject.getObject();
                 if (base instanceof COSStream)
                 {

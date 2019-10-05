@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
@@ -64,7 +65,7 @@ public class ExportFDF
         }
         else
         {
-            try (PDDocument pdf = PDDocument.load( new File(args[0]) ))
+            try (PDDocument pdf = PDFParser.load(new File(args[0])))
             {
                 PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
                 if( form == null )

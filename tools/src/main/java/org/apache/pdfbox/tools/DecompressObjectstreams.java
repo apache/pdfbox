@@ -20,8 +20,9 @@ import java.io.File;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.io.IOUtils;
 
@@ -79,7 +80,7 @@ public final class DecompressObjectstreams
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(new File(inputFilename));
+            doc = PDFParser.load(new File(inputFilename));
             for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM))
             {
                 COSStream stream = (COSStream)objStream.getObject();
