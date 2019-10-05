@@ -97,8 +97,7 @@ public class SignatureOptions implements Closeable
     {
         pdfSource = rar;
         PDFParser parser = new PDFParser(pdfSource);
-        parser.parse();
-        visualSignature = parser.getDocument();
+        visualSignature = parser.parse().getDocument();
     }
 
     /**

@@ -198,8 +198,7 @@ public class PDFParser extends COSParser
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
         RandomAccessRead source = new RandomAccessBuffer(input);
         PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
-        parser.parse();
-        return parser.getPDDocument();
+        return parser.parse();
     }
 
     private void init(ScratchFile scratchFile) throws IOException
@@ -340,8 +339,7 @@ public class PDFParser extends COSParser
         try
         {
             PDFParser parser = new PDFParser(raFile, password, keyStore, alias, scratchFile);
-            parser.parse();
-            return parser.getPDDocument();
+            return parser.parse();
         }
         catch (IOException ioe)
         {
@@ -462,29 +460,13 @@ public class PDFParser extends COSParser
         {
             RandomAccessRead source = scratchFile.createBuffer(input);
             PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
-            parser.parse();
-            return parser.getPDDocument();
+            return parser.parse();
         }
         catch (IOException ioe)
         {
             IOUtils.closeQuietly(scratchFile);
             throw ioe;
         }
-    }
-
-    /**
-     * This will get the PD document that was parsed. When you are done with this document you must call close() on it
-     * to release resources.
-     *
-     * @return The document at the PD layer.
-     *
-     * @throws IOException If there is an error getting the document.
-     */
-    public PDDocument getPDDocument() throws IOException
-    {
-        PDDocument doc = new PDDocument(getDocument(), source, getAccessPermission());
-        doc.setEncryptionDictionary(getEncryption());
-        return doc;
     }
 
     /**
@@ -516,19 +498,32 @@ public class PDFParser extends COSParser
     }
 
     /**
-     * This will parse the stream and populate the COSDocument object.  This will close
-     * the keystore stream when it is done parsing.
+     * This will parse the stream and populate the PDDocument object. This will close the keystore stream when it is
+     * done parsing. Lenient mode is active by default.
      *
      * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException If there is an error reading from the stream or corrupt data
-     * is found.
+     * @throws IOException If there is an error reading from the stream or corrupt data is found.
      */
-    public void parse() throws IOException
+    public PDDocument parse() throws IOException
     {
-         // set to false if all is processed
-         boolean exceptionOccurred = true; 
-         try
-         {
+        return parse(true);
+    }
+
+    /**
+     * This will parse the stream and populate the PDDocument object. This will close the keystore stream when it is
+     * done parsing.
+     *
+     * @param lenient activate leniency if set to true
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException If there is an error reading from the stream or corrupt data is found.
+     */
+    public PDDocument parse(boolean lenient) throws IOException
+    {
+        setLenient(lenient);
+        // set to false if all is processed
+        boolean exceptionOccurred = true;
+        try
+        {
             // PDFBOX-1922 read the version header and rewind
             if (!parsePDFHeader() && !parseFDFHeader())
             {
@@ -540,6 +535,9 @@ public class PDFParser extends COSParser
                 initialParse();
             }
             exceptionOccurred = false;
+            PDDocument pdDocument = new PDDocument(getDocument(), source, getAccessPermission());
+            pdDocument.setEncryptionDictionary(getEncryption());
+            return pdDocument;
         }
         finally
         {

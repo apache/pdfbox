@@ -30,7 +30,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -349,8 +348,7 @@ public class TestPDFParser
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
         PDFParser pdfParser = new PDFParser(source, scratchFile);
-        pdfParser.parse();
-        try (COSDocument doc = pdfParser.getDocument())
+        try (PDDocument doc = pdfParser.parse())
         {
             assertNotNull(doc);
         }
