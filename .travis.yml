@@ -25,6 +25,7 @@ jdk:
   - openjdk8
   - openjdk11
 
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq fonts-liberation
