@@ -36,7 +36,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
@@ -44,7 +43,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -103,9 +101,7 @@ public class PreflightParser extends PDFParser
      */
     public PreflightParser(File file) throws IOException
     {
-        // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(file));
-        this.setLenient(false);
     }
 
     /**
@@ -117,9 +113,7 @@ public class PreflightParser extends PDFParser
      */
     public PreflightParser(File file, ScratchFile scratch) throws IOException
     {
-        // TODO move file handling outside of the parser
         super(new RandomAccessBufferedFileInputStream(file), scratch);
-        this.setLenient(false);
     }
 
     /**
@@ -130,7 +124,6 @@ public class PreflightParser extends PDFParser
      */
     public PreflightParser(String filename) throws IOException
     {
-        // TODO move file handling outside of the parser
         this(new File(filename));
     }
 
@@ -143,37 +136,7 @@ public class PreflightParser extends PDFParser
      */
     public PreflightParser(String filename, ScratchFile scratch) throws IOException
     {
-        // TODO move file handling outside of the parser
         this(new File(filename), scratch);
-    }
-
-    /**
-     * Constructor. This one is slower than the file and the filename constructors, because
-     * a temporary file will be created.
-     *
-     * @param source
-     * @throws IOException if there is a reading error.
-     */
-    public PreflightParser(RandomAccessRead source) throws IOException
-    {
-        // TODO move file handling outside of the parser
-        super(source);
-        this.setLenient(false);
-    }
-
-    /**
-     * Constructor. This one is slower than the file and the filename constructors, because
-     * a temporary file will be created.
-     *
-     * @param source
-     * @param scratch
-     * @throws IOException if there is a reading error.
-     */
-    public PreflightParser(RandomAccessRead source, ScratchFile scratch) throws IOException
-    {
-        // TODO move file handling outside of the parser
-        super(source, scratch);
-        this.setLenient(false);
     }
 
     /**
@@ -208,9 +171,9 @@ public class PreflightParser extends PDFParser
     }
 
     @Override
-    public void parse() throws IOException
+    public PDDocument parse() throws IOException
     {
-        parse(Format.PDF_A1B);
+        return parse(Format.PDF_A1B);
     }
 
     /**
@@ -220,9 +183,9 @@ public class PreflightParser extends PDFParser
      *            format that the document should follow (default {@link Format#PDF_A1B})
      * @throws IOException
      */
-    public void parse(Format format) throws IOException
+    public PDDocument parse(Format format) throws IOException
     {
-        parse(format, null);
+        return parse(format, null);
     }
 
     /**
@@ -235,12 +198,14 @@ public class PreflightParser extends PDFParser
      *            the default configuration.
      * @throws IOException
      */
-    public void parse(Format format, PreflightConfiguration config) throws IOException
+    public PDDocument parse(Format format, PreflightConfiguration config) throws IOException
     {
+        PDDocument pdDocument = null;
         checkPdfHeader();
         try
         {
-            super.parse();
+            // disable leniency
+            pdDocument = super.parse(false);
         }
         catch (IOException e)
         {
@@ -255,6 +220,7 @@ public class PreflightParser extends PDFParser
         Format formatToUse = (format == null ? Format.PDF_A1B : format);
         createPdfADocument(formatToUse, config);
         createContext();
+        return pdDocument;
     }
 
     protected void createPdfADocument(Format format, PreflightConfiguration config) throws IOException
@@ -275,17 +241,10 @@ public class PreflightParser extends PDFParser
         ctx.setFileLen(this.fileLen);
     }
 
-    @Override
-    public PDDocument getPDDocument() throws IOException
-    {
-        preflightDocument.setResult(validationResult);
-        // Add XMP MetaData
-        return preflightDocument;
-    }
-
     public PreflightDocument getPreflightDocument() throws IOException
     {
-        return (PreflightDocument) getPDDocument();
+        preflightDocument.setResult(validationResult);
+        return preflightDocument;
     }
 
     // --------------------------------------------------------

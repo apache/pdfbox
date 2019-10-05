@@ -27,7 +27,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.junit.Assert;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.preflight.PreflightConstants;

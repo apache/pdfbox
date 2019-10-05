@@ -76,7 +76,7 @@ public class TestMetadataFiles
             {
                 PreflightParser parser = new PreflightParser(pdf);
                 parser.parse();
-                document = (PreflightDocument) parser.getPDDocument();
+                document = parser.getPreflightDocument();
                 document.validate();
                 result = document.getResult();
             }

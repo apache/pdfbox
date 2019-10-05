@@ -183,7 +183,7 @@ public class TestIsartorBavaria
             {
                 PreflightParser parser = new PreflightParser(file);
                 parser.parse();
-                document = (PreflightDocument) parser.getPDDocument();
+                document = (PreflightDocument) parser.getPreflightDocument();
                 // to speeds up tests, skip validation of page count is over the limit
                 if (document.getNumberOfPages() < 8191)
                 {

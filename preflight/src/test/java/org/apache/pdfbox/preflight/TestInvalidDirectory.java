@@ -58,7 +58,7 @@ public class TestInvalidDirectory
         {
             PreflightParser parser = new PreflightParser(target);
             parser.parse();
-            document = (PreflightDocument) parser.getPDDocument();
+            document = parser.getPreflightDocument();
             document.validate();
             result = document.getResult();
         }

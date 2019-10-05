@@ -32,8 +32,6 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
-import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
@@ -47,20 +45,20 @@ public class XmlResultParser
 
     public Element validate(File file) throws IOException
     {
-        return validate(new RandomAccessBufferedFileInputStream(file), file.getName());
+        return validate(file, file.getName());
     }
 
     public Element validate(Document rdocument, File file) throws IOException
     {
-        return validate(rdocument, new RandomAccessBufferedFileInputStream(file), file.getName());
+        return validate(rdocument, file, file.getName());
     }
 
-    private Element validate(RandomAccessRead source, String name) throws IOException
+    private Element validate(File file, String name) throws IOException
     {
         try
         {
             Document rdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            return validate(rdocument, source, name);
+            return validate(rdocument, file, name);
         }
         catch (ParserConfigurationException e)
         {
@@ -69,7 +67,7 @@ public class XmlResultParser
     }
 
 
-    private Element validate(Document rdocument, RandomAccessRead source, String name)
+    private Element validate(Document rdocument, File file, String name)
             throws IOException
     {
         String pdfType = null;
@@ -77,7 +75,7 @@ public class XmlResultParser
         long before = System.currentTimeMillis();
         try
         {
-            PreflightParser parser = new PreflightParser(source);
+            PreflightParser parser = new PreflightParser(file);
             try
             {
                 parser.parse();
