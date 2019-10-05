@@ -47,6 +47,7 @@ import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -93,7 +94,7 @@ public class TestCreateSignature
      * using externally signing scenario ({@code true}) or SignatureInterface ({@code false}).
      */
     @Parameterized.Parameters
-    public static Collection signingTypes()
+    public static Collection<Boolean> signingTypes()
     {
         return Arrays.asList(false, true);
     }
@@ -264,7 +265,7 @@ public class TestCreateSignature
 
         checkSignature(new File(filename), new File(filenameSigned1));
 
-        try (PDDocument doc1 = PDDocument.load(new File(filenameSigned1)))
+        try (PDDocument doc1 = PDFParser.load(new File(filenameSigned1)))
         {
             List<PDSignature> signatureDictionaries = doc1.getSignatureDictionaries();
             Assert.assertEquals(1, signatureDictionaries.size());
@@ -282,7 +283,7 @@ public class TestCreateSignature
 
         checkSignature(new File(filenameSigned1), new File(filenameSigned2));
 
-        try (PDDocument doc2 = PDDocument.load(new File(filenameSigned2)))
+        try (PDDocument doc2 = PDFParser.load(new File(filenameSigned2)))
         {
             List<PDSignature> signatureDictionaries = doc2.getSignatureDictionaries();
             Assert.assertEquals(2, signatureDictionaries.size());
@@ -299,12 +300,12 @@ public class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
         String origPageKey;
-        try (PDDocument document = PDDocument.load(origFile))
+        try (PDDocument document = PDFParser.load(origFile))
         {
             // get string representation of pages COSObject
             origPageKey = document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString();
         }
-        try (PDDocument document = PDDocument.load(signedFile))
+        try (PDDocument document = PDFParser.load(signedFile))
         {
             // PDFBOX-4261: check that object number stays the same 
             Assert.assertEquals(origPageKey, document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString());
@@ -345,7 +346,8 @@ public class TestCreateSignature
                 Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
                 SignerInformation signerInformation = signers.iterator().next();
                 @SuppressWarnings("unchecked")
-                Collection matches = certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
+                Collection<X509CertificateHolder> matches = certificatesStore
+                        .getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
                 X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
                 X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
                 Assert.assertEquals(certificate, certFromSignedData);
@@ -389,7 +391,7 @@ public class TestCreateSignature
         document.save(baos);
         document.close();
         
-        document = PDDocument.load(baos.toByteArray());
+        document = PDFParser.load(baos.toByteArray());
         // for stable digest
         document.setDocumentId(12345L);
         
@@ -424,7 +426,7 @@ public class TestCreateSignature
     @Test
     public void testSaveIncrementalAfterSign() throws Exception
     {
-        BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
+        BufferedImage oldImage, expectedImage1, actualImage1;
 
         CreateSimpleForm.main(new String[0]); // creates "target/SimpleForm.pdf"
 
@@ -438,12 +440,11 @@ public class TestCreateSignature
 
         final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf");
         final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf");
-        final String fileNameResaved2 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved2.pdf");
         signing.signDetached(new File("target/SimpleForm.pdf"), new File(outDir + fileNameSigned));
 
         checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameSigned));
         
-        try (PDDocument doc = PDDocument.load(new File(outDir, fileNameSigned)))
+        try (PDDocument doc = PDFParser.load(new File(outDir, fileNameSigned)))
         {
             oldImage = new PDFRenderer(doc).renderImage(0);
             
@@ -477,7 +478,7 @@ public class TestCreateSignature
             doc.saveIncremental(fileOutputStream);
         }
         checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameResaved1));
-        try (PDDocument doc = PDDocument.load(new File(outDir, fileNameResaved1)))
+        try (PDDocument doc = PDFParser.load(new File(outDir, fileNameResaved1)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             Assert.assertEquals("New Value 1", field.getValueAsString());
