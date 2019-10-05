@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.List;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.preflight.Format;
@@ -48,7 +49,7 @@ public abstract class AbstractTestAction
      */
     protected PreflightContext createContext() throws Exception
     {
-        PDDocument doc = PDDocument
+        PDDocument doc = PDFParser
                 .load(new File("src/test/resources/pdfa-with-annotations-square.pdf"));
         PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
         PreflightContext ctx = new PreflightContext();
