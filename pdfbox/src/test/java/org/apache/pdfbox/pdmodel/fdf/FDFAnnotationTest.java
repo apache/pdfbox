@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+
+import org.apache.pdfbox.pdfparser.FDFParser;
 import org.junit.Assert;
 
 import org.junit.Test;
@@ -38,7 +40,7 @@ public class FDFAnnotationTest
     public void loadXFDFAnnotations() throws IOException, URISyntaxException
     {
         File f = new File(FDFAnnotationTest.class.getResource("xfdf-test-document-annotations.xml").toURI());
-        try (FDFDocument fdfDoc = FDFDocument.loadXFDF(f))
+        try (FDFDocument fdfDoc = FDFParser.loadXFDF(f))
         {
             List<FDFAnnotation> fdfAnnots = fdfDoc.getCatalog().getFDF().getAnnotations();
             assertEquals(18, fdfAnnots.size());
