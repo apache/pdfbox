@@ -111,6 +111,7 @@ import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -1247,7 +1248,7 @@ public class PDFDebugger extends JFrame
             @Override
             PDDocument open() throws IOException
             {
-                return PDDocument.load(file, password);
+                return PDFParser.load(file, password);
             }
         };
         document = documentOpener.parse();
@@ -1285,7 +1286,7 @@ public class PDFDebugger extends JFrame
             @Override
             PDDocument open() throws IOException
             {
-                return PDDocument.load(new URL(urlString).openStream(), password);
+                return PDFParser.load(new URL(urlString).openStream(), password);
             }
         };
         document = documentOpener.parse();
