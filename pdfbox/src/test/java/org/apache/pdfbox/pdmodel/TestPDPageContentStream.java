@@ -21,6 +21,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 

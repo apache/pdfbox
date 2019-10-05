@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.junit.After;
 import org.junit.Before;
@@ -41,7 +42,7 @@ public class HandleDifferentDALevelsTest
     @Before
     public void setUp() throws IOException
     {
-        document = PDDocument.load(new File(IN_DIR, NAME_OF_PDF));
+        document = PDFParser.load(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();
         OUT_DIR.mkdirs();
         

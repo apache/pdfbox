@@ -28,6 +28,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
@@ -165,7 +166,7 @@ public class PDVisibleSignDesigner
 
     private void calculatePageSizeFromFile(String filename, int page) throws IOException
     {
-        try (PDDocument document = PDDocument.load(new File(filename)))
+        try (PDDocument document = PDFParser.load(new File(filename)))
         {
             // calculate height and width of document page
             calculatePageSize(document, page);
@@ -174,7 +175,7 @@ public class PDVisibleSignDesigner
 
     private void calculatePageSizeFromStream(InputStream documentStream, int page) throws IOException
     {
-        try (PDDocument document = PDDocument.load(documentStream))
+        try (PDDocument document = PDFParser.load(documentStream))
         {
             // calculate height and width of document page
             calculatePageSize(document, page);

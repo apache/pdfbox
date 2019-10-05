@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
@@ -178,7 +179,7 @@ public class PDInlineImageTest extends TestCase
         document.save(pdfFile);
         document.close();
 
-        document = PDDocument.load(pdfFile);
+        document = PDFParser.load(pdfFile);
         new PDFRenderer(document).renderImage(0);
         document.close();
 

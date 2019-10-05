@@ -25,6 +25,8 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.apache.pdfbox.pdfparser.FDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
@@ -65,7 +67,8 @@ public class TestFDF extends TestCase
             assertEquals("Test1", fields.get(0).getValue());
             assertEquals("Test2", fields.get(1).getValue());
             
-            try (PDDocument pdf = PDDocument.load(new File(TestFDF.class.getResource("/org/apache/pdfbox/pdfparser/SimpleForm2Fields.pdf").toURI())))
+            try (PDDocument pdf = PDFParser.load(new File(TestFDF.class
+                    .getResource("/org/apache/pdfbox/pdfparser/SimpleForm2Fields.pdf").toURI())))
             {
                 PDAcroForm acroForm = pdf.getDocumentCatalog().getAcroForm();
                 acroForm.importFDF(fdf);

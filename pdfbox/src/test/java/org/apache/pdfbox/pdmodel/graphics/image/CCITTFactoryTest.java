@@ -25,7 +25,9 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import junit.framework.TestCase;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -84,7 +86,7 @@ public class CCITTFactoryTest extends TestCase
         document.save(testResultsDir + "/singletiff.pdf");
         document.close();
         
-        document = PDDocument.load(new File(testResultsDir, "singletiff.pdf"));
+        document = PDFParser.load(new File(testResultsDir, "singletiff.pdf"));
         assertEquals(2, document.getNumberOfPages());
         
         document.close();  
@@ -133,7 +135,7 @@ public class CCITTFactoryTest extends TestCase
         document.save(testResultsDir + "/multitiff.pdf");
         document.close();
         
-        document = PDDocument.load(new File(testResultsDir, "multitiff.pdf"), (String)null);
+        document = PDFParser.load(new File(testResultsDir, "multitiff.pdf"), (String) null);
         assertEquals(countTiffImages, document.getNumberOfPages());
         
         document.close();  
@@ -159,7 +161,7 @@ public class CCITTFactoryTest extends TestCase
         document.save(testResultsDir + "/singletifffrombi.pdf");
         document.close();
         
-        document = PDDocument.load(new File(testResultsDir, "singletifffrombi.pdf"));
+        document = PDFParser.load(new File(testResultsDir, "singletifffrombi.pdf"));
         assertEquals(1, document.getNumberOfPages());
         
         document.close();  
@@ -193,7 +195,7 @@ public class CCITTFactoryTest extends TestCase
         document.save(testResultsDir + "/singletifffromchessbi.pdf");
         document.close();
 
-        document = PDDocument.load(new File(testResultsDir, "singletifffromchessbi.pdf"));
+        document = PDFParser.load(new File(testResultsDir, "singletifffromchessbi.pdf"));
         assertEquals(1, document.getNumberOfPages());
 
         document.close();

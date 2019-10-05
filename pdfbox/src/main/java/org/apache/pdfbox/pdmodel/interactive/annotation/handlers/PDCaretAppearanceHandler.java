@@ -19,11 +19,11 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCaret;
 import org.apache.pdfbox.pdmodel.PDAppearanceContentStream;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.Matrix;
 
 /**

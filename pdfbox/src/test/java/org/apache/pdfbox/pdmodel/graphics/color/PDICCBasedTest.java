@@ -15,9 +15,10 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.Test;
 
 /**

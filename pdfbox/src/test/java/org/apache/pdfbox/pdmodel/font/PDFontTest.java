@@ -27,6 +27,7 @@ import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
@@ -61,7 +62,7 @@ public class PDFontTest
     public void testPDFBox988() throws IOException, URISyntaxException
     {
         try (PDDocument doc = 
-                PDDocument.load(new File(PDFontTest.class.getResource("F001u_3_7j.pdf").toURI())))
+                PDFParser.load(new File(PDFontTest.class.getResource("F001u_3_7j.pdf").toURI())))
         {
             PDFRenderer renderer = new PDFRenderer(doc);
             renderer.renderImage(0);
@@ -101,7 +102,7 @@ public class PDFontTest
             doc.save(baos);
         }
 
-        try (PDDocument doc = PDDocument.load(baos.toByteArray()))
+        try (PDDocument doc = PDFParser.load(baos.toByteArray()))
         {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(doc);
@@ -166,7 +167,7 @@ public class PDFontTest
 
             doc.save(outputFile);
         }
-        try (PDDocument doc = PDDocument.load(outputFile))
+        try (PDDocument doc = PDFParser.load(outputFile))
         {
             PDType1Font font = (PDType1Font) doc.getPage(0).getResources().getFont(COSName.getPDFName("F1"));
             Assert.assertEquals(font.getEncoding(), WinAnsiEncoding.INSTANCE);
@@ -211,7 +212,7 @@ public class PDFontTest
 
     private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
     {
-        try (PDDocument doc = PDDocument.load(byteArray))
+        try (PDDocument doc = PDFParser.load(byteArray))
         {
             PDPage page2 = doc.getPage(0);
             

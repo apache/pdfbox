@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -295,7 +296,7 @@ public class TestFontEmbedding extends TestCase
 
     private String getUnicodeText(File file) throws IOException
     {
-        PDDocument document = PDDocument.load(file);
+        PDDocument document = PDFParser.load(file);
         PDFTextStripper stripper = new PDFTextStripper();
         return stripper.getText(document);
     }
