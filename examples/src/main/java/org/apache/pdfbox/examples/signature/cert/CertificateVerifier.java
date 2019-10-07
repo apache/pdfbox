@@ -286,7 +286,7 @@ public final class CertificateVerifier
             // AccessDescription
             ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
             ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
-            if (!oid.equals(X509ObjectIdentifiers.id_ad_caIssuers))
+            if (!X509ObjectIdentifiers.id_ad_caIssuers.equals(oid))
             {
                 continue;
             }
@@ -395,7 +395,7 @@ public final class CertificateVerifier
                 ASN1ObjectIdentifier oid = (ASN1ObjectIdentifier) obj.getObjectAt(0);
                 // accessLocation
                 ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
-                if (oid.equals(X509ObjectIdentifiers.id_ad_ocsp)
+                if (X509ObjectIdentifiers.id_ad_ocsp.equals(oid)
                         && location.getTagNo() == GeneralName.uniformResourceIdentifier)
                 {
                     ASN1OctetString url = (ASN1OctetString) location.getObject();
