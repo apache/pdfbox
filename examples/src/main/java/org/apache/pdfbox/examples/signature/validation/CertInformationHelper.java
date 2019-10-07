@@ -29,8 +29,6 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1TaggedObject;
-import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
@@ -116,15 +114,14 @@ public class CertInformationHelper
         {
             DLSequence obj = (DLSequence) objects.nextElement();
 
-            DERTaggedObject derTagged = (DERTaggedObject) obj.getObjectAt(0);
-            derTagged = (DERTaggedObject) derTagged.getObject();
-            derTagged = (DERTaggedObject) derTagged.getObject();
-            if (!(derTagged.getObject() instanceof DEROctetString))
+            ASN1TaggedObject taggedObject = (ASN1TaggedObject) obj.getObjectAt(0);
+            taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+            if (!(taggedObject.getObject() instanceof ASN1OctetString))
             {
                 // happens with SampleSignedPDFDocument.pdf
                 continue;
             }
-            ASN1OctetString uri = (ASN1OctetString) derTagged.getObject();
+            ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
             String url = new String(uri.getOctets());
             // TODO Check for: DistributionPoint ::= SEQUENCE (see RFC 2459), multiples can be possible.
 
