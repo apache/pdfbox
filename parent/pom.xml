@@ -212,6 +212,8 @@
                     <compilerArgs>
                         <arg>-verbose</arg>
                         <arg>-J-Xmx1g</arg>
+                        <arg>-J-XX:PermSize=256m</arg>
+                        <arg>-J-XX:MaxPermSize=512m</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>
