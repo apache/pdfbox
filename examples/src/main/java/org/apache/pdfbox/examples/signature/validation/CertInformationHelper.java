@@ -116,9 +116,10 @@ public class CertInformationHelper
 
             ASN1TaggedObject taggedObject = (ASN1TaggedObject) obj.getObjectAt(0);
             taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+            taggedObject = (ASN1TaggedObject) taggedObject.getObject(); // yes stmt is twice
             if (!(taggedObject.getObject() instanceof ASN1OctetString))
             {
-                // happens with SampleSignedPDFDocument.pdf
+                // happens with http://blogs.adobe.com/security/SampleSignedPDFDocument.pdf
                 continue;
             }
             ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
