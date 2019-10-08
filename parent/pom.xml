@@ -213,7 +213,6 @@
                         <arg>-verbose</arg>
                         <arg>-J-Xmx1g</arg>
                     </compilerArgs>
-                    <verbose>true</verbose>
                 </configuration>
             </plugin>
             <plugin>
