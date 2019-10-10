@@ -241,12 +241,20 @@ public class ScratchFile implements Closeable
                 // enlarge if we do not int overflow
                 if (pageCount + ENLARGE_PAGE_COUNT > pageCount)
                 {
-                    LOG.debug("file: " + file);
-                    LOG.debug("fileLen before: " + fileLen + ", raf length: " + raf.length() + ", file length: " + file.length());
+                    if (LOG.isDebugEnabled())
+                    {
+                        LOG.debug("file: " + file);
+                        LOG.debug("fileLen before: " + fileLen + ", raf length: " + raf.length() + 
+                                  ", file length: " + file.length());
+                    }
                     fileLen += ENLARGE_PAGE_COUNT * PAGE_SIZE;
 
                     raf.setLength(fileLen);
-                    LOG.debug("fileLen after1:  " + fileLen + ", raf length: " + raf.length() + ", file length: " + file.length());
+                    if (LOG.isDebugEnabled())
+                    {
+                        LOG.debug("fileLen after1: " + fileLen + ", raf length: " + raf.length() + 
+                                  ", file length: " + file.length());
+                    }
                     if (fileLen != raf.length() || fileLen != file.length())
                     {
                         // PDFBOX-4601 possible AWS lambda bug that setLength() doesn't throw
