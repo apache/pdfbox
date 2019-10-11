@@ -764,8 +764,8 @@ public class OS2WindowsMetricsTable extends TTFTable
     private int typoLineGap;
     private int winAscent;
     private int winDescent;
-    private long codePageRange1 = -1;
-    private long codePageRange2 = -1;
+    private long codePageRange1 = 0;
+    private long codePageRange2 = 0;
     private int sxHeight;
     private int sCapHeight;
     private int usDefaultChar;
