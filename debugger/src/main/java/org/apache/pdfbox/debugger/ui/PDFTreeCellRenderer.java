@@ -32,7 +32,6 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
@@ -128,9 +127,13 @@ public class PDFTreeCellRenderer extends DefaultTreeCellRenderer
         {
             result = Boolean.toString(((COSBoolean) nodeValue).getValue());
         }
-        else if (nodeValue instanceof COSNumber)
+        else if (nodeValue instanceof COSFloat)
         {
-            result = Float.toString(((COSNumber) nodeValue).floatValue());
+            result = Float.toString(((COSFloat) nodeValue).floatValue());
+        }
+        else if (nodeValue instanceof COSInteger)
+        {
+            result = Integer.toString(((COSInteger) nodeValue).intValue());
         }
         else if (nodeValue instanceof COSString)
         {
