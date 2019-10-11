@@ -177,6 +177,44 @@ public class OS2WindowsMetricsTable extends TTFTable
      */
     public static final short FSTYPE_BITMAP_ONLY = 0x0200;
 
+    private int version;
+    private short averageCharWidth;
+    private int weightClass;
+    private int widthClass;
+    private short fsType;
+    private short subscriptXSize;
+    private short subscriptYSize;
+    private short subscriptXOffset;
+    private short subscriptYOffset;
+    private short superscriptXSize;
+    private short superscriptYSize;
+    private short superscriptXOffset;
+    private short superscriptYOffset;
+    private short strikeoutSize;
+    private short strikeoutPosition;
+    private int familyClass;
+    private byte[] panose = new byte[10];
+    private long unicodeRange1;
+    private long unicodeRange2;
+    private long unicodeRange3;
+    private long unicodeRange4;
+    private String achVendId = "XXXX";
+    private int fsSelection;
+    private int firstCharIndex;
+    private int lastCharIndex;
+    private int typoAscender;
+    private int typoDescender;
+    private int typoLineGap;
+    private int winAscent;
+    private int winDescent;
+    private long codePageRange1 = 0;
+    private long codePageRange2 = 0;
+    private int sxHeight;
+    private int sCapHeight;
+    private int usDefaultChar;
+    private int usBreakChar;
+    private int usMaxContext;
+
     OS2WindowsMetricsTable(TrueTypeFont font)
     {
         super(font);
@@ -733,44 +771,6 @@ public class OS2WindowsMetricsTable extends TTFTable
     {
         return usMaxContext;
     }
-
-    private int version;
-    private short averageCharWidth;
-    private int weightClass;
-    private int widthClass;
-    private short fsType;
-    private short subscriptXSize;
-    private short subscriptYSize;
-    private short subscriptXOffset;
-    private short subscriptYOffset;
-    private short superscriptXSize;
-    private short superscriptYSize;
-    private short superscriptXOffset;
-    private short superscriptYOffset;
-    private short strikeoutSize;
-    private short strikeoutPosition;
-    private int familyClass;
-    private byte[] panose = new byte[10];
-    private long unicodeRange1;
-    private long unicodeRange2;
-    private long unicodeRange3;
-    private long unicodeRange4;
-    private String achVendId = "XXXX";
-    private int fsSelection;
-    private int firstCharIndex;
-    private int lastCharIndex;
-    private int typoAscender;
-    private int typoDescender;
-    private int typoLineGap;
-    private int winAscent;
-    private int winDescent;
-    private long codePageRange1 = 0;
-    private long codePageRange2 = 0;
-    private int sxHeight;
-    private int sCapHeight;
-    private int usDefaultChar;
-    private int usBreakChar;
-    private int usMaxContext;
 
     /**
      * A tag that identifies this table type.
