@@ -204,8 +204,12 @@ public class COSArrayList<E> implements List<E>
         int index = actual.indexOf( o );
         if( index >= 0 )
         {
-            actual.remove( index );
-            array.remove( index );
+            Object removed = actual.remove( index );
+
+            if (removed instanceof COSObjectable) {
+                COSBase cosBase = ((COSObjectable) removed).getCOSObject();
+                retval = array.remove(cosBase);
+            }
         }
         else
         {

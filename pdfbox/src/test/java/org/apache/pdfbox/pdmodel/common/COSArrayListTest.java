@@ -194,7 +194,7 @@ public class COSArrayListTest {
     }
 
     @Test
-    public void removeFromFilteredListByIndex() throws Exception
+    public void removeFromFilteredListByObject() throws Exception
     {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
@@ -216,18 +216,16 @@ public class COSArrayListTest {
 
         // remove aCircle annotation
         int positionToRemove = 1;
-        PDAnnotation removedAnnot = cosArrayList.remove(positionToRemove);
-        assertTrue("We should have removed the circle annotation", removedAnnot.getSubtype().equals(PDAnnotationSquareCircle.SUB_TYPE_CIRCLE));
+        PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
+        assertTrue("We should remove the circle annotation", toBeRemoved.getSubtype().equals(PDAnnotationSquareCircle.SUB_TYPE_CIRCLE));
+        cosArrayList.remove(toBeRemoved);
 
         assertTrue("List size shall be 2", cosArrayList.size() == 1);
         assertTrue("COSArray size shall be 2", underlyingCOSArray.size() == 2);
         assertTrue("Backed COSArray size shall be 2", cosArrayList.toList().size() == 2);
 
-        assertTrue("Removed annotation shall no longer appear in COSArrayList", cosArrayList.indexOf(removedAnnot) == -1);
-        
-        // TODO: fix removing an item if list is filtered and enable the following line in test
-        // assertTrue("Removed annotation shall no longer appear in underlying COSArray", underlyingCOSArray.indexOf(removedAnnot.getCOSObject()) == -1);
-        // assertTrue("Removed annotation shall no longer appear in backed COSArray", cosArrayList.toList().indexOf(removedAnnot.getCOSObject()) == -1);
-
+        assertTrue("Removed annotation shall no longer appear in COSArrayList", cosArrayList.indexOf(toBeRemoved) == -1);
+        assertTrue("Removed annotation shall no longer appear in underlying COSArray", underlyingCOSArray.indexOf(toBeRemoved.getCOSObject()) == -1);
+        assertTrue("Removed annotation shall no longer appear in backed COSArray", cosArrayList.toList().indexOf(toBeRemoved.getCOSObject()) == -1);
     }
 }
