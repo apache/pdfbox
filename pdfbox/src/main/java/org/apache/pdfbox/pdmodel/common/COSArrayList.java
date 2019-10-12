@@ -204,10 +204,10 @@ public class COSArrayList<E> implements List<E>
         int index = actual.indexOf( o );
         if( index >= 0 )
         {
-            Object removed = actual.remove( index );
+            retval = actual.remove( o );
 
-            if (removed instanceof COSObjectable) {
-                COSBase cosBase = ((COSObjectable) removed).getCOSObject();
+            if (o instanceof COSObjectable) {
+                COSBase cosBase = ((COSObjectable) o).getCOSObject();
                 retval = array.remove(cosBase);
             }
         }
@@ -607,8 +607,9 @@ public class COSArrayList<E> implements List<E>
     @Override
     public E remove(int index)
     {
-        array.remove( index );
-        return actual.remove( index );
+        E toBeRemoved = actual.get(index);
+        boolean result = remove(toBeRemoved);
+        return result ? toBeRemoved : null;
     }
 
     /**

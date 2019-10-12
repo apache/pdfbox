@@ -194,6 +194,43 @@ public class COSArrayListTest {
     }
 
     @Test
+    public void removeFromFilteredListByIndex() throws Exception
+    {
+        // retrieve all annotations from page but the link annotation
+        // which is 2nd in list - see above setup
+        AnnotationFilter annotsFilter = new AnnotationFilter()
+        {
+            @Override
+            public boolean accept(PDAnnotation annotation)
+            {
+                return !(annotation instanceof PDAnnotationLink);
+            }
+        };
+
+        COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
+        COSArray underlyingCOSArray = pdPage.getCOSObject().getCOSArray(COSName.ANNOTS);
+
+        assertTrue("Filtered COSArrayList size shall be 2", cosArrayList.size() == 2);
+        assertTrue("Underlying COSArray shall have 3 entries", underlyingCOSArray.size() == 3);
+        assertTrue("Backed COSArray shall have 3 entries", cosArrayList.toList().size() == 3);
+
+        // remove aCircle annotation
+        int positionToRemove = 1;
+        PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
+        assertTrue("We should remove the circle annotation", toBeRemoved.getSubtype().equals(PDAnnotationSquareCircle.SUB_TYPE_CIRCLE));
+        cosArrayList.remove(positionToRemove);
+
+        assertTrue("List size shall be 2", cosArrayList.size() == 1);
+        assertTrue("COSArray size shall be 2", underlyingCOSArray.size() == 2);
+        assertTrue("Backed COSArray size shall be 2", cosArrayList.toList().size() == 2);
+
+        assertTrue("Removed annotation shall no longer appear in COSArrayList", cosArrayList.indexOf(toBeRemoved) == -1);
+        assertTrue("Removed annotation shall no longer appear in underlying COSArray", underlyingCOSArray.indexOf(toBeRemoved.getCOSObject()) == -1);
+        assertTrue("Removed annotation shall no longer appear in backed COSArray", cosArrayList.toList().indexOf(toBeRemoved.getCOSObject()) == -1);
+    }
+    
+
+    @Test
     public void removeFromFilteredListByObject() throws Exception
     {
         // retrieve all annotations from page but the link annotation
