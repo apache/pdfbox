@@ -228,7 +228,7 @@ public final class LosslessFactory
      * @return the newly created PDImageXObject with the data compressed.
      * @throws IOException 
      */
-    private static PDImageXObject prepareImageXObject(PDDocument document, 
+    static PDImageXObject prepareImageXObject(PDDocument document,
             byte [] byteArray, int width, int height, int bitsPerComponent, 
             PDColorSpace initColorSpace) throws IOException
     {
