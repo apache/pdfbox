@@ -63,6 +63,38 @@ final class PNGConverter
 {
     private static final Log LOG = LogFactory.getLog(PNGConverter.class);
 
+    // Chunk Type definitions. The bytes in the comments are the bytes in the spec.
+    private static final int CHUNK_IHDR = 0x49484452; // IHDR: 73 72 68 82
+    private static final int CHUNK_IDAT = 0x49444154; // IDAT: 73 68 65 84
+    private static final int CHUNK_PLTE = 0x504C5445; // PLTE: 80 76 84 69
+    private static final int CHUNK_IEND = 0x49454E44; // IEND: 73 69 78 68
+    private static final int CHUNK_TRNS = 0x74524E53; // tRNS: 116 82 78 83
+    private static final int CHUNK_CHRM = 0x6348524D; // cHRM: 99 72 82 77
+    private static final int CHUNK_GAMA = 0x67414D41; // gAMA: 103 65 77 65
+    private static final int CHUNK_ICCP = 0x69434350; // iCCP: 105 67 67 80
+    private static final int CHUNK_SBIT = 0x73424954; // sBIT: 115 66 73 84
+    private static final int CHUNK_SRGB = 0x73524742; // sRGB: 115 82 71 66
+    private static final int CHUNK_TEXT = 0x74455874; // tEXt: 116 69 88 116
+    private static final int CHUNK_ZTXT = 0x7A545874; // zTXt: 122 84 88 116
+    private static final int CHUNK_ITXT = 0x69545874; // iTXt: 105 84 88 116
+    private static final int CHUNK_KBKG = 0x6B424B47; // kBKG: 107 66 75 71
+    private static final int CHUNK_HIST = 0x68495354; // hIST: 104 73 83 84
+    private static final int CHUNK_PHYS = 0x70485973; // pHYs: 112 72 89 115
+    private static final int CHUNK_SPLT = 0x73504C54; // sPLT: 115 80 76 84
+    private static final int CHUNK_TIME = 0x74494D45; // tIME: 116 73 77 69
+
+    // CRC Reference Implementation, see
+    // https://www.w3.org/TR/2003/REC-PNG-20031110/#D-CRCAppendix
+    // for details
+
+    /* Table of CRCs of all 8-bit messages. */
+    private static final int[] CRC_TABLE = new int[256];
+
+    static
+    {
+        makeCrcTable();
+    }
+
     private PNGConverter()
     {
     }
@@ -444,7 +476,7 @@ final class PNGConverter
     private static class MultipleInputStream extends InputStream
     {
 
-        List<InputStream> inputStreams = new ArrayList<InputStream>();
+        List<InputStream> inputStreams = new ArrayList<>();
         int currentStreamIdx;
         InputStream currentStream;
 
@@ -574,7 +606,7 @@ final class PNGConverter
         }
 
         // Check the IDATs
-        if (state.IDATs.size() == 0)
+        if (state.IDATs.isEmpty())
         {
             LOG.error("No IDAT chunks.");
             return false;
@@ -668,7 +700,7 @@ final class PNGConverter
      */
     static final class PNGConverterState
     {
-        List<Chunk> IDATs = new ArrayList<Chunk>();
+        List<Chunk> IDATs = new ArrayList<>();
         @SuppressWarnings("SpellCheckingInspection") Chunk IHDR;
         @SuppressWarnings("SpellCheckingInspection") Chunk PLTE;
         Chunk iCCP;
@@ -697,26 +729,6 @@ final class PNGConverter
         int v = readInt(bytes, offset);
         return v / 100000f;
     }
-
-    // Chunk Type definitions. The bytes in the comments are the bytes in the spec.
-    private static final int CHUNK_IHDR = 0x49484452; // IHDR: 73 72 68 82
-    private static final int CHUNK_IDAT = 0x49444154; // IDAT: 73 68 65 84
-    private static final int CHUNK_PLTE = 0x504C5445; // PLTE: 80 76 84 69
-    private static final int CHUNK_IEND = 0x49454E44; // IEND: 73 69 78 68
-    private static final int CHUNK_TRNS = 0x74524E53; // tRNS: 116 82 78 83
-    private static final int CHUNK_CHRM = 0x6348524D; // cHRM: 99 72 82 77
-    private static final int CHUNK_GAMA = 0x67414D41; // gAMA: 103 65 77 65
-    private static final int CHUNK_ICCP = 0x69434350; // iCCP: 105 67 67 80
-    private static final int CHUNK_SBIT = 0x73424954; // sBIT: 115 66 73 84
-    private static final int CHUNK_SRGB = 0x73524742; // sRGB: 115 82 71 66
-    private static final int CHUNK_TEXT = 0x74455874; // tEXt: 116 69 88 116
-    private static final int CHUNK_ZTXT = 0x7A545874; // zTXt: 122 84 88 116
-    private static final int CHUNK_ITXT = 0x69545874; // iTXt: 105 84 88 116
-    private static final int CHUNK_KBKG = 0x6B424B47; // kBKG: 107 66 75 71
-    private static final int CHUNK_HIST = 0x68495354; // hIST: 104 73 83 84
-    private static final int CHUNK_PHYS = 0x70485973; // pHYs: 112 72 89 115
-    private static final int CHUNK_SPLT = 0x73504C54; // sPLT: 115 80 76 84
-    private static final int CHUNK_TIME = 0x74494D45; // tIME: 116 73 77 69
 
     /**
      * Parse the PNG structure into the PNGConverterState. If we can't handle
@@ -850,18 +862,6 @@ final class PNGConverter
         }
         LOG.error("No IEND chunk found.");
         return null;
-    }
-
-    // CRC Reference Implementation, see
-    // https://www.w3.org/TR/2003/REC-PNG-20031110/#D-CRCAppendix
-    // for details
-
-    /* Table of CRCs of all 8-bit messages. */
-    private static final int[] CRC_TABLE = new int[256];
-
-    static
-    {
-        makeCrcTable();
     }
 
     /* Make the table for a fast CRC. */
