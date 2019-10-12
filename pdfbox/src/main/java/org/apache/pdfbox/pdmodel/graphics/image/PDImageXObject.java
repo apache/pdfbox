@@ -295,7 +295,9 @@ public final class PDImageXObject extends PDXObject implements PDImage
      * This is a convenience method that calls {@link JPEGFactory#createFromByteArray},
      * {@link CCITTFactory#createFromFile} or {@link ImageIO#read} combined with
      * {@link LosslessFactory#createFromImage}. (The later can also be used to create a
-     * PDImageXObject from a BufferedImage).
+     * PDImageXObject from a BufferedImage). Since 2.0.18, this call can also create an image
+     * directly from a PNG file without decoding it, which is faster. However the result size
+     * depends on the compression skill of the software that created the PNG file.
      *
      * @param byteArray bytes from an image file.
      * @param document the document that shall use this PDImageXObject.
@@ -324,6 +326,15 @@ public final class PDImageXObject extends PDXObject implements PDImage
         if (fileType.equals(FileType.JPEG))
         {
             return JPEGFactory.createFromByteArray(document, byteArray);
+        }
+        if (fileType.equals(FileType.PNG))
+        {
+            // Try to directly convert the image without recoding it.
+            PDImageXObject image = PNGConverter.convertPNGImage(document, byteArray);
+            if (image != null)
+            {
+                return image;
+            }
         }
         if (fileType.equals(FileType.TIFF))
         {
@@ -726,6 +737,8 @@ public final class PDImageXObject extends PDXObject implements PDImage
     public void setColorSpace(PDColorSpace cs)
     {
         getCOSObject().setItem(COSName.COLORSPACE, cs != null ? cs.getCOSObject() : null);
+        colorSpace = null;
+        cachedImage = null;
     }
 
     @Override
