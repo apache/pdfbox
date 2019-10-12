@@ -46,6 +46,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     // A
     public static final COSName A = new COSName("A");
     public static final COSName AA = new COSName("AA");
+    public static final COSName ABSOLUTE_COLORIMETRIC = new COSName("AbsoluteColorimetric");
     public static final COSName AC = new COSName("AC");
     public static final COSName ACRO_FORM = new COSName("AcroForm");
     public static final COSName ACTUAL_TEXT = new COSName("ActualText");
@@ -302,6 +303,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName INDEXED = new COSName("Indexed");
     public static final COSName INFO = new COSName("Info");
     public static final COSName INKLIST = new COSName("InkList");
+    public static final COSName INTENT = new COSName("Intent");
     public static final COSName INTERPOLATE = new COSName("Interpolate");
     public static final COSName IT = new COSName("IT");
     public static final COSName ITALIC_ANGLE = new COSName("ItalicAngle");
@@ -437,6 +439,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName PATTERN_TYPE = new COSName("PatternType");
     public static final COSName PDF_DOC_ENCODING = new COSName("PDFDocEncoding");
     public static final COSName PERMS = new COSName("Perms");
+    public static final COSName PERCEPTUAL = new COSName("Perceptual");
     public static final COSName PG = new COSName("Pg");
     public static final COSName PRE_RELEASE = new COSName("PreRelease");
     public static final COSName PREDICTOR = new COSName("Predictor");
@@ -461,6 +464,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName RD = new COSName("RD");
     public static final COSName REASON = new COSName("Reason");
     public static final COSName REASONS = new COSName("Reasons");
+    public static final COSName RELATIVE_COLORIMETRIC = new COSName("RelativeColorimetric");
     public static final COSName REPEAT = new COSName("Repeat");
     public static final COSName RECIPIENTS = new COSName("Recipients");
     public static final COSName RECT = new COSName("Rect");
