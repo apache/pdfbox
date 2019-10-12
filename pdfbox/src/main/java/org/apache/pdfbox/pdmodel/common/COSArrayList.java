@@ -608,8 +608,8 @@ public class COSArrayList<E> implements List<E>
     public E remove(int index)
     {
         E toBeRemoved = actual.get(index);
-        boolean result = remove(toBeRemoved);
-        return result ? toBeRemoved : null;
+        remove(toBeRemoved);
+        return toBeRemoved;
     }
 
     /**
