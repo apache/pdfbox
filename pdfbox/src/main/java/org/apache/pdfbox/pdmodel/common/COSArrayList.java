@@ -627,8 +627,7 @@ public class COSArrayList<E> implements List<E>
     @Override
     public int lastIndexOf(Object o)
     {
-        return actual.indexOf( o );
-
+        return actual.lastIndexOf( o );
     }
 
     /**
