@@ -146,12 +146,13 @@ public class TestCMapParser extends TestCase
 
         assertNotNull("Failed to parse malformed CMap file", cMap);
 
-        byte[] bytes1 = { 0, 1 };
-        assertEquals("bytes 00 01 from bfrange <0001> <0009> <0041>", "A",
-                cMap.toUnicode(toInt(bytes1, bytes1.length)));
+        assertEquals("bytes 00 01 from bfrange <0001> <0009> <0030>", "0", cMap.toUnicode(0x001));
 
-        byte[] bytes2 = { 2, 00 };
-        assertNull(cMap.toUnicode(toInt(bytes2, bytes2.length)));
+        assertEquals("bytes 02 32 from bfrange <0232> <0432> <0041>", "A", cMap.toUnicode(0x232));
+
+        // check border values
+        assertNotNull(cMap.toUnicode(0x2EF));
+        assertNull(cMap.toUnicode(0x2F0));
 
     }
 
