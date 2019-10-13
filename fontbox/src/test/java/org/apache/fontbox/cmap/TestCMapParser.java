@@ -151,8 +151,8 @@ public class TestCMapParser extends TestCase
         assertEquals("bytes 02 32 from bfrange <0232> <0432> <0041>", "A", cMap.toUnicode(0x232));
 
         // check border values
-        assertNotNull(cMap.toUnicode(0x2EF));
-        assertNull(cMap.toUnicode(0x2F0));
+        assertNotNull(cMap.toUnicode(0x2F0));
+        assertNull(cMap.toUnicode(0x2F1));
 
     }
 
