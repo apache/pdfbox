@@ -668,10 +668,22 @@ public class COSArrayList<E> implements List<E>
     }
     
     /**
-     * This will return then underlying COSArray.
+     * This will return the underlying COSArray.
      * 
      * @return the COSArray
      */
+    public COSArray getCOSArray() 
+    {
+        return array;
+    }
+
+    /**
+     * This will return the underlying COSArray.
+     * 
+     * @deprecated use {@link #getCOSArray()} instead.
+     * @return the COSArray
+     */
+    @Deprecated
     public COSArray toList() 
     {
         return array;
