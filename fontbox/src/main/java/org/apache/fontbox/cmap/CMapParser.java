@@ -388,8 +388,8 @@ public class CMapParser
                 if (tokenBytes.length > 0)
                 {
                     // PDFBOX-4661: avoid overflow of the last byte, all following values are undefined
-                    int values = Math.min(end - start + 1,
-                            255 - (tokenBytes[tokenBytes.length - 1] & 0xFF));
+                    int values = Math.min(end - start,
+                            255 - (tokenBytes[tokenBytes.length - 1] & 0xFF)) + 1;
                     addMappingFrombfrange(result, startCode, values, tokenBytes);
                 }
             }
