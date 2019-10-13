@@ -377,18 +377,14 @@ public class CMapParser
             // PDFBOX-3807: ignore null
             else if (nextToken instanceof byte[])
             {
-                // the range can not represent more that 255 values
-                // PDFBOX-4661: be more lenient and support 256 values as well
-                if ((end - start) > 256)
-                {
-                    // PDFBOX-4550: likely corrupt stream
-                    break;
-                }
                 byte[] tokenBytes = (byte[]) nextToken;
                 // PDFBOX-3450: ignore <>
                 if (tokenBytes.length > 0)
                 {
-                    addMappingFrombfrange(result, startCode, end - start + 1, tokenBytes);
+                    // PDFBOX-4661: avoid overflow of the last byte, all following values are undefined
+                    int values = Math.min(end - start + 1,
+                            255 - (tokenBytes[tokenBytes.length - 1] & 0xFF));
+                    addMappingFrombfrange(result, startCode, values, tokenBytes);
                 }
             }
         }
