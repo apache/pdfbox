@@ -202,11 +202,17 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * Create a PDImageXObject from an image file. The file format is determined by the file name
-     * suffix. The following suffixes are supported: jpg, jpeg, tif, tiff, gif, bmp and png. This is
+     * suffix. The following suffixes are supported: JPG, JPEG, TIF, TIFF, GIF, BMP and PNG. This is
      * a convenience method that calls {@link JPEGFactory#createFromStream},
      * {@link CCITTFactory#createFromFile} or {@link ImageIO#read} combined with
      * {@link LosslessFactory#createFromImage}. (The later can also be used to create a
-     * PDImageXObject from a BufferedImage).
+     * PDImageXObject from a BufferedImage). Starting with 2.0.18, this call will create an image
+     * directly from a PNG file without decoding it (when possible), which is faster. However the
+     * result size depends on the compression skill of the software that created the PNG file. If
+     * file size or bandwidth are important to you or to your clients, then create your PNG files
+     * with a tool that has implemented the
+     * <a href="https://blog.codinghorror.com/zopfli-optimization-literally-free-bandwidth/">Zopfli
+     * algorithm</a>, or use the two-step process mentioned above.
      *
      * @param file the image file.
      * @param doc the document that shall use this PDImageXObject.
@@ -251,11 +257,17 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * Create a PDImageXObject from an image file. The file format is determined by the file
-     * content. The following file types are supported: jpg, jpeg, tif, tiff, gif, bmp and png. This
+     * content. The following file types are supported: JPG, JPEG, TIF, TIFF, GIF, BMP and PNG. This
      * is a convenience method that calls {@link JPEGFactory#createFromStream},
      * {@link CCITTFactory#createFromFile} or {@link ImageIO#read} combined with
      * {@link LosslessFactory#createFromImage}. (The later can also be used to create a
-     * PDImageXObject from a BufferedImage).
+     * PDImageXObject from a BufferedImage). Starting with 2.0.18, this call will create an image
+     * directly from a png file without decoding it (when possible), which is faster. However the
+     * result size depends on the compression skill of the software that created the PNG file. If
+     * file size or bandwidth are important to you or to your clients, then create your PNG files
+     * with a tool that has implemented the
+     * <a href="https://blog.codinghorror.com/zopfli-optimization-literally-free-bandwidth/">Zopfli
+     * algorithm</a>, or use the two-step process mentioned above.
      *
      * @param file the image file.
      * @param doc the document that shall use this PDImageXObject.
@@ -321,13 +333,17 @@ public final class PDImageXObject extends PDXObject implements PDImage
 
     /**
      * Create a PDImageXObject from bytes of an image file. The file format is determined by the
-     * file content. The following file types are supported: jpg, jpeg, tif, tiff, gif, bmp and png.
+     * file content. The following file types are supported: JPG, JPEG, TIF, TIFF, GIF, BMP and PNG.
      * This is a convenience method that calls {@link JPEGFactory#createFromByteArray},
      * {@link CCITTFactory#createFromFile} or {@link ImageIO#read} combined with
      * {@link LosslessFactory#createFromImage}. (The later can also be used to create a
-     * PDImageXObject from a BufferedImage). Since 2.0.18, this call can also create an image
-     * directly from a PNG file without decoding it, which is faster. However the result size
-     * depends on the compression skill of the software that created the PNG file.
+     * PDImageXObject from a BufferedImage). Starting with 2.0.18, this call will create an image
+     * directly from a PNG file without decoding it (when possible), which is faster. However the
+     * result size depends on the compression skill of the software that created the PNG file. If
+     * file size or bandwidth are important to you or to your clients, then create your PNG files
+     * with a tool that has implemented the
+     * <a href="https://blog.codinghorror.com/zopfli-optimization-literally-free-bandwidth/">Zopfli
+     * algorithm</a>, or use the two-step process mentioned above.
      *
      * @param byteArray bytes from an image file.
      * @param document the document that shall use this PDImageXObject.
