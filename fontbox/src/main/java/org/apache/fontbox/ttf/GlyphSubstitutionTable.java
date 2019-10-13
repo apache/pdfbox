@@ -412,7 +412,10 @@ public class GlyphSubstitutionTable extends TTFTable
 
         int[] componentGlyphIDs = new int[componentCount];
 
-        componentGlyphIDs[0] = coverageGlyphId;
+        if (componentCount > 0)
+        {
+            componentGlyphIDs[0] = coverageGlyphId;
+        }
 
         for (int i = 1; i <= componentCount - 1; i++)
         {
