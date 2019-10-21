@@ -255,7 +255,7 @@ public class ScratchFile implements Closeable
                         LOG.debug("fileLen after1: " + fileLen + ", raf length: " + raf.length() + 
                                   ", file length: " + file.length());
                     }
-                    if (fileLen != raf.length() || fileLen != file.length())
+                    if (fileLen != raf.length())
                     {
                         // PDFBOX-4601 possible AWS lambda bug that setLength() doesn't throw
                         // if not enough space
