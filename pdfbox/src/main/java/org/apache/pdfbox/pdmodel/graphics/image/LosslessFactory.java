@@ -79,8 +79,9 @@ public final class LosslessFactory
     public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
             throws IOException
     {
-        if ((image.getType() == BufferedImage.TYPE_BYTE_GRAY && image.getColorModel().getPixelSize() <= 8)
-                || (image.getType() == BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() == 1))
+        if (image.getTransparency() == BufferedImage.OPAQUE &&
+                ((image.getType() == BufferedImage.TYPE_BYTE_GRAY && image.getColorModel().getPixelSize() <= 8)
+                || (image.getType() == BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() == 1)))
         {
             return createFromGrayImage(image, document);
         }
