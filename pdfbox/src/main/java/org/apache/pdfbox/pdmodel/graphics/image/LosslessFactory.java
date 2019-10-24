@@ -111,7 +111,7 @@ public final class LosslessFactory
             }
         }
 
-        // Fallback: We export the image as 8-bit sRGB and might loose color information
+        // Fallback: We export the image as 8-bit sRGB and might lose color information
         return createFromRGBImage(image, document);
     }
 
