@@ -266,6 +266,36 @@ public class LosslessFactoryTest extends TestCase
     }
 
     /**
+     * Tests LosslessFactoryTest#createFromImage(PDDocument document,
+     * BufferedImage image) with a transparent 1 bit GIF. (PDFBOX-4672)
+     * This ends up as RGB because the 1 bit fast path doesn't support transparency.
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromTransparent1BitGIF() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("gif-1bit-transparent.gif"));
+
+        assertEquals(Transparency.BITMASK, image.getColorModel().getTransparency());
+        assertEquals(BufferedImage.TYPE_BYTE_BINARY, image.getType());
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, image);
+
+        int w = image.getWidth();
+        int h = image.getHeight();
+        validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(image, ximage.getImage());
+        checkIdentRGB(image, ximage.getOpaqueImage());
+
+        assertNotNull(ximage.getSoftMask());
+        validate(ximage.getSoftMask(), 1, w, h, "png", PDDeviceGray.INSTANCE.getName());
+        assertEquals(2, colorCount(ximage.getSoftMask().getImage()));
+
+        doWritePDF(document, ximage, testResultsDir, "gif-1bit-transparent.pdf");
+    }
+
+    /**
      * Test file that had a predictor encoding bug in PDFBOX-4184.
      *
      * @throws java.io.IOException
