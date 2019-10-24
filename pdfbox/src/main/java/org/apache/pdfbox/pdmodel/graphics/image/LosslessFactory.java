@@ -79,45 +79,59 @@ public final class LosslessFactory
     public static PDImageXObject createFromImage(PDDocument document, BufferedImage image)
             throws IOException
     {
-        if (image.getTransparency() == BufferedImage.OPAQUE &&
-                ((image.getType() == BufferedImage.TYPE_BYTE_GRAY && image.getColorModel().getPixelSize() <= 8)
-                || (image.getType() == BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() == 1)))
+        if (isGrayImage(image))
         {
             return createFromGrayImage(image, document);
         }
-        else
-        {
-            // We try to encode the image with predictor
-            if (usePredictorEncoder)
-            {
-                PDImageXObject pdImageXObject = new PredictorEncoder(document, image).encode();
-                if (pdImageXObject != null)
-                {
-                    if (pdImageXObject.getColorSpace() == PDDeviceRGB.INSTANCE &&
-                        pdImageXObject.getBitsPerComponent() < 16 &&
-                        image.getWidth() * image.getHeight() <= 50 * 50)
-                    {
-                        // also create classic compressed image, compare sizes
-                        PDImageXObject pdImageXObjectClassic = createFromRGBImage(image, document);
-                        if (pdImageXObjectClassic.getCOSObject().getLength() < 
-                            pdImageXObject.getCOSObject().getLength())
-                        {
-                            pdImageXObject.getCOSObject().close();
-                            return pdImageXObjectClassic;
-                        }
-                        else
-                        {
-                            pdImageXObjectClassic.getCOSObject().close();
-                        }
-                    }
-                    return pdImageXObject;
-                }
-            }
 
-            // Fallback: We export the image as 8-bit sRGB and might loose color information
-            return createFromRGBImage(image, document);
+        // We try to encode the image with predictor
+        if (usePredictorEncoder)
+        {
+            PDImageXObject pdImageXObject = new PredictorEncoder(document, image).encode();
+            if (pdImageXObject != null)
+            {
+                if (pdImageXObject.getColorSpace() == PDDeviceRGB.INSTANCE &&
+                    pdImageXObject.getBitsPerComponent() < 16 &&
+                    image.getWidth() * image.getHeight() <= 50 * 50)
+                {
+                    // also create classic compressed image, compare sizes
+                    PDImageXObject pdImageXObjectClassic = createFromRGBImage(image, document);
+                    if (pdImageXObjectClassic.getCOSObject().getLength() < 
+                        pdImageXObject.getCOSObject().getLength())
+                    {
+                        pdImageXObject.getCOSObject().close();
+                        return pdImageXObjectClassic;
+                    }
+                    else
+                    {
+                        pdImageXObjectClassic.getCOSObject().close();
+                    }
+                }
+                return pdImageXObject;
+            }
         }
+
+        // Fallback: We export the image as 8-bit sRGB and might loose color information
+        return createFromRGBImage(image, document);
     }
+
+    private static boolean isGrayImage(BufferedImage image)
+    {
+        if (image.getTransparency() != BufferedImage.OPAQUE)
+        {
+            return false;
+        }
+        if (image.getType() == BufferedImage.TYPE_BYTE_GRAY && image.getColorModel().getPixelSize() <= 8)
+        {
+            return true;
+        }
+        if (image.getType() == BufferedImage.TYPE_BYTE_BINARY && image.getColorModel().getPixelSize() == 1)
+        {
+            return true;
+        }
+        return false;
+    }
+
 
     // grayscale images need one color per sample
     private static PDImageXObject createFromGrayImage(BufferedImage image, PDDocument document)
