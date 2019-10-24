@@ -472,7 +472,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://ipafont.ipa.go.jp/old/ipafont/ipag00303.php</url>
+                            <url>https://ipafont.ipa.go.jp/IPAfont/ipag00303.zip</url>
                             <outputDirectory>${project.build.directory}/fonts</outputDirectory>
                             <outputFileName>ipag00303.zip</outputFileName>
                             <unpack>true</unpack>
@@ -486,7 +486,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <url>https://ipafont.ipa.go.jp/old/ipafont/ipagp00303.php</url>
+                            <url>https://ipafont.ipa.go.jp/IPAfont/ipagp00303.zip</url>
                             <outputDirectory>${project.build.directory}/fonts</outputDirectory>
                             <outputFileName>ipagp00303.zip</outputFileName>
                             <unpack>true</unpack>
