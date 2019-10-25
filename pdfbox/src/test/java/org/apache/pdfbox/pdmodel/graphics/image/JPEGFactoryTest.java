@@ -216,6 +216,49 @@ public class JPEGFactoryTest extends TestCase
         doWritePDF(document, ximage, testResultsDir, "jpeg-4bargb.pdf");
     }
 
+    /**
+     * Tests USHORT_555_RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
+     * image), see also PDFBOX-4674.
+     * @throws java.io.IOException
+     */
+    public void testCreateFromImageUSHORT_555_RGB() throws IOException
+    {
+        // workaround Open JDK bug
+        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
+        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
+                && (System.getProperty("java.specification.version").equals("1.6")
+                || System.getProperty("java.specification.version").equals("1.7")
+                || System.getProperty("java.specification.version").equals("1.8")))
+        {
+            return;
+        }
+
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
+
+        // create an USHORT_555_RGB image
+        int width = image.getWidth();
+        int height = image.getHeight();
+        BufferedImage rgbImage = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_555_RGB);
+        Graphics ag = rgbImage.getGraphics();
+        ag.drawImage(image, 0, 0, null);
+        ag.dispose();
+
+        for (int x = 0; x < rgbImage.getWidth(); ++x)
+        {
+            for (int y = 0; y < rgbImage.getHeight(); ++y)
+            {
+                rgbImage.setRGB(x, y, (rgbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+            }
+        }
+
+        PDImageXObject ximage = JPEGFactory.createFromImage(document, rgbImage);
+        validate(ximage, 8, width, height, "jpg", PDDeviceRGB.INSTANCE.getName());
+        assertNull(ximage.getSoftMask());
+
+        doWritePDF(document, ximage, testResultsDir, "jpeg-ushort555rgb.pdf");
+    }
+
     // check whether it is possible to extract the jpeg stream exactly 
     // as it was passed to createFromStream
     private void checkJpegStream(File testResultsDir, String filename, InputStream resourceStream)
