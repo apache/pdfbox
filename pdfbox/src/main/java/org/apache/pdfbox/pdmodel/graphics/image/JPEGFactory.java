@@ -269,7 +269,7 @@ public final class JPEGFactory
         
         PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
                 COSName.DCT_DECODE, awtColorImage.getWidth(), awtColorImage.getHeight(), 
-                awtColorImage.getColorModel().getComponentSize(0),
+                8,
                 getColorSpaceFromAWT(awtColorImage));
 
         // alpha -> soft mask
