@@ -236,6 +236,45 @@ public class LosslessFactoryTest extends TestCase
     }
 
     /**
+     * Tests USHORT_555_RGB LosslessFactoryTest#createFromImage(PDDocument document, BufferedImage
+     * image). This should create an 8-bit-image; prevent the problems from PDFBOX-4674 in case
+     * image creation is modified in the future.
+     *
+     * @throws java.io.IOException
+     */
+    public void testCreateLosslessFromImageUSHORT_555_RGB() throws IOException
+    {
+        PDDocument document = new PDDocument();
+        BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));
+
+        // create an USHORT_555_RGB image
+        int w = image.getWidth();
+        int h = image.getHeight();
+        BufferedImage rgbImage = new BufferedImage(w, h, BufferedImage.TYPE_USHORT_555_RGB);
+        Graphics ag = rgbImage.getGraphics();
+        ag.drawImage(image, 0, 0, null);
+        ag.dispose();
+
+        for (int x = 0; x < rgbImage.getWidth(); ++x)
+        {
+            for (int y = 0; y < rgbImage.getHeight(); ++y)
+            {
+                rgbImage.setRGB(x, y, (rgbImage.getRGB(x, y) & 0xFFFFFF) | ((y / 10 * 10) << 24));
+            }
+        }
+
+        PDImageXObject ximage = LosslessFactory.createFromImage(document, rgbImage);
+
+        validate(ximage, 8, w, h, "png", PDDeviceRGB.INSTANCE.getName());
+        checkIdent(rgbImage, ximage.getImage());
+        checkIdentRGB(rgbImage, ximage.getOpaqueImage());
+
+        assertNull(ximage.getSoftMask());
+
+        doWritePDF(document, ximage, testResultsDir, "ushort555rgb.pdf");
+    }
+
+    /**
      * Tests LosslessFactoryTest#createFromImage(PDDocument document,
      * BufferedImage image) with transparent GIF
      *
