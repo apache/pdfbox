@@ -100,7 +100,7 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return parameters;
     }
