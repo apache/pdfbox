@@ -189,5 +189,6 @@ public interface PDImage extends COSObjectable
      *
      * @return The cos object that matches this image object.
      */
+    @Override
     COSDictionary getCOSObject();
 }
