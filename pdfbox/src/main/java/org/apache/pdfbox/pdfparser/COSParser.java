@@ -616,7 +616,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @throws IOException If an IO error occurs.
      */
-    protected COSBase parseObjectDynamically(long objNr, int objGenNr,
+    protected synchronized COSBase parseObjectDynamically(long objNr, int objGenNr,
             boolean requireExistingNotCompressedObj) throws IOException
     {
         // ---- create object key and get object (container) from pool
