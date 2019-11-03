@@ -18,6 +18,9 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This class represents a PDF object.
  *
@@ -31,6 +34,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private int generationNumber;
     private boolean needToBeUpdated;
     private ICOSParser parser;
+
+    private static final Log LOG = LogFactory.getLog(COSObject.class);
 
     /**
      * Constructor.
@@ -101,16 +106,21 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSBase getObject()
     {
-        if (baseObject == null || baseObject instanceof COSNull)
+        if ((baseObject == null || baseObject instanceof COSNull) && parser != null)
         {
-            if (parser != null)
+            try
             {
-                boolean returnValue = parser.dereferenceCOSObject(this);
-                if (!returnValue)
+                if (!parser.dereferenceCOSObject(this))
                 {
                     // remove parser to avoid endless recursions
                     parser = null;
                 }
+            }
+            catch (IOException e)
+            {
+                // remove parser to avoid endless recursions
+                parser = null;
+                LOG.error("Can't dereference " + this, e);
             }
         }
         return baseObject;

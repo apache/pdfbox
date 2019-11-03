@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.cos;
 
+import java.io.IOException;
+
 public interface ICOSParser
 {
 
@@ -25,7 +27,9 @@ public interface ICOSParser
      * @param obj the COSObject which references the COSBase object to be dereferenced.
      * 
      * @return true if the referenced object was read successfully
+     * 
+     * @throws IOException if something went wrong when dereferencing the COSBase object
      */
-    public boolean dereferenceCOSObject(COSObject obj);
+    public boolean dereferenceCOSObject(COSObject obj) throws IOException;
 
 }

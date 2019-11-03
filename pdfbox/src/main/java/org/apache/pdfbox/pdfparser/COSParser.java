@@ -574,39 +574,15 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     @Override
-    public boolean dereferenceCOSObject(COSObject obj)
+    public boolean dereferenceCOSObject(COSObject obj) throws IOException
     {
-        COSBase parsedObj = null;
-        long currentPos = 0;
-        try
+        long currentPos = source.getPosition();
+        COSBase parsedObj = parseObjectDynamically(obj, false);
+        if (currentPos > 0)
         {
-            currentPos = source.getPosition();
-            parsedObj = parseObjectDynamically(obj, false);
+            source.seek(currentPos);
         }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        finally
-        {
-            if (currentPos > 0)
-                try
-                {
-                    source.seek(currentPos);
-                }
-                catch (IOException e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-        }
-        if (parsedObj != null)
-        {
-            obj.setObject(parsedObj);
-            return true;
-        }
-        return false;
+        return parsedObj != null;
     }
 
     /**
