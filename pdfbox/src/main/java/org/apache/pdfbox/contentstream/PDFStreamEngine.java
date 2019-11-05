@@ -47,7 +47,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.apache.pdfbox.pdmodel.font.PDFontFactory;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.PDLineDashPattern;
@@ -681,7 +681,7 @@ public abstract class PDFStreamEngine
         if (font == null)
         {
             LOG.warn("No current font, will use default");
-            font = PDFontFactory.createDefaultFont();
+            font = PDType1Font.HELVETICA;
         }
 
         float fontSize = textState.getFontSize();

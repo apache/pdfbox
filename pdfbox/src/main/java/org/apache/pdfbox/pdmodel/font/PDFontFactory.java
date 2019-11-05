@@ -149,13 +149,11 @@ public final class PDFontFactory
      * 
      * @return a default font
      * @throws IOException if something goes wrong
+     * @deprecated use {@link PDType1Font#HELVETICA}
      */
+    @Deprecated
     public static PDFont createDefaultFont() throws IOException
     {
-        COSDictionary dict = new COSDictionary();
-        dict.setItem(COSName.TYPE, COSName.FONT);
-        dict.setItem(COSName.SUBTYPE, COSName.TRUE_TYPE);
-        dict.setString(COSName.BASE_FONT, "Arial");
-        return createFont(dict);
+        return PDType1Font.HELVETICA;
     }
 }
