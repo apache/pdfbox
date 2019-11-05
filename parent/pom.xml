@@ -57,7 +57,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>4.13-rc-1</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -274,6 +274,7 @@
             <plugins>
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M2</version>
                     <executions>
                         <execution>
                             <goals>
