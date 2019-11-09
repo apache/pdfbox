@@ -154,7 +154,6 @@ public class PDFDebugger extends JFrame
     private boolean isPageMode;
     private PDDocument document;
     private String currentFilePath;
-    private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextPane jTextPane1;
@@ -332,7 +331,7 @@ public class PDFDebugger extends JFrame
     private void initComponents()
     {
         jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPane1 = new JScrollPane();
+        JScrollPane jScrollPane1 = new JScrollPane();
         tree = new Tree();
         jScrollPane2 = new JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
