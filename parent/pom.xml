@@ -113,6 +113,16 @@
     </dependencyManagement>
 
     <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
+                <addmod></addmod>
+            </properties>
+        </profile>
         <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
         <profile>
             <id>jdk9</id>
@@ -147,6 +157,10 @@
         </profile>
         <profile>
             <id>pedantic</id>
+            <properties>
+                <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
+                <addmod></addmod>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -185,6 +199,34 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>                
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>${addmod} ${surefireArgLine}</argLine>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
