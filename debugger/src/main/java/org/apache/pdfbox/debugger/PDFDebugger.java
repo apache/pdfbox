@@ -156,7 +156,6 @@ public class PDFDebugger extends JFrame
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
     private static final boolean IS_MAC_OS = OS_NAME.startsWith("mac os x");
     
-    private JScrollPane jScrollPane1;
     private JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTextPane jTextPane1;
@@ -205,7 +204,7 @@ public class PDFDebugger extends JFrame
     private void initComponents()
     {
         jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPane1 = new JScrollPane();
+        JScrollPane jScrollPane1 = new JScrollPane();
         tree = new Tree(this);
         jScrollPane2 = new JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
