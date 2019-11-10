@@ -26,6 +26,7 @@ import javax.swing.table.AbstractTableModel;
 /**
  * This the table model for showing DeviceN color space which extends AbstractTableModel.
  */
+@SuppressWarnings({"serial","squid:S1948"})
 public class DeviceNTableModel extends AbstractTableModel
 {
     private static final String[] COLUMNNAMES = new String[] { "Colorant", "Maximum", "Minimum"};
