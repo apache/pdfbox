@@ -286,6 +286,7 @@ public abstract class SecurityHandler
 
         try
         {
+            @SuppressWarnings({"squid:S4432"}) // PKCS#5 padding is requested by PDF specification
             Cipher decryptCipher;
             try
             {
@@ -337,9 +338,11 @@ public abstract class SecurityHandler
             return;
         }
 
+        @SuppressWarnings({"squid:S4432"}) // PKCS#5 padding is requested by PDF specification
         Cipher cipher;
         try
         {
+            
             cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
             SecretKeySpec keySpec = new SecretKeySpec(encryptionKey, "AES");
             IvParameterSpec ivSpec = new IvParameterSpec(iv);
