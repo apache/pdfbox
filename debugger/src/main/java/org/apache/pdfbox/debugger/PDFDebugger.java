@@ -154,9 +154,9 @@ public class PDFDebugger extends JFrame
     private boolean isPageMode;
     private PDDocument document;
     private String currentFilePath;
-    private JScrollPane jScrollPane2;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTextPane jTextPane1;
+    private JScrollPane jScrollPaneRight;
+    private javax.swing.JSplitPane jSplitPane;
+    private javax.swing.JTextPane jTextPane;
     private ReaderBottomPanel statusBar;
     private Tree tree;
     // file menu
@@ -330,11 +330,11 @@ public class PDFDebugger extends JFrame
      */
     private void initComponents()
     {
-        jSplitPane1 = new javax.swing.JSplitPane();
-        JScrollPane jScrollPane1 = new JScrollPane();
+        jSplitPane = new javax.swing.JSplitPane();
+        JScrollPane jScrollPaneLeft = new JScrollPane();
         tree = new Tree();
-        jScrollPane2 = new JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        jScrollPaneRight = new JScrollPane();
+        jTextPane = new javax.swing.JTextPane();
         
         tree.setCellRenderer(new PDFTreeCellRenderer());
         tree.setModel(null);
@@ -359,18 +359,18 @@ public class PDFDebugger extends JFrame
 
         windowPrefs = new WindowPrefs(this.getClass());
 
-        jScrollPane1.setBorder(new BevelBorder(BevelBorder.RAISED));
-        jSplitPane1.setDividerLocation(windowPrefs.getDividerLocation());
+        jScrollPaneLeft.setBorder(new BevelBorder(BevelBorder.RAISED));
+        jSplitPane.setDividerLocation(windowPrefs.getDividerLocation());
         tree.addTreeSelectionListener(this::jTree1ValueChanged);
 
-        jScrollPane1.setViewportView(tree);
+        jScrollPaneLeft.setViewportView(tree);
 
-        jSplitPane1.setRightComponent(jScrollPane2);
-        jSplitPane1.setDividerSize(3);
+        jSplitPane.setRightComponent(jScrollPaneRight);
+        jSplitPane.setDividerSize(3);
 
-        jScrollPane2.setViewportView(jTextPane1);
+        jScrollPaneRight.setViewportView(jTextPane);
 
-        jSplitPane1.setLeftComponent(jScrollPane1);
+        jSplitPane.setLeftComponent(jScrollPaneLeft);
 
         JScrollPane documentScroller = new JScrollPane();
         documentScroller.setViewportView(documentPanel);
@@ -380,7 +380,7 @@ public class PDFDebugger extends JFrame
         statusPane.getPanel().setPreferredSize(new Dimension(300, 25));
         getContentPane().add(statusPane.getPanel(), BorderLayout.PAGE_START);
 
-        getContentPane().add(jSplitPane1, BorderLayout.CENTER);
+        getContentPane().add(jSplitPane, BorderLayout.CENTER);
 
         statusBar = new ReaderBottomPanel();
         getContentPane().add(statusBar, BorderLayout.SOUTH);
@@ -746,12 +746,12 @@ public class PDFDebugger extends JFrame
                     showString(selectedNode);
                     return;
                 }
-                if (jSplitPane1.getRightComponent() == null
-                        || !jSplitPane1.getRightComponent().equals(jScrollPane2))
+                if (jSplitPane.getRightComponent() == null
+                        || !jSplitPane.getRightComponent().equals(jScrollPaneRight))
                 {
-                    replaceRightComponent(jScrollPane2);
+                    replaceRightComponent(jScrollPaneRight);
                 }
-                jTextPane1.setText(convertToString(selectedNode));
+                jTextPane.setText(convertToString(selectedNode));
             }
             catch (Exception e)
             {
@@ -1013,7 +1013,7 @@ public class PDFDebugger extends JFrame
         if (pane == null)
         {
             // unsupported font type
-            replaceRightComponent(jScrollPane2);
+            replaceRightComponent(jScrollPaneRight);
             return;
         }
         replaceRightComponent(pane);
@@ -1022,9 +1022,9 @@ public class PDFDebugger extends JFrame
     // replace the right component while keeping divider position
     private void replaceRightComponent(Component pane)
     {
-        int div = jSplitPane1.getDividerLocation();
-        jSplitPane1.setRightComponent(pane);
-        jSplitPane1.setDividerLocation(div);
+        int div = jSplitPane.getDividerLocation();
+        jSplitPane.setRightComponent(pane);
+        jSplitPane.setDividerLocation(div);
     }
 
     private void showString(Object selectedNode)
@@ -1148,7 +1148,7 @@ public class PDFDebugger extends JFrame
         windowPrefs.setExtendedState(getExtendedState());
         this.setExtendedState(Frame.NORMAL);
         windowPrefs.setBounds(getBounds());
-        windowPrefs.setDividerLocation(jSplitPane1.getDividerLocation());
+        windowPrefs.setDividerLocation(jSplitPane.getDividerLocation());
         performApplicationExit();
     }
 
