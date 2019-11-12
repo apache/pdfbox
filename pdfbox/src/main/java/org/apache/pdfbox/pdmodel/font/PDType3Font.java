@@ -259,6 +259,12 @@ public class PDType3Font extends PDSimpleFont
         return false;
     }
 
+    @Override
+    public boolean isStandard14()
+    {
+        return false;
+    }
+
     /**
      * Returns the optional resources of the type3 stream.
      *
