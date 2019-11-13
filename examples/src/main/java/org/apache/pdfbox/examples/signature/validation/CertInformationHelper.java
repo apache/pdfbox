@@ -116,7 +116,20 @@ public class CertInformationHelper
 
             ASN1TaggedObject taggedObject = (ASN1TaggedObject) obj.getObjectAt(0);
             taggedObject = (ASN1TaggedObject) taggedObject.getObject();
-            taggedObject = (ASN1TaggedObject) taggedObject.getObject(); // yes stmt is twice
+            if (taggedObject.getObject() instanceof ASN1TaggedObject)
+            {
+                taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+            }
+            else if (taggedObject.getObject() instanceof ASN1Sequence)
+            {
+                // multiple URLs (we take the first)
+                ASN1Sequence seq = (ASN1Sequence) taggedObject.getObject();
+                taggedObject = (ASN1TaggedObject) seq.getObjectAt(0);
+            }
+            else
+            {
+                continue;
+            }
             if (!(taggedObject.getObject() instanceof ASN1OctetString))
             {
                 // happens with http://blogs.adobe.com/security/SampleSignedPDFDocument.pdf
@@ -124,7 +137,6 @@ public class CertInformationHelper
             }
             ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
             String url = new String(uri.getOctets());
-            // TODO Check for: DistributionPoint ::= SEQUENCE (see RFC 2459), multiples can be possible.
 
             // return first http(s)-Url for crl
             if (url.startsWith("http"))
