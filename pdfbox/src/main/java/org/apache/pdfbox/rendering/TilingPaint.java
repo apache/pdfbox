@@ -186,7 +186,7 @@ class TilingPaint implements Paint
      */
     private static int ceiling(double num)
     {
-        BigDecimal decimal = new BigDecimal(num);
+        BigDecimal decimal = BigDecimal.valueOf(num);
         decimal = decimal.setScale(5, RoundingMode.CEILING); // 5 decimal places of accuracy
         return decimal.intValue();
     }
