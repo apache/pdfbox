@@ -29,6 +29,7 @@ import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -200,6 +201,10 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         @Override
         public PDPage next()
         {
+            if (!hasNext())
+            {
+                throw new NoSuchElementException();
+            }
             COSDictionary next = queue.poll();
             
             sanitizeType(next);
