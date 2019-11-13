@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * Iterator over the linked list of {@link PDOutlineItem} siblings.
@@ -46,7 +47,7 @@ class PDOutlineItemIterator implements Iterator<PDOutlineItem>
     public PDOutlineItem next()
     {
         if (!hasNext()) {
-            throw new java.util.NoSuchElementException();
+            throw new NoSuchElementException();
         }
         if (currentItem == null)
         {
