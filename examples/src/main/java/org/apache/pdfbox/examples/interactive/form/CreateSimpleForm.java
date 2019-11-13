@@ -22,6 +22,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -106,7 +107,16 @@ public final class CreateSimpleForm
         page.getAnnotations().add(widget);
         
         // set the field value
-        textBox.setValue("Sample field");
+        textBox.setValue("Sample field content");
+
+        // put some text near the field
+        PDPageContentStream cs = new PDPageContentStream(document, page);
+        cs.beginText();
+        cs.setFont(PDType1Font.HELVETICA, 15);
+        cs.newLineAtOffset(50, 810);
+        cs.showText("Field:");
+        cs.endText();
+        cs.close();
 
         document.save("target/SimpleForm.pdf");
         document.close();
