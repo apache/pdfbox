@@ -45,6 +45,9 @@ class PDOutlineItemIterator implements Iterator<PDOutlineItem>
     @Override
     public PDOutlineItem next()
     {
+        if (!hasNext()) {
+            throw new java.util.NoSuchElementException();
+        }
         if (currentItem == null)
         {
             currentItem = startingItem;
