@@ -113,29 +113,46 @@ public class CertInformationHelper
 
         while (objects.hasMoreElements())
         {
-            DLSequence obj = (DLSequence) objects.nextElement();
-
-            ASN1TaggedObject taggedObject = (ASN1TaggedObject) obj.getObjectAt(0);
-            taggedObject = (ASN1TaggedObject) taggedObject.getObject();
-            if (taggedObject.getObject() instanceof ASN1TaggedObject)
+            Object obj = objects.nextElement();
+            if (obj instanceof DLSequence)
             {
-                taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+                String url = extractCrlUrlFromSequence((DLSequence) obj);
+                if (url != null)
+                {
+                    return url;
+                }
             }
-            else if (taggedObject.getObject() instanceof ASN1Sequence)
+        }
+        return null;
+    }
+
+    private static String extractCrlUrlFromSequence(DLSequence sequence)
+    {
+        ASN1TaggedObject taggedObject = (ASN1TaggedObject) sequence.getObjectAt(0);
+        taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+        if (taggedObject.getObject() instanceof ASN1TaggedObject)
+        {
+            taggedObject = (ASN1TaggedObject) taggedObject.getObject();
+        }
+        else if (taggedObject.getObject() instanceof ASN1Sequence)
+        {
+            // multiple URLs (we take the first)
+            ASN1Sequence seq = (ASN1Sequence) taggedObject.getObject();
+            if (seq.getObjectAt(0) instanceof ASN1TaggedObject)
             {
-                // multiple URLs (we take the first)
-                ASN1Sequence seq = (ASN1Sequence) taggedObject.getObject();
                 taggedObject = (ASN1TaggedObject) seq.getObjectAt(0);
             }
             else
             {
-                continue;
+                return null;
             }
-            if (!(taggedObject.getObject() instanceof ASN1OctetString))
-            {
-                // happens with http://blogs.adobe.com/security/SampleSignedPDFDocument.pdf
-                continue;
-            }
+        }
+        else
+        {
+            return null;
+        }
+        if (taggedObject.getObject() instanceof ASN1OctetString)
+        {
             ASN1OctetString uri = (ASN1OctetString) taggedObject.getObject();
             String url = new String(uri.getOctets());
 
@@ -145,6 +162,7 @@ public class CertInformationHelper
                 return url;
             }
         }
+        // else happens with http://blogs.adobe.com/security/SampleSignedPDFDocument.pdf
         return null;
     }
 }
