@@ -50,8 +50,6 @@ import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.tsp.TSPException;
-import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
 
@@ -118,11 +116,7 @@ public class CertInformationCollector
         try
         {
             CMSSignedData signedData = new CMSSignedData(signatureContent);
-            Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
-
-            SignerInformation signerInformation = processSignerStore(certificatesStore, signedData,
-                    rootCertInfo);
-
+            SignerInformation signerInformation = processSignerStore(signedData, rootCertInfo);
             addTimestampCerts(signerInformation);
         }
         catch (CMSException e)
@@ -156,18 +150,9 @@ public class CertInformationCollector
 
         try
         {
-            TimeStampToken tsToken = new TimeStampToken(new CMSSignedData(tsSeq.getEncoded("DER")));
-
+            CMSSignedData signedData = new CMSSignedData(tsSeq.getEncoded("DER"));
             rootCertInfo.tsaCerts = new CertSignatureInformation();
-
-            @SuppressWarnings("unchecked")
-            Store<X509CertificateHolder> certificatesStore = tsToken.getCertificates();
-
-            processSignerStore(certificatesStore, tsToken.toCMSSignedData(), rootCertInfo.tsaCerts);
-        }
-        catch (TSPException e)
-        {
-            throw new IOException("Error parsing timestamp token", e);
+            processSignerStore(signedData, rootCertInfo.tsaCerts);
         }
         catch (CMSException e)
         {
@@ -180,21 +165,21 @@ public class CertInformationCollector
      * to the certInfo. Handles only the first signer, although multiple would be possible, but is
      * not yet practicable.
      *
-     * @param certificatesStore To get the certificate information from. Certificates will be saved
-     * in certificateSet.
      * @param signedData data from which to get the SignerInformation
      * @param certInfo where to add certificate information
      * @return Signer Information of the processed certificatesStore for further usage.
      * @throws IOException on data-processing error
      * @throws CertificateProccessingException on a specific error with a certificate
      */
-    private SignerInformation processSignerStore(Store<X509CertificateHolder> certificatesStore,
+    private SignerInformation processSignerStore(
             CMSSignedData signedData, CertSignatureInformation certInfo)
             throws IOException, CertificateProccessingException
     {
         Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
         SignerInformation signerInformation = signers.iterator().next();
 
+        @SuppressWarnings("unchecked")
+        Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         @SuppressWarnings("unchecked")
         Collection<X509CertificateHolder> matches = certificatesStore
                 .getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
