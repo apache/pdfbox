@@ -22,10 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -249,23 +245,7 @@ public class CertInformationCollector
                 {
                     certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider().getName());
                 }
-                catch (CertificateException ex)
-                {
-                    throw new CertificateProccessingException(ex);
-                }
-                catch (NoSuchAlgorithmException ex)
-                {
-                    throw new CertificateProccessingException(ex);
-                }
-                catch (InvalidKeyException ex)
-                {
-                    throw new CertificateProccessingException(ex);
-                }
-                catch (SignatureException ex)
-                {
-                    throw new CertificateProccessingException(ex);
-                }
-                catch (NoSuchProviderException ex)
+                catch (GeneralSecurityException ex)
                 {
                     throw new CertificateProccessingException(ex);
                 }
