@@ -29,7 +29,6 @@ import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1TaggedObject;
-import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
@@ -113,9 +112,9 @@ public class CertInformationHelper
         while (objects.hasMoreElements())
         {
             Object obj = objects.nextElement();
-            if (obj instanceof DLSequence)
+            if (obj instanceof ASN1Sequence)
             {
-                String url = extractCrlUrlFromSequence((DLSequence) obj);
+                String url = extractCrlUrlFromSequence((ASN1Sequence) obj);
                 if (url != null)
                 {
                     return url;
@@ -125,7 +124,7 @@ public class CertInformationHelper
         return null;
     }
 
-    private static String extractCrlUrlFromSequence(DLSequence sequence)
+    private static String extractCrlUrlFromSequence(ASN1Sequence sequence)
     {
         ASN1TaggedObject taggedObject = (ASN1TaggedObject) sequence.getObjectAt(0);
         taggedObject = (ASN1TaggedObject) taggedObject.getObject();
