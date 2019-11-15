@@ -40,8 +40,8 @@ import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -155,7 +155,7 @@ public class CertInformationCollector
         if (tsAttribute.getAttrValues() instanceof ASN1Set)
         {
             ASN1Set tsSet = (ASN1Set) tsAttribute.getAttrValues();
-            DLSequence tsSeq = (DLSequence) tsSet.getObjectAt(0);
+            ASN1Object tsSeq = (ASN1Object) tsSet.getObjectAt(0);
 
             try
             {
