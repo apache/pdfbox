@@ -40,7 +40,6 @@ import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.bouncycastle.asn1.ASN1Object;
-import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -145,28 +144,23 @@ public class CertInformationCollector
         }
         Attribute tsAttribute = signerInformation.getUnsignedAttributes()
                 .get(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
-        if (tsAttribute.getAttrValues() instanceof ASN1Set)
+
+        ASN1Object tsSeq = (ASN1Object) tsAttribute.getAttrValues().getObjectAt(0);
+
+        try
         {
-            ASN1Set tsSet = (ASN1Set) tsAttribute.getAttrValues();
-            ASN1Object tsSeq = (ASN1Object) tsSet.getObjectAt(0);
+            TimeStampToken tsToken = new TimeStampToken(new CMSSignedData(tsSeq.getEncoded("DER")));
 
-            try
-            {
-                TimeStampToken tsToken = new TimeStampToken(
-                        new CMSSignedData(tsSeq.getEncoded("DER")));
+            rootCertInfo.tsaCerts = new CertSignatureInformation();
 
-                rootCertInfo.tsaCerts = new CertSignatureInformation();
+            @SuppressWarnings("unchecked")
+            Store<X509CertificateHolder> certificatesStore = tsToken.getCertificates();
 
-                @SuppressWarnings("unchecked")
-                Store<X509CertificateHolder> certificatesStore = tsToken.getCertificates();
-
-                processSignerStore(certificatesStore, tsToken.toCMSSignedData(),
-                        rootCertInfo.tsaCerts);
-            }
-            catch (TSPException | CMSException e)
-            {
-                throw new IOException("Error parsing timestamp token", e);
-            }
+            processSignerStore(certificatesStore, tsToken.toCMSSignedData(), rootCertInfo.tsaCerts);
+        }
+        catch (TSPException | CMSException e)
+        {
+            throw new IOException("Error parsing timestamp token", e);
         }
     }
 
