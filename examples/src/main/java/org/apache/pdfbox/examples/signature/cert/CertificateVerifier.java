@@ -47,7 +47,6 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
@@ -292,12 +291,10 @@ public final class CertificateVerifier
             }
             ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
             ASN1OctetString uri = (ASN1OctetString) location.getObject();
-            InputStream in = null;
-            try
+            String urlString = new String(uri.getOctets());
+            LOG.info("CA issuers URL: " + urlString);
+            try (InputStream in = new URL(urlString).openStream())
             {
-                String urlString = new String(uri.getOctets());
-                LOG.info("CA issuers URL: " + urlString);
-                in = new URL(urlString).openStream();
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
                 Collection<? extends Certificate> altCerts = certFactory.generateCertificates(in);
                 altCerts.forEach(altCert -> resultSet.add((X509Certificate) altCert));
@@ -306,10 +303,6 @@ public final class CertificateVerifier
             catch (IOException | CertificateException ex)
             {
                 LOG.warn(ex.getMessage(), ex);
-            }
-            finally
-            {
-                IOUtils.closeQuietly(in);
             }
         }
         LOG.info("CA issuers: Downloaded " + resultSet.size() + " certificate(s) total");

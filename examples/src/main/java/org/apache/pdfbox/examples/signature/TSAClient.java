@@ -132,29 +132,17 @@ public class TSAClient
         }
 
         // read response
-        OutputStream output = null;
-        try
+        try (OutputStream output = connection.getOutputStream())
         {
-            output = connection.getOutputStream();
             output.write(request);
-        }
-        finally
-        {
-            IOUtils.closeQuietly(output);
         }
 
         LOG.debug("Waiting for response from TSA server");
 
-        InputStream input = null;
         byte[] response;
-        try
+        try (InputStream input = connection.getInputStream())
         {
-            input = connection.getInputStream();
             response = IOUtils.toByteArray(input);
-        }
-        finally
-        {
-            IOUtils.closeQuietly(input);
         }
 
         LOG.debug("Received response from TSA server");
