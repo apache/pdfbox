@@ -20,6 +20,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.Paint;
 import java.awt.Point;
@@ -1040,10 +1041,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 Paint paint = getNonStrokingPaint();
                 Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
                 Rectangle2D bounds = at.createTransformedShape(unitRect).getBounds2D();
-                BufferedImage renderedPaint = 
-                        new BufferedImage((int) Math.ceil(bounds.getWidth()), 
-                                          (int) Math.ceil(bounds.getHeight()), 
-                                           BufferedImage.TYPE_INT_ARGB);
+                GraphicsConfiguration deviceConfiguration = graphics.getDeviceConfiguration();
+                int w;
+                int h;
+                if (graphics.getDeviceConfiguration() != null &&
+                    graphics.getDeviceConfiguration().getBounds() != null)
+                {
+                    // PDFBOX-4690: bounds doesn't need to be larger than device bounds (OOM risk)
+                    Rectangle deviceBounds = deviceConfiguration.getBounds();
+                    w = (int) Math.ceil(Math.min(bounds.getWidth(), deviceBounds.getWidth()));
+                    h = (int) Math.ceil(Math.min(bounds.getHeight(), deviceBounds.getHeight()));
+                }
+                else
+                {
+                    w = (int) Math.ceil(bounds.getWidth());
+                    h = (int) Math.ceil(bounds.getHeight());
+                }
+                BufferedImage renderedPaint = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g = (Graphics2D) renderedPaint.getGraphics();
                 g.translate(-bounds.getMinX(), -bounds.getMinY());
                 g.setPaint(paint);
@@ -1052,9 +1066,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
                 // draw the mask
                 BufferedImage mask = pdImage.getImage();
-                BufferedImage renderedMask = new BufferedImage((int) Math.ceil(bounds.getWidth()), 
-                                                               (int) Math.ceil(bounds.getHeight()), 
-                                                               BufferedImage.TYPE_INT_RGB);
+                BufferedImage renderedMask = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
                 g = (Graphics2D) renderedMask.getGraphics();
                 g.translate(-bounds.getMinX(), -bounds.getMinY());
                 AffineTransform imageTransform = new AffineTransform(at);
@@ -1068,8 +1080,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 int[] alphaPixel = null;
                 WritableRaster raster = renderedPaint.getRaster();
                 WritableRaster alpha = renderedMask.getRaster();
-                int h = renderedMask.getRaster().getHeight();
-                int w = renderedMask.getRaster().getWidth();
                 for (int y = 0; y < h; y++)
                 {
                     for (int x = 0; x < w; x++)
