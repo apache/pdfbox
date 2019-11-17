@@ -50,6 +50,12 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <bouncycastle.version>1.64</bouncycastle.version>
+
+        <!-- This is a default value to avoid problems when running single tests
+             see also https://stackoverflow.com/a/28695766/535646 
+             https://maven.apache.org/surefire/maven-surefire-plugin/faq.html#late-property-evaluation
+        -->
+        <surefireArgLine></surefireArgLine>
       </properties>
 
     <dependencyManagement>
@@ -224,7 +230,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>${addmod} ${surefireArgLine}</argLine>
+                    <argLine>${addmod} @{surefireArgLine}</argLine>
                 </configuration>
             </plugin>
             <plugin>
