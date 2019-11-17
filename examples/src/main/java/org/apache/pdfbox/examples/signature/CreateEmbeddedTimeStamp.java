@@ -182,9 +182,8 @@ public class CreateEmbeddedTimeStamp
      * Extracts last Document-Signature from the document. The signature will be set on the signature-field.
      *
      * @param document to get the Signature from
-     * @throws IOException
      */
-    private void getRelevantSignature(PDDocument document) throws IOException
+    private void getRelevantSignature(PDDocument document)
     {
         // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
         // if a signature is assigned to a pre-defined empty signature field that isn't the last.

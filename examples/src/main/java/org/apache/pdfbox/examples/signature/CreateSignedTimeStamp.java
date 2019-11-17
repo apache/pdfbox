@@ -142,7 +142,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
         return new byte[] {};
     }
 
-    public static void main(String[] args) throws IOException, GeneralSecurityException
+    public static void main(String[] args) throws IOException
     {
         if (args.length != 3)
         {
