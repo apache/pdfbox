@@ -199,7 +199,10 @@ public final class JPEGFactory
         }
         finally
         {
-            IOUtils.closeQuietly(iis);
+            if (iis != null)
+            {
+                iis.close();
+            }
             stream.reset();
             reader.dispose();
         }
