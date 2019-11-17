@@ -219,7 +219,7 @@ public class StreamPane implements ActionListener
         }
     }
 
-    private void requestImageShowing() throws IOException
+    private void requestImageShowing()
     {
         if (stream.isImage())
         {
