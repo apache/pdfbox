@@ -296,7 +296,7 @@ public final class JPEGFactory
     }
     
     // returns the alpha channel of an image
-    private static BufferedImage getAlphaImage(BufferedImage image) throws IOException
+    private static BufferedImage getAlphaImage(BufferedImage image)
     {
         if (!image.getColorModel().hasAlpha())
         {

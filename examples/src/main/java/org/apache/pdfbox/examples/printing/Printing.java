@@ -70,7 +70,7 @@ public final class Printing
     /**
      * Prints the document at its actual size. This is the recommended way to print.
      */
-    private static void print(PDDocument document) throws IOException, PrinterException
+    private static void print(PDDocument document) throws PrinterException
     {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
@@ -80,8 +80,7 @@ public final class Printing
     /**
      * Prints using custom PrintRequestAttribute values.
      */
-    private static void printWithAttributes(PDDocument document)
-            throws IOException, PrinterException
+    private static void printWithAttributes(PDDocument document) throws PrinterException
     {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
@@ -95,7 +94,7 @@ public final class Printing
     /**
      * Prints with a print preview dialog.
      */
-    private static void printWithDialog(PDDocument document) throws IOException, PrinterException
+    private static void printWithDialog(PDDocument document) throws PrinterException
     {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
@@ -109,8 +108,7 @@ public final class Printing
     /**
      * Prints with a print preview dialog and custom PrintRequestAttribute values.
      */
-    private static void printWithDialogAndAttributes(PDDocument document)
-            throws IOException, PrinterException
+    private static void printWithDialogAndAttributes(PDDocument document) throws PrinterException
     {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
@@ -145,8 +143,7 @@ public final class Printing
     /**
      * Prints using a custom page size and custom margins.
      */
-    private static void printWithPaper(PDDocument document)
-            throws IOException, PrinterException
+    private static void printWithPaper(PDDocument document) throws PrinterException
     {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPageable(new PDFPageable(document));
