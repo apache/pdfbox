@@ -21,6 +21,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,6 +67,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -430,8 +432,7 @@ public class PDDocument implements Closeable
         // Distinction of case for visual and non-visual signature
         if (visualSignature == null)
         {
-            prepareNonVisibleSignature(signatureField);
-            return;
+            visualSignature = createInvisibleSignatureCOSDocument();
         }
 
         prepareVisibleSignature(signatureField, acroForm, visualSignature);
@@ -528,6 +529,30 @@ public class PDDocument implements Closeable
             }
         }
         return false;
+    }
+
+    private COSDocument createInvisibleSignatureCOSDocument() throws IOException
+    {
+        // This document must be tailored so that prepareVisibleSignature() finds all it wants.
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        List<PDAnnotation> annots = new ArrayList<>();
+        PDAnnotationWidget widget = new PDAnnotationWidget();
+        widget.getCOSObject().setItem(COSName.FT, COSName.SIG);
+        widget.setRectangle(new PDRectangle());
+        PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(doc);
+        appearanceStream.setBBox(new PDRectangle());
+        appearanceDictionary.setNormalAppearance(appearanceStream);
+        widget.setAppearance(appearanceDictionary);
+        annots.add(widget);
+        page.setAnnotations(annots);
+        doc.addPage(page);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        doc.save(baos);
+        doc.close();
+        // need to save and reload so that COSDocument has an object list
+        return PDDocument.load(baos.toByteArray()).getDocument();
     }
 
     private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
