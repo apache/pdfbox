@@ -39,7 +39,12 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
@@ -58,6 +63,8 @@ import org.w3c.dom.Element;
  */
 public final class JPEGFactory
 {
+    private static final Log LOG = LogFactory.getLog(JPEGFactory.class);
+
     private JPEGFactory()
     {
     }
@@ -93,12 +100,10 @@ public final class JPEGFactory
         // copy stream
         ByteArrayInputStream byteStream = new ByteArrayInputStream(byteArray);
 
-        // read image
-        Raster raster = readJPEGRaster(byteStream);
-        byteStream.reset();
+        Dimensions meta = retrieveDimensions(byteStream);
 
         PDColorSpace colorSpace;
-        switch (raster.getNumDataElements())
+        switch (meta.numComponents)
         {
             case 1:
                 colorSpace = PDDeviceGray.INSTANCE;
@@ -111,12 +116,12 @@ public final class JPEGFactory
                 break;
             default:
                 throw new UnsupportedOperationException("number of data elements not supported: " +
-                        raster.getNumDataElements());
+                        meta.numComponents);
         }
 
         // create PDImageXObject from stream
         PDImageXObject pdImage = new PDImageXObject(document, byteStream, 
-                COSName.DCT_DECODE, raster.getWidth(), raster.getHeight(), 8, colorSpace);
+                COSName.DCT_DECODE, meta.width, meta.height, 8, colorSpace);
 
         if (colorSpace instanceof PDDeviceCMYK)
         {
@@ -135,7 +140,12 @@ public final class JPEGFactory
         return pdImage;
     }
 
-    private static Raster readJPEGRaster(InputStream stream) throws IOException
+    private static class Dimensions
+    {
+        private int width, height, numComponents;
+    }
+
+    private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
     {
         // find suitable image reader
         Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName("JPEG");
@@ -158,12 +168,60 @@ public final class JPEGFactory
         try (ImageInputStream iis = ImageIO.createImageInputStream(stream))
         {
             reader.setInput(iis);
+
+            Dimensions meta = new Dimensions();
+            meta.width = reader.getWidth(0);
+            meta.height = reader.getHeight(0);
+            // PDFBOX-4691: get from image metadata (faster because no decoding)
+            try
+            {
+                meta.numComponents = getNumComponentsFromImageMetadata(reader);
+                if (meta.numComponents != 0)
+                {
+                    return meta;
+                }
+                LOG.warn("No image metadata, will decode image and use raster size");
+            }
+            catch (IOException ex)
+            {
+                LOG.warn("Error reading image metadata, will decode image and use raster size", ex);
+            }            
+
+            // Old method: get from raster (slower)
             ImageIO.setUseCache(false);
-            return reader.readRaster(0, null);
+            Raster raster = reader.readRaster(0, null);
+            meta.numComponents = raster.getNumDataElements();
+            return meta;
         }
         finally
         {
+            stream.reset();
             reader.dispose();
+        }
+    }
+
+    private static int getNumComponentsFromImageMetadata(ImageReader reader) throws IOException
+    {
+        IIOMetadata imageMetadata = reader.getImageMetadata(0);
+        if (imageMetadata == null)
+        {
+            return 0;
+        }
+        Element root = (Element) imageMetadata.getAsTree("javax_imageio_jpeg_image_1.0");
+        if (root == null)
+        {
+            return 0;
+        }
+
+        try
+        {
+            XPath xpath = XPathFactory.newInstance().newXPath();
+            String numScanComponents = xpath.evaluate("markerSequence/sos/@numScanComponents", root);
+            return Integer.parseInt(numScanComponents);
+        }
+        catch (NumberFormatException | XPathExpressionException ex)
+        {
+            return 0;
         }
     }
 
