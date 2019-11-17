@@ -232,7 +232,7 @@ public class OcspHelper
         }
     }
 
-    private byte[] getKeyHashFromCertHolder(X509CertificateHolder certHolder) throws IOException
+    private byte[] getKeyHashFromCertHolder(X509CertificateHolder certHolder)
     {
         // https://tools.ietf.org/html/rfc2560#section-4.2.1
         // KeyHash ::= OCTET STRING -- SHA-1 hash of responder's public key

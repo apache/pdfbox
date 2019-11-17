@@ -556,7 +556,7 @@ public class AddValidationInformation
         catalog.setVersion("1.7");
     }
 
-    public static void main(String[] args) throws IOException, GeneralSecurityException
+    public static void main(String[] args) throws IOException
     {
         if (args.length != 1)
         {

@@ -215,9 +215,8 @@ public class SigUtils
      * 
      * @param document to get its last signature
      * @return last signature or null when none found
-     * @throws IOException
      */
-    public static PDSignature getLastRelevantSignature(PDDocument document) throws IOException
+    public static PDSignature getLastRelevantSignature(PDDocument document)
     {
         SortedMap<Integer, PDSignature> sortedMap = new TreeMap<>();
         for (PDSignature signature : document.getSignatureDictionaries())
