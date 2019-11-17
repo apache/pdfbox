@@ -1048,8 +1048,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 GraphicsConfiguration deviceConfiguration = graphics.getDeviceConfiguration();
                 int w;
                 int h;
-                if (graphics.getDeviceConfiguration() != null &&
-                    graphics.getDeviceConfiguration().getBounds() != null)
+                if (deviceConfiguration != null && deviceConfiguration.getBounds() != null)
                 {
                     // PDFBOX-4690: bounds doesn't need to be larger than device bounds (OOM risk)
                     Rectangle deviceBounds = deviceConfiguration.getBounds();
