@@ -142,7 +142,9 @@ public final class JPEGFactory
 
     private static class Dimensions
     {
-        private int width, height, numComponents;
+        private int width;
+        private int height;
+        private int numComponents;
     }
 
     private static Dimensions retrieveDimensions(ByteArrayInputStream stream) throws IOException
@@ -220,14 +222,20 @@ public final class JPEGFactory
         {
             XPath xpath = XPathFactory.newInstance().newXPath();
             String numScanComponents = xpath.evaluate("markerSequence/sos/@numScanComponents", root);
+            if (numScanComponents.isEmpty())
+            {
+                return 0;
+            }
             return Integer.parseInt(numScanComponents);
         }
         catch (NumberFormatException ex)
         {
+            LOG.warn(ex.getMessage(), ex);
             return 0;
         }
         catch (XPathExpressionException ex)
         {
+            LOG.warn(ex.getMessage(), ex);
             return 0;
         }
     }
