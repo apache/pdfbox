@@ -306,7 +306,7 @@ public class PDFTreeModel implements TreeModel
     @Override
     public boolean isLeaf(Object node)
     {
-        boolean isLeaf = !(node instanceof COSDictionary ||
+        return !(node instanceof COSDictionary ||
                  node instanceof COSArray ||
                  node instanceof COSDocument ||
                  node instanceof DocumentEntry ||
@@ -314,7 +314,6 @@ public class PDFTreeModel implements TreeModel
                  node instanceof COSObject ||
                  (node instanceof MapEntry && !isLeaf(((MapEntry)node).getValue()) ) ||
                  (node instanceof ArrayEntry && !isLeaf(((ArrayEntry)node).getValue()) ));
-        return isLeaf;
     }
 
     /** Removes a listener previously added with
