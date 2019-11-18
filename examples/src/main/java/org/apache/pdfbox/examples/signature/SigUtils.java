@@ -16,7 +16,6 @@
 
 package org.apache.pdfbox.examples.signature;
 
-import java.io.IOException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.List;
