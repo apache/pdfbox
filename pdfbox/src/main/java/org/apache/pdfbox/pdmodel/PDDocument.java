@@ -21,7 +21,6 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -432,7 +431,8 @@ public class PDDocument implements Closeable
         // Distinction of case for visual and non-visual signature
         if (visualSignature == null)
         {
-            visualSignature = createInvisibleSignatureCOSDocument();
+            prepareNonVisibleSignature(signatureField);
+            return;
         }
 
         prepareVisibleSignature(signatureField, acroForm, visualSignature);
@@ -529,30 +529,6 @@ public class PDDocument implements Closeable
             }
         }
         return false;
-    }
-
-    private COSDocument createInvisibleSignatureCOSDocument() throws IOException
-    {
-        // This document must be tailored so that prepareVisibleSignature() finds all it wants.
-        PDDocument doc = new PDDocument();
-        PDPage page = new PDPage();
-        List<PDAnnotation> annots = new ArrayList<>();
-        PDAnnotationWidget widget = new PDAnnotationWidget();
-        widget.getCOSObject().setItem(COSName.FT, COSName.SIG);
-        widget.setRectangle(new PDRectangle());
-        PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
-        PDAppearanceStream appearanceStream = new PDAppearanceStream(doc);
-        appearanceStream.setBBox(new PDRectangle());
-        appearanceDictionary.setNormalAppearance(appearanceStream);
-        widget.setAppearance(appearanceDictionary);
-        annots.add(widget);
-        page.setAnnotations(annots);
-        doc.addPage(page);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        doc.save(baos);
-        doc.close();
-        // need to save and reload so that COSDocument has an object list
-        return PDDocument.load(baos.toByteArray()).getDocument();
     }
 
     private void prepareVisibleSignature(PDSignatureField signatureField, PDAcroForm acroForm, 
@@ -656,6 +632,13 @@ public class PDDocument implements Closeable
         // have an annotation rectangle that has zero height and width."
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
         signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
+        
+        // The visual appearance must also exist for an invisible signature but may be empty.
+        PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
+        appearanceStream.setBBox(new PDRectangle());
+        appearanceDictionary.setNormalAppearance(appearanceStream);
+        signatureField.getWidgets().get(0).setAppearance(appearanceDictionary);
     }
 
     /**
