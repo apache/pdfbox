@@ -345,7 +345,6 @@ public class TestCreateSignature
             {
                 Assert.fail("Signature verification failed");
             }
-            break;
         }
         document.close();
     }
