@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
@@ -49,6 +48,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -471,8 +471,9 @@ public class TestCreateSignature
             doc.getDocumentCatalog().getCOSObject().setNeedToBeUpdated(true);
             doc.getDocumentCatalog().getAcroForm().getCOSObject().setNeedToBeUpdated(true);
             field.getCOSObject().setNeedToBeUpdated(true);
-            field.getWidgets().get(0).getAppearance().getCOSObject().setNeedToBeUpdated(true);
-            ((COSDictionary) field.getWidgets().get(0).getAppearance().getNormalAppearance().getCOSObject()).setNeedToBeUpdated(true);
+            PDAppearanceDictionary appearance = field.getWidgets().get(0).getAppearance();
+            appearance.getCOSObject().setNeedToBeUpdated(true);
+            appearance.getNormalAppearance().getCOSObject().setNeedToBeUpdated(true);
             doc.saveIncremental(fileOutputStream);
         }
         checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameResaved1));
