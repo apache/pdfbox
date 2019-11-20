@@ -39,6 +39,10 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
  */
 public class CreateSeparationColorBox
 {
+    private CreateSeparationColorBox()
+    {
+    }
+
     public static void main(String[] args) throws IOException
     {
         try (PDDocument doc = new PDDocument())
