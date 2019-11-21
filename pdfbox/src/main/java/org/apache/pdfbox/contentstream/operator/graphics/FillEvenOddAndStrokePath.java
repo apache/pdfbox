@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.io.IOException;
 
 /**
@@ -34,7 +34,7 @@ public final class FillEvenOddAndStrokePath extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        context.fillAndStrokePath(GeneralPath.WIND_EVEN_ODD);
+        context.fillAndStrokePath(Path2D.WIND_EVEN_ODD);
     }
 
     @Override

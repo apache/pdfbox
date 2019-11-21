@@ -117,7 +117,7 @@ public final class LosslessFactory
 
     private static boolean isGrayImage(BufferedImage image)
     {
-        if (image.getTransparency() != BufferedImage.OPAQUE)
+        if (image.getTransparency() != Transparency.OPAQUE)
         {
             return false;
         }

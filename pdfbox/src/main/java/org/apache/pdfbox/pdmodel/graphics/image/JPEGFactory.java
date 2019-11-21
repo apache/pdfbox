@@ -396,8 +396,8 @@ public final class JPEGFactory
             imageWriter.setOutput(ios);
 
             // add compression
-            JPEGImageWriteParam jpegParam = (JPEGImageWriteParam)imageWriter.getDefaultWriteParam();
-            jpegParam.setCompressionMode(JPEGImageWriteParam.MODE_EXPLICIT);
+            ImageWriteParam jpegParam = imageWriter.getDefaultWriteParam();
+            jpegParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
             jpegParam.setCompressionQuality(quality);
 
             // add metadata
