@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.graphic;
 
+import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
@@ -86,7 +87,7 @@ public class ICCProfileWrapper
      */
     public boolean isRGBColorSpace()
     {
-        return ICC_ColorSpace.TYPE_RGB == colorSpace.getType();
+        return ColorSpace.TYPE_RGB == colorSpace.getType();
     }
 
     /**
@@ -96,7 +97,7 @@ public class ICCProfileWrapper
      */
     public boolean isCMYKColorSpace()
     {
-        return ICC_ColorSpace.TYPE_CMYK == colorSpace.getType();
+        return ColorSpace.TYPE_CMYK == colorSpace.getType();
     }
 
     /**
@@ -106,7 +107,7 @@ public class ICCProfileWrapper
      */
     public boolean isGrayColorSpace()
     {
-        return ICC_ColorSpace.TYPE_GRAY == colorSpace.getType();
+        return ColorSpace.TYPE_GRAY == colorSpace.getType();
     }
 
     /**

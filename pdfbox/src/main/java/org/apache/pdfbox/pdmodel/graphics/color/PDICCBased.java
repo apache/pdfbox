@@ -478,11 +478,11 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         switch (alternateColorSpace.getNumberOfComponents())
         {
             case 1:
-                return ICC_ColorSpace.TYPE_GRAY;
+                return ColorSpace.TYPE_GRAY;
             case 3:
-                return ICC_ColorSpace.TYPE_RGB;
+                return ColorSpace.TYPE_RGB;
             case 4:
-                return ICC_ColorSpace.TYPE_CMYK;
+                return ColorSpace.TYPE_CMYK;
             default:
                 // should not happen as all ICC color spaces in PDF must have 1,3, or 4 components
                 return -1;
