@@ -33,9 +33,8 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBoolean;
 
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSFloat;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.util.Hex;
@@ -355,12 +354,12 @@ public class FDFAnnotationStamp extends FDFAnnotation
                 if ("INT".equalsIgnoreCase(child.getTagName()))
                 {
                     LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
-                    array.add(COSFloat.get(childAttrVal));
+                    array.add(COSNumber.get(childAttrVal));
                 }
                 else if ("FIXED".equalsIgnoreCase(child.getTagName()))
                 {
                     LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
-                    array.add(COSInteger.get(childAttrVal));
+                    array.add(COSNumber.get(childAttrVal));
                 }
                 else if ("NAME".equalsIgnoreCase(child.getTagName()))
                 {

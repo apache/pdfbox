@@ -39,6 +39,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.WindowConstants;
 
 /**
  * A dialog to display a runtime exception stack trace.
@@ -110,7 +112,7 @@ public class ErrorDialog extends JDialog
         {
             setIconImage(((ImageIcon) icon).getImage());
         }
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         error = t;
         message = createErrorMessage(error);
         main = createContent();
@@ -252,8 +254,8 @@ public class ErrorDialog extends JDialog
         stacktrace = new JTextPane();
         stacktrace.setEditable(false);
         JScrollPane pane = new JScrollPane(stacktrace,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         return pane;
     }
 

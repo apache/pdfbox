@@ -21,6 +21,7 @@
 
 package org.apache.pdfbox.preflight.content;
 
+import java.awt.color.ColorSpace;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_CMYK;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_MISSING;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID_COLOR_SPACE_RGB;
@@ -28,7 +29,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TOO_M
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY;
 import static org.apache.pdfbox.preflight.PreflightConstants.MAX_GRAPHIC_STATES;
 
-import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 import java.util.List;
 
@@ -516,8 +516,8 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
             int type = ((PDICCBased)cs).getColorSpaceType();
             switch (expectedIccType)
             {
-                case RGB: return type == ICC_ColorSpace.TYPE_RGB;
-                case CMYK: return type == ICC_ColorSpace.TYPE_CMYK;
+                case RGB: return type == ColorSpace.TYPE_RGB;
+                case CMYK: return type == ColorSpace.TYPE_CMYK;
                 default: return true;
             }
         }
