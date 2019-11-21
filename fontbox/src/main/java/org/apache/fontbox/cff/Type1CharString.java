@@ -47,7 +47,7 @@ public class Type1CharString
     private Point2D.Float leftSideBearing = null;
     private Point2D.Float current = null;
     private boolean isFlex = false;
-    private final List<Point.Float> flexPoints = new ArrayList<Point2D.Float>();
+    private final List<Point2D.Float> flexPoints = new ArrayList<Point2D.Float>();
     protected List<Object> type1Sequence;
     protected int commandCount;
 
@@ -369,12 +369,12 @@ public class Type1CharString
             }
 
             // reference point is relative to start point
-            Point.Float reference = flexPoints.get(0);
+            Point2D.Float reference = flexPoints.get(0);
             reference.setLocation(current.getX() + reference.getX(),
                                   current.getY() + reference.getY());
 
             // first point is relative to reference point
-            Point.Float first = flexPoints.get(1);
+            Point2D.Float first = flexPoints.get(1);
             first.setLocation(reference.getX() + first.getX(), reference.getY() + first.getY());
 
             // make the first point relative to the start point
