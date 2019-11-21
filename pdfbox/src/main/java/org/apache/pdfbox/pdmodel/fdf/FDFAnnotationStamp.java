@@ -351,39 +351,34 @@ public class FDFAnnotationStamp extends FDFAnnotation
                 String childAttrVal = child.getAttribute("VAL");
                 LOG.debug(parentAttrKey + " => reading child: " + child.getTagName() +
                            " with key: " + childAttrKey);
-                if ("INT".equalsIgnoreCase(child.getTagName()))
+                if ("INT".equalsIgnoreCase(child.getTagName()) || "FIXED".equalsIgnoreCase(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
-                    array.add(COSNumber.get(childAttrVal));
-                }
-                else if ("FIXED".equalsIgnoreCase(child.getTagName()))
-                {
-                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + childAttrVal);
                     array.add(COSNumber.get(childAttrVal));
                 }
                 else if ("NAME".equalsIgnoreCase(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + childAttrVal);
                     array.add(COSName.getPDFName(childAttrVal));
                 }
                 else if ("BOOL".equalsIgnoreCase(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + childAttrVal);
                     array.add(COSBoolean.getBoolean(Boolean.parseBoolean(childAttrVal)));
                 }
                 else if ("DICT".equalsIgnoreCase(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + childAttrVal);
                     array.add(parseDictElement(child));
                 }
                 else if ("STREAM".equalsIgnoreCase(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + childAttrVal);
                     array.add(parseStreamElement(child));
                 }
                 else if ("ARRAY".equalsIgnoreCase(child.getTagName()))
                 {
-                    LOG.debug(parentAttrKey + " value(" + i + "): " + child.getAttribute("VAL"));
+                    LOG.debug(parentAttrKey + " value(" + i + "): " + childAttrVal);
                     array.add(parseArrayElement(child));
                 }
                 else
