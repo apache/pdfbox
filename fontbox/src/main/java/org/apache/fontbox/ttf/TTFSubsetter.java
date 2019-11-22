@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -1072,7 +1071,7 @@ public final class TTFSubsetter
     private void writeLongDateTime(DataOutputStream out, Calendar calendar) throws IOException
     {
         // inverse operation of TTFDataStream.readInternationalDate()
-        Calendar cal = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.set(1904, 0, 1, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         long millisFor1904 = cal.getTimeInMillis();
