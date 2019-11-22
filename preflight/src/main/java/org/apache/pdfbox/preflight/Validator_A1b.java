@@ -215,16 +215,17 @@ public class Validator_A1b
         if (f.isFile())
         {
             FileReader fr = new FileReader(f);
-            BufferedReader buf = new BufferedReader(fr);
-            while (buf.ready())
+            try (BufferedReader bufferedReader = new BufferedReader(fr))
             {
-                File fn = new File(buf.readLine());
-                if (fn.exists())
+                while (bufferedReader.ready())
                 {
-                    files.add(fn);
-                } // else warn ?
+                    File fn = new File(bufferedReader.readLine());
+                    if (fn.exists())
+                    {
+                        files.add(fn);
+                    } // else warn ?
+                }
             }
-            IOUtils.closeQuietly(buf);
         }
         else
         {
