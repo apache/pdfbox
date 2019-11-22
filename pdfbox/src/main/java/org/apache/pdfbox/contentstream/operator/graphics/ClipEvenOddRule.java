@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.contentstream.operator.graphics;
 
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.io.IOException;
 import java.util.List;
 
@@ -34,7 +34,7 @@ public final class ClipEvenOddRule extends GraphicsOperatorProcessor
     @Override
     public void process(Operator operator, List<COSBase> operands) throws IOException
     {
-        context.clip(GeneralPath.WIND_EVEN_ODD);
+        context.clip(Path2D.WIND_EVEN_ODD);
     }
 
     @Override
