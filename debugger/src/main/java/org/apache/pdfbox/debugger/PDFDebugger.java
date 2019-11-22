@@ -33,7 +33,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -1068,17 +1067,20 @@ public class PDFDebugger extends JFrame
         }
         else if( selectedNode instanceof COSStream )
         {
+            COSStream stream = (COSStream) selectedNode;
+            InputStream in = null;
             try
             {
-                COSStream stream = (COSStream) selectedNode;
-                InputStream in = stream.createInputStream();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                IOUtils.copy(in, baos);
-                data = baos.toString();
+                in = stream.createInputStream();
+                data = new String(IOUtils.toByteArray(in));
             }
-            catch( IOException e )
+            catch (IOException e)
             {
                 throw new RuntimeException(e);
+            }
+            finally
+            {
+                IOUtils.closeQuietly(in);
             }
         }
         else if( selectedNode instanceof MapEntry )
