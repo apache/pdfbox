@@ -349,6 +349,10 @@ public final class PDAcroForm implements COSObjectable
                         transformed = true;
                     }
 
+                    Matrix m = appearanceStream.getMatrix();
+                    int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
+                    int rotation = (angle + 360) % 360;
+
                     if (needsScaling)
                     {
                         PDRectangle bbox = appearanceStream.getBBox();
@@ -356,7 +360,7 @@ public final class PDAcroForm implements COSObjectable
 
                         float xScale;
                         float yScale;
-                        if (page.getRotation() == 90 || page.getRotation() == 270)
+                        if (rotation == 90 || rotation == 270)
                         {
                             xScale = fieldRect.getWidth() / bbox.getHeight();
                             yScale = fieldRect.getHeight() / bbox.getWidth();
