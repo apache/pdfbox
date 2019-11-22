@@ -32,7 +32,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -1104,10 +1103,10 @@ public class PDFDebugger extends JFrame
             try
             {
                 COSStream stream = (COSStream) selectedNode;
-                InputStream in = stream.createInputStream();
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                IOUtils.copy(in, baos);
-                data = baos.toString();
+                try (InputStream in = stream.createInputStream())
+                {
+                    data = new String(IOUtils.toByteArray(in));
+                }
             }
             catch( IOException e )
             {
