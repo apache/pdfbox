@@ -136,15 +136,12 @@ public final class OverlayPDF
         {
             usage();
         }
-        
-        try
+
+        try (PDDocument result = overlayer.overlay(specificPageOverlayFile))
         {
-            try (PDDocument result = overlayer.overlay(specificPageOverlayFile))
-            {
-                result.save(outputFilename);
-            }
-        } 
-        catch (IOException e) 
+            result.save(outputFilename);
+        }
+        catch (IOException e)
         {
             LOG.error("Overlay failed: " + e.getMessage(), e);
             throw e;
