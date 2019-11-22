@@ -245,6 +245,18 @@ public class PDAcroFormFlattenTest {
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
+    /**
+     * PDFBOX-4693: page is not rotated, but the appearance stream is.
+     */
+    // @Test
+    public void testFlattenPDFBox4693() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12986337/stenotypeTest-3_rotate_no_flatten.pdf";
+        String targetFileName = "PDFBOX-4693-filled.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
     /*
      * Flatten and compare with generated image samples.
      */
