@@ -55,7 +55,7 @@ class EndstreamOutputStream extends BufferedOutputStream
      * @throws IOException 
      */
     @Override
-    public void write(byte[] b, int off, int len) throws IOException
+    public synchronized void write(byte[] b, int off, int len) throws IOException
     {
         if (pos == 0 && len > 10)
         {
@@ -124,7 +124,7 @@ class EndstreamOutputStream extends BufferedOutputStream
      * @throws IOException 
      */
     @Override
-    public void flush() throws IOException
+    public synchronized void flush() throws IOException
     {
         // if there is only a CR and no LF, write it
         if (hasCR && !hasLF)
