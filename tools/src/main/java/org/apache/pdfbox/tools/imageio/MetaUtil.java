@@ -19,6 +19,7 @@ package org.apache.pdfbox.tools.imageio;
 import java.io.StringWriter;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
+import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -59,7 +60,9 @@ public final class MetaUtil
         {
             StringWriter xmlStringWriter = new StringWriter();
             StreamResult streamResult = new StreamResult(xmlStringWriter);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            Transformer transformer = transformerFactory.newTransformer();
             // see http://stackoverflow.com/a/1264872/535646
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
