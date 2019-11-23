@@ -59,6 +59,7 @@ public class XmlResultParser
     {
         try
         {
+            @SuppressWarnings({"squid:S2755"}) // self-created XML
             Document rdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             return validate(rdocument, source, name);
         }
