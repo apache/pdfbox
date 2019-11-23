@@ -64,12 +64,6 @@ public class DrawObject extends OperatorProcessor
         {
             PDFormXObject form = (PDFormXObject) xobject;
             PDResources formResources = form.getResources();
-            if (formResources != null &&
-                context.getResources().getCOSObject() == formResources.getCOSObject())
-            {
-                LOG.error("avoiding recursion with XObject '" + name.getName() + "'");
-                return;
-            }
             if (form instanceof PDTransparencyGroup)
             {
                 context.showTransparencyGroup((PDTransparencyGroup) form);
