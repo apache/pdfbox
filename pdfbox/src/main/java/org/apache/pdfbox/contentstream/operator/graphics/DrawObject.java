@@ -71,15 +71,6 @@ public final class DrawObject extends GraphicsOperatorProcessor
         {
             PDFormXObject form = (PDFormXObject) xobject;
             PDResources formResources = form.getResources();
-            if (formResources != null &&
-                context.getResources().getCOSObject() == formResources.getCOSObject())
-            {
-                //TODO a general solution should be found for recursions that go over several levels
-                // context is a PDFStreamEngine and this is the same object on every level.
-                LOG.error("avoiding recursion with XObject '" + objectName.getName() + "'");
-                return;
-            }
-
             if (form instanceof PDTransparencyGroup)
             {
                 context.showTransparencyGroup((PDTransparencyGroup) form);
