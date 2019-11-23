@@ -70,7 +70,6 @@ public final class DrawObject extends GraphicsOperatorProcessor
         else if (xobject instanceof PDFormXObject)
         {
             PDFormXObject form = (PDFormXObject) xobject;
-            PDResources formResources = form.getResources();
             if (form instanceof PDTransparencyGroup)
             {
                 context.showTransparencyGroup((PDTransparencyGroup) form);
