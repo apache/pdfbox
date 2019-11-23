@@ -97,12 +97,12 @@ public abstract class SecurityHandler
     /**
      * The stream filter name.
      */
-	private COSName streamFilterName;
+    private COSName streamFilterName;
 
-	/**
-	 * The string filter name.
-	 */
-	private COSName stringFilterName;
+    /**
+     * The string filter name.
+     */
+    private COSName stringFilterName;
 
     /**
      * Set wether to decrypt meta data.
@@ -121,8 +121,8 @@ public abstract class SecurityHandler
      */
     protected void setStringFilterName(COSName stringFilterName)
     {
-		this.stringFilterName = stringFilterName;
-	}
+        this.stringFilterName = stringFilterName;
+    }
 
     /**
      * Set the stream filter name.
@@ -130,9 +130,9 @@ public abstract class SecurityHandler
      * @param streamFilterName the stream filter name.
      */
     protected void setStreamFilterName(COSName streamFilterName)
-	{
-    	this.streamFilterName = streamFilterName;
-	}
+    {
+        this.streamFilterName = streamFilterName;
+    }
 
     /**
      * Prepare the document for encryption.
@@ -435,12 +435,12 @@ public abstract class SecurityHandler
      */
     public void decryptStream(COSStream stream, long objNum, long genNum) throws IOException
     {
-    	// Stream encrypted with identity filter
-    	if (COSName.IDENTITY.equals(streamFilterName))
-    	{
+        // Stream encrypted with identity filter
+        if (COSName.IDENTITY.equals(streamFilterName))
+        {
             return;
-    	}
-    	
+        }
+        
         COSBase type = stream.getCOSName(COSName.TYPE);
         if (!decryptMetadata && COSName.METADATA.equals(type))
         {
@@ -551,12 +551,12 @@ public abstract class SecurityHandler
      */
     private void decryptString(COSString string, long objNum, long genNum) throws IOException
     {
-    	// String encrypted with identity filter
-    	if (COSName.IDENTITY.equals(stringFilterName))
-    	{
+        // String encrypted with identity filter
+        if (COSName.IDENTITY.equals(stringFilterName))
+        {
             return;
-    	}
-    	
+        }
+        
         ByteArrayInputStream data = new ByteArrayInputStream(string.getBytes());
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try
