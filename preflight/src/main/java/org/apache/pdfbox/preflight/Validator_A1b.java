@@ -95,13 +95,14 @@ public class Validator_A1b
             }
             else
             {
-                @SuppressWarnings({"squid:S4435","squid:S2755"}) // self-created XML
+                @SuppressWarnings({"squid:S4435"}) // self-created XML
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
                 XmlResultParser xrp = new XmlResultParser();
                 if (isGroup)
                 {
+                    @SuppressWarnings({"squid:S2755"}) // self-created XML
                     Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
                     Element root = document.createElement("preflights");
                     document.appendChild(root);
