@@ -31,7 +31,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
-import org.apache.pdfbox.pdmodel.PDResources;
 
 /**
  * Do: Draws an XObject.
