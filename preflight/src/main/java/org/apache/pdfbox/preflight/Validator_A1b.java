@@ -95,6 +95,7 @@ public class Validator_A1b
             }
             else
             {
+                @SuppressWarnings({"squid:S4435","squid:S2755"}) // self-created XML
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
@@ -141,6 +142,7 @@ public class Validator_A1b
                 Element result = xrp.validate(new FileDataSource(args[posFile]));
                 Document document = result.getOwnerDocument();
                 document.appendChild(result);
+                @SuppressWarnings({"squid:S4435"}) // self-created XML
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");

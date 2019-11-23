@@ -61,6 +61,7 @@ public class XmpSerializer
     public XmpSerializer()
     {
         // xml init
+        @SuppressWarnings({"squid:S2755"}) // self-created XML
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         try
         {
@@ -288,6 +289,7 @@ public class XmpSerializer
      */
     private void save(Node doc, OutputStream outStream, String encoding) throws TransformerException
     {
+        @SuppressWarnings({"squid:S4435"}) // self-created XML
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         // human readable
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
