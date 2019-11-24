@@ -295,23 +295,15 @@ public final class PDAcroForm implements COSObjectable
             refreshAppearances(fields);
         }
 
-        // the content stream to write to
-        PDPageContentStream contentStream;
-
         // get the widgets per page
         Map<COSDictionary,Set<COSDictionary>> pagesWidgetsMap = buildPagesWidgetsMap(fields);
-        
+
         // preserve all non widget annotations
         for (PDPage page : document.getPages())
         {
             Set<COSDictionary> widgetsForPageMap = pagesWidgetsMap.get(page.getCOSObject());
-
-            // indicates if the original content stream
-            // has been wrapped in a q...Q pair.
-            boolean isContentStreamWrapped = false;
-            
             List<PDAnnotation> annotations = new ArrayList<PDAnnotation>();
-            
+            PDPageContentStream contentStream = null;
             for (PDAnnotation annotation: page.getAnnotations())
             {
                 if (widgetsForPageMap != null && !widgetsForPageMap.contains(annotation.getCOSObject()))
@@ -322,9 +314,12 @@ public final class PDAcroForm implements COSObjectable
                          annotation.getNormalAppearanceStream() != null && 
                          annotation.getNormalAppearanceStream().getBBox() != null)
                 {
-                    contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, !isContentStreamWrapped);
-                    isContentStreamWrapped = true;
-                    
+                    if (contentStream == null)
+                    {
+                        // have one content stream for all (reduces the memory footprint)
+                        contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, true);
+                    }
+
                     PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
                     
                     PDFormXObject fieldObject = new PDFormXObject(appearanceStream.getCOSObject());
@@ -383,8 +378,11 @@ public final class PDAcroForm implements COSObjectable
                     
                     contentStream.drawForm(fieldObject);
                     contentStream.restoreGraphicsState();
-                    contentStream.close();
-                }
+                }    
+            }
+            if (contentStream != null)
+            {
+                contentStream.close();
             }
             page.setAnnotations(annotations);
         }
