@@ -262,23 +262,34 @@ public class PDPropBuildDataDict implements COSObjectable
      * attribute will be set to true.
      *
      * @return true if NonEFontNoWarn is set to true
+     * @see #setNonEFontNoWarn(boolean)
      */
     public boolean getNonEFontNoWarn()
     {
         return dictionary.getBoolean(COSName.NON_EFONT_NO_WARN, true);
     }
 
-    /*
-     * setNonEFontNoWarn missing. Maybe not needed or should be self
-     * implemented.
+    /**
+     * If true, the reader should not display a warning about fonts not being embedded.
      *
-     * Documentation says:
-     * (Optional; PDF 1.5) If there is a LegalPDF dictionary in the catalog
-     * of the PDF file and the NonEmbeddedFonts attribute in this dictionary
-     * has a non zero value, and the viewing application has a preference
-     * set to suppress the display of this warning then the value of this
-     * attribute will be set to true.
+     * @param noEmbedFontWarning true if there is a Legal dictionary in the catalog and the
+     * NonEmbeddedFonts attribute has a non-zero value
+     *
+     * Documentation says: (Optional; PDF 1.5) If there is a LegalPDF dictionary in the catalog of
+     * the PDF file and the NonEmbeddedFonts attribute in this dictionary has a non zero value, and
+     * the viewing application has a preference set to suppress the display of this warning then the
+     * value of this attribute will be set to true.
+     *
+     * @see
+     * <a href="https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/Acrobat_Signature_BuildDict.pdf#page=6">Digital
+     * Signature Build Dictionary Specification</a>
+     * @see #getNonEFontNoWarn()
+     * @see COSName#NON_EFONT_NO_WARN
      */
+    public void setNonEFontNoWarn(boolean noEmbedFontWarning)
+    {
+        dictionary.setBoolean(COSName.NON_EFONT_NO_WARN, noEmbedFontWarning);
+    }
 
     /**
      * If true, the application was in trusted mode when signing took place.
