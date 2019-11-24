@@ -80,6 +80,7 @@ public class AddValidationInformation
     private PDDocument document;
     private final Set<BigInteger> foundRevocationInformation = new HashSet<>();
     private Calendar signDate;
+    private final Set<X509Certificate> ocspChecked = new HashSet<>();
 
     /**
      * Signs the given PDF file.
@@ -239,7 +240,7 @@ public class AddValidationInformation
         }
         // To avoid getting same revocation information twice.
         boolean isRevocationInfoFound = foundRevocationInformation
-                .contains(certInfo.getCertificate().getSerialNumber());
+                .contains(certInfo.getCertificate().getSerialNumber()); //TODO serial number is not unique!
         if (!isRevocationInfoFound)
         {
             if (certInfo.getOcspUrl() != null && certInfo.getIssuerCertificate() != null)
@@ -331,6 +332,11 @@ public class AddValidationInformation
     private void addOcspData(CertSignatureInformation certInfo) throws IOException, OCSPException,
             CertificateProccessingException, RevokedCertificateException
     {
+        if (ocspChecked.contains(certInfo.getCertificate()))
+        {
+            // This certificate has been OCSP-checked before
+            return;
+        }
         OcspHelper ocspHelper = new OcspHelper(
                 certInfo.getCertificate(),
                 signDate.getTime(),
@@ -338,6 +344,7 @@ public class AddValidationInformation
                 new HashSet<>(certInformationHelper.getCertificateSet()),
                 certInfo.getOcspUrl());
         OCSPResp ocspResp = ocspHelper.getResponseOcsp();
+        ocspChecked.add(certInfo.getCertificate());
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
         X509Certificate ocspResponderCertificate = ocspHelper.getOcspResponderCertificate();
         certInformationHelper.addAllCertsFromHolders(basicResponse.getCerts());
