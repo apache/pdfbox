@@ -463,6 +463,12 @@ public final class CertificateVerifier
             return;
         }
 
+        if (ocspHelper.getCertificateToCheck().equals(ocspResponderCertificate))
+        {
+            LOG.info("OCSP responder certificate is identical to certificate to check");
+            return;
+        }
+
         LOG.info("Check of OCSP responder certificate");
         Set<X509Certificate> additionalCerts2 = new HashSet<X509Certificate>(additionalCerts);
         JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
