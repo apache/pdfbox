@@ -64,6 +64,7 @@ public class CertInformationCollector
     private static final int MAX_CERTIFICATE_CHAIN_DEPTH = 5;
 
     private final Set<X509Certificate> certificateSet = new HashSet<X509Certificate>();
+    private final Set<String> urlSet = new HashSet<String>();
 
     private final JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
 
@@ -277,6 +278,11 @@ public class CertInformationCollector
     private void getAlternativeIssuerCertificate(CertSignatureInformation certInfo, int maxDepth)
             throws CertificateProccessingException
     {
+        if (urlSet.contains(certInfo.issuerUrl))
+        {
+            return;
+        }
+        urlSet.add(certInfo.issuerUrl);
         LOG.info("Get alternative issuer certificate from: " + certInfo.issuerUrl);
         try
         {
