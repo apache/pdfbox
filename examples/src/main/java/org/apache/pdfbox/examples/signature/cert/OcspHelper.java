@@ -106,6 +106,16 @@ public class OcspHelper
     }
 
     /**
+     * Get the certificate to be OCSP-checked.
+     * 
+     * @return The certificate to be OCSP-checked.
+     */
+    X509Certificate getCertificateToCheck()
+    {
+        return certificateToCheck;
+    }
+
+    /**
      * Performs and verifies the OCSP-Request
      *
      * @return the OCSPResp, when the request was successful, else a corresponding exception will be
