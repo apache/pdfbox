@@ -67,7 +67,7 @@ class AnnotFlag extends Flag
                 new Object[]{7, "ReadOnly", annotation.isReadOnly()},
                 new Object[]{8, "Locked", annotation.isLocked()},
                 new Object[]{9, "ToggleNoView", annotation.isToggleNoView()},
-                new Object[]{10, "LockedContents", annotation.isLocked()}
+                new Object[]{10, "LockedContents", annotation.isLockedContents()}
         };
     }
 }
