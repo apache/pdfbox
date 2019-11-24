@@ -91,7 +91,11 @@ public abstract class FDFAnnotation implements COSObjectable
      * An annotation flag.
      */
     private static final int FLAG_TOGGLE_NO_VIEW = 1 << 8;
-    
+    /**
+     * An annotation flag.
+     */
+    private static final int FLAG_LOCKED_CONTENTS = 1 << 9;
+
     /**
      * Annotation dictionary.
      */
@@ -679,6 +683,26 @@ public abstract class FDFAnnotation implements COSObjectable
     public final void setToggleNoView(boolean toggleNoView)
     {
         annot.setFlag(COSName.F, FLAG_TOGGLE_NO_VIEW, toggleNoView);
+    }
+
+    /**
+     * Get the LockedContents flag.
+     *
+     * @return The LockedContents flag.
+     */
+    public boolean isLockedContents()
+    {
+        return annot.getFlag(COSName.F, FLAG_LOCKED_CONTENTS);
+    }
+
+    /**
+     * Set the LockedContents flag.
+     * 
+     * @param lockedContents The new LockedContents flag.
+     */
+    public void setLockedContents(boolean lockedContents)
+    {
+        annot.setFlag(COSName.F, FLAG_LOCKED_CONTENTS, lockedContents);
     }
 
     /**
