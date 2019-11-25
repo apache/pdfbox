@@ -199,33 +199,27 @@ public class AddValidationInformation
             }
             catch (InstantiationException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
-                return null;
+                throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
             }
             catch (IllegalAccessException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
-                return null;
+                throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
             }
             catch (NoSuchMethodException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
-                return null;
+                throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
             }
             catch (SecurityException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
-                return null;
+                throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
             }
             catch (IllegalArgumentException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
-                return null;
+                throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
             }
             catch (InvocationTargetException ex)
             {
-                LOG.error("Failed to create new instance of " + clazz.getCanonicalName(), ex);
-                return null;
+                throw new IOException("Failed to create new instance of " + clazz.getCanonicalName(), ex);
             }
             result.setDirect(false);
             parent.setItem(COSName.getPDFName(name), result);
