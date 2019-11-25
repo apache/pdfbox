@@ -101,7 +101,10 @@ public final class ExtractEmbeddedFiles
                             {
                                 PDComplexFileSpecification complexFileSpec = (PDComplexFileSpecification) fileSpec;
                                 PDEmbeddedFile embeddedFile = getEmbeddedFile(complexFileSpec);
-                                extractFile(filePath, complexFileSpec.getFilename(), embeddedFile);
+                                if (embeddedFile != null)
+                                {
+                                    extractFile(filePath, complexFileSpec.getFilename(), embeddedFile);
+                                }
                             }
                         }
                     }
@@ -126,7 +129,10 @@ public final class ExtractEmbeddedFiles
             String filename = entry.getKey();
             PDComplexFileSpecification fileSpec = entry.getValue();
             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
-            extractFile(filePath, filename, embeddedFile);
+            if (embeddedFile != null)
+            {
+                extractFile(filePath, filename, embeddedFile);
+            }
         }
     }
 
