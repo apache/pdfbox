@@ -96,7 +96,10 @@ public final class ExtractEmbeddedFiles
                             PDAnnotationFileAttachment annotationFileAttachment = (PDAnnotationFileAttachment) annotation;
                             PDComplexFileSpecification fileSpec = (PDComplexFileSpecification) annotationFileAttachment.getFile();
                             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
-                            extractFile(filePath, fileSpec.getFilename(), embeddedFile);
+                            if (embeddedFile != null)
+                            {
+                                extractFile(filePath, fileSpec.getFilename(), embeddedFile);
+                            }
                         }
                     }
                 }
@@ -120,7 +123,10 @@ public final class ExtractEmbeddedFiles
             String filename = entry.getKey();
             PDComplexFileSpecification fileSpec = entry.getValue();
             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
-            extractFile(filePath, filename, embeddedFile);
+            if (embeddedFile != null)
+            {
+                extractFile(filePath, filename, embeddedFile);
+            }
         }
     }
 
