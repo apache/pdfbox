@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -64,6 +63,8 @@ import org.bouncycastle.cert.ocsp.OCSPResp;
  * V1.1.2 (2009-12), Part 4: PAdES Long Term - PAdES-LTV Profile. This procedure appends the
  * Validation Information of the last signature (more precise its signer(s)) to a copy of the
  * document. The signature and the signed data will not be touched and stay valid.
+ * <p>
+ * See also <a href="http://eprints.hsr.ch/id/eprint/616">Bachelor thesis (in German) about LTV</a>
  *
  * @author Alexis Suter
  */
@@ -79,9 +80,12 @@ public class AddValidationInformation
     private COSArray crls;
     private COSArray certs;
     private PDDocument document;
-    private final Set<BigInteger> foundRevocationInformation = new HashSet<>();
+    private final Set<X509Certificate> foundRevocationInformation = new HashSet<>();
     private Calendar signDate;
     private final Set<X509Certificate> ocspChecked = new HashSet<>();
+    //TODO foundRevocationInformation and ocspChecked have a similar purpose. One of them should likely
+    // be removed and the code improved. When doing so, keep in mind that ocspChecked was added last,
+    // because of a problem with freetsa.
 
     /**
      * Signs the given PDF file.
@@ -240,8 +244,7 @@ public class AddValidationInformation
             return;
         }
         // To avoid getting same revocation information twice.
-        boolean isRevocationInfoFound = foundRevocationInformation
-                .contains(certInfo.getCertificate().getSerialNumber());
+        boolean isRevocationInfoFound = foundRevocationInformation.contains(certInfo.getCertificate());
         if (!isRevocationInfoFound)
         {
             if (certInfo.getOcspUrl() != null && certInfo.getIssuerCertificate() != null)
@@ -383,7 +386,7 @@ public class AddValidationInformation
         {
             correspondingOCSPs.add(ocspStream);
         }
-        foundRevocationInformation.add(certInfo.getCertificate().getSerialNumber());
+        foundRevocationInformation.add(certInfo.getCertificate());
     }
 
     /**
@@ -454,7 +457,7 @@ public class AddValidationInformation
                 correspondingCRLs = savedCorrespondingCRLs;
             }
         }
-        foundRevocationInformation.add(certInfo.getCertificate().getSerialNumber());
+        foundRevocationInformation.add(certInfo.getCertificate());
     }
 
     private void updateVRI(CertSignatureInformation certInfo, COSDictionary vri) throws IOException
