@@ -599,9 +599,9 @@ public final class ShowSignature
         @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
         Collection<X509CertificateHolder> tstMatches =
                 timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
-        X509CertificateHolder holder = tstMatches.iterator().next();
-        X509Certificate tstCert = new JcaX509CertificateConverter().getCertificate(holder);
-        SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(tstCert);
+        X509CertificateHolder certificateHolder = tstMatches.iterator().next();
+        SignerInformationVerifier siv = 
+                new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);
         timeStampToken.validate(siv);
         System.out.println("TimeStampToken validated");
     }
