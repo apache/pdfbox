@@ -338,12 +338,10 @@ public class TestCreateSignature
             SignerInformation signerInformation = signers.iterator().next();
             Collection matches = certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
             X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
-            X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
-
-            Assert.assertEquals(certificate, certFromSignedData);
+            Assert.assertArrayEquals(certificate.getEncoded(), certificateHolder.getEncoded());
 
             // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
-            if (!signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certFromSignedData)))
+            if (!signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certificateHolder)))
             {
                 Assert.fail("Signature verification failed");
             }
