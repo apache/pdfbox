@@ -204,7 +204,7 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 // catch corrupt file
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#flTbl
-                LOG.error("FeatureRecord array not alphabetically sorted by FeatureTag: " +
+                LOG.warn("FeatureRecord array not alphabetically sorted by FeatureTag: " +
                           featureTags[i] + " < " + featureTags[i - 1]);
                 return new FeatureListTable(0, new FeatureRecord[0]);
             }
