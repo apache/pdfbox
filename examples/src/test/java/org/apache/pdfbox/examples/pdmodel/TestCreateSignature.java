@@ -32,7 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,7 +54,6 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.Hex;
 import org.apache.wink.client.MockHttpServer;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -347,7 +345,6 @@ public class TestCreateSignature
                 @SuppressWarnings("unchecked")
                 Collection matches = certificatesStore.getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
                 X509CertificateHolder certificateHolder = (X509CertificateHolder) matches.iterator().next();
-                X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
                 // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
                 if (!signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certificateHolder)))
                 {
