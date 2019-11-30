@@ -93,7 +93,7 @@ public final class CreateSimpleForm
         widget.setPage(page);
 
         // set green border and yellow background
-        // if you prefer defaults, just delete this code block
+        // if you prefer defaults, delete this code block
         PDAppearanceCharacteristicsDictionary fieldAppearance
                 = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
         fieldAppearance.setBorderColour(new PDColor(new float[]{0,1,0}, PDDeviceRGB.INSTANCE));
