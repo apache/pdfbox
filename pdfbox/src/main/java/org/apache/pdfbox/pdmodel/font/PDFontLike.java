@@ -68,7 +68,8 @@ public interface PDFontLike
      * but there is no corresponding advance height. The logical height of a character is the same
      * for every character in a font, so if you want that, retrieve the font bbox's height. 
      * Otherwise if you want the visual bounds of the glyph then call getPath(..) on the appropriate
-     * PDFont subclass to retrieve the glyph outline as a GeneralPath.
+     * PDFont subclass to retrieve the glyph outline as a GeneralPath. See the cyan rectangles in
+     * the <b>DrawPrintTextLocations.java</b> example to see this in action.
      * 
      * @param code character code
      * @deprecated Use
@@ -82,7 +83,8 @@ public interface PDFontLike
      * Returns the advance width of the given character, in glyph space.<p>
      * 
      * If you want the visual bounds of the glyph then call getPath(..) on the appropriate
-     * PDFont subclass to retrieve the glyph outline as a GeneralPath instead.
+     * PDFont subclass to retrieve the glyph outline as a GeneralPath instead. See the cyan
+     * rectangles in the <b>DrawPrintTextLocations.java</b> example to see this in action.
      *
      * @param code character code
      */
