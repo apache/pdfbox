@@ -109,7 +109,7 @@ public final class CreateMultiWidgetsForm
             widget2.setParent(textBox);
             
             // set green border and yellow background for 1st widget
-            // if you prefer defaults, just delete this code block
+            // if you prefer defaults, delete this code block
             PDAppearanceCharacteristicsDictionary fieldAppearance1
                     = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
             fieldAppearance1.setBorderColour(new PDColor(new float[]{0,1,0}, PDDeviceRGB.INSTANCE));
@@ -117,7 +117,7 @@ public final class CreateMultiWidgetsForm
             widget1.setAppearanceCharacteristics(fieldAppearance1);
             
             // set red border and green background for 2nd widget
-            // if you prefer defaults, just delete this code block
+            // if you prefer defaults, delete this code block
             PDAppearanceCharacteristicsDictionary fieldAppearance2
                     = new PDAppearanceCharacteristicsDictionary(new COSDictionary());
             fieldAppearance2.setBorderColour(new PDColor(new float[]{1,0,0}, PDDeviceRGB.INSTANCE));
