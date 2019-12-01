@@ -16,8 +16,11 @@
 
 package org.apache.pdfbox.examples.signature;
 
+import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -28,8 +31,23 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.cms.SignerInformationVerifier;
+import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.tsp.TSPException;
+import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.util.Selector;
 
 /**
  * Utility class for the signature / timestamp examples.
@@ -233,5 +251,38 @@ public class SigUtils
             }
         }
         return null;
+    }
+
+    public static TimeStampToken extractTimeStampTokenFromSignerInformation(SignerInformation signerInformation)
+            throws CMSException, IOException, TSPException
+    {
+        if (signerInformation.getUnsignedAttributes() == null)
+        {
+            return null;
+        }
+        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
+        // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
+        Attribute attribute = unsignedAttributes.get(
+                PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
+        if (attribute == null)
+        {
+            return null;
+        }
+        ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
+        CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
+        return new TimeStampToken(signedTSTData);
+    }
+
+    public static void validateTimestampToken(TimeStampToken timeStampToken)
+            throws TSPException, CertificateException, OperatorCreationException, IOException
+    {
+        // https://stackoverflow.com/questions/42114742/
+        @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
+        Collection<X509CertificateHolder> tstMatches =
+                timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
+        X509CertificateHolder certificateHolder = tstMatches.iterator().next();
+        SignerInformationVerifier siv = 
+                new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);
+        timeStampToken.validate(siv);
     }
 }
