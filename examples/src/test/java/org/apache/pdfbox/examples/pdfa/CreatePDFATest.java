@@ -18,7 +18,10 @@ package org.apache.pdfbox.examples.pdfa;
 import junit.framework.TestCase;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.security.KeyStore;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
+import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -52,12 +55,21 @@ public class CreatePDFATest extends TestCase
     {
         System.out.println("testCreatePDFA");
         String pdfaFilename = outDir + "/PDFA.pdf";
+        String signedPdfaFilename = outDir + "/PDFA_signed.pdf";
+        String keystorePath = "src/test/resources/org/apache/pdfbox/examples/signature/keystore.p12";
         String message = "The quick brown fox jumps over the lazy dog äöüÄÖÜß @°^²³ {[]}";
         String dir = "../pdfbox/src/main/resources/org/apache/pdfbox/resources/ttf/";
         String fontfile = dir + "LiberationSans-Regular.ttf";
         CreatePDFA.main(new String[] { pdfaFilename, message, fontfile });
-        
-        PreflightParser preflightParser = new PreflightParser(new File(pdfaFilename));
+
+        // sign PDF - because we want to make sure that the signed PDF is also PDF/A-1b
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream(keystorePath), "123456".toCharArray());
+        CreateSignature signing = new CreateSignature(keystore, "123456".toCharArray());
+        signing.signDetached(new File(pdfaFilename), new File(signedPdfaFilename));
+
+        // Verify that it is PDF/A-1b
+        PreflightParser preflightParser = new PreflightParser(new File(signedPdfaFilename));
         preflightParser.parse();
         PreflightDocument preflightDocument = preflightParser.getPreflightDocument();
         preflightDocument.validate();
