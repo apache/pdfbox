@@ -63,11 +63,8 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
-import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.CMSAttributes;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.Time;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaCertStore;
@@ -77,7 +74,6 @@ import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
@@ -380,8 +376,7 @@ public final class ShowSignature
         System.out.println("certs=" + certs);
         
         String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
-        // compare the hash of the signed content with the hash in
-        // the timestamp
+        // compare the hash of the signed content with the hash in the timestamp
         if (Arrays.equals(MessageDigest.getInstance(hashAlgorithm).digest(buf),
                 timeStampToken.getTimeStampInfo().getMessageImprintDigest()))
         {
@@ -394,7 +389,7 @@ public final class ShowSignature
 
         X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
         SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
-        validateTimestampToken(timeStampToken);
+        SigUtils.validateTimestampToken(timeStampToken);
         verifyCertificateChain(timeStampToken.getCertificates(),
                 certFromTimeStamp,
                 timeStampToken.getTimeStampInfo().getGenTime());
@@ -448,13 +443,13 @@ public final class ShowSignature
         SigUtils.checkCertificateUsage(certFromSignedData);
         
         // Embedded timestamp
-        TimeStampToken timeStampToken = extractTimeStampTokenFromSignerInformation(signerInformation);
+        TimeStampToken timeStampToken = SigUtils.extractTimeStampTokenFromSignerInformation(signerInformation);
         if (timeStampToken != null)
         {
             // tested with QV_RCA1_RCA3_CPCPS_V4_11.pdf
             // https://www.quovadisglobal.com/~/media/Files/Repository/QV_RCA1_RCA3_CPCPS_V4_11.ashx
             // also 021496.pdf and 036351.pdf from digitalcorpora
-            validateTimestampToken(timeStampToken);
+            SigUtils.validateTimestampToken(timeStampToken);
             @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
             Collection<X509CertificateHolder> tstMatches =
                 timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
@@ -544,26 +539,6 @@ public final class ShowSignature
         }
     }
 
-    private TimeStampToken extractTimeStampTokenFromSignerInformation(SignerInformation signerInformation)
-            throws CMSException, IOException, TSPException
-    {
-        if (signerInformation.getUnsignedAttributes() == null)
-        {
-            return null;
-        }
-        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-        // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
-        Attribute attribute = unsignedAttributes.get(
-                PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
-        if (attribute == null)
-        {
-            return null;
-        }
-        ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
-        CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
-        return new TimeStampToken(signedTSTData);
-    }
-
     private void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
             X509Certificate certFromSignedData, Date signDate)
             throws CertificateVerificationException, CertificateException
@@ -588,20 +563,6 @@ public final class ShowSignature
         // For the EU, get a list here:
         // https://ec.europa.eu/digital-single-market/en/eu-trusted-lists-trust-service-providers
         // ( getRootCertificates() is not helpful because these are SSL certificates)
-    }
-
-    private void validateTimestampToken(TimeStampToken timeStampToken)
-            throws TSPException, CertificateException, OperatorCreationException, IOException
-    {
-        // https://stackoverflow.com/questions/42114742/
-        @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
-        Collection<X509CertificateHolder> tstMatches =
-                timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
-        X509CertificateHolder certificateHolder = tstMatches.iterator().next();
-        SignerInformationVerifier siv = 
-                new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);
-        timeStampToken.validate(siv);
-        System.out.println("TimeStampToken validated");
     }
 
     // for later use: get all root certificates. Will be used to check
