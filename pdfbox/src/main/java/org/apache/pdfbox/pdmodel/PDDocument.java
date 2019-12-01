@@ -61,6 +61,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -626,6 +627,13 @@ public class PDDocument implements Closeable
         // have an annotation rectangle that has zero height and width."
         // Set rectangle for non-visual signature to rectangle array [ 0 0 0 0 ]
         signatureField.getWidgets().get(0).setRectangle(new PDRectangle());
+        
+        // The visual appearance must also exist for an invisible signature but may be empty.
+        PDAppearanceDictionary appearanceDictionary = new PDAppearanceDictionary();
+        PDAppearanceStream appearanceStream = new PDAppearanceStream(this);
+        appearanceStream.setBBox(new PDRectangle());
+        appearanceDictionary.setNormalAppearance(appearanceStream);
+        signatureField.getWidgets().get(0).setAppearance(appearanceDictionary);
     }
 
     /**
