@@ -53,7 +53,7 @@ class FieldFlag extends Flag
         {
             return "Choice field flag";
         }
-        return null;
+        return "Field flag";
     }
 
     @Override
@@ -80,7 +80,7 @@ class FieldFlag extends Flag
         {
             return getChoiceFieldFlagBits(flagValue);
         }
-        return null;
+        return getFieldFlagBits(flagValue);
     }
 
     private Object[][] getTextFieldFlagBits(final int flagValue)
@@ -124,6 +124,15 @@ class FieldFlag extends Flag
                 new Object[]{22, "MultiSelect", isFlagBitSet(flagValue, 22)},
                 new Object[]{23, "DoNotSpellCheck", isFlagBitSet(flagValue, 23)},
                 new Object[]{27, "CommitOnSelChange", isFlagBitSet(flagValue, 27)}
+        };
+    }
+
+    private Object[][] getFieldFlagBits(final int flagValue)
+    {
+        return new Object[][]{
+                new Object[]{1, "ReadOnly", isFlagBitSet(flagValue, 1)},
+                new Object[]{2, "Required", isFlagBitSet(flagValue, 2)},
+                new Object[]{3, "NoExport", isFlagBitSet(flagValue, 3)}
         };
     }
 
