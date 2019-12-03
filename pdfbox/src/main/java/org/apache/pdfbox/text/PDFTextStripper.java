@@ -352,7 +352,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     }
                     else
                     {
-                        charactersByArticle.add(new ArrayList<TextPosition>());
+                        charactersByArticle.add(new ArrayList<>());
                     }
                 }
             }

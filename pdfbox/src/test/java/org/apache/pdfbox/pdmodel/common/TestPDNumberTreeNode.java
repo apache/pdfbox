@@ -162,7 +162,7 @@ public class TestPDNumberTreeNode extends TestCase
 
         Assert.assertEquals(12, (int) this.node1.getUpperLimit());
 
-        this.node24.setNumbers( new HashMap<Integer, COSObjectable>() );
+        this.node24.setNumbers(new HashMap<>());
         Assert.assertNull( this.node24.getUpperLimit() );
         
         this.node5.setNumbers( null );
@@ -182,7 +182,7 @@ public class TestPDNumberTreeNode extends TestCase
 
         Assert.assertEquals(1, (int) this.node1.getLowerLimit());
         
-        this.node24.setNumbers( new HashMap<Integer, COSObjectable>() );
+        this.node24.setNumbers(new HashMap<>());
         Assert.assertNull( this.node24.getLowerLimit() );
         
         this.node5.setNumbers( null );

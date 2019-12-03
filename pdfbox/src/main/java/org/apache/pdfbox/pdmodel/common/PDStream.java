@@ -335,10 +335,8 @@ public class PDStream implements COSObjectable
         }
         if (dp instanceof COSDictionary)
         {
-            Map<?, ?> map = COSDictionaryMap
-                    .convertBasicTypesToMap((COSDictionary) dp);
-            retval = new COSArrayList<Object>(map, dp, stream,
-                    COSName.DECODE_PARMS);
+            Map<?, ?> map = COSDictionaryMap.convertBasicTypesToMap((COSDictionary) dp);
+            retval = new COSArrayList<>(map, dp, stream, COSName.DECODE_PARMS);
         } 
         else if (dp instanceof COSArray)
         {
@@ -439,10 +437,8 @@ public class PDStream implements COSObjectable
         COSBase dp = stream.getDictionaryObject(COSName.F_DECODE_PARMS);
         if (dp instanceof COSDictionary)
         {
-            Map<?, ?> map = COSDictionaryMap
-                    .convertBasicTypesToMap((COSDictionary) dp);
-            retval = new COSArrayList<Object>(map, dp, stream,
-                    COSName.F_DECODE_PARMS);
+            Map<?, ?> map = COSDictionaryMap.convertBasicTypesToMap((COSDictionary) dp);
+            retval = new COSArrayList<>(map, dp, stream, COSName.F_DECODE_PARMS);
         } 
         else if (dp instanceof COSArray)
         {

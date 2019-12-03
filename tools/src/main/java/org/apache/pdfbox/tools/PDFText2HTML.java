@@ -47,7 +47,6 @@ public class PDFText2HTML extends PDFTextStripper
      */
     public PDFText2HTML() throws IOException
     {
-        super();
         setLineSeparator(LINE_SEPARATOR);
         setParagraphStart("<p>");
         setParagraphEnd("</p>"+ LINE_SEPARATOR);
