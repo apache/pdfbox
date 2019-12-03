@@ -18,6 +18,7 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -605,6 +606,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
 
     // fields
     private final String name;
+    private final Charset charset;
     private final int hashCode;
 
     /**
@@ -615,6 +617,19 @@ public final class COSName extends COSBase implements Comparable<COSName>
      * @return A COSName with the specified name.
      */
     public static COSName getPDFName(String aName)
+    {
+        return getPDFName(aName, Charsets.UTF_8);
+    }
+
+    /**
+     * This will get a COSName object with that name.
+     *
+     * @param aName The name of the object.
+     * @param charset Character set used to encode/decode name value
+     *
+     * @return A COSName with the specified name.
+     */
+    public static COSName getPDFName(String aName, Charset charset)
     {
         COSName name = null;
         if (aName != null)
@@ -628,11 +643,33 @@ public final class COSName extends COSBase implements Comparable<COSName>
                 if (name == null)
                 {
                     // name is added to the synchronized map in the constructor
-                    name = new COSName(aName, false);
+                    name = new COSName(aName, false, charset);
                 }
             }
         }
         return name;
+    }
+
+    /**
+     * Private constructor. This will limit the number of COSName objects. that are created.
+     *
+     * @param aName The name of the COSName object.
+     * @param staticValue Indicates if the COSName object is static so that it can be stored in the HashMap without
+     * synchronizing.
+     */
+    private COSName(String aName, boolean staticValue, Charset aCharset)
+    {
+        name = aName;
+        charset = aCharset == null ? Charsets.UTF_8 : aCharset;
+        if (staticValue)
+        {
+            commonNameMap.put(aName, this);
+        }
+        else
+        {
+            nameMap.put(aName, this);
+        }
+        hashCode = name.hashCode();
     }
 
     /**
@@ -644,16 +681,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
      */
     private COSName(String aName, boolean staticValue)
     {
-        name = aName;
-        if (staticValue)
-        {
-            commonNameMap.put(aName, this);
-        }
-        else
-        {
-            nameMap.put(aName, this);
-        }
-        hashCode = name.hashCode();
+        this(aName, staticValue, Charsets.UTF_8);
     }
 
     /**
@@ -724,7 +752,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public void writePDF(OutputStream output) throws IOException
     {
         output.write('/');
-        byte[] bytes = getName().getBytes(Charsets.UTF_8);
+        byte[] bytes = getName().getBytes(charset);
         for (byte b : bytes)
         {
             int current = b & 0xFF;
