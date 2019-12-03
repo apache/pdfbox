@@ -1475,7 +1475,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
 
     /**
      * Nice method, gives you every object you want Arrays works properly too. Try "P/Annots/[k]/Rect" where k means the
-     * index of the Annotsarray.
+     * index of the Annots array.
      *
      * @param objPath the relative path to the object.
      * @return the object
@@ -1517,7 +1517,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     {
         try
         {
-            return getDictionaryString(this, new ArrayList<COSBase>());
+            return getDictionaryString(this, new ArrayList<>());
         }
         catch (IOException e)
         {

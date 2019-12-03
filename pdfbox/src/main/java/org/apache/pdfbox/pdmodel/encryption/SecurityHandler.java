@@ -83,8 +83,7 @@ public abstract class SecurityHandler
     // Because COSString.equals() checks the contents, decryption was then skipped.
     // This solution keeps all different "equal" objects.
     // IdentityHashMap solves this problem and is also faster than a HashMap
-    private final Set<COSBase> objects =
-            Collections.newSetFromMap(new IdentityHashMap<COSBase, Boolean>());
+    private final Set<COSBase> objects = Collections.newSetFromMap(new IdentityHashMap<>());
 
     private boolean useAES;
 

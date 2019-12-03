@@ -1496,7 +1496,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
 
             boolean needsBackdrop = !isSoftMask && !form.getGroup().isIsolated() &&
-                hasBlendMode(form, new HashSet<COSBase>());
+                hasBlendMode(form, new HashSet<>());
             BufferedImage backdropImage = null;
             // Position of this group in parent group's coordinates
             int backdropX = 0;

@@ -2107,7 +2107,7 @@ public class COSParser extends BaseParser implements ICOSParser
             COSBase pages = root.getDictionaryObject(COSName.PAGES);
             if (pages instanceof COSDictionary)
             {
-                checkPagesDictionary((COSDictionary) pages, new HashSet<COSObject>());
+                checkPagesDictionary((COSDictionary) pages, new HashSet<>());
             }
         }
         if (!(root.getDictionaryObject(COSName.PAGES) instanceof COSDictionary))

@@ -152,11 +152,12 @@ public class PNGConverterTest
 
     private void checkImageConvertFail(String name) throws IOException
     {
-        PDDocument doc = new PDDocument();
-        byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
-        PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
-        assertNull(pdImageXObject);
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
+            assertNull(pdImageXObject);
+        }
     }
 
     private void checkImageConvert(String name) throws IOException
@@ -206,7 +207,7 @@ public class PNGConverterTest
         assertFalse(PNGConverter.checkConverterState(state));
         state.IHDR = validChunk;
         assertTrue(PNGConverter.checkConverterState(state));
-        state.IDATs = new ArrayList<PNGConverter.Chunk>();
+        state.IDATs = new ArrayList<>();
         assertFalse(PNGConverter.checkConverterState(state));
         state.IDATs = Collections.singletonList(validChunk);
         assertTrue(PNGConverter.checkConverterState(state));

@@ -205,7 +205,7 @@ final class FontMapperImpl implements FontMapper
     {
         if (!substitutes.containsKey(match))
         {
-            substitutes.put(match, new ArrayList<String>());
+            substitutes.put(match, new ArrayList<>());
         }
         substitutes.get(match).add(replace);
     }
