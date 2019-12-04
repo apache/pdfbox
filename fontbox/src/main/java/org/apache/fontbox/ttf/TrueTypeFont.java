@@ -628,7 +628,7 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Parses a Unicode PostScript name in the format uniXXXX.
      */
-    private int parseUniName(String name) throws IOException
+    private int parseUniName(String name)
     {
         if (name.startsWith("uni") && name.length() == 7)
         {
