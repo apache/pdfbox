@@ -318,10 +318,8 @@ public abstract class FDFAnnotation implements COSObjectable
      * @param fdfDic The FDF dictionary.
      *
      * @return A newly created FDFAnnotation
-     *
-     * @throws IOException If there is an error accessing the FDF information.
      */
-    public static FDFAnnotation create(COSDictionary fdfDic) throws IOException
+    public static FDFAnnotation create(COSDictionary fdfDic)
     {
         FDFAnnotation retval = null;
         if (fdfDic != null)

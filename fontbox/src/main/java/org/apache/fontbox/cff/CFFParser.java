@@ -764,7 +764,7 @@ public class CFFParser
         }
     }
 
-    private String readString(int index) throws IOException
+    private String readString(int index)
     {
         if (index >= 0 && index <= 390)
         {

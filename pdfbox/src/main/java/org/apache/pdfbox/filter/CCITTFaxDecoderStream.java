@@ -382,7 +382,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
         }
     }
 
-    private void resetBuffer() throws IOException {
+    private void resetBuffer()
+    {
         bufferPos = -1;
     }
 
