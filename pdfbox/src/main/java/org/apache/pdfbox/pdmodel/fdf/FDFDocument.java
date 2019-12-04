@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
@@ -292,7 +293,7 @@ public class FDFDocument implements Closeable
     public void saveXFDF(File fileName) throws IOException
     {
         saveXFDF(new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")));
+                new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)));
     }
 
     /**
@@ -305,7 +306,7 @@ public class FDFDocument implements Closeable
     public void saveXFDF(String fileName) throws IOException
     {
         saveXFDF(new BufferedWriter(
-                new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")));
+                new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)));
     }
 
     /**

@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -305,27 +306,23 @@ public final class TTFSubsetter
             {
                 int platform = record.getPlatformId();
                 int encoding = record.getPlatformEncodingId();
-                String charset = "ISO-8859-1";
+                Charset charset = StandardCharsets.ISO_8859_1;
 
                 if (platform == CmapTable.PLATFORM_WINDOWS &&
                     encoding == CmapTable.ENCODING_WIN_UNICODE_BMP)
                 {
-                    charset = "UTF-16BE";
+                    charset = StandardCharsets.UTF_16BE;
                 }
                 else if (platform == 2) // ISO [deprecated]=
                 {
                     if (encoding == 0) // 7-bit ASCII
                     {
-                        charset = "US-ASCII";
+                        charset = StandardCharsets.US_ASCII;
                     }
                     else if (encoding == 1) // ISO 10646=
                     {
                         //not sure is this is correct??
-                        charset = "UTF16-BE";
-                    }
-                    else if (encoding == 2) // ISO 8859-1
-                    {
-                        charset = "ISO-8859-1";
+                        charset = StandardCharsets.UTF_16BE;
                     }
                 }
                 String value = record.getString();
