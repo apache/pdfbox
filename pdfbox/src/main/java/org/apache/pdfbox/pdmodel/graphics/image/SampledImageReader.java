@@ -569,7 +569,6 @@ final class SampledImageReader
 
     // color key mask: RGB + Binary -> ARGB
     private static BufferedImage applyColorKeyMask(BufferedImage image, BufferedImage mask)
-            throws IOException
     {
         int width = image.getWidth();
         int height = image.getHeight();
