@@ -22,7 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -181,7 +181,7 @@ public final class TTFSubsetter
         }
         checksum &= 0xffffffffL;
 
-        byte[] tagbytes = tag.getBytes("US-ASCII");
+        byte[] tagbytes = tag.getBytes(StandardCharsets.US_ASCII);
 
         out.write(tagbytes, 0, 4);
         out.writeInt((int)checksum);
@@ -428,7 +428,7 @@ public final class TTFSubsetter
         writeUint32(out, 0);
         writeUint32(out, 0);
 
-        out.write(os2.getAchVendId().getBytes("US-ASCII"));
+        out.write(os2.getAchVendId().getBytes(StandardCharsets.US_ASCII));
 
         writeUint16(out, os2.getFsSelection());
         writeUint16(out, uniToGID.firstKey());
@@ -879,7 +879,7 @@ public final class TTFSubsetter
         // names[numberNewGlyphs]
         for (String name : names.keySet())
         {
-            byte[] buf = name.getBytes(Charset.forName("US-ASCII"));
+            byte[] buf = name.getBytes(StandardCharsets.US_ASCII);
             writeUint8(out, buf.length);
             out.write(buf);
         }
