@@ -654,7 +654,7 @@ public abstract class PDFStreamEngine
      * @param tx x-translation
      * @param ty y-translation
      */
-    protected void applyTextAdjustment(float tx, float ty) throws IOException
+    protected void applyTextAdjustment(float tx, float ty)
     {
         // update the text matrix
         textMatrix.concatenate(Matrix.getTranslateInstance(tx, ty));
