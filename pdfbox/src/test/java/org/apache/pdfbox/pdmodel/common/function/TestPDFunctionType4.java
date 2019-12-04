@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.common.function;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSStream;
@@ -42,7 +43,7 @@ public class TestPDFunctionType4 extends TestCase
         
         try (OutputStream out = stream.createOutputStream())
         {
-            byte[] data = function.getBytes("US-ASCII");
+            byte[] data = function.getBytes(StandardCharsets.US_ASCII);
             out.write(data, 0, data.length);
         }
 
