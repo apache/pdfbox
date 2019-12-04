@@ -225,12 +225,12 @@ public class KerningSubtable
         pairs.read(data);
     }
 
-    private void readSubtable0Format2(TTFDataStream data) throws IOException
+    private void readSubtable0Format2(TTFDataStream data)
     {
         LOG.info("Kerning subtable format 2 not yet supported.");
     }
 
-    private void readSubtable1(TTFDataStream data) throws IOException
+    private void readSubtable1(TTFDataStream data)
     {
         LOG.info("Kerning subtable format 1 not yet supported.");
     }
