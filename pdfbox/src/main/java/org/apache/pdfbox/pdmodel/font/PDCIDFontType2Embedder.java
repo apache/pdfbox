@@ -226,7 +226,7 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
         return cidFont;
     }
 
-    private void addNameTag(String tag) throws IOException
+    private void addNameTag(String tag)
     {
         String name = fontDescriptor.getFontName();
         String newName = tag + name;
