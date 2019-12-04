@@ -366,7 +366,7 @@ public abstract class PDButton extends PDTerminalField
      * @param value Name of radio button to select
      * @throws IllegalArgumentException if the value is not a valid option.
      */
-    void checkValue(String value) throws IllegalArgumentException
+    void checkValue(String value)
     {
         Set<String> onValues = getOnValues();
         if (COSName.Off.getName().compareTo(value) != 0 && !onValues.contains(value))
