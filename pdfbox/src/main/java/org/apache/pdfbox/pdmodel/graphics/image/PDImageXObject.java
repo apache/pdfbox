@@ -473,6 +473,13 @@ public final class PDImageXObject extends PDXObject implements PDImage
         return image;
     }
 
+    /**
+     * Extract the matte color from a softmask.
+     * 
+     * @param softMask
+     * @return the matte color.
+     * @throws IOException if the color conversion fails.
+     */
     private float[] extractMatte(PDImageXObject softMask) throws IOException
     {
         COSBase base = softMask.getCOSObject().getItem(COSName.MATTE);
@@ -517,7 +524,6 @@ public final class PDImageXObject extends PDXObject implements PDImage
     // soft mask: RGB + Gray -> ARGB
     private BufferedImage applyMask(BufferedImage image, BufferedImage mask,
                                     boolean isSoft, float[] matte)
-            throws IOException
     {
         if (mask == null)
         {

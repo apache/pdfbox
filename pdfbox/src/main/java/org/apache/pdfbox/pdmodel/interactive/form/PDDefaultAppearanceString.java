@@ -233,7 +233,7 @@ class PDDefaultAppearanceString
     /**
      * Returns the font.
      */
-    PDFont getFont() throws IOException
+    PDFont getFont()
     {
         return font;
     }
