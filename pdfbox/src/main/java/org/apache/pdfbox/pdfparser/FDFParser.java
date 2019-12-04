@@ -86,7 +86,7 @@ public class FDFParser extends COSParser
         return dictionary.containsKey(COSName.FDF);
     }
 
-    private void init() throws IOException
+    private void init()
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)

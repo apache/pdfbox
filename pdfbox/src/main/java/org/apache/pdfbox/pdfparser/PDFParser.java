@@ -127,7 +127,7 @@ public class PDFParser extends COSParser
         init(scratchFile);
     }
     
-    private void init(ScratchFile scratchFile) throws IOException
+    private void init(ScratchFile scratchFile)
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)

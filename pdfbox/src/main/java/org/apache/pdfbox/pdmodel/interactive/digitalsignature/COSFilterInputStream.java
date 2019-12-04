@@ -95,7 +95,7 @@ public class COSFilterInputStream extends FilterInputStream
     return i;
   }
 
-  private boolean inRange() throws IOException
+  private boolean inRange()
   {
     long pos = position;
     for (int i = 0; i<byteRange.length/2;++i)
