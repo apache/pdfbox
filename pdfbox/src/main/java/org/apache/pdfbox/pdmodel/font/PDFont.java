@@ -455,8 +455,9 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      *
      * @param code character code
      * @return Unicode character(s)
+     * @throws IOException
      */
-    public String toUnicode(int code)
+    public String toUnicode(int code) throws IOException
     {
         // if the font dictionary containsName a ToUnicode CMap, use that CMap
         if (toUnicodeCMap != null)
