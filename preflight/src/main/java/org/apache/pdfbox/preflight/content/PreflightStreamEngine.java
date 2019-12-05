@@ -243,9 +243,8 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * Valid the number of graphic states if the operator is the Save Graphic state operator ("q")
      * 
      * @param operator
-     * @throws ContentStreamException
      */
-    protected void validateNumberOfGraphicStates(Operator operator) throws ContentStreamException
+    protected void validateNumberOfGraphicStates(Operator operator)
     {
         if (OperatorName.SAVE.equals(operator.getName()))
         {
@@ -261,9 +260,8 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      * Throw a ContentStreamException if the LZW filter is used in a InlinedImage.
      * 
      * @param operator the InlinedImage object (BI to EI)
-     * @throws ContentStreamException
      */
-    protected void validateInlineImageFilter(Operator operator) throws ContentStreamException
+    protected void validateInlineImageFilter(Operator operator)
     {
         COSDictionary dict = operator.getImageParameters();
         /*

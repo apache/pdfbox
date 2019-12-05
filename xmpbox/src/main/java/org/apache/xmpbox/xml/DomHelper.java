@@ -66,9 +66,8 @@ public final class DomHelper
      * 
      * @param description
      * @return the first child element. Might be null.
-     * @throws XmpParsingException
      */
-    public static Element getFirstChildElement(Element description) throws XmpParsingException
+    public static Element getFirstChildElement(Element description)
     {
         NodeList nl = description.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++)
@@ -81,7 +80,7 @@ public final class DomHelper
         return null;
     }
 
-    public static List<Element> getElementChildren(Element description) throws XmpParsingException
+    public static List<Element> getElementChildren(Element description)
     {
         NodeList nl = description.getChildNodes();
         List<Element> ret = new ArrayList<>(nl.getLength());
