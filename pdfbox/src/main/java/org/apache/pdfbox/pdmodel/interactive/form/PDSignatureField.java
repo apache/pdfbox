@@ -135,7 +135,7 @@ public class PDSignatureField extends PDTerminalField
      * @throws UnsupportedOperationException in all cases!
      */
     @Override
-    public void setValue(String value) throws UnsupportedOperationException
+    public void setValue(String value)
     {
         throw new UnsupportedOperationException("Signature fields don't support setting the value as String "
                 + "- use setValue(PDSignature value) instead");
