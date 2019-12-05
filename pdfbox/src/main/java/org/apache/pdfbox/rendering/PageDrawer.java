@@ -672,7 +672,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     // returns the image adjusted for applySoftMaskToPaint().
-    private BufferedImage adjustImage(BufferedImage gray) throws IOException
+    private BufferedImage adjustImage(BufferedImage gray)
     {
         AffineTransform at = new AffineTransform(xform);
         Matrix m = new Matrix(at);
