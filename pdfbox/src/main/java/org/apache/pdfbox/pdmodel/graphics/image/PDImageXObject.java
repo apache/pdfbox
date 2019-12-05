@@ -325,15 +325,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
      */
     public static PDImageXObject createFromByteArray(PDDocument document, byte[] byteArray, String name) throws IOException
     {
-        FileType fileType;
-        try
-        {
-            fileType = FileTypeDetector.detectFileType(byteArray);
-        }
-        catch (IOException e)
-        {
-            throw new IOException("Could not determine file type: " + name, e);
-        }
+        FileType fileType = FileTypeDetector.detectFileType(byteArray);
         if (fileType == null)
         {
             throw new IllegalArgumentException("Image type not supported: " + name);
