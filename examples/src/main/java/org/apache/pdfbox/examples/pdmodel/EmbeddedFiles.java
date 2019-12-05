@@ -18,6 +18,7 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
@@ -83,7 +84,7 @@ public class EmbeddedFiles
             fs.setFileUnicode("Test.txt");
 
             //create a dummy file stream, this would probably normally be a FileInputStream
-            byte[] data = "This is the contents of the embedded file".getBytes("ISO-8859-1");
+            byte[] data = "This is the contents of the embedded file".getBytes(StandardCharsets.ISO_8859_1);
             ByteArrayInputStream fakeFile = new ByteArrayInputStream(data);
             PDEmbeddedFile ef = new PDEmbeddedFile(doc, fakeFile );
             //now lets some of the optional parameters

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -576,7 +577,7 @@ public class Overlay implements Closeable
         try (OutputStream out = stream.createOutputStream(
                 content.length() > 20 ? COSName.FLATE_DECODE : null))
         {
-            out.write(content.getBytes("ISO-8859-1"));
+            out.write(content.getBytes(StandardCharsets.ISO_8859_1));
         }
         return stream;
     }

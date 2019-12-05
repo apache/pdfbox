@@ -21,6 +21,7 @@ import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -2005,7 +2006,7 @@ public class COSParser extends BaseParser
                     start++;
                 }
                 String numbersStr = new String(numbersBytes, start, numbersBytes.length - start,
-                        "ISO-8859-1");
+                        StandardCharsets.ISO_8859_1);
                 numbersStr = numbersStr.replaceAll("\n", " ").replaceAll("  ", " ");
                 String[] numbers = numbersStr.split(" ");
                 if (numbers.length < nrOfObjects * 2)

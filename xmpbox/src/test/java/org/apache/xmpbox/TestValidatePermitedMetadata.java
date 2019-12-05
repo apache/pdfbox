@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -50,7 +51,7 @@ public class TestValidatePermitedMetadata
     {
         List<Object[]> params = new ArrayList<>();
         InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, "ISO-8859-1"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.ISO_8859_1));
         String line = reader.readLine();
         while (line!=null)
         {

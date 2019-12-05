@@ -20,6 +20,7 @@ package org.apache.pdfbox.cos;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 import junit.framework.Test;
@@ -241,7 +242,7 @@ public class TestCOSFloat extends TestCOSNumber
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.accept(visitor);
                 assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
-                testByteArrays(floatToString(num).getBytes("ISO-8859-1"), outStream.toByteArray());
+                testByteArrays(floatToString(num).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();
             }
             catch (IOException e)
@@ -276,7 +277,7 @@ public class TestCOSFloat extends TestCOSNumber
                 cosFloat.writePDF(outStream);
                 assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
                 assertEquals(floatToString(num), outStream.toString("ISO-8859-1"));
-                testByteArrays(floatToString(num).getBytes("ISO-8859-1"), outStream.toByteArray());
+                testByteArrays(floatToString(num).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();
             }
             catch (IOException e)
