@@ -112,7 +112,7 @@ public final class FileTypeDetector
         return root.find(bytes);
     }
 
-    public static FileType detectFileType(final byte[] fileBytes) throws IOException
+    public static FileType detectFileType(final byte[] fileBytes)
     {
         return root.find(fileBytes);
     }
