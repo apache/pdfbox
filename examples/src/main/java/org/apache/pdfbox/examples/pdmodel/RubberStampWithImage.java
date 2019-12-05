@@ -19,6 +19,7 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -156,7 +157,7 @@ public class RubberStampWithImage
 
     private void appendRawCommands(OutputStream os, String commands) throws IOException
     {
-        os.write( commands.getBytes("ISO-8859-1"));
+        os.write( commands.getBytes(StandardCharsets.ISO_8859_1));
     }
 
     /**

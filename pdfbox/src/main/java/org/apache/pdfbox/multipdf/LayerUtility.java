@@ -19,6 +19,7 @@ package org.apache.pdfbox.multipdf;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -89,13 +90,13 @@ public class LayerUtility
         COSStream saveGraphicsStateStream = getDocument().getDocument().createCOSStream();
         try (OutputStream saveStream = saveGraphicsStateStream.createOutputStream())
         {
-            saveStream.write("q\n".getBytes("ISO-8859-1"));
+            saveStream.write("q\n".getBytes(StandardCharsets.ISO_8859_1));
         }
 
         COSStream restoreGraphicsStateStream = getDocument().getDocument().createCOSStream();
         try (OutputStream restoreStream = restoreGraphicsStateStream.createOutputStream())
         {
-            restoreStream.write("Q\n".getBytes("ISO-8859-1"));
+            restoreStream.write("Q\n".getBytes(StandardCharsets.ISO_8859_1));
         }
 
         //Wrap the existing page's content in a save/restore pair (q/Q) to have a controlled

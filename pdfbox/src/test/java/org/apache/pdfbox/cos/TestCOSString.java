@@ -18,6 +18,7 @@ package org.apache.pdfbox.cos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import junit.framework.Test;
@@ -236,9 +237,9 @@ public class TestCOSString extends TestCOSBase
 
         // Testing the getBytes method
         // The first two strings should be stored as ISO-8859-1 because they only contain chars in the range 0..255
-        assertEquals(textAscii, new String(stringAscii.getBytes(), "ISO-8859-1"));
+        assertEquals(textAscii, new String(stringAscii.getBytes(), StandardCharsets.ISO_8859_1));
         // likewise for the 8bit characters.
-        assertEquals(text8Bit, new String(string8Bit.getBytes(), "ISO-8859-1"));
+        assertEquals(text8Bit, new String(string8Bit.getBytes(), StandardCharsets.ISO_8859_1));
         
         // The japanese text contains high bits so must be stored as big endian UTF-16
         assertEquals(textHighBits, new String(stringHighBits.getBytes(), "UnicodeBig"));

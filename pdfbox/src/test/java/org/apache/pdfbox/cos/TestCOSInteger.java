@@ -18,6 +18,7 @@ package org.apache.pdfbox.cos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -142,7 +143,7 @@ public class TestCOSInteger extends TestCOSNumber
                 index = i;
                 COSInteger cosInt = COSInteger.get(i);
                 cosInt.accept(visitor);
-                testByteArrays(String.valueOf(i).getBytes("ISO-8859-1"), outStream.toByteArray());
+                testByteArrays(String.valueOf(i).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();
             }
         }
@@ -166,7 +167,7 @@ public class TestCOSInteger extends TestCOSNumber
                 index = i;
                 COSInteger cosInt = COSInteger.get(i);
                 cosInt.writePDF(outStream);
-                testByteArrays(String.valueOf(i).getBytes("ISO-8859-1"), outStream.toByteArray());
+                testByteArrays(String.valueOf(i).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
                 outStream.reset();
             }
         }

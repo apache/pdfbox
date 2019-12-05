@@ -19,6 +19,7 @@ package org.apache.pdfbox.cos;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This class represents a floating point number in a PDF document.
@@ -226,6 +227,6 @@ public class COSFloat extends COSNumber
      */
     public void writePDF( OutputStream output ) throws IOException
     {
-        output.write(valueAsString.getBytes("ISO-8859-1"));
+        output.write(valueAsString.getBytes(StandardCharsets.ISO_8859_1));
     }
 }

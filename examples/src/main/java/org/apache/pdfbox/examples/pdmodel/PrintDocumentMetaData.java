@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -90,7 +91,7 @@ public class PrintDocumentMetaData
         System.out.println( "Trapped=" + info.getTrapped() );
         if( metadata != null )
         {
-            String string =  new String( metadata.toByteArray(), "ISO-8859-1" );
+            String string =  new String( metadata.toByteArray(), StandardCharsets.ISO_8859_1 );
             System.out.println( "Metadata=" + string );
         }
     }
