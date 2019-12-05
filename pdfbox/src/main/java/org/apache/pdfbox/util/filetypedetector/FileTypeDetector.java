@@ -71,7 +71,7 @@ public final class FileTypeDetector
         root.addPath(FileType.RW2, "II".getBytes(Charsets.ISO_8859_1), new byte[]{0x55, 0x00});
     }
 
-    private FileTypeDetector() throws Exception
+    private FileTypeDetector()
     {
     }
 
