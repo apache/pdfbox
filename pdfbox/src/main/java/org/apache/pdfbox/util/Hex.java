@@ -199,9 +199,8 @@ public final class Hex
      *
      * @param s A String with ASCII hex.
      * @return decoded byte array.
-     * @throws IOException
      */
-    public static byte[] decodeHex(String s) throws IOException
+    public static byte[] decodeHex(String s)
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int i = 0;

@@ -211,9 +211,8 @@ public class PDNonTerminalField extends PDField
      * <p><b>Note:</b> while non-terminal fields <b>do</b> inherit field values, this method returns
      * the local value, without inheritance.
      * @param object
-     * @throws java.io.IOException
      */
-    public void setValue(COSBase object) throws IOException
+    public void setValue(COSBase object)
     {
         getCOSObject().setItem(COSName.V, object);
         // todo: propagate change event to children?
