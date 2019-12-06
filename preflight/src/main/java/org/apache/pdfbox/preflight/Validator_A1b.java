@@ -153,7 +153,7 @@ public class Validator_A1b
 
     }
 
-    private static void usage() throws IOException 
+    private static void usage()
     {
         String version = Version.getVersion();
 
