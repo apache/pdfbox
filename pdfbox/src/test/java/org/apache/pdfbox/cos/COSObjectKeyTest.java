@@ -17,15 +17,10 @@
 package org.apache.pdfbox.cos;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class COSObjectKeyTest
 {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Test
     public void compareToInputNotNullOutputZero()
     {

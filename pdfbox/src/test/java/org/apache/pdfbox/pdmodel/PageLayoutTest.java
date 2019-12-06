@@ -19,9 +19,8 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import static org.junit.Assert.assertEquals;
-import org.junit.Rule;
+import static org.junit.Assert.assertThrows;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class PageLayoutTest
 {
@@ -48,18 +47,9 @@ public class PageLayoutTest
     /**
      * @author John Bergqvist
      */
-    @Rule public ExpectedException thrown = ExpectedException.none();
     @Test
     public void fromStringInputNotNullOutputIllegalArgumentException()
     {
-
-        // Arrange
-        final String value = "SinglePag";
-
-        // Act
-        thrown.expect(IllegalArgumentException.class);
-        PageLayout.fromString(value);
-
-        // Method is not expected to return due to exception thrown
+        assertThrows(IllegalArgumentException.class, () -> PageLayout.fromString("SinglePag"));
     }
 }

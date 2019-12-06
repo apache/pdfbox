@@ -17,15 +17,10 @@
 package org.apache.pdfbox.pdmodel;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class PageModeTest
 {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     @Test
     public void fromStringInputNotNullOutputNotNull()
     {
@@ -107,27 +102,13 @@ public class PageModeTest
     @Test
     public void fromStringInputNotNullOutputIllegalArgumentException()
     {
-        // Arrange
-        final String value = "";
-
-        // Act
-        thrown.expect(IllegalArgumentException.class);
-        PageMode.fromString(value);
-
-        // Method is not expected to return due to exception thrown
+        Assert.assertThrows(IllegalArgumentException.class, () -> PageMode.fromString(""));
     }
 
     @Test
     public void fromStringInputNotNullOutputIllegalArgumentException2()
     {
-        // Arrange
-        final String value = "Dulacb`ecj";
-
-        // Act
-        thrown.expect(IllegalArgumentException.class);
-        PageMode.fromString(value);
-
-        // Method is not expected to return due to exception thrown
+        Assert.assertThrows(IllegalArgumentException.class, () -> PageMode.fromString("Dulacb`ecj"));
     }
 
     @Test
