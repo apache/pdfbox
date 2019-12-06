@@ -101,28 +101,31 @@ public class CMapParser
                     break;
                 }
 
-                switch (op.op)
+                if (previousToken != null)
                 {
-                    case "usecmap":
-                        parseUsecmap((LiteralName) previousToken, result);
-                        break;
-                    case "begincodespacerange":
-                        parseBegincodespacerange((Number) previousToken, cmapStream, result);
-                        break;
-                    case "beginbfchar":
-                        parseBeginbfchar((Number) previousToken, cmapStream, result);
-                        break;
-                    case "beginbfrange":
-                        parseBeginbfrange((Number) previousToken, cmapStream, result);
-                        break;
-                    case "begincidchar":
-                        parseBegincidchar((Number) previousToken, cmapStream, result);
-                        break;
-                    case "begincidrange":
-                        parseBegincidrange((Integer) previousToken, cmapStream, result);
-                        break;
-                    default:
-                        break;
+                    switch (op.op)
+                    {
+                        case "usecmap":
+                            parseUsecmap((LiteralName) previousToken, result);
+                            break;
+                        case "begincodespacerange":
+                            parseBegincodespacerange((Number) previousToken, cmapStream, result);
+                            break;
+                        case "beginbfchar":
+                            parseBeginbfchar((Number) previousToken, cmapStream, result);
+                            break;
+                        case "beginbfrange":
+                            parseBeginbfrange((Number) previousToken, cmapStream, result);
+                            break;
+                        case "begincidchar":
+                            parseBegincidchar((Number) previousToken, cmapStream, result);
+                            break;
+                        case "begincidrange":
+                            parseBegincidrange((Integer) previousToken, cmapStream, result);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             else if (token instanceof LiteralName)
