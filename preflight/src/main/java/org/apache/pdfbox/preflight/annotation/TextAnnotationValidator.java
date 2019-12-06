@@ -50,6 +50,7 @@ public class TextAnnotationValidator extends AnnotationValidator
      * 
      * @see org.apache.pdfbox.preflight.annotation.AnnotationValidator#checkFlags( java.util.List)
      */
+    @Override
     protected boolean checkFlags()
     {
         // call common flags settings
