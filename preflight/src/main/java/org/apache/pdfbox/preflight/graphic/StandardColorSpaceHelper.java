@@ -515,7 +515,6 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
     }
 
     private boolean validateICCProfileNEntry(COSStream stream, ICC_Profile iccp)
-            throws IOException
     {
         COSDictionary streamDict = (COSDictionary) stream.getCOSObject();
         if (!streamDict.containsKey(COSName.N))

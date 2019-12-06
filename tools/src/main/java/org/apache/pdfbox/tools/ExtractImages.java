@@ -187,7 +187,7 @@ public final class ExtractImages
 
     private class ImageGraphicsEngine extends PDFGraphicsStreamEngine
     {
-        protected ImageGraphicsEngine(PDPage page) throws IOException
+        protected ImageGraphicsEngine(PDPage page)
         {
             super(page);
         }

@@ -118,7 +118,7 @@ public class FDFAnnotationFreeText extends FDFAnnotation
         }
     }
 
-    private void initCallout(Element element) throws IOException
+    private void initCallout(Element element)
     {
         String callout = element.getAttribute("callout");
         if (callout != null && !callout.isEmpty())

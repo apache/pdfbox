@@ -411,7 +411,6 @@ public class DomXmpParser
     }
 
     private void manageSimpleType(XMPMetadata xmp, Element property, Types type, ComplexPropertyContainer container)
-            throws XmpParsingException
     {
         TypeMapping tm = xmp.getTypeMapping();
         String prefix = property.getPrefix();

@@ -256,7 +256,7 @@ public final class PdfaExtensionHelper
         }
     }
 
-    private static PropertyType transformValueType(TypeMapping tm, String valueType) throws XmpParsingException
+    private static PropertyType transformValueType(TypeMapping tm, String valueType)
     {
         if ("Lang Alt".equals(valueType))
         {
