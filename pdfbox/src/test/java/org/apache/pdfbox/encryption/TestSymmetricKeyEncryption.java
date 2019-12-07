@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,6 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.StandardSecurityHandler;
 import org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.Charsets;
 import org.junit.Assert;
 
 /**
@@ -399,11 +399,11 @@ public class TestSymmetricKeyEncryption extends TestCase
             StandardSecurityHandler standardSecurityHandler = new StandardSecurityHandler();
             int keyLengthInBytes = encryption.getVersion() == 1 ? 5 : encryption.getLength() / 8;
             byte[] computedUserPassword = standardSecurityHandler.getUserPassword(
-                    ownerpassword.getBytes(Charsets.ISO_8859_1),
+                    ownerpassword.getBytes(StandardCharsets.ISO_8859_1),
                     encryption.getOwnerKey(),
                     revision,
                     keyLengthInBytes);
-            Assert.assertEquals(userpassword.substring(0, 32), new String(computedUserPassword, Charsets.ISO_8859_1));
+            Assert.assertEquals(userpassword.substring(0, 32), new String(computedUserPassword, StandardCharsets.ISO_8859_1));
         }
 
         encryptedDoc.close();
