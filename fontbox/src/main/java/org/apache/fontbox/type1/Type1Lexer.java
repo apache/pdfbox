@@ -203,7 +203,7 @@ class Type1Lexer
                         if (name.equals("RD") || name.equals("-|"))
                         {
                             // return the next CharString instead
-                            if (prevToken.getKind() == Token.INTEGER)
+                            if (prevToken != null && prevToken.getKind() == Token.INTEGER)
                             {
                                 return readCharString(prevToken.intValue());
                             }
