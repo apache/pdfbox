@@ -343,8 +343,9 @@ public final class DateConverter
      */
     private static char skipOptionals(String text, ParsePosition where, String optionals)
     {
-        char retval = ' ', currch;
-        while (text != null && where.getIndex() < text.length() &&
+        char retval = ' ';
+        char currch;
+        while (where.getIndex() < text.length() &&
                optionals.indexOf((currch = text.charAt(where.getIndex()))) >= 0)
         {
             retval = (currch != ' ') ? currch : retval;
