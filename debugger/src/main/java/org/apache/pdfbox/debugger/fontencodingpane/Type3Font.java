@@ -18,6 +18,7 @@ package org.apache.pdfbox.debugger.fontencodingpane;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,7 +35,6 @@ import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -182,7 +182,7 @@ class Type3Font extends FontPane
                 cs.beginText();
                 cs.setFont(font, scale / Math.min(Math.abs(scalingFactorX), Math.abs(scalingFactorY)));
                 // can't use showText() because there's no guarantee we have the unicode
-                cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(Charsets.ISO_8859_1));
+                cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(StandardCharsets.ISO_8859_1));
                 cs.endText();
             }
             doc.addPage(page);
