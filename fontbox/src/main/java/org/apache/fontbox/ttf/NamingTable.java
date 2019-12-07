@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.fontbox.util.Charsets;
-
 /**
  * A table in a true type font.
  * 
@@ -102,7 +100,7 @@ public class NamingTable extends TTFTable
                         break;
                     case 1:
                         //not sure is this is correct??
-                        charset = Charsets.ISO_10646;
+                        charset = StandardCharsets.UTF_16BE;
                         break;
                     case 2:
                         charset = StandardCharsets.ISO_8859_1;
