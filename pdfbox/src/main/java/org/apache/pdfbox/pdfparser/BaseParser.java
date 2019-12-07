@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -54,7 +55,7 @@ public abstract class BaseParser
 
     static final int MAX_LENGTH_LONG = Long.toString(Long.MAX_VALUE).length();
 
-    private final CharsetDecoder utf8Decoder = Charsets.UTF_8.newDecoder();
+    private final CharsetDecoder utf8Decoder = StandardCharsets.UTF_8.newDecoder();
 
     /**
      * Log instance.
@@ -767,7 +768,7 @@ public abstract class BaseParser
         String string;
         if (isValidUTF8(bytes))
         {
-            string = new String(buffer.toByteArray(), Charsets.UTF_8);
+            string = new String(buffer.toByteArray(), StandardCharsets.UTF_8);
         }
         else
         {
@@ -789,7 +790,7 @@ public abstract class BaseParser
         }
         catch (CharacterCodingException e)
         {
-            LOG.debug("Character could not be decoded using Charsets.UTF_8 - returning false", e);
+            LOG.debug("Character could not be decoded using StandardCharsets.UTF_8 - returning false", e);
             return false;
         }
     }

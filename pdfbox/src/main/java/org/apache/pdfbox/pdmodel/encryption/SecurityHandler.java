@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.MessageDigest;
@@ -47,7 +48,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * A security handler as described in the PDF specifications.
@@ -464,7 +464,7 @@ public abstract class SecurityHandler
                     LOG.debug("Tried reading " + buf.length + " bytes but only " + isResult + " bytes read");
                 }
             }
-            if (Arrays.equals(buf, "<?xpacket ".getBytes(Charsets.ISO_8859_1)))
+            if (Arrays.equals(buf, "<?xpacket ".getBytes(StandardCharsets.ISO_8859_1)))
             {
                 LOG.warn("Metadata is not encrypted, but was expected to be");
                 LOG.warn("Read PDF specification about EncryptMetadata (default value: true)");

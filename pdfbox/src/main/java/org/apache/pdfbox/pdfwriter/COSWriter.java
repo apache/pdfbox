@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -65,7 +66,6 @@ import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.COSFilterInputStream;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 
 /**
@@ -79,11 +79,11 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * The dictionary open token.
      */
-    public static final byte[] DICT_OPEN = "<<".getBytes(Charsets.US_ASCII);
+    public static final byte[] DICT_OPEN = "<<".getBytes(StandardCharsets.US_ASCII);
     /**
      * The dictionary close token.
      */
-    public static final byte[] DICT_CLOSE = ">>".getBytes(Charsets.US_ASCII);
+    public static final byte[] DICT_CLOSE = ">>".getBytes(StandardCharsets.US_ASCII);
     /**
      * space character.
      */
@@ -96,7 +96,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * The output version of the PDF.
      */
-    public static final byte[] VERSION = "PDF-1.4".getBytes(Charsets.US_ASCII);
+    public static final byte[] VERSION = "PDF-1.4".getBytes(StandardCharsets.US_ASCII);
     /**
      * Garbage bytes used to create the PDF header.
      */
@@ -104,57 +104,57 @@ public class COSWriter implements ICOSVisitor, Closeable
     /**
      * The EOF constant.
      */
-    public static final byte[] EOF = "%%EOF".getBytes(Charsets.US_ASCII);
+    public static final byte[] EOF = "%%EOF".getBytes(StandardCharsets.US_ASCII);
     // pdf tokens
 
     /**
      * The reference token.
      */
-    public static final byte[] REFERENCE = "R".getBytes(Charsets.US_ASCII);
+    public static final byte[] REFERENCE = "R".getBytes(StandardCharsets.US_ASCII);
     /**
      * The XREF token.
      */
-    public static final byte[] XREF = "xref".getBytes(Charsets.US_ASCII);
+    public static final byte[] XREF = "xref".getBytes(StandardCharsets.US_ASCII);
     /**
      * The xref free token.
      */
-    public static final byte[] XREF_FREE = "f".getBytes(Charsets.US_ASCII);
+    public static final byte[] XREF_FREE = "f".getBytes(StandardCharsets.US_ASCII);
     /**
      * The xref used token.
      */
-    public static final byte[] XREF_USED = "n".getBytes(Charsets.US_ASCII);
+    public static final byte[] XREF_USED = "n".getBytes(StandardCharsets.US_ASCII);
     /**
      * The trailer token.
      */
-    public static final byte[] TRAILER = "trailer".getBytes(Charsets.US_ASCII);
+    public static final byte[] TRAILER = "trailer".getBytes(StandardCharsets.US_ASCII);
     /**
      * The start xref token.
      */
-    public static final byte[] STARTXREF = "startxref".getBytes(Charsets.US_ASCII);
+    public static final byte[] STARTXREF = "startxref".getBytes(StandardCharsets.US_ASCII);
     /**
      * The starting object token.
      */
-    public static final byte[] OBJ = "obj".getBytes(Charsets.US_ASCII);
+    public static final byte[] OBJ = "obj".getBytes(StandardCharsets.US_ASCII);
     /**
      * The end object token.
      */
-    public static final byte[] ENDOBJ = "endobj".getBytes(Charsets.US_ASCII);
+    public static final byte[] ENDOBJ = "endobj".getBytes(StandardCharsets.US_ASCII);
     /**
      * The array open token.
      */
-    public static final byte[] ARRAY_OPEN = "[".getBytes(Charsets.US_ASCII);
+    public static final byte[] ARRAY_OPEN = "[".getBytes(StandardCharsets.US_ASCII);
     /**
      * The array close token.
      */
-    public static final byte[] ARRAY_CLOSE = "]".getBytes(Charsets.US_ASCII);
+    public static final byte[] ARRAY_CLOSE = "]".getBytes(StandardCharsets.US_ASCII);
     /**
      * The open stream token.
      */
-    public static final byte[] STREAM = "stream".getBytes(Charsets.US_ASCII);
+    public static final byte[] STREAM = "stream".getBytes(StandardCharsets.US_ASCII);
     /**
      * The close stream token.
      */
-    public static final byte[] ENDSTREAM = "endstream".getBytes(Charsets.US_ASCII);
+    public static final byte[] ENDSTREAM = "endstream".getBytes(StandardCharsets.US_ASCII);
     
     private final NumberFormat formatXrefOffset = new DecimalFormat("0000000000",
             DecimalFormatSymbols.getInstance(Locale.US));
@@ -506,9 +506,9 @@ public class COSWriter implements ICOSVisitor, Closeable
             // add a x ref entry
             addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
             // write the object
-            getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
             getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(StandardCharsets.ISO_8859_1));
             getStandardOutput().write(SPACE);
             getStandardOutput().write(OBJ);
             getStandardOutput().writeEOL();
@@ -541,7 +541,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         {
             headerString = "%PDF-"+ Float.toString(doc.getVersion());
         }
-        getStandardOutput().write( headerString.getBytes(Charsets.ISO_8859_1) );
+        getStandardOutput().write( headerString.getBytes(StandardCharsets.ISO_8859_1) );
         
         getStandardOutput().writeEOL();
         getStandardOutput().write(COMMENT);
@@ -716,7 +716,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         incrementPart = byteOut.toByteArray();
 
         // overwrite the ByteRange in the buffer
-        byte[] byteRangeBytes = byteRange.getBytes(Charsets.ISO_8859_1);
+        byte[] byteRangeBytes = byteRange.getBytes(StandardCharsets.ISO_8859_1);
         for (int i = 0; i < byteRangeLength; i++)
         {
             if (i >= byteRangeBytes.length)
@@ -810,9 +810,9 @@ public class COSWriter implements ICOSVisitor, Closeable
 
     private void writeXrefRange(long x, long y) throws IOException
     {
-        getStandardOutput().write(String.valueOf(x).getBytes(Charsets.ISO_8859_1));
+        getStandardOutput().write(String.valueOf(x).getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(String.valueOf(y).getBytes(Charsets.ISO_8859_1));
+        getStandardOutput().write(String.valueOf(y).getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().writeEOL();
     }
 
@@ -820,9 +820,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     {
         String offset = formatXrefOffset.format(entry.getOffset());
         String generation = formatXrefGeneration.format(entry.getKey().getGeneration());
-        getStandardOutput().write(offset.getBytes(Charsets.ISO_8859_1));
+        getStandardOutput().write(offset.getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(generation.getBytes(Charsets.ISO_8859_1));
+        getStandardOutput().write(generation.getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(entry.isFree() ? XREF_FREE : XREF_USED);
         getStandardOutput().writeCRLF();
@@ -1133,7 +1133,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         // write endof
         getStandardOutput().write(STARTXREF);
         getStandardOutput().writeEOL();
-        getStandardOutput().write(String.valueOf(getStartxref()).getBytes(Charsets.ISO_8859_1));
+        getStandardOutput().write(String.valueOf(getStartxref()).getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().writeEOL();
         getStandardOutput().write(EOF);
         getStandardOutput().writeEOL();
@@ -1191,9 +1191,9 @@ public class COSWriter implements ICOSVisitor, Closeable
     public void writeReference(COSBase obj) throws IOException
     {
             COSObjectKey key = getObjectKey(obj);
-            getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(String.valueOf(key.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
             getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(Charsets.ISO_8859_1));
+            getStandardOutput().write(String.valueOf(key.getGeneration()).getBytes(StandardCharsets.ISO_8859_1));
             getStandardOutput().write(SPACE);
             getStandardOutput().write(REFERENCE);
     }
@@ -1360,14 +1360,14 @@ public class COSWriter implements ICOSVisitor, Closeable
 
             // algorithm says to use time/path/size/values in doc to generate the id.
             // we don't have path or size, so do the best we can
-            md5.update( Long.toString(idTime).getBytes(Charsets.ISO_8859_1) );
+            md5.update( Long.toString(idTime).getBytes(StandardCharsets.ISO_8859_1) );
 
             COSDictionary info = trailer.getCOSDictionary(COSName.INFO);
             if( info != null )
             {
                 for (COSBase cosBase : info.getValues())
                 {
-                    md5.update(cosBase.toString().getBytes(Charsets.ISO_8859_1));
+                    md5.update(cosBase.toString().getBytes(StandardCharsets.ISO_8859_1));
                 }
             }
             // reuse origin documentID if available as first value
