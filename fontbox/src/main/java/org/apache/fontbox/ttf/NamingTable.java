@@ -87,7 +87,7 @@ public class NamingTable extends TTFTable
             Charset charset = StandardCharsets.ISO_8859_1;
             if (platform == NameRecord.PLATFORM_WINDOWS && (encoding == NameRecord.ENCODING_WINDOWS_SYMBOL || encoding == NameRecord.ENCODING_WINDOWS_UNICODE_BMP))
             {
-                charset = Charsets.UTF_16;
+                charset = StandardCharsets.UTF_16;
             }
             else if (platform == NameRecord.PLATFORM_UNICODE)
             {

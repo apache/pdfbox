@@ -20,6 +20,7 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -30,7 +31,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * Inspired from <a href=
@@ -182,7 +182,7 @@ public class BengaliPdfGenerationHelloWorld
         List<String> lines = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                BengaliPdfGenerationHelloWorld.class.getResourceAsStream(TEXT_SOURCE_FILE), Charsets.UTF_8));)
+                BengaliPdfGenerationHelloWorld.class.getResourceAsStream(TEXT_SOURCE_FILE), StandardCharsets.UTF_8));)
         {
             while (true)
             {

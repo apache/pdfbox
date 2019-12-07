@@ -16,11 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.action;
 
+import java.nio.charset.StandardCharsets;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * This represents a URI action that can be executed in a PDF document.
@@ -78,7 +78,7 @@ public class PDActionURI extends PDAction
                     return action.getString(COSName.URI);
                 }
             }
-            return new String(bytes, Charsets.UTF_8);
+            return new String(bytes, StandardCharsets.UTF_8);
         }
         return null;
     }
