@@ -148,6 +148,10 @@
             <!-- from jdk11 onwards java.xml.bind is no longer part of the jdk -->
             <!-- must be set to "test" or "provided" in subprojects --> 
             <id>jdk11</id>
+            <properties>
+                <!-- needs to exist even if empty due to problems with jacoco-maven-plugin -->
+                <addmod></addmod>
+            </properties>
             <activation>
                 <jdk>[11,)</jdk>
             </activation>

@@ -768,13 +768,15 @@ public abstract class BaseParser
         if (isValidUTF8(bytes))
         {
             string = new String(buffer.toByteArray(), Charsets.UTF_8);
+            return COSName.getPDFName(string);
         }
         else
         {
             // some malformed PDFs don't use UTF-8 see PDFBOX-3347
             string = new String(buffer.toByteArray(), Charsets.WINDOWS_1252);
+            // Same charset must be used when writing document. See PDFBOX-????
+            return COSName.getPDFName(string, Charsets.WINDOWS_1252);
         }
-        return COSName.getPDFName(string);
     }
 
     /**
