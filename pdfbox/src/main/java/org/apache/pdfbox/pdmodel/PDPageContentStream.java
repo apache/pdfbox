@@ -40,7 +40,6 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -186,7 +185,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                 // save the pre-append graphics state
                 try (OutputStream prefixOut = prefixStream.createOutputStream())
                 {
-                    prefixOut.write("q".getBytes(Charsets.US_ASCII));
+                    prefixOut.write("q".getBytes(StandardCharsets.US_ASCII));
                     prefixOut.write('\n');
                 }
 

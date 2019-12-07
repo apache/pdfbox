@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -45,7 +46,6 @@ import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.font.PDFont;
@@ -65,7 +65,6 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.NumberFormatUtil;
 
@@ -1421,7 +1420,7 @@ abstract class PDAbstractContentStream implements Closeable
             throw new IllegalArgumentException("comment should not include a newline");
         }
         outputStream.write('%');
-        outputStream.write(comment.getBytes(Charsets.US_ASCII));
+        outputStream.write(comment.getBytes(StandardCharsets.US_ASCII));
         outputStream.write('\n');
     }
 
@@ -1475,7 +1474,7 @@ abstract class PDAbstractContentStream implements Closeable
      */
     protected void writeOperator(String text) throws IOException
     {
-        outputStream.write(text.getBytes(Charsets.US_ASCII));
+        outputStream.write(text.getBytes(StandardCharsets.US_ASCII));
         outputStream.write('\n');
     }
 
@@ -1486,7 +1485,7 @@ abstract class PDAbstractContentStream implements Closeable
      */
     protected void write(String text) throws IOException
     {
-        outputStream.write(text.getBytes(Charsets.US_ASCII));
+        outputStream.write(text.getBytes(StandardCharsets.US_ASCII));
     }
 
     /**
