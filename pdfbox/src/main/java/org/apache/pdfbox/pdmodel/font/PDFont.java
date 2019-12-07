@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.cmap.CMap;
-import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -313,15 +312,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @return width in 1/1000 text space
      */
     protected abstract float getStandard14Width(int code);
-    
-    @Override
-    public abstract float getWidthFromFont(int code) throws IOException;
-
-    @Override
-    public abstract boolean isEmbedded();
-
-    @Override
-    public abstract float getHeight(int code) throws IOException;
 
     /**
      * Encodes the given string for use in a PDF content stream.
@@ -504,12 +494,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         return dict.getNameAsString(COSName.SUBTYPE);
     }
 
-    @Override
-    public abstract String getName();
-
-    @Override
-    public abstract BoundingBox getBoundingBox() throws IOException;
-
     /**
      * The widths of the characters. This will be null for the standard 14 fonts.
      *
@@ -623,9 +607,6 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * Returns true if this font will be subset when embedded.
      */
     public abstract boolean willBeSubset();
-    
-    @Override
-    public abstract boolean isDamaged();
 
     @Override
     public boolean equals(Object other)
