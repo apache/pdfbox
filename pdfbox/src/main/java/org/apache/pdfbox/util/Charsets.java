@@ -18,6 +18,7 @@
 package org.apache.pdfbox.util;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Utility class providing common Charsets used in PDFBox.
@@ -28,21 +29,48 @@ public final class Charsets
 {
     private Charsets() {}
 
-    /*** ASCII charset */
-    public static final Charset US_ASCII = Charset.forName("US-ASCII");
+    /**
+     * ASCII charset
+     *
+     * @deprecated use {@link StandardCharsets}
+     */
+    @Deprecated
+    public static final Charset US_ASCII = StandardCharsets.US_ASCII;
 
-    /*** UTF-16BE charset */
-    public static final Charset UTF_16BE = Charset.forName("UTF-16BE");
+    /**
+     * UTF-16BE charset
+     *
+     * @deprecated use {@link StandardCharsets}
+     */
+    @Deprecated
+    public static final Charset UTF_16BE = StandardCharsets.UTF_16BE;
 
-    /*** UTF-16LE charset */
-    public static final Charset UTF_16LE = Charset.forName("UTF-16LE");
-    
-    /*** ISO-8859-1 charset */
-    public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
+    /**
+     * UTF-16LE charset
+     *
+     * @deprecated use {@link StandardCharsets}
+     */
+    @Deprecated
+    public static final Charset UTF_16LE = StandardCharsets.UTF_16LE;
 
-    /*** Windows-1252 charset */
+    /**
+     * ISO-8859-1 charset
+     *
+     * @deprecated use {@link StandardCharsets}
+     */
+    @Deprecated
+    public static final Charset ISO_8859_1 = StandardCharsets.ISO_8859_1;
+
+    /**
+     * Windows-1252 charset
+     */
     public static final Charset WINDOWS_1252 = Charset.forName("Windows-1252");
 
-    /*** UTF-8 charset */
-    public static final Charset UTF_8 = Charset.forName("UTF-8");
+    /**
+     * UTF-8 charset
+     *
+     * @deprecated use {@link StandardCharsets}
+     */
+    @Deprecated
+    public static final Charset UTF_8 = StandardCharsets.UTF_8;
 }

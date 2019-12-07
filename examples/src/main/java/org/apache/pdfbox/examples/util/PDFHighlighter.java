@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,7 +47,7 @@ public class PDFHighlighter extends PDFTextStripper
     private String[] searchedWords;
     private ByteArrayOutputStream textOS = null;
     private Writer textWriter = null;
-    private static final String ENCODING = "UTF-16";
+    private static final Charset ENCODING = StandardCharsets.UTF_16;
 
     /**
      * Default constructor.
