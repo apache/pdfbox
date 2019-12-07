@@ -350,7 +350,7 @@ public class PDFDebugger extends JFrame
             @Override
             public void windowClosing(WindowEvent evt)
             {
-                exitForm(evt);
+                exitMenuItemActionPerformed(null);
             }
         });
 
@@ -1213,14 +1213,6 @@ public class PDFDebugger extends JFrame
         }
     }
 
-    /**
-     * Exit the Application.
-     */
-    private void exitForm(WindowEvent evt)
-    {
-        exitMenuItemActionPerformed(null);
-    }
-    
     private void readPDFFile(String filePath, String password) throws IOException
     {
         File file = new File(filePath);
