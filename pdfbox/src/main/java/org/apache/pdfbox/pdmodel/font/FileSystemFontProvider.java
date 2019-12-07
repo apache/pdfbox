@@ -25,6 +25,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +44,6 @@ import org.apache.fontbox.ttf.TrueTypeCollection;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.type1.Type1Font;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * A FontProvider which searches for fonts on the local filesystem.
@@ -665,9 +665,9 @@ final class FileSystemFontProvider extends FontProvider
                     {
                         // Apple's AAT fonts have a "gcid" table with CID info
                         byte[] bytes = ttf.getTableBytes(ttf.getTableMap().get("gcid"));
-                        String reg = new String(bytes, 10, 64, Charsets.US_ASCII);
+                        String reg = new String(bytes, 10, 64, StandardCharsets.US_ASCII);
                         String registryName = reg.substring(0, reg.indexOf('\0'));
-                        String ord = new String(bytes, 76, 64, Charsets.US_ASCII);
+                        String ord = new String(bytes, 76, 64, StandardCharsets.US_ASCII);
                         String orderName = ord.substring(0, ord.indexOf('\0'));
                         int supplementVersion = bytes[140] << 8 & (bytes[141] & 0xFF);
                         ros = new CIDSystemInfo(registryName, orderName, supplementVersion);

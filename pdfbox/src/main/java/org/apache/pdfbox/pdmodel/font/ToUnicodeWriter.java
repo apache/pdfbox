@@ -21,11 +21,11 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 
 /**
@@ -90,7 +90,7 @@ final class ToUnicodeWriter
      */
     public void writeTo(OutputStream out) throws IOException
     {
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, Charsets.US_ASCII));
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.US_ASCII));
 
         writeLine(writer, "/CIDInit /ProcSet findresource begin");
         writeLine(writer, "12 dict begin\n");

@@ -29,6 +29,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.logging.Log;
@@ -44,7 +45,6 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * ICCBased color spaces are based on a cross-platform color profile as defined by the
@@ -271,7 +271,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     {
         byte[] bytes = Arrays.copyOfRange(profile.getData(ICC_Profile.icSigHead),
                 ICC_Profile.icHdrModel, ICC_Profile.icHdrModel + 7);
-        String deviceModel = new String(bytes, Charsets.US_ASCII).trim();
+        String deviceModel = new String(bytes, StandardCharsets.US_ASCII).trim();
         return deviceModel.equals("sRGB");
     }
 
