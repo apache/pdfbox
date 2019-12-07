@@ -26,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -61,7 +62,6 @@ import org.apache.pdfbox.debugger.streampane.tooltip.ToolTipController;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * @author Khyrul Bashar
@@ -461,7 +461,7 @@ public class StreamPane implements ActionListener
                     writeToken(value, docu);
                     docu.insertString(docu.getLength(), "\n", null);
                 }
-                String imageString = new String(op.getImageData(), Charsets.ISO_8859_1);
+                String imageString = new String(op.getImageData(), StandardCharsets.ISO_8859_1);
                 docu.insertString(docu.getLength(), OperatorName.BEGIN_INLINE_IMAGE_DATA + "\n", INLINE_IMAGE_STYLE);
                 docu.insertString(docu.getLength(), imageString, null);
                 docu.insertString(docu.getLength(), "\n", null);

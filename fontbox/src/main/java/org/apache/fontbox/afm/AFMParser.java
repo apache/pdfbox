@@ -18,12 +18,12 @@ package org.apache.fontbox.afm;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.fontbox.util.BoundingBox;
-import org.apache.fontbox.util.Charsets;
 
 /**
  * This class is used to parse AFM(Adobe Font Metrics) documents.
@@ -650,7 +650,7 @@ public class AFMParser
                 throw new IOException( "Error parsing AFM file:" + e );
             }
         }
-        return new String( data, Charsets.ISO_8859_1 );
+        return new String( data, StandardCharsets.ISO_8859_1 );
     }
 
     /**

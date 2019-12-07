@@ -18,11 +18,10 @@ package org.apache.fontbox.cff;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.apache.fontbox.util.Charsets;
 
 /**
  * This class contains some functionality to read a byte buffer.
@@ -80,7 +79,7 @@ public class DataInput
      */
     public String getString() throws IOException
     {
-        return new String(inputBuffer, Charsets.ISO_8859_1);
+        return new String(inputBuffer, StandardCharsets.ISO_8859_1);
     }
 
     /**

@@ -21,10 +21,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.TimeZone;
-
-import org.apache.fontbox.util.Charsets;
 
 /**
  * An interface into a data stream.
@@ -60,7 +59,7 @@ abstract class TTFDataStream implements Closeable
      */
     public String readString(int length) throws IOException
     {
-        return readString(length, Charsets.ISO_8859_1);
+        return readString(length, StandardCharsets.ISO_8859_1);
     }
 
     /**
@@ -222,12 +221,12 @@ abstract class TTFDataStream implements Closeable
     }
 
     /**
-     * Reads a tag, an arrau of four uint8s used to identify a script, language system, feature,
+     * Reads a tag, an array of four uint8s used to identify a script, language system, feature,
      * or baseline.
      */
     public String readTag() throws IOException
     {
-        return new String(read(4), Charsets.US_ASCII);
+        return new String(read(4), StandardCharsets.US_ASCII);
     }
 
     /**
