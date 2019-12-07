@@ -127,7 +127,8 @@ class TilingPaintFactory
             }
             try
             {
-                if (this.color != other.color && this.color.toRGB() != other.color.toRGB())
+                if (this.color != null && other.color != null &&
+                    this.color != other.color && this.color.toRGB() != other.color.toRGB())
                 {
                     return false;
                 }
