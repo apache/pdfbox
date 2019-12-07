@@ -225,7 +225,7 @@ public class PDFDebugger extends JFrame
             @Override
             public void windowClosing(WindowEvent evt)
             {
-                exitForm(evt);
+                exitMenuItemActionPerformed(null);
             }
         });
 
@@ -1181,14 +1181,6 @@ public class PDFDebugger extends JFrame
         {
             throw new RuntimeException(e);
         }
-    }
-    
-    /**
-     * Exit the Application.
-     */
-    private void exitForm(WindowEvent evt)
-    {
-        exitMenuItemActionPerformed(null);
     }
 
     /**
