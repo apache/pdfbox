@@ -21,12 +21,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.fontbox.util.Charsets;
 
 /**
  * Parses a CMap stream.
@@ -713,7 +713,7 @@ public class CMapParser
 
     private String createStringFromBytes(byte[] bytes)
     {
-        return new String(bytes, bytes.length == 1 ? Charsets.ISO_8859_1 : Charsets.UTF_16BE);
+        return new String(bytes, bytes.length == 1 ? StandardCharsets.ISO_8859_1 : StandardCharsets.UTF_16BE);
     }
 
     /**

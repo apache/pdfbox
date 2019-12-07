@@ -17,6 +17,7 @@
 package org.apache.fontbox.cff;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,7 +29,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.fontbox.util.Charsets;
 
 /**
  * This class represents a parser for a CFF font. 
@@ -160,7 +160,7 @@ public class CFFParser
     private static String readTagName(CFFDataInput input) throws IOException
     {
         byte[] b = input.readBytes(4);
-        return new String(b, Charsets.ISO_8859_1);
+        return new String(b, StandardCharsets.ISO_8859_1);
     }
 
     private static long readLong(CFFDataInput input) throws IOException
@@ -234,7 +234,7 @@ public class CFFParser
                         i + ": offsets[" + (i + 1) + "]=" + offsets[i + 1] + 
                         ", offsets[" + i + "]=" + offsets[i]);
             }
-            indexDataValues[i] = new String(input.readBytes(length), Charsets.ISO_8859_1);
+            indexDataValues[i] = new String(input.readBytes(length), StandardCharsets.ISO_8859_1);
         }
         return indexDataValues;
     }

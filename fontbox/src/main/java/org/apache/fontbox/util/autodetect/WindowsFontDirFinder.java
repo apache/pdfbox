@@ -21,12 +21,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.fontbox.util.Charsets;
 
 /**
  * FontFinder for native Windows platforms. This class is based on a class provided by Apache FOP. see
@@ -54,7 +54,7 @@ public class WindowsFontDirFinder implements FontDirFinder
             process = runtime.exec("cmd.exe /c echo %windir%");
         }
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-                process.getInputStream(), Charsets.ISO_8859_1)))
+                process.getInputStream(), StandardCharsets.ISO_8859_1)))
         {
             return bufferedReader.readLine();
         }
