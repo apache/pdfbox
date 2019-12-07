@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
@@ -61,7 +62,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.CMSAttributes;
@@ -313,7 +313,7 @@ public final class ShowSignature
                 System.err.println("'<' expected at offset " + byteRange[1] + ", but got " + (char) c);
             }
             byte[] contentFromFile = raf.readFully(byteRange[2] - byteRange[1] - 2);
-            byte[] contentAsHex = Hex.getString(contents.getBytes()).getBytes(Charsets.US_ASCII);
+            byte[] contentAsHex = Hex.getString(contents.getBytes()).getBytes(StandardCharsets.US_ASCII);
             if (contentFromFile.length != contentAsHex.length)
             {
                 System.err.println("Raw content length from file is " +

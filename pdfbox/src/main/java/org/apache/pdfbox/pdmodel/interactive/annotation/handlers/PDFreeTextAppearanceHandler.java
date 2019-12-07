@@ -16,11 +16,11 @@
 package org.apache.pdfbox.pdmodel.interactive.annotation.handlers;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.fontbox.util.Charsets;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
@@ -371,7 +371,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
         try
         {
             // not sure if charset is correct, but we only need numbers and simple characters
-            PDFStreamParser parser = new PDFStreamParser(defaultAppearance.getBytes(Charsets.US_ASCII));
+            PDFStreamParser parser = new PDFStreamParser(defaultAppearance.getBytes(StandardCharsets.US_ASCII));
             COSArray arguments = new COSArray();
             COSArray colors = null;
             Operator graphicOp = null;
@@ -442,7 +442,7 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
         try
         {
             // not sure if charset is correct, but we only need numbers and simple characters
-            PDFStreamParser parser = new PDFStreamParser(defaultAppearance.getBytes(Charsets.US_ASCII));
+            PDFStreamParser parser = new PDFStreamParser(defaultAppearance.getBytes(StandardCharsets.US_ASCII));
             COSArray arguments = new COSArray();
             COSArray fontArguments = new COSArray();
             for (Object token = parser.parseNextToken(); token != null; token = parser.parseNextToken())

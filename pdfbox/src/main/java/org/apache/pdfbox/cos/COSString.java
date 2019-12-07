@@ -18,11 +18,11 @@ package org.apache.pdfbox.cos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 
 /**
@@ -91,7 +91,7 @@ public final class COSString extends COSBase
         else
         {
             // UTF-16BE encoded string with a leading byte order marker
-            byte[] data = text.getBytes(Charsets.UTF_16BE);
+            byte[] data = text.getBytes(StandardCharsets.UTF_16BE);
             bytes = new byte[data.length + 2];
             bytes[0] = (byte) 0xFE;
             bytes[1] = (byte) 0xFF;
@@ -181,12 +181,12 @@ public final class COSString extends COSBase
             if ((bytes[0] & 0xff) == 0xFE && (bytes[1] & 0xff) == 0xFF)
             {
                 // UTF-16BE
-                return new String(bytes, 2, bytes.length - 2, Charsets.UTF_16BE);
+                return new String(bytes, 2, bytes.length - 2, StandardCharsets.UTF_16BE);
             }
             else if ((bytes[0] & 0xff) == 0xFF && (bytes[1] & 0xff) == 0xFE)
             {
                 // UTF-16LE - not in the PDF spec!
-                return new String(bytes, 2, bytes.length - 2, Charsets.UTF_16LE);
+                return new String(bytes, 2, bytes.length - 2, StandardCharsets.UTF_16LE);
             }
         }
 
@@ -200,7 +200,7 @@ public final class COSString extends COSBase
     public String getASCII()
     {
         // ASCII string
-        return new String(bytes, Charsets.US_ASCII);
+        return new String(bytes, StandardCharsets.US_ASCII);
     }
 
     /**

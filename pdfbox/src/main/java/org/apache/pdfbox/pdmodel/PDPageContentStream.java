@@ -21,6 +21,7 @@ import java.awt.geom.PathIterator;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +41,6 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDInlineImage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 
 /**
@@ -186,7 +186,7 @@ public final class PDPageContentStream extends PDAbstractContentStream implement
                 // save the pre-append graphics state
                 try (OutputStream prefixOut = prefixStream.createOutputStream())
                 {
-                    prefixOut.write("q".getBytes(Charsets.US_ASCII));
+                    prefixOut.write("q".getBytes(StandardCharsets.US_ASCII));
                     prefixOut.write('\n');
                 }
 

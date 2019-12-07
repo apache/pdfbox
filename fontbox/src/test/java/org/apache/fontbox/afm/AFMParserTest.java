@@ -19,7 +19,7 @@ package org.apache.fontbox.afm;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import org.apache.fontbox.util.Charsets;
+import java.nio.charset.StandardCharsets;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public class AFMParserTest
     {
         try
         {
-            new AFMParser(new ByteArrayInputStream("huhu".getBytes(Charsets.US_ASCII))).parse();
+            new AFMParser(new ByteArrayInputStream("huhu".getBytes(StandardCharsets.US_ASCII))).parse();
         }
         catch (IOException ex)
         {
