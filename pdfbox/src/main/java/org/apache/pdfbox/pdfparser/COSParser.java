@@ -16,8 +16,6 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -897,7 +895,7 @@ public class COSParser extends BaseParser
 
         if (endObjectKey.equals(STREAM_STRING))
         {
-            source.rewind(endObjectKey.getBytes(ISO_8859_1).length);
+            source.rewind(endObjectKey.getBytes(StandardCharsets.ISO_8859_1).length);
             if (pb instanceof COSDictionary)
             {
                 COSStream stream = parseCOSStream((COSDictionary) pb);
@@ -1133,7 +1131,7 @@ public class COSParser extends BaseParser
             LOG.warn("stream ends with '" + endStream + "' instead of 'endstream' at offset "
                     + source.getPosition());
             // unread the "extra" bytes
-            source.rewind(endStream.substring(9).getBytes(ISO_8859_1).length);
+            source.rewind(endStream.substring(9).getBytes(StandardCharsets.ISO_8859_1).length);
         }
         else if (!endStream.equals(ENDSTREAM_STRING))
         {
@@ -2604,7 +2602,7 @@ public class COSParser extends BaseParser
             {
                 String headerGarbage = header.substring(headerMarker.length() + 3, header.length()) + "\n";
                 header = header.substring(0, headerMarker.length() + 3);
-                source.rewind(headerGarbage.getBytes(ISO_8859_1).length);
+                source.rewind(headerGarbage.getBytes(StandardCharsets.ISO_8859_1).length);
             }
         }
         float headerVersion = -1;
@@ -2658,7 +2656,7 @@ public class COSParser extends BaseParser
         
         // check for trailer after xref
         String str = readString();
-        byte[] b = str.getBytes(ISO_8859_1);
+        byte[] b = str.getBytes(StandardCharsets.ISO_8859_1);
         source.rewind(b.length);
         
         // signal start of new XRef

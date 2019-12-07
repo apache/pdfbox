@@ -18,11 +18,11 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Hex;
 
 /**
@@ -724,7 +724,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public void writePDF(OutputStream output) throws IOException
     {
         output.write('/');
-        byte[] bytes = getName().getBytes(Charsets.UTF_8);
+        byte[] bytes = getName().getBytes(StandardCharsets.UTF_8);
         for (byte b : bytes)
         {
             int current = b & 0xFF;
