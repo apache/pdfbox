@@ -24,6 +24,7 @@ import org.apache.pdfbox.pdmodel.common.function.type4.InstructionSequenceBuilde
 import org.apache.pdfbox.pdmodel.common.function.type4.Operators;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This class represents a Type 4 (PostScript calculator) function in a PDF document.
@@ -48,7 +49,7 @@ public class PDFunctionType4 extends PDFunction
     {
         super( functionStream );
         byte[] bytes = getPDStream().toByteArray();
-        String string =  new String(bytes, "ISO-8859-1");
+        String string = new String(bytes, StandardCharsets.ISO_8859_1);
         this.instructions = InstructionSequenceBuilder.parse(string);
     }
     

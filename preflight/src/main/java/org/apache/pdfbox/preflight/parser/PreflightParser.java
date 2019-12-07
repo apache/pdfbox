@@ -24,6 +24,7 @@ package org.apache.pdfbox.preflight.parser;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -82,10 +83,10 @@ import static org.apache.pdfbox.preflight.PreflightConstants.MAX_STRING_LENGTH;
 public class PreflightParser extends PDFParser
 {
     /**
-     * Define a one byte encoding that hasn't specific encoding in UTF-8 charset. Avoid unexpected error when the
-     * encoding is Cp5816
+     * Define a one byte encoding that hasn't specific encoding in UTF-8 charset. Avoid unexpected
+     * error when the encoding is Cp5816
      */
-    public static final Charset encoding = Charset.forName("ISO-8859-1");
+    public static final Charset ENCODING = StandardCharsets.ISO_8859_1;
 
     protected ValidationResult validationResult;
 
@@ -291,7 +292,7 @@ public class PreflightParser extends PDFParser
             String secondLine = readLine();
             if (secondLine != null)
             {
-                byte[] secondLineAsBytes = secondLine.getBytes(encoding.name());
+                byte[] secondLineAsBytes = secondLine.getBytes(ENCODING.name());
                 if (secondLineAsBytes.length >= 5)
                 {
                     if (secondLineAsBytes[0] != '%')

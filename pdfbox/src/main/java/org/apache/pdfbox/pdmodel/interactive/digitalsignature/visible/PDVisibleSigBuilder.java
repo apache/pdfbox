@@ -20,6 +20,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -372,7 +373,7 @@ public class PDVisibleSigBuilder implements PDFTemplateBuilder
 
     public void appendRawCommands(OutputStream os, String commands) throws IOException
     {
-        os.write(commands.getBytes("UTF-8"));
+        os.write(commands.getBytes(StandardCharsets.UTF_8));
         os.close();
     }
 
