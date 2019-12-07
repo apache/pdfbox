@@ -38,9 +38,6 @@ import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.util.Charsets;
 
-
-import static org.apache.pdfbox.util.Charsets.ISO_8859_1;
-
 /**
  * This class is used to contain parsing logic that will be used by both the
  * PDFParser and the COSStreamParser.
@@ -290,7 +287,7 @@ public abstract class BaseParser
             String potentialDEF = readString();
             if (!potentialDEF.equals(DEF))
             {
-                seqSource.unread(potentialDEF.getBytes(ISO_8859_1));
+                seqSource.unread(potentialDEF.getBytes(StandardCharsets.ISO_8859_1));
             }
             else
             {
@@ -671,7 +668,7 @@ public abstract class BaseParser
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 String isThisTheEnd = readString();
-                seqSource.unread(isThisTheEnd.getBytes(ISO_8859_1));
+                seqSource.unread(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1));
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
                     return po;
@@ -808,7 +805,7 @@ public abstract class BaseParser
         char c = (char) seqSource.peek();
         if( c == 't' )
         {
-            String trueString = new String( seqSource.readFully( 4 ), ISO_8859_1 );
+            String trueString = new String( seqSource.readFully( 4 ), StandardCharsets.ISO_8859_1 );
             if( !trueString.equals( TRUE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString 
@@ -821,7 +818,7 @@ public abstract class BaseParser
         }
         else if( c == 'f' )
         {
-            String falseString = new String( seqSource.readFully( 5 ), ISO_8859_1 );
+            String falseString = new String( seqSource.readFully( 5 ), StandardCharsets.ISO_8859_1 );
             if( !falseString.equals( FALSE ) )
             {
                 throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString 
@@ -897,7 +894,7 @@ public abstract class BaseParser
         }
         case 't':
         {
-            String trueString = new String( seqSource.readFully(4), ISO_8859_1 );
+            String trueString = new String( seqSource.readFully(4), StandardCharsets.ISO_8859_1 );
             if( trueString.equals( TRUE ) )
             {
                 retval = COSBoolean.TRUE;
@@ -911,7 +908,7 @@ public abstract class BaseParser
         }
         case 'f':
         {
-            String falseString = new String( seqSource.readFully(5), ISO_8859_1 );
+            String falseString = new String( seqSource.readFully(5), StandardCharsets.ISO_8859_1 );
             if( falseString.equals( FALSE ) )
             {
                 retval = COSBoolean.FALSE;
@@ -971,7 +968,7 @@ public abstract class BaseParser
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
                 if(ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
                 {
-                    seqSource.unread(badString.getBytes(ISO_8859_1));
+                    seqSource.unread(badString.getBytes(StandardCharsets.ISO_8859_1));
                 }
             }
         }
@@ -1334,7 +1331,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            seqSource.unread(intBuffer.toString().getBytes(ISO_8859_1));
+            seqSource.unread(intBuffer.toString().getBytes(StandardCharsets.ISO_8859_1));
             throw new IOException("Error: Expected an integer type at offset " +
                                   seqSource.getPosition() +
                                   ", instead got '" + intBuffer + "'", e);
@@ -1363,7 +1360,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            seqSource.unread(longBuffer.toString().getBytes(ISO_8859_1));
+            seqSource.unread(longBuffer.toString().getBytes(StandardCharsets.ISO_8859_1));
             throw new IOException( "Error: Expected a long type at offset "
                     + seqSource.getPosition() + ", instead got '" + longBuffer + "'", e);
         }
