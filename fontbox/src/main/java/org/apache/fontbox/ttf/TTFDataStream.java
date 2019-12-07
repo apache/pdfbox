@@ -231,14 +231,6 @@ abstract class TTFDataStream implements Closeable
     }
 
     /**
-     * Close the underlying resources.
-     * 
-     * @throws IOException If there is an error closing the resources.
-     */
-    @Override
-    public abstract void close() throws IOException;
-
-    /**
      * Seek into the datasource.
      * 
      * @param pos The position to seek to.

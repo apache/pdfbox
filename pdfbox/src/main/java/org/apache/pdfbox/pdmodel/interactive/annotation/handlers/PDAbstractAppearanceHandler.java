@@ -77,15 +77,6 @@ public abstract class PDAbstractAppearanceHandler implements PDAppearanceHandler
         this.document = document;
     }
 
-    @Override
-    public abstract void generateNormalAppearance();
-
-    @Override
-    public abstract void generateRolloverAppearance();
-
-    @Override
-    public abstract void generateDownAppearance();
-
     PDAnnotation getAnnotation()
     {
         return annotation;
