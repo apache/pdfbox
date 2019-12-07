@@ -67,14 +67,27 @@ public final class DrawObject extends GraphicsOperatorProcessor
         }
         else if (xobject instanceof PDFormXObject)
         {
-            PDFormXObject form = (PDFormXObject) xobject;
-            if (form instanceof PDTransparencyGroup)
+            try
             {
-                context.showTransparencyGroup((PDTransparencyGroup) form);
+                context.increaseLevel();
+                if (context.getLevel() > 25)
+                {
+                    LOG.error("recursion is too deep, skipping form XObject");
+                    return;
+                }
+                PDFormXObject form = (PDFormXObject) xobject;
+                if (form instanceof PDTransparencyGroup)
+                {
+                    context.showTransparencyGroup((PDTransparencyGroup) form);
+                }
+                else
+                {
+                    context.showForm(form);
+                }
             }
-            else
+            finally
             {
-                context.showForm(form);
+                context.decreaseLevel();
             }
         }
     }
