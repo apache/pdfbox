@@ -57,10 +57,9 @@ public class CreateGradientShadingPDF
      */
     public void create(String file) throws IOException
     {
-        PDDocument document = null;
-        try
+        
+        try (PDDocument document = new PDDocument())
         {
-            document = new PDDocument();
             PDPage page = new PDPage();
             document.addPage(page);
 
@@ -191,20 +190,12 @@ public class CreateGradientShadingPDF
             }
             
             document.save(file);
-            document.close();
-            
+        }
+        try (PDDocument document = PDDocument.load(new File(file)))
+        {
             // render the PDF and save it into a PNG file
-            document = PDDocument.load(new File(file));
             BufferedImage bim = new PDFRenderer(document).renderImageWithDPI(0, 100);
             ImageIO.write(bim, "png", new File(file + ".png"));
-            document.close();
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
-            }
         }
     }
 
