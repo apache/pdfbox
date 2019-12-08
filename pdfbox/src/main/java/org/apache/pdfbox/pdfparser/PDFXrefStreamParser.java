@@ -65,20 +65,14 @@ public class PDFXrefStreamParser extends BaseParser
      */
     public void parse() throws IOException
     {
-        COSBase w = stream.getDictionaryObject(COSName.W);
-        if (!(w instanceof COSArray))
+        COSArray wArray = stream.getCOSArray(COSName.W);
+        if (wArray == null)
         {
             throw new IOException("/W array is missing in Xref stream");
         }
-        COSArray xrefFormat = (COSArray) w;
-        
-        COSBase base = stream.getDictionaryObject(COSName.INDEX);
-        COSArray indexArray;
-        if (base instanceof COSArray)
-        {
-            indexArray = (COSArray) base;
-        }
-        else
+
+        COSArray indexArray = stream.getCOSArray(COSName.INDEX);
+        if (indexArray == null)
         {
             // If /Index doesn't exist, we will use the default values.
             indexArray = new COSArray();
@@ -94,7 +88,7 @@ public class PDFXrefStreamParser extends BaseParser
         Iterator<COSBase> indexIter = indexArray.iterator();
         while (indexIter.hasNext())
         {
-            base = indexIter.next();
+            COSBase base = indexIter.next();
             if (!(base instanceof COSInteger))
             {
                 throw new IOException("Xref stream must have integer in /Index array");
@@ -119,12 +113,12 @@ public class PDFXrefStreamParser extends BaseParser
         /*
          * Calculating the size of the line in bytes
          */
-        int w0 = xrefFormat.getInt(0, 0);
-        int w1 = xrefFormat.getInt(1, 0);
-        int w2 = xrefFormat.getInt(2, 0);
+        int w0 = wArray.getInt(0, 0);
+        int w1 = wArray.getInt(1, 0);
+        int w2 = wArray.getInt(2, 0);
         int lineSize = w0 + w1 + w2;
 
-        while(!seqSource.isEOF() && objIter.hasNext())
+        while (!seqSource.isEOF() && objIter.hasNext())
         {
             byte[] currLine = new byte[lineSize];
             seqSource.read(currLine);
@@ -180,12 +174,7 @@ public class PDFXrefStreamParser extends BaseParser
                      * 2nd argument is object number of object stream
                      * 3rd argument is index of object within object stream
                      * 
-                     * For sequential PDFParser we do not need this information
-                     * because
-                     * These objects are handled by the dereferenceObjects() method
-                     * since they're only pointing to object numbers
-                     * 
-                     * However for XRef aware parsers we have to know which objects contain
+                     * For XRef aware parsers we have to know which objects contain
                      * object streams. We will store this information in normal xref mapping
                      * table but add object stream number with minus sign in order to
                      * distinguish from file offsets
