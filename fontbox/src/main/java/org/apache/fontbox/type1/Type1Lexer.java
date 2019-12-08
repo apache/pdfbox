@@ -435,6 +435,8 @@ class Type1Lexer
                         case '\\': sb.append('\\'); break;
                         case '(': sb.append('('); break;
                         case ')': sb.append(')'); break;
+                        default:
+                            break;
                     }   
                     // octal \ddd
                     if (Character.isDigit(c1))
