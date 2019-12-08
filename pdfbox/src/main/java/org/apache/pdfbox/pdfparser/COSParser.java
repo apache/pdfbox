@@ -2005,7 +2005,7 @@ public class COSParser extends BaseParser
                 }
                 String numbersStr = new String(numbersBytes, start, numbersBytes.length - start,
                         StandardCharsets.ISO_8859_1);
-                numbersStr = numbersStr.replaceAll("\n", " ").replaceAll("  ", " ");
+                numbersStr = numbersStr.replace('\n', ' ').replace("  ", " ");
                 String[] numbers = numbersStr.split(" ");
                 if (numbers.length < nrOfObjects * 2)
                 {
