@@ -65,7 +65,6 @@ public class DrawPrintTextLocations extends PDFTextStripper
     private final String filename;
     static final int SCALE = 4;
     private Graphics2D g2d;
-    private final PDDocument document;
 
     /**
      * Instantiate a new PDFTextStripper object.
@@ -76,7 +75,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
      */
     public DrawPrintTextLocations(PDDocument document, String filename) throws IOException
     {
-        this.document = document;
+        this.document = document; // must initialize here, base class initializes too late
         this.filename = filename;
     }
 
