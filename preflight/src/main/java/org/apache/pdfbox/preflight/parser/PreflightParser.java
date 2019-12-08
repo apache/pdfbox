@@ -869,10 +869,8 @@ public class PreflightParser extends PDFParser
                 {
                     // parse object stream
                     PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
-                    parser.parse();
-
                     // register all objects which are referenced to be contained in object stream
-                    parser.getObjects().forEach(next ->
+                    parser.parse().forEach(next ->
                     {
                         COSObjectKey stmObjKey = new COSObjectKey(next);
                         Long offset = document.getXrefTable().get(stmObjKey);

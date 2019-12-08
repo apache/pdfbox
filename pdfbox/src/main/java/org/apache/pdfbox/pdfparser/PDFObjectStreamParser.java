@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 
@@ -40,7 +41,6 @@ public class PDFObjectStreamParser extends BaseParser
      */
     private static final Log LOG = LogFactory.getLog(PDFObjectStreamParser.class);
 
-    private List<COSObject> streamObjects = null;
     private final COSStream stream;
 
     /**
@@ -58,23 +58,23 @@ public class PDFObjectStreamParser extends BaseParser
     }
 
     /**
-     * This will parse the tokens in the stream.  This will close the
-     * stream when it is finished parsing.
+     * This will parse the tokens in the stream. This will close the stream when it is finished parsing.
      *
+     * @return All of the objects in the stream.
      * @throws IOException If there is an error while parsing the stream.
      */
-    public void parse() throws IOException
+    public List<COSObject> parse() throws IOException
     {
+        List<COSObject> streamObjects = new ArrayList<>();
         try
         {
             //need to first parse the header.
-            int numberOfObjects = stream.getInt( "N" );
+            int numberOfObjects = stream.getInt(COSName.N);
             if (numberOfObjects == -1)
             {
                 throw new IOException("/N entry missing in object stream");
             }
             List<Long> objectNumbers = new ArrayList<>( numberOfObjects );
-            streamObjects = new ArrayList<>( numberOfObjects );
             for( int i=0; i<numberOfObjects; i++ )
             {
                 long objectNumber = readObjectNumber();
@@ -87,19 +87,15 @@ public class PDFObjectStreamParser extends BaseParser
             int objectCounter = 0;
             while( (cosObject = parseDirObject()) != null )
             {
-                object = new COSObject(cosObject);
-                object.setGenerationNumber(0);
                 if (objectCounter >= objectNumbers.size())
                 {
                     LOG.error("/ObjStm (object stream) has more objects than /N " + numberOfObjects);
                     break;
                 }
+                object = new COSObject(cosObject);
+                object.setGenerationNumber(0);
                 object.setObjectNumber( objectNumbers.get( objectCounter) );
                 streamObjects.add( object );
-                if(LOG.isDebugEnabled())
-                {
-                    LOG.debug( "parsed=" + object );
-                }
                 // According to the spec objects within an object stream shall not be enclosed 
                 // by obj/endobj tags, but there are some pdfs in the wild using those tags 
                 // skip endobject marker if present
@@ -114,33 +110,7 @@ public class PDFObjectStreamParser extends BaseParser
         {
             seqSource.close();
         }
-    }
-
-    /**
-     * This will get the objects that were parsed from the stream.
-     *
-     * @return All of the objects in the stream.
-     */
-    public List<COSObject> getObjects()
-    {
         return streamObjects;
-    }
-
-    public boolean dereferenceCOSObject(COSObject obj)
-    {
-        if (streamObjects != null) 
-        {
-            long objectNumber = obj.getObjectNumber();
-            for (COSObject cosObject : streamObjects)
-            {
-                if (cosObject.getObjectNumber() == objectNumber)
-                {
-                    obj.setObject(cosObject);
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
 }

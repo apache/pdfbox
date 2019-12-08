@@ -85,8 +85,7 @@ public final class DecompressObjectstreams
             {
                 COSStream stream = (COSStream)objStream.getObject();
                 PDFObjectStreamParser sp = new PDFObjectStreamParser(stream, doc.getDocument());
-                sp.parse();
-                for(COSObject next : sp.getObjects())
+                for (COSObject next : sp.parse())
                 {
                     COSObjectKey key = new COSObjectKey(next);
                     COSObject obj = doc.getDocument().getObjectFromPool(key);

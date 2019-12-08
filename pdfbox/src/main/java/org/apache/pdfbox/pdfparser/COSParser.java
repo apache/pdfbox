@@ -766,7 +766,16 @@ public class COSParser extends BaseParser implements ICOSParser
             try
             {
                 parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
-                parser.parse();
+                // register all objects which are referenced to be contained in object stream
+                parser.parse().stream().forEach(next -> {
+                    COSObjectKey stmObjKey = new COSObjectKey(next);
+                    Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey);
+                    if (offset != null && offset == -objstmObjNr)
+                    {
+                        COSObject stmObj = document.getObjectFromPool(stmObjKey);
+                        stmObj.setObject(next.getObject());
+                    }
+                });
             }
             catch (IOException ex)
             {
@@ -790,17 +799,6 @@ public class COSParser extends BaseParser implements ICOSParser
                     throw ex;
                 }
             }
-            // register all objects which are referenced to be contained in object stream
-            parser.getObjects().stream().forEach(next -> 
-            {
-                COSObjectKey stmObjKey = new COSObjectKey(next);
-                Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey);
-                if (offset != null && offset == -objstmObjNr)
-                {
-                    COSObject stmObj = document.getObjectFromPool(stmObjKey);
-                    stmObj.setObject(next.getObject());
-                }
-            });
         }
     }
     
