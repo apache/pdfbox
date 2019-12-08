@@ -210,6 +210,8 @@ final class CCITTFaxEncoderStream extends OutputStream {
                     case -3:
                         write(2, 7);
                         break;
+                    default:
+                        break;
                 }
                 white = !white;
                 index = nextRefs[0] + difference;

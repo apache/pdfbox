@@ -105,6 +105,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
                 optionUncompressed = (options & TIFFExtension.GROUP4OPT_UNCOMPRESSED) != 0;
                 optionByteAligned = (options & TIFFExtension.GROUP4OPT_BYTEALIGNED) != 0;
                 break;
+            default:
+                break;
         }
 
     }
@@ -302,6 +304,8 @@ final class CCITTFaxDecoderStream extends FilterInputStream {
                 break;
             case TIFFExtension.COMPRESSION_CCITT_T6:
                 decodeRowType6();
+                break;
+            default:
                 break;
         }
 

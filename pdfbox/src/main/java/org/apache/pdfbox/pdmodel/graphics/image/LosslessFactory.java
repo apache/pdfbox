@@ -538,6 +538,8 @@ public final class LosslessFactory
                     targetValues[1] = b1;
                     targetValues[2] = b0;
                     break;
+                default:
+                    break;
             }
         }
 
