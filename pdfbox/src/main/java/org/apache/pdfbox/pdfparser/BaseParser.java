@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.logging.Log;
@@ -36,7 +37,6 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.util.Charsets;
 
 /**
  * This class is used to contain parsing logic that will be used by both the
@@ -770,7 +770,7 @@ public abstract class BaseParser
         else
         {
             // some malformed PDFs don't use UTF-8 see PDFBOX-3347
-            string = new String(buffer.toByteArray(), Charsets.WINDOWS_1252);
+            string = new String(buffer.toByteArray(), Charset.forName("Windows-1252"));
         }
         return COSName.getPDFName(string);
     }
