@@ -567,6 +567,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName URI = new COSName("URI");
     public static final COSName URL = new COSName("URL");
     public static final COSName URL_TYPE = new COSName("URLType");
+    public static final COSName USER_UNIT = new COSName("UserUnit");
     // V
     public static final COSName V = new COSName("V");
     public static final COSName VE = new COSName("VE");
