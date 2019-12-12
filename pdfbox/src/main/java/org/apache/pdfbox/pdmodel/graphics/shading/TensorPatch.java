@@ -206,7 +206,7 @@ class TensorPatch extends Patch
     /*
      dividing a patch into a grid according to level, then calculate the coordinate and color of 
      each crossing point in the grid, the rule to calculate the coordinate is tensor-product which 
-     is defined in page 119 of PDF32000_2008.pdf, the method to calculate the cooresponding color is 
+     is defined in page 119 of PDF32000_2008.pdf, the method to calculate the corresponding color is 
      bilinear interpolation
      */
     private CoordinateColorPair[][] getPatchCoordinatesColor()
