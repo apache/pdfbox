@@ -201,7 +201,7 @@ public final class PDFSplit
                 + "  -split     <integer>   : split after this many pages (default 1, if startPage and endPage are unset)\n"
                 + "  -startPage <integer>   : start page\n"
                 + "  -endPage   <integer>   : end page\n"
-                + "  -outputPrefix <prefix> : Filename prefix for splitted files\n"
+                + "  -outputPrefix <prefix> : Filename prefix for split files\n"
                 + "  <inputfile>            : The PDF document to use\n";
         
         System.err.println(message);
