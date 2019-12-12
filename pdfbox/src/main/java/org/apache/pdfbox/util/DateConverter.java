@@ -541,7 +541,7 @@ public final class DateConverter
         char nextC = skipOptionals(text, where, ".");
         if (nextC == '.')
         {
-            // fractions of a second: skip upto 19 digits
+            // fractions of a second: skip up to 19 digits
             parseTimeField(text, where, 19, 0);
         }
 
