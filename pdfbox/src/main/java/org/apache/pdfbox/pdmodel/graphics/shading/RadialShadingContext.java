@@ -285,7 +285,7 @@ public class RadialShadingContext extends ShadingContext implements PaintContext
                 int value;
                 if (useBackground)
                 {
-                    // use the given backgound color values
+                    // use the given background color values
                     value = getRgbBackground();
                 }
                 else
