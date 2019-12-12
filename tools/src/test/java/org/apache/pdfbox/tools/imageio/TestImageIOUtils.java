@@ -143,13 +143,13 @@ public class TestImageIOUtils extends TestCase
             // testing GIF
             imageType = "gif";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.RGB, dpi, 1, "");
-            // no META data posible for GIF, thus no dpi test
+            // no META data possible for GIF, thus no dpi test
             checkFileTypeByContent(outDir + file.getName() + "-1." + imageType, FileType.GIF);
 
             // testing WBMP
             imageType = "wbmp";
             writeImage(document, imageType, outDir + file.getName() + "-", ImageType.BINARY, dpi, 1, "");
-            // no META data posible for WBMP, thus no dpi test
+            // no META data possible for WBMP, thus no dpi test
 
             // testing TIFF
             imageType = "tif";
