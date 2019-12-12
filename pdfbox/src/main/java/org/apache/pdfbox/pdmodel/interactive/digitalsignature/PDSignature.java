@@ -413,7 +413,7 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * PDF signature build dictionary. Provides informations about the signature handler.
+     * PDF signature build dictionary. Provides information about the signature handler.
      *
      * @return the pdf signature build dictionary.
      */
@@ -429,7 +429,7 @@ public class PDSignature implements COSObjectable
     }
 
     /**
-     * PDF signature build dictionary. Provides informations about the signature handler.
+     * PDF signature build dictionary. Provides information about the signature handler.
      *
      * @param propBuild the prop build
      */

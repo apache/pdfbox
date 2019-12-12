@@ -37,7 +37,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 /**
  * @author Khyrul Bashar
  *
- * A class that provides the COSStream in different version and related informations.
+ * A class that provides the COSStream in various views and related information.
  */
 public class Stream
 {
