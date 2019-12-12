@@ -265,7 +265,7 @@ public class AFMParser
      */
     public static final String CC = "CC";
     /**
-     * This is a composite charater part.
+     * This is a composite character part.
      */
     public static final String PCC = "PCC";
     /**
