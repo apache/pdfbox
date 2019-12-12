@@ -66,7 +66,7 @@ public class XMPMetadata
     private TypeMapping typeMapping;
 
     /**
-     * Contructor of an empty default XMPMetaData.
+     * Constructor of an empty default XMPMetaData.
      * 
      */
     protected XMPMetadata()
