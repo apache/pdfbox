@@ -249,18 +249,18 @@ public class Splitter
                 }
                 if (destination instanceof PDPageDestination)
                 {
-                    // TODO preserve links to pages within the splitted result  
+                    // TODO preserve links to pages within the split result  
                     ((PDPageDestination) destination).setPage(null);
                 }
             }
-            // TODO preserve links to pages within the splitted result  
+            // TODO preserve links to pages within the split result  
             annotation.setPage(null);
         }
     }
     /**
      * The source PDF document.
      * 
-     * @return the pdf to be splitted
+     * @return the pdf to be split
      */
     protected final PDDocument getSourceDocument()
     {
