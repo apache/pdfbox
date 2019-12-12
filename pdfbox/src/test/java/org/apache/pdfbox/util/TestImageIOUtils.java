@@ -137,12 +137,12 @@ public class TestImageIOUtils extends TestCase
             // testing GIF
             imageType = "gif";
             writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_INT_RGB, dpi);
-            // no META data posible for GIF, thus no test
+            // no META data possible for GIF, thus no test
 
             // testing WBMP
             imageType = "wbmp";
             writeImage(document, imageType, outDir + file.getName() + "-", BufferedImage.TYPE_BYTE_BINARY, dpi);
-            // no META data posible for WBMP, thus no test
+            // no META data possible for WBMP, thus no test
 
             // testing TIFF
             imageType = "tif";
@@ -275,6 +275,7 @@ public class TestImageIOUtils extends TestCase
 
         for (File file : testFiles)
         {
+System.out.println(file);
             doTestFile(file, outDir);
         }
     }
