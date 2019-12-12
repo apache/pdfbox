@@ -44,7 +44,7 @@ public class ArrayProperty extends AbstractComplexProperty
     private final String prefix;
 
     /**
-     * Contructor of a complex property
+     * Constructor of a complex property
      * 
      * @param metadata
      *            The metadata to attach to this property
