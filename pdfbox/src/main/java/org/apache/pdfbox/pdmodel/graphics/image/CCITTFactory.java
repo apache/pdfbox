@@ -325,7 +325,7 @@ public final class CCITTFactory
 
             int numtags = readshort(endianess, reader);
 
-            // The number 50 is somewhat arbitary, it just stops us load up junk from somewhere
+            // The number 50 is somewhat arbitrary, it just stops us load up junk from somewhere
             // and tramping on
             if (numtags > 50)
             {
@@ -438,7 +438,7 @@ public final class CCITTFactory
                     {
                         if ((val & 1) != 0)
                         {
-                            // T4 2D - arbitary positive K value
+                            // T4 2D - arbitrary positive K value
                             k = 50;
                         }
                         // http://www.awaresystems.be/imaging/tiff/tifftags/t4options.html

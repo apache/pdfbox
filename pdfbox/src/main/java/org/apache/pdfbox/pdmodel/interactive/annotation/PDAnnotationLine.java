@@ -114,7 +114,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public PDAnnotationLine()
     {
         getCOSObject().setName(COSName.SUBTYPE, SUB_TYPE);
-        // Dictionary value L is mandatory, fill in with arbitary value
+        // Dictionary value L is mandatory, fill in with arbitrary value
         setLine(new float[] { 0, 0, 0, 0 });
     }
 
