@@ -54,7 +54,7 @@ public class TestSimpleMetadataProperties
     @Test(expected = IllegalArgumentException.class)
     public void testBooleanBadTypeDetection()
     {
-        new BooleanType(parent, null, "test", "booleen", "Not a Boolean");
+        new BooleanType(parent, null, "test", "boolean", "Not a Boolean");
     }
 
     /**
@@ -114,7 +114,7 @@ public class TestSimpleMetadataProperties
         int integerv = 1;
         float realv = Float.parseFloat("1.69");
         String textv = "TEXTCONTENT";
-        BooleanType bool = parent.getTypeMapping().createBoolean(null, "test", "booleen", boolv);
+        BooleanType bool = parent.getTypeMapping().createBoolean(null, "test", "boolean", boolv);
         DateType date = parent.getTypeMapping().createDate(null, "test", "date", datev);
         IntegerType integer = parent.getTypeMapping().createInteger(null, "test", "integer", integerv);
         RealType real = parent.getTypeMapping().createReal(null, "test", "real", realv);
@@ -142,7 +142,7 @@ public class TestSimpleMetadataProperties
         String realv = "1.92";
         String textv = "text";
 
-        BooleanType bool = new BooleanType(parent, null, "test", "booleen", boolv);
+        BooleanType bool = new BooleanType(parent, null, "test", "boolean", boolv);
         DateType date = new DateType(parent, null, "test", "date", datev);
         IntegerType integer = new IntegerType(parent, null, "test", "integer", integerv);
         RealType real = new RealType(parent, null, "test", "real", realv);
@@ -164,7 +164,7 @@ public class TestSimpleMetadataProperties
     public void testObjectCreationWithNamespace() throws Exception
     {
         String ns = "http://www.test.org/pdfa/";
-        BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "booleen", true);
+        BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "boolean", true);
         DateType date = parent.getTypeMapping().createDate(ns, "test", "date", Calendar.getInstance());
         IntegerType integer = parent.getTypeMapping().createInteger(ns, "test", "integer", 1);
         RealType real = parent.getTypeMapping().createReal(ns, "test", "real", (float) 1.6);
