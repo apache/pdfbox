@@ -297,7 +297,7 @@ public class XMPRightsManagementSchema extends XMPSchema
      * Set the Certificate URL.
      * 
      * @param url
-     *            certficate url value to set
+     *            certificate url value to set
      */
     public void setCertificate(String url)
     {
