@@ -188,7 +188,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
                 if (metadata.getFilters() != null && !metadata.getFilters().isEmpty())
                 {
                     this.fContainer.push(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
-                            "Filter specified in font file metadata dictionnary"));
+                            "Filter specified in font file metadata dictionary"));
                     return;
                 }
 

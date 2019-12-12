@@ -59,7 +59,7 @@ public class ConvertColorspace
      * The method that replace RGB colors by CMYK ones.
      *
      * @param inputFile input file name.
-     * @param colorEquivalents a dictionnary for the color equivalents.
+     * @param colorEquivalents a dictionary for the color equivalents.
      * @param destColorspace The destination colorspace, currently CMYK is supported.
      *
      * @throws IOException If there is an error parsing the document.
