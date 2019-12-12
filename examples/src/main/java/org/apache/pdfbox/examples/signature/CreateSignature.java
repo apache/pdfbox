@@ -50,7 +50,7 @@ public class CreateSignature extends CreateSignatureBase
 {
 
     /**
-     * Initialize the signature creator with a keystore and certficate password.
+     * Initialize the signature creator with a keystore and certificate password.
      *
      * @param keystore the pkcs12 keystore containing the signing certificate
      * @param pin the password for recovering the key
