@@ -300,7 +300,7 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * Set the unique identifer of the work from which this resource was derived
+     * Set the unique identifier of the work from which this resource was derived
      * 
      * @param text
      *            Value to set
@@ -311,7 +311,7 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * Set the unique identifer of the work from which this resource was derived
+     * Set the unique identifier of the work from which this resource was derived
      * 
      * @param text
      *            Property to set
@@ -322,7 +322,7 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * Set the unique identifer of the work from which this resource was derived
+     * Set the unique identifier of the work from which this resource was derived
      * 
      * @param text
      *            Property to set
