@@ -230,7 +230,7 @@ public class MetadataValidationProcess extends AbstractProcess
         if (bim.getWidth() != tb.getWidth())
         {
             addValidationError(ctx, new ValidationError(PreflightConstants.ERROR_METADATA_FORMAT,
-                    "xapGImg:witdh does not match the actual base64-encoded thumbnail image data"));
+                    "xapGImg:width does not match the actual base64-encoded thumbnail image data"));
         }
     }
     
@@ -276,7 +276,7 @@ public class MetadataValidationProcess extends AbstractProcess
             // should not be defined
             ValidationError error = new ValidationError(
                     PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
-                    "Filter specified in metadata dictionnary");
+                    "Filter specified in metadata dictionary");
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
         }
 
