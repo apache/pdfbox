@@ -529,7 +529,7 @@ public abstract class PDAnnotation implements COSObjectable
     /**
      * This will retrieve the date and time the annotation was modified.
      * 
-     * @return the modified date/time (often in date format, but can be an arbitary string).
+     * @return the modified date/time (often in date format, but can be an arbitrary string).
      */
     public String getModifiedDate()
     {

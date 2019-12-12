@@ -306,7 +306,7 @@ public class PDCcitt extends PDXObjectImage
 
             int numtags = readshort(endianess, raf);
 
-            // The number 50 is somewhat arbitary, it just stops us load up junk from somewhere and tramping on
+            // The number 50 is somewhat arbitrary, it just stops us load up junk from somewhere and tramping on
             if (numtags > 50)
             {
                 throw new IOException("Not a valid tiff file");
@@ -415,7 +415,7 @@ public class PDCcitt extends PDXObjectImage
                 {
                     if ((val & 1) != 0)
                     {
-                        k = 50; // T4 2D - arbitary positive K value
+                        k = 50; // T4 2D - arbitrary positive K value
                     }
                     // http://www.awaresystems.be/imaging/tiff/tifftags/t4options.html
                     if ((val & 4) != 0)
@@ -724,8 +724,8 @@ public class PDCcitt extends PDXObjectImage
             addTag(262, blackis1); // Photometric Interpretation
             addTag(273, tiffheader.length); // Offset to start of image data - updated below
             addTag(279, options.getInt(COSName.LENGTH)); // Length of image data
-            addTag(282, 300, 1); // X Resolution 300 (default unit Inches) This is arbitary
-            addTag(283, 300, 1); // Y Resolution 300 (default unit Inches) This is arbitary
+            addTag(282, 300, 1); // X Resolution 300 (default unit Inches) This is arbitrary
+            addTag(283, 300, 1); // Y Resolution 300 (default unit Inches) This is arbitrary
             if (comptype == 3)
             {
                 addTag(292, t4options);

@@ -115,7 +115,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     {
         super();
         getDictionary().setItem( COSName.SUBTYPE, COSName.getPDFName( SUB_TYPE ) );
-        // Dictionary value L is mandatory, fill in with arbitary value
+        // Dictionary value L is mandatory, fill in with arbitrary value
         setLine( new float[] { 0, 0, 0, 0 } );
 
     }
