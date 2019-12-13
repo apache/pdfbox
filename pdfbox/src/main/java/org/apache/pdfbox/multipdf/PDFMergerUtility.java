@@ -653,10 +653,8 @@ public class PDFMergerUtility
             destCatalog.setPageMode(srcPageMode);
         }
 
-        COSDictionary destLabels = (COSDictionary) destCatalog.getCOSObject().getDictionaryObject(
-                COSName.PAGE_LABELS);
-        COSDictionary srcLabels = (COSDictionary) srcCatalog.getCOSObject()
-                .getDictionaryObject(COSName.PAGE_LABELS);
+        COSDictionary destLabels = destCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
+        COSDictionary srcLabels = srcCatalog.getCOSObject().getCOSDictionary(COSName.PAGE_LABELS);
         if (srcLabels != null)
         {
             int destPageCount = destination.getNumberOfPages();
@@ -697,8 +695,8 @@ public class PDFMergerUtility
             }
         }
 
-        COSStream destMetadata = (COSStream) destCatalog.getCOSObject().getDictionaryObject(COSName.METADATA);
-        COSStream srcMetadata = (COSStream) srcCatalog.getCOSObject().getDictionaryObject(COSName.METADATA);
+        COSStream destMetadata = destCatalog.getCOSObject().getCOSStream(COSName.METADATA);
+        COSStream srcMetadata = srcCatalog.getCOSObject().getCOSStream(COSName.METADATA);
         if (destMetadata == null && srcMetadata != null)
         {
             try
@@ -715,8 +713,8 @@ public class PDFMergerUtility
             }
         }
 
-        COSDictionary destOCP = (COSDictionary) destCatalog.getCOSObject().getDictionaryObject(COSName.OCPROPERTIES);
-        COSDictionary srcOCP = (COSDictionary) srcCatalog.getCOSObject().getDictionaryObject(COSName.OCPROPERTIES);
+        COSDictionary destOCP = destCatalog.getCOSObject().getCOSDictionary(COSName.OCPROPERTIES);
+        COSDictionary srcOCP = srcCatalog.getCOSObject().getCOSDictionary(COSName.OCPROPERTIES);
         if (destOCP == null && srcOCP != null)
         {
             destCatalog.getCOSObject().setItem(COSName.OCPROPERTIES, cloner.cloneForNewDocument(srcOCP));
