@@ -1182,6 +1182,29 @@ public final class PDPageContentStream implements Closeable
     }
 
     /**
+     * Set the stroking color in the DeviceRGB color space. Range is 0..1.
+     *
+     * @param r The red value
+     * @param g The green value.
+     * @param b The blue value.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
+     */
+    public void setStrokingColor(float r, float g, float b) throws IOException
+    {
+        if (isOutsideOneInterval(r) || isOutsideOneInterval(g) || isOutsideOneInterval(b))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..1, but are "
+                    + String.format("(%.2f,%.2f,%.2f)", r, g, b));
+        }
+        writeOperand(r);
+        writeOperand(g);
+        writeOperand(b);
+        writeOperator("RG");
+        setStrokingColorSpaceStack(PDDeviceRGB.INSTANCE);
+    }
+
+    /**
      * Set the stroking color in the DeviceRGB color space. Range is 0..255.
      *
      * @param r The red value
@@ -1189,6 +1212,7 @@ public final class PDPageContentStream implements Closeable
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameters are invalid.
+     * @see #setStrokingColor(float, float, float) setStrokingColor(r/255f, g/255f, b/255f)
      */
     public void setStrokingColor(int r, int g, int b) throws IOException
     {
@@ -1197,11 +1221,7 @@ public final class PDPageContentStream implements Closeable
             throw new IllegalArgumentException("Parameters must be within 0..255, but are "
                     + String.format("(%d,%d,%d)", r, g, b));
         }
-        writeOperand(r / 255f);
-        writeOperand(g / 255f);
-        writeOperand(b / 255f);
-        writeOperator("RG");
-        setStrokingColorSpaceStack(PDDeviceRGB.INSTANCE);
+        setStrokingColor(r / 255f, g / 255f, b / 255f);
     }
 
     /**
@@ -1397,6 +1417,30 @@ public final class PDPageContentStream implements Closeable
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameters are invalid.
      */
+    public void setNonStrokingColor(float r, float g, float b) throws IOException
+    {
+        if (isOutsideOneInterval(r) || isOutsideOneInterval(g) || isOutsideOneInterval(b))
+        {
+            throw new IllegalArgumentException("Parameters must be within 0..1, but are "
+                    + String.format("(%.2f,%.2f,%.2f)", r, g, b));
+        }
+        writeOperand(r);
+        writeOperand(g);
+        writeOperand(b);
+        writeOperator("rg");
+        setNonStrokingColorSpaceStack(PDDeviceRGB.INSTANCE);
+    }
+
+    /**
+     * Set the non stroking color in the DeviceRGB color space. Range is 0..255.
+     *
+     * @param r The red value
+     * @param g The green value.
+     * @param b The blue value.
+     * @throws IOException If an IO error occurs while writing to the stream.
+     * @throws IllegalArgumentException If the parameters are invalid.
+     * @see #setNonStrokingColor(float, float, float) setNonStrokingColor(r/255f, g/255f, b/255f)
+     */
     public void setNonStrokingColor(int r, int g, int b) throws IOException
     {
         if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
@@ -1404,11 +1448,7 @@ public final class PDPageContentStream implements Closeable
             throw new IllegalArgumentException("Parameters must be within 0..255, but are "
                     + String.format("(%d,%d,%d)", r, g, b));
         }
-        writeOperand(r / 255f);
-        writeOperand(g / 255f);
-        writeOperand(b / 255f);
-        writeOperator("rg");
-        setNonStrokingColorSpaceStack(PDDeviceRGB.INSTANCE);
+        setNonStrokingColor(r / 255f, g / 255f, b / 255f);
     }
 
     /**
