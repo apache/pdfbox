@@ -24,6 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -84,6 +85,7 @@ public class OcspHelper
     private DEROctetString encodedNonce;
     private X509Certificate ocspResponderCertificate;
     private final JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+    private static Random rand = null;
 
     /**
      * @param checkCertificate Certificate to be OCSP-checked
@@ -559,10 +561,7 @@ public class OcspHelper
         Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
                 false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
 
-        Random rand = new Random();
-        byte[] nonce = new byte[16];
-        rand.nextBytes(nonce);
-        encodedNonce = new DEROctetString(new DEROctetString(nonce));
+        encodedNonce = new DEROctetString(new DEROctetString(create16BytesNonce()));
         Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
                 encodedNonce);
 
@@ -571,6 +570,26 @@ public class OcspHelper
                 new Extensions(new Extension[] { responseExtension, nonceExtension }));
         builder.addRequest(certId);
         return builder.build();
+    }
+
+    private byte[] create16BytesNonce() throws IOException
+    {
+        if (rand == null)
+        {
+            try
+            {
+                // SecureRandom is preferred to Random
+                // late init because of NoSuchAlgorithmException
+                rand = SecureRandom.getInstanceStrong();
+            }
+            catch (NoSuchAlgorithmException ex)
+            {
+                throw new IOException(ex);
+            }
+        }
+        byte[] nonce = new byte[16];
+        rand.nextBytes(nonce);
+        return nonce;
     }
 
     /**
