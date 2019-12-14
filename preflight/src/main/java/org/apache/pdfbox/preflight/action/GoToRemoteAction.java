@@ -64,7 +64,7 @@ public class GoToRemoteAction extends GoToAction
     @Override
     protected boolean innerValid() throws ValidationException
     {
-        COSBase dest = this.actionDictionnary.getItem(COSName.D);
+        COSBase dest = this.actionDictionary.getItem(COSName.D);
 
         // ---- D entry is mandatory
         if (dest == null)
@@ -81,7 +81,7 @@ public class GoToRemoteAction extends GoToAction
             return false;
         }
 
-        COSBase f = this.actionDictionnary.getItem(COSName.F);
+        COSBase f = this.actionDictionary.getItem(COSName.F);
         if (f == null)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,

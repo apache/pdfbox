@@ -56,7 +56,7 @@ public class UriAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        COSBase uri = this.actionDictionnary.getDictionaryObject(COSName.URI);
+        COSBase uri = this.actionDictionary.getDictionaryObject(COSName.URI);
         if (uri == null)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
