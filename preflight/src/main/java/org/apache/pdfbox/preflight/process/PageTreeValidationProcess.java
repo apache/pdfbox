@@ -59,7 +59,7 @@ public class PageTreeValidationProcess extends AbstractProcess
 
                 if (context.getDocument().getResult().getErrorsList().size() > context.getConfig().getMaxErrors())
                 {
-                    context.addValidationError(new ValidationError(PreflightConstants.ERROR_UNKOWN_ERROR, 
+                    context.addValidationError(new ValidationError(PreflightConstants.ERROR_UNKNOWN_ERROR, 
                             "Over " + context.getConfig().getMaxErrors() +
                             " errors, page tree validation process aborted"));
                     break;

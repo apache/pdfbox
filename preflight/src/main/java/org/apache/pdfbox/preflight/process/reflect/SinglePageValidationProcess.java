@@ -27,7 +27,7 @@ import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS
 import static org.apache.pdfbox.preflight.PreflightConfiguration.RESOURCES_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_TRANSPARENCY_GROUP;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_UNKOWN_ERROR;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_UNKNOWN_ERROR;
 
 import java.io.IOException;
 import java.util.List;
@@ -187,7 +187,7 @@ public class SinglePageValidationProcess extends AbstractProcess
         catch (IOException e)
         {
             LOGGER.debug("Unable to read page contet stream", e);
-            context.addValidationError(new ValidationError(ERROR_UNKOWN_ERROR, e.getMessage(), e));
+            context.addValidationError(new ValidationError(ERROR_UNKNOWN_ERROR, e.getMessage(), e));
         }
     }
 
