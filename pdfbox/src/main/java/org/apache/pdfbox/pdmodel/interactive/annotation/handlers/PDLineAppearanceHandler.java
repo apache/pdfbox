@@ -105,7 +105,7 @@ public class PDLineAppearanceHandler extends PDAbstractAppearanceHandler
         // However the border of the line ending shapes is not drawn.
         float lineEndingSize = (ab.width < 1e-5) ? 1 : ab.width;
 
-        // add/substract with, font height, and arrows
+        // add/subtract with, font height, and arrows
         // arrow length is 9 * width at about 30° => 10 * width seems to be enough
         // but need to consider /LL, /LLE and /LLO too
         //TODO find better way to calculate padding
