@@ -441,7 +441,7 @@ public final class PDFontDescriptor implements COSObjectable
     /**
      * Set the fonts bounding box.
      *
-     * @param rect The new bouding box.
+     * @param rect The new bounding box.
      */
     public void setFontBoundingBox( PDRectangle rect )
     {
