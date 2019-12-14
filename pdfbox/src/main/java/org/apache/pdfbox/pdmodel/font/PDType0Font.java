@@ -478,7 +478,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     @Override
     protected float getStandard14Width(int code)
     {
-        throw new UnsupportedOperationException("not suppported");
+        throw new UnsupportedOperationException("not supported");
     }
 
     @Override
