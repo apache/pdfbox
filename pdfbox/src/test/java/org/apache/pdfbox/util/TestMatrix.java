@@ -171,7 +171,7 @@ public class TestMatrix extends TestCase
         float delta = 0.00001f;
         for (int i = 0; i < values.length; i++)
         {
-            // Need to convert a (row, column) co-ordinate into a straight index.
+            // Need to convert a (row, column) coordinate into a straight index.
             int row = (int)Math.floor(i / 3);
             int column = i % 3;
             StringBuilder failureMsg = new StringBuilder();
