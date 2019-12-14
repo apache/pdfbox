@@ -497,7 +497,7 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * Returns true if this document has been closed.
      * 
-     * @return true if the documnet has been closed.
+     * @return true if the document has been closed.
      */
     public boolean isClosed()
     {
