@@ -95,7 +95,7 @@ public class KerningTable extends TTFTable
     }
 
     /**
-     * Obtain first subtable that supports horizontal kerning with specificed cross stream.
+     * Obtain first subtable that supports horizontal kerning with specified cross stream.
      *
      * @param cross true if requesting cross stream horizontal kerning
      * @return first matching subtable or null if none found
