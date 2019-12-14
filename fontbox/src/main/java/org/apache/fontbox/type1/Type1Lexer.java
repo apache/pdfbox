@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
  * context-free, and the execution of the program can modify the
  * the behaviour of the lexer/parser.
  *
- * Nevertheless, this class represents an attempt to artificially seperate
+ * Nevertheless, this class represents an attempt to artificially separate
  * the PostScript parsing process into separate lexing and parsing phases
  * in order to reduce the complexity of the parsing phase.
  *
