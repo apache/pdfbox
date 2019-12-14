@@ -442,7 +442,7 @@ public final class ExtractText
 
 /**
  * Collect all angles while doing text extraction. Angles are in degrees and rounded to the closest
- * integer (to avoid slight differences from floating point arithmethic resulting in similarly
+ * integer (to avoid slight differences from floating point arithmetic resulting in similarly
  * angled glyphs being treated separately). This class must be constructed for each page so that the
  * angle set is initialized.
  */
