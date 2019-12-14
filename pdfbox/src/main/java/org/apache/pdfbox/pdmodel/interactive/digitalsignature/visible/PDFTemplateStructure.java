@@ -169,7 +169,7 @@ public class PDFTemplateStructure
     }
 
     /**
-     * Gets Dictionary of AcroForm. Thats <b> /DR </b>
+     * Gets Dictionary of AcroForm. That's <b> /DR </b>
      * entry in the AcroForm
      * @return the AcroForm's dictionary 
      */
