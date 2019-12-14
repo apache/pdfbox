@@ -328,7 +328,7 @@ public final class TypeMapping
                 catch (Exception e)
                 {
                     throw new IllegalArgumentException(
-                            "couldn't read one type declaration, please check accessibility and declaration of fields annoted in "
+                            "couldn't read one type declaration, please check accessibility and declaration of fields annotated in "
                                     + classSchem.getName(), e);
                 }
                 PropertyType propType = field.getAnnotation(PropertyType.class);
