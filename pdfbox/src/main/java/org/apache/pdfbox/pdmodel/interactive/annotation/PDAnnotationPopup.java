@@ -57,7 +57,7 @@ public class PDAnnotationPopup extends PDAnnotation
     }
 
     /**
-     * This will set inital state of the annotation, open or closed.
+     * This will set the initial state of the annotation, open or closed.
      *
      * @param open Boolean value, true = open false = closed.
      */
