@@ -147,7 +147,7 @@ public class PreflightParser extends PDFParser
      */
     protected static ValidationResult createUnknownErrorResult()
     {
-        ValidationError error = new ValidationError(PreflightConstants.ERROR_UNKOWN_ERROR);
+        ValidationError error = new ValidationError(PreflightConstants.ERROR_UNKNOWN_ERROR);
         return new ValidationResult(error);
     }
 

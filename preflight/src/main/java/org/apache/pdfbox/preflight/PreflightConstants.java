@@ -252,7 +252,7 @@ public interface PreflightConstants
     /**
      * Error code uses by the Validator when there is an error without error code.
      */
-    String ERROR_UNKOWN_ERROR = "-1";
+    String ERROR_UNKNOWN_ERROR = "-1";
 
     // -----------------------------------------------------------
     // ---- FILE STRUCTURE ERRORS 1.x...
