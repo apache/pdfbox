@@ -261,7 +261,7 @@ public abstract class PDFunction implements COSObjectable
      * @return The of outputs the function returns based on those inputs. 
      * In many cases will be an array of a single value, but not always.
      * 
-     * @throws IOException an IOExcpetion is thrown if something went wrong processing the function.  
+     * @throws IOException if something went wrong processing the function.  
      */
     public abstract float[] eval(float[] input) throws IOException;
     
