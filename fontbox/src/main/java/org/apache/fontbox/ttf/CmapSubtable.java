@@ -367,7 +367,7 @@ public class CmapSubtable implements CmapLookup
     {
         int firstCode = data.readUnsignedShort();
         int entryCount = data.readUnsignedShort();
-        // skip emtpy tables
+        // skip empty tables
         if (entryCount == 0)
         {
             return;
