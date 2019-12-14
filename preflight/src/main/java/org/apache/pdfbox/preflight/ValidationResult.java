@@ -348,7 +348,7 @@ public class ValidationResult
             }
             else
             {
-                // default Unkown error
+                // default Unknown error
                 this.details = "Unknown error";
             }
             t = new Exception();
