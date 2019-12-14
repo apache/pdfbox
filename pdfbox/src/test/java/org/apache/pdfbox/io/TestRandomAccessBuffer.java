@@ -32,7 +32,7 @@ public class TestRandomAccessBuffer extends TestCase
     
     /**
      * This test checks two corner cases where the last read ends
-     * exactly at the end of a chunck (remainingBytes == 0)
+     * exactly at the end of a chunk (remainingBytes == 0)
      * @throws IOException
      */
     public void testRemainingByteZero() throws IOException
