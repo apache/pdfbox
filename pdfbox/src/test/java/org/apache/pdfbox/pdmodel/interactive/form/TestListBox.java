@@ -156,7 +156,7 @@ public class TestListBox extends TestCase
             
             // ensure that the choice field does allow multiple selections
             choice.setMultiSelect(true);
-            // now this call must suceed
+            // now this call must succeed
             choice.setValue(exportValues);
             
             // assert that the option values have been correctly set
