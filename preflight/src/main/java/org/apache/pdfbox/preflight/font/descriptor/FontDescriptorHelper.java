@@ -25,7 +25,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DESCRIP
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_STREAM;
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_UNKOWN;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_UNKNOWN;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_FORMAT_XPACKET;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_METADATA_UNKNOWN_VALUETYPE;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
@@ -267,7 +267,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
         }
         catch (IllegalStateException e)
         {
-            this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_UNKOWN,
+            this.fContainer.push(new ValidationError(ERROR_METADATA_FORMAT_UNKNOWN,
                     this.font.getName() + ": The Metadata entry doesn't reference a stream object", e));
         }
     }

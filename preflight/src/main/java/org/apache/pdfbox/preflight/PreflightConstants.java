@@ -827,7 +827,7 @@ public interface PreflightConstants
     /**
      * Unexpected type of a Metadata entry
      */
-    String ERROR_METADATA_FORMAT_UNKOWN = "7.1.3";
+    String ERROR_METADATA_FORMAT_UNKNOWN = "7.1.3";
     /**
      * Invalid metadata, unable to process the font due to IOException
      */
