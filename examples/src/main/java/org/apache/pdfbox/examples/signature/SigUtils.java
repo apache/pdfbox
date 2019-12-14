@@ -123,7 +123,7 @@ public class SigUtils
      * @param signature The signature object.
      * @param accessPermissions The permission value (1, 2 or 3).
      */
-    static public void setMDPPermission(PDDocument doc, PDSignature signature, int accessPermissions)
+    public static void setMDPPermission(PDDocument doc, PDSignature signature, int accessPermissions)
     {
         COSDictionary sigDict = signature.getCOSObject();
 
