@@ -34,7 +34,7 @@ import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 /**
- * This will take a text file and ouput a pdf with that text.
+ * This will take a text file and output a pdf with that text.
  *
  * @author Ben Litchfield
  */
