@@ -62,7 +62,7 @@ public class TrailerValidationProcess extends AbstractProcess
                 ctx.getFileLen() == linearizedDict.getLong(COSName.L))
         {
             // it is a linearized PDF, check the linearized dictionary
-            checkLinearizedDictionnary(ctx, linearizedDict);
+            checkLinearizedDictionary(ctx, linearizedDict);
 
             // if the pdf is a linearized pdf. the first trailer must be checked
             // and it must have the same ID than the last trailer.
@@ -360,7 +360,7 @@ public class TrailerValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @param linearizedDict the linearization dictionary.
      */
-    protected void checkLinearizedDictionnary(PreflightContext ctx, COSDictionary linearizedDict)
+    protected void checkLinearizedDictionary(PreflightContext ctx, COSDictionary linearizedDict)
     {
         // ---- check if all keys are authorized in a linearized dictionary
         // ---- Linearized dictionary must contain the lhoent keys
