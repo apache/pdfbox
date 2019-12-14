@@ -284,7 +284,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (widths == null || widths.isEmpty())
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    font.getName() + ": The Witdhs array is unreachable"));
+                    font.getName() + ": The Widths array is unreachable"));
             return;
         }
 
@@ -308,7 +308,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         if (widths.size() != expectedLength)
         {
             this.fontContainer.push(new ValidationError(ERROR_FONTS_DICTIONARY_INVALID,
-                    font.getName() + ": The length of Witdhs array is invalid. Expected : \"" + expectedLength + "\" Current : \""
+                    font.getName() + ": The length of Widths array is invalid. Expected : \"" + expectedLength + "\" Current : \""
                             + widths.size() + "\""));
             return;
         }
