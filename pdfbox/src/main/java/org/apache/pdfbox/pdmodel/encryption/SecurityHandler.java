@@ -310,7 +310,7 @@ public abstract class SecurityHandler
             {
                 throw exception;
             }
-            LOG.debug("A GeneralSecurityException occured when decrypting some stream data", exception);
+            LOG.debug("A GeneralSecurityException occurred when decrypting some stream data", exception);
         }
         finally
         {
