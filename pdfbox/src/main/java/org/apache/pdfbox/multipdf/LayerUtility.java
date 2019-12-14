@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.logging.Log;
@@ -145,8 +146,8 @@ public class LayerUtility
         return importPageAsForm(sourceDoc, page);
     }
 
-    private static final Set<String> PAGE_TO_FORM_FILTER = new java.util.HashSet<>(
-            Arrays.asList(new String[] {"Group", "LastModified", "Metadata"}));
+    private static final Set<String> PAGE_TO_FORM_FILTER =
+            new HashSet<>(Arrays.asList("Group", "LastModified", "Metadata"));
 
     /**
      * Imports a page from some PDF file as a Form XObject so it can be placed on another page
