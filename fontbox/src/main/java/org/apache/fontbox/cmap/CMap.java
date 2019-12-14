@@ -221,7 +221,7 @@ public class CMap
     /**
      * This will add a CID Range.
      *
-     * @param from starting charactor of the CID range.
+     * @param from starting character of the CID range.
      * @param to ending character of the CID range.
      * @param cid the cid to be started with.
      *
