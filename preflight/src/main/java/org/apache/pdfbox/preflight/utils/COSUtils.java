@@ -403,7 +403,7 @@ public final class COSUtils
         }
         catch (IOException e)
         {
-            LOGGER.warn("Error occured during the close of a COSDocument : " + e.getMessage(), e);
+            LOGGER.warn("Error occurred during the close of a COSDocument : " + e.getMessage(), e);
         }
     }
 

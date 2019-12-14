@@ -40,7 +40,7 @@ public interface ExternalSigningSupport
      *
      * @param signature CMS signature as byte array
      *
-     * @throws IOException if exception occured during PDF writing
+     * @throws IOException if exception occurred during PDF writing
      */
     void setSignature(byte[] signature) throws IOException;
 }
