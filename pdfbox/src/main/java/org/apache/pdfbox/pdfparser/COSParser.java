@@ -792,7 +792,6 @@ public class COSParser extends BaseParser implements ICOSParser
                                 + " due to an exception", ex);
                     }
                     // the error is handled in parseDictObjects
-                    return;
                 }
                 else
                 {
