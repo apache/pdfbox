@@ -90,7 +90,7 @@ public class PDAnnotationLine extends PDAnnotationMarkup
     public static final String LE_R_OPEN_ARROW = "ROpenArrow";
 
     /**
-     * Constant for a revered closed arrow line ending.
+     * Constant for a reversed closed arrow line ending.
      */
     public static final String LE_R_CLOSED_ARROW = "RClosedArrow";
 
