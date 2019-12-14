@@ -273,7 +273,7 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Translates this matrix by the given ammount.
+     * Translates this matrix by the given amount.
      *
      * @param tx x-translation
      * @param ty y-translation
