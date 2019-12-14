@@ -1228,7 +1228,7 @@ public class PDFMergerUtility
                 PDField destinationField = destAcroForm.getField(srcField.getFullyQualifiedName());
                 if (destinationField == null)
                 {
-                    // field doesn't exist - can savely add it
+                    // field doesn't exist - can safely add it
                     COSDictionary importedField = (COSDictionary) cloner.cloneForNewDocument(srcField.getCOSObject());
                     destFields.add(importedField);
                 }
