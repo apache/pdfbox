@@ -789,7 +789,7 @@ public class PDDocument implements Closeable
 
     /**
      * This will get the encryption dictionary for this document. This will still return the parameters if the document
-     * was decrypted. As the encryption architecture in PDF documents is plugable this returns an abstract class,
+     * was decrypted. As the encryption architecture in PDF documents is pluggable this returns an abstract class,
      * but the only supported subclass at this time is a
      * PDStandardEncryption object.
      *
