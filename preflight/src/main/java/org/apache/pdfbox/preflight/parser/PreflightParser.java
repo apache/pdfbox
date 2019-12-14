@@ -913,7 +913,7 @@ public class PreflightParser extends PDFParser
                     {
                         position = source.getPosition();
                     }
-                    catch(IOException excpetion)
+                    catch (IOException ex)
                     {
                         position = Long.MIN_VALUE;
                     }
