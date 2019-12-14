@@ -439,7 +439,7 @@ public class COSDocument extends COSBase implements Closeable
             // - first Exception is kept
             // - all COSStreams are closed
             // - ScratchFile is closed
-            // - there's a way to see which errors occured
+            // - there's a way to see which errors occurred
 
             IOException firstException = null;
 

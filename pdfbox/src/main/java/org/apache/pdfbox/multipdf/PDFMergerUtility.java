@@ -432,7 +432,7 @@ public class PDFMergerUtility
             // - first Exception is kept
             // - all PDDocuments are closed
             // - all FileInputStreams are closed
-            // - there's a way to see which errors occured
+            // - there's a way to see which errors occurred
 
             List<PDDocument> tobeclosed = new ArrayList<>();
             MemoryUsageSetting partitionedMemSetting = memUsageSetting != null ? 

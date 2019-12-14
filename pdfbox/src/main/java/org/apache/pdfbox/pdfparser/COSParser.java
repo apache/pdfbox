@@ -1717,7 +1717,7 @@ public class COSParser extends BaseParser
                 }
                 catch (IOException exception)
                 {
-                    LOG.debug("An exception occured during brute force search for trailer - ignoring", exception);
+                    LOG.debug("An exception occurred during brute force search for trailer - ignoring", exception);
                     continue;
                 }
             }
@@ -1830,7 +1830,7 @@ public class COSParser extends BaseParser
                 catch (IOException exception)
                 {
                     // save the EOF marker as the following data is most likely some garbage
-                    LOG.debug("An exception occured during brute force for last EOF - ignoring",
+                    LOG.debug("An exception occurred during brute force for last EOF - ignoring",
                             exception);
                     lastEOFMarker = tempMarker;
                 }

@@ -86,7 +86,7 @@ public class TestMetadataFiles
             }
             catch (IOException e)
             {
-                fail("An exception occured while parsing the PDF " + pdf + ": " + e);
+                fail("An exception occurred while parsing the PDF " + pdf + ": " + e);
             }
             if (result != null)
             {

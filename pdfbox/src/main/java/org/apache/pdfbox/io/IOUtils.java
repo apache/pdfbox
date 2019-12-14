@@ -120,7 +120,7 @@ public final class IOUtils
         }
         catch (IOException ioe)
         {
-            LOG.debug("An exception occured while trying to close - ignoring", ioe);
+            LOG.debug("An exception occurred while trying to close - ignoring", ioe);
             // ignore
         }
     }
