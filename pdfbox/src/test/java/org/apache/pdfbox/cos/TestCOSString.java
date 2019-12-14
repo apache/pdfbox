@@ -217,7 +217,7 @@ public class TestCOSString extends TestCOSBase
         COSString string = new COSString(theString);
         assertTrue(string.getString().equals(theString));
         
-        String textAscii = "This is some regular text. It should all be expressable in ASCII";
+        String textAscii = "This is some regular text. It should all be expressible in ASCII";
         /** En français où les choses sont accentués. En español, así */
         String text8Bit = "En fran\u00e7ais o\u00f9 les choses sont accentu\u00e9s. En espa\u00f1ol, as\u00ed";
          /** をクリックしてく */
