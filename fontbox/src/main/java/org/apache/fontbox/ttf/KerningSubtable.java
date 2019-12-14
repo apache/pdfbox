@@ -45,7 +45,7 @@ public class KerningSubtable
 
     // true if horizontal kerning
     private boolean horizontal;
-    // true if mimimum adjustment values (versus kerning values)
+    // true if minimum adjustment values (versus kerning values)
     private boolean minimums; 
     // true if cross-stream (block progression) kerning
     private boolean crossStream;
