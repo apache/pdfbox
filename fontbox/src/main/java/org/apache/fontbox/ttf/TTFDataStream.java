@@ -137,7 +137,7 @@ abstract class TTFDataStream implements Closeable
     /**
      * Read an unsigned integer.
      * 
-     * @return An unsiged integer.
+     * @return An unsigned integer.
      * @throws IOException If there is an error reading the data.
      */
     public long readUnsignedInt() throws IOException
