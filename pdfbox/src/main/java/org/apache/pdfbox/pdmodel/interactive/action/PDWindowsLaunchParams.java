@@ -22,7 +22,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
- * Launch paramaters for the windows OS.
+ * Launch parameters for the windows OS.
  *
  * @author Ben Litchfield
  */
