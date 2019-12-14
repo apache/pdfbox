@@ -175,7 +175,7 @@ public final class PdfaExtensionHelper
             throw new XmpParsingException(ErrorType.RequiredProperty,
                     "Missing field in property definition");
         }
-        // check ptype existance
+        // check ptype existence
         PropertyType pt = transformValueType(tm, ptype);
         if (pt == null)
         {
