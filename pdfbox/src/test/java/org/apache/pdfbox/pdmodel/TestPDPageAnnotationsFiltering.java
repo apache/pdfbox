@@ -47,11 +47,11 @@ public class TestPDPageAnnotationsFiltering
     public void initMock()
     {
         COSDictionary mockedPageWithAnnotations = new COSDictionary();
-        COSArray annotsDictionnary = new COSArray();
-        annotsDictionnary.add(new PDAnnotationRubberStamp().getCOSObject());
-        annotsDictionnary.add(new PDAnnotationSquareCircle(PDAnnotationSquareCircle.SUB_TYPE_SQUARE).getCOSObject());
-        annotsDictionnary.add(new PDAnnotationLink().getCOSObject());
-        mockedPageWithAnnotations.setItem(COSName.ANNOTS, annotsDictionnary);
+        COSArray annotsDictionary = new COSArray();
+        annotsDictionary.add(new PDAnnotationRubberStamp().getCOSObject());
+        annotsDictionary.add(new PDAnnotationSquareCircle(PDAnnotationSquareCircle.SUB_TYPE_SQUARE).getCOSObject());
+        annotsDictionary.add(new PDAnnotationLink().getCOSObject());
+        mockedPageWithAnnotations.setItem(COSName.ANNOTS, annotsDictionary);
         page = new PDPage(mockedPageWithAnnotations);
     }
 
