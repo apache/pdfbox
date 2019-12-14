@@ -75,7 +75,7 @@ public class XMPSchemaFactory
      * 
      * @param name
      *            The property name
-     * @return null if propery name is unknown
+     * @return null if property name is unknown
      */
     public PropertyType getPropertyType(String name)
     {

@@ -151,7 +151,7 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * set the autor(s) of the resource
+     * set the author(s) of the resource
      *
      * @param properName Value to add
      */
@@ -502,7 +502,7 @@ public class DublinCoreSchema extends XMPSchema
      * 
      * @param lang
      *            The language wanted
-     * @return Desription value for specified language
+     * @return Description value for specified language
      */
     public String getDescription(String lang)
     {
