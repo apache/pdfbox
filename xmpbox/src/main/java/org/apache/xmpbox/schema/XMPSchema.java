@@ -1214,7 +1214,7 @@ public class XMPSchema extends AbstractStructuredType
      * Get an AbstractField list corresponding to the content of an array
      * property.
      *
-     * @param name The property name whitout namespace.
+     * @param name The property name without namespace.
      * @return List of properties contained in the array property.
      * @throws BadFieldValueException If the property with the requested name isn't an array.
      */

@@ -102,7 +102,7 @@ public class TestSimpleMetadataProperties
     }
 
     /**
-     * Check if information between objects and the elment generated are equals
+     * Check if information between objects and the element generated are equals
      * 
      * @throws Exception
      */
