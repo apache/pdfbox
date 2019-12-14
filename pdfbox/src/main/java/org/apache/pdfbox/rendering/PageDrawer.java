@@ -155,7 +155,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     
     private final Deque<TransparencyGroup> transparencyGroupStack = new ArrayDeque<TransparencyGroup>();
     
-    // if greater zero the content is hidden and wil not be rendered
+    // if greater zero the content is hidden and will not be rendered
     private int nestedHiddenOCGCount;
 
     private final RenderDestination destination;
