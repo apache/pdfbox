@@ -33,7 +33,7 @@ public abstract class PDFileSpecification implements COSObjectable
 {
 
     /**
-     * A file specfication can either be a COSString or a COSDictionary.  This
+     * A file specification can either be a COSString or a COSDictionary.  This
      * will create the file specification either way.
      *
      * @param base The cos object that describes the fs.
