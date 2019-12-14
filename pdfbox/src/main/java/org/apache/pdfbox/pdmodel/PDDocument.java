@@ -1086,7 +1086,7 @@ public class PDDocument implements Closeable
              // Make sure that:
             // - first Exception is kept
             // - all IO resources are closed
-            // - there's a way to see which errors occured
+            // - there's a way to see which errors occurred
 
             IOException firstException = null;
 

@@ -97,7 +97,7 @@ public class DataInput
         } 
         catch (RuntimeException re)
         {
-            LOG.debug("An error occured reading a byte - returning -1", re);
+            LOG.debug("An error occurred reading a byte - returning -1", re);
             return -1;
         }
     }
@@ -204,7 +204,7 @@ public class DataInput
         } 
         catch (RuntimeException re)
         {
-            LOG.debug("An error occured reading an int - returning -1", re);
+            LOG.debug("An error occurred reading an int - returning -1", re);
             return -1;
         }
     }
@@ -217,7 +217,7 @@ public class DataInput
         }
         catch (RuntimeException re)
         {
-            LOG.debug("An error occured peeking at offset " + offset + " - returning -1", re);
+            LOG.debug("An error occurred peeking at offset " + offset + " - returning -1", re);
             return -1;
         }
     }

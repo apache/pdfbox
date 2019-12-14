@@ -1521,7 +1521,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         }
         catch (IOException e)
         {
-            LOG.debug("An exception occured trying - returning error message instead", e);
+            LOG.debug("An exception occurred trying - returning error message instead", e);
             return "COSDictionary{" + e.getMessage() + "}";
         }
     }

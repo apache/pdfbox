@@ -99,7 +99,7 @@ public class COSFilterInputStream extends FilterInputStream
     }
     catch (IOException ee) 
     {
-      LOG.debug("An exception occured while trying to fill byte[] - ignoring", ee);
+      LOG.debug("An exception occurred while trying to fill byte[] - ignoring", ee);
     }
     return i;
   }
