@@ -873,7 +873,7 @@ public interface PreflightConstants
      */
     String ERROR_METADATA_FORMAT_XPACKET = "7.1.5";
     /**
-     * Metadata mismatch between PDF Dictionnary and xmp
+     * Metadata mismatch between PDF Dictionary and xmp
      */
     String ERROR_METADATA_MISMATCH = "7.2";
 
