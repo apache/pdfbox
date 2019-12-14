@@ -51,7 +51,7 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 public class Overlay implements Closeable
 {
     /**
-     * Possible location of the overlayed pages: foreground or background.
+     * Possible location of the overlaid pages: foreground or background.
      */
     public enum Position
     {
@@ -589,9 +589,9 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the file to be overlayed.
+     * Sets the file to be overlaid.
      *
-     * @param inputFile the file to be overlayed. The {@link PDDocument} object gathered from
+     * @param inputFile the file to be overlaid. The {@link PDDocument} object gathered from
      * opening this file will be returned by
      * {@link #overlay(java.util.Map) overlay(Map&lt;Integer, String&gt;)}.
      */
@@ -601,9 +601,9 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the PDF to be overlayed.
+     * Sets the PDF to be overlaid.
      *
-     * @param inputPDF the PDF to be overlayed. This will be the object that is returned by
+     * @param inputPDF the PDF to be overlaid. This will be the object that is returned by
      * {@link #overlay(java.util.Map) overlay(Map&lt;Integer, String&gt;)}.
      */
     public void setInputPDF(PDDocument inputPDF)
