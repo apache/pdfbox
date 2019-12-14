@@ -863,12 +863,7 @@ public final class TTFSubsetter
             else
             {
                 // the name will be written explicitly
-                Integer ordinal = names.get(name);
-                if (ordinal == null)
-                {
-                    ordinal = names.size();
-                    names.put(name, ordinal);
-                }
+                Integer ordinal = names.computeIfAbsent(name, dummy -> names.size());
                 writeUint16(out, 258 + ordinal);
             }
         }
