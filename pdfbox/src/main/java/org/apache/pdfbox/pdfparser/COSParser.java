@@ -987,7 +987,6 @@ public class COSParser extends BaseParser
                                 + " due to an exception", ex);
                     }
                     // the error is handled in parseDictObjects
-                    return;
                 }
                 else
                 {
