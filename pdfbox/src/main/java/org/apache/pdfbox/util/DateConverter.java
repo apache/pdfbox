@@ -142,7 +142,7 @@ public final class DateConverter
             // "yyyymmdd hh:mm:ss", 
             // "yyyymmdd", 
             // "yyyymmddX''00''",  // covers 24 cases 
-            //    (orignally the above ended with '+00''00'''; 
+            //    (originally the above ended with '+00''00'''; 
             //      the first apostrophe quoted the plus, 
             //      '' mapped to a single ', and the ''' was invalid)
     };
