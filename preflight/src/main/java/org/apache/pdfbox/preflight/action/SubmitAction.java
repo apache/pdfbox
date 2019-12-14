@@ -54,7 +54,7 @@ public class SubmitAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        COSBase f = this.actionDictionary.getItem(COSName.F);
+        COSBase f = this.actionDictionnary.getItem(COSName.F);
         if (f == null)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,

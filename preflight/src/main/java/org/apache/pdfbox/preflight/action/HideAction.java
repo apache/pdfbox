@@ -63,7 +63,7 @@ public class HideAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        COSBase t = this.actionDictionary.getItem(COSName.T);
+        COSBase t = this.actionDictionnary.getItem(COSName.T);
         // ---- T entry is mandatory
         if (t == null)
         {
@@ -92,7 +92,7 @@ public class HideAction extends AbstractActionManager
          * representation of the document or is not documented in the PDF Reference is not permitted. This includes the
          * /Hide action which isn't specifically prohibited by PDF/A-1, but should have been.
          */
-        boolean h = this.actionDictionary.getBoolean(COSName.H, true);
+        boolean h = this.actionDictionnary.getBoolean(COSName.H, true);
         if (h)
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_HIDE_H_INVALID, "H entry is \"true\""));

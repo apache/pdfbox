@@ -43,7 +43,7 @@ public abstract class AbstractActionManager
     /**
      * The action dictionary checked by this class
      */
-    protected COSDictionary actionDictionary = null;
+    protected COSDictionary actionDictionnary = null;
     /**
      * The validation context
      */
@@ -63,7 +63,7 @@ public abstract class AbstractActionManager
     AbstractActionManager(ActionManagerFactory amFact, COSDictionary adict, PreflightContext ctx, String aaKey)
     {
         this.actionFact = amFact;
-        this.actionDictionary = adict;
+        this.actionDictionnary = adict;
         this.aaKey = aaKey;
         this.context = ctx;
     }
@@ -79,9 +79,9 @@ public abstract class AbstractActionManager
     /**
      * @return the actionDictionary
      */
-    public COSDictionary getActionDictionary()
+    public COSDictionary getActionDictionnary()
     {
-        return actionDictionary;
+        return actionDictionnary;
     }
 
     /**
@@ -101,7 +101,7 @@ public abstract class AbstractActionManager
      */
     protected boolean validNextActions() throws ValidationException
     {
-        List<AbstractActionManager> lActions = this.actionFact.getNextActions(this.context, this.actionDictionary);
+        List<AbstractActionManager> lActions = this.actionFact.getNextActions(this.context, this.actionDictionnary);
         for (AbstractActionManager nAction : lActions)
         {
             if (!nAction.innerValid())
