@@ -216,7 +216,7 @@ class ShadedTriangle
                 - (p2.getX() - p1.getX()) * (p.getY() - p1.getY());
     }
 
-    // calcuate the area of a triangle
+    // calculate the area of a triangle
     private double getArea(Point2D a, Point2D b, Point2D c)
     {
         return Math.abs((c.getX() - b.getX()) * (c.getY() - a.getY())
