@@ -131,7 +131,7 @@ public class FontMetaDataValidation
     }
 
     /**
-     * If XMP MetaData are present, they must have followings information :
+     * If XMP MetaData is present, they must have the following information :
      * <UL>
      * <li>dc:rights
      * <li>Marked (with the value true)
