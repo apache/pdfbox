@@ -907,7 +907,7 @@ public interface PreflightConstants
     String ERROR_METADATA_CATEGORY_PROPERTY_INVALID = "7.5.1";
 
     /**
-     * the infor dictionary is corrupt or value can't be read
+     * the info dictionary is corrupt or value can't be read
      */
     String ERROR_METADATA_DICT_INFO_CORRUPT = "7.12";
     /**
