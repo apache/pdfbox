@@ -57,7 +57,7 @@ public class ThreadAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        COSBase d = this.actionDictionary.getItem(COSName.D);
+        COSBase d = this.actionDictionnary.getItem(COSName.D);
 
         // ---- D entry is mandatory
         if (d == null)

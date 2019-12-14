@@ -64,7 +64,7 @@ public class NamedAction extends AbstractActionManager
     @Override
     protected boolean innerValid()
     {
-        String n = this.actionDictionary.getNameAsString(COSName.N);
+        String n = this.actionDictionnary.getNameAsString(COSName.N);
 
         // ---- N entry is mandatory
         if (n == null || "".equals(n))
