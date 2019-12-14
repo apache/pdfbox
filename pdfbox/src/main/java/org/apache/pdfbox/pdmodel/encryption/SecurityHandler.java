@@ -105,7 +105,7 @@ public abstract class SecurityHandler
     private COSName stringFilterName;
 
     /**
-     * Set wether to decrypt meta data.
+     * Set whether to decrypt meta data.
      *
      * @param decryptMetadata true if meta data has to be decrypted.
      */
