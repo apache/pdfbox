@@ -206,7 +206,7 @@ public final class DateConverter
                         && (date.substring(date.length() - 6, date.length() - 5).equals("+") || date.substring(
                                 date.length() - 6, date.length() - 5).equals("-")))
                 {
-                    // thats a timezone string, remove the :
+                    // that's a timezone string, remove the :
                     date = date.substring(0, date.length() - 3) + date.substring(date.length() - 2);
                 }
                 for (int i = 0; (retval == null) && (i < POTENTIAL_FORMATS.length); i++)
