@@ -572,7 +572,7 @@ public class OcspHelper
         return builder.build();
     }
 
-    private byte[] create16BytesNonce() throws IOException
+    private synchronized byte[] create16BytesNonce() throws IOException
     {
         if (rand == null)
         {
