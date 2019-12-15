@@ -119,7 +119,7 @@ public class PDFTemplateCreator
             pdfBuilder.createHolderForm(holderFormResources, holderFormStream, bbox);
             // that is /AP entry the appearance dictionary.
             pdfBuilder.createAppearanceDictionary(pdfStructure.getHolderForm(), pdSignatureField);
-            // inner form stream, form and resource (hlder form containts inner form)
+            // inner form stream, form and resource (holder form contains inner form)
             pdfBuilder.createInnerFormStream(template);
             pdfBuilder.createInnerFormResource();
             PDResources innerFormResource = pdfStructure.getInnerFormResources();
