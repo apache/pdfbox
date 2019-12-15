@@ -186,7 +186,7 @@ public class SinglePageValidationProcess extends AbstractProcess
         }
         catch (IOException e)
         {
-            LOGGER.debug("Unable to read page contet stream", e);
+            LOGGER.debug("Unable to read page content stream", e);
             context.addValidationError(new ValidationError(ERROR_UNKNOWN_ERROR, e.getMessage(), e));
         }
     }
