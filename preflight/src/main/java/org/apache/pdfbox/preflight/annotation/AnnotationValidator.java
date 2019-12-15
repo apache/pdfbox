@@ -213,6 +213,12 @@ public abstract class AnnotationValidator
                         return false;
                     }
                     COSDictionary apnDict = COSUtils.getAsDictionary(apn, cosDocument);
+                    if (this.pdAnnot.getAppearanceState() == null)
+                    {
+                        ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
+                            "The appearance state is required if the appearance contains a subdictionary"));
+                        return false;
+                    }
                     if (apnDict.size() == 0)
                     {
                         // PDFBOX-4712 / https://github.com/veraPDF/veraPDF-library/issues/900
