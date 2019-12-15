@@ -784,4 +784,33 @@ public class PDPage implements COSObjectable, PDContentStream
         }
         page.setItem(COSName.VP, array);
     }
+
+    /**
+     * Get the user unit. This is a positive number that shall give the size of default user space
+     * units, in multiples of 1/72 inch, or 1 if it hasn't been set. This is supported by PDF 1.6
+     * and higher.
+     *
+     * @return the user unit.
+     */
+    public float getUserUnit()
+    {
+        float userUnit = page.getFloat(COSName.USER_UNIT, 1.0f);
+        return userUnit > 0 ? userUnit : 1.0f;
+    }
+
+    /**
+     * Get the user unit. This is a positive number that shall give the size of default user space
+     * units, in multiples of 1/72 inch. This is supported by PDF 1.6 and higher.
+     *
+     * @param userUnit
+     * throws IllegalArgumentException if the parameter is not positive.
+     */
+    public void setUserUnit(float userUnit)
+    {
+        if (userUnit <= 0)
+        {
+            throw new IllegalArgumentException("User unit must be positive");
+        }
+        page.setFloat(COSName.USER_UNIT, userUnit);
+    }
 }
