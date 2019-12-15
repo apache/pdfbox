@@ -103,33 +103,6 @@ public final class ImageIOUtil
     }
 
     /**
-     * Writes a buffered image to a file using the given image format. See      
-     * {@link #writeImage(BufferedImage image, String formatName, 
-     * OutputStream output, int dpi, float compressionQuality)} for more details.
-     *
-     * @param image the image to be written
-     * @param formatName the target format (ex. "png") which is also the suffix
-     * for the filename
-     * @param filename used to construct the filename for the individual image.
-     * The formatName parameter will be used as the suffix.
-     * @param dpi the resolution in dpi (dots per inch) to be used in metadata
-     * @return true if the image file was produced, false if there was an error.
-     * @throws IOException if an I/O error occurs
-     * @deprecated use
-     * {@link #writeImage(BufferedImage image, String filename, int dpi)}, which
-     * uses the full filename instead of just the prefix.
-     */
-    @Deprecated
-    public static boolean writeImage(BufferedImage image, String formatName, String filename,
-            int dpi) throws IOException
-    {
-        try (OutputStream output = new BufferedOutputStream(new FileOutputStream(filename + "." + formatName)))
-        {
-            return writeImage(image, formatName, output, dpi);
-        }
-    }
-
-    /**
      * Writes a buffered image to a file using the given image format. The compression is set for
      * maximum compression for PNG and maximum quality for all other file formats. See
      * {@link #writeImage(BufferedImage image, String formatName, OutputStream output, int dpi, float compressionQuality)}

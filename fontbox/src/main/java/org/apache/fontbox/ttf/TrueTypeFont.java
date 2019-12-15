@@ -517,33 +517,6 @@ public class TrueTypeFont implements FontBoxFont, Closeable
     /**
      * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
      * by which this is accomplished are implementation-dependent."
-     * 
-     * @throws IOException if the font could not be read
-     * @deprecated Use {@link #getUnicodeCmapLookup()} instead
-     */
-    @Deprecated
-    public CmapSubtable getUnicodeCmap() throws IOException
-    {
-        return getUnicodeCmap(true);
-    }
-
-    /**
-     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
-     * by which this is accomplished are implementation-dependent."
-     * 
-     * @param isStrict False if we allow falling back to any cmap, even if it's not Unicode.
-     * @throws IOException if the font could not be read, or there is no Unicode cmap
-     * @deprecated Use {@link #getUnicodeCmapLookup(boolean)} instead
-     */
-    @Deprecated
-    public CmapSubtable getUnicodeCmap(boolean isStrict) throws IOException
-    {
-        return getUnicodeCmapImpl(isStrict);
-    }
-
-    /**
-     * Returns the best Unicode from the font (the most general). The PDF spec says that "The means
-     * by which this is accomplished are implementation-dependent."
      *
      * The returned cmap will perform glyph substitution.
      *
