@@ -99,20 +99,6 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Register a custom operator processor with the engine.
-     * 
-     * @param operator The operator as a string.
-     * @param op Processor instance.
-     * @deprecated Use {@link #addOperator(OperatorProcessor)} instead
-     */
-    @Deprecated
-    public void registerOperatorProcessor(String operator, OperatorProcessor op)
-    {
-        op.setContext(this);
-        operators.put(operator, op);
-    }
-
-    /**
      * Adds an operator processor to the engine.
      *
      * @param op operator processor

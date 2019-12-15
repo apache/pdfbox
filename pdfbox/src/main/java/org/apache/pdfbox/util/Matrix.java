@@ -143,18 +143,6 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * This method resets the numbers in this Matrix to the original values, which are
-     * the values that a newly constructed Matrix would have.
-     *
-     * @deprecated This method will be removed.
-     */
-    @Deprecated
-    public void reset()
-    {
-        System.arraycopy(DEFAULT_SINGLE, 0, single, 0, DEFAULT_SINGLE.length);
-    }
-
-    /**
      * Create an affine transform from this matrix's values.
      *
      * @return An affine transform with this matrix's values.
@@ -165,23 +153,6 @@ public final class Matrix implements Cloneable
             single[0], single[1],   // m00 m10 = scaleX shearY
             single[3], single[4],   // m01 m11 = shearX scaleY
             single[6], single[7] ); // m02 m12 = tx ty
-    }
-
-    /**
-     * Set the values of the matrix from the AffineTransform.
-     *
-     * @param af The transform to get the values from.
-     * @deprecated Use the {@link #Matrix(AffineTransform)} constructor instead.
-     */
-    @Deprecated
-    public void setFromAffineTransform( AffineTransform af )
-    {
-        single[0] = (float)af.getScaleX();
-        single[1] = (float)af.getShearY();
-        single[3] = (float)af.getShearX();
-        single[4] = (float)af.getScaleY();
-        single[6] = (float)af.getTranslateX();
-        single[7] = (float)af.getTranslateY();
     }
 
     /**
@@ -217,28 +188,6 @@ public final class Matrix implements Cloneable
     public float[][] getValues()
     {
         float[][] retval = new float[3][3];
-        retval[0][0] = single[0];
-        retval[0][1] = single[1];
-        retval[0][2] = single[2];
-        retval[1][0] = single[3];
-        retval[1][1] = single[4];
-        retval[1][2] = single[5];
-        retval[2][0] = single[6];
-        retval[2][1] = single[7];
-        retval[2][2] = single[8];
-        return retval;
-    }
-
-    /**
-     * Return a single dimension array of all values in the matrix.
-     *
-     * @return The values ot this matrix.
-     * @deprecated Use {@link #getValues()} instead.
-     */
-    @Deprecated
-    public double[][] getValuesAsDouble()
-    {
-        double[][] retval = new double[3][3];
         retval[0][0] = single[0];
         retval[0][1] = single[1];
         retval[0][2] = single[2];
@@ -454,21 +403,6 @@ public final class Matrix implements Cloneable
     }
 
     /**
-     * Create a new matrix with just the scaling operators.
-     *
-     * @return A new matrix with just the scaling operators.
-     * @deprecated This method is due to be removed, please contact us if you make use of it.
-     */
-    @Deprecated
-    public Matrix extractScaling()
-    {
-        Matrix matrix = new Matrix();
-        matrix.single[0] = this.single[0];
-        matrix.single[4] = this.single[4];
-        return matrix;
-    }
-
-    /**
      * Convenience method to create a scaled instance.
      *
      * @param sx The xscale operator.
@@ -481,35 +415,6 @@ public final class Matrix implements Cloneable
         matrix.single[0] = sx;
         matrix.single[4] = sy;
         return matrix;
-    }
-
-    /**
-     * Create a new matrix with just the translating operators.
-     *
-     * @return A new matrix with just the translating operators.
-     * @deprecated This method is due to be removed, please contact us if you make use of it.
-     */
-    @Deprecated
-    public Matrix extractTranslating()
-    {
-        Matrix matrix = new Matrix();
-        matrix.single[6] = this.single[6];
-        matrix.single[7] = this.single[7];
-        return matrix;
-    }
-
-    /**
-     * Convenience method to create a translating instance.
-     *
-     * @param tx The x translating operator.
-     * @param ty The y translating operator.
-     * @return A new matrix with just the x/y translating.
-     * @deprecated Use {@link #getTranslateInstance} instead.
-     */
-    @Deprecated
-    public static Matrix getTranslatingInstance(float tx, float ty)
-    {
-        return getTranslateInstance(tx, ty);
     }
 
     /**
@@ -673,30 +578,6 @@ public final class Matrix implements Cloneable
      * Returns the y-translation element of this matrix.
      */
     public float getTranslateY()
-    {
-        return single[7];
-    }
-
-    /**
-     * Get the x position in the matrix. This method is deprecated as it is incorrectly named.
-     *
-     * @return The x-position.
-     * @deprecated Use {@link #getTranslateX} instead
-     */
-    @Deprecated
-    public float getXPosition()
-    {
-        return single[6];
-    }
-
-    /**
-     * Get the y position. This method is deprecated as it is incorrectly named.
-     *
-     * @return The y position.
-     * @deprecated Use {@link #getTranslateY} instead
-     */
-    @Deprecated
-    public float getYPosition()
     {
         return single[7];
     }
