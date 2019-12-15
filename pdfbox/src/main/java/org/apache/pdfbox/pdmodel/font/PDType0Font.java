@@ -506,7 +506,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
         if ((isCMapPredefined || isDescendantCJK) && cMapUCS2 != null)
         {
             // if the font is composite and uses a predefined cmap (excluding Identity-H/V) then
-            // or if its decendant font uses Adobe-GB1/CNS1/Japan1/Korea1
+            // or if its descendant font uses Adobe-GB1/CNS1/Japan1/Korea1
 
             // a) Map the character code to a character identifier (CID) according to the font?s CMap
             int cid = codeToCID(code);

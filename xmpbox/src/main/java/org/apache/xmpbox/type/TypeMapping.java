@@ -210,7 +210,7 @@ public final class TypeMapping
         schemaMap.put(ns, new XMPSchemaFactory(ns, classSchem, initializePropMapping(classSchem)));
     }
 
-    public void addNewNameSpace(String ns, String prefered)
+    public void addNewNameSpace(String ns, String preferred)
     {
         PropertiesDescription mapping = new PropertiesDescription();
         schemaMap.put(ns, new XMPSchemaFactory(ns, XMPSchema.class, mapping));
