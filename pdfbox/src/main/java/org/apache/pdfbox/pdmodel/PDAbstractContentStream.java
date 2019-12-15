@@ -677,8 +677,10 @@ abstract class PDAbstractContentStream implements Closeable
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameters are invalid.
-     * @see #setStrokingColor(float, float, float) setStrokingColor(r/255f, g/255f, b/255f)
+     * @deprecated use
+     * {@link #setStrokingColor(float, float, float) setStrokingColor(r/255f, g/255f, b/255f)}
      */
+    @Deprecated
     public void setStrokingColor(int r, int g, int b) throws IOException
     {
         if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
@@ -816,8 +818,10 @@ abstract class PDAbstractContentStream implements Closeable
      * @param b The blue value.
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameters are invalid.
-     * @see #setNonStrokingColor(float, float, float) setNonStrokingColor(r/255f, g/255f, b/255f)
+     * @deprecated use
+     * {@link #setNonStrokingColor(float, float, float) setNonStrokingColor(r/255f, g/255f, b/255f)}
      */
+    @Deprecated
     public void setNonStrokingColor(int r, int g, int b) throws IOException
     {
         if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
@@ -878,6 +882,7 @@ abstract class PDAbstractContentStream implements Closeable
      * @param g The gray value.
      * @throws IOException If an IO error occurs while writing to the stream.
      * @throws IllegalArgumentException If the parameter is invalid.
+     * @deprecated use {@link #setNonStrokingColor(float) setNonStrokingColor(g/255f)}
      */
     public void setNonStrokingColor(int g) throws IOException
     {
