@@ -206,6 +206,13 @@ public abstract class AnnotationValidator
                     }
                     if (apn instanceof COSDictionary)
                     {
+                        if (((COSDictionary) apn).size() == 0)
+                        {
+                            // PDFBOX-4712 / https://github.com/veraPDF/veraPDF-library/issues/900
+                            ctx.addValidationError(new ValidationError(ERROR_ANNOT_INVALID_AP_CONTENT,
+                                "The N Appearance of a Btn widget must not be empty"));
+                            return false;
+                        }
                         for (COSBase val : ((COSDictionary) apn).getValues())
                         {
                             // Appearance stream is a XObjectForm, check it.
