@@ -177,18 +177,6 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
 
     /**
-     * This will set name representing a dos file.
-     *
-     * @param file The name of the file.
-     * @deprecated This method is obsolescent and should not be used by conforming writers.
-     */
-    @Deprecated
-    public void setFileDos( String file )
-    {
-        fs.setString( COSName.DOS, file );
-    }
-
-    /**
      * This will get the name representing a Mac file.
      *
      * @return The file name.
@@ -199,18 +187,6 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
 
     /**
-     * This will set name representing a Mac file.
-     *
-     * @param file The name of the file.
-     * @deprecated This method is obsolescent and should not be used by conforming writers.
-     */
-    @Deprecated
-    public void setFileMac( String file )
-    {
-        fs.setString( COSName.MAC, file );
-    }
-
-    /**
      * This will get the name representing a Unix file.
      *
      * @return The file name.
@@ -218,18 +194,6 @@ public class PDComplexFileSpecification extends PDFileSpecification
     public String getFileUnix()
     {
         return fs.getString( COSName.UNIX );
-    }
-
-    /**
-     * This will set name representing a Unix file.
-     *
-     * @param file The name of the file.
-     * @deprecated This method is obsolescent and should not be used by conforming writers.
-     */
-    @Deprecated
-    public void setFileUnix( String file )
-    {
-        fs.setString( COSName.UNIX, file );
     }
 
     /**
@@ -307,27 +271,6 @@ public class PDComplexFileSpecification extends PDFileSpecification
     }
 
     /**
-     * Set the embedded dos file for this spec.
-     *
-     * @param file The dos file to be embedded.
-     * @deprecated This method is obsolescent and should not be used by conforming writers.
-     */
-    @Deprecated
-    public void setEmbeddedFileDos( PDEmbeddedFile file )
-    {
-        COSDictionary ef = getEFDictionary();
-        if( ef == null && file != null )
-        {
-            ef = new COSDictionary();
-            fs.setItem( COSName.EF, ef );
-        }
-        if( ef != null )
-        {
-            ef.setItem( COSName.DOS, file );
-        }
-    }
-
-    /**
      * Get the embedded Mac file.
      *
      * @return The embedded Mac file for this file spec.
@@ -341,27 +284,6 @@ public class PDComplexFileSpecification extends PDFileSpecification
             file = new PDEmbeddedFile( stream );
         }
         return file;
-    }
-
-    /**
-     * Set the embedded Mac file for this spec.
-     *
-     * @param file The Mac file to be embedded.
-     * @deprecated This method is obsolescent and should not be used by conforming writers.
-     */
-    @Deprecated
-    public void setEmbeddedFileMac( PDEmbeddedFile file )
-    {
-        COSDictionary ef = getEFDictionary();
-        if( ef == null && file != null )
-        {
-            ef = new COSDictionary();
-            fs.setItem( COSName.EF, ef );
-        }
-        if( ef != null )
-        {
-            ef.setItem( COSName.MAC, file );
-        }
     }
 
     /**
@@ -380,27 +302,6 @@ public class PDComplexFileSpecification extends PDFileSpecification
         return file;
     }
 
-    /**
-     * Set the embedded Unix file for this spec.
-     *
-     * @param file The Unix file to be embedded.
-     * @deprecated This method is obsolescent and should not be used by conforming writers.
-     */
-    @Deprecated
-    public void setEmbeddedFileUnix( PDEmbeddedFile file )
-    {
-        COSDictionary ef = getEFDictionary();
-        if( ef == null && file != null )
-        {
-            ef = new COSDictionary();
-            fs.setItem( COSName.EF, ef );
-        }
-        if( ef != null )
-        {
-            ef.setItem( COSName.UNIX, file );
-        }
-    }
-    
     /**
      * Get the embedded unicode file.
      *

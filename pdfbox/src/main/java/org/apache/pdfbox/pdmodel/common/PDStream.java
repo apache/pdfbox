@@ -140,51 +140,6 @@ public class PDStream implements COSObjectable
     }
 
     /**
-     * If there are not compression filters on the current stream then this will
-     * add a compression filter, flate compression for example.
-     * 
-     * @deprecated This method is inefficient. To copying an existing InputStream, use
-     *             {@link #PDStream(PDDocument, InputStream, COSName)} instead, with
-     *             COSName.FLATE_DECODE as the final argument.
-     *             
-     *             Otherwise, to write new compressed data, use {@link #createOutputStream(COSName)},
-     *             with COSName.FLATE_DECODE as the argument.
-     */
-    @Deprecated
-    public void addCompression()
-    {
-        List<COSName> filters = getFilters();
-        if (filters == null)
-        {
-            if (stream.getLength() > 0)
-            {
-                OutputStream out = null;
-                try
-                {
-                    byte[] bytes = IOUtils.toByteArray(stream.createInputStream());
-                    out = stream.createOutputStream(COSName.FLATE_DECODE);
-                    out.write(bytes);
-                }
-                catch (IOException e)
-                {
-                    // not much else we can do here without breaking the existing API, sorry.
-                    throw new RuntimeException(e);
-                }
-                finally
-                {
-                    IOUtils.closeQuietly(out);
-                }
-            }
-            else
-            {
-                filters = new ArrayList<>();
-                filters.add(COSName.FLATE_DECODE);
-                setFilters(filters);
-            }
-        }
-    }
-
-    /**
      * Get the cos stream associated with this object.
      *
      * @return The cos object that matches this Java object.

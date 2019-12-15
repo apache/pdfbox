@@ -88,19 +88,6 @@ public class COSStream extends COSDictionary implements Closeable
     }
 
     /**
-     * This will get the stream with all of the filters applied.
-     *
-     * @return the bytes of the physical (encoded) stream
-     * @throws IOException when encoding causes an exception
-     * @deprecated Use {@link #createRawInputStream()} instead.
-     */
-    @Deprecated
-    public InputStream getFilteredStream() throws IOException
-    {
-        return createRawInputStream();
-    }
-
-    /**
      * Ensures {@link #randomAccess} is not <code>null</code> by creating a
      * buffer from {@link #scratchFile} if needed.
      * 
@@ -140,19 +127,6 @@ public class COSStream extends COSDictionary implements Closeable
     }
 
     /**
-     * This will get the logical content stream with none of the filters.
-     *
-     * @return the bytes of the logical (decoded) stream
-     * @throws IOException when decoding causes an exception
-     * @deprecated Use {@link #createInputStream()} instead.
-     */
-    @Deprecated
-    public InputStream getUnfilteredStream() throws IOException
-    {
-        return createInputStream();
-    }
-
-    /**
      * Returns a new InputStream which reads the decoded stream data.
      * 
      * @return InputStream containing decoded stream data.
@@ -173,19 +147,6 @@ public class COSStream extends COSDictionary implements Closeable
         ensureRandomAccessExists(true);
         InputStream input = new RandomAccessInputStream(randomAccess);
         return COSInputStream.create(getFilterList(), this, input, scratchFile, options);
-    }
-
-    /**
-     * This will create an output stream that can be written to.
-     *
-     * @return An output stream which raw data bytes should be written to.
-     * @throws IOException If there is an error creating the stream.
-     * @deprecated Use {@link #createOutputStream()} instead.
-     */
-    @Deprecated
-    public OutputStream createUnfilteredStream() throws IOException
-    {
-        return createOutputStream();
     }
 
     /**
@@ -241,21 +202,6 @@ public class COSStream extends COSDictionary implements Closeable
         };
     }
     
-    /**
-     * This will create a new stream for which filtered byte should be
-     * written to. You probably don't want this but want to use the
-     * createUnfilteredStream, which is used to write raw bytes to.
-     *
-     * @return A stream that can be written to.
-     * @throws IOException If there is an error creating the stream.
-     * @deprecated Use {@link #createRawOutputStream()} instead.
-     */
-    @Deprecated
-    public OutputStream createFilteredStream() throws IOException
-    {
-        return createRawOutputStream();
-    }
-
     /**
      * Returns a new OutputStream for writing encoded PDF data. Experts only!
      * 
@@ -344,30 +290,6 @@ public class COSStream extends COSDictionary implements Closeable
     public COSBase getFilters()
     {
         return getDictionaryObject(COSName.FILTER);
-    }
-    
-    /**
-     * Sets the filters to be applied when encoding or decoding the stream.
-     *
-     * @param filters The filters to set on this stream.
-     * @throws IOException If there is an error clearing the old filters.
-     * @deprecated Use {@link #createOutputStream(COSBase)} instead.
-     */
-    @Deprecated
-    public void setFilters(COSBase filters) throws IOException
-    {
-        setItem(COSName.FILTER, filters);
-    }
-
-    /**
-     * Returns the contents of the stream as a text string.
-     * 
-     * @deprecated Use {@link #toTextString()} instead.
-     */
-    @Deprecated
-    public String getString()
-    {
-        return toTextString();
     }
     
     /**

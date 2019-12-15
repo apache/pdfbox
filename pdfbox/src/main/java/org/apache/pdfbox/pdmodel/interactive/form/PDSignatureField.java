@@ -90,18 +90,6 @@ public class PDSignatureField extends PDTerminalField
     }
     
     /**
-     * Add a signature dictionary to the signature field.
-     * 
-     * @param value is the PDSignatureField
-     * @deprecated Use {@link #setValue(PDSignature)} instead.
-     */
-    @Deprecated
-    public void setSignature(PDSignature value) throws IOException
-    {
-        setValue(value);
-    }
-    
-    /**
      * Get the signature dictionary.
      * 
      * @return the signature dictionary

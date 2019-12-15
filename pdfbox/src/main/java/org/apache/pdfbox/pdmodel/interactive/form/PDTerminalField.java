@@ -202,21 +202,6 @@ public abstract class PDTerminalField extends PDField
     }
     
     /**
-     * This will get the single associated widget that is part of this field. This occurs when the
-     * Widget is embedded in the fields dictionary. Sometimes there are multiple sub widgets
-     * associated with this field, in which case you want to use getWidgets(). If the kids entry is
-     * specified, then the first entry in that list will be returned.
-     * 
-     * @return The widget that is associated with this field.
-     * @deprecated Fields may have more than one widget, call {@link #getWidgets()} instead.
-     */
-    @Deprecated
-    public PDAnnotationWidget getWidget()
-    {
-        return getWidgets().get(0);
-    }
-
-    /**
      * Applies a value change to the field. Generates appearances if required and raises events.
      * 
      * @throws IOException if the appearance couldn't be generated

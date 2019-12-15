@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.fontbox.ttf.CmapLookup;
-import org.apache.fontbox.ttf.CmapSubtable;
 import org.apache.fontbox.ttf.HeaderTable;
 import org.apache.fontbox.ttf.HorizontalHeaderTable;
 import org.apache.fontbox.ttf.OS2WindowsMetricsTable;
@@ -57,14 +56,6 @@ abstract class TrueTypeEmbedder implements Subsetter
     private final PDDocument document;
     protected TrueTypeFont ttf;
     protected PDFontDescriptor fontDescriptor;
-
-    /**
-     * For API backwards compatibility.
-     * 
-     * @deprecated
-     */
-    @Deprecated
-    protected final CmapSubtable cmap;
 
     protected final CmapLookup cmapLookup;
     private final Set<Integer> subsetCodePoints = new HashSet<>();
@@ -99,7 +90,6 @@ abstract class TrueTypeEmbedder implements Subsetter
         dict.setName(COSName.BASE_FONT, ttf.getName());
 
         // choose a Unicode "cmap"
-        cmap = ttf.getUnicodeCmap();
         cmapLookup = ttf.getUnicodeCmapLookup();
     }
 
@@ -258,17 +248,6 @@ abstract class TrueTypeEmbedder implements Subsetter
         fd.setStemV(fd.getFontBoundingBox().getWidth() * .13f);
 
         return fd;
-    }
-
-    /**
-     * Returns the FontBox font.
-     * 
-     * @deprecated 
-     */
-    @Deprecated
-    public TrueTypeFont getTrueTypeFont()
-    {
-        return ttf;
     }
 
     /**
