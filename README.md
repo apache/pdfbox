@@ -60,7 +60,7 @@ Known Limitations and Problems
 
 See the issue tracker at https://issues.apache.org/jira/browse/PDFBOX for
 the full list of known issues and requested features. Some of the more
-commont issues are:
+common issues are:
 
 1. You get text like "G38G43G36G51G5" instead of what you expect when you are
    extracting text. This is because the characters are a meaningless internal
