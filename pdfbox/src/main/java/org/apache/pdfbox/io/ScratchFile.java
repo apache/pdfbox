@@ -509,15 +509,9 @@ public class ScratchFile implements Closeable
                 }
             }
             
-            if (file != null)
+            if (file != null && !file.delete() && file.exists() && ioexc == null)
             {
-                if (!file.delete())
-                {
-                    if (file.exists() && (ioexc == null))
-                    {
-                        ioexc = new IOException("Error deleting scratch file: " + file.getAbsolutePath());
-                    }
-                }
+                ioexc = new IOException("Error deleting scratch file: " + file.getAbsolutePath());
             }
         }
         

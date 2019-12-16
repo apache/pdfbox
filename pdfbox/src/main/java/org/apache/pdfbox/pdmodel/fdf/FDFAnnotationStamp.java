@@ -296,21 +296,15 @@ public class FDFAnnotationStamp extends FDFAnnotation
         NodeList nodeList = arrayEl.getChildNodes();
         String parentAttrKey = arrayEl.getAttribute("KEY");
 
-        if ("BBox".equals(parentAttrKey))
+        if ("BBox".equals(parentAttrKey) && nodeList.getLength() < 4)
         {
-            if (nodeList.getLength() < 4)
-            {
-                throw new IOException("BBox does not have enough coordinates, only has: " +
-                        nodeList.getLength());
-            }
+            throw new IOException("BBox does not have enough coordinates, only has: " +
+                    nodeList.getLength());
         }
-        else if ("Matrix".equals(parentAttrKey))
+        else if ("Matrix".equals(parentAttrKey) && nodeList.getLength() < 6)
         {
-            if (nodeList.getLength() < 6)
-            {
-                throw new IOException("Matrix does not have enough coordinates, only has: " + 
-                        nodeList.getLength());
-            }
+            throw new IOException("Matrix does not have enough coordinates, only has: " + 
+                    nodeList.getLength());
         }
 
         for (int i = 0; i < nodeList.getLength(); i++)
