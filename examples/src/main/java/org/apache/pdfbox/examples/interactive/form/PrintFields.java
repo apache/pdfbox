@@ -61,12 +61,9 @@ public class PrintFields
         
         if (field instanceof PDNonTerminalField)
         {
-            if (!sParent.equals(field.getPartialName()))
+            if (!sParent.equals(field.getPartialName()) && partialName != null)
             {
-                if (partialName != null)
-                {
-                    sParent = sParent + "." + partialName;
-                }
+                sParent = sParent + "." + partialName;
             }
             System.out.println(sLevel + sParent);
 

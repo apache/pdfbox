@@ -96,15 +96,12 @@ public class CustomPageDrawer
         @Override
         protected Paint getPaint(PDColor color) throws IOException
         {
-            // if this is the non-stroking color
-            if (getGraphicsState().getNonStrokingColor() == color)
+            // if this is the non-stroking color, find red, ignoring alpha channel
+            if (getGraphicsState().getNonStrokingColor() == color &&
+                color.toRGB() == (Color.RED.getRGB() & 0x00FFFFFF))
             {
-                // find red, ignoring alpha channel
-                if (color.toRGB() == (Color.RED.getRGB() & 0x00FFFFFF))
-                {
-                    // replace it with blue
-                    return Color.BLUE;
-                }
+                // replace it with blue
+                return Color.BLUE;
             }
             return super.getPaint(color);
         }

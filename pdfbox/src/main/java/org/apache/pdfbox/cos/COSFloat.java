@@ -105,14 +105,11 @@ public class COSFloat extends COSNumber
             }
         }
         // check for very small values
-        else if (floatValue == 0 && doubleValue != 0)
+        else if (floatValue == 0 && doubleValue != 0 && Math.abs(doubleValue) < Float.MIN_NORMAL)
         {
-            if (Math.abs(doubleValue) < Float.MIN_NORMAL )
-            {
-                floatValue = Float.MIN_NORMAL;
-                floatValue *= doubleValue >= 0  ? 1 : -1;
-                valueReplaced = true;
-            }
+            floatValue = Float.MIN_NORMAL;
+            floatValue *= doubleValue >= 0 ? 1 : -1;
+            valueReplaced = true;
         }
         if (valueReplaced)
         {
