@@ -69,7 +69,7 @@ class AppearanceGeneratorHelper
      *
      * Regardless of other settings in an existing appearance stream Adobe will always use this value.
      */
-    private static final int[] HIGHLIGHT_COLOR = {153,193,215};
+    private static final float[] HIGHLIGHT_COLOR = {153/255f, 193/255f, 215/255f};
  
     /**
      * The scaling factor for font units to PDF units
@@ -697,14 +697,14 @@ class AppearanceGeneratorHelper
                     highlightBoxHeight);
             contents.fill();
         }
-        contents.setNonStrokingColor(0);
+        contents.setNonStrokingColor(0f);
     }
     
     
     private void insertGeneratedListboxAppearance(PDAppearanceContentStream contents, PDAppearanceStream appearanceStream,
             PDRectangle contentRect, PDFont font, float fontSize) throws IOException
     {
-        contents.setNonStrokingColor(0);
+        contents.setNonStrokingColor(0f);
         
         int q = field.getQ();
 

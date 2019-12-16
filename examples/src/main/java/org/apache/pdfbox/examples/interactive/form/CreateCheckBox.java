@@ -168,7 +168,7 @@ public class CreateCheckBox
                 xOffset -= bounds.getX() / 1000 * fontSize;
                 float yOffset = (float) (rect.getHeight() - (bounds.getHeight()) / 1000 * fontSize) / 2;
                 yOffset -= bounds.getY() / 1000 * fontSize;
-                yesAPCS.setNonStrokingColor(0);
+                yesAPCS.setNonStrokingColor(0f);
                 yesAPCS.beginText();
                 yesAPCS.setFont(PDType1Font.ZAPF_DINGBATS, fontSize);
                 yesAPCS.newLineAtOffset(xOffset, yOffset);
