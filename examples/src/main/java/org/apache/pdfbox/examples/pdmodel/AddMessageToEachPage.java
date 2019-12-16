@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
@@ -80,7 +81,7 @@ public class AddMessageToEachPage
                     // set font and font size
                     contentStream.setFont( font, fontSize );
                     // set text color to red
-                    contentStream.setNonStrokingColor(255, 0, 0);
+                    contentStream.setNonStrokingColor(Color.red);
                     if (rotate)
                     {
                         // rotate the text according to the page rotation
