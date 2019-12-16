@@ -152,16 +152,13 @@ public class TrueTypeFont implements FontBoxFont, Closeable
         // after the initial parsing of the ttf there aren't any write operations
         // to the HashMap anymore, so that we don't have to synchronize the read access
         TTFTable ttfTable = tables.get(tag);
-        if (ttfTable != null)
+        if (ttfTable != null && !ttfTable.initialized)
         {
-            if (!ttfTable.initialized)
+            synchronized (lockReadtable)
             {
-                synchronized (lockReadtable)
+                if (!ttfTable.initialized)
                 {
-                    if (!ttfTable.initialized)
-                    {
-                        readTable(ttfTable);
-                    }
+                    readTable(ttfTable);
                 }
             }
         }
