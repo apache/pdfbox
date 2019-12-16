@@ -858,16 +858,13 @@ LogFactory.getLog(PreflightParser.class).info("xrefTable.size(): " + xrefTable.s
                     endObjectKey = readString();
 
                     // we have case with a second 'endstream' before endobj
-                    if (!endObjectKey.startsWith("endobj"))
+                    if (!endObjectKey.startsWith("endobj") && endObjectKey.startsWith("endstream"))
                     {
-                        if (endObjectKey.startsWith("endstream"))
+                        endObjectKey = endObjectKey.substring(9).trim();
+                        if (endObjectKey.length() == 0)
                         {
-                            endObjectKey = endObjectKey.substring(9).trim();
-                            if (endObjectKey.length() == 0)
-                            {
-                                // no other characters in extra endstream line
-                                endObjectKey = readString(); // read next line
-                            }
+                            // no other characters in extra endstream line
+                            endObjectKey = readString(); // read next line
                         }
                     }
                 }
