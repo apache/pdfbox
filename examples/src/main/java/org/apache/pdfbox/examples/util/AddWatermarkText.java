@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.examples.util;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 
@@ -89,10 +90,8 @@ public class AddWatermarkText
             gs.setLineWidth(3f);
             cs.setGraphicsStateParameters(gs);
 
-            // some API weirdness here. When int, range is 0..255.
-            // when float, this would be 0..1f
-            cs.setNonStrokingColor(255, 0, 0);
-            cs.setStrokingColor(255, 0, 0);
+            cs.setNonStrokingColor(Color.red);
+            cs.setStrokingColor(Color.red);
 
             cs.beginText();
             cs.newLineAtOffset(x, y);
