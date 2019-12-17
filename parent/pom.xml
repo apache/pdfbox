@@ -135,6 +135,24 @@
                 <addmod>--add-modules java.activation --add-modules java.xml.bind</addmod>
             </properties>
         </profile>
+        <!-- need to specify release version so that if PDFBox is built with
+        &gt; Java 8, it can still be run with e.g. Java 6; PDFBOX-4715 -->
+        <profile>
+            <id>jdkGte9</id>
+            <activation>
+                <jdk>[1.9,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <release>6</release>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <!-- from jdk11 onwards activation and bind are no longer part of the jdk -->
             <!-- must be set to "test" or "provided" in subprojects --> 
