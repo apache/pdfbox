@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -254,7 +253,6 @@ public class PreflightParser extends PDFParser
             // TODO move file handling outside of the parser
             IOUtils.closeQuietly(source);
         }
-LogFactory.getLog(PreflightParser.class).info("Objects in Pool: " + document.getObjects().size());
         Format formatToUse = (format == null ? Format.PDF_A1B : format);
         createPdfADocument(formatToUse, config);
         createContext();
@@ -305,7 +303,6 @@ LogFactory.getLog(PreflightParser.class).info("Objects in Pool: " + document.get
         // For each ObjectKey, we check if the object has been loaded
         // useful for linearized PDFs
         Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
-LogFactory.getLog(PreflightParser.class).info("xrefTable.size(): " + xrefTable.size());
         for (Entry<COSObjectKey, Long> entry : xrefTable.entrySet())
         {
             COSObject co = document.getObjectFromPool(entry.getKey());
