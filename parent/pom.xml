@@ -113,6 +113,24 @@
     </dependencyManagement>
 
     <profiles>
+        <!-- need to specify release version so that if PDFBox is built with
+        &gt; Java 8, it can still be run with e.g. Java 6; PDFBOX-4715 -->
+        <profile>
+            <id>jdkGte9</id>
+            <activation>
+                <jdk>[1.9,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <release>8</release>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <!-- call mvn with -Pjdk9 or call with -Daddmod="...." -->
         <profile>
             <id>jdk9</id>
