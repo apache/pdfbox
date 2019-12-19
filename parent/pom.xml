@@ -136,7 +136,7 @@
             </properties>
         </profile>
         <!-- need to specify release version so that if PDFBox is built with
-             &gt; Java 8, it can still be run with e.g. Java 6; PDFBOX-4715 -->
+             a version after Java 8, it can still be run with e.g. Java 6; PDFBOX-4715 -->
         <profile>
             <id>jdkGte9</id>
             <activation>
@@ -326,7 +326,13 @@
                                     <requireMavenVersion>
                                         <version>3.1</version>
                                     </requireMavenVersion>
-                                </rules>    
+                                    <requireJavaVersion>
+                                        <version>[1.7,12)</version>
+                                        <message>Requires at least Java 7, and
+                                            Java versions higher than 11 cannot
+                                            build Java 6 bytecode</message>
+                                    </requireJavaVersion>
+                                  </rules>
                             </configuration>
                         </execution>
                     </executions>
