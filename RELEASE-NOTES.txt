@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.17
+Release Notes -- Apache PDFBox -- Version 2.0.18
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.16 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.17 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,47 +14,58 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-4579] - IndexOutOfBoundsException when setting DefaultFontProvider in FontMapper
-[PDFBOX-4580] - PDFTextStripper::getText() lead to OutOfMemoryError: Java heap space
-[PDFBOX-4581] - Exception XRSurfaceData.getRaster not implemented yet on Swing, Linux
-[PDFBOX-4584] - Java 7 compile error
-[PDFBOX-4585] - remove message "OpenType Layout tables used in font ... are not implemented"
-[PDFBOX-4586] - Annotation widgets without AP not detected by preflight
-[PDFBOX-4587] - SASLPrep declares that u2070E is private use
-[PDFBOX-4589] - PDPageContent stream warns about overwriting in overwrite mode
-[PDFBOX-4592] - Preflight does not check process colorspace in DeviceN
-[PDFBOX-4595] - PDCIDFontType0 getHeight return 0
-[PDFBOX-4596] - Overlays with /Rotate value appear rotated in result file
-[PDFBOX-4604] - Used type0 for cyrillic, losting font on android
-[PDFBOX-4607] - Transparent 16 bit image doesn't display in Adobe Reader
-[PDFBOX-4608] - ImageToPDF fails with single image
-[PDFBOX-4610] - Copy&Paste in IOUtils.closeAndLogException()'s Javadoc
-[PDFBOX-4611] - PDF validates despite wrong /Alternate in ICC colorspace
-[PDFBOX-4615] - AppearanceGeneratorHelper.setAppearanceValue doesn't set the bounding box on the appearance stream correctly
-[PDFBOX-4622] - Various exceptions in TTFParser.parse
-[PDFBOX-4624] - COSParser: NullPointerException
-[PDFBOX-4626] - ArrayIndexOutOfBounds exceptions in CmapSubtable parsing
-[PDFBOX-4631] - NPE due to bounding box not being set on PDAppearanceStream
-[PDFBOX-4636] - "There has been a widget with a missing page reference" and non widget annotation gets flattened
-[PDFBOX-4638] - no field content after PDAcroForm.refreshAppearances() call if BBox empty
-[PDFBOX-4646] - PDFToImage not working with certain formfields
+[PDFBOX-4654] - PDFToImage shows reader image formats in usage
+[PDFBOX-4655] - ImageIOUtil.WriteImage creates huge PNG images when used with default quality on jdk11
+[PDFBOX-4659] - PDFBOX-3531 has re-appeared when trying to use  "sun.java2d.cmm.kcms.KcmsServiceProvider" in JAVA 1.8_222
+[PDFBOX-4661] - Regression No Unicode mapping with Identity-H font
+[PDFBOX-4662] - ClassCastException: org.bouncycastle.asn1.DLTaggedObject cannot be cast to org.bouncycastle.asn1.DERTaggedObject
+[PDFBOX-4665] - PDImageXObject createFromFileByExtension does not close FileInputStream in event of error
+[PDFBOX-4666] - StackOverflowError with PDFTextStripper.getText()
+[PDFBOX-4667] - Issue in FontMapperImpl#isCharSetMatch when font codePageRange is -1
+[PDFBOX-4672] - Draws the attachment image to the PDF document, and the image displays as a black block
+[PDFBOX-4674] - PDF Page Render Background Image has Gray Smudges
+[PDFBOX-4678] - Use PDFontFactory. CreateDefaultFont font to render text, the exported PDF document has a mistake
+[PDFBOX-4683] - Could not find referenced cmap stream Adobe-Japan1-7
+[PDFBOX-4687] - "Iterator.next()" methods should throw "NoSuchElementException"
+[PDFBOX-4688] - "BigDecimal(double)" should not be used
+[PDFBOX-4693] - PDF documents with rotated form field(90° degrees in my case) that apply form flattening appear squ
+[PDFBOX-4696] - Endless loop in OCSP certificate check
+[PDFBOX-4701] - TextPosition.equal() fails after getDir()
+[PDFBOX-4706] - support /UserUnit
+[PDFBOX-4711] - java.lang.ClassCastException: org.apache.pdfbox.cos.COSDictionary cannot be cast to org.apache.pdfbox.cos.COSStream
+[PDFBOX-4712] - Appearance dictionary should not be empty
+[PDFBOX-4713] - /AS is required if /AP contains a subdictionary
+[PDFBOX-4716] - ipag00303.php does not exist, mvn clean install!
 
 New Feature
 
-[PDFBOX-4639] - Please add Automatic-Module-Name to MANIFEST.MF
+[PDFBOX-4682] - NPE at PDSimpleFont.isStandard14()
 
 Improvement
 
-[PDFBOX-4080] - Improve memory consumption of PDAbstractAppearanceHandler
-[PDFBOX-4597] - TextPosition.getX() vs getXDirAdj()
-[PDFBOX-4600] - Please clarify CTM terminology in Javadoc
-[PDFBOX-4632] - Create example of PDF creation with page labels
-[PDFBOX-4637] - improve exception message "IOException: Could not find font: /Helvetica"
-[PDFBOX-4641] - Keywords created using PDFBox are not visible in Acrobat
+[PDFBOX-4341] - [Patch] PNGConverter: PNG bytes to PDImageXObject converter
+[PDFBOX-4653] - Clarify what font is missing when not in resources
+[PDFBOX-4657] - Use smooth interpolation for stencils too
+[PDFBOX-4685] - Add example of usage of separation color (spot color)
+[PDFBOX-4686] - Add text to AcroForm examples
+[PDFBOX-4689] - Invisible Signature should have empty Appearance Dictionary
+[PDFBOX-4691] - JPEGFactory should not decode JPEG files when only meta data is needed
+[PDFBOX-4694] - LockedContents flag
+[PDFBOX-4695] - PDPropBuildDataDict missing setNonEFontNoWarn
+[PDFBOX-4710] - allow precise RGB stroke colors with setStrokingColor
+
+Wish
+
+[PDFBOX-4699] - ERROR FeatureRecord array not alphabetically sorted by FeatureTag
 
 Task
 
-[PDFBOX-4625] - remove Netbeans warning: Exporting non-public type through public API
+[PDFBOX-4708] - Add PDAcroFormFlattenTest to 2.0 branch
+[PDFBOX-4715] - Need to add release version for maven-compiler-plugin
+
+Sub-task
+
+[PDFBOX-4703] - Support acroform /Ff flag for signature fields
 
 Release Contents
 ----------------
