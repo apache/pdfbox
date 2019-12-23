@@ -212,7 +212,7 @@ public class COSArrayListTest {
 
         assertTrue("Filtered COSArrayList size shall be 2", cosArrayList.size() == 2);
         assertTrue("Underlying COSArray shall have 3 entries", underlyingCOSArray.size() == 3);
-        assertTrue("Backed COSArray shall have 3 entries", cosArrayList.toList().size() == 3);
+        assertTrue("Backed COSArray shall have 3 entries", cosArrayList.getCOSArray().size() == 3);
 
         // remove aCircle annotation
         int positionToRemove = 1;
@@ -222,11 +222,11 @@ public class COSArrayListTest {
 
         assertTrue("List size shall be 2", cosArrayList.size() == 1);
         assertTrue("COSArray size shall be 2", underlyingCOSArray.size() == 2);
-        assertTrue("Backed COSArray size shall be 2", cosArrayList.toList().size() == 2);
+        assertTrue("Backed COSArray size shall be 2", cosArrayList.getCOSArray().size() == 2);
 
         assertTrue("Removed annotation shall no longer appear in COSArrayList", cosArrayList.indexOf(toBeRemoved) == -1);
         assertTrue("Removed annotation shall no longer appear in underlying COSArray", underlyingCOSArray.indexOf(toBeRemoved.getCOSObject()) == -1);
-        assertTrue("Removed annotation shall no longer appear in backed COSArray", cosArrayList.toList().indexOf(toBeRemoved.getCOSObject()) == -1);
+        assertTrue("Removed annotation shall no longer appear in backed COSArray", cosArrayList.getCOSArray().indexOf(toBeRemoved.getCOSObject()) == -1);
     }
     
 
@@ -249,7 +249,7 @@ public class COSArrayListTest {
 
         assertTrue("Filtered COSArrayList size shall be 2", cosArrayList.size() == 2);
         assertTrue("Underlying COSArray shall have 3 entries", underlyingCOSArray.size() == 3);
-        assertTrue("Backed COSArray shall have 3 entries", cosArrayList.toList().size() == 3);
+        assertTrue("Backed COSArray shall have 3 entries", cosArrayList.getCOSArray().size() == 3);
 
         // remove aCircle annotation
         int positionToRemove = 1;
@@ -259,10 +259,10 @@ public class COSArrayListTest {
 
         assertTrue("List size shall be 2", cosArrayList.size() == 1);
         assertTrue("COSArray size shall be 2", underlyingCOSArray.size() == 2);
-        assertTrue("Backed COSArray size shall be 2", cosArrayList.toList().size() == 2);
+        assertTrue("Backed COSArray size shall be 2", cosArrayList.getCOSArray().size() == 2);
 
         assertTrue("Removed annotation shall no longer appear in COSArrayList", cosArrayList.indexOf(toBeRemoved) == -1);
         assertTrue("Removed annotation shall no longer appear in underlying COSArray", underlyingCOSArray.indexOf(toBeRemoved.getCOSObject()) == -1);
-        assertTrue("Removed annotation shall no longer appear in backed COSArray", cosArrayList.toList().indexOf(toBeRemoved.getCOSObject()) == -1);
+        assertTrue("Removed annotation shall no longer appear in backed COSArray", cosArrayList.getCOSArray().indexOf(toBeRemoved.getCOSObject()) == -1);
     }
 }
