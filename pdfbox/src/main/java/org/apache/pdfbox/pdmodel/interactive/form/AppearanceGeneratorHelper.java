@@ -82,9 +82,10 @@ class AppearanceGeneratorHelper
     private static final float DEFAULT_FONT_SIZE = 12;    
 
     /**
-     * The minimum font size used for multiline text auto sizing
+     * The minimum/maximum font sizes used for multiline text auto sizing
      */
     private static final float MINIMUM_FONT_SIZE = 4;    
+    private static final float MAXIMUM_FONT_SIZE = 300;
 
     /**
      * The default padding applied by Acrobat to the fields bbox.
@@ -775,9 +776,6 @@ class AppearanceGeneratorHelper
     }
 
     /**
-     * My "not so great" method for calculating the fontsize. It does not work superb, but it
-     * handles ok.
-     * 
      * @return the calculated font-size
      * @throws IOException If there is an error getting the font information.
      */
@@ -793,29 +791,29 @@ class AppearanceGeneratorHelper
                 PlainText textContent = new PlainText(value);
                 if (textContent.getParagraphs() != null)
                 {
-                    float fs = DEFAULT_FONT_SIZE;
-                    while (fs > MINIMUM_FONT_SIZE)
+                    float width = contentRect.getWidth() - contentRect.getLowerLeftX();
+                    float fs = MINIMUM_FONT_SIZE;
+                    while (fs <= MAXIMUM_FONT_SIZE)
                     {
                         // determine the number of lines needed for this font and contentRect
                         int numLines = 0;
                         for (PlainText.Paragraph paragraph : textContent.getParagraphs())
                         {
-                            numLines += paragraph.getLines(font, fs, contentRect.getWidth()).size();
+                            numLines += paragraph.getLines(font, fs, width).size();
                         }
-                        // calculate the height using the capHeight and leading for this font size
+                        // calculate the height required for this font size
                         float fontScaleY = fs / FONTSCALE;
-                        float fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
                         float leading = font.getBoundingBox().getHeight() * fontScaleY;
-                        float height = fontCapAtSize + ((numLines - 1) * leading);
+                        float height = leading * numLines;
 
-                        // if within bounds, return this font size
-                        if (height <= contentRect.getHeight()) {
-                            return fs;
+                        // if this font size didn't fit, use the prior size that did fit
+                        if (height > contentRect.getHeight())
+                        {
+                            return Math.max(fs - 1, MINIMUM_FONT_SIZE);
                         }
-
-                        // otherwise, try again with a smaller font
-                        fs -= 1;
+                        fs++;
                     }
+                    return Math.min(fs, MAXIMUM_FONT_SIZE);
                 }
 
                 // Acrobat defaults to 12 for multiline text with size 0
