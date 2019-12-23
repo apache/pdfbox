@@ -60,7 +60,15 @@ public class COSArrayList<E> implements List<E>
     }
 
     /**
-     * Constructor.
+     * Create the COSArrayList specifing the List and the backing COSArray.
+     * 
+     * <p>User of this constructor need to ensure that the entries in the List and
+     * the backing COSArray are matching i.e. the COSObject of the List entry is
+     * included in the COSArray.
+     *   
+     * <p>If the number of entries in the List and the COSArray differ
+     * it is assumed that the List has been filtered. In that case the COSArrayList
+     * shall only be used for reading purposes and no longer for updating.
      *
      * @param actualList The list of standard java objects
      * @param cosArray The COS array object to sync to.
@@ -248,6 +256,10 @@ public class COSArrayList<E> implements List<E>
     @Override
     public boolean addAll(Collection<? extends E> c)
     {
+        if (isFiltered) {
+            throw new UnsupportedOperationException("Apping to a filtered List is not permitted");
+        }
+
         //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null && c.size() > 0)
@@ -267,6 +279,11 @@ public class COSArrayList<E> implements List<E>
     @Override
     public boolean addAll(int index, Collection<? extends E> c)
     {
+
+        if (isFiltered) {
+            throw new UnsupportedOperationException("Inserting to a filtered List is not permitted");
+        }
+
         //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null && c.size() > 0)
@@ -570,6 +587,11 @@ public class COSArrayList<E> implements List<E>
     @Override
     public E set(int index, E element)
     {
+
+        if (isFiltered) {
+            throw new UnsupportedOperationException("Replacing an element in a filtered List is not permitted");
+        }
+
         if( element instanceof String )
         {
             COSString item = new COSString( (String)element );
@@ -596,6 +618,10 @@ public class COSArrayList<E> implements List<E>
     @Override
     public void add(int index, E element)
     {
+        if (isFiltered) {
+            throw new UnsupportedOperationException("Adding an element in a filtered List is not permitted");
+        }
+
         //when adding if there is a parentDict then change the item
         //in the dictionary from a single item to an array.
         if( parentDict != null )
