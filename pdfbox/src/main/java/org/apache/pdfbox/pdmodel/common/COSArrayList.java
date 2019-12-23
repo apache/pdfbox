@@ -43,6 +43,10 @@ public class COSArrayList<E> implements List<E>
     private final COSArray array;
     private final List<E> actual;
 
+    // indicates that the list has been filtered
+    // i.e. the number of entries in array and actual differ 
+    private boolean isFiltered = false;
+
     private COSDictionary parentDict;
     private COSName dictKey;
 
@@ -65,6 +69,12 @@ public class COSArrayList<E> implements List<E>
     {
         actual = actualList;
         array = cosArray;
+
+        // if the number of entries differs this may come from a filter being
+        // applied at the PDModel level 
+        if (actual.size() != array.size()) {
+            isFiltered = true;
+        }
     }
 
     /**
@@ -200,6 +210,11 @@ public class COSArrayList<E> implements List<E>
     @Override
     public boolean remove(Object o)
     {
+
+        if (isFiltered) {
+            throw new UnsupportedOperationException("removing entries from a filtered List is not permitted");
+        }
+
         boolean retval = true;
         int index = actual.indexOf( o );
         if( index >= 0 )
@@ -607,8 +622,13 @@ public class COSArrayList<E> implements List<E>
     @Override
     public E remove(int index)
     {
+        if (isFiltered) {
+            throw new UnsupportedOperationException("removing entries from a filtered List is not permitted");
+        }
+
         E toBeRemoved = actual.get(index);
-        remove(toBeRemoved);
+        array.remove(index);
+        actual.remove(index);
         return toBeRemoved;
     }
 
