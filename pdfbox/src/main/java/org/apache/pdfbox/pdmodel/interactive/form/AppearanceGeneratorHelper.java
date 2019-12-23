@@ -79,7 +79,12 @@ class AppearanceGeneratorHelper
     /**
      * The default font size used for multiline text
      */
-    private static final float DEFAULT_FONT_SIZE = 12;    
+    private static final float DEFAULT_FONT_SIZE = 12;
+
+    /**
+     * The minimum font size used for multiline text auto sizing
+     */
+    private static final float MINIMUM_FONT_SIZE = 4;  
     
     /**
      * The default padding applied by Acrobat to the fields bbox.
@@ -787,6 +792,35 @@ class AppearanceGeneratorHelper
         {
             if (isMultiLine())
             {
+                PlainText textContent = new PlainText(value);
+                if (textContent.getParagraphs() != null)
+                {
+                    float fs = DEFAULT_FONT_SIZE;
+                    while (fs > MINIMUM_FONT_SIZE)
+                    {
+                        // determine the number of lines needed for this font and contentRect
+                        int numLines = 0;
+                        for (PlainText.Paragraph paragraph : textContent.getParagraphs())
+                        {
+                            numLines += paragraph.getLines(font, fs, contentRect.getWidth()).size();
+                        }
+                        // calculate the height using the capHeight and leading for this font size
+                        float fontScaleY = fs / FONTSCALE;
+                        float fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
+                        float leading = font.getBoundingBox().getHeight() * fontScaleY;
+                        float height = fontCapAtSize + ((numLines - 1) * leading);
+
+                        // if within bounds, return this font size
+                        if (height <= contentRect.getHeight())
+                        {
+                            return fs;
+                        }
+
+                        // otherwise, try again with a smaller font
+                        fs -= 1;
+                    }
+                }
+
                 // Acrobat defaults to 12 for multiline text with size 0
                 return DEFAULT_FONT_SIZE;
             }
