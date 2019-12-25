@@ -147,8 +147,9 @@ public class COSArrayListTest {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
 
         int positionToRemove = 2;
-        cosArrayList.remove(positionToRemove);
+        PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
 
+        assertEquals("Remove operation shall return the removed object",toBeRemoved, cosArrayList.remove(positionToRemove));
         assertTrue("List size shall be 3", cosArrayList.size() == 3);
         assertTrue("COSArray size shall be 3", annotationsArray.size() == 3);
 

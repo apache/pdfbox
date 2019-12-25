@@ -652,10 +652,8 @@ public class COSArrayList<E> implements List<E>
             throw new UnsupportedOperationException("removing entries from a filtered List is not permitted");
         }
 
-        E toBeRemoved = actual.get(index);
         array.remove(index);
-        actual.remove(index);
-        return toBeRemoved;
+        return actual.remove(index);
     }
 
     /**
