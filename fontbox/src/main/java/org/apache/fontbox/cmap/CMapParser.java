@@ -391,10 +391,28 @@ public class CMapParser
                 // PDFBOX-3450: ignore <>
                 if (tokenBytes.length > 0)
                 {
-                    // PDFBOX-4661: avoid overflow of the last byte, all following values are undefined
-                    int values = Math.min(end - start,
-                            255 - (tokenBytes[tokenBytes.length - 1] & 0xFF)) + 1;
-                    addMappingFrombfrange(result, startCode, values, tokenBytes);
+                    // PDFBOX-4720:
+                    // some pdfs use the malformed bfrange <0000> <FFFF> <0000>. Add support by adding a identity
+                    // mapping for the whole range instead of cutting it after 255 entries
+                    // TODO find a more efficient method to represent all values for a identity mapping
+                    if (tokenBytes.length == 2 && start == 0 && end == 0xffff
+                            && tokenBytes[0] == 0 && tokenBytes[1] == 0)
+                    {
+                        for (int i = 0; i < 256; i++)
+                        {
+                            startCode[1] = (byte) i;
+                            tokenBytes[1] = (byte) i;
+                            addMappingFrombfrange(result, startCode, 0xff, tokenBytes);
+
+                        }
+                    }
+                    else
+                    {
+                        // PDFBOX-4661: avoid overflow of the last byte, all following values are undefined
+                        int values = Math.min(end - start,
+                                255 - (tokenBytes[tokenBytes.length - 1] & 0xFF)) + 1;
+                        addMappingFrombfrange(result, startCode, values, tokenBytes);
+                    }
                 }
             }
         }
