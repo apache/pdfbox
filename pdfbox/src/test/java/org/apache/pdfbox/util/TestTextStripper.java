@@ -178,6 +178,11 @@ public class TestTextStripper extends TestCase
                     equals = false;
                     log.warn("Actual line is longer at:" + actualIndex );
                 }
+                if (expectedArray.length != actualArray.length)
+                {
+                    equals = false;
+                    log.warn("Expected lines: " + expectedArray.length + ", actual lines: " + actualArray.length);
+                }
             }
         }
         else if( ( expected == null && actual != null && actual.trim().equals( "" ) ) ||
