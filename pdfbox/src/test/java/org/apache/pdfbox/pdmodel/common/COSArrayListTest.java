@@ -344,4 +344,49 @@ public class COSArrayListTest {
             assertTrue("The size of the internal COSArray shall be 2", annotations.toList().size() == 2);
         }
     }
+
+    @Test
+    public void removeIndirectObject() throws IOException {
+
+        // generate test file
+        try (PDDocument pdf = new PDDocument()) {
+            PDPage page = new PDPage();
+            pdf.addPage(page);
+
+            ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
+            PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
+            PDAnnotationLink txtLink = new PDAnnotationLink();
+
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtLink);
+            assertTrue("There shall be 4 annotations generated", pageAnnots.size() == 4);
+
+            page.setAnnotations(pageAnnots);
+
+            pdf.save(OUT_DIR + "/removeIndirectObjectTest.pdf");
+            pdf.close();
+        }
+
+        try (PDDocument pdf = PDDocument.load(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
+            PDPage page = pdf.getPage(0);
+        
+            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+
+            assertTrue("There shall be 4 annotations retrieved", annotations.size() == 4);
+            assertTrue("The size of the internal COSArray shall be 4", annotations.toList().size() == 4);
+
+            ArrayList<PDAnnotation> toBeRemoved = new ArrayList<>();
+            toBeRemoved.add(annotations.get(0));
+            toBeRemoved.add(annotations.get(1));
+
+            annotations.removeAll(toBeRemoved);
+
+            assertTrue("There shall be 2 annotations left", annotations.size() == 2);
+
+            // the following line is failing 
+            assertFalse("The size of the internal COSArray shall be 2", annotations.toList().size() == 2);
+        }
+    }
 }
