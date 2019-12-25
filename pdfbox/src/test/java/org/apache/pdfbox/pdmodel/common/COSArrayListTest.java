@@ -289,4 +289,28 @@ public class COSArrayListTest {
         // this call should fail
         assertThrows(UnsupportedOperationException.class, () -> cosArrayList.remove(toBeRemoved));
     }
+
+    @Test
+    public void removeDirectObject() {
+
+        COSArrayList<String> cosArrayList = new COSArrayList<>();
+
+        // add a string to the COSArrayList
+        // with a duplicate entry
+        cosArrayList.add("A");
+        cosArrayList.add("A");
+        cosArrayList.add("B");
+        cosArrayList.add("C");
+
+        assertTrue("List size shall be 4", cosArrayList.size() == 4);
+        assertTrue("Internal COSArray size shall be 4", cosArrayList.toList().size() == 4);
+
+        ArrayList<String> toBeRemoved = new ArrayList<>();
+        toBeRemoved.add("A");
+
+        cosArrayList.removeAll(toBeRemoved);
+
+        assertTrue("List size shall be 2", cosArrayList.size() == 2);
+        assertTrue("Internal COSArray size shall be 2", cosArrayList.toList().size() == 2);
+    }
 }
