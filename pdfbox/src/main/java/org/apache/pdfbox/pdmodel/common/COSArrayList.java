@@ -645,7 +645,7 @@ public class COSArrayList<E> implements List<E>
         if (isFiltered) {
             throw new UnsupportedOperationException("removing entries from a filtered List is not permitted");
         }
-        
+
         array.remove( index );
         return actual.remove( index );
     }
@@ -665,7 +665,7 @@ public class COSArrayList<E> implements List<E>
     @Override
     public int lastIndexOf(Object o)
     {
-        return actual.indexOf( o );
+        return actual.lastIndexOf( o );
 
     }
 
