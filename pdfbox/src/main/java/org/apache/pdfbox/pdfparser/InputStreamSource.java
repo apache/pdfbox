@@ -113,7 +113,7 @@ final class InputStreamSource implements SequentialSource
     public void unread(byte[] bytes, int start, int len) throws IOException
     {
         input.unread(bytes, start, len);
-        position -= len - start;
+        position -= len;
     }
 
     @Override
