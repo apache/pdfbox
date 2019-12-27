@@ -129,7 +129,6 @@ final class InputStreamSource implements SequentialSource
             {
                 off += n;
                 len -= n;
-                position += n;
             }
             else
             {
