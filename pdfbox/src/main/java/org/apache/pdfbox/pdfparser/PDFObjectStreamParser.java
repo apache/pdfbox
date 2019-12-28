@@ -18,7 +18,9 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +43,8 @@ public class PDFObjectStreamParser extends BaseParser
      */
     private static final Log LOG = LogFactory.getLog(PDFObjectStreamParser.class);
 
-    private final COSStream stream;
+    private final int numberOfObjects;
+    private final int firstObject;
 
     /**
      * Constructor.
@@ -53,12 +56,23 @@ public class PDFObjectStreamParser extends BaseParser
     public PDFObjectStreamParser(COSStream stream, COSDocument document) throws IOException
     {
         super(new InputStreamSource(stream.createInputStream()));
-        this.stream = stream;
         this.document = document;
+        // get mandatory number of objects
+        numberOfObjects = stream.getInt(COSName.N);
+        if (numberOfObjects == -1)
+        {
+            throw new IOException("/N entry missing in object stream");
+        }
+        // get mandatory stream offset of the first object
+        firstObject = stream.getInt(COSName.FIRST);
+        if (firstObject == -1)
+        {
+            throw new IOException("/First entry missing in object stream");
+        }
     }
 
     /**
-     * This will parse the tokens in the stream. This will close the stream when it is finished parsing.
+     * Parse all objects of the stream. This will close the stream when it is finished parsing.
      *
      * @return All of the objects in the stream.
      * @throws IOException If there is an error while parsing the stream.
@@ -68,12 +82,6 @@ public class PDFObjectStreamParser extends BaseParser
         List<COSObject> streamObjects = new ArrayList<>();
         try
         {
-            //need to first parse the header.
-            int numberOfObjects = stream.getInt(COSName.N);
-            if (numberOfObjects == -1)
-            {
-                throw new IOException("/N entry missing in object stream");
-            }
             List<Long> objectNumbers = new ArrayList<>( numberOfObjects );
             for( int i=0; i<numberOfObjects; i++ )
             {
@@ -111,6 +119,51 @@ public class PDFObjectStreamParser extends BaseParser
             seqSource.close();
         }
         return streamObjects;
+    }
+
+    /**
+     * Search for/parse the object with the given object number. This will close the stream when it is finished parsing.
+     * 
+     * @param objectNumber the number of the object to b e parsed
+     * @return the parsed object or null if the object with the given number can't be found
+     * @throws IOException if there is an error while parsing the stream
+     */
+    public COSBase parseObject(long objectNumber) throws IOException
+    {
+        COSBase streamObject = null;
+        try
+        {
+            Integer objectOffset = readObjectNumbers().get(objectNumber);
+            if (objectOffset != null) 
+            {
+                // jump to the offset of the first object
+                long currentPosition = seqSource.getPosition();
+                if (firstObject > 0 && currentPosition < firstObject)
+                {
+                    seqSource.readFully(firstObject - (int) currentPosition);
+                }
+                // jump to the offset of the object to be parsed
+                seqSource.readFully(objectOffset);
+                streamObject = parseDirObject();
+            }
+        }
+        finally
+        {
+            seqSource.close();
+        }
+        return streamObject;
+    }
+
+    private Map<Long, Integer> readObjectNumbers() throws IOException
+    {
+        Map<Long, Integer> objectNumbers = new HashMap<>(numberOfObjects);
+        for (int i = 0; i < numberOfObjects; i++)
+        {
+            long objectNumber = readObjectNumber();
+            int offset = (int) readLong();
+            objectNumbers.put(objectNumber, offset);
+        }
+        return objectNumbers;
     }
 
 }

@@ -95,12 +95,6 @@ public class COSParser extends BaseParser implements ICOSParser
     private String keyAlias = null;
 
     /**
-     * Only parse the PDF file minimally allowing access to basic information.
-     */
-    public static final String SYSPROP_PARSEMINIMAL = 
-            "org.apache.pdfbox.pdfparser.nonSequentialPDFParser.parseMinimal";
-    
-    /**
      * The range within the %%EOF marker will be searched.
      * Useful if there are additional characters after %%EOF within the PDF. 
      */
@@ -600,7 +594,7 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     /**
-     * This will parse the next object from the stream and add it to the local state. 
+     * Parse the object for the given object number.  
      * It's reduced to parsing an indirect object.
      * 
      * @param objNr object number of object to be parsed
@@ -619,11 +613,12 @@ public class COSParser extends BaseParser implements ICOSParser
         // ---- create object key and get object (container) from pool
         final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
         final COSObject pdfObject = document.getObjectFromPool(objKey);
+        COSBase referencedObject = !pdfObject.isObjectNull() ? pdfObject.getObject() : null;
 
-        if (pdfObject.isObjectNull())
+        // not previously parsed
+        if (referencedObject == null)
         {
-            // not previously parsed
-            // ---- read offset or object stream object number from xref table
+            // read offset or object stream object number from xref table
             Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
             // maybe something is wrong with the xref table -> perform brute force search for all objects
@@ -656,15 +651,24 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 // offset of indirect object in file
                 parseFileObject(offsetOrObjstmObNr, objKey, pdfObject);
+                referencedObject = pdfObject.getObject();
             }
             else
             {
                 // xref value is object nr of object stream containing object to be parsed
                 // since our object was not found it means object stream was not parsed so far
-                parseObjectStream((int) -offsetOrObjstmObNr);
+                referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
+                if (referencedObject != null && referencedObject != COSNull.NULL)
+                {
+                    pdfObject.setObject(referencedObject);
+                }
+                else
+                {
+                    pdfObject.setToNull();
+                }
             }
         }
-        return pdfObject.getObject();
+        return referencedObject;
     }
 
     private void parseFileObject(Long offsetOrObjstmObNr, final COSObjectKey objKey, final COSObject pdfObject) throws IOException
@@ -756,9 +760,10 @@ public class COSParser extends BaseParser implements ICOSParser
         }
     }
 
-    private void parseObjectStream(int objstmObjNr) throws IOException
+    private COSBase parseObjectStreamObject(int objstmObjNr, COSObjectKey key) throws IOException
     {
         final COSBase objstmBaseObj = parseObjectDynamically(objstmObjNr, 0, true);
+        COSBase objectStreamObject = null;
         if (objstmBaseObj instanceof COSStream)
         {
             // parse object stream
@@ -766,32 +771,14 @@ public class COSParser extends BaseParser implements ICOSParser
             try
             {
                 parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
-                // register all objects which are referenced to be contained in object stream
-                parser.parse().stream().forEach(next -> {
-                    COSObjectKey stmObjKey = new COSObjectKey(next);
-                    Long offset = xrefTrailerResolver.getXrefTable().get(stmObjKey);
-                    if (offset != null && offset == -objstmObjNr)
-                    {
-                        COSObject stmObj = document.getObjectFromPool(stmObjKey);
-                        stmObj.setObject(next.getObject());
-                    }
-                });
+                objectStreamObject = parser.parseObject(key.getNumber());
             }
             catch (IOException ex)
             {
                 if (isLenient)
                 {
-                    if (parser == null)
-                    {
-                        LOG.error("object stream " + objstmObjNr
-                                + " could not be parsed due to an exception", ex);
-                    }
-                    else
-                    {
-                        LOG.debug("Stop reading object stream " + objstmObjNr
-                                + " due to an exception", ex);
-                    }
-                    // the error is handled in parseDictObjects
+                    LOG.error("object stream " + objstmObjNr
+                            + " could not be parsed due to an exception", ex);
                 }
                 else
                 {
@@ -799,6 +786,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 }
             }
         }
+        return objectStreamObject;
     }
     
     /** 
@@ -2058,11 +2046,19 @@ public class COSParser extends BaseParser implements ICOSParser
         if (offset < 0)
         {
             COSObject compressedObject = document.getObjectFromPool(key);
-            if (compressedObject.getObject() == null)
-            {
-                parseObjectStream((int) -offset);
-            }
             COSBase baseObject = compressedObject.getObject();
+            if (baseObject == null)
+            {
+                baseObject = parseObjectStreamObject((int) -offset, key);
+                if (baseObject != null && baseObject != COSNull.NULL)
+                {
+                    compressedObject.setObject(baseObject);
+                }
+                else
+                {
+                    compressedObject.setToNull();
+                }
+            }
             if (baseObject instanceof COSDictionary)
             {
                 dictionary = (COSDictionary) baseObject;
