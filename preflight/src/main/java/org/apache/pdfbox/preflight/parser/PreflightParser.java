@@ -242,29 +242,20 @@ public class PreflightParser extends PDFParser
             String secondLine = readLine();
             if (secondLine != null)
             {
+                boolean secondLineFails = false;
                 byte[] secondLineAsBytes = secondLine.getBytes(ENCODING);
-                if (secondLineAsBytes.length >= 5)
+                if (secondLineAsBytes[0] != '%')
                 {
-                    if (secondLineAsBytes[0] != '%')
+                    secondLineFails = true;
+                }
+                else if (secondLine.length() >= 5)
+                {
+                    for (int i = 1; i < 5; ++i)
                     {
-                        addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
-                    }
-                    else
-                    {
-                        for (int i = 1; i < 5; ++i)
-                        {
-                            byte b = secondLineAsBytes[i];
-                            if ((b & 0xFF) < 0x80)
-                            {
-                                addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
-                                        "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
-                                break;
-                            }
-                        }
+                        secondLineFails |= (secondLineAsBytes[i] & 0xFF) < 0x80;
                     }
                 }
-                else
+                if (secondLineFails)
                 {
                     addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_HEADER,
                             "Second line must begin with '%' followed by at least 4 bytes greater than 127"));
@@ -432,11 +423,11 @@ public class PreflightParser extends PDFParser
         }
         long startOffset = source.getPosition();
         int nextChar = source.read();
-        if (nextChar == 13 && source.peek() == 10)
+        if (nextChar == ASCII_CR && source.peek() == ASCII_LF)
         {
             startOffset += 2;
         }
-        else if (nextChar == 10)
+        else if (nextChar == ASCII_LF)
         {
             startOffset++;
         }
@@ -464,12 +455,12 @@ public class PreflightParser extends PDFParser
         boolean eolFound = false;
         boolean crlfFound = false;
         // LF found
-        if (nextChar == '\n')
+        if (nextChar == ASCII_LF)
         {
             eolFound = true;
             // check if the LF is part of a CRLF
             source.rewind(2);
-            if (source.read() == '\r')
+            if (source.read() == ASCII_CR)
             {
                 endOffset--;
                 crlfFound = true;
@@ -569,13 +560,8 @@ public class PreflightParser extends PDFParser
             do
             {
                 nextChar = (char) source.read();
-                if (nextChar != '>')
+                if (!isWhitespace(nextChar) && nextChar != '>')
                 {
-                    if (isWhitespace(nextChar))
-                    {
-                        // ignore space characters
-                        continue;
-                    }
                     if (Character.digit(nextChar, 16) >= 0)
                     {
                         count++;
@@ -783,9 +769,6 @@ public class PreflightParser extends PDFParser
                 {
                     securityHandler.decrypt(referencedObject, objNr, objGenNr);
                 }
-
-                pdfObject.setObject(referencedObject);
-
                 if (!endObjectKey.startsWith("endobj"))
                 {
                     throw new IOException("Object (" + readObjNr + ":" + readObjGen + ") at offset "
@@ -814,14 +797,14 @@ public class PreflightParser extends PDFParser
                 // xref value is object nr of object stream containing object to be parsed
                 // since our object was not found it means object stream was not parsed so far
                 referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
-                if (referencedObject != null && referencedObject != COSNull.NULL)
-                {
-                    pdfObject.setObject(referencedObject);
-                }
-                else
-                {
-                    pdfObject.setToNull();
-                }
+            }
+            if (referencedObject != null && referencedObject != COSNull.NULL)
+            {
+                pdfObject.setObject(referencedObject);
+            }
+            else
+            {
+                pdfObject.setToNull();
             }
         }
         return referencedObject;
@@ -836,25 +819,25 @@ public class PreflightParser extends PDFParser
             // this is the offset of the last %%EOF sequence.
             // nothing should be present after this sequence.
             int tmpOffset = offset + pattern.length;
-            if (tmpOffset != buf.length)
+            int offsetDiff = buf.length - tmpOffset;
+            // EOL is authorized
+            if (offsetDiff > 2
+                    || (offsetDiff == 2
+                            && (buf[tmpOffset] != ASCII_CR || buf[tmpOffset + 1] != ASCII_LF))
+                    || (offsetDiff == 1
+                            && (buf[tmpOffset] != ASCII_CR && buf[tmpOffset] != ASCII_LF)))
             {
-                // EOL is authorized
-                if ((buf.length - tmpOffset) > 2
-                        || (buf.length - tmpOffset == 2 && (buf[tmpOffset] != 13 || buf[tmpOffset + 1] != 10))
-                        || (buf.length - tmpOffset == 1 && (buf[tmpOffset] != 13 && buf[tmpOffset] != 10)))
+                long position;
+                try
                 {
-                    long position;
-                    try
-                    {
-                        position = source.getPosition();
-                    }
-                    catch (IOException ex)
-                    {
-                        position = Long.MIN_VALUE;
-                    }
-                    addValidationError(new ValidationError(ERROR_SYNTAX_TRAILER_EOF,
-                            "File contains data after the last %%EOF sequence at offset " + position));
+                    position = source.getPosition();
                 }
+                catch (IOException ex)
+                {
+                    position = Long.MIN_VALUE;
+                }
+                addValidationError(new ValidationError(ERROR_SYNTAX_TRAILER_EOF,
+                        "File contains data after the last %%EOF sequence at offset " + position));
             }
         }
         return offset;
