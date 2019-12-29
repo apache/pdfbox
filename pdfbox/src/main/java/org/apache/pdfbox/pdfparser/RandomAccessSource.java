@@ -82,7 +82,7 @@ final class RandomAccessSource implements SequentialSource
     @Override
     public void unread(byte[] bytes, int start, int len) throws IOException
     {
-        reader.rewind(len - start);
+        reader.rewind(len);
     }
 
     @Override
