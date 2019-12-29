@@ -650,28 +650,28 @@ public class COSParser extends BaseParser implements ICOSParser
             else if (offsetOrObjstmObNr > 0)
             {
                 // offset of indirect object in file
-                parseFileObject(offsetOrObjstmObNr, objKey, pdfObject);
-                referencedObject = pdfObject.getObject();
+                referencedObject = parseFileObject(offsetOrObjstmObNr, objKey);
             }
             else
             {
                 // xref value is object nr of object stream containing object to be parsed
                 // since our object was not found it means object stream was not parsed so far
                 referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
-                if (referencedObject != null && referencedObject != COSNull.NULL)
-                {
-                    pdfObject.setObject(referencedObject);
-                }
-                else
-                {
-                    pdfObject.setToNull();
-                }
+            }
+            if (referencedObject != null && referencedObject != COSNull.NULL)
+            {
+                pdfObject.setObject(referencedObject);
+            }
+            else
+            {
+                pdfObject.setToNull();
             }
         }
         return referencedObject;
     }
 
-    private void parseFileObject(Long offsetOrObjstmObNr, final COSObjectKey objKey, final COSObject pdfObject) throws IOException
+    private COSBase parseFileObject(Long offsetOrObjstmObNr, final COSObjectKey objKey)
+            throws IOException
     {
         // ---- go to object start
         source.seek(offsetOrObjstmObNr);
@@ -690,21 +690,21 @@ public class COSParser extends BaseParser implements ICOSParser
         }
 
         skipSpaces();
-        COSBase pb = parseDirObject();
+        COSBase parsedObject = parseDirObject();
         String endObjectKey = readString();
 
         if (endObjectKey.equals(STREAM_STRING))
         {
             source.rewind(endObjectKey.getBytes(StandardCharsets.ISO_8859_1).length);
-            if (pb instanceof COSDictionary)
+            if (parsedObject instanceof COSDictionary)
             {
-                COSStream stream = parseCOSStream((COSDictionary) pb);
+                COSStream stream = parseCOSStream((COSDictionary) parsedObject);
 
                 if (securityHandler != null)
                 {
                     securityHandler.decryptStream(stream, objKey.getNumber(), objKey.getGeneration());
                 }
-                pb = stream;
+                parsedObject = stream;
             }
             else
             {
@@ -731,16 +731,7 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         else if (securityHandler != null)
         {
-            securityHandler.decrypt(pb, objKey.getNumber(), objKey.getGeneration());
-        }
-
-        if (pb != null && pb != COSNull.NULL)
-        {
-            pdfObject.setObject(pb);
-        }
-        else
-        {
-            pdfObject.setToNull();
+            securityHandler.decrypt(parsedObject, objKey.getNumber(), objKey.getGeneration());
         }
 
         if (!endObjectKey.startsWith(ENDOBJ_STRING))
@@ -758,6 +749,7 @@ public class COSParser extends BaseParser implements ICOSParser
                         + " does not end with 'endobj' but with '" + endObjectKey + "'");
             }
         }
+        return parsedObject;
     }
 
     /**
@@ -800,33 +792,22 @@ public class COSParser extends BaseParser implements ICOSParser
     /** 
      * Returns length value referred to or defined in given object. 
      */
-    private COSNumber getLength(final COSBase lengthBaseObj, final COSName streamType) throws IOException
+    private COSNumber getLength(final COSBase lengthBaseObj) throws IOException
     {
         if (lengthBaseObj == null)
         {
             return null;
         }
-        COSNumber retVal;
         // maybe length was given directly
         if (lengthBaseObj instanceof COSNumber)
         {
-            retVal = (COSNumber) lengthBaseObj;
+            return (COSNumber) lengthBaseObj;
         }
         // length in referenced object
-        else if (lengthBaseObj instanceof COSObject)
+        if (lengthBaseObj instanceof COSObject)
         {
             COSObject lengthObj = (COSObject) lengthBaseObj;
             COSBase length = lengthObj.getObject();
-            if (length == null)
-            {
-                // not read so far, keep current stream position
-                final long curFileOffset = source.getPosition();
-                boolean isObjectStream = COSName.OBJ_STM.equals(streamType);
-                parseObjectDynamically(lengthObj, isObjectStream);
-                // reset current stream position
-                source.seek(curFileOffset);
-                length = lengthObj.getObject();
-            }
             if (length == null)
             {
                 throw new IOException("Length object content was not read.");
@@ -837,19 +818,15 @@ public class COSParser extends BaseParser implements ICOSParser
                         + lengthObj.getGenerationNumber() + ") not found");
                 return null;
             }
-            if (!(length instanceof COSNumber))
+            if (length instanceof COSNumber)
             {
-                throw new IOException("Wrong type of referenced length object " + lengthObj
-                        + ": " + length.getClass().getSimpleName());
+                return (COSNumber) length;
             }
-            retVal = (COSNumber) length;
+            throw new IOException("Wrong type of referenced length object " + lengthObj + ": "
+                    + length.getClass().getSimpleName());
         }
-        else
-        {
-            throw new IOException("Wrong type of length object: "
-                    + lengthBaseObj.getClass().getSimpleName());
-        }
-        return retVal;
+        throw new IOException(
+                "Wrong type of length object: " + lengthBaseObj.getClass().getSimpleName());
     }
     
     private static final int STREAMCOPYBUFLEN = 8192;
@@ -881,7 +858,7 @@ public class COSParser extends BaseParser implements ICOSParser
         /*
          * This needs to be dic.getItem because when we are parsing, the underlying object might still be null.
          */
-        COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH), dic.getCOSName(COSName.TYPE));
+        COSNumber streamLengthObj = getLength(dic.getItem(COSName.LENGTH));
         if (streamLengthObj == null)
         {
             if (isLenient)
@@ -2650,12 +2627,6 @@ public class COSParser extends BaseParser implements ICOSParser
             return;
         }
 
-        if (trailerEncryptItem instanceof COSObject)
-        {
-            COSObject trailerEncryptObj = (COSObject) trailerEncryptItem;
-            parseDictionaryRecursive(trailerEncryptObj);
-        }
-
         try
         {
             encryption = new PDEncryption(document.getEncryptionDictionary());
@@ -2690,36 +2661,6 @@ public class COSParser extends BaseParser implements ICOSParser
             if (keyStoreInputStream != null)
             {
                 IOUtils.closeQuietly(keyStoreInputStream);
-            }
-        }
-    }
-
-    /**
-     * Resolves all not already parsed objects of a dictionary recursively.
-     * 
-     * @param dictionaryObject dictionary to be parsed
-     * @throws IOException if something went wrong
-     * 
-     */
-    private void parseDictionaryRecursive(COSObject dictionaryObject) throws IOException
-    {
-        parseObjectDynamically(dictionaryObject, true);
-        if (!(dictionaryObject.getObject() instanceof COSDictionary))
-        {
-            // we can't be lenient here, this is called by prepareDecryption()
-            // to get the encryption directory
-            throw new IOException("Dictionary object expected at offset " + source.getPosition());
-        }
-        COSDictionary dictionary = (COSDictionary) dictionaryObject.getObject();
-        for (COSBase value : dictionary.getValues())
-        {
-            if (value instanceof COSObject)
-            {
-                COSObject object = (COSObject) value;
-                if (object.getObject() == null)
-                {
-                    parseDictionaryRecursive(object);
-                }
             }
         }
     }
