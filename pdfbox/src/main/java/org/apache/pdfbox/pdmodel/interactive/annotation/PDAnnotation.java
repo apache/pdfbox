@@ -18,6 +18,7 @@ package org.apache.pdfbox.pdmodel.interactive.annotation;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Objects;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -220,6 +221,35 @@ public abstract class PDAnnotation implements COSObjectable
         dictionary = dict;
         dictionary.setItem(COSName.TYPE, COSName.ANNOT);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals (Object o) {
+        if (o == this)
+        {
+            return true;
+        }
+
+        if (!(o instanceof PDAnnotation))
+        {
+            return false;
+        }
+
+        COSDictionary toBeCompared = ((PDAnnotation) o).getCOSObject();
+        return toBeCompared.equals(getCOSObject());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(dictionary);
+    }
+
 
     /**
      * This will set the sub type (and hence appearance, AP taking precedence) For this annotation. See the SUB_TYPE_XXX

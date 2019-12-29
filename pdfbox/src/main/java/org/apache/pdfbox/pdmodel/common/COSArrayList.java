@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSNumber;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -518,7 +519,19 @@ public class COSArrayList<E> implements List<E>
     @Override
     public boolean removeAll(Collection<?> c)
     {
-        array.removeAll( toCOSObjectList( c ) );
+        c.forEach(item -> {
+            COSBase itemCOSBase = ((COSObjectable)item).getCOSObject();
+            // remove all indirect objects too by dereferencing them
+            // before doing the comparison
+            for (int i=array.size()-1; i>=0; i--)
+            {
+                if (itemCOSBase.equals(array.getObject(i)))
+                {
+                    array.remove(i);
+                }
+            }
+        });
+
         return actual.removeAll( c );
     }
 
