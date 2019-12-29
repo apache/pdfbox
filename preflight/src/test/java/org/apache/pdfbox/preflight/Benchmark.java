@@ -75,19 +75,13 @@ public class Benchmark
         {
             File file = lfd.get(i % size);
             long startLTime = System.currentTimeMillis();
-            PreflightParser parser = new PreflightParser(file);
-            parser.parse();
-            try (PreflightDocument document = parser.getPreflightDocument())
+            ValidationResult result = PreflightParser.validate(file);
+            if (!result.isValid())
             {
-                document.validate();
-                ValidationResult result = document.getResult();
-                if (!result.isValid())
+                resFile.write(file.getAbsolutePath() + " isn't PDF/A\n");
+                for (ValidationError error : result.getErrorsList())
                 {
-                    resFile.write(file.getAbsolutePath() + " isn't PDF/A\n");
-                    for (ValidationError error : result.getErrorsList())
-                    {
-                        resFile.write(error.getErrorCode() + " : " + error.getDetails() + "\n");
-                    }
+                    resFile.write(error.getErrorCode() + " : " + error.getDetails() + "\n");
                 }
             }
             long endLTime = System.currentTimeMillis();

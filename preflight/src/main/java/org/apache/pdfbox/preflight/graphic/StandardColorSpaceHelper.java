@@ -468,9 +468,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             if (defaultCS != null)
             {
                 // defaultCS is valid if the number of errors hasn't changed
-                int nbOfErrors = context.getDocument().getResult().getErrorsList().size();
+                int nbOfErrors = context.getDocument().getValidationErrors().size();
                 processAllColorSpace(defaultCS);
-                int newNbOfErrors = context.getDocument().getResult().getErrorsList().size();
+                int newNbOfErrors = context.getDocument().getValidationErrors().size();
                 result = (nbOfErrors == newNbOfErrors);
             }
 

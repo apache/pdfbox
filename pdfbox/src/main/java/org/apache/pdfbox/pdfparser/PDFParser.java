@@ -535,7 +535,7 @@ public class PDFParser extends COSParser
                 initialParse();
             }
             exceptionOccurred = false;
-            PDDocument pdDocument = new PDDocument(getDocument(), source, getAccessPermission());
+            PDDocument pdDocument = createDocument();
             pdDocument.setEncryptionDictionary(getEncryption());
             return pdDocument;
         }
@@ -549,4 +549,14 @@ public class PDFParser extends COSParser
         }
     }
 
+    /**
+     * Create the resulting document. Maybe overwritten if the parser uses another class as document.
+     * 
+     * @return the resulting document
+     * @throws IOException if the method is called before parsing the document
+     */
+    protected PDDocument createDocument() throws IOException
+    {
+        return new PDDocument(getDocument(), source, getAccessPermission());
+    }
 }

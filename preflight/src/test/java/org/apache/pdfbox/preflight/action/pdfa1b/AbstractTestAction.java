@@ -108,12 +108,12 @@ public abstract class AbstractTestAction
             abstractActionManager.valid();
         }
 
+        List<ValidationError> errors = ctx.getDocument().getValidationErrors();
         // check the result
         if (!valid)
         {
-            List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
             assertFalse(errors.isEmpty());
-            if (expectedCode != null || !"".equals(expectedCode))
+            if (expectedCode != null && !expectedCode.isEmpty())
             {
                 boolean found = false;
                 for (ValidationError err : errors)
@@ -129,11 +129,7 @@ public abstract class AbstractTestAction
         }
         else
         {
-            if (ctx.getDocument().getResult() != null)
-            {
-                List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
-                assertTrue(errors.isEmpty());
-            }
+            assertTrue(errors.isEmpty());
         }
         ctx.getDocument().close();
     }

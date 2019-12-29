@@ -37,16 +37,8 @@ public class TestPDFBox3741
     @Test
     public void testPDFBox3741() throws IOException
     {
-        PreflightParser parser = new PreflightParser(
-                new File("src/test/resources/PDFBOX-3741.pdf"));
-        parser.parse();
-        ValidationResult result;
-        try (PreflightDocument document = parser.getPreflightDocument())
-        {
-            document.validate();
-            result = document.getResult();
-        }
-
+        ValidationResult result = PreflightParser
+                .validate(new File("src/test/resources/PDFBOX-3741.pdf"));
         // Error should be:
         // 2.4.3: Invalid Color space, /DeviceGray default for operator "Tj" can't be used without Color Profile
         Assert.assertFalse("File PDFBOX-3741.pdf should be detected as not PDF/A-1b", result.isValid());

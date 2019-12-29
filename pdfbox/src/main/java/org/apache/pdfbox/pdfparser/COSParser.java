@@ -760,7 +760,15 @@ public class COSParser extends BaseParser implements ICOSParser
         }
     }
 
-    private COSBase parseObjectStreamObject(int objstmObjNr, COSObjectKey key) throws IOException
+    /**
+     * Parse the object with the given key from the object stream with the given number.
+     * 
+     * @param objstmObjNr the number of the offset stream
+     * @param key the key of the object to be parsed
+     * @return the parsed object
+     * @throws IOException if something went wrong when parsing the object
+     */
+    protected COSBase parseObjectStreamObject(int objstmObjNr, COSObjectKey key) throws IOException
     {
         final COSBase objstmBaseObj = parseObjectDynamically(objstmObjNr, 0, true);
         COSBase objectStreamObject = null;

@@ -28,10 +28,8 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.After;
 import org.junit.Assert;
@@ -86,74 +84,57 @@ public abstract class AbstractInvalidFileTester
             logger.warn("This is an empty test");
             return;
         }
-        PreflightDocument document = null;
-        try
+        ValidationResult result = PreflightParser.validate(path);
+        Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")",
+                result.isValid());
+        Assert.assertTrue(path + " : Should find at least one error",
+                result.getErrorsList().size() > 0);
+        // could contain more than one error
+        boolean found = false;
+        if (this.expectedError != null)
         {
-            PreflightParser parser = new PreflightParser(path);
-            parser.parse();
-            document = parser.getPreflightDocument();
-            document.validate();
-
-            ValidationResult result = document.getResult();
-            Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")", result.isValid());
-            Assert.assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
-            // could contain more than one error
-            boolean found = false;
-            if (this.expectedError != null)
+            for (ValidationError error : result.getErrorsList())
             {
+                if (error.getErrorCode().equals(this.expectedError))
+                {
+                    found = true;
+                    if (outputResult == null)
+                    {
+                        break;
+                    }
+                }
+                if (outputResult != null)
+                {
+                    String log = path.getName().replace(".pdf", "") + "#" + error.getErrorCode()
+                            + "#" + error.getDetails() + "\n";
+                    outputResult.write(log.getBytes());
+                }
+            }
+        }
+
+        if (result.getErrorsList().size() > 0)
+        {
+            if (this.expectedError == null)
+            {
+                logger.info("File invalid as expected (no expected code) :"
+                        + this.path.getAbsolutePath());
+            }
+            else if (!found)
+            {
+                StringBuilder message = new StringBuilder(100);
+                message.append(path).append(" : Invalid error code returned. Expected ");
+                message.append(this.expectedError).append(", found ");
                 for (ValidationError error : result.getErrorsList())
                 {
-                    if (error.getErrorCode().equals(this.expectedError))
-                    {
-                        found = true;
-                        if (outputResult == null)
-                        {
-                            break;
-                        }
-                    }
-                    if (outputResult != null)
-                    {
-                        String log = path.getName().replace(".pdf", "") + "#" + error.getErrorCode() + "#"
-                                + error.getDetails() + "\n";
-                        outputResult.write(log.getBytes());
-                    }
+                    message.append(error.getErrorCode()).append(" ");
                 }
-            }
-
-            if (result.getErrorsList().size() > 0)
-            {
-                if (this.expectedError == null)
-                {
-                    logger.info("File invalid as expected (no expected code) :" + this.path.getAbsolutePath());
-                }
-                else if (!found)
-                {
-                    StringBuilder message = new StringBuilder(100);
-                    message.append(path).append(" : Invalid error code returned. Expected ");
-                    message.append(this.expectedError).append(", found ");
-                    for (ValidationError error : result.getErrorsList())
-                    {
-                        message.append(error.getErrorCode()).append(" ");
-                    }
-                    Assert.fail(message.toString());
-                }
-            }
-            else
-            {
-                Assert.assertEquals(path + " : Invalid error code returned.", this.expectedError, result
-                        .getErrorsList().get(0).getErrorCode());
+                Assert.fail(message.toString());
             }
         }
-        catch (ValidationException e)
+        else
         {
-            throw new Exception(path + " :" + e.getMessage(), e);
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
-            }
+            Assert.assertEquals(path + " : Invalid error code returned.", this.expectedError,
+                    result.getErrorsList().get(0).getErrorCode());
         }
     }
 

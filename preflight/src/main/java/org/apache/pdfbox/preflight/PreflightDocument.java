@@ -22,6 +22,8 @@
 package org.apache.pdfbox.preflight;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -31,7 +33,6 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 public class PreflightDocument extends PDDocument
 {
-
     private ValidationResult result = new ValidationResult(true);
 
     private PreflightConfiguration config;
@@ -43,8 +44,8 @@ public class PreflightDocument extends PDDocument
     /**
      * Create a preflight document based on the COSDocument and load the default configuration for the given format.
      * 
-     * @param doc
-     * @param format
+     * @param doc the underlying COSDocument
+     * @param format the format used for validation
      */
     public PreflightDocument(COSDocument doc, Format format)
     {
@@ -55,70 +56,69 @@ public class PreflightDocument extends PDDocument
      * Create a preflight document based on the COSDocument that will use the given configuration bean to process the
      * validation. if the configuration is null, a default configuration will be load using the given format.
      * 
-     * @param doc
-     * @param format
-     * @param config
+     * @param doc the underlying COSDocument
+     * @param format the format used for validation
+     * @param config the configuration used for validation
      */
     public PreflightDocument(COSDocument doc, Format format, PreflightConfiguration config)
     {
         super(doc);
         this.specification = format;
-        this.config = config;
-        if (this.config == null)
-        {
-            initConfiguration(format);
-        }
+        // PDF/A1-b is default
+        this.config = config == null ? PreflightConfiguration.createPdfA1BConfiguration() : config;
     }
 
-    private void initConfiguration(Format format)
+    /**
+     * Returns an unmodifiable list of all validation errors.
+     * 
+     * @return an unmodifiable list of all validation errors
+     */
+    public List<ValidationError> getValidationErrors()
     {
-        switch (format)
-        {
-        default: // default is PDF/A1-b
-            this.config = PreflightConfiguration.createPdfA1BConfiguration();
-            break;
-        }
-
+        return Collections.unmodifiableList(result.getErrorsList());
     }
 
-    public ValidationResult getResult()
-    {
-        return result;
-    }
-
-    public void setResult(ValidationResult result)
-    {
-        if (this.result != null)
-        {
-            this.result.mergeResult(result);
-        }
-        else if (result != null)
-        {
-            this.result = result;
-        }
-        else
-        {
-            this.result = new ValidationResult(true);
-        }
-    }
-
+    /**
+     * Add a validation error.
+     * 
+     * @param error the validation error to be added
+     */
     public void addValidationError(ValidationError error)
     {
         if (error != null)
         {
-            if (result == null)
-            {
-                this.result = new ValidationResult(error.isWarning());
-            }
             this.result.addError(error);
         }
     }
 
+    /**
+     * Add a list of validation errors.
+     * 
+     * @param errorList the list of validation errors
+     */
+    public void addValidationErrors(List<ValidationError> errorList)
+    {
+        if (errorList != null)
+        {
+            this.result.addErrors(errorList);
+        }
+    }
+
+    /**
+     * Returns the associated preflight context. It is created after parsing the pdf.
+     * 
+     * @return the associated preflight context
+     */
     public PreflightContext getContext()
     {
         return this.context;
     }
 
+    /**
+     * Set the preflight context for this document.
+     * 
+     * @param context the associated preflight context
+     */
     public void setContext(PreflightContext context)
     {
         this.context = context;
@@ -127,9 +127,10 @@ public class PreflightDocument extends PDDocument
     /**
      * Check that PDDocument is a valid file according to the format given during the object creation.
      * 
+     * @return the validation result
      * @throws ValidationException
      */
-    public void validate() throws ValidationException
+    public ValidationResult validate() throws ValidationException
     {
         // force early class loading to check if people forgot to use --add-modules javax.xml.bind
         // on java 9 & 10, or to add jaxb-api on java 11 and later
@@ -140,8 +141,14 @@ public class PreflightDocument extends PDDocument
         {
             ContextHelper.validateElement(context, name);
         }
+        return result;
     }
 
+    /**
+     * Returns the format which is used to valide the pdf document.
+     * 
+     * @return the format used for validation
+     */
     public Format getSpecification()
     {
         return specification;

@@ -28,9 +28,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
-import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.Test;
 
@@ -67,22 +65,13 @@ public class TestMetadataFiles
 
     private boolean checkPDF(File pdf)
     {
-        PreflightDocument document = null;
         boolean testResult = false;
         if (pdf.exists())
         {
             ValidationResult result = null;
             try
             {
-                PreflightParser parser = new PreflightParser(pdf);
-                parser.parse();
-                document = parser.getPreflightDocument();
-                document.validate();
-                result = document.getResult();
-            }
-            catch (SyntaxValidationException e)
-            {
-                result = e.getResult();
+                result = PreflightParser.validate(pdf);
             }
             catch (IOException e)
             {
@@ -91,17 +80,6 @@ public class TestMetadataFiles
             if (result != null)
             {
                 testResult = result.isValid();
-            }
-            if (document != null)
-            {
-                try
-                {
-                    document.close();
-                }
-                catch (IOException e)
-                {
-                    // shouldn't happen;
-                }
             }
         }
         else

@@ -26,26 +26,22 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.ScratchFile;
-import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -86,13 +82,15 @@ public class PreflightParser extends PDFParser
      * Define a one byte encoding that hasn't specific encoding in UTF-8 charset. Avoid unexpected
      * error when the encoding is Cp5816
      */
-    public static final Charset ENCODING = StandardCharsets.ISO_8859_1;
+    private static final Charset ENCODING = StandardCharsets.ISO_8859_1;
 
-    protected ValidationResult validationResult;
+    private Format format = null;
 
-    protected PreflightDocument preflightDocument;
+    private PreflightConfiguration config = null;
 
-    protected PreflightContext ctx;
+    private PreflightDocument preflightDocument;
+
+    private ValidationResult validationResult;
 
     /**
      * Constructor.
@@ -141,34 +139,13 @@ public class PreflightParser extends PDFParser
     }
 
     /**
-     * Create an instance of ValidationResult with a ValidationError(UNKNOWN_ERROR)
+     * Add a validation error to the ValidationResult.
      * 
-     * @return the ValidationError instance.
+     * @param error the validation error to be added
      */
-    protected static ValidationResult createUnknownErrorResult()
+    private void addValidationError(ValidationError error)
     {
-        ValidationError error = new ValidationError(PreflightConstants.ERROR_UNKNOWN_ERROR);
-        return new ValidationResult(error);
-    }
-
-    /**
-     * Add the error to the ValidationResult. If the validationResult is null, an instance is created using the
-     * isWarning boolean of the ValidationError to know if the ValidationResult must be flagged as Valid.
-     * 
-     * @param error
-     */
-    protected void addValidationError(ValidationError error)
-    {
-        if (this.validationResult == null)
-        {
-            this.validationResult = new ValidationResult(error.isWarning());
-        }
-        this.validationResult.addError(error);
-    }
-
-    protected void addValidationErrors(List<ValidationError> errors)
-    {
-        errors.forEach(this::addValidationError);
+        validationResult.addError(error);
     }
 
     @Override
@@ -201,6 +178,9 @@ public class PreflightParser extends PDFParser
      */
     public PDDocument parse(Format format, PreflightConfiguration config) throws IOException
     {
+        this.format = format == null ? Format.PDF_A1B : format;
+        this.config = config;
+        validationResult = new ValidationResult(true);
         PDDocument pdDocument = null;
         checkPdfHeader();
         try
@@ -211,40 +191,22 @@ public class PreflightParser extends PDFParser
         catch (IOException e)
         {
             addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_COMMON, e.getMessage()));
-            throw new SyntaxValidationException(e, this.validationResult);
+            throw new SyntaxValidationException(e, validationResult);
         }
-        finally
-        {
-            // TODO move file handling outside of the parser
-            IOUtils.closeQuietly(source);
-        }
-        Format formatToUse = (format == null ? Format.PDF_A1B : format);
-        createPdfADocument(formatToUse, config);
-        createContext();
+        // create context
+        PreflightContext context = new PreflightContext();
+        context.setDocument(preflightDocument);
+        preflightDocument.setContext(context);
+        context.setXrefTrailerResolver(xrefTrailerResolver);
+        context.setFileLen(fileLen);
+        preflightDocument.addValidationErrors(validationResult.getErrorsList());
         return pdDocument;
     }
 
-    protected void createPdfADocument(Format format, PreflightConfiguration config) throws IOException
+    @Override
+    protected PDDocument createDocument() throws IOException
     {
-        COSDocument cosDocument = getDocument();
-        this.preflightDocument = new PreflightDocument(cosDocument, format, config);
-    }
-
-    /**
-     * Create a validation context. This context is set to the PreflightDocument.
-     */
-    protected void createContext()
-    {
-        ctx = new PreflightContext();
-        ctx.setDocument(preflightDocument);
-        preflightDocument.setContext(ctx);
-        ctx.setXrefTrailerResolver(xrefTrailerResolver);
-        ctx.setFileLen(this.fileLen);
-    }
-
-    public PreflightDocument getPreflightDocument() throws IOException
-    {
-        preflightDocument.setResult(validationResult);
+        preflightDocument = new PreflightDocument(getDocument(), format, config);
         return preflightDocument;
     }
 
@@ -253,24 +215,12 @@ public class PreflightParser extends PDFParser
     // --------------------------------------------------------
 
     @Override
-    /**
-     * Fill the CosDocument with some object that isn't set by the NonSequentialParser
-     */
     protected void initialParse() throws IOException
     {
         super.initialParse();
-        // For each ObjectKey, we check if the object has been loaded
-        // useful for linearized PDFs
-        Map<COSObjectKey, Long> xrefTable = document.getXrefTable();
-        for (Entry<COSObjectKey, Long> entry : xrefTable.entrySet())
-        {
-            COSObject co = document.getObjectFromPool(entry.getKey());
-            if (co.getObject() == null)
-            {
-                // object isn't loaded - parse the object to load its content
-                parseObjectDynamically(co, true);
-            }
-        }
+        // Dereference each object to trigger parser validation errors
+        Set<COSObjectKey> objectKeys = document.getXrefTable().keySet();
+        objectKeys.forEach(key -> document.getObjectFromPool(key).getObject());
     }
 
     /**
@@ -278,7 +228,7 @@ public class PreflightParser extends PDFParser
      * be a comment with the PDF version (version 1.0 isn't conform to the PDF/A specification)
      * Second line is a comment with at least 4 bytes greater than 0x80
      */
-    protected void checkPdfHeader()
+    private void checkPdfHeader()
     {
         try
         {
@@ -292,7 +242,7 @@ public class PreflightParser extends PDFParser
             String secondLine = readLine();
             if (secondLine != null)
             {
-                byte[] secondLineAsBytes = secondLine.getBytes(ENCODING.name());
+                byte[] secondLineAsBytes = secondLine.getBytes(ENCODING);
                 if (secondLineAsBytes.length >= 5)
                 {
                     if (secondLineAsBytes[0] != '%')
@@ -711,11 +661,12 @@ public class PreflightParser extends PDFParser
         // ---- create object key and get object (container) from pool
         final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
         final COSObject pdfObject = document.getObjectFromPool(objKey);
+        COSBase referencedObject = !pdfObject.isObjectNull() ? pdfObject.getObject() : null;
 
-        if (pdfObject.isObjectNull())
+        // not previously parsed
+        if (referencedObject == null)
         {
-            // not previously parsed
-            // ---- read offset or object stream object number from xref table
+            // read offset or object stream object number from xref table
             Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
             // sanity test to circumvent loops with broken documents
@@ -725,7 +676,8 @@ public class PreflightParser extends PDFParser
                         "Object must be defined and must not be compressed object: " + objKey.getNumber() + ":"
                                 + objKey.getGeneration()));
                 throw new SyntaxValidationException("Object must be defined and must not be compressed object: "
-                        + objKey.getNumber() + ":" + objKey.getGeneration(), validationResult);
+                                + objKey.getNumber() + ":" + objKey.getGeneration(),
+                        validationResult);
             }
 
             if (offsetOrObjstmObNr == null)
@@ -775,7 +727,8 @@ public class PreflightParser extends PDFParser
                             addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER, "Expected pattern '"
                                     + new String(OBJ_MARKER) + " but missed at character '" + c + "'"));
                             throw new SyntaxValidationException("Expected pattern '" + new String(OBJ_MARKER)
-                                    + " but missed at character '" + c + "'", validationResult);
+                                            + " but missed at character '" + c + "'",
+                                    validationResult);
                         }
                     }
                 }
@@ -788,7 +741,7 @@ public class PreflightParser extends PDFParser
                 }
 
                 skipSpaces();
-                COSBase pb = parseDirObject();
+                referencedObject = parseDirObject();
                 skipSpaces();
                 long endObjectOffset = source.getPosition();
                 String endObjectKey = readString();
@@ -796,14 +749,14 @@ public class PreflightParser extends PDFParser
                 if (endObjectKey.equals("stream"))
                 {
                     source.seek(endObjectOffset);
-                    if (pb instanceof COSDictionary)
+                    if (referencedObject instanceof COSDictionary)
                     {
-                        COSStream stream = parseCOSStream((COSDictionary) pb);
+                        COSStream stream = parseCOSStream((COSDictionary) referencedObject);
                         if (securityHandler != null)
                         {
                             securityHandler.decryptStream(stream, objNr, objGenNr);
                         }
-                        pb = stream;
+                        referencedObject = stream;
                     }
                     else
                     {
@@ -828,10 +781,10 @@ public class PreflightParser extends PDFParser
                 }
                 else if (securityHandler != null)
                 {
-                    securityHandler.decrypt(pb, objNr, objGenNr);
+                    securityHandler.decrypt(referencedObject, objNr, objGenNr);
                 }
 
-                pdfObject.setObject(pb);
+                pdfObject.setObject(referencedObject);
 
                 if (!endObjectKey.startsWith("endobj"))
                 {
@@ -858,29 +811,20 @@ public class PreflightParser extends PDFParser
             }
             else
             {
-                // xref value is object nr of object stream containing object to be parsed;
+                // xref value is object nr of object stream containing object to be parsed
                 // since our object was not found it means object stream was not parsed so far
-                final int objstmObjNr = (int) (-offsetOrObjstmObNr);
-                final COSBase objstmBaseObj = parseObjectDynamically(objstmObjNr, 0, true);
-                if (objstmBaseObj instanceof COSStream)
+                referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
+                if (referencedObject != null && referencedObject != COSNull.NULL)
                 {
-                    // parse object stream
-                    PDFObjectStreamParser parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
-                    // register all objects which are referenced to be contained in object stream
-                    parser.parse().forEach(next ->
-                    {
-                        COSObjectKey stmObjKey = new COSObjectKey(next);
-                        Long offset = document.getXrefTable().get(stmObjKey);
-                        if (offset != null && offset == -objstmObjNr)
-                        {
-                            COSObject stmObj = document.getObjectFromPool(stmObjKey);
-                            stmObj.setObject(next.getObject());
-                        }
-                    });
+                    pdfObject.setObject(referencedObject);
+                }
+                else
+                {
+                    pdfObject.setToNull();
                 }
             }
         }
-        return pdfObject.getObject();
+        return referencedObject;
     }
 
     @Override
@@ -914,5 +858,27 @@ public class PreflightParser extends PDFParser
             }
         }
         return offset;
+    }
+
+    /**
+     * Load and validate the given file. Returns the validation result and closes the read pdf.
+     * 
+     * @param file thew file to be read and validated
+     * @return the validation result
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static ValidationResult validate(File file) throws IOException
+    {
+        ValidationResult result;
+        PreflightParser parser = new PreflightParser(file);
+        try (PreflightDocument document = (PreflightDocument) parser.parse())
+        {
+            result = document.validate();
+        }
+        catch (SyntaxValidationException e)
+        {
+            result = e.getResult();
+        }
+        return result;
     }
 }
