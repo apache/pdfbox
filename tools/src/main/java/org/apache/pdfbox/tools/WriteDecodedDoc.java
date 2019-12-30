@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
@@ -63,44 +64,42 @@ public class WriteDecodedDoc
         try (PDDocument doc = PDFParser.load(new File(in), password))
         {
             doc.setAllSecurityToBeRemoved(true);
-            for (COSObject cosObject : doc.getDocument().getObjects())
-            {
-                System.out.println(cosObject.getObjectNumber());
-                COSBase base = cosObject.getObject();
-                if (base instanceof COSStream)
-                {
-                    COSStream stream = (COSStream) base;
-                    if (skipImages &&
-                        COSName.XOBJECT.equals(stream.getItem(COSName.TYPE)) && 
-                        COSName.IMAGE.equals(stream.getItem(COSName.SUBTYPE)))
-                    {
-                        continue;
-                    }
-                    byte[] bytes;
-                    try
-                    {
-                        bytes = new PDStream(stream).toByteArray();
-                    }
-                    catch (IOException ex)
-                    {
-                        System.err.println("skip " + 
-                                cosObject.getObjectNumber() + " " + 
-                                cosObject.getGenerationNumber() + " obj: " + 
-                                ex.getMessage());
-                        continue;
-                    }
-                    stream.removeItem(COSName.FILTER);
-                    try (OutputStream streamOut = stream.createOutputStream())
-                    {
-                        streamOut.write(bytes);
-                    }
-                }
-            }
+            COSDocument cosDocument = doc.getDocument();
+            cosDocument.getXrefTable().keySet().stream()
+                    .forEach(o -> processObject(cosDocument.getObjectFromPool(o), skipImages));
             doc.getDocumentCatalog();
             doc.save( out );
         }
     }
 
+    private void processObject(COSObject cosObject, boolean skipImages)
+    {
+        COSBase base = cosObject.getObject();
+        if (base instanceof COSStream)
+        {
+            COSStream stream = (COSStream) base;
+            if (skipImages && COSName.XOBJECT.equals(stream.getItem(COSName.TYPE))
+                    && COSName.IMAGE.equals(stream.getItem(COSName.SUBTYPE)))
+            {
+                return;
+            }
+            try
+            {
+                byte[] bytes = new PDStream(stream).toByteArray();
+                stream.removeItem(COSName.FILTER);
+                try (OutputStream streamOut = stream.createOutputStream())
+                {
+                    streamOut.write(bytes);
+                }
+            }
+            catch (IOException ex)
+            {
+                System.err.println("skip " + cosObject.getObjectNumber() + " "
+                        + cosObject.getGenerationNumber() + " obj: " + ex.getMessage());
+            }
+        }
+
+    }
     /**
      * This will write a PDF document with completely decoded streams.
      * <br>
