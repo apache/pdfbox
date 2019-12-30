@@ -16,15 +16,14 @@
 package org.apache.pdfbox.tools;
 
 import java.io.File;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.cos.COSObjectKey;
-import org.apache.pdfbox.io.IOUtils;
 
 /**
  * This program will just take all of the stream objects in a PDF and dereference
@@ -77,31 +76,34 @@ public final class DecompressObjectstreams
             }
         }
 
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = PDFParser.load(new File(inputFilename)))
         {
-            doc = PDFParser.load(new File(inputFilename));
-            for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM))
-            {
-                COSStream stream = (COSStream)objStream.getObject();
-                PDFObjectStreamParser sp = new PDFObjectStreamParser(stream, doc.getDocument());
-                for (COSObject next : sp.parse())
-                {
-                    COSObjectKey key = new COSObjectKey(next);
-                    COSObject obj = doc.getDocument().getObjectFromPool(key);
-                    obj.setObject(next.getObject());
-                }
-                doc.getDocument().removeObject(new COSObjectKey(objStream));
-            }
+            // It is sufficient to simply write the loaded pdf without further processing
+            // as PDFBox doesn't support writing compressed object streams
+
+            // Nevertheless so following code shows how to derefence all objects within a stream
+            // and remove the stream objects itself
+            COSDocument cosDocument = doc.getDocument();
+            // collect all objects related to an object stream (offset < 0)
+            List<Entry<COSObjectKey, Long>> streamObjects = cosDocument.getXrefTable().entrySet()
+                    .stream().filter(e -> e.getValue() < 0L).collect(Collectors.toList());
+
+            // dereference objects within a stream
+            streamObjects.stream() //
+                    .map(Entry::getKey) //
+                    .forEach(key -> cosDocument.getObjectFromPool(key).getObject());
+
+            // remove objects containing an object stream
+            streamObjects.stream() //
+                    .map(Entry::getValue) //
+                    .distinct() //
+                    .forEach(off -> cosDocument.removeObject(new COSObjectKey(-off, 0)));
+
             doc.save(outputFilename);
         }
         catch(Exception e) 
         {
             System.err.println("Error processing file: " + e.getMessage());
-        }
-        finally
-        {
-            IOUtils.closeQuietly(doc);
         }
     }
 
