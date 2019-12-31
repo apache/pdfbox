@@ -21,13 +21,6 @@
 
 package org.apache.pdfbox.preflight.process;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED;
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_E;
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_H;
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_L;
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_N;
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_O;
-import static org.apache.pdfbox.preflight.PreflightConstants.DICTIONARY_KEY_LINEARIZED_T;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER;
 
 import java.util.List;
@@ -55,7 +48,7 @@ public class TrailerValidationProcess extends AbstractProcess
     {
         PDDocument pdfDoc = ctx.getDocument();
 
-        COSDictionary linearizedDict = getLinearizedDictionary(pdfDoc);
+        COSDictionary linearizedDict = pdfDoc.getDocument().getLinearizedDictionary();
         // linearized files have two trailers, everything else is not a linearized file
         // so don't make the checks for updated linearized files
         if (linearizedDict != null && ctx.getXrefTrailerResolver().getTrailerCount() == 2 &&
@@ -221,40 +214,12 @@ public class TrailerValidationProcess extends AbstractProcess
      */
     protected void checkMainTrailer(PreflightContext ctx, COSDictionary trailer)
     {
-        boolean id = false;
-        boolean root = false;
-        boolean size = false;
-        boolean prev = false;
-        boolean info = false;
-        boolean encrypt = false;
-
-        for (COSName cosName : trailer.keySet())
-        {
-            if (cosName.equals(COSName.ENCRYPT))
-            {
-                encrypt = true;
-            }
-            if (cosName.equals(COSName.SIZE))
-            {
-                size = true;
-            }
-            if (cosName.equals(COSName.PREV))
-            {
-                prev = true;
-            }
-            if (cosName.equals(COSName.ROOT))
-            {
-                root = true;
-            }
-            if (cosName.equals(COSName.INFO))
-            {
-                info = true;
-            }
-            if (cosName.equals(COSName.ID))
-            {
-                id = true;
-            }
-        }
+        boolean id = trailer.getItem(COSName.ID) != null;
+        boolean root = trailer.getItem(COSName.ROOT) != null;
+        boolean size = trailer.getItem(COSName.SIZE) != null;
+        boolean prev = trailer.getItem(COSName.PREV) != null;
+        boolean info = trailer.getItem(COSName.INFO) != null;
+        boolean encrypt = trailer.getItem(COSName.ENCRYPT) != null;
 
         // PDF/A Trailer dictionary must contain the ID key
         if (!id)
@@ -331,30 +296,6 @@ public class TrailerValidationProcess extends AbstractProcess
     }
 
     /**
-     * According to the PDF Reference, A linearized PDF contain a dictionary as first object (linearized dictionary) and
-     * only this one in the first section.
-     * 
-     * @param document the document to validate.
-     * @return the linearization dictionary or null.
-     */
-    protected COSDictionary getLinearizedDictionary(PDDocument document)
-    {
-        // ---- Get Ref to obj
-        COSDocument cDoc = document.getDocument();
-        List<COSObject> lObj = cDoc.getObjects();
-        for (COSObject object : lObj)
-        {
-            COSBase curObj = object.getObject();
-            if (curObj instanceof COSDictionary
-                    && ((COSDictionary) curObj).keySet().contains(COSName.getPDFName(DICTIONARY_KEY_LINEARIZED)))
-            {
-                return (COSDictionary) curObj;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Check if mandatory keys of linearized dictionary are present.
      * 
      * @param ctx the preflight context.
@@ -364,41 +305,12 @@ public class TrailerValidationProcess extends AbstractProcess
     {
         // ---- check if all keys are authorized in a linearized dictionary
         // ---- Linearized dictionary must contain the lhoent keys
-        boolean l = false;
-        boolean h = false;
-        boolean o = false;
-        boolean e = false;
-        boolean n = false;
-        boolean t = false;
-
-        for (COSName key : linearizedDict.keySet())
-        {
-            String cosName = key.getName();
-            if (cosName.equals(DICTIONARY_KEY_LINEARIZED_L))
-            {
-                l = true;
-            }
-            if (cosName.equals(DICTIONARY_KEY_LINEARIZED_H))
-            {
-                h = true;
-            }
-            if (cosName.equals(DICTIONARY_KEY_LINEARIZED_O))
-            {
-                o = true;
-            }
-            if (cosName.equals(DICTIONARY_KEY_LINEARIZED_E))
-            {
-                e = true;
-            }
-            if (cosName.equals(DICTIONARY_KEY_LINEARIZED_N))
-            {
-                n = true;
-            }
-            if (cosName.equals(DICTIONARY_KEY_LINEARIZED_T))
-            {
-                t = true;
-            }
-        }
+        boolean l = linearizedDict.getItem(COSName.L) != null;
+        boolean h = linearizedDict.getItem(COSName.H) != null;
+        boolean o = linearizedDict.getItem(COSName.O) != null;
+        boolean e = linearizedDict.getItem(COSName.E) != null;
+        boolean n = linearizedDict.getItem(COSName.N) != null;
+        boolean t = linearizedDict.getItem(COSName.T) != null;
 
         if (!(l && h && o && e && t && n))
         {

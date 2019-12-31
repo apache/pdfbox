@@ -337,6 +337,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName LENGTH2 = new COSName("Length2");
     public static final COSName LIGHTEN = new COSName("Lighten");
     public static final COSName LIMITS = new COSName("Limits");
+    public static final COSName LINEARIZED = new COSName("Linearized");
     public static final COSName LJ = new COSName("LJ");
     public static final COSName LL = new COSName("LL");
     public static final COSName LLE = new COSName("LLE");

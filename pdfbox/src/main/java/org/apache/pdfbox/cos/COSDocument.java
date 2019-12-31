@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -166,6 +168,36 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
+     * Get the dictionary containing the linearization information if the pdf is linearized.
+     * 
+     * @return the dictionary containing the linearization information
+     */
+    public COSDictionary getLinearizedDictionary()
+    {
+        // get all keys with a positive offset in ascending order, as the linearization dictionary shall be the first
+        // within the pdf
+        List<COSObjectKey> objectKeys = xrefTable.entrySet().stream() //
+                .filter(e -> e.getValue() > 0L) //
+                .sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue())) //
+                .map(Entry::getKey) //
+                .collect(Collectors.toList());
+        for (COSObjectKey objectKey : objectKeys)
+        {
+            COSObject objectFromPool = getObjectFromPool(objectKey);
+            COSBase realObject = objectFromPool.getObject();
+            if (realObject instanceof COSDictionary)
+            {
+                COSDictionary dic = (COSDictionary) realObject;
+                if (dic.getItem(COSName.LINEARIZED) != null)
+                {
+                    return dic;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * This will get the first dictionary object by type.
      *
      * @param type The type of the object.
@@ -174,47 +206,20 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSObject getObjectByType(COSName type)
     {
-        for( COSObject object : objectPool.values() )
+        for (COSObjectKey objectKey : xrefTable.keySet())
         {
-            COSBase realObject = object.getObject();
-            if( realObject instanceof COSDictionary )
+            COSObject objectFromPool = getObjectFromPool(objectKey);
+            COSBase realObject = objectFromPool.getObject();
+            if (realObject instanceof COSDictionary)
             {
-                try
+                COSDictionary dic = (COSDictionary) realObject;
+                if (type.equals(dic.getCOSName(COSName.TYPE)))
                 {
-                    COSDictionary dic = (COSDictionary)realObject;
-                    COSBase typeItem = dic.getItem(COSName.TYPE);
-                    if (typeItem instanceof COSName)
-                    {
-                        COSName objectType = (COSName) typeItem;
-                        if (objectType.equals(type))
-                        {
-                            return object;
-                        }
-                    }
-                    else if (typeItem != null)
-                    {
-                        LOG.debug("Expected a /Name object after /Type, got '" + typeItem + "' instead");
-                    }
-                }
-                catch (ClassCastException e)
-                {
-                    LOG.warn(e, e);
+                    return objectFromPool;
                 }
             }
         }
         return null;
-    }
-
-    /**
-     * This will get all dictionary objects by type.
-     *
-     * @param type The type of the object.
-     *
-     * @return This will return an object with the specified type.
-     */
-    public List<COSObject> getObjectsByType( String type )
-    {
-        return getObjectsByType( COSName.getPDFName( type ) );
     }
 
     /**
@@ -224,68 +229,23 @@ public class COSDocument extends COSBase implements Closeable
      *
      * @return This will return an object with the specified type.
      */
-    public List<COSObject> getObjectsByType( COSName type )
+    public List<COSObject> getObjectsByType(COSName type)
     {
         List<COSObject> retval = new ArrayList<>();
-        for( COSObject object : objectPool.values() )
+        for (COSObjectKey objectKey : xrefTable.keySet())
         {
-            COSBase realObject = object.getObject();
+            COSObject objectFromPool = getObjectFromPool(objectKey);
+            COSBase realObject = objectFromPool.getObject();
             if( realObject instanceof COSDictionary )
             {
-                try
+                COSDictionary dic = (COSDictionary) realObject;
+                if (type.equals(dic.getCOSName(COSName.TYPE)))
                 {
-                    COSDictionary dic = (COSDictionary)realObject;
-                    COSBase typeItem = dic.getItem(COSName.TYPE);
-                    if (typeItem instanceof COSName)
-                    {
-                        COSName objectType = (COSName) typeItem;
-                        if (objectType.equals(type))
-                        {
-                            retval.add( object );
-                        }
-                    }
-                    else if (typeItem != null)
-                    {
-                        LOG.debug("Expected a /Name object after /Type, got '" + typeItem + "' instead");
-                    }
-                }
-                catch (ClassCastException e)
-                {
-                    LOG.warn(e, e);
+                    retval.add(objectFromPool);
                 }
             }
         }
         return retval;
-    }
-
-    /**
-     * Returns the COSObjectKey for a given COS object, or null if there is none.
-     * This lookup iterates over all objects in a PDF, which may be slow for large files.
-     * 
-     * @param object COS object
-     * @return key
-     */
-    public COSObjectKey getKey(COSBase object)
-    {
-        for (Map.Entry<COSObjectKey, COSObject> entry : objectPool.entrySet())
-        {
-            if (entry.getValue().getObject() == object)
-            {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * This will print contents to stdout.
-     */
-    public void print()
-    {
-        for( COSObject object : objectPool.values() )
-        {
-            System.out.println( object);
-        }
     }
 
     /**
