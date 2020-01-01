@@ -35,21 +35,16 @@ public class PDEmbeddedFile extends PDStream
 {
 
     /**
-     * Constructor.
-     *
-     * @param document {@inheritDoc}
+     * {@inheritDoc}
      */
     public PDEmbeddedFile( PDDocument document )
     {
         super( document );
         getCOSObject().setName(COSName.TYPE, "EmbeddedFile" );
-
     }
 
     /**
-     * Constructor.
-     *
-     * @param str The stream parameter.
+     * {@inheritDoc}
      */
     public PDEmbeddedFile( COSStream str )
     {
@@ -57,12 +52,7 @@ public class PDEmbeddedFile extends PDStream
     }
 
     /**
-     * Constructor.
-     *
-     * @param doc {@inheritDoc}
-     * @param str {@inheritDoc}
-     *
-     * @throws IOException {@inheritDoc}
+     * {@inheritDoc}
      */
     public PDEmbeddedFile( PDDocument doc, InputStream str  ) throws IOException
     {
@@ -71,10 +61,7 @@ public class PDEmbeddedFile extends PDStream
     }
 
     /**
-     * Constructor.
-     *
-     * @param doc {@inheritDoc}
-     * @param input {@inheritDoc}
+     * {@inheritDoc}
      * @param filter Filter to apply to the stream.
      *
      * @throws IOException {@inheritDoc}
