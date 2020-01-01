@@ -134,7 +134,7 @@ public class ExtractEmbeddedFiles
         {
             PDComplexFileSpecification fileSpec = (PDComplexFileSpecification)names.get(filename);
             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
-            extractFile(filePath, filename, embeddedFile);
+            extractFile(filePath, fileSpec.getFilename(), embeddedFile);
         }
     }
 
