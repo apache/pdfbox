@@ -40,7 +40,7 @@ public class XRefValidationProcess extends AbstractProcess
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER, "/XRef cross reference streams are not allowed"));
         }
-        if (document.getObjects().size() > PreflightConstants.MAX_INDIRECT_OBJ)
+        if (document.getXrefTable().size() > PreflightConstants.MAX_INDIRECT_OBJ)
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_INDIRECT_OBJ_RANGE, "Too many indirect objects"));
         }
