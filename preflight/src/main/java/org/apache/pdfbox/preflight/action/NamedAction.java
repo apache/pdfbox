@@ -67,7 +67,7 @@ public class NamedAction extends AbstractActionManager
         String n = this.actionDictionary.getNameAsString(COSName.N);
 
         // ---- N entry is mandatory
-        if (n == null || "".equals(n))
+        if (n == null || n.isEmpty())
         {
             context.addValidationError(new ValidationError(ERROR_ACTION_MISING_KEY,
                     "N entry is mandatory for the NamedActions"));

@@ -21,23 +21,23 @@
 
 package org.apache.pdfbox.preflight.annotation.pdfa;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_FREETEXT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_HIGHLIGHT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_INK;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_LINE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_LINK;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_PRINTERMARK;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUIGGLY;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_STAMP;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_STRIKEOUT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_TEXT;
 import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_TRAPNET;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_UNDERLINE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_WIDGET;
 
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationFreeText;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationHighlight;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationInk;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLine;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquiggly;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationStrikeout;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationText;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnderline;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.preflight.annotation.AnnotationValidatorFactory;
 import org.apache.pdfbox.preflight.annotation.CircleAnnotationValidator;
 import org.apache.pdfbox.preflight.annotation.FreeTextAnnotationValidator;
@@ -66,23 +66,27 @@ public class PDFAbAnnotationFactory extends AnnotationValidatorFactory
     @Override
     protected void initializeClasses()
     {
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_TEXT, TextAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_LINK, LinkAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_FREETEXT, FreeTextAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_LINE, LineAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationText.SUB_TYPE, TextAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationLink.SUB_TYPE, LinkAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationFreeText.SUB_TYPE, FreeTextAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationLine.SUB_TYPE, LineAnnotationValidator.class);
 
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUARE, SquareAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_CIRCLE, CircleAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationSquare.SUB_TYPE, SquareAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationCircle.SUB_TYPE, CircleAnnotationValidator.class);
 
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_HIGHLIGHT, HighlightAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_UNDERLINE, UnderlineAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STRIKEOUT, StrikeoutAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_SQUIGGLY, SquigglyAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationHighlight.SUB_TYPE,
+                HighlightAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationUnderline.SUB_TYPE,
+                UnderlineAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationStrikeout.SUB_TYPE,
+                StrikeoutAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationSquiggly.SUB_TYPE, SquigglyAnnotationValidator.class);
 
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_STAMP, RubberStampAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_INK, InkAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP, PopupAnnotationValidator.class);
-        this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_WIDGET, WidgetAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationRubberStamp.SUB_TYPE,
+                RubberStampAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationInk.SUB_TYPE, InkAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationPopup.SUB_TYPE, PopupAnnotationValidator.class);
+        this.validatorClasses.put(PDAnnotationWidget.SUB_TYPE, WidgetAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_PRINTERMARK, PrintMarkAnnotationValidator.class);
         this.validatorClasses.put(ANNOT_DICTIONARY_VALUE_SUBTYPE_TRAPNET, TrapNetAnnotationValidator.class);
     }

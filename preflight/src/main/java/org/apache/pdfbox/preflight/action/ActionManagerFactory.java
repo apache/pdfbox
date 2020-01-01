@@ -31,28 +31,28 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
+import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionHide;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionImportData;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionLaunch;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionMovie;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionNamed;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionRemoteGoTo;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionResetForm;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionSound;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionSubmitForm;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionThread;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_GOTO;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_GOTOR;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_HIDE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_IMPORT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_JAVASCRIPT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_LAUNCH;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_MOVIE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NOOP;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_RESET;
 import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_SETSTATE;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_SOUND;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_SUBMIT;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_THREAD;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_URI;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACTION_DICTIONARY_VALUE_TYPE;
 
 public class ActionManagerFactory
 {
@@ -225,7 +225,7 @@ public class ActionManagerFactory
     {
 
         String type = action.getNameAsString(COSName.TYPE);
-        if (type != null && !ACTION_DICTIONARY_VALUE_TYPE.equals(type))
+        if (type != null && !PDAction.TYPE.equals(type))
         {
             throw new ValidationException("The given dictionary isn't the dictionary of an Action");
         }
@@ -235,46 +235,48 @@ public class ActionManagerFactory
         String s = action.getNameAsString(COSName.S);
 
         // --- Here is authorized actions
-        if (ACTION_DICTIONARY_VALUE_ATYPE_GOTO.equals(s))
+        if (PDActionGoTo.SUB_TYPE.equals(s))
         {
             return new GoToAction(this, action, ctx, aaKey);
         }
 
-        if (ACTION_DICTIONARY_VALUE_ATYPE_GOTOR.equals(s))
+        if (PDActionRemoteGoTo.SUB_TYPE.equals(s))
         {
             return new GoToRemoteAction(this, action, ctx, aaKey);
         }
 
-        if (ACTION_DICTIONARY_VALUE_ATYPE_THREAD.equals(s))
+        if (PDActionThread.SUB_TYPE.equals(s))
         {
             return new ThreadAction(this, action, ctx, aaKey);
         }
 
-        if (ACTION_DICTIONARY_VALUE_ATYPE_URI.equals(s))
+        if (PDActionURI.SUB_TYPE.equals(s))
         {
             return new UriAction(this, action, ctx, aaKey);
         }
 
-        if (ACTION_DICTIONARY_VALUE_ATYPE_HIDE.equals(s))
+        if (PDActionHide.SUB_TYPE.equals(s))
         {
             return new HideAction(this, action, ctx, aaKey);
         }
 
-        if (ACTION_DICTIONARY_VALUE_ATYPE_NAMED.equals(s))
+        if (PDActionNamed.SUB_TYPE.equals(s))
         {
             return new NamedAction(this, action, ctx, aaKey);
         }
 
-        if (ACTION_DICTIONARY_VALUE_ATYPE_SUBMIT.equals(s))
+        if (PDActionSubmitForm.SUB_TYPE.equals(s))
         {
             return new SubmitAction(this, action, ctx, aaKey);
         }
 
         // --- Here is forbidden actions
-        if (ACTION_DICTIONARY_VALUE_ATYPE_LAUNCH.equals(s) || ACTION_DICTIONARY_VALUE_ATYPE_SOUND.equals(s)
-                || ACTION_DICTIONARY_VALUE_ATYPE_MOVIE.equals(s) || ACTION_DICTIONARY_VALUE_ATYPE_RESET.equals(s)
-                || ACTION_DICTIONARY_VALUE_ATYPE_IMPORT.equals(s) || ACTION_DICTIONARY_VALUE_ATYPE_JAVASCRIPT.equals(s)
-                || ACTION_DICTIONARY_VALUE_ATYPE_SETSTATE.equals(s) || ACTION_DICTIONARY_VALUE_ATYPE_NOOP.equals(s))
+        if (PDActionLaunch.SUB_TYPE.equals(s) || PDActionSound.SUB_TYPE.equals(s)
+                || PDActionMovie.SUB_TYPE.equals(s) || PDActionResetForm.SUB_TYPE.equals(s)
+                || PDActionImportData.SUB_TYPE.equals(s)
+                || PDActionJavaScript.SUB_TYPE.equals(s)
+                || ACTION_DICTIONARY_VALUE_ATYPE_SETSTATE.equals(s)
+                || ACTION_DICTIONARY_VALUE_ATYPE_NOOP.equals(s))
         {
             return new InvalidAction(this, action, ctx, aaKey, s);
         }

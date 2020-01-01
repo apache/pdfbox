@@ -86,7 +86,7 @@ public class XObjImageValidator extends AbstractXObjValidator
     /*
      * 6.2.4 if interpolates, value = false
      */
-    protected void checkInterpolate() throws ValidationException
+    protected void checkInterpolate()
     {
         if (this.xobject.getItem(COSName.INTERPOLATE) != null
                 && this.xobject.getBoolean(COSName.INTERPOLATE, true))
@@ -99,16 +99,14 @@ public class XObjImageValidator extends AbstractXObjValidator
     /*
      * 6.2.4 Intent has specific values
      */
-    protected void checkIntent() throws ValidationException
+    protected void checkIntent()
     {
-        if (this.xobject.getItem("Intent") != null)
+        COSName renderingIntent = xobject.getCOSName(COSName.INTENT);
+        if (renderingIntent != null && !RenderingIntents.contains(renderingIntent))
         {
-            String s = this.xobject.getNameAsString("Intent");
-            if (!RenderingIntents.contains(s))
-            {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                        "Unexpected value '" + s + "' for Intent key in image"));
-            }
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
+                    "Unexpected value '" + renderingIntent.getName()
+                            + "' for Intent key in image"));
         }
     }
 

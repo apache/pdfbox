@@ -252,8 +252,8 @@ public class CatalogValidationProcess extends AbstractProcess
             else
             {
                 // S entry is mandatory and must be equals to GTS_PDFA1
-                String sValue = outputIntentDict.getNameAsString(OUTPUT_INTENT_DICTIONARY_KEY_S);
-                if (!OUTPUT_INTENT_DICTIONARY_VALUE_GTS_PDFA1.equals(sValue))
+                COSName sValue = outputIntentDict.getCOSName(COSName.S);
+                if (!COSName.GTS_PDFA1.equals(sValue))
                 {
                     addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_S_VALUE_INVALID,
                             "The S entry of the OutputIntent isn't GTS_PDFA1"));
@@ -262,7 +262,7 @@ public class CatalogValidationProcess extends AbstractProcess
 
                 // OutputConditionIdentifier is a mandatory field
                 String outputConditionIdentifier = outputIntentDict
-                        .getString(OUTPUT_INTENT_DICTIONARY_KEY_OUTPUT_CONDITION_IDENTIFIER);
+                        .getString(COSName.OUTPUT_CONDITION_IDENTIFIER);
                 if (outputConditionIdentifier == null)
                 {
                     // empty string is authorized (it may be an application specific value)
@@ -284,7 +284,7 @@ public class CatalogValidationProcess extends AbstractProcess
                 PreflightConfiguration config = ctx.getConfig();
                 if (config.isLazyValidation() && !isStandardICCCharacterization(outputConditionIdentifier))
                 {
-                    String info = outputIntentDict.getString(COSName.getPDFName(OUTPUT_INTENT_DICTIONARY_KEY_INFO));
+                    String info = outputIntentDict.getString(COSName.INFO);
                     if (info == null || "".equals(info))
                     {
                         ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,

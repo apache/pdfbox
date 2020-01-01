@@ -25,18 +25,11 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.preflight.PreflightConstants;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.font.container.Type1Container;
 import org.apache.pdfbox.preflight.font.descriptor.Type1DescriptorHelper;
-
-
-import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_ENCODING;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_PDFDOC;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_STD;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_ENCODING_WIN;
 
 public class Type1FontValidator extends SimpleFontValidator<Type1Container>
 {
@@ -48,7 +41,7 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
     @Override
     protected void createFontDescriptorHelper()
     {
-        this.descriptorHelper = new Type1DescriptorHelper(context, (PDSimpleFont)font, fontContainer);
+        descriptorHelper = new Type1DescriptorHelper(context, (PDSimpleFont) font, fontContainer);
     }
 
     @Override
@@ -59,19 +52,21 @@ public class Type1FontValidator extends SimpleFontValidator<Type1Container>
         {
             if (encoding instanceof COSName)
             {
-                String encodingName = ((COSName) encoding).getName();
-                if (!(encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC)
-                        || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_MAC_EXP)
-                        || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_WIN)
-                        || encodingName.equals(FONT_DICTIONARY_VALUE_ENCODING_PDFDOC) || encodingName
-                            .equals(FONT_DICTIONARY_VALUE_ENCODING_STD)))
+                COSName encodingName = (COSName) encoding;
+                if (!(encodingName.equals(COSName.MAC_ROMAN_ENCODING)
+                        || encodingName.equals(COSName.MAC_EXPERT_ENCODING)
+                        || encodingName.equals(COSName.WIN_ANSI_ENCODING)
+                        || encodingName.equals(COSName.PDF_DOC_ENCODING)
+                        || encodingName.equals(COSName.STANDARD_ENCODING)))
                 {
-                    this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
+                    fontContainer
+                            .push(new ValidationError(PreflightConstants.ERROR_FONTS_ENCODING));
                 }
             }
             else if (!(encoding instanceof COSDictionary))
             {
-                this.fontContainer.push(new ValidationError(ERROR_FONTS_ENCODING));
+                fontContainer
+                        .push(new ValidationError(PreflightConstants.ERROR_FONTS_ENCODING));
             }
         }
     }

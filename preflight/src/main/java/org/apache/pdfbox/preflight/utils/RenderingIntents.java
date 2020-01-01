@@ -21,14 +21,11 @@
 
 package org.apache.pdfbox.preflight.utils;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_ABS_COLOR;
-import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_PERCEPTUAL;
-import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_REL_COLOR;
-import static org.apache.pdfbox.preflight.PreflightConstants.RENDERING_INTENT_SATURATION;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.pdfbox.cos.COSName;
 
 /**
  * This class contains a static list of RenderingIntent values to allow an easy RenderingIntent value validation. Here
@@ -42,15 +39,15 @@ import java.util.List;
  */
 public final class RenderingIntents
 {
-    private static final List<String> RENDERING_INTENTS;
+    private static final List<COSName> RENDERING_INTENTS;
 
     static
     {
-        List<String> al = new ArrayList<>(4);
-        al.add(RENDERING_INTENT_REL_COLOR);
-        al.add(RENDERING_INTENT_ABS_COLOR);
-        al.add(RENDERING_INTENT_PERCEPTUAL);
-        al.add(RENDERING_INTENT_SATURATION);
+        List<COSName> al = new ArrayList<>(4);
+        al.add(COSName.RELATIVE_COLORIMETRIC);
+        al.add(COSName.ABSOLUTE_COLORIMETRIC);
+        al.add(COSName.PERCEPTUAL);
+        al.add(COSName.SATURATION);
         RENDERING_INTENTS = Collections.unmodifiableList(al);
     }
 
@@ -58,8 +55,8 @@ public final class RenderingIntents
     {
     }
 
-    public static boolean contains(String riArg)
+    public static boolean contains(COSName renderingIntent)
     {
-        return RENDERING_INTENTS.contains(riArg);
+        return RENDERING_INTENTS.contains(renderingIntent);
     }
 }

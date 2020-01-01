@@ -28,8 +28,6 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_DAM
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CID_CMAP_DAMAGED;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_DICTIONARY_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_DEFAULT_CMAP_WMODE;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_CMAP_USECMAP;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_CMAP_WMODE;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY_H;
 import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_VALUE_CMAP_IDENTITY_V;
 
@@ -259,8 +257,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
              * According to the getInt javadoc, -1 is returned if there is no result. In the PDF Reference v1.7 p449,
              * we can read that the default value is 0.
              */
-            int wmode = aCMap.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_CMAP_WMODE),
-                    FONT_DICTIONARY_DEFAULT_CMAP_WMODE);
+            int wmode = aCMap.getInt(COSName.WMODE, FONT_DICTIONARY_DEFAULT_CMAP_WMODE);
             COSName type = aCMap.getCOSName(COSName.TYPE);
             String cmapName = aCMap.getNameAsString(COSName.CMAPNAME);
 
@@ -285,8 +282,7 @@ public class Type0FontValidator extends FontValidator<Type0Container>
             this.fontContainer.push(new ValidationError(ERROR_FONTS_CID_CMAP_DAMAGED, font.getName() + ": The CMap type is damaged", e));
         }
 
-        COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName
-                .getPDFName(FONT_DICTIONARY_KEY_CMAP_USECMAP));
+        COSDictionary cmapUsed = (COSDictionary) aCMap.getDictionaryObject(COSName.USE_CMAP);
         if (cmapUsed != null)
         {
             checkCMapEncoding(cmapUsed);

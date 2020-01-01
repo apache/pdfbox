@@ -35,8 +35,6 @@ import org.apache.pdfbox.preflight.font.container.Type1Container;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_CHARSET_MISSING_FOR_SUBSET;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_FONT_FILEX_INVALID;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_FONTS_TYPE1_DAMAGED;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH2;
-import static org.apache.pdfbox.preflight.PreflightConstants.FONT_DICTIONARY_KEY_LENGTH3;
 
 public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
 {
@@ -55,7 +53,7 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
         if (isSubSet(fontDescriptor.getFontName()))
         {
             String charsetStr = fontDescriptor.getCharSet();
-            if (charsetStr == null || "".equals(charsetStr))
+            if (charsetStr == null || charsetStr.isEmpty())
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_CHARSET_MISSING_FOR_SUBSET,
                         fontDescriptor.getFontName()
@@ -84,8 +82,8 @@ public class Type1DescriptorHelper extends FontDescriptorHelper<Type1Container>
             }
 
             boolean hasLength1 = stream.getInt(COSName.LENGTH1) > 0;
-            boolean hasLength2 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH2)) > 0;
-            boolean hasLength3 = stream.getInt(COSName.getPDFName(FONT_DICTIONARY_KEY_LENGTH3)) >= 0;
+            boolean hasLength2 = stream.getInt(COSName.LENGTH2) > 0;
+            boolean hasLength3 = stream.getInt(COSName.LENGTH3) >= 0;
             if (!(hasLength1 && hasLength2 && hasLength3))
             {
                 this.fContainer.push(new ValidationError(ERROR_FONTS_FONT_FILEX_INVALID, 
