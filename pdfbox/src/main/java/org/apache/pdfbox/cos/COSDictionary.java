@@ -1479,9 +1479,16 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             COSName key = entry.getKey();
             COSBase value = entry.getValue();
 
-            if (value == null && !(toBeCompared.getItem(key) == null && toBeCompared.containsKey(key)))
+            if (!toBeCompared.containsKey(key)) 
             {
                 return false;
+            }
+            else if (value == null)
+            {
+                if (toBeCompared.getItem(key) != null)
+                {
+                    return false;
+                }
             }
             else if (!value.equals(toBeCompared.getItem(key)))
             {
