@@ -124,12 +124,11 @@ public final class ExtractEmbeddedFiles
     {
         for (Entry<String, PDComplexFileSpecification> entry : names.entrySet())
         {
-            String filename = entry.getKey();
             PDComplexFileSpecification fileSpec = entry.getValue();
             PDEmbeddedFile embeddedFile = getEmbeddedFile(fileSpec);
             if (embeddedFile != null)
             {
-                extractFile(filePath, filename, embeddedFile);
+                extractFile(filePath, fileSpec.getFilename(), embeddedFile);
             }
         }
     }
