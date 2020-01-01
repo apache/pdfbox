@@ -223,13 +223,26 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This will get a dictionary object by type.
+     * This will get all dictionaries objects by type.
      *
      * @param type The type of the object.
      *
-     * @return This will return an object with the specified type.
+     * @return This will return all objects with the specified type.
      */
     public List<COSObject> getObjectsByType(COSName type)
+    {
+        return getObjectsByType(type, null);
+    }
+
+    /**
+     * This will get all dictionaries objects by type.
+     *
+     * @param type1 The first possible type of the object, mandatory.
+     * @param type2 The second possible type of the object, usally an abreviation, optional.
+     *
+     * @return This will return all objects with the specified type(s).
+     */
+    public List<COSObject> getObjectsByType(COSName type1, COSName type2)
     {
         List<COSObject> retval = new ArrayList<>();
         for (COSObjectKey objectKey : xrefTable.keySet())
@@ -238,8 +251,8 @@ public class COSDocument extends COSBase implements Closeable
             COSBase realObject = objectFromPool.getObject();
             if( realObject instanceof COSDictionary )
             {
-                COSDictionary dic = (COSDictionary) realObject;
-                if (type.equals(dic.getCOSName(COSName.TYPE)))
+                COSName dictType = ((COSDictionary) realObject).getCOSName(COSName.TYPE);
+                if (type1.equals(dictType) || (type2 != null && type2.equals(dictType)))
                 {
                     retval.add(objectFromPool);
                 }
