@@ -32,6 +32,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.TrueTypeFont;
@@ -530,41 +532,40 @@ public class PDDocument implements Closeable
             COSDocument visualSignature)
     {
         // Obtain visual signature object
-        boolean annotNotFound = true;
-        boolean sigFieldNotFound = true;
-        for (COSObject cosObject : visualSignature.getObjects())
+        boolean annotFound = false;
+        boolean sigFieldFound = false;
+        // get all objects
+        List<COSObject> cosObjects = visualSignature.getXrefTable().keySet().stream() //
+                .map(visualSignature::getObjectFromPool) //
+                .collect(Collectors.toList());
+        for (COSObject cosObject : cosObjects)
         {
-            if (!annotNotFound && !sigFieldNotFound)
-            {
-                break;
-            }
-            
             COSBase base = cosObject.getObject();
             if (base instanceof COSDictionary)
             {
                 COSDictionary cosBaseDict = (COSDictionary) base;
-
                 // Search for signature annotation
-                COSBase type = cosBaseDict.getDictionaryObject(COSName.TYPE);
-                if (annotNotFound && COSName.ANNOT.equals(type))
+                if (!annotFound && COSName.ANNOT.equals(cosBaseDict.getCOSName(COSName.TYPE)))
                 {
                     assignSignatureRectangle(signatureField, cosBaseDict);
-                    annotNotFound = false;
+                    annotFound = true;
                 }
-
                 // Search for signature field
-                COSBase fieldType = cosBaseDict.getDictionaryObject(COSName.FT);
-                COSBase apDict = cosBaseDict.getDictionaryObject(COSName.AP);
-                if (sigFieldNotFound && COSName.SIG.equals(fieldType) && apDict instanceof COSDictionary)
+                COSDictionary apDict = cosBaseDict.getCOSDictionary(COSName.AP);
+                if (apDict != null && !sigFieldFound
+                        && COSName.SIG.equals(cosBaseDict.getCOSName(COSName.FT)))
                 {
-                    assignAppearanceDictionary(signatureField, (COSDictionary) apDict);
+                    assignAppearanceDictionary(signatureField, apDict);
                     assignAcroFormDefaultResource(acroForm, cosBaseDict);
-                    sigFieldNotFound = false;
+                    sigFieldFound = true;
+                }
+                if (annotFound && sigFieldFound)
+                {
+                    break;
                 }
             }
         }
-        
-        if (annotNotFound || sigFieldNotFound)
+        if (!annotFound || !sigFieldFound)
         {
             throw new IllegalArgumentException("Template is missing required objects");
         }
