@@ -1460,7 +1460,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             return true;
         }
 
-        if (!(o instanceof COSDictionary))
+        if (!(o.getClass().getName().equals(this.getClass().getName())))
         {
             return false;
         }
