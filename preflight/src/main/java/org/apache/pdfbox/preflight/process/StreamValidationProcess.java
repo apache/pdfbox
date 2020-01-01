@@ -26,13 +26,15 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_LENGTH_MISSING;
 
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -44,24 +46,29 @@ public class StreamValidationProcess extends AbstractProcess
     @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
-        PDDocument pdfDoc = ctx.getDocument();
+        COSDocument cosDocument = ctx.getDocument().getDocument();
 
-        List<COSObject> lCOSObj = pdfDoc.getDocument().getObjects();
-        for (COSObject cObj : lCOSObj)
+        // get all keys with a positive offset in ascending order to read the pdf linear
+        List<COSObjectKey> objectKeys = cosDocument.getXrefTable().entrySet().stream() //
+                .filter(e -> e.getValue() > 0L) //
+                .sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue())) //
+                .map(Entry::getKey) //
+                .collect(Collectors.toList());
+
+        for (COSObjectKey objectKey : objectKeys)
         {
             // If this object represents a Stream, the Dictionary must contain the Length key
-            COSBase cBase = cObj.getObject();
+            COSBase cBase = cosDocument.getObjectFromPool(objectKey).getObject();
             if (cBase instanceof COSStream)
             {
-                validateStreamObject(ctx, cObj);
+                validateStreamObject(ctx, cBase);
             }
         }
     }
 
-    public void validateStreamObject(PreflightContext context, COSObject cObj) throws ValidationException
+    public void validateStreamObject(PreflightContext context, COSBase cObj)
     {
-        COSStream streamObj = (COSStream) cObj.getObject();
-
+        COSStream streamObj = (COSStream) cObj;
         // ---- Check dictionary entries
         // ---- Only the Length entry is mandatory
         // ---- In a PDF/A file, F, FFilter and FDecodeParms are forbidden
