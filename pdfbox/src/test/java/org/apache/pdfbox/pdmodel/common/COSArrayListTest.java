@@ -470,4 +470,94 @@ public class COSArrayListTest {
             assertTrue("The size of the internal COSArray shall be 1", annotations.toList().size() == 1);
         }
     }
+
+    @Test
+    public void retainDirectObject() throws IOException {
+
+        // generate test file
+        try (PDDocument pdf = new PDDocument()) {
+            PDPage page = new PDPage();
+            pdf.addPage(page);
+
+            ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
+            PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
+            PDAnnotationLink txtLink = new PDAnnotationLink();
+
+            // enforce the COSDictionaries to be written directly into the COSArray
+            txtMark.getCOSObject().getCOSObject().setDirect(true);
+            txtLink.getCOSObject().getCOSObject().setDirect(true);
+
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtLink);
+            assertTrue("There shall be 4 annotations generated", pageAnnots.size() == 4);
+
+            page.setAnnotations(pageAnnots);
+
+            pdf.save(OUT_DIR + "/retainDirectObjectTest.pdf");
+            pdf.close();
+        }
+
+        try (PDDocument pdf = PDDocument.load(new File(OUT_DIR + "/retainDirectObjectTest.pdf"))) {
+            PDPage page = pdf.getPage(0);
+        
+            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+
+            assertTrue("There shall be 4 annotations retrieved", annotations.size() == 4);
+            assertTrue("The size of the internal COSArray shall be 4", annotations.toList().size() == 4);
+
+            ArrayList<PDAnnotation> toBeRetained = new ArrayList<>();
+
+            toBeRetained.add(annotations.get(0));
+            annotations.retainAll(toBeRetained);
+
+            assertTrue("There shall be 3 annotations left", annotations.size() == 3);
+            assertTrue("The size of the internal COSArray shall be 3", annotations.toList().size() == 3);
+        }
+    }
+
+    @Test
+    public void retainIndirectObject() throws IOException {
+
+        // generate test file
+        try (PDDocument pdf = new PDDocument()) {
+            PDPage page = new PDPage();
+            pdf.addPage(page);
+
+            ArrayList<PDAnnotation> pageAnnots = new ArrayList<>();
+            PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
+            PDAnnotationLink txtLink = new PDAnnotationLink();
+
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtMark);
+            pageAnnots.add(txtLink);
+            assertTrue("There shall be 4 annotations generated", pageAnnots.size() == 4);
+
+            page.setAnnotations(pageAnnots);
+
+            pdf.save(OUT_DIR + "/removeIndirectObjectTest.pdf");
+            pdf.close();
+        }
+
+        try (PDDocument pdf = PDDocument.load(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
+            PDPage page = pdf.getPage(0);
+        
+            COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+
+            assertTrue("There shall be 4 annotations retrieved", annotations.size() == 4);
+            assertTrue("The size of the internal COSArray shall be 4", annotations.toList().size() == 4);
+
+            ArrayList<PDAnnotation> toBeRetained = new ArrayList<>();
+            toBeRetained.add(annotations.get(0));
+
+            annotations.retainAll(toBeRetained);
+
+            System.out.println(annotations.toList().size());
+
+            assertTrue("There shall be 3 annotations left", annotations.size() == 3);
+            assertTrue("The size of the internal COSArray shall be 3", annotations.toList().size() == 3);
+        }
+    }
 }
