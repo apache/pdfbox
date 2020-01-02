@@ -554,8 +554,6 @@ public class COSArrayListTest {
 
             annotations.retainAll(toBeRetained);
 
-            System.out.println(annotations.toList().size());
-
             assertTrue("There shall be 3 annotations left", annotations.size() == 3);
             assertTrue("The size of the internal COSArray shall be 3", annotations.toList().size() == 3);
         }
