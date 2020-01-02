@@ -198,31 +198,6 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * This will get the first dictionary object by type.
-     *
-     * @param type The type of the object.
-     *
-     * @return This will return an object with the specified type.
-     */
-    public COSObject getObjectByType(COSName type)
-    {
-        for (COSObjectKey objectKey : xrefTable.keySet())
-        {
-            COSObject objectFromPool = getObjectFromPool(objectKey);
-            COSBase realObject = objectFromPool.getObject();
-            if (realObject instanceof COSDictionary)
-            {
-                COSDictionary dic = (COSDictionary) realObject;
-                if (type.equals(dic.getCOSName(COSName.TYPE)))
-                {
-                    return objectFromPool;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * This will get all dictionaries objects by type.
      *
      * @param type The type of the object.
@@ -357,16 +332,6 @@ public class COSDocument extends COSBase implements Closeable
     }
     
     /**
-     * This will get a list of all available objects.
-     *
-     * @return A list of all objects, never null.
-     */
-    public List<COSObject> getObjects()
-    {
-        return new ArrayList<>(objectPool.values());
-    }
-
-    /**
      * This will get the document trailer.
      *
      * @return the document trailer dict
@@ -441,7 +406,7 @@ public class COSDocument extends COSBase implements Closeable
             IOException firstException = null;
 
             // close all open I/O streams
-            for (COSObject object : getObjects())
+            for (COSObject object : objectPool.values())
             {
                 if (!object.isObjectNull())
                 {
@@ -538,16 +503,6 @@ public class COSDocument extends COSBase implements Closeable
             }
         }
         return obj;
-    }
-
-    /**
-     * Removes an object from the object pool.
-     * @param key the object key
-     * @return the object that was removed or null if the object was not found
-     */
-    public COSObject removeObject(COSObjectKey key)
-    {
-        return objectPool.remove(key);
     }
 
     /**
