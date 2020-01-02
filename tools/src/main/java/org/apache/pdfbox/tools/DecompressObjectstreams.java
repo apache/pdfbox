@@ -16,22 +16,16 @@
 package org.apache.pdfbox.tools;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
-import org.apache.pdfbox.cos.COSObjectKey;
 
 /**
- * This program will just take all of the stream objects in a PDF and dereference
- * them.  The streams will be gone in the resulting file and the objects will be
- * present.  This is very helpful when trying to debug problems as it'll make
- * it possible to easily look through a PDF using a text editor.  It also exposes
- * problems which stem from objects inside object streams overwriting other
- * objects.
+ * This program will just save the loaded pdf without any changes. As PDFBox doesn't support writing compressed object
+ * streams those streams are stripped and will be gone in the resulting file. This is very helpful when trying to debug
+ * problems as it'll make it possible to easily look through a PDF using a text editor. It also exposes problems which
+ * stem from objects inside object streams overwriting other objects.
+ * 
  * @author Adam Nichols
  */
 public final class DecompressObjectstreams 
@@ -78,27 +72,9 @@ public final class DecompressObjectstreams
 
         try (PDDocument doc = PDFParser.load(new File(inputFilename)))
         {
-            // It is sufficient to simply write the loaded pdf without further processing
-            // as PDFBox doesn't support writing compressed object streams
-
-            // Nevertheless so following code shows how to derefence all objects within a stream
-            // and remove the stream objects itself
-            COSDocument cosDocument = doc.getDocument();
-            // collect all objects related to an object stream (offset < 0)
-            List<Entry<COSObjectKey, Long>> streamObjects = cosDocument.getXrefTable().entrySet()
-                    .stream().filter(e -> e.getValue() < 0L).collect(Collectors.toList());
-
-            // dereference objects within a stream
-            streamObjects.stream() //
-                    .map(Entry::getKey) //
-                    .forEach(key -> cosDocument.getObjectFromPool(key).getObject());
-
-            // remove objects containing an object stream
-            streamObjects.stream() //
-                    .map(Entry::getValue) //
-                    .distinct() //
-                    .forEach(off -> cosDocument.removeObject(new COSObjectKey(-off, 0)));
-
+            // It is sufficient to simply write the loaded pdf without further processing.
+            // As PDFBox doesn't support writing compressed object streams that streams will
+            // be simply omitted
             doc.save(outputFilename);
         }
         catch(Exception e) 
