@@ -38,7 +38,6 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
@@ -568,7 +567,8 @@ public class COSParser extends BaseParser implements ICOSParser
     public boolean dereferenceCOSObject(COSObject obj) throws IOException
     {
         long currentPos = source.getPosition();
-        COSBase parsedObj = parseObjectDynamically(obj, false);
+        COSBase parsedObj = parseObjectDynamically(obj.getObjectNumber(), obj.getGenerationNumber(),
+                false);
         if (currentPos > 0)
         {
             source.seek(currentPos);
@@ -577,25 +577,7 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     /**
-     * This will parse the next object from the stream and add it to the local state. 
-     * 
-     * @param obj object to be parsed (we only take object number and generation number for lookup start offset)
-     * @param requireExistingNotCompressedObj if <code>true</code> object to be parsed must not be contained within
-     * compressed stream
-     * @return the parsed object (which is also added to document object)
-     * 
-     * @throws IOException If an IO error occurs.
-     */
-    protected final COSBase parseObjectDynamically(COSObject obj,
-            boolean requireExistingNotCompressedObj) throws IOException
-    {
-        return parseObjectDynamically(obj.getObjectNumber(), 
-                obj.getGenerationNumber(), requireExistingNotCompressedObj);
-    }
-
-    /**
      * Parse the object for the given object number.  
-     * It's reduced to parsing an indirect object.
      * 
      * @param objNr object number of object to be parsed
      * @param objGenNr object generation number of object to be parsed
@@ -1652,31 +1634,32 @@ public class COSParser extends BaseParser implements ICOSParser
             long stmObjNumber = readObjectNumber();
             int stmGenNumber = readGenerationNumber();
             readExpectedString(OBJ_MARKER, true);
-            int nrOfObjects = 0;
-            byte[] numbersBytes = null;
             COSStream stream = null;
-            COSInputStream is = null;
             try
             {
                 COSDictionary dict = parseCOSDictionary();
-                int offsetFirstStream = dict.getInt(COSName.FIRST);
-                nrOfObjects = dict.getInt(COSName.N);
-                // skip the stream if required values are missing
-                if (offsetFirstStream != -1 && nrOfObjects != -1)
+                stream = parseCOSStream(dict);
+                if (securityHandler != null)
                 {
-                    stream = parseCOSStream(dict);
-                    if (securityHandler != null)
+                    securityHandler.decryptStream(stream, stmObjNumber, stmGenNumber);
+                }
+                PDFObjectStreamParser objStreamParser = new PDFObjectStreamParser(stream, document);
+                Map<Long, Integer> objectNumbers = objStreamParser.readObjectNumbers();
+                Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
+                for (Long objNumber : objectNumbers.keySet())
+                {
+                    COSObjectKey objKey = new COSObjectKey(objNumber, 0);
+                    Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                    if (existingOffset != null && existingOffset < 0)
                     {
-                        securityHandler.decryptStream(stream, stmObjNumber, stmGenNumber);
+                        // translate stream object key to its offset
+                        COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
+                        existingOffset = bfSearchCOSObjectKeyOffsets.get(objStmKey);
                     }
-                    is = stream.createInputStream();
-                    numbersBytes = new byte[offsetFirstStream];
-                    long isResult = is.read(numbersBytes);
-
-                    if (Long.compare(isResult, numbersBytes.length) != 0)
+                    if (existingOffset == null || offset > existingOffset)
                     {
-                        LOG.debug("Tried reading " + numbersBytes.length + " bytes but only "
-                                + isResult + " bytes read");
+                        bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
+                        xrefOffset.put(objKey, -stmObjNumber);
                     }
                 }
             }
@@ -1687,53 +1670,9 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             finally
             {
-                if (is != null)
-                {
-                    is.close();
-                }
                 if (stream != null)
                 {
                     stream.close();
-                }
-            }
-            if (numbersBytes != null)
-            {
-                // convert byte array to string, skip leading/trailing spaces, replace LF\double spaces
-                String[] numbers = new String(numbersBytes, StandardCharsets.ISO_8859_1) //
-                        .trim() //
-                        .replaceAll("\n", " ") //
-                        .replace("  ", " ") //
-                        .split(" ");
-                if (numbers.length < nrOfObjects * 2)
-                {
-                    LOG.debug(
-                            "Skipped corrupt stream: (" + stmObjNumber + " 0 at offset " + offset);
-                    continue;
-                }
-                Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
-                for (int i = 0; i < nrOfObjects; i++)
-                {
-                    try
-                    {
-                        long objNumber = Long.parseLong(numbers[i * 2]);
-                        COSObjectKey objKey = new COSObjectKey(objNumber, 0);
-                        Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
-                        if (existingOffset != null && existingOffset < 0)
-                        {
-                            // translate stream object key to its offset
-                            COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
-                            existingOffset = bfSearchCOSObjectKeyOffsets.get(objStmKey);
-                        }
-                        if (existingOffset == null || offset > existingOffset)
-                        {
-                            bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
-                            xrefOffset.put(objKey, -stmObjNumber);
-                        }
-                    }
-                    catch (NumberFormatException exception)
-                    {
-                        LOG.debug("Skipped corrupt object key in stream: " + stmObjNumber);
-                    }
                 }
             }
         }

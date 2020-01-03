@@ -63,6 +63,7 @@ public class PDFObjectStreamParser extends BaseParser
 
     /**
      * Search for/parse the object with the given object number. This will close the stream when it is finished parsing.
+     * The stream is closed after parsing the object with the given number.
      * 
      * @param objectNumber the number of the object to b e parsed
      * @return the parsed object or null if the object with the given number can't be found
@@ -94,7 +95,14 @@ public class PDFObjectStreamParser extends BaseParser
         return streamObject;
     }
 
-    private Map<Long, Integer> readObjectNumbers() throws IOException
+    /**
+     * Read all object numbers from the compressed object stream. The stream is not closed after reading the object
+     * numbers.
+     * 
+     * @return a map off all object numbers and the corresponding offset within the object stream.
+     * @throws IOException if there is an error while parsing the stream
+     */
+    public Map<Long, Integer> readObjectNumbers() throws IOException
     {
         Map<Long, Integer> objectNumbers = new HashMap<>(numberOfObjects);
         for (int i = 0; i < numberOfObjects; i++)
@@ -105,5 +113,4 @@ public class PDFObjectStreamParser extends BaseParser
         }
         return objectNumbers;
     }
-
 }
