@@ -227,12 +227,8 @@ public class COSArrayList<E> implements List<E>
         int index = actual.indexOf( o );
         if( index >= 0 )
         {
-            retval = actual.remove( o );
-
-            if (o instanceof COSObjectable) {
-                COSBase cosBase = ((COSObjectable) o).getCOSObject();
-                retval = array.remove(cosBase);
-            }
+            actual.remove( index );
+            array.remove( index );
         }
         else
         {
@@ -523,7 +519,19 @@ public class COSArrayList<E> implements List<E>
     @Override
     public boolean removeAll(Collection<?> c)
     {
-        array.removeAll( toCOSObjectList( c ) );
+        for (Iterator iterator = c.iterator(); iterator.hasNext();)
+        {
+            COSBase itemCOSBase = ((COSObjectable)iterator.next()).getCOSObject();
+            // remove all indirect objects too by dereferencing them
+            // before doing the comparison
+            for (int i=array.size()-1; i>=0; i--)
+            {
+                if (itemCOSBase.equals(array.getObject(i)))
+                {
+                    array.remove(i);
+                }
+            }
+        }
         return actual.removeAll( c );
     }
 

@@ -19,12 +19,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -56,6 +59,8 @@ public class COSArrayListTest {
     // to be used when testing retrieving filtered items as can be done with
     // {@link PDPage.getAnnotations(AnnotationFilter annotationFilter)}
     static PDPage pdPage;
+
+    private static final File OUT_DIR = new File("target/test-output/pdmodel/common");
 
     /*
      * Create thre new different annotations an add them to the Java List/Array as
@@ -98,6 +103,9 @@ public class COSArrayListTest {
         // add the annotations to the page
         pdPage = new PDPage();
         pdPage.setAnnotations(annotationsList);
+
+        // create test output directory
+        OUT_DIR.mkdirs();
     }
 
     /**
@@ -302,26 +310,170 @@ public class COSArrayListTest {
     }
 
     @Test
-    public void removeDirectObject() {
+    public void removeSingleDirectObject() throws IOException {
 
-        COSArrayList<String> cosArrayList = new COSArrayList<String>();
+        // generate test file
+        PDDocument pdf = new PDDocument();
 
-        // add a string to the COSArrayList
-        // with a duplicate entry
-        cosArrayList.add("A");
-        cosArrayList.add("A");
-        cosArrayList.add("B");
-        cosArrayList.add("C");
+        PDPage page = new PDPage();
+        pdf.addPage(page);
 
-        assertTrue("List size shall be 4", cosArrayList.size() == 4);
-        assertTrue("Internal COSArray size shall be 4", cosArrayList.getCOSArray().size() == 4);
+        ArrayList<PDAnnotation> pageAnnots = new ArrayList<PDAnnotation>();
+        PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
+        PDAnnotationLink txtLink = new PDAnnotationLink();
 
-        ArrayList<String> toBeRemoved = new ArrayList<String>();
-        toBeRemoved.add("A");
+        // enforce the COSDictionaries to be written directly into the COSArray
+        txtMark.getCOSObject().getCOSObject().setDirect(true);
+        txtLink.getCOSObject().getCOSObject().setDirect(true);
 
-        cosArrayList.removeAll(toBeRemoved);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtLink);
+        assertTrue("There shall be 4 annotations generated", pageAnnots.size() == 4);
 
-        assertTrue("List size shall be 2", cosArrayList.size() == 2);
-        assertTrue("Internal COSArray size shall be 2", cosArrayList.getCOSArray().size() == 2);
+        page.setAnnotations(pageAnnots);
+
+        pdf.save(OUT_DIR + "/removeSingleDirectObjectTest.pdf");
+        pdf.close();
+
+        pdf = PDDocument.load(new File(OUT_DIR + "/removeSingleDirectObjectTest.pdf"));
+        page = pdf.getPage(0);
+        
+        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+
+        assertTrue("There shall be 4 annotations retrieved", annotations.size() == 4);
+        assertTrue("The size of the internal COSArray shall be 4", annotations.getCOSArray().size() == 4);
+
+        PDAnnotation toBeRemoved = annotations.get(0);
+        annotations.remove(toBeRemoved);
+
+        assertTrue("There shall be 3 annotations left", annotations.size() == 3);
+        assertTrue("The size of the internal COSArray shall be 3", annotations.getCOSArray().size() == 3);
+        pdf.close();
+    }
+
+    @Test
+    public void removeSingleIndirectObject() throws IOException {
+
+        // generate test file
+        PDDocument pdf = new PDDocument();
+        PDPage page = new PDPage();
+        pdf.addPage(page);
+
+        ArrayList<PDAnnotation> pageAnnots = new ArrayList<PDAnnotation>();
+        PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
+        PDAnnotationLink txtLink = new PDAnnotationLink();
+
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtLink);
+        assertTrue("There shall be 4 annotations generated", pageAnnots.size() == 4);
+
+        page.setAnnotations(pageAnnots);
+
+        pdf.save(OUT_DIR + "/removeSingleIndirectObjectTest.pdf");
+        pdf.close();
+
+        pdf = PDDocument.load(new File(OUT_DIR + "/removeSingleIndirectObjectTest.pdf"));
+        page = pdf.getPage(0);
+        
+        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+
+        assertTrue("There shall be 4 annotations retrieved", annotations.size() == 4);
+        assertTrue("The size of the internal COSArray shall be 4", annotations.getCOSArray().size() == 4);
+
+        PDAnnotation toBeRemoved = annotations.get(0);
+
+        annotations.remove(toBeRemoved);
+
+        assertTrue("There shall be 3 annotations left", annotations.size() == 3);
+        assertTrue("The size of the internal COSArray shall be 2", annotations.getCOSArray().size() == 3);
+        pdf.close();
+    }
+
+    @Test
+    public void removeDirectObject() throws IOException {
+
+        // generate test file
+        PDDocument pdf = new PDDocument();
+        PDPage page = new PDPage();
+        pdf.addPage(page);
+
+        ArrayList<PDAnnotation> pageAnnots = new ArrayList<PDAnnotation>();
+        PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
+        PDAnnotationLink txtLink = new PDAnnotationLink();
+
+        // enforce the COSDictionaries to be written directly into the COSArray
+        txtMark.getCOSObject().getCOSObject().setDirect(true);
+        txtLink.getCOSObject().getCOSObject().setDirect(true);
+
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtLink);
+        assertTrue("There shall be 4 annotations generated", pageAnnots.size() == 4);
+
+        page.setAnnotations(pageAnnots);
+
+        pdf.save(OUT_DIR + "/removeDirectObjectTest.pdf");
+        pdf.close();
+
+        pdf = PDDocument.load(new File(OUT_DIR + "/removeDirectObjectTest.pdf"));
+        page = pdf.getPage(0);
+        
+        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+
+        assertTrue("There shall be 4 annotations retrieved", annotations.size() == 4);
+        assertTrue("The size of the internal COSArray shall be 4", annotations.getCOSArray().size() == 4);
+
+        ArrayList<PDAnnotation> toBeRemoved = new ArrayList<PDAnnotation>();
+
+        toBeRemoved.add(annotations.get(0));
+        annotations.removeAll(toBeRemoved);
+
+        assertTrue("There shall be 1 annotations left", annotations.size() == 1);
+        assertTrue("The size of the internal COSArray shall be 1", annotations.getCOSArray().size() == 1);
+    }
+
+    @Test
+    public void removeIndirectObject() throws IOException {
+
+        // generate test file
+        PDDocument pdf = new PDDocument();
+        PDPage page = new PDPage();
+        pdf.addPage(page);
+
+        ArrayList<PDAnnotation> pageAnnots = new ArrayList<PDAnnotation>();
+        PDAnnotationTextMarkup txtMark = new PDAnnotationTextMarkup(PDAnnotationTextMarkup.SUB_TYPE_HIGHLIGHT);
+        PDAnnotationLink txtLink = new PDAnnotationLink();
+
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtMark);
+        pageAnnots.add(txtLink);
+        assertTrue("There shall be 4 annotations generated", pageAnnots.size() == 4);
+
+        page.setAnnotations(pageAnnots);
+
+        pdf.save(OUT_DIR + "/removeIndirectObjectTest.pdf");
+        pdf.close();
+
+        pdf = PDDocument.load(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"));
+        page = pdf.getPage(0);
+        
+        COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
+
+        assertTrue("There shall be 4 annotations retrieved", annotations.size() == 4);
+        assertTrue("The size of the internal COSArray shall be 4", annotations.getCOSArray().size() == 4);
+
+        ArrayList<PDAnnotation> toBeRemoved = new ArrayList<PDAnnotation>();
+        toBeRemoved.add(annotations.get(0));
+
+        annotations.removeAll(toBeRemoved);
+
+        assertTrue("There shall be 1 annotations left", annotations.size() == 1);
+        assertTrue("The size of the internal COSArray shall be 1", annotations.getCOSArray().size() == 1);
     }
 }
