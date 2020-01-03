@@ -541,7 +541,19 @@ public class COSArrayList<E> implements List<E>
     @Override
     public boolean retainAll(Collection<?> c)
     {
-        array.retainAll( toCOSObjectList( c ) );
+        for (Iterator iterator = c.iterator(); iterator.hasNext();)
+        {
+            COSBase itemCOSBase = ((COSObjectable)iterator.next()).getCOSObject();
+            // remove all indirect objects too by dereferencing them
+            // before doing the comparison
+            for (int i=array.size()-1; i>=0; i--)
+            {
+                if (!itemCOSBase.equals(array.getObject(i)))
+                {
+                    array.remove(i);
+                }
+            }
+        }
         return actual.retainAll( c );
     }
 
