@@ -23,7 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.filter.DecodeOptions;
@@ -71,6 +75,73 @@ public class COSStream extends COSDictionary implements Closeable
         setInt(COSName.LENGTH, 0);
         this.scratchFile = scratchFile != null ? scratchFile : ScratchFile.getMainMemoryOnlyInstance();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+        {
+            return true;
+        }
+
+        if (!(o instanceof COSStream))
+        {
+            return false;
+        }
+
+        COSStream toBeCompared = (COSStream) o;
+
+        if (toBeCompared.size() != size())
+        {
+            return false;
+        }
+
+        // compare dictionary content
+        Iterator<Entry<COSName, COSBase>> iter = entrySet().iterator();
+        while (iter.hasNext())
+        {
+            Entry<COSName, COSBase> entry = iter.next();
+            COSName key = entry.getKey();
+            COSBase value = entry.getValue();
+
+            if (!toBeCompared.containsKey(key)) 
+            {
+                return false;
+            }
+            else if (value == null)
+            {
+                if (toBeCompared.getItem(key) != null)
+                {
+                    return false;
+                }
+            }
+            else if (!value.equals(toBeCompared.getItem(key)))
+            {
+                return false;
+            }
+        }
+
+        // compare stream content
+        if (!toBeCompared.toTextString().equals(toTextString()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        Object[] members = {items, randomAccess, scratchFile, isWriting};
+        return Arrays.hashCode(members);
+    }
+
+
     
     /**
      * Throws if the random access backing store has been closed. Helpful for catching cases where

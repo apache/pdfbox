@@ -18,6 +18,7 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -405,6 +406,49 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
             }
         }
         return removed;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this)
+        {
+            return true;
+        }
+
+        if (!(o instanceof COSArray))
+        {
+            return false;
+        }
+
+        COSArray toBeCompared = (COSArray) o;
+
+        if (toBeCompared.size() != size())
+        {
+            return false;
+        }
+
+        for (int i=0; i<size(); i++)
+        {
+            if (!(get(i).equals(toBeCompared.get(i))))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        Object[] members = {objects, needToBeUpdated};
+        return Arrays.hashCode(members);
     }
 
     /**
