@@ -1527,8 +1527,8 @@ public class COSParser extends BaseParser implements ICOSParser
             if (rootObj instanceof COSObject)
             {
                 // check if the dictionary can be dereferenced and is the one we are looking for
-                COSDictionary rootDict = retrieveCOSDictionary((COSObject) rootObj);
-                if (rootDict != null && isCatalog(rootDict))
+                COSBase rootDict = ((COSObject) rootObj).getObject();
+                if (rootDict instanceof COSDictionary && isCatalog((COSDictionary) rootDict))
                 {
                     rootFound = true;
                 }
@@ -1537,8 +1537,8 @@ public class COSParser extends BaseParser implements ICOSParser
             if (infoObj instanceof COSObject)
             {
                 // check if the dictionary can be dereferenced and is the one we are looking for
-                COSDictionary infoDict = retrieveCOSDictionary((COSObject) infoObj);
-                if (infoDict != null && isInfo(infoDict))
+                COSBase infoDict = ((COSObject) infoObj).getObject();
+                if (infoDict instanceof COSDictionary && isInfo((COSDictionary) infoDict))
                 {
                     infoFound = true;
                 }
@@ -1554,8 +1554,8 @@ public class COSParser extends BaseParser implements ICOSParser
                     {
                         // check if the dictionary can be dereferenced
                         // TODO check if the dictionary is an encryption dictionary?
-                        COSDictionary encDict = retrieveCOSDictionary((COSObject) encObj);
-                        if (encDict != null)
+                        COSBase encDict = ((COSObject) encObj).getObject();
+                        if (encDict instanceof COSDictionary)
                         {
                             trailer.setItem(COSName.ENCRYPT, encObj);
                         }
@@ -1639,7 +1639,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 .forEach(o -> LOG.warn(
                         "Skipped incomplete object stream:" + o.getValue() + " at " + o.getKey()));
 
-        // collect all stream offset
+        // collect all stream offsets
         List<Long> objStreamOffsets = bfSearchForObjStreamOffsets().entrySet().stream() //
                 .filter(o -> bfSearchCOSObjectKeyOffsets.get(o.getValue()) != null) //
                 .filter(o -> o.getKey().equals(bfSearchCOSObjectKeyOffsets.get(o.getValue()))) //
@@ -1989,86 +1989,31 @@ public class COSParser extends BaseParser implements ICOSParser
     private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
     {
         boolean rootFound = false;
-        for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
+        for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
         {
-            COSDictionary dictionary = retrieveCOSDictionary(entry.getKey(), entry.getValue());
-            if (dictionary == null)
+            COSObject cosObject = document.getObjectFromPool(key);
+            COSBase baseObject = cosObject.getObject();
+
+            if (!(baseObject instanceof COSDictionary))
             {
                 continue;
             }
+            COSDictionary dictionary = (COSDictionary) baseObject;
             // document catalog
             if (isCatalog(dictionary))
             {
-                trailer.setItem(COSName.ROOT, document.getObjectFromPool(entry.getKey()));
+                trailer.setItem(COSName.ROOT, cosObject);
                 rootFound = true;
             }
             // info dictionary
             else if (isInfo(dictionary))
             {
-                trailer.setItem(COSName.INFO, document.getObjectFromPool(entry.getKey()));
+                trailer.setItem(COSName.INFO, cosObject);
             }
             // encryption dictionary, if existing, is lost
             // We can't run "Algorithm 2" from PDF specification because of missing ID
         }
         return rootFound;
-    }
-
-    private COSDictionary retrieveCOSDictionary(COSObject object) throws IOException
-    {
-        COSObjectKey key = new COSObjectKey(object);
-        Long offset = bfSearchCOSObjectKeyOffsets.get(key);
-        if (offset != null)
-        {
-            return retrieveCOSDictionary(key, offset);
-        }
-        return null;
-    }
-
-    private COSDictionary retrieveCOSDictionary(COSObjectKey key, long offset) throws IOException
-    {
-        COSDictionary dictionary = null;
-        // handle compressed objects
-        if (offset < 0)
-        {
-            COSObject compressedObject = document.getObjectFromPool(key);
-            COSBase baseObject = compressedObject.getObject();
-            if (baseObject == null)
-            {
-                baseObject = parseObjectStreamObject((int) -offset, key);
-                if (baseObject != null && baseObject != COSNull.NULL)
-                {
-                    compressedObject.setObject(baseObject);
-                }
-                else
-                {
-                    compressedObject.setToNull();
-                }
-            }
-            if (baseObject instanceof COSDictionary)
-            {
-                dictionary = (COSDictionary) baseObject;
-            }
-        }
-        else
-        {
-            source.seek(offset);
-            readObjectNumber();
-            readGenerationNumber();
-            readExpectedString(OBJ_MARKER, true);
-            if (source.peek() != '<')
-            {
-                return null;
-            }
-            try
-            {
-                dictionary = parseCOSDictionary();
-            }
-            catch (IOException exception)
-            {
-                LOG.debug("Skipped object " + key + ", either it's corrupt or not a dictionary", exception);
-            }
-        }
-        return dictionary;
     }
 
     /**
