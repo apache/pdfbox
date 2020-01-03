@@ -411,6 +411,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object o) {
 
         if (o == this)

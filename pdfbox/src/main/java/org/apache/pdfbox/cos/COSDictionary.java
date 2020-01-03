@@ -1454,6 +1454,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object o) {
         if (o == this)
         {

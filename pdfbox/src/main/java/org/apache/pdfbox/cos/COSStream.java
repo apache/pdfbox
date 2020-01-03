@@ -76,9 +76,10 @@ public class COSStream extends COSDictionary implements Closeable
         this.scratchFile = scratchFile != null ? scratchFile : ScratchFile.getMainMemoryOnlyInstance();
     }
 
-        /**
+    /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object o) {
         if (o == this)
         {
