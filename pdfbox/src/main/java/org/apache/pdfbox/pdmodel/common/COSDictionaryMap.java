@@ -127,7 +127,7 @@ public class COSDictionaryMap<K,V> implements Map<K,V>
     @Override
     public void putAll(Map<? extends K, ? extends V> t)
     {
-        throw new RuntimeException( "Not yet implemented" );
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
