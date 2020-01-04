@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
@@ -30,6 +31,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
+import org.apache.pdfbox.pdmodel.documentinterchange.markedcontent.PDPropertyList;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.util.Matrix;
 
@@ -257,5 +259,31 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     public void setStructParents(int structParent)
     {
         getCOSObject().setInt(COSName.STRUCT_PARENTS, structParent);
+    }
+
+    /**
+     * This will get the optional content group or optional content membership dictionary.
+     *
+     * @return The optional content group or optional content membership dictionary or null if there
+     * is none.
+     */
+    public PDPropertyList getOptionalContent()
+    {
+        COSBase base = getCOSObject().getDictionaryObject(COSName.OC);
+        if (base instanceof COSDictionary)
+        {
+            return PDPropertyList.create((COSDictionary) base);
+        }
+        return null;
+    }
+
+    /**
+     * Sets the optional content group or optional content membership dictionary.
+     *
+     * @param oc The optional content group or optional content membership dictionary.
+     */
+    public void setOptionalContent(PDPropertyList oc)
+    {
+        getCOSObject().setItem(COSName.OC, oc);
     }
 }
