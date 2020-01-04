@@ -31,36 +31,27 @@ import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN;
 
-
-/**
- *@author Khyrul Bashar.
- */
-
 /**
  * A class that provides the necessary UI and functionalities to show the DeviceN color space.
+ *
+ * @author Khyrul Bashar.
+ *
  */
 public class CSDeviceN
 {
-    private PDDeviceN deviceN;
+    private final PDDeviceN deviceN;
     private JPanel panel;
 
     /**
      * Constructor
      *
-     * @param array COSArray instance that holds DeviceN color space
+     * @param array COSArray instance that holds the DeviceN color space
      */
-    public CSDeviceN(COSArray array)
+    public CSDeviceN(COSArray array) throws IOException
     {
-        try
-        {
-            deviceN = new PDDeviceN(array);
-            DeviceNColorant[] colorants = getColorantData();
-            initUI(colorants);
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        deviceN = new PDDeviceN(array);
+        DeviceNColorant[] colorants = getColorantData();
+        initUI(colorants);
     }
 
     /**
