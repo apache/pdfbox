@@ -681,116 +681,7 @@ public class PreflightParser extends PDFParser
             else if (offsetOrObjstmObNr > 0)
             {
                 // offset of indirect object in file
-                // ---- go to object start
-                source.seek(offsetOrObjstmObNr);
-                // ---- we must have an indirect object
-                long readObjNr;
-                int readObjGen;
-
-                long offset = source.getPosition();
-                String line = readLine();
-                Pattern pattern = Pattern.compile("(\\d+)\\s(\\d+)\\sobj");
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.matches())
-                {
-                    readObjNr = Long.parseLong(matcher.group(1));
-                    readObjGen = Integer.parseInt(matcher.group(2));
-                }
-                else
-                {
-
-                    addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER, "Single space expected [offset="+offset+"; key="+offsetOrObjstmObNr.toString()+"; line="+line+"; object="+pdfObject.toString()+"]"));
-
-                    // reset source cursor to read object information
-                    source.seek(offset);
-                    readObjNr = readObjectNumber();
-                    readObjGen = readGenerationNumber();
-                    skipSpaces(); // skip spaces between Object Generation number and the 'obj' keyword 
-                    for (char c : OBJ_MARKER)
-                    {
-                        if (source.read() != c)
-                        {
-                            addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER, "Expected pattern '"
-                                    + new String(OBJ_MARKER) + " but missed at character '" + c + "'"));
-                            throw new SyntaxValidationException("Expected pattern '" + new String(OBJ_MARKER)
-                                            + " but missed at character '" + c + "'",
-                                    validationResult);
-                        }
-                    }
-                }
-
-                // ---- consistency check
-                if ((readObjNr != objKey.getNumber()) || (readObjGen != objKey.getGeneration()))
-                {
-                    throw new IOException("XREF for " + objKey.getNumber() + ":" + objKey.getGeneration()
-                            + " points to wrong object: " + readObjNr + ":" + readObjGen);
-                }
-
-                skipSpaces();
-                referencedObject = parseDirObject();
-                skipSpaces();
-                long endObjectOffset = source.getPosition();
-                String endObjectKey = readString();
-
-                if (endObjectKey.equals("stream"))
-                {
-                    source.seek(endObjectOffset);
-                    if (referencedObject instanceof COSDictionary)
-                    {
-                        COSStream stream = parseCOSStream((COSDictionary) referencedObject);
-                        if (securityHandler != null)
-                        {
-                            securityHandler.decryptStream(stream, objNr, objGenNr);
-                        }
-                        referencedObject = stream;
-                    }
-                    else
-                    {
-                        // this is not legal
-                        // the combination of a dict and the stream/endstream forms a complete stream object
-                        throw new IOException("Stream not preceded by dictionary (offset: " + offsetOrObjstmObNr + ").");
-                    }
-                    skipSpaces();
-                    endObjectOffset = source.getPosition();
-                    endObjectKey = readString();
-
-                    // we have case with a second 'endstream' before endobj
-                    if (!endObjectKey.startsWith("endobj") && endObjectKey.startsWith("endstream"))
-                    {
-                        endObjectKey = endObjectKey.substring(9).trim();
-                        if (endObjectKey.length() == 0)
-                        {
-                            // no other characters in extra endstream line
-                            endObjectKey = readString(); // read next line
-                        }
-                    }
-                }
-                else if (securityHandler != null)
-                {
-                    securityHandler.decrypt(referencedObject, objNr, objGenNr);
-                }
-                if (!endObjectKey.startsWith("endobj"))
-                {
-                    throw new IOException("Object (" + readObjNr + ":" + readObjGen + ") at offset "
-                            + offsetOrObjstmObNr + " does not end with 'endobj'.");
-                }
-                else
-                {
-                    offset = source.getPosition();
-                    source.seek(endObjectOffset - 1);
-                    if (!nextIsEOL())
-                    {
-                        addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER,
-                                "EOL expected before the 'endobj' keyword at offset "+source.getPosition()));
-                    }
-                    source.seek(offset);
-                }
-
-                if (!nextIsEOL())
-                {
-                    addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER,
-                            "EOL expected after the 'endobj' keyword at offset "+source.getPosition()));
-                }
+                referencedObject = parseFileObject(offsetOrObjstmObNr, objKey);
             }
             else
             {
@@ -806,6 +697,130 @@ public class PreflightParser extends PDFParser
             {
                 pdfObject.setToNull();
             }
+        }
+        return referencedObject;
+    }
+
+    private COSBase parseFileObject(Long offsetOrObjstmObNr, final COSObjectKey objKey)
+            throws IOException
+    {
+        // offset of indirect object in file
+        // ---- go to object start
+        source.seek(offsetOrObjstmObNr);
+        // ---- we must have an indirect object
+        long readObjNr;
+        int readObjGen;
+
+        long offset = source.getPosition();
+        String line = readLine();
+        Pattern pattern = Pattern.compile("(\\d+)\\s(\\d+)\\sobj");
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.matches())
+        {
+            readObjNr = Long.parseLong(matcher.group(1));
+            readObjGen = Integer.parseInt(matcher.group(2));
+        }
+        else
+        {
+
+            addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER,
+                    "Single space expected [offset=" + offset + "; key="
+                            + offsetOrObjstmObNr.toString() + "; line=" + line + "; object="
+                            + objKey.getNumber() + " " + objKey.getGeneration() + "]"));
+
+            // reset source cursor to read object information
+            source.seek(offset);
+            readObjNr = readObjectNumber();
+            readObjGen = readGenerationNumber();
+            skipSpaces(); // skip spaces between Object Generation number and the 'obj' keyword
+            for (char c : OBJ_MARKER)
+            {
+                if (source.read() != c)
+                {
+                    addValidationError(new ValidationError(ERROR_SYNTAX_OBJ_DELIMITER,
+                            "Expected pattern '" + new String(OBJ_MARKER)
+                                    + " but missed at character '" + c + "'"));
+                    throw new SyntaxValidationException("Expected pattern '"
+                            + new String(OBJ_MARKER) + " but missed at character '" + c + "'",
+                            validationResult);
+                }
+            }
+        }
+
+        // ---- consistency check
+        if ((readObjNr != objKey.getNumber()) || (readObjGen != objKey.getGeneration()))
+        {
+            throw new IOException("XREF for " + objKey.getNumber() + ":" + objKey.getGeneration()
+                    + " points to wrong object: " + readObjNr + ":" + readObjGen);
+        }
+
+        skipSpaces();
+        COSBase referencedObject = parseDirObject();
+        skipSpaces();
+        long endObjectOffset = source.getPosition();
+        String endObjectKey = readString();
+
+        if (endObjectKey.equals("stream"))
+        {
+            source.seek(endObjectOffset);
+            if (referencedObject instanceof COSDictionary)
+            {
+                COSStream stream = parseCOSStream((COSDictionary) referencedObject);
+                if (securityHandler != null)
+                {
+                    securityHandler.decryptStream(stream, readObjNr, readObjGen);
+                }
+                referencedObject = stream;
+            }
+            else
+            {
+                // this is not legal
+                // the combination of a dict and the stream/endstream forms a complete stream object
+                throw new IOException(
+                        "Stream not preceded by dictionary (offset: " + offsetOrObjstmObNr + ").");
+            }
+            skipSpaces();
+            endObjectOffset = source.getPosition();
+            endObjectKey = readString();
+
+            // we have case with a second 'endstream' before endobj
+            if (!endObjectKey.startsWith("endobj") && endObjectKey.startsWith("endstream"))
+            {
+                endObjectKey = endObjectKey.substring(9).trim();
+                if (endObjectKey.length() == 0)
+                {
+                    // no other characters in extra endstream line
+                    endObjectKey = readString(); // read next line
+                }
+            }
+        }
+        else if (securityHandler != null)
+        {
+            securityHandler.decrypt(referencedObject, readObjNr, readObjGen);
+        }
+        if (!endObjectKey.startsWith("endobj"))
+        {
+            throw new IOException("Object (" + readObjNr + ":" + readObjGen + ") at offset "
+                    + offsetOrObjstmObNr + " does not end with 'endobj'.");
+        }
+        else
+        {
+            offset = source.getPosition();
+            source.seek(endObjectOffset - 1);
+            if (!nextIsEOL())
+            {
+                addValidationError(
+                        new ValidationError(PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER,
+                                "EOL expected before the 'endobj' keyword at offset "
+                                        + source.getPosition()));
+            }
+            source.seek(offset);
+        }
+
+        if (!nextIsEOL())
+        {
+            addValidationError(new ValidationError(PreflightConstants.ERROR_SYNTAX_OBJ_DELIMITER,
+                    "EOL expected after the 'endobj' keyword at offset " + source.getPosition()));
         }
         return referencedObject;
     }
