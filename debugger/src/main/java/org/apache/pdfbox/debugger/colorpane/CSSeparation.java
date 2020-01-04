@@ -71,7 +71,7 @@ public class CSSeparation implements ChangeListener, ActionListener
     /**
      * initialize all the UI elements and arrange them.
      */
-    private void initUI()
+    private void initUI() throws IOException
     {
         Font boldFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
 
@@ -199,10 +199,17 @@ public class CSSeparation implements ChangeListener, ActionListener
     @Override
     public void stateChanged(ChangeEvent changeEvent)
     {
-            int value = slider.getValue();
-            tintValue = getFloatRepresentation(value);
-            tintField.setText(Float.toString(tintValue));
+        int value = slider.getValue();
+        tintValue = getFloatRepresentation(value);
+        tintField.setText(Float.toString(tintValue));
+        try
+        {
             updateColorBar();
+        }
+        catch (IOException ex)
+        {
+            tintField.setText(ex.getMessage());
+        }
     }
 
     /**
@@ -223,36 +230,26 @@ public class CSSeparation implements ChangeListener, ActionListener
         {
             tintField.setText(Float.toString(tintValue));
         }
+        catch (IOException ex)
+        {
+            tintField.setText(ex.getMessage());
+        }
     }
 
-    private void updateColorBar()
+    private void updateColorBar() throws IOException
     {
-        try
-        {
-            float[] rgbValues = separation.toRGB(new float[] {tintValue});
-            colorBar.setBackground(new Color(rgbValues[0], rgbValues[1], rgbValues[2]));
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        float[] rgbValues = separation.toRGB(new float[] {tintValue});
+        colorBar.setBackground(new Color(rgbValues[0], rgbValues[1], rgbValues[2]));
     }
 
     /**
      * Set a little border around colorbar. color of the border is the darkest of the colorant.
      */
-    private void setColorBarBorder()
+    private void setColorBarBorder() throws IOException
     {
-        try
-        {
-            float[] rgbValues = separation.toRGB(new float[] {1});
-            Color darkest= new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
-            colorBar.setBorder(new BevelBorder(BevelBorder.LOWERED, darkest, darkest));
-        }
-        catch (IOException e)
-        {
-           throw new RuntimeException(e);
-        }
+        float[] rgbValues = separation.toRGB(new float[] {1});
+        Color darkest= new Color(rgbValues[0], rgbValues[1], rgbValues[2]);
+        colorBar.setBorder(new BevelBorder(BevelBorder.LOWERED, darkest, darkest));
     }
 
     private float getFloatRepresentation(int value)
