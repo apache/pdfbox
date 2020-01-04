@@ -34,34 +34,26 @@ import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 /**
- * @author Khyrul Bashar.
- */
-
-/**
  * A class that provides the necessary UI and functionalities to show the Indexed colorspace.
+ *
+ * @author Khyrul Bashar.
  */
 public class CSIndexed
 {
-    private PDIndexed indexed;
+    private final PDIndexed indexed;
     private JPanel panel;
-    private int colorCount;
+    private final int colorCount;
 
     /**
      * Constructor.
-     * @param array COSArray instance for Indexed Colorspace.
+     * @param array COSArray instance for Indexed color space.
+     * @throws java.io.IOException
      */
-    public CSIndexed(COSArray array)
+    public CSIndexed(COSArray array) throws IOException
     {
-        try
-        {
-            indexed = new PDIndexed(array);
-            colorCount = getHival(array) + 1;
-            initUI(getColorantData());
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        indexed = new PDIndexed(array);
+        colorCount = getHival(array) + 1;
+        initUI(getColorantData());
     }
 
     /**

@@ -885,7 +885,7 @@ public class PDFDebugger extends JFrame
      * Show a Panel describing color spaces in more detail and interactive way.
      * @param csNode the special color space containing node.
      */
-    private void showColorPane(Object csNode)
+    private void showColorPane(Object csNode) throws IOException
     {
         csNode = getUnderneathObject(csNode);
 

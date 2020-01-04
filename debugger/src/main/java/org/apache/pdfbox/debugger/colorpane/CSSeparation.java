@@ -40,11 +40,9 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDSeparation;
 
 /**
+ * A class that provides the necessary UI and functionalities to show the Separation color space.
+ *
  * @author Khyrul Bashar.
- */
-
-/**
- *A class that provides the necessary UI and functionalities to show the Separation color space.
  */
 public class CSSeparation implements ChangeListener, ActionListener
 {
@@ -53,23 +51,19 @@ public class CSSeparation implements ChangeListener, ActionListener
     private JLabel colorBar;
     private JPanel panel;
 
-    private PDSeparation separation;
+    private final PDSeparation separation;
     private float tintValue = 1;
 
     /**
      * Constructor
-     * @param array COSArray instance of the separation color space.
+     *
+     * @param array COSArray instance of the Separation color space.
+     * 
+     * @throws java.io.IOException
      */
-    public CSSeparation(COSArray array)
+    public CSSeparation(COSArray array) throws IOException
     {
-        try
-        {
-            separation = new PDSeparation(array);
-        }
-        catch (IOException e)
-        {
-            throw new RuntimeException(e);
-        }
+        separation = new PDSeparation(array);
         initUI();
         initValues();
     }
