@@ -211,7 +211,7 @@ public class Type2CharString extends Type1CharString
         else if ("hintmask".equals(name) || "cntrmask".equals(name))
         {
             numbers = clearStack(numbers, numbers.size() % 2 != 0);
-            if (numbers.size() > 0)
+            if (!numbers.isEmpty())
             {
                 expandStemHints(numbers, false);
             }
@@ -308,7 +308,7 @@ public class Type2CharString extends Type1CharString
 
     private void drawAlternatingLine(List<Number> numbers, boolean horizontal)
     {
-        while (numbers.size() > 0)
+        while (!numbers.isEmpty())
         {
             addCommand(numbers.subList(0, 1), new CharStringCommand(
                     horizontal ? 6 : 7));
