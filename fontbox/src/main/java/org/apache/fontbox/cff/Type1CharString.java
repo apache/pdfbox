@@ -182,7 +182,7 @@ public class Type1CharString
         }
         else if ("vmoveto".equals(name))
         {
-            if (numbers.size() >= 1)
+            if (!numbers.isEmpty())
             {
                 if (isFlex)
                 {
@@ -197,7 +197,7 @@ public class Type1CharString
         }
         else if ("hmoveto".equals(name))
         {
-            if (numbers.size() >= 1)
+            if (!numbers.isEmpty())
             {
                 if (isFlex)
                 {
@@ -219,14 +219,14 @@ public class Type1CharString
         }
         else if ("hlineto".equals(name))
         {
-            if (numbers.size() >= 1)
+            if (!numbers.isEmpty())
             {
                 rlineTo(numbers.get(0), 0);
             }
         }
         else if ("vlineto".equals(name))
         {
-            if (numbers.size() >= 1)
+            if (!numbers.isEmpty())
             {
                 rlineTo(0, numbers.get(0));
             }
@@ -293,7 +293,7 @@ public class Type1CharString
         }
         else if ("callothersubr".equals(name))
         {
-            if (numbers.size() >= 1)
+            if (!numbers.isEmpty())
             {
                 callothersubr(numbers.get(0).intValue());
             }
