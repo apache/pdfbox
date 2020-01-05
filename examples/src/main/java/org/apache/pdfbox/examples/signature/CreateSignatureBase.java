@@ -69,25 +69,23 @@ public abstract class CreateSignatureBase implements SignatureInterface
         Enumeration<String> aliases = keystore.aliases();
         String alias;
         Certificate cert = null;
-        while (aliases.hasMoreElements())
+        while (cert == null && aliases.hasMoreElements())
         {
             alias = aliases.nextElement();
             setPrivateKey((PrivateKey) keystore.getKey(alias, pin));
             Certificate[] certChain = keystore.getCertificateChain(alias);
-            if (certChain == null)
+            if (certChain != null)
             {
-                continue;
+                setCertificateChain(certChain);
+                cert = certChain[0];
+                if (cert instanceof X509Certificate)
+                {
+                    // avoid expired certificate
+                    ((X509Certificate) cert).checkValidity();
+
+                    SigUtils.checkCertificateUsage((X509Certificate) cert);
+                }
             }
-            setCertificateChain(certChain);
-            cert = certChain[0];
-            if (cert instanceof X509Certificate)
-            {
-                // avoid expired certificate
-                ((X509Certificate) cert).checkValidity();
-                
-                SigUtils.checkCertificateUsage((X509Certificate) cert);
-            }
-            break;
         }
 
         if (cert == null)
