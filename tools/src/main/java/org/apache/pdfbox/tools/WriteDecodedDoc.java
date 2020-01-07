@@ -68,6 +68,7 @@ public class WriteDecodedDoc
             cosDocument.getXrefTable().keySet().stream()
                     .forEach(o -> processObject(cosDocument.getObjectFromPool(o), skipImages));
             doc.getDocumentCatalog();
+            doc.getDocument().setIsXRefStream(false);
             doc.save( out );
         }
     }
