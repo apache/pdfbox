@@ -96,6 +96,7 @@ public class WriteDecodedDoc
                 }
             }
             doc.getDocumentCatalog();
+            doc.getDocument().setIsXRefStream(false);
             doc.save( out );
         }
         finally
