@@ -16,6 +16,7 @@
 package org.apache.pdfbox.tools;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -77,7 +78,7 @@ public final class DecompressObjectstreams
             // be simply omitted
             doc.save(outputFilename);
         }
-        catch(Exception e) 
+        catch (IOException e)
         {
             System.err.println("Error processing file: " + e.getMessage());
         }
