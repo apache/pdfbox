@@ -423,6 +423,24 @@ public final class ExtractImages
                         ImageIOUtil.writeImage(image, "jpeg2000", out);
                     }
                 }
+                else if ("tiff".equals(suffix) && pdImage.getColorSpace().equals(PDDeviceGray.INSTANCE))
+                {
+                    // CCITT compressed images can have a different colorspace, but this one is B/W
+                    // This is a bitonal image, so copy to TYPE_BYTE_BINARY
+                    // so that a G4 compressed TIFF image is created by ImageIOUtil.writeImage()
+                    int w = image.getWidth();
+                    int h = image.getHeight();
+                    BufferedImage bitonalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
+                    // copy image the old fashioned way - ColorConvertOp is slower!
+                    for (int y = 0; y < h; y++)
+                    {
+                        for (int x = 0; x < w; x++)
+                        {
+                            bitonalImage.setRGB(x, y, image.getRGB(x, y));
+                        }
+                    }
+                    ImageIOUtil.writeImage(bitonalImage, suffix, out);
+                }
                 else 
                 {
                     ImageIOUtil.writeImage(image, suffix, out);
