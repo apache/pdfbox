@@ -50,6 +50,8 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.debugger.PDFDebugger;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
+import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
+import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -62,6 +64,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.RenderDestination;
 
 /**
  * Display the page number and a page rendering.
@@ -78,6 +82,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private JLabel label;
     private ZoomMenu zoomMenu;
     private RotationMenu rotationMenu;
+    private ImageTypeMenu imageTypeMenu;
+    private RenderDestinationMenu renderDestinationMenu;
     private final JLabel statuslabel;
     private final PDPage page;
     private String labelText = "";
@@ -229,6 +235,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         String actionCommand = actionEvent.getActionCommand();
         if (ZoomMenu.isZoomMenu(actionCommand) ||
             RotationMenu.isRotationMenu(actionCommand) ||
+            ImageTypeMenu.isImageTypeMenu(actionCommand) ||
+            RenderDestinationMenu.isRenderDestinationMenu(actionCommand) ||
             actionEvent.getSource() == PDFDebugger.allowSubsampling)
         {
             startRendering();
@@ -242,7 +250,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         // the fact that PDDocument is not officially thread safe
         new RenderWorker(ZoomMenu.getZoomScale(),
                 RotationMenu.getRotationDegrees(),
-                PDFDebugger.allowSubsampling.isSelected()
+                PDFDebugger.allowSubsampling.isSelected(),
+                ImageTypeMenu.getImageType(),
+                RenderDestinationMenu.getRenderDestination()
         ).execute();
         zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
     }
@@ -256,6 +266,14 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         rotationMenu = RotationMenu.getInstance();
         rotationMenu.addMenuListeners(this);
         rotationMenu.setEnableMenu(true);
+
+        imageTypeMenu = ImageTypeMenu.getInstance();
+        imageTypeMenu.addMenuListeners(this);
+        imageTypeMenu.setEnableMenu(true);
+
+        renderDestinationMenu = RenderDestinationMenu.getInstance();
+        renderDestinationMenu.addMenuListeners(this);
+        renderDestinationMenu.setEnableMenu(true);
         
         PDFDebugger.allowSubsampling.setEnabled(true);
         PDFDebugger.allowSubsampling.addActionListener(this);
@@ -266,6 +284,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         zoomMenu.setEnableMenu(false);
         rotationMenu.setEnableMenu(false);
+        imageTypeMenu.setEnableMenu(false);
+        renderDestinationMenu.setEnableMenu(false);
 
         PDFDebugger.allowSubsampling.setEnabled(false);
         PDFDebugger.allowSubsampling.removeActionListener(this);
@@ -373,12 +393,17 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         private final float scale;
         private final int rotation;
         private final boolean allowSubsampling;
+        private final ImageType imageType;
+        private final RenderDestination renderDestination;
 
-        private RenderWorker(float scale, int rotation, boolean allowSubsampling)
+        private RenderWorker(float scale, int rotation, boolean allowSubsampling,
+                              ImageType imageType, RenderDestination renderDestination)
         {
             this.scale = scale;
             this.rotation = rotation;
             this.allowSubsampling = allowSubsampling;
+            this.imageType = imageType;
+            this.renderDestination = renderDestination;
         }
 
         @Override
@@ -391,7 +416,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             renderer.setSubsamplingAllowed(allowSubsampling);
             long t0 = System.currentTimeMillis();
             statuslabel.setText(labelText);
-            BufferedImage bim = renderer.renderImage(pageIndex, scale);
+            BufferedImage bim = renderer.renderImage(pageIndex, scale, imageType, renderDestination);
             float t = (System.currentTimeMillis() - t0) / 1000f;
             labelText = "Rendered in " + t + " second" + (t > 1 ? "s" : "");
             statuslabel.setText(labelText);

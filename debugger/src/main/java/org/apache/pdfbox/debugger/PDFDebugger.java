@@ -96,6 +96,7 @@ import org.apache.pdfbox.debugger.ui.DocumentEntry;
 import org.apache.pdfbox.debugger.ui.ErrorDialog;
 import org.apache.pdfbox.debugger.ui.ExtensionFileFilter;
 import org.apache.pdfbox.debugger.ui.FileOpenSaveDialog;
+import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.LogDialog;
 import org.apache.pdfbox.debugger.ui.MapEntry;
 import org.apache.pdfbox.debugger.ui.OSXAdapter;
@@ -104,6 +105,7 @@ import org.apache.pdfbox.debugger.ui.PDFTreeModel;
 import org.apache.pdfbox.debugger.ui.PageEntry;
 import org.apache.pdfbox.debugger.ui.ReaderBottomPanel;
 import org.apache.pdfbox.debugger.ui.RecentFiles;
+import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
 import org.apache.pdfbox.debugger.ui.Tree;
 import org.apache.pdfbox.debugger.ui.WindowPrefs;
@@ -523,6 +525,14 @@ public class PDFDebugger extends JFrame
         RotationMenu rotationMenu = RotationMenu.getInstance();
         rotationMenu.setEnableMenu(false);
         viewMenu.add(rotationMenu.getMenu());
+
+        ImageTypeMenu imageTypeMenu = ImageTypeMenu.getInstance();
+        imageTypeMenu.setEnableMenu(false);
+        viewMenu.add(imageTypeMenu.getMenu());
+
+        RenderDestinationMenu renderDestinationMenu = RenderDestinationMenu.getInstance();
+        renderDestinationMenu.setEnableMenu(false);
+        viewMenu.add(renderDestinationMenu.getMenu());
         
         viewMenu.addSeparator();
 
@@ -1355,6 +1365,8 @@ public class PDFDebugger extends JFrame
             DocumentEntry documentEntry = new DocumentEntry(document, file.getName());
             ZoomMenu.getInstance().resetZoom();
             RotationMenu.getInstance().setRotationSelection(RotationMenu.ROTATE_0_DEGREES);
+            ImageTypeMenu.getInstance().setImageTypeSelection(ImageTypeMenu.IMAGETYPE_RGB);
+            RenderDestinationMenu.getInstance().setRenderDestinationSelection(RenderDestinationMenu.RENDER_DESTINATION_EXPORT);
             tree.setModel(new PDFTreeModel(documentEntry));
             // Root/Pages/Kids/[0] is not always the first page, so use the first row instead:
             tree.setSelectionPath(tree.getPathForRow(1));
