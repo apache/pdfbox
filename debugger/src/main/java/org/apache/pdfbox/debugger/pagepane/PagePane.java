@@ -57,6 +57,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
+import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
+import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -69,6 +71,8 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.RenderDestination;
 
 /**
  * Display the page number and a page rendering.
@@ -87,6 +91,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private JLabel label;
     private ZoomMenu zoomMenu;
     private RotationMenu rotationMenu;
+    private ImageTypeMenu imageTypeMenu;
+    private RenderDestinationMenu renderDestinationMenu;
     private ViewMenu viewMenu;
     private String labelText = "";
     private final Map<PDRectangle,String> rectMap = new HashMap<>();
@@ -234,9 +240,10 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        
         if (ZoomMenu.isZoomMenu(actionCommand) ||
             RotationMenu.isRotationMenu(actionCommand) ||
+            ImageTypeMenu.isImageTypeMenu(actionCommand) ||
+            RenderDestinationMenu.isRenderDestinationMenu(actionCommand) ||
             ViewMenu.isRenderingOptions(actionCommand))
         {
             startRendering();
@@ -253,7 +260,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
                 ViewMenu.isShowTextStripperBeads(),
                 ViewMenu.isShowFontBBox(),
                 ViewMenu.isShowGlyphBounds(),
-                ViewMenu.isAllowSubsampling()
+                ViewMenu.isAllowSubsampling(),
+                ImageTypeMenu.getImageType(),
+                RenderDestinationMenu.getRenderDestination()
         ).execute();
         zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
     }
@@ -267,7 +276,15 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         rotationMenu = RotationMenu.getInstance();
         rotationMenu.addMenuListeners(this);
         rotationMenu.setEnableMenu(true);
-        
+
+        imageTypeMenu = ImageTypeMenu.getInstance();
+        imageTypeMenu.addMenuListeners(this);
+        imageTypeMenu.setEnableMenu(true);
+
+        renderDestinationMenu = RenderDestinationMenu.getInstance();
+        renderDestinationMenu.addMenuListeners(this);
+        renderDestinationMenu.setEnableMenu(true);
+
         viewMenu = ViewMenu.getInstance(null);
 
         JMenu menuInstance = viewMenu.getMenu();
@@ -290,7 +307,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         boolean isFirstEntrySkipped = false;
         zoomMenu.setEnableMenu(false);
         rotationMenu.setEnableMenu(false);
-        
+        imageTypeMenu.setEnableMenu(false);
+        renderDestinationMenu.setEnableMenu(false);
+
         JMenu menuInstance = viewMenu.getMenu();
         int itemCount = menuInstance.getItemCount();
         
@@ -419,10 +438,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         private final boolean showFontBBox;
         private final boolean showGlyphBounds;
         private final boolean allowSubsampling;
+        private final ImageType imageType;
+        private final RenderDestination renderDestination;
 
         private RenderWorker(float scale, int rotation, boolean showTextStripper,
                              boolean showTextStripperBeads, boolean showFontBBox,
-                             boolean showGlyphBounds, boolean allowSubsampling)
+                             boolean showGlyphBounds, boolean allowSubsampling,
+                             ImageType imageType, RenderDestination renderDestination)
         {
             this.scale = scale;
             this.rotation = rotation;
@@ -431,6 +453,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             this.showFontBBox = showFontBBox;
             this.showGlyphBounds = showGlyphBounds;
             this.allowSubsampling = allowSubsampling;
+            this.imageType = imageType;
+            this.renderDestination = renderDestination;
         }
 
         @Override
@@ -445,7 +469,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             renderer.setSubsamplingAllowed(allowSubsampling);
 
             long t0 = System.nanoTime();
-            BufferedImage image = renderer.renderImage(pageIndex, scale);
+            BufferedImage image = renderer.renderImage(pageIndex, scale, imageType, renderDestination);
             long t1 = System.nanoTime();
 
             long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
