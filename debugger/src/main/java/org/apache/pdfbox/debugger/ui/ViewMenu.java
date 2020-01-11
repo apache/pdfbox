@@ -186,6 +186,14 @@ public class ViewMenu extends MenuBase
         rotationMenu.setEnableMenu(false);
         viewMenu.add(rotationMenu.getMenu());
 
+        ImageTypeMenu imageTypeMenu = ImageTypeMenu.getInstance();
+        imageTypeMenu.setEnableMenu(false);
+        viewMenu.add(imageTypeMenu.getMenu());
+
+        RenderDestinationMenu renderDestinationMenu = RenderDestinationMenu.getInstance();
+        renderDestinationMenu.setEnableMenu(false);
+        viewMenu.add(renderDestinationMenu.getMenu());
+
         viewMenu.addSeparator();
 
         showTextStripper = new JCheckBoxMenuItem(SHOW_TEXT_STRIPPER);        
