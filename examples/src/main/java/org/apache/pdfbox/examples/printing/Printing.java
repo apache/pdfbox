@@ -45,7 +45,7 @@ public final class Printing
     /**
      * Entry point.
      */
-    public static void main(String args[]) throws PrinterException, IOException
+    public static void main(String[] args) throws PrinterException, IOException
     {
         if (args.length != 1)
         {
