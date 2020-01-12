@@ -71,7 +71,7 @@ public final class ExtractText
     /*
      * debug flag
      */
-    private boolean debug = false;
+    private boolean debugOutput = false;
 
     /**
      * private constructor.
@@ -163,7 +163,7 @@ public final class ExtractText
             }
             else if( args[i].equals( DEBUG ) )
             {
-                debug = true;
+                debugOutput = true;
             }
             else if (args[i].equals(ALWAYSNEXT))
             {
@@ -239,7 +239,7 @@ public final class ExtractText
                     output = new OutputStreamWriter( new FileOutputStream( outputFile ), encoding );
                 }
                 startTime = startProcessing("Starting text extraction");
-                if (debug)
+                if (debugOutput)
                 {
                     System.err.println("Writing to " + outputFile);
                 }
@@ -288,7 +288,7 @@ public final class ExtractText
                         {
                             for (Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet()) 
                             {
-                                if (debug)
+                                if (debugOutput)
                                 {
                                     System.err.println("Processing embedded file " + ent.getKey() + ":");
                                 }
@@ -296,7 +296,7 @@ public final class ExtractText
                                 PDEmbeddedFile file = spec.getEmbeddedFile();
                                 if (file != null && "application/pdf".equals(file.getSubtype()))
                                 {
-                                    if (debug)
+                                    if (debugOutput)
                                     {
                                         System.err.println("  is PDF (size=" + file.getSize() + ")");
                                     }
@@ -384,7 +384,7 @@ public final class ExtractText
 
     private long startProcessing(String message) 
     {
-        if (debug) 
+        if (debugOutput) 
         {
             System.err.println(message);
         }
@@ -393,7 +393,7 @@ public final class ExtractText
     
     private void stopProcessing(String message, long startTime) 
     {
-        if (debug)
+        if (debugOutput)
         {
             long stopTime = System.currentTimeMillis();
             float elapsedTime = ((float)(stopTime - startTime))/1000;
