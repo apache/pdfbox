@@ -21,8 +21,6 @@
 
 package org.apache.pdfbox.preflight.annotation;
 
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_KEY_INKLIST;
-
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationUnknown;
@@ -48,6 +46,6 @@ public class InkAnnotationValidator extends AnnotationValidator
     @Override
     protected boolean checkSpecificMandatoryFields()
     {
-        return this.annotDictionary.containsKey(COSName.getPDFName(ANNOT_DICTIONARY_KEY_INKLIST));
+        return annotDictionary.containsKey(COSName.INKLIST);
     }
 }

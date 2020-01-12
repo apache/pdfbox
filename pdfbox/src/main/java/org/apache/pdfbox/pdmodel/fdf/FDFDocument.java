@@ -16,13 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel.fdf;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -32,9 +29,7 @@ import java.nio.charset.StandardCharsets;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.apache.pdfbox.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -152,96 +147,6 @@ public class FDFDocument implements Closeable
     {
         COSDictionary trailer = document.getTrailer();
         trailer.setItem(COSName.ROOT, cat);
-    }
-
-    /**
-     * This will load a document from a file.
-     *
-     * @param filename The name of the file to load.
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static FDFDocument load(String filename) throws IOException
-    {
-        FDFParser parser = new FDFParser(filename);
-        parser.parse();
-        return new FDFDocument(parser.getDocument());
-    }
-
-    /**
-     * This will load a document from a file.
-     *
-     * @param file The name of the file to load.
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static FDFDocument load(File file) throws IOException
-    {
-        FDFParser parser = new FDFParser(file);
-        parser.parse();
-        return new FDFDocument(parser.getDocument());
-    }
-
-    /**
-     * This will load a document from an input stream.
-     *
-     * @param input The stream that contains the document.
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static FDFDocument load(InputStream input) throws IOException
-    {
-        FDFParser parser = new FDFParser(input);
-        parser.parse();
-        return new FDFDocument(parser.getDocument());
-    }
-
-    /**
-     * This will load a document from a file.
-     *
-     * @param filename The name of the file to load.
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static FDFDocument loadXFDF(String filename) throws IOException
-    {
-        return loadXFDF(new BufferedInputStream(new FileInputStream(filename)));
-    }
-
-    /**
-     * This will load a document from a file.
-     *
-     * @param file The name of the file to load.
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static FDFDocument loadXFDF(File file) throws IOException
-    {
-        return loadXFDF(new BufferedInputStream(new FileInputStream(file)));
-    }
-
-    /**
-     * This will load a document from an input stream.
-     *
-     * @param input The stream that contains the document.
-     *
-     * @return The document that was loaded.
-     *
-     * @throws IOException If there is an error reading from the stream.
-     */
-    public static FDFDocument loadXFDF(InputStream input) throws IOException
-    {
-        return new FDFDocument(XMLUtil.parse(input));
     }
 
     /**

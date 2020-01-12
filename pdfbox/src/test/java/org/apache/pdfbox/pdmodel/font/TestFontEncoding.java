@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
@@ -93,7 +94,7 @@ public class TestFontEncoding extends TestCase
         doc.close();
 
         // verify
-        doc = PDDocument.load(baos.toByteArray());
+        doc = PDFParser.load(baos.toByteArray());
         PDFTextStripper stripper = new PDFTextStripper();
         String text = stripper.getText(doc);
         assertEquals("~˜", text.trim());

@@ -118,7 +118,7 @@ public class PDFXrefStreamParser extends BaseParser
         int w2 = wArray.getInt(2, 0);
         int lineSize = w0 + w1 + w2;
 
-        while (!seqSource.isEOF() && objIter.hasNext())
+        while (!isEOF() && objIter.hasNext())
         {
             byte[] currLine = new byte[lineSize];
             seqSource.read(currLine);

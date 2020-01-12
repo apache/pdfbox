@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 
 import static org.junit.Assert.assertEquals;
@@ -51,7 +53,8 @@ public class TestPDDocumentCatalog
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
+            doc = PDFParser
+                    .load(TestPDDocumentCatalog.class.getResourceAsStream("test_pagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             String[] labels = cat.getPageLabels().getLabelsByPageIndices();
             assertEquals(12, labels.length);
@@ -92,7 +95,8 @@ public class TestPDDocumentCatalog
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf"));
+            doc = PDFParser
+                    .load(TestPDDocumentCatalog.class.getResourceAsStream("badpagelabels.pdf"));
             PDDocumentCatalog cat = doc.getDocumentCatalog();
             // getLabelsByPageIndices() should not throw an exception
             cat.getPageLabels().getLabelsByPageIndices();
@@ -122,7 +126,7 @@ public class TestPDDocumentCatalog
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
+            doc = PDFParser.load(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
             assertEquals(4, doc.getNumberOfPages());
         }
         finally
@@ -151,7 +155,7 @@ public class TestPDDocumentCatalog
         try
         {
             
-            doc = PDDocument.load(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
+            doc = PDFParser.load(TestPDDocumentCatalog.class.getResourceAsStream("test.unc.pdf"));
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             // retrieve OutputIntents

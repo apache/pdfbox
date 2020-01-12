@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.List;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.preflight.Format;
@@ -48,7 +49,7 @@ public abstract class AbstractTestAction
      */
     protected PreflightContext createContext() throws Exception
     {
-        PDDocument doc = PDDocument
+        PDDocument doc = PDFParser
                 .load(new File("src/test/resources/pdfa-with-annotations-square.pdf"));
         PreflightDocument preflightDocument = new PreflightDocument(doc.getDocument(), Format.PDF_A1B);
         PreflightContext ctx = new PreflightContext();
@@ -107,12 +108,12 @@ public abstract class AbstractTestAction
             abstractActionManager.valid();
         }
 
+        List<ValidationError> errors = ctx.getDocument().getValidationErrors();
         // check the result
         if (!valid)
         {
-            List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
             assertFalse(errors.isEmpty());
-            if (expectedCode != null || !"".equals(expectedCode))
+            if (expectedCode != null && !expectedCode.isEmpty())
             {
                 boolean found = false;
                 for (ValidationError err : errors)
@@ -128,11 +129,7 @@ public abstract class AbstractTestAction
         }
         else
         {
-            if (ctx.getDocument().getResult() != null)
-            {
-                List<ValidationError> errors = ctx.getDocument().getResult().getErrorsList();
-                assertTrue(errors.isEmpty());
-            }
+            assertTrue(errors.isEmpty());
         }
         ctx.getDocument().close();
     }

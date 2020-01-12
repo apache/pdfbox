@@ -16,16 +16,19 @@
  */
 package org.apache.pdfbox.pdfparser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -125,6 +128,79 @@ public class PDFParser extends COSParser
         init(scratchFile);
     }
     
+    /**
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param input byte array that contains the document.
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the PDF required a non-empty password.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(byte[] input) throws IOException
+    {
+        return load(input, "");
+    }
+
+    /**
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param input byte array that contains the document.
+     * @param password password to be used for decryption
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(byte[] input, String password) throws IOException
+    {
+        return load(input, password, null, null);
+    }
+
+    /**
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param input byte array that contains the document.
+     * @param password password to be used for decryption
+     * @param keyStore key store to be used for decryption when using public key security
+     * @param alias alias to be used for decryption when using public key security
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(byte[] input, String password, InputStream keyStore, String alias)
+            throws IOException
+    {
+        return load(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Parses a PDF.
+     * 
+     * @param input byte array that contains the document.
+     * @param password password to be used for decryption
+     * @param keyStore key store to be used for decryption when using public key security
+     * @param alias alias to be used for decryption when using public key security
+     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(byte[] input, String password, InputStream keyStore, String alias,
+            MemoryUsageSetting memUsageSetting) throws IOException
+    {
+        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
+        RandomAccessRead source = new RandomAccessBuffer(input);
+        PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
+        return parser.parse();
+    }
+
     private void init(ScratchFile scratchFile)
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
@@ -140,22 +216,257 @@ public class PDFParser extends COSParser
                         + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
             }
         }
-        document = new COSDocument(scratchFile);
+        document = new COSDocument(scratchFile, this);
     }
     
     /**
-     * This will get the PD document that was parsed.  When you are done with
-     * this document you must call close() on it to release resources.
-     *
-     * @return The document at the PD layer.
-     *
-     * @throws IOException If there is an error getting the document.
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param file file to be loaded
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the file required a non-empty password.
+     * @throws IOException in case of a file reading or parsing error
      */
-    public PDDocument getPDDocument() throws IOException
+    public static PDDocument load(File file) throws IOException
     {
-        PDDocument doc = new PDDocument(getDocument(), source, getAccessPermission());
-        doc.setEncryptionDictionary(getEncryption());
-        return doc;
+        return load(file, "", MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Parses a PDF.
+     * 
+     * @param file file to be loaded
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the file required a non-empty password.
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(File file, MemoryUsageSetting memUsageSetting) throws IOException
+    {
+        return load(file, "", null, null, memUsageSetting);
+    }
+
+    /**
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param file file to be loaded
+     * @param password password to be used for decryption
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(File file, String password) throws IOException
+    {
+        return load(file, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Parses a PDF.
+     * 
+     * @param file file to be loaded
+     * @param password password to be used for decryption
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(File file, String password, MemoryUsageSetting memUsageSetting)
+            throws IOException
+    {
+        return load(file, password, null, null, memUsageSetting);
+    }
+
+    /**
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param file file to be loaded
+     * @param password password to be used for decryption
+     * @param keyStore key store to be used for decryption when using public key security
+     * @param alias alias to be used for decryption when using public key security
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(File file, String password, InputStream keyStore, String alias)
+            throws IOException
+    {
+        return load(file, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Parses a PDF.
+     * 
+     * @param file file to be loaded
+     * @param password password to be used for decryption
+     * @param keyStore key store to be used for decryption when using public key security
+     * @param alias alias to be used for decryption when using public key security
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException in case of a file reading or parsing error
+     */
+    public static PDDocument load(File file, String password, InputStream keyStore, String alias,
+            MemoryUsageSetting memUsageSetting) throws IOException
+    {
+        @SuppressWarnings({ "squid:S2095" }) // raFile not closed here, may be needed for signing
+        RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
+        try
+        {
+            return load(raFile, password, keyStore, alias, memUsageSetting);
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(raFile);
+            throw ioe;
+        }
+    }
+
+    private static PDDocument load(RandomAccessBufferedFileInputStream raFile, String password,
+            InputStream keyStore, String alias, MemoryUsageSetting memUsageSetting)
+            throws IOException
+    {
+        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
+        try
+        {
+            PDFParser parser = new PDFParser(raFile, password, keyStore, alias, scratchFile);
+            return parser.parse();
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(scratchFile);
+            throw ioe;
+        }
+    }
+
+    /**
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf. Unrestricted
+     * main memory will be used for buffering PDF streams.
+     * 
+     * @param input stream that contains the document. Don't forget to close it after loading.
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the PDF required a non-empty password.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(InputStream input) throws IOException
+    {
+        return load(input, "", null, null, MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Parses a PDF. Depending on the memory settings parameter the given input stream is either copied to main memory
+     * or to a temporary file to enable random access to the pdf.
+     * 
+     * @param input stream that contains the document. Don't forget to close it after loading.
+     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the PDF required a non-empty password.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(InputStream input, MemoryUsageSetting memUsageSetting)
+            throws IOException
+    {
+        return load(input, "", null, null, memUsageSetting);
+    }
+
+    /**
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf. Unrestricted
+     * main memory will be used for buffering PDF streams.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
+     * @param password password to be used for decryption
+     *
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(InputStream input, String password) throws IOException
+    {
+        return load(input, password, null, null, MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf. Unrestricted
+     * main memory will be used for buffering PDF streams.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
+     * @param password password to be used for decryption
+     * @param keyStore key store to be used for decryption when using public key security
+     * @param alias alias to be used for decryption when using public key security
+     * 
+     * @return loaded document
+     * 
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(InputStream input, String password, InputStream keyStore,
+            String alias) throws IOException
+    {
+        return load(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
+    }
+
+    /**
+     * Parses a PDF. Depending on the memory settings parameter the given input stream is either copied to main memory
+     * or to a temporary file to enable random access to the pdf.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
+     * @param password password to be used for decryption
+     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(InputStream input, String password,
+            MemoryUsageSetting memUsageSetting) throws IOException
+    {
+        return load(input, password, null, null, memUsageSetting);
+    }
+
+    /**
+     * Parses a PDF. Depending on the memory settings parameter the given input stream is either copied to memory or to
+     * a temporary file to enable random access to the pdf.
+     *
+     * @param input stream that contains the document. Don't forget to close it after loading.
+     * @param password password to be used for decryption
+     * @param keyStore key store to be used for decryption when using public key security
+     * @param alias alias to be used for decryption when using public key security
+     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException In case of a reading or parsing error.
+     */
+    public static PDDocument load(InputStream input, String password, InputStream keyStore,
+            String alias, MemoryUsageSetting memUsageSetting) throws IOException
+    {
+        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
+        try
+        {
+            RandomAccessRead source = scratchFile.createBuffer(input);
+            PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
+            return parser.parse();
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(scratchFile);
+            throw ioe;
+        }
     }
 
     /**
@@ -170,24 +481,15 @@ public class PDFParser extends COSParser
     {
         COSDictionary trailer = retrieveTrailer();
     
-        COSBase base = parseTrailerValuesDynamically(trailer);
-        if (!(base instanceof COSDictionary))
+        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        if (root == null)
         {
-            throw new IOException("Expected root dictionary, but got this: " + base);
+            throw new IOException("Missing root object specification in trailer.");
         }
-        COSDictionary root = (COSDictionary) base;
         // in some pdfs the type value "Catalog" is missing in the root object
         if (isLenient() && !root.containsKey(COSName.TYPE))
         {
             root.setItem(COSName.TYPE, COSName.CATALOG);
-        }
-        // parse all objects, starting at the root dictionary
-        parseDictObjects(root, (COSName[]) null);
-        // parse all objects of the info dictionary
-        COSBase infoBase = trailer.getDictionaryObject(COSName.INFO);
-        if (infoBase instanceof COSDictionary)
-        {
-            parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
         }
         // check pages dictionaries
         checkPages(root);
@@ -196,19 +498,32 @@ public class PDFParser extends COSParser
     }
 
     /**
-     * This will parse the stream and populate the COSDocument object.  This will close
-     * the keystore stream when it is done parsing.
+     * This will parse the stream and populate the PDDocument object. This will close the keystore stream when it is
+     * done parsing. Lenient mode is active by default.
      *
      * @throws InvalidPasswordException If the password is incorrect.
-     * @throws IOException If there is an error reading from the stream or corrupt data
-     * is found.
+     * @throws IOException If there is an error reading from the stream or corrupt data is found.
      */
-    public void parse() throws IOException
+    public PDDocument parse() throws IOException
     {
-         // set to false if all is processed
-         boolean exceptionOccurred = true; 
-         try
-         {
+        return parse(true);
+    }
+
+    /**
+     * This will parse the stream and populate the PDDocument object. This will close the keystore stream when it is
+     * done parsing.
+     *
+     * @param lenient activate leniency if set to true
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException If there is an error reading from the stream or corrupt data is found.
+     */
+    public PDDocument parse(boolean lenient) throws IOException
+    {
+        setLenient(lenient);
+        // set to false if all is processed
+        boolean exceptionOccurred = true;
+        try
+        {
             // PDFBOX-1922 read the version header and rewind
             if (!parsePDFHeader() && !parseFDFHeader())
             {
@@ -220,6 +535,9 @@ public class PDFParser extends COSParser
                 initialParse();
             }
             exceptionOccurred = false;
+            PDDocument pdDocument = createDocument();
+            pdDocument.setEncryptionDictionary(getEncryption());
+            return pdDocument;
         }
         finally
         {
@@ -231,4 +549,14 @@ public class PDFParser extends COSParser
         }
     }
 
+    /**
+     * Create the resulting document. Maybe overwritten if the parser uses another class as document.
+     * 
+     * @return the resulting document
+     * @throws IOException if the method is called before parsing the document
+     */
+    protected PDDocument createDocument() throws IOException
+    {
+        return new PDDocument(getDocument(), source, getAccessPermission());
+    }
 }

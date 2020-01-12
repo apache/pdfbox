@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.print.PrintService;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.printing.Orientation;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -146,7 +147,7 @@ public final class PrintPDF
             usage();
         }
 
-        try (PDDocument document = PDDocument.load(new File(pdfFile), password))
+        try (PDDocument document = PDFParser.load(new File(pdfFile), password))
         {
             AccessPermission ap = document.getCurrentAccessPermission();
             if (!ap.canPrint())

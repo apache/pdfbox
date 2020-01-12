@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.SignatureInterface;
@@ -83,7 +84,7 @@ public class CreateSignedTimeStamp implements SignatureInterface
         }
 
         // sign
-        try (PDDocument doc = PDDocument.load(inFile);
+        try (PDDocument doc = PDFParser.load(inFile);
              FileOutputStream fos = new FileOutputStream(outFile))
         {
             signDetached(doc, fos);

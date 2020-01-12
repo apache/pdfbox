@@ -31,6 +31,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -56,7 +57,7 @@ public class CustomPageDrawer
         File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
                              "custom-render-demo.pdf");
         
-        try (PDDocument doc = PDDocument.load(file))
+        try (PDDocument doc = PDFParser.load(file))
         {
             PDFRenderer renderer = new MyPDFRenderer(doc);
             BufferedImage image = renderer.renderImage(0);

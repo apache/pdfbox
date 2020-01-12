@@ -31,6 +31,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.multipdf.PDFMergerUtility.AcroFormMergeMode;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.junit.Before;
@@ -68,8 +69,10 @@ public class MergeAcroFormsTest
         merger.mergeDocuments(null);
         merger.setAcroFormMergeMode(AcroFormMergeMode.PDFBOX_LEGACY_MODE);
         
-        try (PDDocument compliantDocument = PDDocument.load(new File(IN_DIR,"PDFBoxLegacyMerge-SameMerged.pdf"));
-                PDDocument toBeCompared = PDDocument.load(new File(OUT_DIR,"PDFBoxLegacyMerge-SameMerged.pdf")))
+        try (PDDocument compliantDocument = PDFParser
+                .load(new File(IN_DIR, "PDFBoxLegacyMerge-SameMerged.pdf"));
+                PDDocument toBeCompared = PDFParser
+                        .load(new File(OUT_DIR, "PDFBoxLegacyMerge-SameMerged.pdf")))
         {
             PDAcroForm compliantAcroForm = compliantDocument.getDocumentCatalog().getAcroForm();
             PDAcroForm toBeComparedAcroForm = toBeCompared.getDocumentCatalog().getAcroForm();
@@ -145,7 +148,7 @@ public class MergeAcroFormsTest
         }
         
         // Test merge result
-        try (PDDocument mergedPDF = PDDocument.load(pdfOutput))
+        try (PDDocument mergedPDF = PDFParser.load(pdfOutput))
         {
             assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
             
@@ -180,7 +183,7 @@ public class MergeAcroFormsTest
         }
         
         // Test merge result
-        try (PDDocument mergedPDF = PDDocument.load(pdfOutput))
+        try (PDDocument mergedPDF = PDFParser.load(pdfOutput))
         {
             assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
             

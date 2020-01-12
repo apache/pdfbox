@@ -27,6 +27,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.function.PDFunctionType2;
@@ -57,7 +58,6 @@ public class CreateGradientShadingPDF
      */
     public void create(String file) throws IOException
     {
-        
         try (PDDocument document = new PDDocument())
         {
             PDPage page = new PDPage();
@@ -191,7 +191,7 @@ public class CreateGradientShadingPDF
             
             document.save(file);
         }
-        try (PDDocument document = PDDocument.load(new File(file)))
+        try (PDDocument document = PDFParser.load(new File(file)))
         {
             // render the PDF and save it into a PNG file
             BufferedImage bim = new PDFRenderer(document).renderImageWithDPI(0, 100);

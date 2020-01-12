@@ -18,21 +18,15 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.cos.COSObjectKey;
-import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdfparser.PDFParser;
 
 /**
- * This program will just take all of the stream objects in a PDF and dereference
- * them.  The streams will be gone in the resulting file and the objects will be
- * present.  This is very helpful when trying to debug problems as it'll make
- * it possible to easily look through a PDF using a text editor.  It also exposes
- * problems which stem from objects inside object streams overwriting other
- * objects.
+ * This program will just save the loaded pdf without any changes. As PDFBox doesn't support writing compressed object
+ * streams those streams are stripped and will be gone in the resulting file. This is very helpful when trying to debug
+ * problems as it'll make it possible to easily look through a PDF using a text editor. It also exposes problems which
+ * stem from objects inside object streams overwriting other objects.
+ * 
  * @author Adam Nichols
  */
 public final class DecompressObjectstreams 
@@ -77,31 +71,16 @@ public final class DecompressObjectstreams
             }
         }
 
-        PDDocument doc = null;
-        try
+        try (PDDocument doc = PDFParser.load(new File(inputFilename)))
         {
-            doc = PDDocument.load(new File(inputFilename));
-            for(COSObject objStream : doc.getDocument().getObjectsByType(COSName.OBJ_STM))
-            {
-                COSStream stream = (COSStream)objStream.getObject();
-                PDFObjectStreamParser sp = new PDFObjectStreamParser(stream, doc.getDocument());
-                for (COSObject next : sp.parse())
-                {
-                    COSObjectKey key = new COSObjectKey(next);
-                    COSObject obj = doc.getDocument().getObjectFromPool(key);
-                    obj.setObject(next.getObject());
-                }
-                doc.getDocument().removeObject(new COSObjectKey(objStream));
-            }
+            // It is sufficient to simply write the loaded pdf without further processing.
+            // As PDFBox doesn't support writing compressed object streams that streams will
+            // be simply omitted
             doc.save(outputFilename);
         }
         catch (IOException e)
         {
             System.err.println("Error processing file: " + e.getMessage());
-        }
-        finally
-        {
-            IOUtils.closeQuietly(doc);
         }
     }
 

@@ -31,6 +31,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 
 /**
@@ -151,7 +152,7 @@ public final class Decrypt
             {
                 keyStoreStream = new FileInputStream(keyStore);
             }
-            document = PDDocument.load(new File(infile), password, keyStoreStream, alias);
+            document = PDFParser.load(new File(infile), password, keyStoreStream, alias);
             
             if (document.isEncrypted())
             {

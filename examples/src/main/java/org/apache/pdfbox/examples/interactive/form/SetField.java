@@ -18,7 +18,9 @@ package org.apache.pdfbox.examples.interactive.form;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
@@ -106,7 +108,7 @@ public class SetField
             else
             {
                 SetField example = new SetField();
-                pdf = PDDocument.load(new File(args[0]));
+                pdf = PDFParser.load(new File(args[0]));
                 example.setField(pdf, args[1], args[2]);
                 pdf.save(args[0]);
             }

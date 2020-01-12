@@ -32,6 +32,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.ParallelParameterized;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
+
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -224,7 +226,7 @@ public class TestPDFToImage
         try
         {
             new FileOutputStream(new File(outDir, file.getName() + ".parseerror")).close();
-            document = PDDocument.load(file, (String)null);
+            document = PDFParser.load(file, (String) null);
             String outputPrefix = outDir + '/' + file.getName() + "-";
             int numPages = document.getNumberOfPages();
             if (numPages < 1)
@@ -258,7 +260,7 @@ public class TestPDFToImage
             document.save(tmpFile);
             new File(outDir, file.getName() + ".saveerror").delete();
             new FileOutputStream(new File(outDir, file.getName() + ".reloaderror")).close();
-            PDDocument.load(tmpFile, (String)null).close();
+            PDFParser.load(tmpFile, (String) null).close();
             new File(outDir, file.getName() + ".reloaderror").delete();
             tmpFile.delete();
         }

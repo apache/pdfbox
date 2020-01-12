@@ -18,6 +18,9 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This class represents a PDF object.
  *
@@ -30,6 +33,9 @@ public class COSObject extends COSBase implements COSUpdateInfo
     private long objectNumber;
     private int generationNumber;
     private boolean needToBeUpdated;
+    private ICOSParser parser;
+
+    private static final Log LOG = LogFactory.getLog(COSObject.class);
 
     /**
      * Constructor.
@@ -39,9 +45,21 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSObject(COSBase object)
     {
-        setObject( object );
+        this(object, null);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param object The object that this encapsulates.
+     * @param parser The parser to be used to load the object on demand
+     *
+     */
+    public COSObject(COSBase object, ICOSParser parser)
+    {
+        setObject( object );
+        this.parser = parser;
+    }
     /**
      * This will get the dictionary object in this object that has the name key and
      * if it is a pdfobjref then it will dereference that and return it.
@@ -77,6 +95,10 @@ public class COSObject extends COSBase implements COSUpdateInfo
         return retval;
     }
 
+    public boolean isObjectNull()
+    {
+        return baseObject == null;
+    }
     /**
      * This will get the object that this object encapsulates.
      *
@@ -84,6 +106,23 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSBase getObject()
     {
+        if ((baseObject == null || baseObject instanceof COSNull) && parser != null)
+        {
+            try
+            {
+                if (!parser.dereferenceCOSObject(this))
+                {
+                    // remove parser to avoid endless recursions
+                    parser = null;
+                }
+            }
+            catch (IOException e)
+            {
+                // remove parser to avoid endless recursions
+                parser = null;
+                LOG.error("Can't dereference " + this, e);
+            }
+        }
         return baseObject;
     }
 
@@ -95,6 +134,12 @@ public class COSObject extends COSBase implements COSUpdateInfo
     public final void setObject(COSBase object)
     {
         baseObject = object;
+    }
+
+    public final void setToNull()
+    {
+        baseObject = COSNull.NULL;
+        parser = null;
     }
 
     /**

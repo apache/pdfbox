@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
@@ -46,7 +47,6 @@ public class ExportXFDF
      * @param args command line arguments
      * @throws IOException in case the file can not be read or the data can not be exported.
      *
-     * @throws IOException If there is an error importing the FDF document.
      */
     public static void main(String[] args) throws IOException
     {
@@ -65,7 +65,7 @@ public class ExportXFDF
         }
         else
         {
-            try (PDDocument pdf = PDDocument.load( new File(args[0]) ))
+            try (PDDocument pdf = PDFParser.load(new File(args[0])))
             {
                 PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
                 if( form == null )

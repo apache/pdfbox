@@ -1575,7 +1575,10 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
         if (base instanceof COSObject)
         {
             COSObject obj = (COSObject) base;
-            return "COSObject{" + getDictionaryString(obj.getObject(), objs) + "}";
+            return "COSObject{"
+                    + getDictionaryString(
+                            obj.isObjectNull() ? COSNull.NULL : obj.getObject(), objs)
+                    + "}";
         }
         return base.toString();
     }

@@ -36,7 +36,6 @@ import java.util.StringTokenizer;
 import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -175,27 +174,9 @@ public class TestIsartorBavaria
     @Test()
     public void validate() throws Exception
     {
-        PreflightDocument document = null;
-        try
+        ValidationResult result = PreflightParser.validate(file);
+        if (result != null)
         {
-            ValidationResult result;
-            try
-            {
-                PreflightParser parser = new PreflightParser(file);
-                parser.parse();
-                document = (PreflightDocument) parser.getPDDocument();
-                // to speeds up tests, skip validation of page count is over the limit
-                if (document.getNumberOfPages() < 8191)
-                {
-                    document.validate();
-                }
-                result = document.getResult();
-            }
-            catch (SyntaxValidationException e)
-            {
-                result = e.getResult();
-            }
-            
             if (this.expectedErrorSet.isEmpty())
             {
                 Set<String> errorSet = new HashSet<>();
@@ -205,7 +186,7 @@ public class TestIsartorBavaria
                 }
                 StringBuilder message = new StringBuilder();
                 message.append(file.getName());
-                message.append( " : PDF/A file should be valid, but has error");
+                message.append(" : PDF/A file should be valid, but has error");
                 if (errorSet.size() > 1)
                 {
                     message.append('s');
@@ -221,8 +202,8 @@ public class TestIsartorBavaria
             }
             else
             {
-                assertFalse(file.getName() + " : PDF/A file should be invalid (expected " +
-                        this.expectedErrorSet + ")", result.isValid()); //TODO
+                assertFalse(file.getName() + " : PDF/A file should be invalid (expected "
+                        + this.expectedErrorSet + ")", result.isValid()); // TODO
 
                 assertTrue(file.getName() + " : Should find at least one error",
                         result.getErrorsList().size() > 0);
@@ -241,8 +222,8 @@ public class TestIsartorBavaria
                         }
                         if (isartorResultFile != null && !logged)
                         {
-                            String log = file.getName().replace(".pdf", "") + "#" + error.getErrorCode() +
-                                    "#" + error.getDetails() + "\n";
+                            String log = file.getName().replace(".pdf", "") + "#"
+                                    + error.getErrorCode() + "#" + error.getDetails() + "\n";
                             isartorResultFile.write(log.getBytes());
                         }
                     }
@@ -251,7 +232,7 @@ public class TestIsartorBavaria
                         allFound = false;
                         break;
                     }
-                    
+
                     // log only in the first inner loop
                     logged = true;
                 }
@@ -275,13 +256,6 @@ public class TestIsartorBavaria
                             file.getName(), expectedErrorSet, message.toString().trim()));
                 }
                 // if each of the expected errors are found, we consider test valid
-            }
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
             }
         }
     }

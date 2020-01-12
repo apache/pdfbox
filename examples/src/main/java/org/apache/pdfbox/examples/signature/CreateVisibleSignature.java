@@ -31,6 +31,7 @@ import java.util.Calendar;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -190,7 +191,7 @@ public class CreateVisibleSignature extends CreateSignatureBase
         // creating output document and prepare the IO streams.
         
         try (FileOutputStream fos = new FileOutputStream(signedFile);
-                PDDocument doc = PDDocument.load(inputFile))
+                PDDocument doc = PDFParser.load(inputFile))
         {
             int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)

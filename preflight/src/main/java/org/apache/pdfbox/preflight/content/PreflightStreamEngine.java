@@ -223,19 +223,12 @@ public abstract class PreflightStreamEngine extends PDFStreamEngine
      */
     protected void validateRenderingIntent(Operator operator, List<COSBase> arguments) throws ContentStreamException
     {
-        if (OperatorName.SET_RENDERINGINTENT.equals(operator.getName()))
+        if (OperatorName.SET_RENDERINGINTENT.equals(operator.getName())
+                && arguments.get(0) instanceof COSName
+                && !RenderingIntents.contains((COSName) arguments.get(0)))
         {
-            String riArgument0 = "";
-            if (arguments.get(0) instanceof COSName)
-            {
-                riArgument0 = ((COSName) arguments.get(0)).getName();
-            }
-
-            if (!RenderingIntents.contains(riArgument0))
-            {
-                registerError("Unexpected value '" + arguments.get(0) + "' for ri operand. ",
-                        ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
-            }
+            registerError("Unexpected value '" + arguments.get(0) + "' for ri operand. ",
+                    ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY);
         }
     }
 

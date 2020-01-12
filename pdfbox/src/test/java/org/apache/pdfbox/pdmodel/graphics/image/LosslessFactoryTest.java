@@ -37,15 +37,12 @@ import java.util.Hashtable;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
-import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
@@ -122,7 +119,7 @@ public class LosslessFactoryTest extends TestCase
         document.save(pdfFile);
         document.close();
         
-        document = PDDocument.load(pdfFile, (String)null);
+        document = PDFParser.load(pdfFile, (String) null);
         new PDFRenderer(document).renderImage(0);
         document.close();
     }
@@ -481,7 +478,7 @@ public class LosslessFactoryTest extends TestCase
         File pdfFile = new File(testResultsDir, pdfFilename);
         document.save(pdfFile);
         document.close();
-        document = PDDocument.load(pdfFile, (String)null);
+        document = PDFParser.load(pdfFile, (String) null);
         new PDFRenderer(document).renderImage(0);
         document.close();
     }
@@ -519,7 +516,8 @@ public class LosslessFactoryTest extends TestCase
                 ColorModel.OPAQUE, dataBufferType);
         WritableRaster targetRaster = Raster.createInterleavedRaster(dataBufferType, image.getWidth(), image.getHeight(),
                 targetCS.getNumComponents(), new Point(0, 0));
-        BufferedImage img16Bit = new BufferedImage(colorModel, targetRaster, false, new Hashtable());
+        BufferedImage img16Bit = new BufferedImage(colorModel, targetRaster, false,
+                new Hashtable<>());
         ColorConvertOp op = new ColorConvertOp(image.getColorModel().getColorSpace(), targetCS, null);
         op.filter(image, img16Bit);
 

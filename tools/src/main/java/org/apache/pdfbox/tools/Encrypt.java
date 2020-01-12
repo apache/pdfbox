@@ -25,6 +25,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
@@ -163,7 +164,7 @@ public final class Encrypt
                 {
                     outfile = infile;
                 }
-                document = PDDocument.load( new File(infile) );
+                document = PDFParser.load(new File(infile));
 
                 if( !document.isEncrypted() )
                 {

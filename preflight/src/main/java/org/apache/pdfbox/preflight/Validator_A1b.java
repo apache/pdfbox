@@ -39,7 +39,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.parser.XmlResultParser;
 import org.apache.pdfbox.util.Version;
@@ -166,21 +165,7 @@ public class Validator_A1b
 
     private static int runSimple(File file) throws IOException
     {
-        ValidationResult result;
-        PreflightParser parser = new PreflightParser(file);
-        try
-        {
-            parser.parse();
-            try (PreflightDocument document = parser.getPreflightDocument())
-            {
-                document.validate();
-                result = document.getResult();
-            }
-        }
-        catch (SyntaxValidationException e)
-        {
-            result = e.getResult();
-        }
+        ValidationResult result = PreflightParser.validate(file);
 
         if (result.isValid())
         {

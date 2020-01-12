@@ -29,6 +29,7 @@ import javax.crypto.Cipher;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
@@ -83,7 +84,7 @@ public class TestPublicKeyEncryption
      * @return
      */
     @Parameterized.Parameters
-    public static Collection keyLengths()
+    public static Collection<Integer> keyLengths()
     {
         return Arrays.asList(40, 128, 256);
     }
@@ -134,7 +135,7 @@ public class TestPublicKeyEncryption
         keyStore1 = "test1.pfx";
         keyStore2 = "test2.pfx";
 
-        document = PDDocument.load(new File(this.getClass().getResource("test.pdf").toURI()));
+        document = PDFParser.load(new File(this.getClass().getResource("test.pdf").toURI()));
         text = new PDFTextStripper().getText(document);
         producer = document.getDocumentInformation().getProducer();
         document.setVersion(1.7f);
@@ -275,7 +276,7 @@ public class TestPublicKeyEncryption
     private PDDocument reload(File file, String decryptionPassword, InputStream keyStore)
             throws IOException, NoSuchAlgorithmException
     {
-        PDDocument doc2 = PDDocument.load(file, decryptionPassword,
+        PDDocument doc2 = PDFParser.load(file, decryptionPassword,
                 keyStore, null, MemoryUsageSetting.setupMainMemoryOnly());
         Assert.assertEquals("Extracted text is different",
                                 text,

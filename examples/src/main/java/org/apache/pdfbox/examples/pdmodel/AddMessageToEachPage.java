@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -56,7 +57,7 @@ public class AddMessageToEachPage
      */
     public void doIt( String file, String message, String  outfile ) throws IOException
     {
-        try (PDDocument doc = PDDocument.load(new File(file)))
+        try (PDDocument doc = PDFParser.load(new File(file)))
         {
             PDFont font = PDType1Font.HELVETICA_BOLD;
             float fontSize = 36.0f;

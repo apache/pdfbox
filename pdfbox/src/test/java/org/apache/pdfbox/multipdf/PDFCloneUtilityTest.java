@@ -19,7 +19,9 @@ import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import junit.framework.TestCase;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
@@ -96,9 +98,9 @@ public class PDFCloneUtilityTest extends TestCase
 
         // save and reload PDF, so that one can see that the files are legit
         dstDoc.save(TESTDIR + CLONEDST);
-        PDDocument.load(new File(TESTDIR + CLONESRC)).close();
-        PDDocument.load(new File(TESTDIR + CLONESRC), (String)null).close();
-        PDDocument.load(new File(TESTDIR + CLONEDST)).close();
-        PDDocument.load(new File(TESTDIR + CLONEDST), (String)null).close();
+        PDFParser.load(new File(TESTDIR + CLONESRC)).close();
+        PDFParser.load(new File(TESTDIR + CLONESRC), (String) null).close();
+        PDFParser.load(new File(TESTDIR + CLONEDST)).close();
+        PDFParser.load(new File(TESTDIR + CLONEDST), (String) null).close();
     }
 }

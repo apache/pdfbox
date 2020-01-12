@@ -46,6 +46,7 @@ import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.TestPDPageTree;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -250,7 +251,7 @@ public class TestTextStripper extends TestCase
         }
 
         //System.out.println("  " + inFile + (bSort ? " (sorted)" : ""));
-        try (PDDocument document = PDDocument.load(inFile))
+        try (PDDocument document = PDFParser.load(inFile))
         {
             File outFile;
             File diffFile;
@@ -352,7 +353,7 @@ public class TestTextStripper extends TestCase
                 List<String> revised = fileToLines(outFile);
 
                 // Compute diff. Get the Patch object. Patch is the container for computed deltas.
-                Patch patch = DiffUtils.diff(original, revised);
+                Patch<String> patch = DiffUtils.diff(original, revised);
 
                 try (PrintStream diffPS = new PrintStream(diffFile, ENCODING))
                 {
@@ -437,7 +438,8 @@ public class TestTextStripper extends TestCase
      */
     public void testStripByOutlineItems() throws IOException, URISyntaxException
     {
-        PDDocument doc = PDDocument.load(new File(TestPDPageTree.class.getResource("with_outline.pdf").toURI()));
+        PDDocument doc = PDFParser
+                .load(new File(TestPDPageTree.class.getResource("with_outline.pdf").toURI()));
         PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
         Iterable<PDOutlineItem> children = outline.children();
         Iterator<PDOutlineItem> it = children.iterator();

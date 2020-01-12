@@ -36,6 +36,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
@@ -168,7 +169,7 @@ public class TestSymmetricKeyEncryption extends TestCase
     private void checkPerms(byte[] inputFileAsByteArray, String password,
             AccessPermission expectedPermissions) throws IOException
     {
-        try (PDDocument doc = PDDocument.load(inputFileAsByteArray, password))
+        try (PDDocument doc = PDFParser.load(inputFileAsByteArray, password))
         {
             AccessPermission currentAccessPermission = doc.getCurrentAccessPermission();
             
@@ -300,7 +301,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             doc.save(file);
         }
 
-        try (PDDocument doc = PDDocument.load(file))
+        try (PDDocument doc = PDFParser.load(file))
         {
             Assert.assertTrue(doc.isEncrypted());
             for (int i = 0; i < TESTCOUNT; ++i)
@@ -318,7 +319,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             String userpassword, String ownerpassword,
             AccessPermission permission) throws IOException
     {
-        PDDocument document = PDDocument.load(inputFileAsByteArray);
+        PDDocument document = PDFParser.load(inputFileAsByteArray);
         String prefix = "Simple-";
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
@@ -386,7 +387,7 @@ public class TestSymmetricKeyEncryption extends TestCase
                 sizeEncrypted != sizePriorToEncr);
 
         // test with owner password => full permissions
-        PDDocument encryptedDoc = PDDocument.load(pdfFile, ownerpassword);
+        PDDocument encryptedDoc = PDFParser.load(pdfFile, ownerpassword);
         Assert.assertTrue(encryptedDoc.isEncrypted());
         Assert.assertTrue(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
 
@@ -408,7 +409,7 @@ public class TestSymmetricKeyEncryption extends TestCase
         encryptedDoc.close();
 
         // test with user password => restricted permissions
-        encryptedDoc = PDDocument.load(pdfFile, userpassword);
+        encryptedDoc = PDFParser.load(pdfFile, userpassword);
         Assert.assertTrue(encryptedDoc.isEncrypted());
         Assert.assertFalse(encryptedDoc.getCurrentAccessPermission().isOwnerPermission());
 
@@ -420,8 +421,7 @@ public class TestSymmetricKeyEncryption extends TestCase
     // extract the embedded file, saves it, and return the extracted saved file
     private File extractEmbeddedFile(InputStream pdfInputStream, String name) throws IOException
     {
-        PDDocument docWithEmbeddedFile;
-        docWithEmbeddedFile = PDDocument.load(pdfInputStream);
+        PDDocument docWithEmbeddedFile = PDFParser.load(pdfInputStream);
         PDDocumentCatalog catalog = docWithEmbeddedFile.getDocumentCatalog();
         PDDocumentNameDictionary names = catalog.getNames();
         PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
@@ -450,7 +450,7 @@ public class TestSymmetricKeyEncryption extends TestCase
             File embeddedFilePriorToEncryption,
             String userpassword, String ownerpassword) throws IOException
     {
-        PDDocument document = PDDocument.load(inputFileWithEmbeddedFileAsByteArray);
+        PDDocument document = PDFParser.load(inputFileWithEmbeddedFileAsByteArray);
         try (PDDocument encryptedDoc = encrypt(keyLength, preferAES, sizePriorToEncr, document, "ContainsEmbedded-", permission, userpassword, ownerpassword))
         {
             File decryptedFile = new File(testResultsDir, "DecryptedContainsEmbedded-" + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + ".pdf");

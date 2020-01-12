@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -53,7 +54,7 @@ public final class RubberStamp
         }
         else
         {
-            try (PDDocument document = PDDocument.load(new File(args[0])))
+            try (PDDocument document = PDFParser.load(new File(args[0])))
             {
                 if( document.isEncrypted() )
                 {

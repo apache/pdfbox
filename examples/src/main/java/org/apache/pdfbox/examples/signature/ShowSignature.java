@@ -141,9 +141,7 @@ public final class ShowSignature
             // with IOUtils.toByteArray() and pass a RandomAccessBuffer() object to the
             // PDFParser constructor.
             PDFParser parser = new PDFParser(raFile, password);
-            parser.setLenient(false);
-            parser.parse();
-            try (PDDocument document = parser.getPDDocument())
+            try (PDDocument document = parser.parse(false))
             {
                 for (PDSignature sig : document.getSignatureDictionaries())
                 {

@@ -1156,6 +1156,17 @@ public abstract class BaseParser
     }
 
     /**
+     * This will tell if the end of the data is reached.
+     * 
+     * @return true if the end of the data is reached.
+     * @throws IOException If there is an error reading from the stream.
+     */
+    protected boolean isEOF() throws IOException
+    {
+        return seqSource.isEOF();
+    }
+
+    /**
      * This will tell if the next byte to be read is an end of line byte.
      *
      * @param c The character to check against end of line

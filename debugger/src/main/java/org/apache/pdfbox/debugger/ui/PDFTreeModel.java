@@ -134,10 +134,6 @@ public class PDFTreeModel implements TreeModel
         {
             retval = getChild( ((ArrayEntry)parent).getValue(), index );
         }
-        else if( parent instanceof COSDocument )
-        {
-            retval = ((COSDocument)parent).getObjects().get( index );
-        }
         else if( parent instanceof DocumentEntry)
         {
             retval = ((DocumentEntry)parent).getPage(index);
@@ -185,10 +181,6 @@ public class PDFTreeModel implements TreeModel
         else if( parent instanceof ArrayEntry )
         {
             retval = getChildCount(((ArrayEntry) parent).getValue());
-        }
-        else if( parent instanceof COSDocument )
-        {
-            retval = ((COSDocument)parent).getObjects().size();
         }
         else if( parent instanceof DocumentEntry )
         {
@@ -255,10 +247,6 @@ public class PDFTreeModel implements TreeModel
             else if( parent instanceof ArrayEntry )
             {
                 retval = getIndexOfChild( ((ArrayEntry)parent).getValue(), child );
-            }
-            else if( parent instanceof COSDocument )
-            {
-                retval = ((COSDocument)parent).getObjects().indexOf( child );
             }
             else if( parent instanceof DocumentEntry )
             {

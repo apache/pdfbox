@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdfparser.PDFParser;
 
 import junit.framework.TestCase;
 
@@ -70,7 +71,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), StandardCharsets.UTF_8));
 
         // Load
-        PDDocument loadDoc = PDDocument.load(new ByteArrayInputStream(pdf));
+        PDDocument loadDoc = PDFParser.load(new ByteArrayInputStream(pdf));
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }
@@ -100,7 +101,7 @@ public class TestPDDocument extends TestCase
         assertEquals("%%EOF\n", new String(Arrays.copyOfRange(pdf, pdf.length - 6, pdf.length), StandardCharsets.UTF_8));
 
         // Load
-        PDDocument loadDoc = PDDocument.load(targetFile);
+        PDDocument loadDoc = PDFParser.load(targetFile);
         assertEquals(1, loadDoc.getNumberOfPages());
         loadDoc.close();
     }
@@ -158,7 +159,7 @@ public class TestPDDocument extends TestCase
         PDDocument doc = null;
         try
         {
-            doc = PDDocument.load(f);
+            doc = PDFParser.load(f);
             fail("parsing should fail");
         }
         catch (IOException ex)
@@ -187,7 +188,7 @@ public class TestPDDocument extends TestCase
         doc.save(f);
         doc.close();
 
-        PDDocument.load(f).close();
+        PDFParser.load(f).close();
 
         boolean deleted = f.delete();
         assertTrue("delete good file failed after successful load() and close()", deleted);
@@ -210,7 +211,7 @@ public class TestPDDocument extends TestCase
         doc.save(baos);
         doc.close();
 
-        PDDocument.load(new ByteArrayInputStream(baos.toByteArray())).close();
+        PDFParser.load(new ByteArrayInputStream(baos.toByteArray())).close();
 
         Locale.setDefault(defaultLocale);
     }

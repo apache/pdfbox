@@ -26,6 +26,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,7 +47,7 @@ public class PDStructureElementTest
     public void testPDFBox4197() throws IOException
     {
         Set<Revisions<PDAttributeObject>> attributeSet = new HashSet<>();
-        try (PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-4197.pdf")))
+        try (PDDocument doc = PDFParser.load(new File(TARGETPDFDIR, "PDFBOX-4197.pdf")))
         {
             PDStructureTreeRoot structureTreeRoot = doc.getDocumentCatalog().getStructureTreeRoot();
             checkElement(structureTreeRoot.getK(), attributeSet);

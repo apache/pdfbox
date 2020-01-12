@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -65,8 +66,8 @@ public class TestLayerUtility extends TestCase
         File overlay1 = createOverlay1();
         File targetFile = new File(testResultsDir, "text-with-form-overlay.pdf");
 
-        try (PDDocument targetDoc = PDDocument.load(mainPDF);
-             PDDocument overlay1Doc = PDDocument.load(overlay1))
+        try (PDDocument targetDoc = PDFParser.load(mainPDF);
+                PDDocument overlay1Doc = PDFParser.load(overlay1))
         {
             LayerUtility layerUtil = new LayerUtility(targetDoc);
             PDFormXObject form = layerUtil.importPageAsForm(overlay1Doc, 0);
@@ -78,7 +79,7 @@ public class TestLayerUtility extends TestCase
             targetDoc.save(targetFile.getAbsolutePath());
         }
 
-        try (PDDocument doc = PDDocument.load(targetFile))
+        try (PDDocument doc = PDFParser.load(targetFile))
         {
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 

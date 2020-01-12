@@ -37,6 +37,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -262,7 +263,7 @@ public class Overlay implements Closeable
     
     private PDDocument loadPDF(String pdfName) throws IOException
     {
-        return PDDocument.load(new File(pdfName));
+        return PDFParser.load(new File(pdfName));
     }
 
     /**

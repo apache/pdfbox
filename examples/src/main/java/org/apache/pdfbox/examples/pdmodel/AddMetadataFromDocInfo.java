@@ -17,6 +17,7 @@
 package org.apache.pdfbox.examples.pdmodel;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -61,7 +62,7 @@ public final class AddMetadataFromDocInfo
         }
         else
         {
-            try (PDDocument document = PDDocument.load(new File(args[0])))
+            try (PDDocument document = PDFParser.load(new File(args[0])))
             {
                 if (document.isEncrypted())
                 {

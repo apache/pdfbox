@@ -57,7 +57,8 @@ public class PageTreeValidationProcess extends AbstractProcess
                 context.setCurrentPageNumber(p);
                 validatePage(context, page);
 
-                if (context.getDocument().getResult().getErrorsList().size() > context.getConfig().getMaxErrors())
+                if (context.getDocument().getValidationErrors().size() > context.getConfig()
+                        .getMaxErrors())
                 {
                     context.addValidationError(new ValidationError(PreflightConstants.ERROR_UNKNOWN_ERROR, 
                             "Over " + context.getConfig().getMaxErrors() +
@@ -74,7 +75,7 @@ public class PageTreeValidationProcess extends AbstractProcess
         }
     }
 
-    protected void validatePage(PreflightContext context, PDPage page) throws ValidationException
+    private void validatePage(PreflightContext context, PDPage page) throws ValidationException
     {
         ContextHelper.validateElement(context, page, PAGE_PROCESS);
     }

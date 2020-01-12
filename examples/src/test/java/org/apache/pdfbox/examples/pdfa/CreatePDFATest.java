@@ -23,9 +23,9 @@ import java.security.KeyStore;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
-import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
@@ -69,21 +69,15 @@ public class CreatePDFATest extends TestCase
         signing.signDetached(new File(pdfaFilename), new File(signedPdfaFilename));
 
         // Verify that it is PDF/A-1b
-        PreflightParser preflightParser = new PreflightParser(new File(signedPdfaFilename));
-        preflightParser.parse();
-        try (PreflightDocument preflightDocument = preflightParser.getPreflightDocument())
+        ValidationResult result = PreflightParser.validate(new File(signedPdfaFilename));
+        for (ValidationError ve : result.getErrorsList())
         {
-            preflightDocument.validate();
-            ValidationResult result = preflightDocument.getResult();
-            for (ValidationError ve : result.getErrorsList())
-            {
-                System.err.println(ve.getErrorCode() + ": " + ve.getDetails());
-            }
-            assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
+            System.err.println(ve.getErrorCode() + ": " + ve.getDetails());
         }
+        assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
 
         // check the XMP metadata
-        try (PDDocument document = PDDocument.load(new File(pdfaFilename)))
+        try (PDDocument document = PDFParser.load(new File(pdfaFilename)))
         {
             PDDocumentCatalog catalog = document.getDocumentCatalog();
             PDMetadata meta = catalog.getMetadata();

@@ -26,6 +26,7 @@ import java.util.Locale;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -63,7 +64,7 @@ public class RubberStampWithImage
         }
         else 
         {
-            try (PDDocument document = PDDocument.load(new File(args[0])))
+            try (PDDocument document = PDFParser.load(new File(args[0])))
             {
                 if( document.isEncrypted() )
                 {

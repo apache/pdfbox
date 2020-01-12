@@ -45,6 +45,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
@@ -357,11 +358,11 @@ public class PDFMergerUtility
                 {
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = PDDocument.load((File) sourceObject, memUsageSetting);
+                        sourceDoc = PDFParser.load((File) sourceObject, memUsageSetting);
                     }
                     else
                     {
-                        sourceDoc = PDDocument.load((InputStream) sourceObject, memUsageSetting);
+                        sourceDoc = PDFParser.load((InputStream) sourceObject, memUsageSetting);
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
@@ -433,11 +434,11 @@ public class PDFMergerUtility
                     PDDocument sourceDoc = null;
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = PDDocument.load((File) sourceObject, partitionedMemSetting);
+                        sourceDoc = PDFParser.load((File) sourceObject, partitionedMemSetting);
                     }
                     else
                     {
-                        sourceDoc = PDDocument.load((InputStream) sourceObject,
+                        sourceDoc = PDFParser.load((InputStream) sourceObject,
                                 partitionedMemSetting);
                     }
                     tobeclosed.add(sourceDoc);

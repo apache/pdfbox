@@ -29,6 +29,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationPopup;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.preflight.PreflightContext;
@@ -39,7 +40,6 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.GRAPHIC_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_COLOR;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_FORBIDDEN_FLAG;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ANNOT_INVALID_AP_CONTENT;
@@ -292,7 +292,7 @@ public abstract class AnnotationValidator
     protected boolean checkPopup() throws ValidationException
     {
         COSBase cosPopup = this.annotDictionary
-                .getDictionaryObject(COSName.getPDFName(ANNOT_DICTIONARY_VALUE_SUBTYPE_POPUP));
+                .getDictionaryObject(COSName.getPDFName(PDAnnotationPopup.SUB_TYPE));
         if (cosPopup != null)
         {
             if (!(cosPopup instanceof COSDictionary))

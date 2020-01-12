@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.Assert;
 import org.junit.Test;
@@ -48,28 +47,8 @@ public class TestValidDirectory
     @Test
     public void validate() throws Exception
     {
-        PreflightDocument document = null;
         System.out.println(target);
-        ValidationResult result = null;
-        try
-        {
-            PreflightParser parser = new PreflightParser(target);
-            parser.parse();
-            document = (PreflightDocument) parser.getPDDocument();
-            document.validate();
-            result = document.getResult();
-        }
-        catch (SyntaxValidationException e)
-        {
-            result = e.getResult();
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
-            }
-        }
+        ValidationResult result = PreflightParser.validate(target);
         Assert.assertTrue("Validation of " + target, result.isValid());
     }
 

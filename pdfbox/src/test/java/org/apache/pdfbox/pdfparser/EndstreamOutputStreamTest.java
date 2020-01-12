@@ -116,7 +116,7 @@ public class EndstreamOutputStreamTest
 
         // Modification of embedded_zip.pdf for 2.0:
         // /Length entry removed to force usage of EndstreamOutputStream
-        try (PDDocument doc = PDDocument.load(
+        try (PDDocument doc = PDFParser.load(
                 new File("src/test/resources/org/apache/pdfbox/pdfparser", "embedded_zip.pdf")))
         {
             PDDocumentCatalog catalog = doc.getDocumentCatalog();

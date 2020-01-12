@@ -47,6 +47,7 @@ import org.apache.pdfbox.examples.signature.cert.CertificateVerificationExceptio
 import org.apache.pdfbox.examples.signature.cert.OcspHelper;
 import org.apache.pdfbox.examples.signature.cert.RevokedCertificateException;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
@@ -100,7 +101,7 @@ public class AddValidationInformation
             throw new FileNotFoundException("Document for signing does not exist");
         }
 
-        try (PDDocument doc = PDDocument.load(inFile);
+        try (PDDocument doc = PDFParser.load(inFile);
                 FileOutputStream fos = new FileOutputStream(outFile))
         {
             document = doc;

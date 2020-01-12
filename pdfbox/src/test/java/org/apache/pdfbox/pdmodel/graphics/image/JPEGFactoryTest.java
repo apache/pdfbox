@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
@@ -263,7 +264,7 @@ public class JPEGFactoryTest extends TestCase
     private void checkJpegStream(File testResultsDir, String filename, InputStream resourceStream)
             throws IOException
     {
-        PDDocument doc = PDDocument.load(new File(testResultsDir, filename));
+        PDDocument doc = PDFParser.load(new File(testResultsDir, filename));
         PDImageXObject img =
                 (PDImageXObject) doc.getPage(0).getResources().getXObject(COSName.getPDFName("Im1"));
         InputStream dctStream = img.createInputStream(Arrays.asList(COSName.DCT_DECODE.getName()));

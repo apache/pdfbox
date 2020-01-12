@@ -335,8 +335,10 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName LENGTH = new COSName("Length");
     public static final COSName LENGTH1 = new COSName("Length1");
     public static final COSName LENGTH2 = new COSName("Length2");
+    public static final COSName LENGTH3 = new COSName("Length3");
     public static final COSName LIGHTEN = new COSName("Lighten");
     public static final COSName LIMITS = new COSName("Limits");
+    public static final COSName LINEARIZED = new COSName("Linearized");
     public static final COSName LJ = new COSName("LJ");
     public static final COSName LL = new COSName("LL");
     public static final COSName LLE = new COSName("LLE");
@@ -568,6 +570,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName URI = new COSName("URI");
     public static final COSName URL = new COSName("URL");
     public static final COSName URL_TYPE = new COSName("URLType");
+    public static final COSName USE_CMAP = new COSName("UseCMap");
     public static final COSName USER_UNIT = new COSName("UserUnit");
     // V
     public static final COSName V = new COSName("V");
@@ -590,6 +593,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     public static final COSName WIDTH = new COSName("Width");
     public static final COSName WIDTHS = new COSName("Widths");
     public static final COSName WIN_ANSI_ENCODING = new COSName("WinAnsiEncoding");
+    public static final COSName WMODE = new COSName("WMode");
     // X
     public static final COSName XFA = new COSName("XFA");
     public static final COSName X_STEP = new COSName("XStep");

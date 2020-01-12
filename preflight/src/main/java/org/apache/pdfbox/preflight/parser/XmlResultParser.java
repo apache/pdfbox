@@ -32,36 +32,47 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
-import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.preflight.PreflightDocument;
+import org.apache.pdfbox.preflight.Format;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
-import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 public class XmlResultParser
 {
 
-
+    /**
+     * Validate the given file.
+     * 
+     * @param file the file to be validated
+     * @return the validation results as XML
+     * @throws IOException if something went wrong
+     */
     public Element validate(File file) throws IOException
     {
-        return validate(new RandomAccessBufferedFileInputStream(file), file.getName());
+        return validate(file, file.getName());
     }
 
+    /**
+     * Validate the given file. Add the validation results to the given XML tree.
+     * 
+     * @param rdocument XML based validation results of a former run
+     * @param file the file to be validated
+     * @return the validation results as XML
+     * @throws IOException if something went wrong
+     */
     public Element validate(Document rdocument, File file) throws IOException
     {
-        return validate(rdocument, new RandomAccessBufferedFileInputStream(file), file.getName());
+        return validate(rdocument, file, file.getName());
     }
 
-    private Element validate(RandomAccessRead source, String name) throws IOException
+    private Element validate(File file, String name) throws IOException
     {
         try
         {
             @SuppressWarnings({"squid:S2755"}) // self-created XML
             Document rdocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            return validate(rdocument, source, name);
+            return validate(rdocument, file, name);
         }
         catch (ParserConfigurationException e)
         {
@@ -70,29 +81,15 @@ public class XmlResultParser
     }
 
 
-    private Element validate(Document rdocument, RandomAccessRead source, String name)
+    private Element validate(Document rdocument, File file, String name)
             throws IOException
     {
-        String pdfType = null;
+        String pdfType = Format.PDF_A1B.getFname();
         ValidationResult result;
         long before = System.currentTimeMillis();
         try
         {
-            PreflightParser parser = new PreflightParser(source);
-            try
-            {
-                parser.parse();
-                try (PreflightDocument document = parser.getPreflightDocument())
-                {
-                    document.validate();
-                    pdfType = document.getSpecification().getFname();
-                    result = document.getResult();
-                }
-            }
-            catch (SyntaxValidationException e)
-            {
-                result = e.getResult();
-            }
+            result = PreflightParser.validate(file);
         } 
         catch(Exception e) 
         {
@@ -175,7 +172,8 @@ public class XmlResultParser
          return cleaned;
     }
 
-    protected Element generateFailureResponse(Document rdocument, String name,long duration, String pdfType, Exception e)
+    private Element generateFailureResponse(Document rdocument, String name, long duration,
+            String pdfType, Exception e)
     {
         Element preflight = generateResponseSkeleton(rdocument, name, duration);
         // valid ?

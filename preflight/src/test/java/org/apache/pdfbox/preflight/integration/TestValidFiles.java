@@ -32,9 +32,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
-import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -129,33 +127,16 @@ public class TestValidFiles
             logger.warn("This is an empty test");
             return;
         }
-        PreflightDocument document = null;
-        try
-        {
-            PreflightParser parser = new PreflightParser(path);
-            parser.parse();
-            document = parser.getPreflightDocument();
-            document.validate();
+        ValidationResult result = PreflightParser.validate(path);
 
-            ValidationResult result = document.getResult();
-            Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")", result.isValid());
-            Assert.assertTrue(path + " : Should find at least one error", result.getErrorsList().size() > 0);
-            // could contain more than one error
-            if (result.getErrorsList().size() > 0)
-            {
-                Assert.fail("File expected valid : " + path.getAbsolutePath());
-            }
-        }
-        catch (ValidationException e)
+        Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")",
+                result.isValid());
+        Assert.assertTrue(path + " : Should find at least one error",
+                result.getErrorsList().size() > 0);
+        // could contain more than one error
+        if (result.getErrorsList().size() > 0)
         {
-            throw new Exception(path + " :" + e.getMessage(), e);
-        }
-        finally
-        {
-            if (document != null)
-            {
-                document.close();
-            }
+            Assert.fail("File expected valid : " + path.getAbsolutePath());
         }
     }
 
