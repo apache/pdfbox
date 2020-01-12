@@ -67,8 +67,8 @@ public final class ExtractImages
             COSName.DCT_DECODE.getName(),
             COSName.DCT_DECODE_ABBREVIATION.getName());
 
-    private boolean directJPEG;
-    private String prefix;
+    private boolean useDirectJPEG;
+    private String filePrefix;
 
     private final Set<COSStream> seen = new HashSet<COSStream>();
     private int imageCounter = 1;
@@ -121,11 +121,11 @@ public final class ExtractImages
                     {
                         usage();
                     }
-                    prefix = args[i];
+                    filePrefix = args[i];
                 }
                 else if (args[i].equals(DIRECTJPEG))
                 {
-                    directJPEG = true;
+                    useDirectJPEG = true;
                 }
                 else
                 {
@@ -141,9 +141,9 @@ public final class ExtractImages
             }
             else
             {
-                if (prefix == null && pdfFile.length() >4)
+                if (filePrefix == null && pdfFile.length() > 4)
                 {
-                    prefix = pdfFile.substring(0, pdfFile.length() -4);
+                    filePrefix = pdfFile.substring(0, pdfFile.length() - 4);
                 }
 
                 extract(pdfFile, password);
@@ -243,11 +243,11 @@ public final class ExtractImages
             }
 
             // save image
-            String name = prefix + "-" + imageCounter;
+            String name = filePrefix + "-" + imageCounter;
             imageCounter++;
 
             System.out.println("Writing image: " + name);
-            write2file(pdImage, name, directJPEG);
+            write2file(pdImage, name, useDirectJPEG);
         }
 
         @Override
