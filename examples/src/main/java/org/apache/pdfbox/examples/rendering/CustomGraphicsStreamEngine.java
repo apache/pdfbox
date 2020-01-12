@@ -84,7 +84,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     @Override
     public void appendRectangle(Point2D p0, Point2D p1, Point2D p2, Point2D p3) throws IOException
     {
-        System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f\n",
+        System.out.printf("appendRectangle %.2f %.2f, %.2f %.2f, %.2f %.2f, %.2f %.2f%n",
                 p0.getX(), p0.getY(), p1.getX(), p1.getY(),
                 p2.getX(), p2.getY(), p3.getX(), p3.getY());
     }
@@ -104,19 +104,19 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
     @Override
     public void moveTo(float x, float y) throws IOException
     {
-        System.out.printf("moveTo %.2f %.2f\n", x, y);
+        System.out.printf("moveTo %.2f %.2f%n", x, y);
     }
 
     @Override
     public void lineTo(float x, float y) throws IOException
     {
-        System.out.printf("lineTo %.2f %.2f\n", x, y);
+        System.out.printf("lineTo %.2f %.2f%n", x, y);
     }
 
     @Override
     public void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) throws IOException
     {
-        System.out.printf("curveTo %.2f %.2f, %.2f %.2f, %.2f %.2f\n", x1, y1, x2, y2, x3, y3);
+        System.out.printf("curveTo %.2f %.2f, %.2f %.2f, %.2f %.2f%n", x1, y1, x2, y2, x3, y3);
     }
 
     @Override
