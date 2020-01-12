@@ -59,7 +59,6 @@ import org.apache.pdfbox.util.Vector;
  */
 public class DrawPrintTextLocations extends PDFTextStripper
 {
-    private BufferedImage image;
     private AffineTransform flipAT;
     private AffineTransform rotateAT;
     private AffineTransform transAT;
@@ -194,8 +193,7 @@ public class DrawPrintTextLocations extends PDFTextStripper
     private void stripPage(int page) throws IOException
     {
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        image = pdfRenderer.renderImage(page, SCALE);
-        
+        BufferedImage image = pdfRenderer.renderImage(page, SCALE);
         PDPage pdPage = document.getPage(page);
         PDRectangle cropBox = pdPage.getCropBox();
 
