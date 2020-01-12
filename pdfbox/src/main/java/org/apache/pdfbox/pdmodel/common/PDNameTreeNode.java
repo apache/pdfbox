@@ -135,7 +135,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
      */
     public void setKids( List<? extends PDNameTreeNode<T>> kids )
     {
-        if (kids != null && kids.size() > 0)
+        if (kids != null && !kids.isEmpty())
         {
             for (PDNameTreeNode<T> kidsNode : kids)
             {
@@ -167,7 +167,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
         else
         {
             List<PDNameTreeNode<T>> kids = getKids();
-            if (kids != null && kids.size() > 0)
+            if (kids != null && !kids.isEmpty())
             {
                 PDNameTreeNode<T> firstKid = kids.get(0);
                 PDNameTreeNode<T> lastKid = kids.get(kids.size() - 1);
