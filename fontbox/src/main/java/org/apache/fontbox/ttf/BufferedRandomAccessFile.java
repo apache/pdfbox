@@ -36,7 +36,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     /**
      * Uses a byte instead of a char buffer for efficiency reasons.
      */
-    private final byte buffer[];
+    private final byte[] buffer;
     private int bufend = 0;
     private int bufpos = 0;
     
@@ -146,7 +146,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
      * {@inheritDoc}
      */
     @Override
-    public int read(byte b[], int off, int len) throws IOException
+    public int read(byte[] b, int off, int len) throws IOException
     {
         int leftover = bufend - bufpos;
         if (len <= leftover)
