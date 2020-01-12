@@ -1229,9 +1229,9 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
         // prepare transfer functions (either one per color or one for all) 
         // and maps (actually arrays[256] to be faster) to avoid calculating values several times
-        Integer rMap[];
-        Integer gMap[];
-        Integer bMap[];
+        Integer[] rMap;
+        Integer[] gMap;
+        Integer[] bMap;
         PDFunction rf;
         PDFunction gf;
         PDFunction bf;
