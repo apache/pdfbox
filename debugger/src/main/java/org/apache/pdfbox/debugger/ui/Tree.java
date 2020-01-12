@@ -49,7 +49,7 @@ import java.util.List;
  *
  * A customized tree for PDFDebugger.
  */
-@SuppressWarnings({"serial","squid:S1948"   })
+@SuppressWarnings({"serial","squid:S1948"})
 public class Tree extends JTree
 {
     private final JPopupMenu treePopupMenu;

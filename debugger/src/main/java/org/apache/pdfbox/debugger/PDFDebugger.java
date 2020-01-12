@@ -105,6 +105,7 @@ import org.apache.pdfbox.debugger.ui.ReaderBottomPanel;
 import org.apache.pdfbox.debugger.ui.RecentFiles;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.debugger.ui.RotationMenu;
+import org.apache.pdfbox.debugger.ui.TextDialog;
 import org.apache.pdfbox.debugger.ui.Tree;
 import org.apache.pdfbox.debugger.ui.ViewMenu;
 import org.apache.pdfbox.debugger.ui.WindowPrefs;
@@ -249,6 +250,8 @@ public class PDFDebugger extends JFrame
         // use reduced file from PDFBOX-3653 to see logging
         LogDialog.init(viewer, viewer.statusBar.getLogLabel());
         System.setProperty("org.apache.commons.logging.Log", "org.apache.pdfbox.debugger.ui.DebugLog");
+
+        TextDialog.init(viewer);
 
         // trigger premature initializations for more accurate rendering benchmarks
         // See discussion in PDFBOX-3988

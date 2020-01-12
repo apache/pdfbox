@@ -272,13 +272,17 @@ public class GlyphSubstitutionTable extends TTFTable
         LookupSubTable[] subTables = new LookupSubTable[subTableCount];
         switch (lookupType)
         {
-        case 1: // Single
+        case 1:
+            // Single
+            // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#SS
             for (int i = 0; i < subTableCount; i++)
             {
                 subTables[i] = readLookupSubTable(data, offset + subTableOffets[i]);
             }
             break;
-        case 4: // Ligature Substitution Subtable
+        case 4:
+            // Ligature Substitution Subtable
+            // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#LS
             for (int i = 0; i < subTableCount; i++)
             {
                 subTables[i] = readLigatureSubstitutionSubtable(data, offset + subTableOffets[i]);
@@ -300,6 +304,8 @@ public class GlyphSubstitutionTable extends TTFTable
         {
         case 1:
         {
+            // LookupType 1: Single Substitution Subtable
+            // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#11-single-substitution-format-1
             int coverageOffset = data.readUnsignedShort();
             short deltaGlyphID = data.readSignedShort();
             CoverageTable coverageTable = readCoverageTable(data, offset + coverageOffset);
@@ -307,6 +313,8 @@ public class GlyphSubstitutionTable extends TTFTable
         }
         case 2:
         {
+            // Single Substitution Format 2
+            // https://docs.microsoft.com/en-us/typography/opentype/spec/gsub#12-single-substitution-format-2
             int coverageOffset = data.readUnsignedShort();
             int glyphCount = data.readUnsignedShort();
             int[] substituteGlyphIDs = new int[glyphCount];

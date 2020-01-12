@@ -165,7 +165,7 @@ public class ErrorDialog extends JDialog
             {
                 if (details == null)
                 {
-                    details = createDetailedMessage(error);
+                    details = createDetailedMessage();
                     StringBuilder buffer = new StringBuilder();
                     stacktrace.setText(generateStackTrace(error, buffer).toString());
                     stacktrace.setCaretPosition(0);
@@ -233,14 +233,13 @@ public class ErrorDialog extends JDialog
     /**
      * Creates a non-editable widget to display the detailed stack trace.
      */
-    JScrollPane createDetailedMessage(Throwable t)
+    JScrollPane createDetailedMessage()
     {
         stacktrace = new JTextPane();
         stacktrace.setEditable(false);
-        JScrollPane pane = new JScrollPane(stacktrace,
+        return new JScrollPane(stacktrace,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        return pane;
     }
 
     /**

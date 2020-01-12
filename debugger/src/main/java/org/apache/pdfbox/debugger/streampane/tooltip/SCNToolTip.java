@@ -52,7 +52,7 @@ final class SCNToolTip extends ColorToolTip
         }
         catch (IOException e)
         {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         }
         if (colorSpace instanceof PDPattern)
         {
@@ -72,7 +72,7 @@ final class SCNToolTip extends ColorToolTip
             }
             catch (IOException e)
             {
-                e.printStackTrace();
+                LOG.error(e.getMessage(), e);
             }
         }
     }

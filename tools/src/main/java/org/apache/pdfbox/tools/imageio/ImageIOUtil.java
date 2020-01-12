@@ -181,7 +181,7 @@ public final class ImageIOUtil
      * @param formatName the target format (ex. "png")
      * @param output the output stream to be used for writing
      * @param dpi the resolution in dpi (dots per inch) to be used in metadata
-     * @param compressionQuality quality to be used when compressing the image * (0 &lt;
+     * @param compressionQuality quality to be used when compressing the image (0 &lt;
      * compressionQuality &lt; 1.0f). See {@link ImageWriteParam#setCompressionQuality(float)} for
      * more details.
      * @param compressionType Advanced users only, and only relevant for TIFF

@@ -72,12 +72,15 @@
 					<configLocation>../pdfbox-checkstyle-5.xml</configLocation>
 				</configuration>
 			</plugin>
-                        
-                        <!-- JDK9 -->
                         <plugin>
-                            <artifactId>maven-surefire-plugin</artifactId>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jar-plugin</artifactId>
                             <configuration>
-                                <argLine>${addmod}</argLine>
+                                <archive>
+                                    <manifestEntries>
+                                        <Automatic-Module-Name>org.apache.xmpbox</Automatic-Module-Name>
+                                    </manifestEntries>
+                                </archive>
                             </configuration>
                         </plugin>
 		</plugins>

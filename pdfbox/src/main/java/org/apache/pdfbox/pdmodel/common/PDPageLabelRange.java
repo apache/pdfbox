@@ -32,7 +32,7 @@ public class PDPageLabelRange implements COSObjectable
 
     private COSDictionary root;
 
-    // Page label dictonary (PDF32000-1:2008 Section 12.4.2, Table 159)
+    // Page label dictionary (PDF32000-1:2008 Section 12.4.2, Table 159)
     private static final COSName KEY_START = COSName.ST;
     private static final COSName KEY_PREFIX = COSName.P;
     private static final COSName KEY_STYLE = COSName.S;

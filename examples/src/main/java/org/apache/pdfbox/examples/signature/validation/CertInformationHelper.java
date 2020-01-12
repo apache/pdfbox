@@ -27,9 +27,9 @@ import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.
 import org.apache.pdfbox.util.Hex;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.ASN1TaggedObject;
-import org.bouncycastle.asn1.DERTaggedObject;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.X509ObjectIdentifiers;
 import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
@@ -81,7 +81,7 @@ public class CertInformationHelper
             ASN1Sequence obj = (ASN1Sequence) objects.nextElement();
             ASN1Encodable oid = obj.getObjectAt(0);
             // accessLocation
-            DERTaggedObject location = (DERTaggedObject) obj.getObjectAt(1);
+            ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
 
             if (X509ObjectIdentifiers.id_ad_ocsp.equals(oid)
                     && location.getTagNo() == GeneralName.uniformResourceIdentifier)

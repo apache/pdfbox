@@ -112,7 +112,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Xmx768m</argLine>
+                    <argLine>${addmod} @{surefireArgLine} -Xmx768m</argLine>
                     <excludes>
                         <exclude>org/apache/pdfbox/rendering/TestPDFToImage.java</exclude>
                     </excludes>
@@ -176,6 +176,17 @@
                     <tryUpdate>true</tryUpdate>
                     <checkoutDirectory>${svn.scmJavadocCheckoutDirectory}</checkoutDirectory>
                     <serverId>pdfbox-site</serverId>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>org.apache.pdfbox</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
 

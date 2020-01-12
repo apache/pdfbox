@@ -17,9 +17,7 @@
 package org.apache.pdfbox.pdmodel;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 public class PageModeTest
 {

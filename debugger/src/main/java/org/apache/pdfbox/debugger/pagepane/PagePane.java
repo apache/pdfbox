@@ -59,6 +59,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
+import org.apache.pdfbox.debugger.ui.TextDialog;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -73,6 +74,7 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.RenderDestination;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
  * Display the page number and a page rendering.
@@ -98,6 +100,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private final Map<PDRectangle,String> rectMap = new HashMap<>();
     private final AffineTransform defaultTransform = GraphicsEnvironment.getLocalGraphicsEnvironment().
                         getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
+    // more ideas:
+    // https://stackoverflow.com/questions/16440159/dragging-of-shapes-on-jpanel
 
     public PagePane(PDDocument document, COSDictionary pageDict, JLabel statuslabel)
     {
@@ -247,6 +251,30 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             ViewMenu.isRenderingOptions(actionCommand))
         {
             startRendering();
+        }
+        else if (ViewMenu.isExtractText(actionEvent))
+        {
+            startExtracting();
+        }
+    }
+
+    private void startExtracting()
+    {
+        TextDialog textDialog = TextDialog.instance();
+        textDialog.setSize(800, 400);
+        textDialog.setVisible(true);
+        textDialog.setLocation(getPanel().getLocationOnScreen().x + getPanel().getWidth() / 2,
+                               getPanel().getLocationOnScreen().y + getPanel().getHeight() / 2);
+        try
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setStartPage(pageIndex + 1);
+            stripper.setEndPage(pageIndex + 1);
+            textDialog.setText(stripper.getText(document));
+        }
+        catch (IOException ex)
+        {
+            LOG.error(ex.getMessage(), ex);
         }
     }
 

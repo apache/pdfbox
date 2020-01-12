@@ -22,9 +22,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1447,6 +1450,64 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     {
         return new UnmodifiableCOSDictionary(this);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+        {
+            return true;
+        }
+
+        if (o == null || !(o.getClass() == COSDictionary.class))
+        {
+            return false;
+        }
+
+        COSDictionary toBeCompared = (COSDictionary) o;
+
+        if (toBeCompared.size() != size())
+        {
+            return false;
+        }
+
+        Iterator<Entry<COSName, COSBase>> iter = entrySet().iterator();
+        while (iter.hasNext())
+        {
+            Entry<COSName, COSBase> entry = iter.next();
+            COSName key = entry.getKey();
+            COSBase value = entry.getValue();
+
+            if (!toBeCompared.containsKey(key)) 
+            {
+                return false;
+            }
+            else if (value == null)
+            {
+                if (toBeCompared.getItem(key) != null)
+                {
+                    return false;
+                }
+            }
+            else if (!value.equals(toBeCompared.getItem(key)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(items, needToBeUpdated);
+    }
+    
 
     /**
      * {@inheritDoc}

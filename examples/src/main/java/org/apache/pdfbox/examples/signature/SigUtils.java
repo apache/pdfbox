@@ -253,7 +253,7 @@ public class SigUtils
         return null;
     }
 
-    static public TimeStampToken extractTimeStampTokenFromSignerInformation(SignerInformation signerInformation)
+    public static TimeStampToken extractTimeStampTokenFromSignerInformation(SignerInformation signerInformation)
             throws CMSException, IOException, TSPException
     {
         if (signerInformation.getUnsignedAttributes() == null)

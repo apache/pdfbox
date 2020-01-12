@@ -404,6 +404,7 @@ public final class ExtractText
 
     static int getAngle(TextPosition text)
     {
+        // should this become a part of TextPosition?
         Matrix m = text.getTextMatrix().clone();
         m.concatenate(text.getFont().getFontMatrix());
         return (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
