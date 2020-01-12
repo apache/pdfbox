@@ -262,7 +262,7 @@ public final class PDFToImage
                 int count = 1 + endPage - startPage;
                 if (showTime)
                 {
-                    System.err.printf("Rendered %d page%s in %dms\n", count, count == 1 ? "" : "s",
+                    System.err.printf("Rendered %d page%s in %dms%n", count, count == 1 ? "" : "s",
                                       duration / 1000000);
                 }
 

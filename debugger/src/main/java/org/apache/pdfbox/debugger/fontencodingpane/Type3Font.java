@@ -182,7 +182,7 @@ class Type3Font extends FontPane
                 cs.beginText();
                 cs.setFont(font, scale / Math.min(Math.abs(scalingFactorX), Math.abs(scalingFactorY)));
                 // can't use showText() because there's no guarantee we have the unicode
-                cs.appendRawCommands(String.format("<%02X> Tj\n", index).getBytes(StandardCharsets.ISO_8859_1));
+                cs.appendRawCommands(String.format("<%02X> Tj%n", index).getBytes(StandardCharsets.ISO_8859_1));
                 cs.endText();
             }
             doc.addPage(page);
