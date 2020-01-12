@@ -66,7 +66,7 @@ public final class ExtractImages
             COSName.DCT_DECODE.getName(),
             COSName.DCT_DECODE_ABBREVIATION.getName());
 
-    private boolean directJPEG;
+    private boolean useDirectJPEG;
     private String prefix;
 
     private final Set<COSStream> seen = new HashSet<>();
@@ -123,7 +123,7 @@ public final class ExtractImages
                         prefix = args[i];
                         break;
                     case DIRECTJPEG:
-                        directJPEG = true;
+                        useDirectJPEG = true;
                         break;
                     default:
                         if (pdfFile == null)
@@ -236,7 +236,7 @@ public final class ExtractImages
             imageCounter++;
 
             System.out.println("Writing image: " + name);
-            write2file(pdImage, name, directJPEG);
+            write2file(pdImage, name, useDirectJPEG);
         }
 
         @Override
