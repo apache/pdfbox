@@ -291,31 +291,36 @@ public class PDFreeTextAppearanceHandler extends PDAbstractAppearanceHandler
             cs.addRect(xOffset, clipY, clipWidth, clipHeight);
             cs.clip();
 
-            cs.beginText();
-            cs.setFont(font, fontSize);
-            cs.setNonStrokingColor(textColor.getComponents());
-            AppearanceStyle appearanceStyle = new AppearanceStyle();
-            appearanceStyle.setFont(font);
-            appearanceStyle.setFontSize(fontSize);
-            PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
-                    .style(appearanceStyle)
-                    .text(new PlainText(annotation.getContents()))
-                    .width(width - ab.width * 4)
-                    .wrapLines(true)
-                    .initialOffset(xOffset, yOffset)
-                    // Adobe ignores the /Q
-                    //.textAlign(annotation.getQ())
-                    .build();
-            try
+            if (annotation.getContents() != null)
             {
-                formatter.format();
+                cs.beginText();
+                cs.setFont(font, fontSize);
+                cs.setNonStrokingColor(textColor.getComponents());
+                AppearanceStyle appearanceStyle = new AppearanceStyle();
+                appearanceStyle.setFont(font);
+                appearanceStyle.setFontSize(fontSize);
+                PlainTextFormatter formatter = new PlainTextFormatter.Builder(cs)
+                        .style(appearanceStyle)
+                        .text(new PlainText(annotation.getContents()))
+                        .width(width - ab.width * 4)
+                        .wrapLines(true)
+                        .initialOffset(xOffset, yOffset)
+                        // Adobe ignores the /Q
+                        //.textAlign(annotation.getQ())
+                        .build();
+                try
+                {
+                    formatter.format();
+                }
+                catch (IllegalArgumentException ex)
+                {
+                    throw new IOException(ex);
+                }
+                finally
+                {
+                    cs.endText();
+                }            
             }
-            catch (IllegalArgumentException ex)
-            {
-                throw new IOException(ex);
-            }
-            cs.endText();
-
 
             if (pathsArray.length > 0)
             {
