@@ -216,7 +216,7 @@ public class PDDocument implements Closeable
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
      * 
      * @param doc The COSDocument that this document wraps.
-     * @param source the parser which is used to read the pdf
+     * @param source input representing the pdf
      */
     public PDDocument(COSDocument doc, RandomAccessRead source)
     {
@@ -227,7 +227,7 @@ public class PDDocument implements Closeable
      * Constructor that uses an existing document. The COSDocument that is passed in must be valid.
      * 
      * @param doc The COSDocument that this document wraps.
-     * @param source the parser which is used to read the pdf
+     * @param source input representing the pdf
      * @param permission he access permissions of the pdf
      * 
      */
