@@ -18,8 +18,8 @@ package org.apache.pdfbox.preflight.process.reflect;
 import java.io.IOException;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.preflight.PreflightConstants;
@@ -97,10 +97,10 @@ public class DestinationValidationProcess extends AbstractProcess
     void validateExplicitDestination(PreflightContext ctx, COSArray ar)
     {
         // "In each case, page is an indirect reference to a page object."
-        if (ar.get(0) instanceof COSObject)
+        COSBase cosObject = ar.getObject(0);
+        if (cosObject instanceof COSDictionary)
         {
-            COSObject ob = (COSObject) ar.get(0);
-            COSBase type = ob.getDictionaryObject(COSName.TYPE);
+            COSName type = ((COSDictionary) cosObject).getCOSName(COSName.TYPE);
             if (COSName.PAGE.equals(type))
             {
                 try
