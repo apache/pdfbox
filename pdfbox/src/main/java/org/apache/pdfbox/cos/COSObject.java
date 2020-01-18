@@ -57,48 +57,20 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSObject(COSBase object, ICOSParser parser)
     {
-        setObject( object );
+        baseObject = object;
         this.parser = parser;
     }
-    /**
-     * This will get the dictionary object in this object that has the name key and
-     * if it is a pdfobjref then it will dereference that and return it.
-     *
-     * @param key The key to the value that we are searching for.
-     *
-     * @return The pdf object that matches the key.
-     */
-    public COSBase getDictionaryObject( COSName key )
-    {
-        COSBase retval =null;
-        if( baseObject instanceof COSDictionary )
-        {
-            retval = ((COSDictionary)baseObject).getDictionaryObject( key );
-        }
-        return retval;
-    }
 
     /**
-     * This will get the dictionary object in this object that has the name key.
-     *
-     * @param key The key to the value that we are searching for.
-     *
-     * @return The pdf object that matches the key.
+     * Indicates if the referenced object is present or not.
+     * 
+     * @return true if the indirect object is dereferenced
      */
-    public COSBase getItem( COSName key )
-    {
-        COSBase retval =null;
-        if( baseObject instanceof COSDictionary )
-        {
-            retval = ((COSDictionary)baseObject).getItem( key );
-        }
-        return retval;
-    }
-
     public boolean isObjectNull()
     {
         return baseObject == null;
     }
+
     /**
      * This will get the object that this object encapsulates.
      *
@@ -110,7 +82,8 @@ public class COSObject extends COSBase implements COSUpdateInfo
         {
             try
             {
-                if (!parser.dereferenceCOSObject(this))
+                baseObject = parser.dereferenceCOSObject(this);
+                if (baseObject != null)
                 {
                     // remove parser to avoid endless recursions
                     parser = null;
@@ -124,16 +97,6 @@ public class COSObject extends COSBase implements COSUpdateInfo
             }
         }
         return baseObject;
-    }
-
-    /**
-     * This will set the object that this object encapsulates.
-     *
-     * @param object The new object to encapsulate.
-     */
-    public final void setObject(COSBase object)
-    {
-        baseObject = object;
     }
 
     public final void setToNull()

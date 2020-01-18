@@ -689,11 +689,7 @@ public class PreflightParser extends PDFParser
                 // since our object was not found it means object stream was not parsed so far
                 referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
             }
-            if (referencedObject != null && referencedObject != COSNull.NULL)
-            {
-                pdfObject.setObject(referencedObject);
-            }
-            else
+            if (referencedObject == null || referencedObject instanceof COSNull)
             {
                 pdfObject.setToNull();
             }

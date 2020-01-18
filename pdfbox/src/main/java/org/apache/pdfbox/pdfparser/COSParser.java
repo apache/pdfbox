@@ -564,7 +564,7 @@ public class COSParser extends BaseParser implements ICOSParser
     }
 
     @Override
-    public boolean dereferenceCOSObject(COSObject obj) throws IOException
+    public COSBase dereferenceCOSObject(COSObject obj) throws IOException
     {
         long currentPos = source.getPosition();
         COSBase parsedObj = parseObjectDynamically(obj.getObjectNumber(), obj.getGenerationNumber(),
@@ -573,7 +573,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             source.seek(currentPos);
         }
-        return parsedObj != null;
+        return parsedObj;
     }
 
     /**
@@ -640,11 +640,7 @@ public class COSParser extends BaseParser implements ICOSParser
                 // since our object was not found it means object stream was not parsed so far
                 referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
             }
-            if (referencedObject != null && referencedObject != COSNull.NULL)
-            {
-                pdfObject.setObject(referencedObject);
-            }
-            else
+            if (referencedObject == null || referencedObject instanceof COSNull)
             {
                 pdfObject.setToNull();
             }

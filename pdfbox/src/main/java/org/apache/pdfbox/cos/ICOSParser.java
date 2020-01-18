@@ -26,10 +26,10 @@ public interface ICOSParser
      * 
      * @param obj the COSObject which references the COSBase object to be dereferenced.
      * 
-     * @return true if the referenced object was read successfully
+     * @return the referenced object
      * 
      * @throws IOException if something went wrong when dereferencing the COSBase object
      */
-    public boolean dereferenceCOSObject(COSObject obj) throws IOException;
+    public COSBase dereferenceCOSObject(COSObject obj) throws IOException;
 
 }
