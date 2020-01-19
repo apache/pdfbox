@@ -62,6 +62,20 @@ public class COSObject extends COSBase implements COSUpdateInfo
     }
 
     /**
+     * Constructor.
+     *
+     * @param key The object number of the encapsulated object.
+     * @param parser The parser to be used to load the object on demand
+     *
+     */
+    public COSObject(COSObjectKey key, ICOSParser parser)
+    {
+        this.parser = parser;
+        objectNumber = key.getNumber();
+        generationNumber = key.getGeneration();
+    }
+
+    /**
      * Indicates if the referenced object is present or not.
      * 
      * @return true if the indirect object is dereferenced
@@ -124,30 +138,12 @@ public class COSObject extends COSBase implements COSUpdateInfo
     }
 
     /** 
-     * Setter for property objectNumber.
-     * @param objectNum New value of property objectNumber.
-     */
-    public void setObjectNumber(long objectNum)
-    {
-        objectNumber = objectNum;
-    }
-
-    /** 
      * Getter for property generationNumber.
      * @return Value of property generationNumber.
      */
     public int getGenerationNumber()
     {
         return generationNumber;
-    }
-
-    /** 
-     * Setter for property generationNumber.
-     * @param generationNumberValue New value of property generationNumber.
-     */
-    public void setGenerationNumber(int generationNumberValue)
-    {
-        generationNumber = generationNumberValue;
     }
 
     /**

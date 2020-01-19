@@ -489,18 +489,8 @@ public class COSDocument extends COSBase implements Closeable
         COSObject obj = null;
         if( key != null )
         {
-            obj = objectPool.get(key);
-        }
-        if (obj == null)
-        {
-            // this was a forward reference, make "proxy" object
-            obj = new COSObject(null, parser);
-            if( key != null )
-            {
-                obj.setObjectNumber(key.getNumber());
-                obj.setGenerationNumber(key.getGeneration());
-                objectPool.put(key, obj);
-            }
+            // make "proxy" object if this was a forward reference
+            obj = objectPool.computeIfAbsent(key, k -> new COSObject(k, parser));
         }
         return obj;
     }
