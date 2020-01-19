@@ -48,4 +48,20 @@ public class COSObjectKeyTest
         // Assert result
         Assert.assertEquals(1, retval);
     }
+
+    @Test
+    public void checkHashCode()
+    {
+        // same object number 100 0
+        Assert.assertEquals(new COSObjectKey(100, 0).hashCode(),
+                new COSObjectKey(100, 0).hashCode());
+
+        // different object numbers/same generation numbers 100 0 vs. 200 0
+        Assert.assertNotEquals(new COSObjectKey(100, 0).hashCode(),
+                new COSObjectKey(200, 0).hashCode());
+
+        // different object numbers/different generation numbers/ sum of both numbers are equal 100 0 vs. 99 1
+        Assert.assertNotEquals(new COSObjectKey(100, 0).hashCode(),
+                new COSObjectKey(99, 1).hashCode());
+    }
 }
