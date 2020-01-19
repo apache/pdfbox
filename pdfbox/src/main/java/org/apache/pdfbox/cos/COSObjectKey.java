@@ -97,7 +97,9 @@ public class COSObjectKey implements Comparable<COSObjectKey>
     @Override
     public int hashCode()
     {
-        return Long.valueOf(number+generation).hashCode();
+        // most likely generation is 0. Shift number 4 times (fast as multiply)
+        // to support generation numbers up to 15
+        return Long.valueOf((number << 4) + generation).hashCode();
     }
 
     @Override
