@@ -641,7 +641,8 @@ public class PreflightParser extends PDFParser
     }
 
     @Override
-    protected COSBase parseObjectDynamically(long objNr, int objGenNr, boolean requireExistingNotCompressedObj)
+    protected synchronized COSBase parseObjectDynamically(long objNr, int objGenNr,
+            boolean requireExistingNotCompressedObj)
             throws IOException
     {
         // ---- create object key and get object (container) from pool
