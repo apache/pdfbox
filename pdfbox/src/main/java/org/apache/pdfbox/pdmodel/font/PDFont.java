@@ -20,10 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +36,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
+import org.apache.pdfbox.util.AnsiEncodingUtil;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 
@@ -65,6 +63,8 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     private float avgFontWidth;
     private float fontWidthOfSpace = -1f;
     private final Map<Integer, Float> codeToWidthMap;
+    //for supporting mixed multiple fonts
+    private List<PDFont> alternatives = new ArrayList<PDFont>();
 
     /**
      * Constructor for embedding.
@@ -322,19 +322,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      */
     public final byte[] encode(String text) throws IOException
     {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        int offset = 0;
-        while (offset < text.length())
-        {
-            int codePoint = text.codePointAt(offset);
-
-            // multi-byte encoding with 1 to 4 bytes
-            byte[] bytes = encode(codePoint);
-            out.write(bytes);
-
-            offset += Character.charCount(codePoint);
-        }
-        return out.toByteArray();
+        return encodeSingleFont(text);
     }
 
     /**
@@ -358,19 +346,86 @@ public abstract class PDFont implements COSObjectable, PDFontLike
      * @throws IOException If there is an error getting the width information.
      * @throws IllegalArgumentException if a character isn't supported by the font.
      */
-    public float getStringWidth(String text) throws IOException
-    {
-        byte[] bytes = encode(text);
+    public float getStringWidth(String text) throws IOException {
+        try {
+            return getWidthFromBytes(encodeSingleFont(text));
+        } catch (IllegalArgumentException e) {
+            if (!this.hasAlternatives()) {
+                throw e;
+            }
+            List<PDFont> fonts = new ArrayList<PDFont>(Collections.singletonList(this));
+            fonts.addAll(alternatives);
+            float width = 0;
+            // now try separately
+            int i = 0;
+            while (i < text.length()) {
+                boolean found = false;
+                for (PDFont font : fonts) {
+                    try {
+                        String s = text.substring(i, i + 1);
+                        font.encodeSingleFont(s);
+                        // it works! Try more with this font
+                        int j = i + 1;
+                        for (; j < text.length(); ++j) {
+                            String s2 = text.substring(j, j + 1);
+
+                            if (AnsiEncodingUtil.isWinAnsiEncoding(s2.codePointAt(0)) && font != fonts.get(0)) {
+                                // This segment assumes that the first font has WinAnsiEncoding.
+                                // (all static PDType1Font Times / Helvetica / Courier fonts)
+                                break;
+                            }
+                            try {
+                                font.encodeSingleFont(s2);
+                            } catch (IllegalArgumentException ex) {
+                                // it's over
+                                break;
+                            }
+                        }
+                        s = text.substring(i, j);
+                        //process partial result
+                        byte[] sBytes = font.encodeSingleFont(s);
+                        width += font.getWidthFromBytes(sBytes);
+                        i = j;
+                        found = true;
+                        break;
+                    } catch (IllegalArgumentException ex) {
+                        // didn't work, will try next font
+                    }
+                }
+                if (!found) {
+                    throw new IllegalArgumentException("Could not process '" + text.substring(i, i + 1)
+                            + "' with the fonts provided");
+                }
+            }
+            //end of fall-back
+            return width;
+        }
+    }
+
+    private float getWidthFromBytes(byte[] bytes) throws IOException {
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
-        
+
         float width = 0;
-        while (in.available() > 0)
-        {
+        while (in.available() > 0) {
             int code = readCode(in);
             width += getWidth(code);
         }
-        
+
         return width;
+    }
+
+    private byte[] encodeSingleFont(String text) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        for (int offset = 0; offset < text.length(); ) {
+            int codePoint = text.codePointAt(offset);
+
+            // multi-byte encoding with 1 to 4 bytes
+            byte[] bytes = encode(codePoint);
+            out.write(bytes);
+
+            offset += Character.charCount(codePoint);
+        }
+        return out.toByteArray();
     }
 
     /**
@@ -622,5 +677,21 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     public String toString()
     {
         return getClass().getSimpleName() + " " + getName();
+    }
+
+    public void addAlternative(PDFont font) {
+        this.alternatives.add(font);
+    }
+
+    public void setAlternatives(List<PDFont> fonts){
+        this.alternatives = fonts;
+    }
+
+    public boolean hasAlternatives() {
+        return !this.alternatives.isEmpty();
+    }
+
+    public List<PDFont> getAlternatives() {
+        return this.alternatives;
     }
 }

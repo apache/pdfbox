@@ -23,8 +23,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.NumberFormat;
-import java.util.Locale;
-import java.util.Stack;
+import java.util.*;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -54,6 +54,7 @@ import org.apache.pdfbox.pdmodel.graphics.shading.PDShading;
 import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
+import org.apache.pdfbox.util.AnsiEncodingUtil;
 import org.apache.pdfbox.util.Charsets;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.NumberFormatUtil;
@@ -103,6 +104,7 @@ public final class PDPageContentStream implements Closeable
 
     private boolean inTextMode = false;
     private final Stack<PDFont> fontStack = new Stack<PDFont>();
+    private float fontSize;
 
     private final Stack<PDColorSpace> nonStrokingColorSpaceStack = new Stack<PDColorSpace>();
     private final Stack<PDColorSpace> strokingColorSpaceStack = new Stack<PDColorSpace>();
@@ -405,7 +407,7 @@ public final class PDPageContentStream implements Closeable
         {
             fontStack.setElementAt(font, fontStack.size() - 1);
         }
-        
+        this.fontSize = fontSize;
         if (font.willBeSubset())
         {
             document.getFontsToSubset().add(font);
@@ -471,11 +473,73 @@ public final class PDPageContentStream implements Closeable
      * @throws IOException If an io exception occurs.
      * @throws IllegalArgumentException if a character isn't supported by the current font
      */
-    public void showText(String text) throws IOException
-    {
+    public void showText(String text) throws IOException {
+        if (fontStack.isEmpty()) {
+            throw new IllegalStateException("Must call setFont() before showText()");
+        }
+        try {
+            // first try all at once
+            showTextSingleFont(text);
+        }
+        catch (IllegalArgumentException ex) {
+            PDFont mainFont = fontStack.peek();
+            if (!mainFont.hasAlternatives()) {
+                throw ex;
+            }
+            // now try separately
+            int i = 0;
+            while (i < text.length()) {
+                boolean found = false;
+                List<PDFont> fontList = new ArrayList<PDFont>(Collections.singleton(mainFont));
+                fontList.addAll(mainFont.getAlternatives());
+                for (PDFont font : fontList) {
+                    try {
+                        String s = text.substring(i, i + 1);
+                        font.encode(s);
+                        // it works! Try more with this font
+                        int j = i + 1;
+                        for (; j < text.length(); ++j) {
+                            String s2 = text.substring(j, j + 1);
+
+                            if (AnsiEncodingUtil.isWinAnsiEncoding(s2.codePointAt(0)) && font != fontList.get(0)) {
+                                // Without this segment, the example would have a flaw:
+                                // This code tries to keep the current font, so
+                                // the second "abc" would appear in a different font
+                                // than the first one, which would be weird.
+                                // This segment assumes that the first font has WinAnsiEncoding.
+                                // (all static PDType1Font Times / Helvetica / Courier fonts)
+                                break;
+                            }
+                            try {
+                                font.encode(s2);
+                            } catch (IllegalArgumentException ex2) {
+                                // it's over
+                                break;
+                            }
+                        }
+                        s = text.substring(i, j);
+                        setFont(font, this.fontSize);
+                        showTextSingleFont(s);
+                        i = j;
+                        found = true;
+                        break;
+                    } catch (IllegalArgumentException ex2) {
+                        // didn't work, will try next font
+                    }
+                }
+                if (!found) {
+                    throw new IllegalArgumentException("Could not show '" + text.substring(i, i + 1)
+                            + "' with the fonts provided");
+                }
+            }
+        }
+
+    }
+
+    private void showTextSingleFont(String text) throws IOException {
         showTextInternal(text);
         write(" ");
-        writeOperator(OperatorName.SHOW_TEXT);
+        writeOperator("Tj");
     }
 
     /**
