@@ -144,11 +144,10 @@ public class ContentStreamWriter
             output.write(COSWriter.ARRAY_OPEN);
             for( int i=0; i<array.size(); i++ )
             {
-                writeObject( array.get( i ) );
-                output.write( SPACE );
+                writeObject(array.get(i));
             }
-
-            output.write( COSWriter.ARRAY_CLOSE );
+            output.write(COSWriter.ARRAY_CLOSE);
+            output.write(SPACE);
         }
         else if( o instanceof COSDictionary )
         {
@@ -173,6 +172,7 @@ public class ContentStreamWriter
             if( op.getName().equals( "BI" ) )
             {
                 output.write( "BI".getBytes(Charsets.ISO_8859_1) );
+                output.write(EOL);
                 COSDictionary dic = op.getImageParameters();
                 for( COSName key : dic.keySet() )
                 {
@@ -197,7 +197,6 @@ public class ContentStreamWriter
         }
         else if (o instanceof COSNull)
         {
-            output.write(SPACE);
             output.write("null".getBytes(Charsets.ISO_8859_1));
             output.write(SPACE);
         }
