@@ -452,45 +452,47 @@ public class COSDocument extends COSBase implements Closeable
     /**
      * This will close all storage and delete the tmp files.
      *
-     *  @throws IOException If there is an error close resources.
+     * @throws IOException If there is an error close resources.
      */
     @Override
     public void close() throws IOException
     {
-        if (!closed)
+        if (closed)
         {
-            // Make sure that:
-            // - first Exception is kept
-            // - all COSStreams are closed
-            // - ScratchFile is closed
-            // - there's a way to see which errors occurred
+            return;
+        }
 
-            IOException firstException = null;
+        // Make sure that:
+        // - first Exception is kept
+        // - all COSStreams are closed
+        // - ScratchFile is closed
+        // - there's a way to see which errors occurred
 
-            // close all open I/O streams
-            for (COSObject object : getObjects())
-            {
-                COSBase cosObject = object.getObject();
-                if (cosObject instanceof COSStream)
-                {
-                    firstException = IOUtils.closeAndLogException((COSStream) cosObject, LOG, "COSStream", firstException);
-                }
-            }
-            for (COSStream stream : streams)
-            {
-                firstException = IOUtils.closeAndLogException(stream, LOG, "COSStream", firstException);
-            }
-            if (scratchFile != null)
-            {
-                firstException = IOUtils.closeAndLogException(scratchFile, LOG, "ScratchFile", firstException);
-            }
-            closed = true;
+        IOException firstException = null;
 
-            // rethrow first exception to keep method contract
-            if (firstException != null)
+        // close all open I/O streams
+        for (COSObject object : getObjects())
+        {
+            COSBase cosObject = object.getObject();
+            if (cosObject instanceof COSStream)
             {
-                throw firstException;
+                firstException = IOUtils.closeAndLogException((COSStream) cosObject, LOG, "COSStream", firstException);
             }
+        }
+        for (COSStream stream : streams)
+        {
+            firstException = IOUtils.closeAndLogException(stream, LOG, "COSStream", firstException);
+        }
+        if (scratchFile != null)
+        {
+            firstException = IOUtils.closeAndLogException(scratchFile, LOG, "ScratchFile", firstException);
+        }
+        closed = true;
+
+        // rethrow first exception to keep method contract
+        if (firstException != null)
+        {
+            throw firstException;
         }
     }
 
