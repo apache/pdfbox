@@ -157,10 +157,8 @@ public class ContentStreamWriter
             {
                 if (entry.getValue() != null)
                 {
-                    writeObject( entry.getKey() );
-                    output.write( SPACE );
-                    writeObject( entry.getValue() );
-                    output.write( SPACE );
+                    writeObject(entry.getKey());
+                    writeObject(entry.getValue());
                 }
             }
             output.write( COSWriter.DICT_CLOSE );
