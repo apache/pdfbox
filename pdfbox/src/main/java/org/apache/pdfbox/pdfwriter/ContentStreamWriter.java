@@ -28,6 +28,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.util.Charsets;
 
@@ -193,6 +194,12 @@ public class ContentStreamWriter
                 output.write( op.getName().getBytes(Charsets.ISO_8859_1) );
                 output.write( EOL );
             }
+        }
+        else if (o instanceof COSNull)
+        {
+            output.write(SPACE);
+            output.write("null".getBytes(Charsets.ISO_8859_1));
+            output.write(SPACE);
         }
         else
         {
