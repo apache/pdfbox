@@ -230,6 +230,6 @@ public class PDFParser extends COSParser
      */
     protected PDDocument createDocument() throws IOException
     {
-        return new PDDocument(getDocument(), source, getAccessPermission());
+        return new PDDocument(document, source, getAccessPermission());
     }
 }

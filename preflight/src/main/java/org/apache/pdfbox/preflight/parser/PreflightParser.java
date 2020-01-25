@@ -206,7 +206,7 @@ public class PreflightParser extends PDFParser
     @Override
     protected PDDocument createDocument() throws IOException
     {
-        preflightDocument = new PreflightDocument(getDocument(), format, config);
+        preflightDocument = new PreflightDocument(document, format, config);
         return preflightDocument;
     }
 

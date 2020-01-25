@@ -1893,7 +1893,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }
             xrefTrailerResolver.setStartxref(0);
             trailer = xrefTrailerResolver.getTrailer();
-            getDocument().setTrailer(trailer);
+            document.setTrailer(trailer);
             boolean searchForObjStreamsDone = false;
             if (!bfSearchForTrailer(trailer) && !searchForTrailerItems(trailer))
             {
@@ -2435,23 +2435,6 @@ public class COSParser extends BaseParser implements ICOSParser
         }        
         PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, document, xrefTrailerResolver);
         parser.parse();
-    }
-
-    /**
-     * This will get the document that was parsed. The document must be parsed before this is called. When you are done
-     * with this document you must call close() on it to release resources.
-     *
-     * @return The document that was parsed.
-     *
-     * @throws IOException If there is an error getting the document.
-     */
-    public COSDocument getDocument() throws IOException
-    {
-        if( document == null )
-        {
-            throw new IOException("You must parse the document first before calling getDocument()");
-        }
-        return document;
     }
 
     /**
