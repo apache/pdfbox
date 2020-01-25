@@ -84,7 +84,7 @@ public class ContentStreamWriterTest
     {
         String filename = "PDFBOX-4750.pdf";
         URL url = new URL("https://issues.apache.org/jira/secure/attachment/12991732/01%20-%20K17%20-%20Was%20dahinter%20steckt%20-%20dsb.pdf");
-        try (PDDocument doc = Loader.load(url.openStream()))
+        try (PDDocument doc = Loader.loadPDF(url.openStream()))
         {
             PDFRenderer r = new PDFRenderer(doc);
             for (int i = 0; i < doc.getNumberOfPages(); ++i)
