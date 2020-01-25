@@ -82,8 +82,8 @@ public class ContentStreamWriterTest
     @Test
     public void testPDFBox4750() throws IOException
     {
-        String filename = "PDFBOX-4750.pdf";
-        URL url = new URL("https://issues.apache.org/jira/secure/attachment/12991732/01%20-%20K17%20-%20Was%20dahinter%20steckt%20-%20dsb.pdf");
+        String filename = "PDFBOX-4750-test.pdf";
+        URL url = new URL("https://issues.apache.org/jira/secure/attachment/12991833/PDFBOX-4750-test.pdf");
         try (PDDocument doc = Loader.loadPDF(url.openStream()))
         {
             PDFRenderer r = new PDFRenderer(doc);
@@ -110,5 +110,5 @@ public class ContentStreamWriterTest
         {
             fail("Rendering failed or is not identical, see in " + testDirOut);
         }
-    }    
+    }
 }
