@@ -24,8 +24,8 @@ import java.net.URISyntaxException;
 import java.util.List;
 import junit.framework.TestCase;
 
-import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
@@ -55,7 +55,7 @@ public class TestFDF extends TestCase
 
     private void checkFields(String name) throws IOException, URISyntaxException
     {
-        try (FDFDocument fdf = FDFParser.load(new File(TestFDF.class.getResource(name).toURI())))
+        try (FDFDocument fdf = Loader.loadFDF(new File(TestFDF.class.getResource(name).toURI())))
         {
             fdf.saveXFDF(new PrintWriter(new ByteArrayOutputStream()));
             

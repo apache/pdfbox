@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.tools;
 
-import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
@@ -87,7 +87,7 @@ public class ImportXFDF
         {
             ImportFDF importer = new ImportFDF();
             try (PDDocument pdf = PDFParser.load(new File(args[0]));
-                    FDFDocument fdf = FDFParser.loadXFDF(args[1]))
+                    FDFDocument fdf = Loader.loadXFDF(args[1]))
             {
                 importer.importFDF( pdf, fdf );
                 pdf.save( args[2] );
