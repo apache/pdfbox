@@ -122,14 +122,8 @@ public class COSStream extends COSDictionary implements Closeable
                 return false;
             }
         }
-
         // compare stream content
-        if (!toBeCompared.toTextString().equals(toTextString()))
-        {
-            return false;
-        }
-
-        return true;
+        return toBeCompared.toTextString().equals(toTextString());
     }
 
     /**
