@@ -28,10 +28,10 @@ import java.util.Arrays;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
@@ -89,7 +89,7 @@ public class CreateEmbeddedTimeStamp
         }
 
         // sign
-        try (PDDocument doc = PDFParser.load(inFile))
+        try (PDDocument doc = Loader.loadPDF(inFile))
         {
             document = doc;
             processTimeStamping(outFile, inFile.getAbsolutePath());

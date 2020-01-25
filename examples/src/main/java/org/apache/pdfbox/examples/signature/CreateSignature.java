@@ -30,7 +30,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Calendar;
 
-import org.apache.pdfbox.pdfparser.PDFParser;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -106,7 +106,7 @@ public class CreateSignature extends CreateSignatureBase
 
         // sign
         try (FileOutputStream fos = new FileOutputStream(outFile);
-                PDDocument doc = PDFParser.load(inFile))
+                PDDocument doc = Loader.loadPDF(inFile))
         {
             signDetached(doc, fos);
         }

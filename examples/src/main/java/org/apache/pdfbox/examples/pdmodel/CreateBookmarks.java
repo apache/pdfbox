@@ -19,8 +19,8 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PageMode;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
@@ -56,7 +56,7 @@ public final class CreateBookmarks
         }
         else
         {
-            try (PDDocument document = PDFParser.load(new File(args[0])))
+            try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
                 if (document.isEncrypted())
                 {

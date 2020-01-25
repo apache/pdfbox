@@ -19,7 +19,6 @@ package org.apache.pdfbox.examples.util;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -28,6 +27,7 @@ import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 
 import java.io.File;
@@ -77,7 +77,7 @@ public class PrintImageLocations extends PDFStreamEngine
         }
         else
         {
-            try (PDDocument document = PDFParser.load(new File(args[0])))
+            try (PDDocument document = Loader.loadPDF(new File(args[0])))
             {
                 PrintImageLocations printer = new PrintImageLocations();
                 int pageNum = 0;

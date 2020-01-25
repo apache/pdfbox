@@ -39,10 +39,10 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
@@ -118,7 +118,7 @@ public class TestImageIOUtils extends TestCase
         try
         {
             float dpi = 36; // low DPI so that rendering is FAST
-            document = PDFParser.load(file);
+            document = Loader.loadPDF(file);
 
             // Save image resources of first page
             checkSaveResources(document.getPage(0).getResources());

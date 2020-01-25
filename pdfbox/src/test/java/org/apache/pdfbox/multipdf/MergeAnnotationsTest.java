@@ -27,9 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.junit.Before;
@@ -71,7 +71,7 @@ public class MergeAnnotationsTest
             merger.mergeDocuments(null);
 
             // Test merge result
-            PDDocument mergedPDF = PDFParser.load(pdfOutput);
+            PDDocument mergedPDF = Loader.loadPDF(pdfOutput);
             assertEquals("There shall be 6 pages", 6, mergedPDF.getNumberOfPages());
 
             PDDocumentNameDestinationDictionary destinations = mergedPDF.getDocumentCatalog().getDests();

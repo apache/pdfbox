@@ -25,10 +25,10 @@ import java.util.Random;
 
 import junit.framework.TestCase;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdfparser.PDFParser;
 
 /**
  * This will test all of the filters in the PDFBox system.
@@ -125,7 +125,7 @@ public class TestFilters extends TestCase
      */
     public void testPDFBOX4517() throws IOException
     {
-        PDFParser.load(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
+        Loader.loadPDF(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
                 "userpassword1234");
     }
 

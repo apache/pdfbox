@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -62,7 +62,7 @@ public final class ExtractEmbeddedFiles
 
         File pdfFile = new File(args[0]);
         String filePath = pdfFile.getParent() + System.getProperty("file.separator");
-        try (PDDocument document = PDFParser.load(pdfFile))
+        try (PDDocument document = Loader.loadPDF(pdfFile))
         {
             PDDocumentNameDictionary namesDictionary =
                     new PDDocumentNameDictionary(document.getDocumentCatalog());

@@ -20,8 +20,8 @@ package org.apache.pdfbox.examples.interactive.form;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAnnotationAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
@@ -46,7 +46,7 @@ public final class FieldTriggers
     public static void main(String[] args) throws IOException
     {
         // Load the PDF document created by SimpleForm.java
-        try (PDDocument document = PDFParser.load(new File("target/SimpleForm.pdf")))
+        try (PDDocument document = Loader.loadPDF(new File("target/SimpleForm.pdf")))
         {
             PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
             

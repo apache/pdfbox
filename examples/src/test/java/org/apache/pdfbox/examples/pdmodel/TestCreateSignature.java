@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
@@ -45,7 +46,6 @@ import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
@@ -263,7 +263,7 @@ public class TestCreateSignature
 
         checkSignature(new File(filename), new File(filenameSigned1));
 
-        try (PDDocument doc1 = PDFParser.load(new File(filenameSigned1)))
+        try (PDDocument doc1 = Loader.loadPDF(new File(filenameSigned1)))
         {
             List<PDSignature> signatureDictionaries = doc1.getSignatureDictionaries();
             Assert.assertEquals(1, signatureDictionaries.size());
@@ -281,7 +281,7 @@ public class TestCreateSignature
 
         checkSignature(new File(filenameSigned1), new File(filenameSigned2));
 
-        try (PDDocument doc2 = PDFParser.load(new File(filenameSigned2)))
+        try (PDDocument doc2 = Loader.loadPDF(new File(filenameSigned2)))
         {
             List<PDSignature> signatureDictionaries = doc2.getSignatureDictionaries();
             Assert.assertEquals(2, signatureDictionaries.size());
@@ -298,12 +298,12 @@ public class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
         String origPageKey;
-        try (PDDocument document = PDFParser.load(origFile))
+        try (PDDocument document = Loader.loadPDF(origFile))
         {
             // get string representation of pages COSObject
             origPageKey = document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString();
         }
-        try (PDDocument document = PDFParser.load(signedFile))
+        try (PDDocument document = Loader.loadPDF(signedFile))
         {
             // PDFBOX-4261: check that object number stays the same 
             Assert.assertEquals(origPageKey, document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString());
@@ -387,7 +387,7 @@ public class TestCreateSignature
         document.save(baos);
         document.close();
         
-        document = PDFParser.load(baos.toByteArray());
+        document = Loader.loadPDF(baos.toByteArray());
         // for stable digest
         document.setDocumentId(12345L);
         
@@ -440,7 +440,7 @@ public class TestCreateSignature
 
         checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameSigned));
         
-        try (PDDocument doc = PDFParser.load(new File(outDir, fileNameSigned)))
+        try (PDDocument doc = Loader.loadPDF(new File(outDir, fileNameSigned)))
         {
             oldImage = new PDFRenderer(doc).renderImage(0);
             
@@ -475,7 +475,7 @@ public class TestCreateSignature
             doc.saveIncremental(fileOutputStream);
         }
         checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameResaved1));
-        try (PDDocument doc = PDFParser.load(new File(outDir, fileNameResaved1)))
+        try (PDDocument doc = Loader.loadPDF(new File(outDir, fileNameResaved1)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             Assert.assertEquals("New Value 1", field.getValueAsString());

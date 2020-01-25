@@ -24,11 +24,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -74,7 +74,7 @@ public class AppearanceGenerationTest
     @Before
     public void setUp() throws IOException
     {
-        document = PDFParser.load(new File(IN_DIR, NAME_OF_PDF));
+        document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         OUT_DIR.mkdirs();
     }
     

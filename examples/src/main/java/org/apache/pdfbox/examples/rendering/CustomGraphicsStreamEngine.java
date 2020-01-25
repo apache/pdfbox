@@ -20,12 +20,13 @@ package org.apache.pdfbox.examples.rendering;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
@@ -58,7 +59,7 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
         File file = new File("src/main/resources/org/apache/pdfbox/examples/rendering/",
                              "custom-render-demo.pdf");
 
-        try (PDDocument doc = PDFParser.load(file))
+        try (PDDocument doc = Loader.loadPDF(file))
         {
             PDPage page = doc.getPage(0);
             CustomGraphicsStreamEngine engine = new CustomGraphicsStreamEngine(page);

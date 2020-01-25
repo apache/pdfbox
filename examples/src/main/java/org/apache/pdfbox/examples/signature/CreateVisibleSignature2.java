@@ -36,9 +36,9 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -164,7 +164,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         // creating output document and prepare the IO streams.
 
         try (FileOutputStream fos = new FileOutputStream(signedFile);
-                PDDocument doc = PDFParser.load(inputFile))
+                PDDocument doc = Loader.loadPDF(inputFile))
         {
             int accessPermissions = SigUtils.getMDPPermission(doc);
             if (accessPermissions == 1)

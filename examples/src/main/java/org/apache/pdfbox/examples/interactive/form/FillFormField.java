@@ -19,8 +19,8 @@ package org.apache.pdfbox.examples.interactive.form;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 
@@ -38,7 +38,7 @@ public final class FillFormField
     {
         String formTemplate = "src/main/resources/org/apache/pdfbox/examples/interactive/form/FillFormField.pdf";
         
-        try (PDDocument pdfDocument = PDFParser.load(new File(formTemplate)))
+        try (PDDocument pdfDocument = Loader.loadPDF(new File(formTemplate)))
         {
             // get the document catalog
             PDAcroForm acroForm = pdfDocument.getDocumentCatalog().getAcroForm();

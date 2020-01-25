@@ -27,11 +27,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
@@ -216,7 +216,7 @@ public final class ExtractText
                 {
                     outputFile = new File( pdfFile.substring( 0, pdfFile.length() -4 ) + ext ).getAbsolutePath();
                 }
-                document = PDFParser.load(new File(pdfFile), password);
+                document = Loader.loadPDF(new File(pdfFile), password);
                 
                 AccessPermission ap = document.getCurrentAccessPermission();
                 if( ! ap.canExtractContent() )
@@ -302,7 +302,7 @@ public final class ExtractText
                                         System.err.println("  is PDF (size=" + file.getSize() + ")");
                                     }
                                     try (InputStream fis = file.createInputStream();
-                                            PDDocument subDoc = PDFParser.load(fis))
+                                            PDDocument subDoc = Loader.loadPDF(fis))
                                     {
                                         if (toHTML)
                                         {

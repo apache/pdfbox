@@ -19,8 +19,8 @@ package org.apache.pdfbox.examples.pdmodel;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
@@ -47,7 +47,7 @@ public class AddImageToPDF
     public void createPDFFromImage( String inputFile, String imagePath, String outputFile )
             throws IOException
     {
-        try (PDDocument doc = PDFParser.load(new File(inputFile)))
+        try (PDDocument doc = Loader.loadPDF(new File(inputFile)))
         {
             //we will add the image to the first page.
             PDPage page = doc.getPage(0);

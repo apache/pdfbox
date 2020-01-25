@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 import org.junit.After;
@@ -63,7 +63,7 @@ public class PDButtonTest
         document = new PDDocument();
         acroForm = new PDAcroForm(document);
         
-        acrobatDocument = PDFParser.load(new File(IN_DIR, NAME_OF_PDF));
+        acrobatDocument = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         acrobatAcroForm = acrobatDocument.getDocumentCatalog().getAcroForm();
     }
 
@@ -115,7 +115,7 @@ public class PDButtonTest
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3656.pdf");
         
         try (InputStream is = new FileInputStream(file);
-                PDDocument pdfDocument = PDFParser.load(is))
+                PDDocument pdfDocument = Loader.loadPDF(is))
         {   
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("Checking/Savings");
             radioButton.setValue("Off");
@@ -145,7 +145,7 @@ public class PDButtonTest
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3682.pdf");
         try (InputStream is = new FileInputStream(file);
-                PDDocument pdfDocument = PDFParser.load(is))
+                PDDocument pdfDocument = Loader.loadPDF(is))
         {            
             pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton").setValue("c");
             PDRadioButton radioButton = (PDRadioButton) pdfDocument.getDocumentCatalog().getAcroForm().getField("RadioButton");

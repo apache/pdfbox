@@ -23,8 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
@@ -68,7 +68,7 @@ public final class PrintURLs
             }
             else
             {
-                doc = PDFParser.load(new File(args[0]));
+                doc = Loader.loadPDF(new File(args[0]));
                 int pageNum = 0;
                 for( PDPage page : doc.getPages() )
                 {

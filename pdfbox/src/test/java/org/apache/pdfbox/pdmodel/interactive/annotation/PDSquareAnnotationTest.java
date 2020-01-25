@@ -16,12 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.annotation;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -111,7 +111,7 @@ public class PDSquareAnnotationTest
         final int borderWidth = 1;
 
         File file = new File(IN_DIR, NAME_OF_PDF);
-        try (PDDocument document = PDFParser.load(file))
+        try (PDDocument document = Loader.loadPDF(file))
         {
             PDPage page = document.getPage(0);
             List<PDAnnotation> annotations = page.getAnnotations();

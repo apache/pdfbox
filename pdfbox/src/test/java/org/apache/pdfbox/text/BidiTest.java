@@ -31,8 +31,8 @@ import java.io.Writer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class BidiTest
             }
         }
         
-        document = PDFParser.load(new File(IN_DIR, NAME_OF_PDF));
+        document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         stripper = new PDFTextStripper();
         stripper.setLineSeparator("\n");
     }
@@ -124,7 +124,7 @@ public class BidiTest
             }
         }
 
-        PDDocument document = PDFParser.load(inFile);
+        PDDocument document = Loader.loadPDF(inFile);
         try
         {            
             File outFile;

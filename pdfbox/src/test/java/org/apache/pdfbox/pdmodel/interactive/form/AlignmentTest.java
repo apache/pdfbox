@@ -19,8 +19,8 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +40,7 @@ public class AlignmentTest
     @Before
     public void setUp() throws IOException
     {
-        document = PDFParser.load(new File(IN_DIR, NAME_OF_PDF));
+        document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();
         OUT_DIR.mkdirs();
     }

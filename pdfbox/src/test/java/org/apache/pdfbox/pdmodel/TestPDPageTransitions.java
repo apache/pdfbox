@@ -23,9 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransition;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransitionDirection;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransitionStyle;
@@ -41,7 +41,7 @@ public class TestPDPageTransitions
     @Test
     public void readTransitions() throws IOException, URISyntaxException
     {
-        try (PDDocument doc = PDFParser.load(new File(this.getClass().getResource(
+        try (PDDocument doc = Loader.loadPDF(new File(this.getClass().getResource(
                 "/org/apache/pdfbox/pdmodel/interactive/pagenavigation/transitions_test.pdf").toURI())))
         {
             PDTransition firstTransition = doc.getPages().get(0).getTransition();
@@ -70,7 +70,7 @@ public class TestPDPageTransitions
         }
         
         // read
-        try (PDDocument doc = PDFParser.load(baos.toByteArray()))
+        try (PDDocument doc = Loader.loadPDF(baos.toByteArray()))
         {
             PDPage page = doc.getPages().get(0);
             PDTransition loadedTransition = page.getTransition();

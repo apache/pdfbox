@@ -45,8 +45,8 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.TestPDPageTree;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
@@ -251,7 +251,7 @@ public class TestTextStripper extends TestCase
         }
 
         //System.out.println("  " + inFile + (bSort ? " (sorted)" : ""));
-        try (PDDocument document = PDFParser.load(inFile))
+        try (PDDocument document = Loader.loadPDF(inFile))
         {
             File outFile;
             File diffFile;
@@ -438,8 +438,8 @@ public class TestTextStripper extends TestCase
      */
     public void testStripByOutlineItems() throws IOException, URISyntaxException
     {
-        PDDocument doc = PDFParser
-                .load(new File(TestPDPageTree.class.getResource("with_outline.pdf").toURI()));
+        PDDocument doc = Loader
+                .loadPDF(new File(TestPDPageTree.class.getResource("with_outline.pdf").toURI()));
         PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
         Iterable<PDOutlineItem> children = outline.children();
         Iterator<PDOutlineItem> it = children.iterator();

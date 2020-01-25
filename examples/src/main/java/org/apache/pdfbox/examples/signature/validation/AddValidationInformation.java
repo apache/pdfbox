@@ -35,6 +35,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -47,7 +48,6 @@ import org.apache.pdfbox.examples.signature.cert.CertificateVerificationExceptio
 import org.apache.pdfbox.examples.signature.cert.OcspHelper;
 import org.apache.pdfbox.examples.signature.cert.RevokedCertificateException;
 import org.apache.pdfbox.examples.signature.validation.CertInformationCollector.CertSignatureInformation;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
@@ -101,7 +101,7 @@ public class AddValidationInformation
             throw new FileNotFoundException("Document for signing does not exist");
         }
 
-        try (PDDocument doc = PDFParser.load(inFile);
+        try (PDDocument doc = Loader.loadPDF(inFile);
                 FileOutputStream fos = new FileOutputStream(outFile))
         {
             document = doc;

@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
@@ -67,7 +67,7 @@ public final class ReplaceURLs
             }
             else
             {
-                doc = PDFParser.load(new File(args[0]));
+                doc = Loader.loadPDF(new File(args[0]));
                 int pageNum = 0;
                 for( PDPage page : doc.getPages() )
                 {

@@ -23,12 +23,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import junit.framework.TestCase;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
@@ -179,7 +180,7 @@ public class PDInlineImageTest extends TestCase
         document.save(pdfFile);
         document.close();
 
-        document = PDFParser.load(pdfFile);
+        document = Loader.loadPDF(pdfFile);
         new PDFRenderer(document).renderImage(0);
         document.close();
 

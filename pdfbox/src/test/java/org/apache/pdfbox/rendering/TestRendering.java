@@ -17,9 +17,9 @@
 
 package org.apache.pdfbox.rendering;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.ParallelParameterized;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized.Parameters;
@@ -62,7 +62,7 @@ public class TestRendering
     public void render() throws IOException
     {
         File file = new File(INPUT_DIR, fileName);
-        PDDocument document = PDFParser.load(file);
+        PDDocument document = Loader.loadPDF(file);
         PDFRenderer renderer = new PDFRenderer(document);
         renderer.renderImage(0);
 

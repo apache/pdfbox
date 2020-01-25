@@ -33,7 +33,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -45,7 +45,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
@@ -358,11 +357,11 @@ public class PDFMergerUtility
                 {
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = PDFParser.load((File) sourceObject, memUsageSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject, memUsageSetting);
                     }
                     else
                     {
-                        sourceDoc = PDFParser.load((InputStream) sourceObject, memUsageSetting);
+                        sourceDoc = Loader.loadPDF((InputStream) sourceObject, memUsageSetting);
                     }
                     for (PDPage page : sourceDoc.getPages())
                     {
@@ -434,11 +433,11 @@ public class PDFMergerUtility
                     PDDocument sourceDoc = null;
                     if (sourceObject instanceof File)
                     {
-                        sourceDoc = PDFParser.load((File) sourceObject, partitionedMemSetting);
+                        sourceDoc = Loader.loadPDF((File) sourceObject, partitionedMemSetting);
                     }
                     else
                     {
-                        sourceDoc = PDFParser.load((InputStream) sourceObject,
+                        sourceDoc = Loader.loadPDF((InputStream) sourceObject,
                                 partitionedMemSetting);
                     }
                     tobeclosed.add(sourceDoc);

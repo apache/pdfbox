@@ -26,12 +26,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.PDFGraphicsStreamEngine;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -169,7 +170,7 @@ public final class ExtractImages
 
     private void extract(String pdfFile, String password) throws IOException
     {
-        try (PDDocument document = PDFParser.load(new File(pdfFile), password))
+        try (PDDocument document = Loader.loadPDF(new File(pdfFile), password))
         {
             AccessPermission ap = document.getCurrentAccessPermission();
             if (!ap.canExtractContent())

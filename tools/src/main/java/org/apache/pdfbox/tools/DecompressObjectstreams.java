@@ -18,8 +18,8 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 
 /**
  * This program will just save the loaded pdf without any changes. As PDFBox doesn't support writing compressed object
@@ -71,7 +71,7 @@ public final class DecompressObjectstreams
             }
         }
 
-        try (PDDocument doc = PDFParser.load(new File(inputFilename)))
+        try (PDDocument doc = Loader.loadPDF(new File(inputFilename)))
         {
             // It is sufficient to simply write the loaded pdf without further processing.
             // As PDFBox doesn't support writing compressed object streams that streams will

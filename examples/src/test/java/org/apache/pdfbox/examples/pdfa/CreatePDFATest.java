@@ -20,10 +20,11 @@ import junit.framework.TestCase;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.examples.pdmodel.CreatePDFA;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
 import org.apache.pdfbox.preflight.ValidationResult;
@@ -77,7 +78,7 @@ public class CreatePDFATest extends TestCase
         assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
 
         // check the XMP metadata
-        try (PDDocument document = PDFParser.load(new File(pdfaFilename)))
+        try (PDDocument document = Loader.loadPDF(new File(pdfaFilename)))
         {
             PDDocumentCatalog catalog = document.getDocumentCatalog();
             PDMetadata meta = catalog.getMetadata();

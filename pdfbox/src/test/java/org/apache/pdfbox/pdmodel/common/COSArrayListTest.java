@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.interactive.annotation.AnnotationFilter;
@@ -327,7 +327,7 @@ public class COSArrayListTest {
             pdf.close();
         }
 
-        try (PDDocument pdf = PDFParser.load(new File(OUT_DIR + "/removeSingleDirectObjectTest.pdf"))) {
+        try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeSingleDirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
@@ -367,7 +367,7 @@ public class COSArrayListTest {
             pdf.close();
         }
 
-        try (PDDocument pdf = PDFParser.load(new File(OUT_DIR + "/removeSingleIndirectObjectTest.pdf"))) {
+        try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeSingleIndirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
@@ -412,7 +412,7 @@ public class COSArrayListTest {
             pdf.close();
         }
 
-        try (PDDocument pdf = PDFParser.load(new File(OUT_DIR + "/removeDirectObjectTest.pdf"))) {
+        try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeDirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
@@ -454,7 +454,7 @@ public class COSArrayListTest {
             pdf.close();
         }
 
-        try (PDDocument pdf = PDFParser.load(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
+        try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
@@ -500,7 +500,7 @@ public class COSArrayListTest {
             pdf.close();
         }
 
-        try (PDDocument pdf = PDFParser.load(new File(OUT_DIR + "/retainDirectObjectTest.pdf"))) {
+        try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/retainDirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
@@ -542,7 +542,7 @@ public class COSArrayListTest {
             pdf.close();
         }
 
-        try (PDDocument pdf = PDFParser.load(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
+        try (PDDocument pdf = Loader.loadPDF(new File(OUT_DIR + "/removeIndirectObjectTest.pdf"))) {
             PDPage page = pdf.getPage(0);
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();

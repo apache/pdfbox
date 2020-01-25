@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -122,7 +122,7 @@ public final class ExtractTTFFonts
                 {
                     prefix = pdfFile.substring(0, pdfFile.length() - 4);
                 }
-                try (PDDocument document = PDFParser.load(new File(pdfFile), password))
+                try (PDDocument document = Loader.loadPDF(new File(pdfFile), password))
                 {
                     for (PDPage page : document.getPages())
                     {

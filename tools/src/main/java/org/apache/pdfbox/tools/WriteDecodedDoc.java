@@ -19,13 +19,14 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
 /**
@@ -61,7 +62,7 @@ public class WriteDecodedDoc
     public void doIt(String in, String out, String password, boolean skipImages)
             throws IOException
     {
-        try (PDDocument doc = PDFParser.load(new File(in), password))
+        try (PDDocument doc = Loader.loadPDF(new File(in), password))
         {
             doc.setAllSecurityToBeRemoved(true);
             COSDocument cosDocument = doc.getDocument();

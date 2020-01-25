@@ -21,9 +21,9 @@ import java.io.IOException;
 
 import java.util.List;
 
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 
 /**
  * This is the main program that will take a pdf document and split it into
@@ -132,7 +132,7 @@ public final class PDFSplit
             List<PDDocument> documents = null;
             try
             {
-                document = PDFParser.load(new File(pdfFile), password);
+                document = Loader.loadPDF(new File(pdfFile), password);
 
                 int numberOfPages = document.getNumberOfPages();
                 boolean startEndPageSet = false;

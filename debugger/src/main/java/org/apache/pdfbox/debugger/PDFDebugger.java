@@ -67,6 +67,8 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreePath;
+
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSBoolean;
@@ -113,7 +115,6 @@ import org.apache.pdfbox.debugger.ui.ZoomMenu;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.common.PDPageLabels;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -1243,7 +1244,7 @@ public class PDFDebugger extends JFrame
             @Override
             PDDocument open() throws IOException
             {
-                return PDFParser.load(file, password);
+                return Loader.loadPDF(file, password);
             }
         };
         document = documentOpener.parse();
@@ -1281,7 +1282,7 @@ public class PDFDebugger extends JFrame
             @Override
             PDDocument open() throws IOException
             {
-                return PDFParser.load(new URL(urlString).openStream(), password);
+                return Loader.loadPDF(new URL(urlString).openStream(), password);
             }
         };
         document = documentOpener.parse();
