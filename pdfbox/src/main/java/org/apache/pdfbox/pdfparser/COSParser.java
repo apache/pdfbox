@@ -1919,9 +1919,8 @@ public class COSParser extends BaseParser implements ICOSParser
      *
      * @param trailer
      * @return true if the root was found, false if not.
-     * @throws IOException
      */
-    private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
+    private boolean searchForTrailerItems(COSDictionary trailer)
     {
         boolean rootFound = false;
         for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
