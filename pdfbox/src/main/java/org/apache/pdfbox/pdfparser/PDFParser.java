@@ -16,11 +16,13 @@
  */
 package org.apache.pdfbox.pdfparser;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
@@ -232,4 +234,40 @@ public class PDFParser extends COSParser
     {
         return new PDDocument(document, source, getAccessPermission());
     }
+
+    /**
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param file file to be loaded
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the file required a non-empty password.
+     * @throws IOException in case of a file reading or parsing error
+     * 
+     * @deprecated use {@link Loader#loadPDF(File)} instead
+     */
+    public PDDocument load(File filename)  throws IOException
+    {
+        return Loader.loadPDF(filename);
+    }
+
+    /**
+     * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
+     * 
+     * @param file file to be loaded
+     * @param password password to be used for decryption
+     * 
+     * @return loaded document
+     * 
+     * @throws InvalidPasswordException If the password is incorrect.
+     * @throws IOException in case of a file reading or parsing error
+     * 
+     * @deprecated use {@link Loader#loadPDF(File, String)} instead
+     */
+    public PDDocument load(File filename, String password) throws IOException
+    {
+        return Loader.loadPDF(filename, password);
+    }
+
 }
