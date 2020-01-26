@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -82,9 +81,9 @@ public class ContentStreamWriterTest
     @Test
     public void testPDFBox4750() throws IOException
     {
-        String filename = "PDFBOX-4750-test.pdf";
-        URL url = new URL("https://issues.apache.org/jira/secure/attachment/12991833/PDFBOX-4750-test.pdf");
-        try (PDDocument doc = Loader.loadPDF(url.openStream()))
+        String filename = "PDFBOX-4750.pdf";
+        File file = new File("target/pdfs", filename);
+        try (PDDocument doc = Loader.loadPDF(file))
         {
             PDFRenderer r = new PDFRenderer(doc);
             for (int i = 0; i < doc.getNumberOfPages(); ++i)
