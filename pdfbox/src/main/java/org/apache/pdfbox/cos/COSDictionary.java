@@ -586,8 +586,26 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This is a convenience method that will get the dictionary object that is expected to be a
-     * COSStream. Null is returned if the entry does not exist in the dictionary.
+     * This is a convenience method that will get the dictionary object that is expected to be a COSDictionary. Null is
+     * returned if the entry does not exist in the dictionary.
+     *
+     * @param firstKey The first key to the item in the dictionary.
+     * @param secondKey The second key to the item in the dictionary.
+     * @return The COSDictionary.
+     */
+    public COSDictionary getCOSDictionary(COSName firstKey, COSName secondKey)
+    {
+        COSBase dictionary = getDictionaryObject(firstKey, secondKey);
+        if (dictionary instanceof COSDictionary)
+        {
+            return (COSDictionary) dictionary;
+        }
+        return null;
+    }
+
+    /**
+     * This is a convenience method that will get the dictionary object that is expected to be a COSStream. Null is
+     * returned if the entry does not exist in the dictionary.
      *
      * @param key The key to the item in the dictionary.
      * @return The COSStream.

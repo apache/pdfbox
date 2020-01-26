@@ -108,15 +108,10 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             return value;
         }
-
-        COSBase base = node.getDictionaryObject(COSName.PARENT, COSName.P);
-        if (base instanceof COSDictionary)
+        COSDictionary parent = node.getCOSDictionary(COSName.PARENT, COSName.P);
+        if (parent != null && COSName.PAGES.equals(parent.getCOSName(COSName.TYPE)))
         {
-            COSDictionary parent = (COSDictionary) base;
-            if (COSName.PAGES.equals(parent.getDictionaryObject(COSName.TYPE)))
-            {
-                return getInheritableAttribute(parent, key);
-            }
+            return getInheritableAttribute(parent, key);
         }
 
         return null;
@@ -321,12 +316,13 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     /**
      * Returns true if the node is a page tree node (i.e. and intermediate).
      */
-    private boolean isPageTreeNode(COSDictionary node )
+    private boolean isPageTreeNode(COSDictionary node)
     {
         // some files such as PDFBOX-2250-229205.pdf don't have Pages set as the Type, so we have
         // to check for the presence of Kids too
         return node != null &&
-               (node.getCOSName(COSName.TYPE) == COSName.PAGES || node.containsKey(COSName.KIDS));
+                (COSName.PAGES.equals(node.getCOSName(COSName.TYPE))
+                        || node.containsKey(COSName.KIDS));
     }
 
     /**
@@ -373,7 +369,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
 
         private SearchContext(PDPage page)
         {
-            this.searched = page.getCOSObject();
+            searched = page.getCOSObject();
         }
 
         private void visitPage(COSDictionary current)
@@ -424,14 +420,14 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private void remove(COSDictionary node)
     {
         // remove from parent's kids
-        COSDictionary parent = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
-        COSArray kids = (COSArray)parent.getDictionaryObject(COSName.KIDS);
+        COSDictionary parent = node.getCOSDictionary(COSName.PARENT, COSName.P);
+        COSArray kids = parent.getCOSArray(COSName.KIDS);
         if (kids.removeObject(node))
         {
             // update ancestor counts
             do
             {
-                node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+                node = node.getCOSDictionary(COSName.PARENT, COSName.P);
                 if (node != null)
                 {
                     node.setInt(COSName.COUNT, node.getInt(COSName.COUNT) - 1);
@@ -455,13 +451,13 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         // todo: re-balance tree? (or at least group new pages into tree nodes of e.g. 20)
 
         // add to parent's kids
-        COSArray kids = (COSArray)root.getDictionaryObject(COSName.KIDS);
+        COSArray kids = root.getCOSArray(COSName.KIDS);
         kids.add(node);
 
         // update ancestor counts
         do
         {
-            node = (COSDictionary) node.getDictionaryObject(COSName.PARENT, COSName.P);
+            node = node.getCOSDictionary(COSName.PARENT, COSName.P);
             if (node != null)
             {
                 node.setInt(COSName.COUNT, node.getInt(COSName.COUNT) + 1);
@@ -481,8 +477,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     public void insertBefore(PDPage newPage, PDPage nextPage)
     {
         COSDictionary nextPageDict = nextPage.getCOSObject();
-        COSDictionary parentDict = (COSDictionary) nextPageDict.getDictionaryObject(COSName.PARENT);
-        COSArray kids = (COSArray) parentDict.getDictionaryObject(COSName.KIDS);
+        COSDictionary parentDict = nextPageDict.getCOSDictionary(COSName.PARENT, COSName.P);
+        COSArray kids = parentDict.getCOSArray(COSName.KIDS);
         boolean found = false;
         for (int i = 0; i < kids.size(); ++i)
         {
@@ -513,8 +509,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     public void insertAfter(PDPage newPage, PDPage prevPage)
     {
         COSDictionary prevPageDict = prevPage.getCOSObject();
-        COSDictionary parentDict = (COSDictionary) prevPageDict.getDictionaryObject(COSName.PARENT);
-        COSArray kids = (COSArray) parentDict.getDictionaryObject(COSName.KIDS);
+        COSDictionary parentDict = prevPageDict.getCOSDictionary(COSName.PARENT, COSName.P);
+        COSArray kids = parentDict.getCOSArray(COSName.KIDS);
         boolean found = false;
         for (int i = 0; i < kids.size(); ++i)
         {
@@ -540,7 +536,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         {
             int cnt = parentDict.getInt(COSName.COUNT);
             parentDict.setInt(COSName.COUNT, cnt + 1);
-            parentDict = (COSDictionary) parentDict.getDictionaryObject(COSName.PARENT);
+            parentDict = parentDict.getCOSDictionary(COSName.PARENT, COSName.P);
         }
         while (parentDict != null);
     }
