@@ -45,8 +45,7 @@ public class TestPDPageContentStream extends TestCase
 
             // now read the PDF stream and verify that the CMYK values are correct
             PDFStreamParser parser = new PDFStreamParser(page.getContents());
-            parser.parse();
-            List<Object>  pageTokens = parser.getTokens();
+            List<Object> pageTokens = parser.parse();
             // expected five tokens :
             // [0] = COSFloat{0.1}
             // [1] = COSFloat{0.2}
@@ -71,8 +70,7 @@ public class TestPDPageContentStream extends TestCase
 
             // now read the PDF stream and verify that the CMYK values are correct
             parser = new PDFStreamParser(page.getContents());
-            parser.parse();
-            pageTokens = parser.getTokens();
+            pageTokens = parser.parse();
             // expected five tokens  :
             // [0] = COSFloat{0.5}
             // [1] = COSFloat{0.6}
@@ -105,8 +103,7 @@ public class TestPDPageContentStream extends TestCase
 
             // now read the PDF stream and verify that the values are correct
             PDFStreamParser parser = new PDFStreamParser(page.getContents());
-            parser.parse();
-            List<Object> pageTokens = parser.getTokens();
+            List<Object> pageTokens = parser.parse();
             assertEquals(0.1f, ((COSNumber) pageTokens.get(0)).floatValue());
             assertEquals(0.2f, ((COSNumber) pageTokens.get(1)).floatValue());
             assertEquals(0.3f, ((COSNumber) pageTokens.get(2)).floatValue());
@@ -135,8 +132,7 @@ public class TestPDPageContentStream extends TestCase
 
             // now read the PDF stream and verify that the values are correct
             parser = new PDFStreamParser(page.getContents());
-            parser.parse();
-            pageTokens = parser.getTokens();
+            pageTokens = parser.parse();
             assertEquals(0.5f, ((COSNumber) pageTokens.get(0)).floatValue());
             assertEquals(0.6f, ((COSNumber) pageTokens.get(1)).floatValue());
             assertEquals(0.7f, ((COSNumber) pageTokens.get(2)).floatValue());
@@ -161,8 +157,7 @@ public class TestPDPageContentStream extends TestCase
     {
         PDPage page = new PDPage();
         PDFStreamParser parser = new PDFStreamParser(page.getContents());
-        parser.parse();
-        List<Object> tokens = parser.getTokens();
+        List<Object> tokens = parser.parse();
         assertEquals(0, tokens.size());
     }
 

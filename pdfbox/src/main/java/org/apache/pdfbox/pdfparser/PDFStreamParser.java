@@ -46,8 +46,6 @@ public class PDFStreamParser extends BaseParser
      */
     private static final Log LOG = LogFactory.getLog(PDFStreamParser.class);
 
-    private final List<Object> streamObjects = new ArrayList<>( 100 );
-    
     private static final int MAX_BIN_CHAR_TEST_LENGTH = 10;
     private final byte[] binCharTestArr = new byte[MAX_BIN_CHAR_TEST_LENGTH];
     
@@ -74,27 +72,20 @@ public class PDFStreamParser extends BaseParser
     }
 
     /**
-     * This will parse all the tokens in the stream. This will close the stream when it is finished
-     * parsing. You can then access these with {@link #getTokens() getTokens()}.
+     * This will parse all the tokens in the stream. This will close the stream when it is finished parsing.
      *
+     * @return All of the tokens in the stream.
      * @throws IOException If there is an error while parsing the stream.
      */
-    public void parse() throws IOException
+    public List<Object> parse() throws IOException
     {
+        List<Object> streamObjects = new ArrayList<>(100);
         Object token;
         while( (token = parseNextToken()) != null )
         {
             streamObjects.add( token );
         }
-    }
-
-    /**
-     * This will get the tokens that were parsed from the stream by the {@link #parse() parse()} method.
-     *
-     * @return All of the tokens in the stream.
-     */
-    public List<Object> getTokens()
-    {
+        seqSource.close();
         return streamObjects;
     }
 
@@ -113,6 +104,7 @@ public class PDFStreamParser extends BaseParser
         int nextByte = seqSource.peek();
         if( ((byte)nextByte) == -1 )
         {
+            seqSource.close();
             return null;
         }
         char c = (char)nextByte;
@@ -416,7 +408,7 @@ public class PDFStreamParser extends BaseParser
      *
      * @throws IOException If there is an error reading from the stream.
      */
-    protected String readOperator() throws IOException
+    private String readOperator() throws IOException
     {
         skipSpaces();
 

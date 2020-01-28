@@ -117,8 +117,7 @@ public class PDFStreamParserTest extends TestCase
     private List<Object> parseTokenString(String s) throws IOException
     {
         PDFStreamParser pdfStreamParser = new PDFStreamParser(s.getBytes());
-        pdfStreamParser.parse();
-        return pdfStreamParser.getTokens();
+        return pdfStreamParser.parse();
     }
 
 }

@@ -325,15 +325,12 @@ public class StreamPane implements ActionListener
             try
             {
                 parser = new PDFStreamParser(IOUtils.toByteArray(inputStream));
-                parser.parse();
+                parser.parse().forEach(obj -> writeToken(obj, docu));
             }
             catch (IOException e)
             {
                 return null;
             }
-
-            parser.getTokens().forEach(obj -> writeToken(obj, docu));
-
             return docu;
         }
 

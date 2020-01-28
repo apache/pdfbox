@@ -96,9 +96,8 @@ public class ContentStreamWriterTest
                      OutputStream os = newContent.createOutputStream(COSName.FLATE_DECODE))
                 {
                     PDFStreamParser parser = new PDFStreamParser(is);
-                    parser.parse();
                     ContentStreamWriter tokenWriter = new ContentStreamWriter(os);
-                    tokenWriter.writeTokens(parser.getTokens());
+                    tokenWriter.writeTokens(parser.parse());
                 }
                 page.setContents(newContent);
             }
