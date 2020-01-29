@@ -412,7 +412,14 @@ public class CFFParser
         {
             return 0d;
         }
-        return Double.valueOf(sb.toString());
+        try
+        {
+            return Double.valueOf(sb.toString());
+        }
+        catch (NumberFormatException ex)
+        {
+            throw new IOException(ex);
+        }
     }
 
     private CFFFont parseFont(CFFDataInput input, String name, byte[] topDictIndex) throws IOException
