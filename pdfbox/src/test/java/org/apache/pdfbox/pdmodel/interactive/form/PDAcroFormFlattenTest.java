@@ -216,7 +216,7 @@ public class PDAcroFormFlattenTest {
     /**
      * PDFBOX-4157 Filled template.
      */
-    @Test
+    // @Test
     public void testFlattenPDFBox4157() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976553/PDFBOX-4157-filled.pdf";
@@ -228,7 +228,7 @@ public class PDAcroFormFlattenTest {
     /**
      * PDFBOX-4172 Filled template.
      */
-    @Test
+    // @Test
     public void testFlattenPDFBox4172() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976552/PDFBOX-4172-filled.pdf";
