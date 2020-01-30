@@ -40,11 +40,12 @@ import org.junit.Test;
 /**
  * Test flatten different forms and compare with rendering.
  *
- * The tests are currently disabled to not run within the CI environment
+ * Some of the tests are currently disabled to not run within the CI environment
  * as the test results need manual inspection. Enable as needed.
  *
  */
-public class PDAcroFormFlattenTest {
+public class PDAcroFormFlattenTest
+{
 
     private static final File IN_DIR = new File("target/test-output/flatten/in");
     private static final File OUT_DIR = new File("target/test-output/flatten/out");
@@ -333,11 +334,11 @@ public class PDAcroFormFlattenTest {
         try (InputStream is = url.openStream();
             OutputStream os = new FileOutputStream(new File(IN_DIR,targetFile)))
         {
-
             byte[] b = new byte[2048];
             int length;
 
-            while ((length = is.read(b)) != -1) {
+            while ((length = is.read(b)) != -1)
+            {
                 os.write(b, 0, length);
             }
         }
@@ -362,7 +363,7 @@ public class PDAcroFormFlattenTest {
 
         for (File testFile : testFiles)
         {
-            if (! new File(OUT_DIR, testFile.getName()).exists())
+            if (!new File(OUT_DIR, testFile.getName()).exists())
             {
                 testFile.delete();
             }
