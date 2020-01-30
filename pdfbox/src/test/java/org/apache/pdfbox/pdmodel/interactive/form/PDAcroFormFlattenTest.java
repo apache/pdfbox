@@ -241,7 +241,7 @@ public class PDAcroFormFlattenTest
     /**
      * PDFBOX-4615 Filled template.
      */
-    @Test
+    // @Test
     public void testFlattenPDFBox4615() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976452/resetboundingbox-filled.pdf";
