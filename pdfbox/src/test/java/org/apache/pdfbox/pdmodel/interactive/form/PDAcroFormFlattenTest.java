@@ -32,13 +32,14 @@ import javax.imageio.ImageIO;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Test flatten different forms and compare with rendering.
  *
- * The tests are currently disabled to not run within the CI environment
+ * Some of the tests are currently disabled to not run within the CI environment
  * as the test results need manual inspection. Enable as needed.
  *
  */
@@ -58,7 +59,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-142 Filled template.
      */
-    //@Test
+    // @Test
     public void testFlattenPDFBOX142() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12742551/Testformular1.pdf";
@@ -70,7 +71,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-563 Filled template.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX563() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12425859/TestFax_56972.pdf";
@@ -82,7 +83,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-2469 Empty template.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX2469Empty() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12682897/FormI-9-English.pdf";
@@ -94,7 +95,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-2469 Filled template.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX2469Filled() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12678455/testPDF_acroForm.pdf";
@@ -106,7 +107,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-2586 Empty template.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX2586() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12689788/test.pdf";
@@ -118,7 +119,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3083 Filled template rotated.
      */
-    //@Test
+    // @Test
     public void testFlattenPDFBOX3083() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12770263/mypdf.pdf";
@@ -130,7 +131,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3262 Hidden fields
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX3262() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf";
@@ -142,7 +143,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3396 Signed Document 1.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX3396_1() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12816014/Signed-Document-1.pdf";
@@ -154,7 +155,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3396 Signed Document 2.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX3396_2() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12816016/Signed-Document-2.pdf";
@@ -166,7 +167,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3396 Signed Document 3.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX3396_3() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12821307/Signed-Document-3.pdf";
@@ -178,7 +179,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3396 Signed Document 4.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBOX3396_4() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12821308/Signed-Document-4.pdf";
@@ -190,7 +191,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3587 Empty template.
      */
-    //@Test
+    // @Test
     public void testFlattenOpenOfficeForm() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12839977/OpenOfficeForm.pdf";
@@ -202,7 +203,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3587 Filled template.
      */
-    //@Test
+    // @Test
     public void testFlattenOpenOfficeFormFilled() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12840280/OpenOfficeForm_filled.pdf";
@@ -214,7 +215,7 @@ public class PDAcroFormFlattenTest
     /**
      * PDFBOX-4157 Filled template.
      */
-    //@Test
+    // @Test
     public void testFlattenPDFBox4157() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976553/PDFBOX-4157-filled.pdf";
@@ -226,7 +227,7 @@ public class PDAcroFormFlattenTest
     /**
      * PDFBOX-4172 Filled template.
      */
-    //@Test
+    // @Test
     public void testFlattenPDFBox4172() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976552/PDFBOX-4172-filled.pdf";
@@ -238,7 +239,7 @@ public class PDAcroFormFlattenTest
     /**
      * PDFBOX-4615 Filled template.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBox4615() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976452/resetboundingbox-filled.pdf";
@@ -250,7 +251,7 @@ public class PDAcroFormFlattenTest
     /**
      * PDFBOX-4693: page is not rotated, but the appearance stream is.
      */
-    //@Test
+    @Test
     public void testFlattenPDFBox4693() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12986337/stenotypeTest-3_rotate_no_flatten.pdf";
@@ -281,8 +282,7 @@ public class PDAcroFormFlattenTest
         TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
         if (!testPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
-            // don't fail, rendering is different on different systems, result must be viewed manually
-            System.out.println("Rendering of " + outputFile + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
+            fail("Rendering of " + outputFile + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
             removeMatchingRenditions(inputFile);
             return false;
         }
@@ -360,7 +360,7 @@ public class PDAcroFormFlattenTest
 
         for (File testFile : testFiles)
         {
-            if (! new File(OUT_DIR, testFile.getName()).exists())
+            if (!new File(OUT_DIR, testFile.getName()).exists())
             {
                 testFile.delete();
             }
