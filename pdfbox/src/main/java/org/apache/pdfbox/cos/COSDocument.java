@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.ScratchFile;
+import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdfparser.PDFObjectStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
@@ -385,7 +386,8 @@ public class COSDocument extends COSBase implements Closeable
 
     /**
      * This will get a list of all available objects. This method works only for loaded PDFs. It
-     * will return an empty list for PDFs created from scratch. This method will be removed in 3.0.
+     * will return an empty list for PDFs created from scratch (this includes PDFs generated within
+     * PDFBox, e.g. by {@link Splitter}). This method will be removed in 3.0.
      *
      * @return A list of all objects, never null.
      */
