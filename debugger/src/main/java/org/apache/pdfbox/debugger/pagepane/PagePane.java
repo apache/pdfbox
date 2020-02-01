@@ -72,8 +72,6 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.rendering.ImageType;
-import org.apache.pdfbox.rendering.RenderDestination;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 /**
@@ -282,16 +280,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
-        new RenderWorker(ZoomMenu.getZoomScale(),
-                RotationMenu.getRotationDegrees(),
-                ViewMenu.isShowTextStripper(),
-                ViewMenu.isShowTextStripperBeads(),
-                ViewMenu.isShowFontBBox(),
-                ViewMenu.isShowGlyphBounds(),
-                ViewMenu.isAllowSubsampling(),
-                ImageTypeMenu.getImageType(),
-                RenderDestinationMenu.getRenderDestination()
-        ).execute();
+        new RenderWorker().execute();
         zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
     }
 
@@ -459,45 +448,26 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
      */
     private final class RenderWorker extends SwingWorker<BufferedImage, Integer>
     {
-        private final float scale;
-        private final int rotation;
-        private final boolean showTextStripper;
-        private final boolean showTextStripperBeads;
-        private final boolean showFontBBox;
-        private final boolean showGlyphBounds;
-        private final boolean allowSubsampling;
-        private final ImageType imageType;
-        private final RenderDestination renderDestination;
-
-        private RenderWorker(float scale, int rotation, boolean showTextStripper,
-                             boolean showTextStripperBeads, boolean showFontBBox,
-                             boolean showGlyphBounds, boolean allowSubsampling,
-                             ImageType imageType, RenderDestination renderDestination)
-        {
-            this.scale = scale;
-            this.rotation = rotation;
-            this.showTextStripper = showTextStripper;
-            this.showTextStripperBeads = showTextStripperBeads;
-            this.showFontBBox = showFontBBox;
-            this.showGlyphBounds = showGlyphBounds;
-            this.allowSubsampling = allowSubsampling;
-            this.imageType = imageType;
-            this.renderDestination = renderDestination;
-        }
-
         @Override
         protected BufferedImage doInBackground() throws IOException
         {
+            // rendering can take a long time, so remember all options that are used later
+            float scale = ZoomMenu.getZoomScale();
+            boolean showTextStripper = ViewMenu.isShowTextStripper();
+            boolean showTextStripperBeads = ViewMenu.isShowTextStripperBeads();
+            boolean showFontBBox = ViewMenu.isShowFontBBox();
+            int rotation = RotationMenu.getRotationDegrees();
+
             label.setIcon(null);
             labelText = "Rendering...";
             label.setText(labelText);
             statuslabel.setText(labelText);
-            
-            PDFRenderer renderer = new DebugPDFRenderer(document, this.showGlyphBounds);
-            renderer.setSubsamplingAllowed(allowSubsampling);
+
+            PDFRenderer renderer = new DebugPDFRenderer(document, ViewMenu.isShowGlyphBounds());
+            renderer.setSubsamplingAllowed(ViewMenu.isAllowSubsampling());
 
             long t0 = System.nanoTime();
-            BufferedImage image = renderer.renderImage(pageIndex, scale, imageType, renderDestination);
+            BufferedImage image = renderer.renderImage(pageIndex, scale, ImageTypeMenu.getImageType(), RenderDestinationMenu.getRenderDestination());
             long t1 = System.nanoTime();
 
             long ms = TimeUnit.MILLISECONDS.convert(t1 - t0, TimeUnit.NANOSECONDS);
