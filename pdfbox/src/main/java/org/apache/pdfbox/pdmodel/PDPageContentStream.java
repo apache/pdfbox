@@ -2470,7 +2470,7 @@ public final class PDPageContentStream implements Closeable
      */
     protected void writeOperand(float real) throws IOException
     {
-        if (!Float.isFinite(real))
+        if (Float.isInfinite(real) || Float.isNaN(real))
         {
             throw new IllegalArgumentException(real + " is not a finite number");
         }
