@@ -2466,9 +2466,15 @@ public final class PDPageContentStream implements Closeable
      * @param real the float value to be added to the content stream.
      * 
      * @throws IOException if something went wrong
+     * @throws IllegalArgumentException if the parameter is not a finite number
      */
     protected void writeOperand(float real) throws IOException
     {
+        if (!Float.isFinite(real))
+        {
+            throw new IllegalArgumentException(real + "is not a finite number");
+        }
+
         int byteCount = NumberFormatUtil.formatFloatFast(real, formatDecimal.getMaximumFractionDigits(), formatBuffer);
 
         if (byteCount == -1)
