@@ -1480,7 +1480,7 @@ abstract class PDAbstractContentStream implements Closeable
     {
         if (!Float.isFinite(real))
         {
-            throw new IllegalArgumentException(real + "is not a finite number");
+            throw new IllegalArgumentException(real + " is not a finite number");
         }
         int byteCount = NumberFormatUtil.formatFloatFast(real, formatDecimal.getMaximumFractionDigits(), formatBuffer);
 
