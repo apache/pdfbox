@@ -670,6 +670,32 @@
                             <sha512>add66ca86b5eb3bfd44fd8c273a81695586d76f6e630b714d4b8db6db5aee5b80e7a6d47b9863a42506773c2c0ee2181469d5cd717dba185b70ef5db7ffb80b9</sha512>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>PDFBOX-4153</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12914331/WXMDXCYRWFDCMOSFQJ5OAJIAFXYRZ5OA.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4153-WXMDXCYRWFDCMOSFQJ5OAJIAFXYRZ5OA.pdf</outputFileName>
+                            <sha512>e69a4ee7ba17c384770d8679586273a23fead36a5775669e5ed4d882d738e8d7c5b5cd48deff2ddeea7900efdb13dee8f4899f9db7945d040ddae8628faea465</sha512>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>PDFBOX-4490</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://issues.apache.org/jira/secure/attachment/12962991/NeS1078.pdf</url>
+                            <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                            <outputFileName>PDFBOX-4490.pdf</outputFileName>
+                            <sha512>5ae7f232c47c13ed31997eb2c368e7deb1013c1321d70bf79369f8d709b33406191d94c21a5d27b4c4bb48241bafd9328a0a6d2d093d4e540d5044e9503bd099</sha512>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
