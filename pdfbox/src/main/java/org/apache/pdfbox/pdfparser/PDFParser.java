@@ -248,9 +248,9 @@ public class PDFParser extends COSParser
      * @deprecated use {@link Loader#loadPDF(File)} instead
      */
     @Deprecated
-    public static PDDocument load(File filename) throws IOException
+    public static PDDocument load(File file) throws IOException
     {
-        return Loader.loadPDF(filename);
+        return Loader.loadPDF(file);
     }
 
     /**
@@ -267,9 +267,9 @@ public class PDFParser extends COSParser
      * @deprecated use {@link Loader#loadPDF(File, String)} instead
      */
     @Deprecated
-    public static PDDocument load(File filename, String password) throws IOException
+    public static PDDocument load(File file, String password) throws IOException
     {
-        return Loader.loadPDF(filename, password);
+        return Loader.loadPDF(file, password);
     }
 
 }
