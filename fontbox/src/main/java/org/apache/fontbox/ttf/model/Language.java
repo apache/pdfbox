@@ -33,7 +33,10 @@ import org.apache.fontbox.ttf.table.common.ScriptRecord;
 public enum Language
 {
 
+	TAMIL(new String[] { "tamil", "taml" }),	
     BENGALI(new String[] { "bng2", "beng" });
+	
+	
 
     private final String[] scriptNames;
 

@@ -17,32 +17,24 @@
 
 package org.apache.fontbox.ttf.gsub;
 
-import org.apache.fontbox.ttf.CmapLookup;
-import org.apache.fontbox.ttf.model.GsubData;
-import org.apache.fontbox.ttf.model.Language;
-
 /**
- * Gets a {@link Language} specific instance of a {@link GsubWorker}
  * 
- * @author Palash Ray
+ * Extracted from GsubWorkerForBengali to share across complex script language GsubWorker 
+ * 
+ * @author Raja Ksv
  *
  */
-public class GsubWorkerFactory
-{
+class BeforeAndAfterSpanComponent {
+    final char originalCharacter;
+    final char beforeComponentCharacter;
+    final char afterComponentCharacter;
 
-    public GsubWorker getGsubWorker(CmapLookup cmapLookup, GsubData gsubData)
+    BeforeAndAfterSpanComponent(char originalCharacter, char beforeComponentCharacter,
+            char afterComponentCharacter)
     {
-        switch (gsubData.getLanguage())
-        {
-        case BENGALI:
-            return new GsubWorkerForBengali(cmapLookup, gsubData);
-        case TAMIL:
-        	return new GsubWorkerForTamil(cmapLookup, gsubData);
-        default:
-            throw new UnsupportedOperationException(
-                    "The language " + gsubData.getLanguage() + " is not yet supported");
-        }
-
+        this.originalCharacter = originalCharacter;
+        this.beforeComponentCharacter = beforeComponentCharacter;
+        this.afterComponentCharacter = afterComponentCharacter;
     }
 
 }
