@@ -41,7 +41,8 @@ public class Type1CharString
     private static final Log LOG = LogFactory.getLog(Type1CharString.class);
 
     private Type1CharStringReader font;
-    private final String fontName, glyphName;
+    private final String fontName;
+    private final String glyphName;
     private GeneralPath path = null;
     private int width = 0;
     private Point2D.Float leftSideBearing = null;
