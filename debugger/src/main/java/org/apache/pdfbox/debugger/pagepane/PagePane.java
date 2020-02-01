@@ -64,8 +64,6 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.rendering.ImageType;
-import org.apache.pdfbox.rendering.RenderDestination;
 
 /**
  * Display the page number and a page rendering.
@@ -248,12 +246,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         // render in a background thread: rendering is read-only, so this should be ok, despite
         // the fact that PDDocument is not officially thread safe
-        new RenderWorker(ZoomMenu.getZoomScale(),
-                RotationMenu.getRotationDegrees(),
-                PDFDebugger.allowSubsampling.isSelected(),
-                ImageTypeMenu.getImageType(),
-                RenderDestinationMenu.getRenderDestination()
-        ).execute();
+        new RenderWorker().execute();
         zoomMenu.setPageZoomScale(ZoomMenu.getZoomScale());
     }
 
@@ -390,33 +383,23 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
      */
     private final class RenderWorker extends SwingWorker<BufferedImage, Integer>
     {
-        private final float scale;
-        private final int rotation;
-        private final boolean allowSubsampling;
-        private final ImageType imageType;
-        private final RenderDestination renderDestination;
-
-        private RenderWorker(float scale, int rotation, boolean allowSubsampling,
-                              ImageType imageType, RenderDestination renderDestination)
-        {
-            this.scale = scale;
-            this.rotation = rotation;
-            this.allowSubsampling = allowSubsampling;
-            this.imageType = imageType;
-            this.renderDestination = renderDestination;
-        }
-
         @Override
         protected BufferedImage doInBackground() throws IOException
         {
+            // rendering can take a long time, so remember all options that are used later
+            float scale = ZoomMenu.getZoomScale();
+            int rotation = RotationMenu.getRotationDegrees();
+
             label.setIcon(null);
             labelText = "Rendering...";
             label.setText(labelText);
+
             PDFRenderer renderer = new PDFRenderer(document);
-            renderer.setSubsamplingAllowed(allowSubsampling);
+            renderer.setSubsamplingAllowed(PDFDebugger.allowSubsampling.isSelected());
+
             long t0 = System.currentTimeMillis();
             statuslabel.setText(labelText);
-            BufferedImage bim = renderer.renderImage(pageIndex, scale, imageType, renderDestination);
+            BufferedImage bim = renderer.renderImage(pageIndex, scale, ImageTypeMenu.getImageType(), RenderDestinationMenu.getRenderDestination());
             float t = (System.currentTimeMillis() - t0) / 1000f;
             labelText = "Rendered in " + t + " second" + (t > 1 ? "s" : "");
             statuslabel.setText(labelText);
