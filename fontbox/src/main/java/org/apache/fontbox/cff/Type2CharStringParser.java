@@ -31,7 +31,9 @@ public class Type2CharStringParser
     private int vstemCount = 0;
     private List<Object> sequence = null;
     @SuppressWarnings("unused")
-    private final String fontName, glyphName;
+    private final String fontName;
+    @SuppressWarnings("unused")
+    private final String glyphName;
 
     /**
      * Constructs a new Type1CharStringParser object for a Type 1-equivalent font.
