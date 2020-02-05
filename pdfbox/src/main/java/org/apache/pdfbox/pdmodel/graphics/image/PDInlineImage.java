@@ -373,7 +373,23 @@ public final class PDInlineImage implements PDImage
     @Override
     public String getSuffix()
     {
-        // TODO implement me
-        return null;
+        List<String> filters = getFilters();
+
+        if (filters == null || filters.isEmpty())
+        {
+            return "png";
+        }
+        if (filters.contains(COSName.DCT_DECODE.getName()) || 
+            filters.contains(COSName.DCT_DECODE_ABBREVIATION.getName()))
+        {
+            return "jpg";
+        }
+        if (filters.contains(COSName.CCITTFAX_DECODE) ||
+            filters.contains(COSName.CCITTFAX_DECODE_ABBREVIATION.getName()))
+        {
+            return "tiff";
+        }
+        // JPX and JBIG2 don't exist for inline images
+        return "png";        
     }
 }
