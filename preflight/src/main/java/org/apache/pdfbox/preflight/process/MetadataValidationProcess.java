@@ -270,10 +270,9 @@ public class MetadataValidationProcess extends AbstractProcess
             throw new XpacketParsingException("Failed while retrieving xpacket", error);
         }
 
-        // no filter key
-        if (metadata.getFilters() != null)
+        if (metadata.getCOSObject().containsKey(COSName.FILTER))
         {
-            // should not be defined
+            // filter key should not be defined
             ValidationError error = new ValidationError(
                     PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER,
                     "Filter specified in metadata dictionary");

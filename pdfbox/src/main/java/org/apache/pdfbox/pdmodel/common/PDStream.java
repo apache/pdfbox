@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.pdfbox.cos.COSArray;
@@ -239,13 +240,12 @@ public class PDStream implements COSObjectable
 
     /**
      * This will get the list of filters that are associated with this stream.
-     * Or null if there are none.
      * 
-     * @return A list of all encoding filters to apply to this stream.
+     * @return A (possibly empty) list of all encoding filters to apply to this stream, never null.
      */
     public List<COSName> getFilters()
     {
-        List<COSName> retval = null;
+        List<COSName> retval = Collections.EMPTY_LIST;
         COSBase filters = stream.getFilters();
         if (filters instanceof COSName)
         {

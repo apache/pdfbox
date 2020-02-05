@@ -23,6 +23,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -236,14 +238,13 @@ public final class PDInlineImage implements PDImage
     }
 
     /**
-     * Returns a list of filters applied to this stream, or null if there are none.
+     * Returns A list of filters applied to this stream.
      *
-     * @return a list of filters applied to this stream
+     * @return A (possibly empty) list of filters applied to this stream, never null.
      */
-    // TODO return an empty list if there are none?
     public List<String> getFilters()
     {
-        List<String> names = null;
+        List<String> names = Collections.EMPTY_LIST;
         COSBase filters = parameters.getDictionaryObject(COSName.F, COSName.FILTER);
         if (filters instanceof COSName)
         {
