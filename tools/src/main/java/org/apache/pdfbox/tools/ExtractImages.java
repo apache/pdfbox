@@ -198,6 +198,10 @@ public final class ExtractImages
             PDPage page = getPage();
             processPage(page);
             PDResources res = page.getResources();
+            if (res == null)
+            {
+                return;
+            }
             for (COSName name : res.getExtGStateNames())
             {
                 PDSoftMask softMask = res.getExtGState(name).getSoftMask();
