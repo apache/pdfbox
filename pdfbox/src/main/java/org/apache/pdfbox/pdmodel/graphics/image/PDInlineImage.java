@@ -243,7 +243,7 @@ public final class PDInlineImage implements PDImage
      */
     public List<String> getFilters()
     {
-        List<String> names = Collections.EMPTY_LIST;
+        List<String> names = Collections.emptyList();
         COSBase filters = parameters.getDictionaryObject(COSName.F, COSName.FILTER);
         if (filters instanceof COSName)
         {

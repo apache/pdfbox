@@ -245,7 +245,7 @@ public class PDStream implements COSObjectable
      */
     public List<COSName> getFilters()
     {
-        List<COSName> retval = Collections.EMPTY_LIST;
+        List<COSName> retval = Collections.emptyList();
         COSBase filters = stream.getFilters();
         if (filters instanceof COSName)
         {
