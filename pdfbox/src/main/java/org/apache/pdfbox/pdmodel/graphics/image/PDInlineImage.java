@@ -326,7 +326,7 @@ public final class PDInlineImage implements PDImage
                 in = new ByteArrayInputStream(out.toByteArray());
             }
         }
-        return new ByteArrayInputStream(out.toByteArray());
+        return in;
     }
 
     @Override
