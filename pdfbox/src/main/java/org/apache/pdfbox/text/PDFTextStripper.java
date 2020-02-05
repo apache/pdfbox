@@ -633,10 +633,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     }
                     // test if our TextPosition starts after a new word would be expected to start
                     if (Float.compare(expectedStartOfNextWordX, EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE) != 0
-                            && expectedStartOfNextWordX < positionX &&
-                            // only bother adding a space if the last character was not a space
-                            lastPosition.getTextPosition().getUnicode() != null
-                            && !lastPosition.getTextPosition().getUnicode().endsWith(" "))
+                            && expectedStartOfNextWordX < positionX
+                            // only bother adding a word separator if the last character was not a word separator
+                            && lastPosition.getTextPosition().getUnicode() != null
+                            && !lastPosition.getTextPosition().getUnicode().endsWith(wordSeparator))
                     {
                         line.add(LineItem.getWordSeparator());
                     }
