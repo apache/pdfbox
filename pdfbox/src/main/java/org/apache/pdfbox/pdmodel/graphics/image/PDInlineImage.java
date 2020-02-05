@@ -402,7 +402,7 @@ public final class PDInlineImage implements PDImage
         {
             return "jpg";
         }
-        if (filters.contains(COSName.CCITTFAX_DECODE) ||
+        if (filters.contains(COSName.CCITTFAX_DECODE.getName()) ||
             filters.contains(COSName.CCITTFAX_DECODE_ABBREVIATION.getName()))
         {
             return "tiff";
