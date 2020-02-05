@@ -292,7 +292,7 @@ public class MetadataValidationProcess extends AbstractProcess
     {
         List<ValidationError> ve = new ArrayList<>();
         List<?> filters = doc.getDocumentCatalog().getMetadata().getFilters();
-        if (filters != null && !filters.isEmpty())
+        if (!filters.isEmpty())
         {
             ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_MAIN,
                     "Using stream filter on metadata dictionary is forbidden"));
