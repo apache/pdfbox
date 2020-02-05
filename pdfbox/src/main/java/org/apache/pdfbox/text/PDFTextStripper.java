@@ -673,8 +673,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     if (expectedStartOfNextWordX != EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
                             && expectedStartOfNextWordX < positionX
                             // only bother adding a word separator if the last character was not a word separator
-                            && lastPosition.getTextPosition().getUnicode() != null
-                            && !lastPosition.getTextPosition().getUnicode().endsWith(wordSeparator))
+                            && (wordSeparator.isEmpty() || //
+                                    (lastPosition.getTextPosition().getUnicode() != null
+                                            && !lastPosition.getTextPosition().getUnicode()
+                                                    .endsWith(wordSeparator))))
                     {
                         line.add(LineItem.getWordSeparator());
                     }
