@@ -671,10 +671,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     }
                     // test if our TextPosition starts after a new word would be expected to start
                     if (expectedStartOfNextWordX != EXPECTED_START_OF_NEXT_WORD_X_RESET_VALUE
-                            && expectedStartOfNextWordX < positionX &&
-                            // only bother adding a space if the last character was not a space
-                            lastPosition.getTextPosition().getUnicode() != null
-                            && !lastPosition.getTextPosition().getUnicode().endsWith(" "))
+                            && expectedStartOfNextWordX < positionX
+                            // only bother adding a word separator if the last character was not a word separator
+                            && lastPosition.getTextPosition().getUnicode() != null
+                            && !lastPosition.getTextPosition().getUnicode().endsWith(wordSeparator))
                     {
                         line.add(LineItem.getWordSeparator());
                     }
@@ -722,8 +722,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     private boolean overlap(float y1, float height1, float y2, float height2)
     {
-        return within(y1, y2, .1f) || y2 <= y1 && y2 >= y1 - height1
-                || y1 <= y2 && y1 >= y2 - height2;
+        return within(y1, y2, .1f) || (y2 <= y1 && y1 - height1 - y2 < -(height1 * 0.1f))
+                || (y1 <= y2 && y2 - height2 - y1 < -(height2 * 0.1f));
     }
 
     /**
