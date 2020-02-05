@@ -134,7 +134,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
         super(stream, COSName.IMAGE);
         this.resources = resources;
         List<COSName> filters = stream.getFilters();
-        if (filters != null && !filters.isEmpty() && COSName.JPX_DECODE.equals(filters.get(filters.size()-1)))
+        if (!filters.isEmpty() && COSName.JPX_DECODE.equals(filters.get(filters.size() - 1)))
         {
             try (COSInputStream is = stream.createInputStream())
             {
@@ -831,7 +831,7 @@ public final class PDImageXObject extends PDXObject implements PDImage
     {
         List<COSName> filters = getStream().getFilters();
 
-        if (filters == null)
+        if (filters.isEmpty())
         {
             return "png";
         }

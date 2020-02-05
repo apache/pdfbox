@@ -196,16 +196,14 @@ public class Stream
         filterList.put(DECODED, null);
         PDStream pdStream = new PDStream(stream);
 
-        if (pdStream.getFilters() != null)
-        {
-            int filtersSize = pdStream.getFilters().size();
+        int filtersSize = pdStream.getFilters().size();
 
-            for (int i = filtersSize - 1; i >= 1; i--)
-            {
-                filterList.put(getPartialStreamCommand(i), getStopFilterList(i));
-            }
-            filterList.put(getFilteredLabel(), null);
+        for (int i = filtersSize - 1; i >= 1; i--)
+        {
+            filterList.put(getPartialStreamCommand(i), getStopFilterList(i));
         }
+        filterList.put(getFilteredLabel(), null);
+
         return filterList;
     }
 

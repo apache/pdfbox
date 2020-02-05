@@ -52,6 +52,7 @@ import java.util.List;
 @SuppressWarnings({"serial","squid:S1948"})
 public class Tree extends JTree
 {
+    // No logging possible because this class is created before the "LogDialog.init()" call
     private final JPopupMenu treePopupMenu;
     private final Object rootNode;
 

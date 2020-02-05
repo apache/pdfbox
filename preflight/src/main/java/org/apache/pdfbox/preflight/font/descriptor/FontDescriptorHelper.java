@@ -218,7 +218,7 @@ public abstract class FontDescriptorHelper<T extends FontContainer>
             if (metadata != null)
             {
                 // Filters are forbidden in a XMP stream
-                if (metadata.getFilters() != null && !metadata.getFilters().isEmpty())
+                if (!metadata.getFilters().isEmpty())
                 {
                     this.fContainer.push(new ValidationError(ERROR_SYNTAX_STREAM_INVALID_FILTER,
                             this.font.getName() + ": Filter specified in font file metadata dictionary"));
