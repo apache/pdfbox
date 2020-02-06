@@ -74,7 +74,7 @@ public final class PDInlineImage implements PDImage
 
         DecodeResult decodeResult = null;
         List<String> filters = getFilters();
-        if (filters == null || filters.isEmpty())
+        if (filters.isEmpty())
         {
             this.decodedData = data;
         }
@@ -311,20 +311,18 @@ public final class PDInlineImage implements PDImage
         List<String> filters = getFilters();
         ByteArrayInputStream in = new ByteArrayInputStream(rawData);
         ByteArrayOutputStream out = new ByteArrayOutputStream(rawData.length);
-        for (int i = 0; filters != null && i < filters.size(); i++)
+        for (int i = 0; i < filters.size(); i++)
         {
-            // TODO handling of abbreviated names belongs here, rather than in other classes
-            out.reset();
             if (stopFilters.contains(filters.get(i)))
             {
                 break;
             }
-            else
-            {
-                Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
-                filter.decode(in, out, parameters, i);
-                in = new ByteArrayInputStream(out.toByteArray());
-            }
+
+            // TODO handling of abbreviated names belongs here, rather than in other classes
+            Filter filter = FilterFactory.INSTANCE.getFilter(filters.get(i));
+            out.reset();
+            filter.decode(in, out, parameters, i);
+            in = new ByteArrayInputStream(out.toByteArray());
         }
         return in;
     }
