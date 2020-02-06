@@ -112,9 +112,10 @@ public class Tree extends JTree
         COSStream stream = (COSStream) obj;
         treePopupMenu.add(getStreamSaveMenu(stream, nodePath));
 
-        if (stream.getFilters() != null)
+        List<COSName> filters = new PDStream(stream).getFilters();
+        if (!filters.isEmpty())
         {
-            if (stream.getFilters() instanceof COSArray && ((COSArray) stream.getFilters()).size() >= 2)
+            if (filters.size() >= 2)
             {
                 getPartiallyDecodedStreamSaveMenu(stream).forEach(treePopupMenu::add);
             }
