@@ -37,7 +37,6 @@ public class UsingTextMatrix
      */
     public UsingTextMatrix()
     {
-        super();
     }
 
     /**
@@ -97,7 +96,8 @@ public class UsingTextMatrix
             // text scaling and translation
             for (int i=0;i<10;i++)
             {
-                contentStream.setTextMatrix(new Matrix(12 + (i * 6), 0, 0, 12+(i*6), 100, 100+i*50));
+                contentStream.setTextMatrix(new Matrix(12f + (i * 6), 0, 0, 12f + (i * 6), 
+                                                       100, 100f + i * 50));
                 contentStream.showText(message + " " + i);
             }
             contentStream.endText();
