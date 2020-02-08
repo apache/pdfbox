@@ -47,7 +47,7 @@ public class RubberStampWithImage
     private static final String XOBJECT_DO = "Do\n";
     private static final String SPACE = " ";
 
-    private static final NumberFormat formatDecimal = NumberFormat.getNumberInstance( Locale.US );
+    private static final NumberFormat FORMATDECIMAL = NumberFormat.getNumberInstance( Locale.US );
 
     /**
      * Add a rubber stamp with an jpg image to every page of the given document.
@@ -139,17 +139,17 @@ public class RubberStampWithImage
         COSName xObjectId = resources.add(xobject);
 
         appendRawCommands( os, SAVE_GRAPHICS_STATE );
-        appendRawCommands( os, formatDecimal.format( width ) );
+        appendRawCommands( os, FORMATDECIMAL.format( width ) );
         appendRawCommands( os, SPACE );
-        appendRawCommands( os, formatDecimal.format( 0 ) );
+        appendRawCommands( os, FORMATDECIMAL.format( 0 ) );
         appendRawCommands( os, SPACE );
-        appendRawCommands( os, formatDecimal.format( 0 ) );
+        appendRawCommands( os, FORMATDECIMAL.format( 0 ) );
         appendRawCommands( os, SPACE );
-        appendRawCommands( os, formatDecimal.format( height ) );
+        appendRawCommands( os, FORMATDECIMAL.format( height ) );
         appendRawCommands( os, SPACE );
-        appendRawCommands( os, formatDecimal.format( x ) );
+        appendRawCommands( os, FORMATDECIMAL.format( x ) );
         appendRawCommands( os, SPACE );
-        appendRawCommands( os, formatDecimal.format( y ) );
+        appendRawCommands( os, FORMATDECIMAL.format( y ) );
         appendRawCommands( os, SPACE );
         appendRawCommands( os, CONCATENATE_MATRIX );
         appendRawCommands( os, SPACE );
