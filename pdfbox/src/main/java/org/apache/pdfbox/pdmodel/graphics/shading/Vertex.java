@@ -25,8 +25,8 @@ import java.awt.geom.Point2D;
  */
 class Vertex
 {
-    public Point2D point;
-    public float[] color;
+    final Point2D point;
+    final float[] color;
 
     Vertex(Point2D p, float[] c)
     {
