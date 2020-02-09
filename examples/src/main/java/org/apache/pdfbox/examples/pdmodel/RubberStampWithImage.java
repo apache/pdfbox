@@ -86,12 +86,12 @@ public class RubberStampWithImage
                     PDImageXObject ximage = PDImageXObject.createFromFile(args[2], document);           
 
                     // define and set the target rectangle
-                    int lowerLeftX = 250;
-                    int lowerLeftY = 550;
-                    int formWidth = 150;
-                    int formHeight = 25;
-                    int imgWidth = 50;
-                    int imgHeight = 25;
+                    float lowerLeftX = 250;
+                    float lowerLeftY = 550;
+                    float formWidth = 150;
+                    float formHeight = 25;
+                    float imgWidth = 50;
+                    float imgHeight = 25;
                     
                     PDRectangle rect = new PDRectangle();
                     rect.setLowerLeftX(lowerLeftX);
