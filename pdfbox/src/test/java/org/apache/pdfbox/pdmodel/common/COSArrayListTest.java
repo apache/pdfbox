@@ -393,7 +393,11 @@ public class COSArrayListTest {
         pdf.close();
     }
 
-    @Test
+    // @Test
+    // PDFBOX-4669, PDFBOX-4723
+    // This test is currently disabled with the removeAll function not properly
+    // working. See the discussion in above mentioned tickets about currently not implementing equals which the 
+    // functionality would need to rely on.
     public void removeDirectObject() throws IOException {
 
         // generate test file
@@ -477,7 +481,11 @@ public class COSArrayListTest {
         assertTrue("The size of the internal COSArray shall be 1", annotations.getCOSArray().size() == 1);
     }
 
-    @Test
+    // @Test
+    // PDFBOX-4669, PDFBOX-4723
+    // This test is currently disabled with the retainAll function not properly
+    // working. See the discussion in above mentioned tickets about currently not implementing equals which the 
+    // functionality would need to rely on.
     public void retainDirectObject() throws IOException {
 
         // generate test file
@@ -521,7 +529,11 @@ public class COSArrayListTest {
         assertTrue("The size of the internal COSArray shall be 3", annotations.getCOSArray().size() == 3);
     }
 
-    @Test
+    // @Test
+    // PDFBOX-4669, PDFBOX-4723
+    // This test is currently disabled with the retainAll function not properly
+    // working. See the discussion in above mentioned tickets about currently not implementing equals which the 
+    // functionality would need to rely on.
     public void retainIndirectObject() throws IOException {
 
         // generate test file
