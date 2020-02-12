@@ -382,12 +382,7 @@ public final class ExtractImages
             suffix = "jp2";
         }
 
-        BufferedImage image = pdImage.getImage();
-        if (image == null)
-        {
-            return;
-        }
-        if (image.getColorModel().hasAlpha())
+        if (hasMasks(pdImage))
         {
             // TIKA-3040, PDFBOX-4771: can't save ARGB as JPEG
             suffix = "png";
@@ -412,7 +407,11 @@ public final class ExtractImages
                 else
                 {
                     // for CMYK and other "unusual" colorspaces, the JPEG will be converted
-                    ImageIOUtil.writeImage(image, suffix, out);
+                    BufferedImage image = pdImage.getImage();
+                    if (image != null)
+                    {
+                        ImageIOUtil.writeImage(image, suffix, out);
+                    }
                 }
             }
             else if ("jp2".equals(suffix))
@@ -431,11 +430,20 @@ public final class ExtractImages
                 else
                 {                        
                     // for CMYK and other "unusual" colorspaces, the image will be converted
-                    ImageIOUtil.writeImage(image, "jpeg2000", out);
+                    BufferedImage image = pdImage.getImage();
+                    if (image != null)
+                    {
+                        ImageIOUtil.writeImage(image, "jpeg2000", out);
+                    }
                 }
             }
             else if ("tiff".equals(suffix) && pdImage.getColorSpace().equals(PDDeviceGray.INSTANCE))
             {
+                BufferedImage image = pdImage.getImage();
+                if (image == null)
+                {
+                    return;
+                }
                 // CCITT compressed images can have a different colorspace, but this one is B/W
                 // This is a bitonal image, so copy to TYPE_BYTE_BINARY
                 // so that a G4 compressed TIFF image is created by ImageIOUtil.writeImage()
@@ -452,9 +460,13 @@ public final class ExtractImages
                 }
                 ImageIOUtil.writeImage(bitonalImage, suffix, out);
             }
-            else 
+            else
             {
-                ImageIOUtil.writeImage(image, suffix, out);
+                BufferedImage image = pdImage.getImage();
+                if (image != null)
+                {
+                    ImageIOUtil.writeImage(image, suffix, out);
+                }
             }
             out.flush();
         }
@@ -465,5 +477,15 @@ public final class ExtractImages
                 out.close();
             }
         }
+    }
+
+    private boolean hasMasks(PDImage pdImage) throws IOException
+    {
+        if (pdImage instanceof PDImageXObject)
+        {
+            PDImageXObject ximg = (PDImageXObject) pdImage;
+            return ximg.getMask() != null || ximg.getSoftMask() != null;
+        }
+        return false;
     }
 }
