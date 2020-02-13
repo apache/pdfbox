@@ -131,11 +131,12 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
         return getCOSObject().getNameAsString(COSName.SUBTYPE);
     }
 
-        /**
+    /**
      * Set a custom appearance handler for generating the annotations appearance streams.
-     * 
+     *
      * @param appearanceHandler
      */
+    @Override
     public void setCustomAppearanceHandler(PDAppearanceHandler appearanceHandler)
     {
         customAppearanceHandler = appearanceHandler;
@@ -155,19 +156,19 @@ public class PDAnnotationTextMarkup extends PDAnnotationMarkup
             PDAppearanceHandler appearanceHandler = null;
             if (SUB_TYPE_HIGHLIGHT.equals(getSubtype()))
             {
-                appearanceHandler = new PDHighlightAppearanceHandler(this);
+                appearanceHandler = new PDHighlightAppearanceHandler(this, document);
             }
-            else if  (SUB_TYPE_SQUIGGLY.equals(getSubtype()))
+            else if (SUB_TYPE_SQUIGGLY.equals(getSubtype()))
             {
-                appearanceHandler = new PDSquigglyAppearanceHandler(this);
+                appearanceHandler = new PDSquigglyAppearanceHandler(this, document);
             }
-            else if  (SUB_TYPE_STRIKEOUT.equals(getSubtype()))
+            else if (SUB_TYPE_STRIKEOUT.equals(getSubtype()))
             {
-                appearanceHandler = new PDStrikeoutAppearanceHandler(this);
+                appearanceHandler = new PDStrikeoutAppearanceHandler(this, document);
             }
-            else if  (SUB_TYPE_UNDERLINE.equals(getSubtype()))
+            else if (SUB_TYPE_UNDERLINE.equals(getSubtype()))
             {
-                appearanceHandler = new PDUnderlineAppearanceHandler(this);
+                appearanceHandler = new PDUnderlineAppearanceHandler(this, document);
             }
 
             if (appearanceHandler != null)

@@ -869,27 +869,27 @@ public class PDAnnotationMarkup extends PDAnnotation
             PDAppearanceHandler appearanceHandler = null;
             if (SUB_TYPE_CARET.equals(getSubtype()))
             {
-                appearanceHandler = new PDCaretAppearanceHandler(this);
+                appearanceHandler = new PDCaretAppearanceHandler(this, document);
             }
             else if (SUB_TYPE_FREETEXT.equals(getSubtype()))
             {
-                appearanceHandler = new PDFreeTextAppearanceHandler(this);
+                appearanceHandler = new PDFreeTextAppearanceHandler(this, document);
             }
             else if (SUB_TYPE_INK.equals(getSubtype()))
             {
-                appearanceHandler = new PDInkAppearanceHandler(this);
+                appearanceHandler = new PDInkAppearanceHandler(this, document);
             }
             else if (SUB_TYPE_POLYGON.equals(getSubtype()))
             {
-                appearanceHandler = new PDPolygonAppearanceHandler(this);
+                appearanceHandler = new PDPolygonAppearanceHandler(this, document);
             }
             else if (SUB_TYPE_POLYLINE.equals(getSubtype()))
             {
-                appearanceHandler = new PDPolylineAppearanceHandler(this);
+                appearanceHandler = new PDPolylineAppearanceHandler(this, document);
             }
             else if (SUB_TYPE_SOUND.equals(getSubtype()))
             {
-                appearanceHandler = new PDSoundAppearanceHandler(this);
+                appearanceHandler = new PDSoundAppearanceHandler(this, document);
             }
 
             if (appearanceHandler != null)
