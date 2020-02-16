@@ -1996,9 +1996,9 @@ public class COSParser extends BaseParser
                 int stmGenNumber = readGenerationNumber();
                 readExpectedString(OBJ_MARKER, true);
                 int nrOfObjects = 0;
-                byte[] numbersBytes = null;
                 COSStream stream = null;
                 COSInputStream is = null;
+                List<Long> objectNumbers = null;
                 try
                 {
                     COSDictionary dict = parseCOSDictionary();
@@ -2014,9 +2014,13 @@ public class COSParser extends BaseParser
                     {
                         securityHandler.decryptStream(stream, stmObjNumber, stmGenNumber);
                     }
-                    is = stream.createInputStream();
-                    numbersBytes = new byte[offsetFirstStream];
-                    is.read(numbersBytes);
+                    PDFObjectStreamParser strmParser = new PDFObjectStreamParser(stream, document);
+                    objectNumbers = new ArrayList<Long>(nrOfObjects);
+                    for (int i = 0; i < nrOfObjects; i++)
+                    {
+                        objectNumbers.add(strmParser.readObjectNumber());
+                        strmParser.readLong();
+                    }
                 }
                 catch (IOException exception)
                 {
@@ -2035,45 +2039,27 @@ public class COSParser extends BaseParser
                         stream.close();
                     }
                 }
-                int start = 0;
-                // skip spaces
-                while (start < numbersBytes.length && numbersBytes[start] == 32)
-                {
-                    start++;
-                }
-                String numbersStr = new String(numbersBytes, start, numbersBytes.length - start,
-                        "ISO-8859-1");
-                numbersStr = numbersStr.replace('\n', ' ').replace("  ", " ");
-                String[] numbers = numbersStr.split(" ");
-                if (numbers.length < nrOfObjects * 2)
+                if (objectNumbers.size() < nrOfObjects)
                 {
                     LOG.debug(
                             "Skipped corrupt stream: (" + stmObjNumber + " 0 at offset " + offset);
                     continue;
                 }
                 Map<COSObjectKey, Long> xrefOffset = xrefTrailerResolver.getXrefTable();
-                for (int i = 0; i < nrOfObjects; i++)
+                for (Long objNumber : objectNumbers)
                 {
-                    try
+                    COSObjectKey objKey = new COSObjectKey(objNumber, 0);
+                    Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                    if (existingOffset != null && existingOffset < 0)
                     {
-                        long objNumber = Long.parseLong(numbers[i * 2]);
-                        COSObjectKey objKey = new COSObjectKey(objNumber, 0);
-                        Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
-                        if (existingOffset != null && existingOffset < 0)
-                        {
-                            // translate stream object key to its offset
-                            COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
-                            existingOffset = bfSearchCOSObjectKeyOffsets.get(objStmKey);
-                        }
-                        if (existingOffset == null || offset > existingOffset)
-                        {
-                            bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
-                            xrefOffset.put(objKey, -stmObjNumber);
-                        }
+                        // translate stream object key to its offset
+                        COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
+                        existingOffset = bfSearchCOSObjectKeyOffsets.get(objStmKey);
                     }
-                    catch (NumberFormatException exception)
+                    if (existingOffset == null || offset > existingOffset)
                     {
-                        LOG.debug("Skipped corrupt object key in stream: " + stmObjNumber);
+                        bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
+                        xrefOffset.put(objKey, -stmObjNumber);
                     }
                 }
             }
