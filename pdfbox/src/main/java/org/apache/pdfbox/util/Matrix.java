@@ -396,7 +396,17 @@ public final class Matrix implements Cloneable
                              + thisOperand[7] * otherOperand[5]
                              + thisOperand[8] * otherOperand[8];
         }
-
+        if (Float.isInfinite(result.single[0]) || Float.isNaN(result.single[0]) //
+                || Float.isInfinite(result.single[1]) || Float.isNaN(result.single[1]) //
+                || Float.isInfinite(result.single[2]) || Float.isNaN(result.single[2]) //
+                || Float.isInfinite(result.single[3]) || Float.isNaN(result.single[3]) //
+                || Float.isInfinite(result.single[4]) || Float.isNaN(result.single[4]) //
+                || Float.isInfinite(result.single[5]) || Float.isNaN(result.single[5]) //
+                || Float.isInfinite(result.single[6]) || Float.isNaN(result.single[6]) //
+                || Float.isInfinite(result.single[7]) || Float.isNaN(result.single[7]) //
+                || Float.isInfinite(result.single[8]) || Float.isNaN(result.single[8]))
+            throw new IllegalArgumentException(
+                    "Multiplying two matrices produces illegal values");
         return result;
     }
 
