@@ -345,6 +345,12 @@ public final class Matrix implements Cloneable
                              + thisOperand[7] * otherOperand[5]
                              + thisOperand[8] * otherOperand[8];
         }
+        if (!Float.isFinite(result.single[0]) || !Float.isFinite(result.single[1])
+                || !Float.isFinite(result.single[2]) || !Float.isFinite(result.single[3])
+                || !Float.isFinite(result.single[4]) || !Float.isFinite(result.single[5])
+                || !Float.isFinite(result.single[6]) || !Float.isFinite(result.single[7])
+                || !Float.isFinite(result.single[8]))
+            throw new IllegalArgumentException("Multiplying two matrices produces illegal values");
 
         return result;
     }
