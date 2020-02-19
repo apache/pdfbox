@@ -28,16 +28,17 @@ import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.XMPSchema;
 
 /**
- * Class which all elements within an rdf:RDF have the same value for their rdf:about attributes
- * 
+ * Class which checks that all elements within an rdf:RDF have the same value for their rdf:about
+ * attributes.
+ *
  * @author Germain Costenobel
- * 
+ *
  */
 public class RDFAboutAttributeConcordanceValidation
 {
 
     /**
-     * 
+     *
      * @param metadata the XMP metadata.
      * @throws DifferentRDFAboutException
      * @throws ValidationException
@@ -48,11 +49,11 @@ public class RDFAboutAttributeConcordanceValidation
         List<XMPSchema> schemas = metadata.getAllSchemas();
         if (schemas.isEmpty())
         {
-            throw new ValidationException("Schemas not found in the given metadata representation");
+            throw new ValidationException("No schema found in the given metadata representation");
         }
-        
+
         String about = schemas.get(0).getAboutValue();
-       
+
         // rdf:description must have an rdf:about attribute
         for (XMPSchema xmpSchema : schemas)
         {
@@ -62,13 +63,12 @@ public class RDFAboutAttributeConcordanceValidation
             {
                 throw new DifferentRDFAboutException();
             }
-            
+
             if ("".equals(about))
             {
                 about = schemaAboutValue;
             }
         }
-
     }
 
     public static class DifferentRDFAboutException extends Exception
