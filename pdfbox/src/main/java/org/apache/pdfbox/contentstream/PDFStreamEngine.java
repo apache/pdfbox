@@ -292,7 +292,8 @@ public abstract class PDFStreamEngine
         Matrix matrix = appearance.getMatrix();
 
         // zero-sized rectangles are not valid
-        if (rect != null && rect.getWidth() > 0 && rect.getHeight() > 0 && bbox != null)
+        if (rect != null && rect.getWidth() > 0 && rect.getHeight() > 0 &&
+            bbox != null && bbox.getWidth() > 0 && bbox.getHeight() > 0)
         {
             // transformed appearance box  fixme: may be an arbitrary shape
             Rectangle2D transformedBox = bbox.transform(matrix).getBounds2D();
