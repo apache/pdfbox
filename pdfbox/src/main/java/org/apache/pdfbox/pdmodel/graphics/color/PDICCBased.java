@@ -526,8 +526,8 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     /**
      * Sets the number of color components.
      * @param n the number of color components
+     * @deprecated it's probably not safe to use this, this method will be removed in 3.0.
      */
-    // TODO it's probably not safe to use this
     @Deprecated
     public void setNumberOfComponents(int n)
     {
