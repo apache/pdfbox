@@ -139,7 +139,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         if (indirect != null && resources != null && resources.getResourceCache() != null)
         {
             PDColorSpace space = resources.getResourceCache().getColorSpace(indirect);
-            if (space != null && space instanceof PDICCBased)
+            if (space instanceof PDICCBased)
             {
                 return (PDICCBased) space;
             }
@@ -231,7 +231,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
                     // or CMMException due to invalid profiles, see PDFBOX-1295 and PDFBOX-1740 (ü-file)
                     // or ArrayIndexOutOfBoundsException, see PDFBOX-3610
                     // also triggers a ProfileDataException for PDFBOX-3549 with KCMS
-                    new Color(awtColorSpace, new float[getNumberOfComponents()], 1f);
+                    awtColorSpace.toRGB(new float[getNumberOfComponents()]);
                 }
                 else
                 {
