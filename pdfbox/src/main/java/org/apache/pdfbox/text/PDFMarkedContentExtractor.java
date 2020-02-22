@@ -133,12 +133,8 @@ public class PDFMarkedContentExtractor extends LegacyPDFStreamEngine
             String textCharacter = text.getUnicode();
             float textX = text.getX();
             float textY = text.getY();
-            List<TextPosition> sameTextCharacters = this.characterListMapping.get( textCharacter );
-            if( sameTextCharacters == null )
-            {
-                sameTextCharacters = new ArrayList<>();
-                this.characterListMapping.put( textCharacter, sameTextCharacters );
-            }
+            List<TextPosition> sameTextCharacters =
+                    this.characterListMapping.computeIfAbsent(textCharacter, k -> new ArrayList<>());
 
             // RDD - Here we compute the value that represents the end of the rendered
             // text.  This value is used to determine whether subsequent text rendered
