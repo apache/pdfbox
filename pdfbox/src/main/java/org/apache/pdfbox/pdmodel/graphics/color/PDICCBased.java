@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import java.awt.Color;
 import java.awt.Transparency;
 import java.awt.color.CMMException;
 import java.awt.color.ColorSpace;
