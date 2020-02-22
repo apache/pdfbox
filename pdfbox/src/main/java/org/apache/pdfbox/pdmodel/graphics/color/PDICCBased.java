@@ -489,18 +489,6 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     /**
-     * Sets the number of color components.
-     * @param n the number of color components
-     */
-    // TODO it's probably not safe to use this
-    @Deprecated
-    public void setNumberOfComponents(int n)
-    {
-        numberOfComponents = n;
-        stream.getCOSObject().setInt(COSName.N, n);
-    }
-
-    /**
      * Sets the list of alternateColorSpace color spaces.
      *
      * @param list the list of color space objects
