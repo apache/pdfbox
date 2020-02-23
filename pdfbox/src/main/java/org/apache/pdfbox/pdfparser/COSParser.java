@@ -138,8 +138,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * Contains all found objects of a brute force search.
      */
     private Map<COSObjectKey, Long> bfSearchCOSObjectKeyOffsets = null;
-    private List<Long> bfSearchXRefTablesOffsets = null;
-    private List<Long> bfSearchXRefStreamsOffsets = null;
+    boolean bruteForceSearchTriggered = false;
     private PDEncryption encryption = null;
 
     /**
@@ -267,7 +266,7 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             // prepare decryption if necessary
             prepareDecryption();
-            if (bfSearchCOSObjectKeyOffsets != null && !bfSearchCOSObjectKeyOffsets.isEmpty())
+            if (bruteForceSearchTriggered && !getBFCOSObjectOffsets().isEmpty())
             {
                 bfSearchForObjStreams();
             }
@@ -1247,7 +1246,8 @@ public class COSParser extends BaseParser implements ICOSParser
     {
         if (bfSearchCOSObjectKeyOffsets == null)
         {
-            bfSearchForObjects();
+            bfSearchCOSObjectKeyOffsets = bfSearchForObjects();
+            bruteForceSearchTriggered = true;
         }
         return bfSearchCOSObjectKeyOffsets;
     }
@@ -1257,10 +1257,10 @@ public class COSParser extends BaseParser implements ICOSParser
      *   
      * @throws IOException if something went wrong
      */
-    private void bfSearchForObjects() throws IOException
+    private Map<COSObjectKey, Long> bfSearchForObjects() throws IOException
     {
+        Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = new HashMap<>();
         long lastEOFMarker = bfSearchForLastEOFMarker();
-        bfSearchCOSObjectKeyOffsets = new HashMap<>();
         long originOffset = source.getPosition();
         long currentOffset = MINIMUM_SEARCH_OFFSET;
         long lastObjectId = Long.MIN_VALUE;
@@ -1304,7 +1304,7 @@ public class COSParser extends BaseParser implements ICOSParser
                             if (lastObjOffset > 0)
                             {
                                 // add the former object ID only if there was a subsequent object ID
-                                bfSearchCOSObjectKeyOffsets.put(
+                                bfCOSObjectKeyOffsets.put(
                                         new COSObjectKey(lastObjectId, lastGenID), lastObjOffset);
                             }
                             lastObjectId = objectId;
@@ -1326,13 +1326,11 @@ public class COSParser extends BaseParser implements ICOSParser
                 if (source.isEOF())
                 {
                     endOfObjFound = true;
-                    continue;
                 }
-                if (isString(endobjRemainingString))
+                else if (isString(endobjRemainingString))
                 {
                     currentOffset += endobjRemainingString.length;
                     endOfObjFound = true;
-                    continue;
                 }
             }
         } while (currentOffset < lastEOFMarker && !source.isEOF());
@@ -1340,11 +1338,12 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             // if the pdf wasn't cut off in the middle or if the last object ends with a "endobj" marker
             // the last object id has to be added here so that it can't get lost as there isn't any subsequent object id
-            bfSearchCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
+            bfCOSObjectKeyOffsets.put(new COSObjectKey(lastObjectId, lastGenID),
                     lastObjOffset);
         }
         // reestablish origin position
         source.seek(originOffset);
+        return bfCOSObjectKeyOffsets;
     }
 
     /**
@@ -1358,9 +1357,9 @@ public class COSParser extends BaseParser implements ICOSParser
         long newOffset = -1;
 
         // initialize bfSearchXRefTablesOffsets -> not null
-        bfSearchForXRefTables();
+        List<Long> bfSearchXRefTablesOffsets = bfSearchForXRefTables();
         // initialize bfSearchXRefStreamsOffsets -> not null
-        bfSearchForXRefStreams();
+        List<Long> bfSearchXRefStreamsOffsets = bfSearchForXRefStreams();
 
         // TODO to be optimized, this won't work in every case
         long newOffsetTable = searchNearestValue(bfSearchXRefTablesOffsets, xrefOffset);
@@ -1602,16 +1601,17 @@ public class COSParser extends BaseParser implements ICOSParser
         long originOffset = source.getPosition();
 
         Map<Long, COSObjectKey> bfSearchForObjStreamOffsets = bfSearchForObjStreamOffsets();
+        Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
         // log warning about skipped stream
         bfSearchForObjStreamOffsets.entrySet().stream() //
-                .filter(o -> bfSearchCOSObjectKeyOffsets.get(o.getValue()) == null) //
+                .filter(o -> bfCOSObjectOffsets.get(o.getValue()) == null) //
                 .forEach(o -> LOG.warn(
                         "Skipped incomplete object stream:" + o.getValue() + " at " + o.getKey()));
 
         // collect all stream offsets
         List<Long> objStreamOffsets = bfSearchForObjStreamOffsets.entrySet().stream() //
-                .filter(o -> bfSearchCOSObjectKeyOffsets.get(o.getValue()) != null) //
-                .filter(o -> o.getKey().equals(bfSearchCOSObjectKeyOffsets.get(o.getValue()))) //
+                .filter(o -> bfCOSObjectOffsets.get(o.getValue()) != null) //
+                .filter(o -> o.getKey().equals(bfCOSObjectOffsets.get(o.getValue()))) //
                 .map(Map.Entry::getKey) //
                 .collect(Collectors.toList());
         // add all found compressed objects to the brute force search result
@@ -1636,16 +1636,16 @@ public class COSParser extends BaseParser implements ICOSParser
                 for (Long objNumber : objectNumbers.keySet())
                 {
                     COSObjectKey objKey = new COSObjectKey(objNumber, 0);
-                    Long existingOffset = bfSearchCOSObjectKeyOffsets.get(objKey);
+                    Long existingOffset = bfCOSObjectOffsets.get(objKey);
                     if (existingOffset != null && existingOffset < 0)
                     {
                         // translate stream object key to its offset
                         COSObjectKey objStmKey = new COSObjectKey(Math.abs(existingOffset), 0);
-                        existingOffset = bfSearchCOSObjectKeyOffsets.get(objStmKey);
+                        existingOffset = bfCOSObjectOffsets.get(objStmKey);
                     }
                     if (existingOffset == null || offset > existingOffset)
                     {
-                        bfSearchCOSObjectKeyOffsets.put(objKey, -stmObjNumber);
+                        bfCOSObjectOffsets.put(objKey, -stmObjNumber);
                         xrefOffset.put(objKey, -stmObjNumber);
                     }
                 }
@@ -1741,32 +1741,31 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         return bfSearchObjStreamsOffsets;
     }
+
     /**
      * Brute force search for all xref entries (tables).
      * 
      * @throws IOException if something went wrong
      */
-    private void bfSearchForXRefTables() throws IOException
+    private List<Long> bfSearchForXRefTables() throws IOException
     {
-        if (bfSearchXRefTablesOffsets == null)
+        List<Long> bfSearchXRefTablesOffsets = new ArrayList<>();
+        // a pdf may contain more than one xref entry
+        source.seek(MINIMUM_SEARCH_OFFSET);
+        // search for xref tables
+        long newOffset = findString(XREF_TABLE);
+        while (newOffset != -1)
         {
-            // a pdf may contain more than one xref entry
-            bfSearchXRefTablesOffsets = new ArrayList<>();
-            source.seek(MINIMUM_SEARCH_OFFSET);
-            // search for xref tables
-            long newOffset = findString(XREF_TABLE);
-            while (newOffset != -1)
+            source.seek(newOffset - 1);
+            // ensure that we don't read "startxref" instead of "xref"
+            if (isWhitespace())
             {
-                source.seek(newOffset - 1);
-                // ensure that we don't read "startxref" instead of "xref"
-                if (isWhitespace())
-                {
-                    bfSearchXRefTablesOffsets.add(newOffset);
-                }
-                source.seek(newOffset + 4);
-                newOffset = findString(XREF_TABLE);
+                bfSearchXRefTablesOffsets.add(newOffset);
             }
+            source.seek(newOffset + 4);
+            newOffset = findString(XREF_TABLE);
         }
+        return bfSearchXRefTablesOffsets;
     }
 
     /**
@@ -1774,77 +1773,75 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @throws IOException if something went wrong
      */
-    private void bfSearchForXRefStreams() throws IOException
+    private List<Long> bfSearchForXRefStreams() throws IOException
     {
-        if (bfSearchXRefStreamsOffsets == null)
+        List<Long> bfSearchXRefStreamsOffsets = new ArrayList<>();
+        // a pdf may contain more than one /XRef entry
+        source.seek(MINIMUM_SEARCH_OFFSET);
+        // search for XRef streams
+        String objString = " obj";
+        char[] string = objString.toCharArray();
+        long xrefOffset = findString(XREF_STREAM);
+        while (xrefOffset != -1)
         {
-            // a pdf may contain more than one /XRef entry
-            bfSearchXRefStreamsOffsets = new ArrayList<>();
-            source.seek(MINIMUM_SEARCH_OFFSET);
-            // search for XRef streams
-            String objString = " obj";
-            char[] string = objString.toCharArray();
-            long xrefOffset = findString(XREF_STREAM);
-            while (xrefOffset != -1)
+            // search backwards for the beginning of the stream
+            long newOffset = -1;
+            boolean objFound = false;
+            for (int i = 1; i < 40 && !objFound; i++)
             {
-                // search backwards for the beginning of the stream
-                long newOffset = -1;
-                boolean objFound = false;
-                for (int i = 1; i < 40 && !objFound; i++)
+                long currentOffset = xrefOffset - (i * 10);
+                if (currentOffset > 0)
                 {
-                    long currentOffset = xrefOffset - (i * 10);
-                    if (currentOffset > 0)
+                    source.seek(currentOffset);
+                    for (int j = 0; j < 10; j++)
                     {
-                        source.seek(currentOffset);
-                        for (int j = 0; j < 10; j++)
+                        if (isString(string))
                         {
-                            if (isString(string))
+                            long tempOffset = currentOffset - 1;
+                            source.seek(tempOffset);
+                            int genID = source.peek();
+                            // is the next char a digit?
+                            if (isDigit(genID))
                             {
-                                long tempOffset = currentOffset - 1;
+                                tempOffset--;
                                 source.seek(tempOffset);
-                                int genID = source.peek();
-                                // is the next char a digit?
-                                if (isDigit(genID))
+                                if (isSpace())
                                 {
-                                    tempOffset--;
-                                    source.seek(tempOffset);
-                                    if (isSpace())
+                                    int length = 0;
+                                    source.seek(--tempOffset);
+                                    while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
                                     {
-                                        int length = 0;
                                         source.seek(--tempOffset);
-                                        while (tempOffset > MINIMUM_SEARCH_OFFSET && isDigit())
-                                        {
-                                            source.seek(--tempOffset);
-                                            length++;
-                                        }
-                                        if (length > 0)
-                                        {
-                                            source.read();
-                                            newOffset = source.getPosition();
-                                        }
+                                        length++;
+                                    }
+                                    if (length > 0)
+                                    {
+                                        source.read();
+                                        newOffset = source.getPosition();
                                     }
                                 }
-                                LOG.debug("Fixed reference for xref stream " + xrefOffset + " -> "
-                                        + newOffset);
-                                objFound = true;
-                                break;
                             }
-                            else
-                            {
-                                currentOffset++;
-                                source.read();
-                            }
+                            LOG.debug("Fixed reference for xref stream " + xrefOffset + " -> "
+                                    + newOffset);
+                            objFound = true;
+                            break;
+                        }
+                        else
+                        {
+                            currentOffset++;
+                            source.read();
                         }
                     }
                 }
-                if (newOffset > -1)
-                {
-                    bfSearchXRefStreamsOffsets.add(newOffset);
-                }
-                source.seek(xrefOffset + 5);
-                xrefOffset = findString(XREF_STREAM);
             }
+            if (newOffset > -1)
+            {
+                bfSearchXRefStreamsOffsets.add(newOffset);
+            }
+            source.seek(xrefOffset + 5);
+            xrefOffset = findString(XREF_STREAM);
         }
+        return bfSearchXRefStreamsOffsets;
     }
     
     /**
@@ -1857,35 +1854,32 @@ public class COSParser extends BaseParser implements ICOSParser
     private COSDictionary rebuildTrailer() throws IOException
     {
         COSDictionary trailer = null;
-        bfSearchForObjects();
-        if (bfSearchCOSObjectKeyOffsets != null)
+        Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
+        // reset trailer resolver
+        xrefTrailerResolver.reset();
+        // use the found objects to rebuild the trailer resolver
+        xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
+        for (Entry<COSObjectKey, Long> entry : bfCOSObjectOffsets.entrySet())
         {
-            // reset trailer resolver
-            xrefTrailerResolver.reset();
-            // use the found objects to rebuild the trailer resolver
-            xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
-            for (Entry<COSObjectKey, Long> entry : bfSearchCOSObjectKeyOffsets.entrySet())
-            {
-                xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
-            }
-            xrefTrailerResolver.setStartxref(0);
-            trailer = xrefTrailerResolver.getTrailer();
-            document.setTrailer(trailer);
-            boolean searchForObjStreamsDone = false;
-            if (!bfSearchForTrailer(trailer) && !searchForTrailerItems(trailer))
-            {
-                // root entry wasn't found, maybe it is part of an object stream
-                bfSearchForObjStreams();
-                searchForObjStreamsDone = true;
-                // search again for the root entry
-                searchForTrailerItems(trailer);
-            }
-            // prepare decryption if necessary
-            prepareDecryption();
-            if (!searchForObjStreamsDone)
-            {
-                bfSearchForObjStreams();
-            }
+            xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
+        }
+        xrefTrailerResolver.setStartxref(0);
+        trailer = xrefTrailerResolver.getTrailer();
+        document.setTrailer(trailer);
+        boolean searchForObjStreamsDone = false;
+        if (!bfSearchForTrailer(trailer) && !searchForTrailerItems(trailer))
+        {
+            // root entry wasn't found, maybe it is part of an object stream
+            bfSearchForObjStreams();
+            searchForObjStreamsDone = true;
+            // search again for the root entry
+            searchForTrailerItems(trailer);
+        }
+        // prepare decryption if necessary
+        prepareDecryption();
+        if (!searchForObjStreamsDone)
+        {
+            bfSearchForObjStreams();
         }
         trailerWasRebuild = true;
         return trailer;
@@ -1896,11 +1890,12 @@ public class COSParser extends BaseParser implements ICOSParser
      *
      * @param trailer
      * @return true if the root was found, false if not.
+     * @throws java.io.IOException if the page tree root is null
      */
-    private boolean searchForTrailerItems(COSDictionary trailer)
+    private boolean searchForTrailerItems(COSDictionary trailer) throws IOException
     {
         boolean rootFound = false;
-        for (COSObjectKey key : bfSearchCOSObjectKeyOffsets.keySet())
+        for (COSObjectKey key : getBFCOSObjectOffsets().keySet())
         {
             COSObject cosObject = document.getObjectFromPool(key);
             COSBase baseObject = cosObject.getObject();
