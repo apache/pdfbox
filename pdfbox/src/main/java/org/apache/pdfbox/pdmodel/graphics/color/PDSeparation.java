@@ -192,7 +192,8 @@ public class PDSeparation extends PDSpecialColorSpace
             for (int x = 0; x < width; x++)
             {
                 raster.getPixel(x, y, samples);
-                int[] rgb = calculatedValues.get(hash = Float.floatToIntBits(samples[0]));
+                hash = Float.floatToIntBits(samples[0]);
+                int[] rgb = calculatedValues.get(hash);
                 if (rgb == null)
                 {
                     samples[0] /= 255;
