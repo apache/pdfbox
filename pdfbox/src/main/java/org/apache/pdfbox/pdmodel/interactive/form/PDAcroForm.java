@@ -312,7 +312,7 @@ public final class PDAcroForm implements COSObjectable
                        
             for (PDAnnotation annotation: page.getAnnotations())
             {                
-                if (widgetsForPageMap != null && !widgetsForPageMap.contains(annotation.getCOSObject()))
+                if (widgetsForPageMap == null || !widgetsForPageMap.contains(annotation.getCOSObject()))
                 {
                     annotations.add(annotation);                 
                 }
