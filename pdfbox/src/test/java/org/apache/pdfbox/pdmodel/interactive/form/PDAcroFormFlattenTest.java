@@ -264,7 +264,7 @@ public class PDAcroFormFlattenTest
      * PDFBOX-4788: non-widget annotations are not to be removed on a page that has no widget
      * annotations.
      */
-    // @Test
+    @Test
     public void testFlattenPDFBox4788() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12994791/flatten.pdf";
