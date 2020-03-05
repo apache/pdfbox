@@ -667,6 +667,11 @@ final class FontMapperImpl implements FontMapper
             long CHINESE_TRADITIONAL = 1 << 20;
             long KOREAN_JOHAB = 1 << 21;
             
+            if ("MalgunGothic-Semilight".equals(info.getPostScriptName()))
+            {
+                // PDFBOX-4793 and PDF.js 10699: This font has only Korean, but has bits 17-21 set.
+                codePageRange &= ~(JIS_JAPAN | CHINESE_SIMPLIFIED | CHINESE_TRADITIONAL);
+            }
             if (cidSystemInfo.getOrdering().equals("GB1") &&
                     (codePageRange & CHINESE_SIMPLIFIED) == CHINESE_SIMPLIFIED)
             {
@@ -685,8 +690,8 @@ final class FontMapperImpl implements FontMapper
             else
             {
                 return cidSystemInfo.getOrdering().equals("Korea1") &&
-                        (codePageRange & KOREAN_WANSUNG) == KOREAN_WANSUNG ||
-                        (codePageRange & KOREAN_JOHAB) == KOREAN_JOHAB;
+                        ((codePageRange & KOREAN_WANSUNG) == KOREAN_WANSUNG ||
+                         (codePageRange & KOREAN_JOHAB) == KOREAN_JOHAB);
             }
         }
     }
