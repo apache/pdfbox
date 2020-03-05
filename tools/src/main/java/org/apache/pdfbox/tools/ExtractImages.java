@@ -45,6 +45,7 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDAbstractPattern;
 import org.apache.pdfbox.pdmodel.graphics.pattern.PDTilingPattern;
+import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.state.PDSoftMask;
 import org.apache.pdfbox.pdmodel.graphics.state.RenderingMode;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
@@ -213,7 +214,13 @@ public final class ExtractImages
             }
             for (COSName name : res.getExtGStateNames())
             {
-                PDSoftMask softMask = res.getExtGState(name).getSoftMask();
+                PDExtendedGraphicsState extGState = res.getExtGState(name);
+                if (extGState == null)
+                {
+                    // can happen if key exists but no value 
+                    continue;
+                }
+                PDSoftMask softMask = extGState.getSoftMask();
                 if (softMask != null)
                 {
                     PDTransparencyGroup group = softMask.getGroup();
