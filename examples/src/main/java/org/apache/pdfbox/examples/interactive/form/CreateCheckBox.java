@@ -98,7 +98,8 @@ public class CreateCheckBox
         page.getAnnotations().add(checkbox.getWidgets().get(0));
         acroForm.getFields().add(checkbox);
 
-        checkbox.check();
+        // always call check() or unCheck(), or the box will remain invisible.
+        checkbox.unCheck();
 
         document.save("CheckBoxSample.pdf");
         document.close();
