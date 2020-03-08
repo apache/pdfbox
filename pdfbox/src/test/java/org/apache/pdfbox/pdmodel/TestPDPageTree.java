@@ -21,7 +21,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
@@ -85,5 +84,39 @@ public class TestPDPageTree
     {
         doc = Loader.loadPDF(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
         assertEquals(-1, doc.getPages().indexOf(new PDPage()));
+    }
+
+    @Test
+    public void testInsertBeforeBlankPage() throws Exception {
+        try (PDDocument document = new PDDocument()) {
+            PDPage pageOne = new PDPage();
+            PDPage pageTwo = new PDPage();
+            PDPage pageThree = new PDPage();
+
+            document.addPage(pageOne);
+            document.addPage(pageTwo);
+            document.getPages().insertBefore(pageThree, pageTwo);
+
+            assertEquals("Page one should be placed at index 0.", 0,(document.getPages().indexOf(pageOne)));
+            assertEquals("Page two should be placed at index 2.", 2,(document.getPages().indexOf(pageTwo)));
+            assertEquals("Page three should be placed at index 1.", 1,(document.getPages().indexOf(pageThree)));
+        }
+    }
+
+    @Test
+    public void testInsertAfterBlankPage() throws Exception {
+        try (PDDocument document = new PDDocument()) {
+            PDPage pageOne = new PDPage();
+            PDPage pageTwo = new PDPage();
+            PDPage pageThree = new PDPage();
+
+            document.addPage(pageOne);
+            document.addPage(pageTwo);
+            document.getPages().insertAfter(pageThree, pageTwo);
+
+            assertEquals("Page one should be placed at index 0.", 0,(document.getPages().indexOf(pageOne)));
+            assertEquals("Page two should be placed at index 1.", 1,(document.getPages().indexOf(pageTwo)));
+            assertEquals("Page three should be placed at index 2.", 2,(document.getPages().indexOf(pageThree)));
+        }
     }
 }

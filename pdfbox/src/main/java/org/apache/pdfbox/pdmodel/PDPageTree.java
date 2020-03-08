@@ -483,7 +483,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         for (int i = 0; i < kids.size(); ++i)
         {
             COSDictionary pageDict = (COSDictionary) kids.getObject(i);
-            if (pageDict.equals(nextPage.getCOSObject()))
+            if (pageDict == nextPage.getCOSObject())
             {
                 kids.add(i, newPage.getCOSObject());
                 newPage.getCOSObject().setItem(COSName.PARENT, parentDict);
@@ -515,7 +515,7 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
         for (int i = 0; i < kids.size(); ++i)
         {
             COSDictionary pageDict = (COSDictionary) kids.getObject(i);
-            if (pageDict.equals(prevPage.getCOSObject()))
+            if (pageDict == prevPage.getCOSObject())
             {
                 kids.add(i + 1, newPage.getCOSObject());
                 newPage.getCOSObject().setItem(COSName.PARENT, parentDict);
