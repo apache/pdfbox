@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 
 import junit.framework.TestCase;

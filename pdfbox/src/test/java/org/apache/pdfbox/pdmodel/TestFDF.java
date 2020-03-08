@@ -24,7 +24,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import junit.framework.TestCase;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;

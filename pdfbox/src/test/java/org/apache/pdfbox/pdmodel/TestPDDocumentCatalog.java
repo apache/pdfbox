@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDOutputIntent;
 
 import static org.junit.Assert.assertEquals;
