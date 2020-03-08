@@ -202,5 +202,6 @@ public class TestPDDocumentCatalog
         PDDocument doc = new PDDocument();
         doc.getDocumentCatalog().getCOSObject().setBoolean(COSName.OPEN_ACTION, false);
         assertNull(doc.getDocumentCatalog().getOpenAction());
+        doc.close();
     }
 }
