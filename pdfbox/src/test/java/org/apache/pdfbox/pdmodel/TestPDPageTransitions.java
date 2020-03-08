@@ -25,7 +25,6 @@ import java.net.URISyntaxException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransition;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransitionDirection;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransitionStyle;
