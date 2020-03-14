@@ -65,9 +65,9 @@ import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 /**
  * LEGACY text calculations which are known to be incorrect but are depended on by PDFTextStripper.
  *
- * This class exists only so that we don't break the code of users who have their own subclasses
- * of PDFTextStripper. It replaces the good implementation of showGlyph in PDFStreamEngine, with
- * a bad implementation which is backwards compatible.
+ * This class exists only so that we don't break the code of users who have their own subclasses of
+ * PDFTextStripper. It replaces the mostly empty implementation of showGlyph() in PDFStreamEngine
+ * with a heuristic implementation which is backwards compatible.
  *
  * DO NOT USE THIS CODE UNLESS YOU ARE WORKING WITH PDFTextStripper.
  * THIS CODE IS DELIBERATELY INCORRECT, USE PDFStreamEngine INSTEAD.
@@ -140,7 +140,8 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     }
 
     /**
-     * This method was originally written by Ben Litchfield for PDFStreamEngine.
+     * Called when a glyph is to be processed. The heuristic calculations here were originally
+     * written by Ben Litchfield for PDFStreamEngine.
      */
     @Override
     protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
