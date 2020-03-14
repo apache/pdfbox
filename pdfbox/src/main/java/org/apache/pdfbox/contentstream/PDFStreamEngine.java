@@ -764,7 +764,7 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Called when a glyph is to be processed.This method is intended for overriding in subclasses,
+     * Called when a glyph is to be processed. This method is intended for overriding in subclasses,
      * the default implementation does nothing.
      *
      * @param textRenderingMatrix the current text rendering matrix, T<sub>rm</sub>
@@ -788,7 +788,7 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Called when a glyph is to be processed.This method is intended for overriding in subclasses,
+     * Called when a glyph is to be processed. This method is intended for overriding in subclasses,
      * the default implementation does nothing.
      *
      * @param textRenderingMatrix the current text rendering matrix, T<sub>rm</sub>
@@ -805,7 +805,7 @@ public abstract class PDFStreamEngine
     }
 
     /**
-     * Called when a glyph is to be processed.This method is intended for overriding in subclasses,
+     * Called when a glyph is to be processed. This method is intended for overriding in subclasses,
      * the default implementation does nothing.
      *
      * @param textRenderingMatrix the current text rendering matrix, T<sub>rm</sub>
