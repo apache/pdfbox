@@ -793,51 +793,6 @@ public abstract class BaseParser
     }
     
     /**
-     * This will parse a boolean object from the stream.
-     *
-     * @return The parsed boolean object.
-     *
-     * @throws IOException If an IO error occurs during parsing.
-     */
-    protected COSBoolean parseBoolean() throws IOException
-    {
-        COSBoolean retval;
-        char c = (char) seqSource.peek();
-        if( c == 't' )
-        {
-            String trueString = new String( seqSource.readFully( 4 ), StandardCharsets.ISO_8859_1 );
-            if( !trueString.equals( TRUE ) )
-            {
-                throw new IOException( "Error parsing boolean: expected='true' actual='" + trueString 
-                        + "' at offset " + seqSource.getPosition());
-            }
-            else
-            {
-                retval = COSBoolean.TRUE;
-            }
-        }
-        else if( c == 'f' )
-        {
-            String falseString = new String( seqSource.readFully( 5 ), StandardCharsets.ISO_8859_1 );
-            if( !falseString.equals( FALSE ) )
-            {
-                throw new IOException( "Error parsing boolean: expected='true' actual='" + falseString 
-                        + "' at offset " + seqSource.getPosition());
-            }
-            else
-            {
-                retval = COSBoolean.FALSE;
-            }
-        }
-        else
-        {
-            throw new IOException( "Error parsing boolean expected='t or f' actual='" + c 
-                    + "' at offset " + seqSource.getPosition());
-        }
-        return retval;
-    }
-
-    /**
      * This will parse a directory object from the stream.
      *
      * @return The parsed object.
