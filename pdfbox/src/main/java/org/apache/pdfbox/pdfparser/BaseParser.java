@@ -849,30 +849,14 @@ public abstract class BaseParser
         }
         case 't':
         {
-            String trueString = new String( seqSource.readFully(4), StandardCharsets.ISO_8859_1 );
-            if( trueString.equals( TRUE ) )
-            {
-                retval = COSBoolean.TRUE;
-            }
-            else
-            {
-                throw new IOException( "expected true actual='" + trueString + "' " + seqSource + 
-                        "' at offset " + seqSource.getPosition());
-            }
+            readExpectedString(TRUE);
+            retval = COSBoolean.TRUE;
             break;
         }
         case 'f':
         {
-            String falseString = new String( seqSource.readFully(5), StandardCharsets.ISO_8859_1 );
-            if( falseString.equals( FALSE ) )
-            {
-                retval = COSBoolean.FALSE;
-            }
-            else
-            {
-                throw new IOException( "expected false actual='" + falseString + "' " + seqSource + 
-                        "' at offset " + seqSource.getPosition());
-            }
+            readExpectedString(FALSE);
+            retval = COSBoolean.FALSE;
             break;
         }
         case 'R':
