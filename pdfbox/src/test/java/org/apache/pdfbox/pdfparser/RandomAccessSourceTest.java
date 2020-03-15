@@ -29,7 +29,7 @@ import org.junit.Test;
 public class RandomAccessSourceTest
 {
     @Test
-    public void testPositionReadFully() throws IOException
+    public void testPositionSkip() throws IOException
     {
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -38,7 +38,7 @@ public class RandomAccessSourceTest
                 new RandomAccessBuffer(bais));
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
-        randomAccessSource.readFully(5);
+        randomAccessSource.skip(5);
         Assert.assertEquals(5, randomAccessSource.getPosition());
 
         randomAccessSource.close();
@@ -92,7 +92,7 @@ public class RandomAccessSourceTest
                 new RandomAccessBuffer(bais));
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
-        randomAccessSource.readFully(6);
+        randomAccessSource.skip(6);
         Assert.assertEquals(6, randomAccessSource.getPosition());
 
         randomAccessSource.peek();
@@ -113,7 +113,8 @@ public class RandomAccessSourceTest
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
         randomAccessSource.read();
-        byte[] readBytes = randomAccessSource.readFully(6);
+        byte[] readBytes = new byte[6];
+        randomAccessSource.read(readBytes);
         Assert.assertEquals(8, randomAccessSource.getPosition());
         randomAccessSource.unread(readBytes);
         Assert.assertEquals(2, randomAccessSource.getPosition());

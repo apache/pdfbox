@@ -104,14 +104,6 @@ public interface RandomAccessRead extends Closeable
     void rewind(int bytes) throws IOException;
 
     /**
-     * Reads a given number of bytes.
-     * @param length the number of bytes to be read
-     * @return a byte array containing the bytes just read
-     * @throws IOException if an I/O error occurs while reading data
-     */
-    byte[] readFully(int length) throws IOException;
-
-    /**
      * A simple test to see if we are at the end of the data.
      *
      * @return true if we are at the end of the data.

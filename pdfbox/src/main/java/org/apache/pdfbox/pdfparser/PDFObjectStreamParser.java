@@ -81,10 +81,10 @@ public class PDFObjectStreamParser extends BaseParser
                 long currentPosition = seqSource.getPosition();
                 if (firstObject > 0 && currentPosition < firstObject)
                 {
-                    seqSource.readFully(firstObject - (int) currentPosition);
+                    seqSource.skip(firstObject - (int) currentPosition);
                 }
                 // jump to the offset of the object to be parsed
-                seqSource.readFully(objectOffset);
+                seqSource.skip(objectOffset);
                 streamObject = parseDirObject();
             }
         }

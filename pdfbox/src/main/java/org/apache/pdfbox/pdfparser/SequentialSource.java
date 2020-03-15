@@ -97,13 +97,21 @@ interface SequentialSource extends Closeable
     void unread(byte[] bytes, int start, int len) throws IOException;
 
     /**
-     * Reads a given number of bytes in its entirety.
+     * Skips a given number of bytes.
      *
-     * @param length the number of bytes to be read
-     * @return a byte array containing the bytes just read
+     * @param length the number of bytes to be skipped
      * @throws IOException if an I/O error occurs while reading data
      */
-    byte[] readFully(int length) throws IOException;
+    default void skip(int length) throws IOException
+    {
+        int i = 0;
+        while (i++ < length)
+        {
+            int value = read();
+            if (value == -1)
+                break;
+        }
+    }
 
     /**
      * Returns true if the end of the data source has been reached.

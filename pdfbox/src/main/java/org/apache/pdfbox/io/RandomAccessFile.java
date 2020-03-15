@@ -159,15 +159,6 @@ public class RandomAccessFile implements RandomAccess
     }
     
     @Override
-    public byte[] readFully(int length) throws IOException
-    {
-        checkClosed();
-        byte[] b = new byte[length];
-        ras.readFully(b);
-        return b;
-    }
-
-    @Override
     public boolean isEOF() throws IOException
     {
         return peek() == -1;

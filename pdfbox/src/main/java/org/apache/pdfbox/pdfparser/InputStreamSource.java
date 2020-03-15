@@ -117,28 +117,6 @@ final class InputStreamSource implements SequentialSource
     }
 
     @Override
-    public byte[] readFully(int length) throws IOException
-    {
-        byte[] bytes = new byte[length];
-        int off = 0;
-        int len = length;
-        while (len > 0)
-        {
-            int n = this.read(bytes, off, len);
-            if (n > 0)
-            {
-                off += n;
-                len -= n;
-            }
-            else
-            {
-                break;
-            }
-        }
-        return bytes;
-    }
-
-    @Override
     public boolean isEOF() throws IOException
     {
         return peek() == -1;

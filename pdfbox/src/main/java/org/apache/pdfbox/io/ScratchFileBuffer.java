@@ -372,28 +372,6 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
-    public byte[] readFully(int len) throws IOException
-    {
-        byte[] b = new byte[len];
-
-        int n = 0;
-        do
-        {
-            int count = read(b, n, len - n);
-            if (count < 0)
-            {
-                throw new EOFException();
-            }
-            n += count;
-        } while (n < len);
-
-        return b;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isEOF() throws IOException
     {
         checkClosed();

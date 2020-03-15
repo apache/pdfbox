@@ -86,12 +86,6 @@ final class RandomAccessSource implements SequentialSource
     }
 
     @Override
-    public byte[] readFully(int length) throws IOException
-    {
-        return reader.readFully(length);
-    }
-
-    @Override
     public boolean isEOF() throws IOException
     {
         return reader.isEOF();

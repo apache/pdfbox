@@ -27,7 +27,7 @@ import org.junit.Test;
 public class InputStreamSourceTest
 {
     @Test
-    public void testPositionReadFully() throws IOException
+    public void testPositionSkip() throws IOException
     {
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -35,7 +35,7 @@ public class InputStreamSourceTest
         InputStreamSource inputStreamSource = new InputStreamSource(bais);
 
         Assert.assertEquals(0, inputStreamSource.getPosition());
-        inputStreamSource.readFully(5);
+        inputStreamSource.skip(5);
         Assert.assertEquals(5, inputStreamSource.getPosition());
 
         inputStreamSource.close();
@@ -86,7 +86,7 @@ public class InputStreamSourceTest
         InputStreamSource inputStreamSource = new InputStreamSource(bais);
 
         Assert.assertEquals(0, inputStreamSource.getPosition());
-        inputStreamSource.readFully(6);
+        inputStreamSource.skip(6);
         Assert.assertEquals(6, inputStreamSource.getPosition());
 
         inputStreamSource.peek();
@@ -106,7 +106,8 @@ public class InputStreamSourceTest
         Assert.assertEquals(0, inputStreamSource.getPosition());
         inputStreamSource.read();
         inputStreamSource.read();
-        byte[] readBytes = inputStreamSource.readFully(6);
+        byte[] readBytes = new byte[6];
+        inputStreamSource.read(readBytes);
         Assert.assertEquals(8, inputStreamSource.getPosition());
         inputStreamSource.unread(readBytes);
         Assert.assertEquals(2, inputStreamSource.getPosition());

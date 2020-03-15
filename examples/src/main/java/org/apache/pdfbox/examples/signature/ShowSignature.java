@@ -310,7 +310,8 @@ public final class ShowSignature
             {
                 System.err.println("'<' expected at offset " + byteRange[1] + ", but got " + (char) c);
             }
-            byte[] contentFromFile = raf.readFully(byteRange[2] - byteRange[1] - 2);
+            byte[] contentFromFile = new byte[byteRange[2] - byteRange[1] - 2];
+            raf.read(contentFromFile);
             byte[] contentAsHex = Hex.getString(contents.getBytes()).getBytes(StandardCharsets.US_ASCII);
             if (contentFromFile.length != contentAsHex.length)
             {

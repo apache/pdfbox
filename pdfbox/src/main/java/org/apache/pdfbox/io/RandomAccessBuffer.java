@@ -498,21 +498,6 @@ public class RandomAccessBuffer implements RandomAccess, Cloneable
      * {@inheritDoc}
      */
     @Override
-    public byte[] readFully(int length) throws IOException
-    {
-        byte[] b = new byte[length];
-        int bytesRead = read(b);
-        while (bytesRead < length)
-        {
-            bytesRead += read(b, bytesRead, length - bytesRead);
-        }
-        return b;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int read(byte[] b) throws IOException
     {
         return read(b, 0, b.length);
