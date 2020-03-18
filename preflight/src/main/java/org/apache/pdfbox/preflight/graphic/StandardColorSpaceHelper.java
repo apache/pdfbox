@@ -286,6 +286,12 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED,
                     "ICCBased color space is invalid: " + e.getMessage(), e));
         }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            // this is not a ICC_Profile
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED,
+                    "ICCBased color space is invalid: " + e.getMessage(), e));
+        }
         catch (IOException e)
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE,

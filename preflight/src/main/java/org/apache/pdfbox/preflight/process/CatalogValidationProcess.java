@@ -383,6 +383,12 @@ public class CatalogValidationProcess extends AbstractProcess
             addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
                     "DestOutputProfile isn't a valid ICCProfile: " + e.getMessage(), e));
         }
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            // this is not a ICC_Profile
+            addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
+                    "DestOutputProfile isn't a valid ICCProfile: " + e.getMessage(), e));
+        }
         catch (IOException e)
         {
             throw new ValidationException("Unable to parse the ICC Profile.", e);
