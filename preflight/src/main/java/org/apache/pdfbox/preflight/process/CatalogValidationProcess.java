@@ -374,7 +374,7 @@ public class CatalogValidationProcess extends AbstractProcess
                 }
             }
         }
-        catch (IllegalArgumentException e)
+        catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e)
         {
             // this is not a ICC_Profile
             addValidationError(ctx, new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
