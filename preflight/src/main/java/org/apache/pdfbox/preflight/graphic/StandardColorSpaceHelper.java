@@ -250,6 +250,10 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 // PDFBOX-2819: load ICC profile as a stream, not as a byte array because of java error
                 iccp = ICC_Profile.getInstance(is);
             }
+            catch (ArrayIndexOutOfBoundsException e)
+            {
+                throw new IOException(e);
+            }
             PDColorSpace altpdcs = iccBased.getAlternateColorSpace();
             if (altpdcs != null)
             {
