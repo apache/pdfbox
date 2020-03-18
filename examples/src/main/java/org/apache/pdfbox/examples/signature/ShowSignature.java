@@ -311,18 +311,18 @@ public final class ShowSignature
                 System.err.println("'<' expected at offset " + byteRange[1] + ", but got " + (char) c);
             }
             byte[] contentFromFile = new byte[byteRange[2] - byteRange[1] - 2];
-            raf.read(contentFromFile);
+            int contentBytesRead = raf.read(contentFromFile);
             byte[] contentAsHex = Hex.getString(contents.getBytes()).getBytes(StandardCharsets.US_ASCII);
-            if (contentFromFile.length != contentAsHex.length)
+            if (contentBytesRead != contentAsHex.length)
             {
                 System.err.println("Raw content length from file is " +
-                        contentFromFile.length +
+                        contentBytesRead +
                         ", but internal content string in hex has length " +
                         contentAsHex.length);
             }
             // Compare the two, we can't do byte comparison because of upper/lower case
             // also check that it is really hex
-            for (int i = 0; i < contentFromFile.length; ++i)
+            for (int i = 0; i < contentBytesRead; ++i)
             {
                 try
                 {
