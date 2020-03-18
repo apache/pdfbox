@@ -134,7 +134,7 @@ public class ICCProfileWrapper
                 {
                     return new ICCProfileWrapper(ICC_Profile.getInstance(is));
                 }
-                catch (IllegalArgumentException e)
+                catch (ArrayIndexOutOfBoundsException | IllegalArgumentException e)
                 {
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
                             "DestOutputProfile isn't a valid ICCProfile. Caused by : " + e.getMessage(), e));
