@@ -174,17 +174,7 @@ public class TestIsartorBavaria
     @Test()
     public void validate() throws Exception
     {
-        ValidationResult result = null;
-        try
-        {
-            result = PreflightParser.validate(file);
-        }
-        catch (Throwable t)
-        {
-            System.err.println("PDFBOX-4799");
-            t.printStackTrace();
-            throw t;
-        }
+        ValidationResult result = PreflightParser.validate(file);
         if (result != null)
         {
             if (this.expectedErrorSet.isEmpty())
