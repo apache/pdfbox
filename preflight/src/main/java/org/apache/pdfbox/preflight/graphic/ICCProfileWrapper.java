@@ -154,6 +154,11 @@ public class ICCProfileWrapper
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
                             "DestOutputProfile isn't a valid ICCProfile. Caused by : " + e.getMessage(), e));
                 }
+                catch (ArrayIndexOutOfBoundsException e)
+                {
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
+                            "DestOutputProfile isn't a valid ICCProfile. Caused by : " + e.getMessage(), e));
+                }
                 catch (IOException e)
                 {            
                     context.addValidationError(new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID,
