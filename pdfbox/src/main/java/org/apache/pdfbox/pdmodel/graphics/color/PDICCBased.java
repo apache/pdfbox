@@ -350,6 +350,18 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         if (numberOfComponents < 0)
         {
             numberOfComponents = stream.getCOSObject().getInt(COSName.N);
+
+            // PDFBOX-4801 correct wrong /N values
+            if (iccProfile != null)
+            {
+                int numIccComponents = iccProfile.getNumComponents();
+                if (numIccComponents != numberOfComponents)
+                {
+                    LOG.warn("Using " + numIccComponents + " components from ICC profile info instead of " +
+                            numberOfComponents + " components from /N entry");
+                    numberOfComponents = numIccComponents;
+                }
+            }
         }
         return numberOfComponents;
     }
