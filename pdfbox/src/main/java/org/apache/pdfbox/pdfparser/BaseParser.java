@@ -1369,8 +1369,8 @@ public abstract class BaseParser
     }
 
     /**
-     * This method is used to read a token by the {@linkplain #readInt()} method
-     * and the {@linkplain #readLong()} method.
+     * This method is used to read a token by the {@linkplain #readInt()} and the {@linkplain #readLong()} method. Valid
+     * delimiters are any non digit values.
      *
      * @return the token to parse as integer or long by the calling method.
      * @throws IOException throws by the {@link #seqSource} methods.
@@ -1379,14 +1379,7 @@ public abstract class BaseParser
     {
         int lastByte;
         StringBuilder buffer = new StringBuilder();
-        while( (lastByte = seqSource.read() ) != ASCII_SPACE &&
-                lastByte != ASCII_LF &&
-                lastByte != ASCII_CR &&
-                lastByte != 60 && //see sourceforge bug 1714707
-                lastByte != '[' && // PDFBOX-1845
-                lastByte != '(' && // PDFBOX-2579
-                lastByte != 0 && //See sourceforge bug 853328
-                lastByte != -1 )
+        while ((lastByte = seqSource.read()) >= '0' && lastByte <= '9')
         {
             buffer.append( (char)lastByte );
             if (buffer.length() > MAX_LENGTH_LONG)
