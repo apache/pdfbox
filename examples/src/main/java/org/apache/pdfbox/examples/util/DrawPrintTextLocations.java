@@ -118,9 +118,10 @@ public class DrawPrintTextLocations extends PDFTextStripper
     }
 
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode, Vector displacement) throws IOException
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+            throws IOException
     {
-        super.showGlyph(textRenderingMatrix, font, code, unicode, displacement);
+        super.showGlyph(textRenderingMatrix, font, code, displacement);
 
         // in cyan:
         // show actual glyph bounds. This must be done here and not in writeString(),

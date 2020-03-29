@@ -186,11 +186,11 @@ public class CustomGraphicsStreamEngine extends PDFGraphicsStreamEngine
      * Overridden from PDFStreamEngine.
      */
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
-                             Vector displacement) throws IOException
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+            throws IOException
     {
-        System.out.print(unicode);
-        super.showGlyph(textRenderingMatrix, font, code, unicode, displacement);
+        System.out.print("showGlyph " + code);
+        super.showGlyph(textRenderingMatrix, font, code, displacement);
     }
     
     // NOTE: there are may more methods in PDFStreamEngine which can be overridden here too.
