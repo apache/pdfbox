@@ -306,7 +306,6 @@ public final class ExtractImages
         protected void showGlyph(Matrix textRenderingMatrix, 
                                  PDFont font,
                                  int code,
-                                 String unicode,
                                  Vector displacement) throws IOException
         {
             RenderingMode renderingMode = getGraphicsState().getTextState().getRenderingMode();
