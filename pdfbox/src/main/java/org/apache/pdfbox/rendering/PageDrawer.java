@@ -443,8 +443,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     }
 
     @Override
-    protected void showFontGlyph(Matrix textRenderingMatrix, PDFont font, int code, String unicode,
-                                 Vector displacement) throws IOException
+    protected void showFontGlyph(Matrix textRenderingMatrix, PDFont font, int code,
+            Vector displacement) throws IOException
     {
         AffineTransform at = textRenderingMatrix.createAffineTransform();
         at.concatenate(font.getFontMatrix().createAffineTransform());
@@ -521,13 +521,13 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     @Override
     protected void showType3Glyph(Matrix textRenderingMatrix, PDType3Font font, int code,
-            String unicode, Vector displacement) throws IOException
+            Vector displacement) throws IOException
     {
         PDGraphicsState state = getGraphicsState();
         RenderingMode renderingMode = state.getTextState().getRenderingMode();
         if (!RenderingMode.NEITHER.equals(renderingMode))
         {
-            super.showType3Glyph(textRenderingMatrix, font, code, unicode, displacement);
+            super.showType3Glyph(textRenderingMatrix, font, code, displacement);
         }
     }
 
