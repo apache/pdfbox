@@ -40,7 +40,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 
 /**
- * This is an example on how to add a rubber stamp with an image to pages of a PDF document.
+ * This is an example on how to add a rubber stamp annotation with an image to pages of a PDF
+ * document. To add a normal image, use the AddImageToPDF.java example.
  */
 public class RubberStampWithImage
 {
