@@ -40,6 +40,7 @@ import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPBasicSchema;
 import org.apache.xmpbox.type.AbstractField;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.TextType;
 
 /**
@@ -67,47 +68,54 @@ public class SynchronizedMetaDataValidation
             title = removeTrailingNul(title);
             if (dc != null)
             {
-                // Check the x-default value, if not found, check with the first value found
-                if (dc.getTitle() != null)
+                try
                 {
-                    if (dc.getTitle("x-default") != null)
+                    // Check the x-default value, if not found, check with the first value found
+                    if (dc.getTitle() != null)
                     {
-                        if (!dc.getTitle("x-default").equals(title))
+                        if (dc.getTitle("x-default") != null)
                         {
-                            ve.add(unsynchronizedMetaDataError("Title"));
-                        }
-                    }
-                    else
-                    {
-                        // This search of first value is made just to keep compatibility
-                        // with lot of PDF documents
-                        // which use title without lang definition
-                        // REM : MAY we have to delete this option in the future
-                        Iterator<AbstractField> it = dc.getTitleProperty().getContainer().getAllProperties().iterator();
-                        if (it.hasNext())
-                        {
-                            AbstractField tmp = it.next();
-                            if (tmp instanceof TextType)
+                            if (!dc.getTitle("x-default").equals(title))
                             {
-                                if (!((TextType) tmp).getStringValue().equals(title))
-                                {
-                                    ve.add(unsynchronizedMetaDataError("Title"));
-                                }
-                            }
-                            else
-                            {
-                                ve.add(absentXMPPropertyError("Title", "Property is badly defined"));
+                                ve.add(unsynchronizedMetaDataError("Title"));
                             }
                         }
                         else
                         {
-                            ve.add(absentXMPPropertyError("Title", "Property is not defined"));
+                            // This search of first value is made just to keep compatibility
+                            // with lot of PDF documents
+                            // which use title without lang definition
+                            // REM : MAY we have to delete this option in the future
+                            Iterator<AbstractField> it = dc.getTitleProperty().getContainer().getAllProperties().iterator();
+                            if (it.hasNext())
+                            {
+                                AbstractField tmp = it.next();
+                                if (tmp instanceof TextType)
+                                {
+                                    if (!((TextType) tmp).getStringValue().equals(title))
+                                    {
+                                        ve.add(unsynchronizedMetaDataError("Title"));
+                                    }
+                                }
+                                else
+                                {
+                                    ve.add(absentXMPPropertyError("Title", "Property is badly defined"));
+                                }
+                            }
+                            else
+                            {
+                                ve.add(absentXMPPropertyError("Title", "Property is not defined"));
+                            }
                         }
                     }
+                    else
+                    {
+                        ve.add(absentXMPPropertyError("Title", "Property is not defined"));
+                    }
                 }
-                else
+                catch (BadFieldValueException ex)
                 {
-                    ve.add(absentXMPPropertyError("Title", "Property is not defined"));
+                    ve.add(badFieldXMPPropertyError("Title", ex.getMessage()));
                 }
             }
             else
@@ -189,18 +197,25 @@ public class SynchronizedMetaDataValidation
                 // as a Text type embedded in the dc:description["x-default"].
                 if (dc.getDescriptionProperty() != null)
                 {
-                    if (dc.getDescription("x-default") == null)
+                    try
                     {
-                        ve.add(absentXMPPropertyError("Subject",
-                                "Subject not found in XMP (dc:description[\"x-default\"] not found)"));
-                    }
-                    else
-                    {
-                        if (!dc.getDescription("x-default").equals(subject))
+                        if (dc.getDescription("x-default") == null)
                         {
-                            ve.add(unsynchronizedMetaDataError("Subject"));
-
+                            ve.add(absentXMPPropertyError("Subject",
+                                    "Subject not found in XMP (dc:description[\"x-default\"] not found)"));
                         }
+                        else
+                        {
+                            if (!dc.getDescription("x-default").equals(subject))
+                            {
+                                ve.add(unsynchronizedMetaDataError("Subject"));
+                                
+                            }
+                        }
+                    }
+                    catch (BadFieldValueException ex)
+                    {
+                        ve.add(badFieldXMPPropertyError("Subject", ex.getMessage()));
                     }
                 }
                 else
@@ -538,6 +553,21 @@ public class SynchronizedMetaDataValidation
      * @return the generated validation error
      */
     protected ValidationError absentXMPPropertyError(String target, String details)
+    {
+        StringBuilder sb = new StringBuilder(80);
+        sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")
+                .append(details).append(")");
+        return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
+    }
+    
+    /**
+     * Return a formatted validation error when a specific XMP property has the wrong type.
+     *
+     * @param target the concerned property
+     * @param details comments about the XMP property
+     * @return the generated validation error
+     */
+    protected ValidationError badFieldXMPPropertyError(String target, String details)
     {
         StringBuilder sb = new StringBuilder(80);
         sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")

@@ -35,6 +35,7 @@ import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPRightsManagementSchema;
 import org.apache.xmpbox.type.AbstractField;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.BooleanType;
 import org.apache.xmpbox.type.TextType;
 
@@ -77,7 +78,18 @@ public class FontMetaDataValidation
         DublinCoreSchema dc = metadata.getDublinCoreSchema();
         if (dc != null && dc.getTitleProperty() != null)
         {
-            String defaultTitle = dc.getTitle("x-default");
+            String defaultTitle;
+            try
+            {
+                defaultTitle = dc.getTitle("x-default");
+            }
+            catch (BadFieldValueException badFieldValueException)
+            {
+                StringBuilder sb = new StringBuilder(80);
+                sb.append("Title property of XMP information is not a multi-lingual property");
+                ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_FORMAT, sb.toString()));
+                return false;
+            }
             if (defaultTitle != null)
             {
                 if (!defaultTitle.equals(fontName) && (noSubSetName != null && !defaultTitle.equals(noSubSetName)))
