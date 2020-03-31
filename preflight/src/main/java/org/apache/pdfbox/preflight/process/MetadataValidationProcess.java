@@ -62,10 +62,12 @@ public class MetadataValidationProcess extends AbstractProcess
         {
             PDDocument document = ctx.getDocument();
 
-            InputStream is = getXpacket(document);
+            XMPMetadata metadata;
             DomXmpParser builder = new DomXmpParser();
-            XMPMetadata metadata = builder.parse(is);
-            is.close();
+            try (InputStream is = getXpacket(document))
+            {
+                metadata = builder.parse(is);
+            }
             ctx.setMetadata(metadata);
 
             // 6.7.5 no deprecated attribute in xpacket processing instruction
