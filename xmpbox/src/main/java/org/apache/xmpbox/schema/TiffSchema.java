@@ -213,7 +213,7 @@ public class TiffSchema extends XMPSchema
      *
      * @return the Copyright property
      */
-    public ArrayProperty getCopyRightProperty()
+    public ArrayProperty getCopyrightProperty()
     {
         return (ArrayProperty) getProperty(COPYRIGHT);
     }
@@ -224,7 +224,7 @@ public class TiffSchema extends XMPSchema
      * @return a list of languages or null if it doesn't exist.
      * @throws BadFieldValueException If the Copyright property is not a multi-lingual property
      */
-    public List<String> getCopyRightLanguages() throws BadFieldValueException
+    public List<String> getCopyrightLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(COPYRIGHT);
     }
@@ -236,7 +236,7 @@ public class TiffSchema extends XMPSchema
      * @return copyright value or null if it doesn't exist.
      * @throws BadFieldValueException If the Copyright property is not a multi-lingual property
      */
-    public String getCopyRight(String lang) throws BadFieldValueException
+    public String getCopyright(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(COPYRIGHT, lang);
     }
@@ -247,9 +247,9 @@ public class TiffSchema extends XMPSchema
      * @return The Copyright property value or null if it doesn't exist.
      * @throws BadFieldValueException If the Copyright property is not a multi-lingual property
      */
-    public String getCopyRight() throws BadFieldValueException
+    public String getCopyright() throws BadFieldValueException
     {
-        return getCopyRight(null);
+        return getCopyright(null);
     }
 
     /**
