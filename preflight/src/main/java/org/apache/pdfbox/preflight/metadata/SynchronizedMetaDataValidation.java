@@ -570,7 +570,7 @@ public class SynchronizedMetaDataValidation
     protected ValidationError badFieldXMPPropertyError(String target, String details)
     {
         StringBuilder sb = new StringBuilder(80);
-        sb.append(target).append(" present in the document catalog dictionary can't be found in XMP information (")
+        sb.append(target).append(" property is not a multi-lingual property in XMP information(")
                 .append(details).append(")");
         return new ValidationError(PreflightConstants.ERROR_METADATA_MISMATCH, sb.toString());
     }
