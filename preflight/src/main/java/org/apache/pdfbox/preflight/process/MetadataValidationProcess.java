@@ -182,10 +182,7 @@ public class MetadataValidationProcess extends AbstractProcess
         {
             return;
         }
-        for (ThumbnailType tb : tbProp)
-        {
-            checkThumbnail(tb, ctx);
-        }
+        tbProp.forEach(tb -> checkThumbnail(tb, ctx));
     }
 
     private void checkThumbnail(ThumbnailType tb, PreflightContext ctx)
