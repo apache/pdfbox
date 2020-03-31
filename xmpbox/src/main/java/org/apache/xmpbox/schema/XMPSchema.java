@@ -641,7 +641,7 @@ public class XMPSchema extends AbstractStructuredType
                 toDelete.add(tmp);
             }
         }
-        toDelete.forEach(aToDelete -> array.getContainer().removeProperty(aToDelete));
+        toDelete.forEach(array.getContainer()::removeProperty);
     }
 
     /**
@@ -755,7 +755,7 @@ public class XMPSchema extends AbstractStructuredType
                 toDelete.add(tmp);
             }
         }
-        toDelete.forEach((aToDelete) -> array.getContainer().removeProperty(aToDelete));
+        toDelete.forEach(array.getContainer()::removeProperty);
     }
 
     /**
@@ -885,7 +885,7 @@ public class XMPSchema extends AbstractStructuredType
                 toDelete.add(tmp);
             }
         }
-        toDelete.forEach((aToDelete) -> seq.getContainer().removeProperty(aToDelete));
+        toDelete.forEach(seq.getContainer()::removeProperty);
     }
 
     /**
@@ -983,7 +983,7 @@ public class XMPSchema extends AbstractStructuredType
                 reordered.add(tmp);
                 toDelete.add(tmp);
             }
-            toDelete.forEach(aToDelete -> alt.removeProperty(aToDelete));
+            toDelete.forEach(alt::removeProperty);
             it = reordered.iterator();
             while (it.hasNext())
             {
