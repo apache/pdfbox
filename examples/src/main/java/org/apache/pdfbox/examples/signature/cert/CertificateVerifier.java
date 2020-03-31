@@ -201,10 +201,12 @@ public final class CertificateVerifier
             {
                 verifyOCSP(ocspHelper, additionalCerts);
             }
-            catch (IOException ex)
+            catch (IOException | OCSPException ex)
             {
-                // happens with 021496.pdf because OCSP responder no longer exists
-                LOG.warn("IOException trying OCSP, will try CRL", ex);
+                // IOException happens with 021496.pdf because OCSP responder no longer exists
+                // OCSPException happens with QV_RCA1_RCA3_CPCPS_V4_11.pdf
+                LOG.warn("Exception trying OCSP, will try CRL", ex);
+                LOG.warn("Certificate# to check: " + cert.getSerialNumber().toString(16));
                 CRLVerifier.verifyCertificateCRLs(cert, signDate, additionalCerts);
             }
         }
