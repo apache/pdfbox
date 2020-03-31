@@ -297,7 +297,7 @@ public class XMPSchemaTest
         {
             schem.getIntegerProperty("boolType");
         }
-        catch (IllegalArgumentException e)
+        catch (BadFieldValueException e)
         {
             ok = true;
         }
@@ -307,7 +307,7 @@ public class XMPSchemaTest
         {
             schem.getUnqualifiedTextProperty("intType");
         }
-        catch (IllegalArgumentException e)
+        catch (BadFieldValueException e)
         {
             ok = true;
         }
@@ -317,7 +317,7 @@ public class XMPSchemaTest
         {
             schem.getDateProperty("textType");
         }
-        catch (IllegalArgumentException e)
+        catch (BadFieldValueException e)
         {
             ok = true;
         }
@@ -327,7 +327,7 @@ public class XMPSchemaTest
         {
             schem.getBooleanProperty("dateType");
         }
-        catch (IllegalArgumentException e)
+        catch (BadFieldValueException e)
         {
             ok = true;
         }
