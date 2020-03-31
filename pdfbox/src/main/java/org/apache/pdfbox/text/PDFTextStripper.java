@@ -724,8 +724,8 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
 
     private boolean overlap(float y1, float height1, float y2, float height2)
     {
-        return within(y1, y2, .1f) || (y2 <= y1 && y1 - height1 - y2 < -(height1 * 0.1f))
-                || (y1 <= y2 && y2 - height2 - y1 < -(height2 * 0.1f));
+        return within(y1, y2, .1f) || y2 <= y1 && y2 >= y1 - height1
+                || y1 <= y2 && y1 >= y2 - height2;
     }
 
     /**
