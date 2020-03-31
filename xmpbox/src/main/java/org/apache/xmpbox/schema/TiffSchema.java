@@ -24,6 +24,7 @@ import org.apache.xmpbox.XMPMetadata;
 
 import java.util.List;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.ProperNameType;
 import org.apache.xmpbox.type.PropertyType;
@@ -129,7 +130,8 @@ public class TiffSchema extends XMPSchema
     }
 
     /**
-     * Return the artist property as String
+     * Return the Artist property as String
+     *
      * @return string
      */
     public String getArtist()
@@ -140,6 +142,7 @@ public class TiffSchema extends XMPSchema
 
     /**
      * Set the name of the artist
+     *
      * @param text
      */
     public void setArtist(String text)
@@ -147,10 +150,10 @@ public class TiffSchema extends XMPSchema
         addProperty(createTextType(ARTIST, text));
     }
 
-
     /**
-     * Return the image description property object
-     * @return the image description property
+     * Return the ImageDescription property object.
+     *
+     * @return the ImageDescription property.
      */
     public ArrayProperty getImageDescriptionProperty()
     {
@@ -158,37 +161,46 @@ public class TiffSchema extends XMPSchema
     }
 
     /**
-     * Return the list of language existing for image description
-     * @return a list of languages
+     * Return the list of language existing for the ImageDescription property.
+     *
+     * @return a list of languages or null if it doesn't exist.
+     * @throws BadFieldValueException If the ImageDescription property is not a multi-lingual
+     * property.
      */
-    public List<String> getImageDescriptionLanguages()
+    public List<String> getImageDescriptionLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(IMAGE_DESCRIPTION);
     }
 
     /**
-     * Return the image description value as String in expected language
+     * Return the ImageDescription property value as String in a specified language.
      *
-     * @param lang expected language
-     * @return image description value
+     * @param lang The expected language.
+     * @return The ImageDescription property value or null if it doesn't exist.
+     * @throws BadFieldValueException If the ImageDescription property is not a multi-lingual
+     * property.
      */
-    public String getImageDescription(String lang)
+    public String getImageDescription(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(IMAGE_DESCRIPTION, lang);
     }
 
     /**
-     * Return the image description as String in default language
-     * @return image description value
+     * Return the ImageDescription property as String in the default language.
+     *
+     * @return the ImageDescription value or null if it doesn't exist.
+     * @throws BadFieldValueException If the ImageDescription property is not a multi-lingual
+     * property.
      */
-    public String getImageDescription()
+    public String getImageDescription() throws BadFieldValueException
     {
         return getImageDescription(null);
     }
 
     /**
-     * Add a image description value for a specified language
-     * @param lang language of the image description
+     * Add an ImageDescription value for a specified language.
+     *
+     * @param lang language of the ImageDescription property.
      * @param value image description text
      */
     public void addImageDescription(String lang, String value)
@@ -197,8 +209,9 @@ public class TiffSchema extends XMPSchema
     }
 
     /**
-     * Return the copyright property object
-     * @return the copyright property
+     * Return the Copyright property object
+     *
+     * @return the Copyright property
      */
     public ArrayProperty getCopyRightProperty()
     {
@@ -206,36 +219,42 @@ public class TiffSchema extends XMPSchema
     }
 
     /**
-     * Return the list of language existing for copyright
-     * @return a list of languages
+     * Return the list of language existing for the Copyright property.
+     *
+     * @return a list of languages or null if it doesn't exist.
+     * @throws BadFieldValueException If the Copyright property is not a multi-lingual property
      */
-    public List<String> getCopyRightLanguages()
+    public List<String> getCopyRightLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(COPYRIGHT);
     }
 
     /**
-     * Return the copyright value as String in expected language
+     * Return the Copyright value as String in expected language
      *
      * @param lang expected language
-     * @return copyright value
+     * @return copyright value or null if it doesn't exist.
+     * @throws BadFieldValueException If the Copyright property is not a multi-lingual property
      */
-    public String getCopyRight(String lang)
+    public String getCopyRight(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(COPYRIGHT, lang);
     }
 
     /**
-     * Return the copyright value as String in default language
-     * @return copyright value
+     * Return the Copyright property value as String in default language
+     *
+     * @return The Copyright property value or null if it doesn't exist.
+     * @throws BadFieldValueException If the Copyright property is not a multi-lingual property
      */
-    public String getCopyRight()
+    public String getCopyRight() throws BadFieldValueException
     {
         return getCopyRight(null);
     }
 
     /**
-     * Add a copyright value for a specified language
+     * Add a Copyright property value for a specified language
+     *
      * @param lang language of the copyright
      * @param value copyright text
      */

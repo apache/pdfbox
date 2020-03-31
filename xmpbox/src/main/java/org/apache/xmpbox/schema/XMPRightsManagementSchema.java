@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.BooleanType;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.PropertyType;
@@ -197,23 +198,25 @@ public class XMPRightsManagementSchema extends XMPSchema
     }
 
     /**
-     * Return a list of languages defined in description property
+     * Return a list of languages defined in the UsageTerms property
      * 
-     * @return list of languages defined for usageterms
+     * @return list of languages defined for the UsageTerms property or null if it doesn't exist.
+     * @throws BadFieldValueException If the UsageTerms property is not a multi-lingual property.
      */
-    public List<String> getUsageTermsLanguages()
+    public List<String> getUsageTermsLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(USAGETERMS);
     }
 
     /**
-     * Return a language value for description property
+     * Return a language value for the UsageTerms property
      * 
      * @param lang
      *            concerned language
-     * @return value of specified language
+     * @return value of specified language or null if it doesn't exist.
+     * @throws BadFieldValueException If the UsageTerms property is not a multi-lingual property.
      */
-    public String getUsageTerms(String lang)
+    public String getUsageTerms(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(USAGETERMS, lang);
     }
@@ -221,9 +224,10 @@ public class XMPRightsManagementSchema extends XMPSchema
     /**
      * Get the default usage terms for the document.
      * 
-     * @return The terms for this resource.
+     * @return The terms for this resource or null if it doesn't exist.
+     * @throws BadFieldValueException If the UsageTerms property is not a multi-lingual property.
      */
-    public String getUsageTerms()
+    public String getUsageTerms() throws BadFieldValueException
     {
         return getUsageTerms(null);
     }

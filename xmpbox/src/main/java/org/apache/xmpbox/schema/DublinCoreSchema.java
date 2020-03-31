@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.MIMEType;
 import org.apache.xmpbox.type.PropertyType;
@@ -488,33 +489,37 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * Return a list of languages defined in description property
-     * 
-     * @return get List of languages defined for description property
+     * Return a list of languages defined in the description property.
+     *
+     * @return The List of languages defined for the description property or null if it doesn't
+     * exist.
+     * @throws BadFieldValueException If the description property is not a multi-lingual property.
      */
-    public List<String> getDescriptionLanguages()
+    public List<String> getDescriptionLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(DESCRIPTION);
     }
 
     /**
-     * Return a language value for description property
-     * 
-     * @param lang
-     *            The language wanted
-     * @return Description value for specified language
+     * Return a language value for the description property.
+     *
+     * @param lang The language wanted.
+     * @return Description value for specified language or null if it doesn't exist.
+     * @throws BadFieldValueException BadFieldValueException If the description property is not a
+     * multi-lingual property.
      */
-    public String getDescription(String lang)
+    public String getDescription(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(DESCRIPTION, lang);
     }
 
     /**
-     * Get the default value for the description.
+     * Get the default value for the description property.
      * 
      * @return The description of this resource.
+     * @throws BadFieldValueException If the description property is not a multi-lingual property.
      */
-    public String getDescription()
+    public String getDescription() throws BadFieldValueException
     {
         return getDescription(null);
     }
@@ -632,34 +637,36 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * Return a list of languages defined in Right property
+     * Return a list of languages defined in Right property.
      * 
      * @return list of rights languages values defined
+     * @throws BadFieldValueException If the Rights property is not a multi-lingual property. 
      */
-    public List<String> getRightsLanguages()
+    public List<String> getRightsLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(RIGHTS);
     }
 
     /**
-     * Return a language value for Right property
-     * 
-     * @param lang
-     *            language concerned
-     * @return the rights value for specified language
+     * Return a language value for the Rights property.
+     *
+     * @param lang language concerned.
+     * @return The rights value for specified language or null if it doesn't exist.
+     * @throws BadFieldValueException If the Rights property is not a multi-lingual property.
      */
-    public String getRights(String lang)
+    public String getRights(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(RIGHTS, lang);
     }
 
     /**
-     * Return the default value for Right property
-     * 
+     * Return the default value for the Rights property.
+     *
+     * @throws BadFieldValueException If the Rights property is not a multi-lingual property. 
      * @see DublinCoreSchema#getRights(String)
      * @return the default rights value
      */
-    public String getRights()
+    public String getRights() throws BadFieldValueException
     {
         return getRights(null);
     }
@@ -716,33 +723,35 @@ public class DublinCoreSchema extends XMPSchema
     }
 
     /**
-     * Return a list of languages defined in Title property
-     * 
+     * Return a list of languages defined in the Title property
+     *
      * @return list of languages defined for title property
+     * @throws BadFieldValueException If the Title property is not a multi-lingual property.
      */
-    public List<String> getTitleLanguages()
+    public List<String> getTitleLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(TITLE);
     }
 
     /**
-     * Return a language value for Title property
-     * 
-     * @param lang
-     *            the language concerned
+     * Return a language value for the Title property
+     *
+     * @param lang the language concerned
      * @return the title value for specified language
+     * @throws BadFieldValueException If the Title property is not a multi-lingual property.
      */
-    public String getTitle(String lang)
+    public String getTitle(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(TITLE, lang);
     }
 
     /**
      * Get the default value for the title.
-     * 
+     *
      * @return The default title of this resource.
+     * @throws BadFieldValueException If the Title property is not a multi-lingual property.
      */
-    public String getTitle()
+    public String getTitle() throws BadFieldValueException
     {
         return getTitle(null);
     }

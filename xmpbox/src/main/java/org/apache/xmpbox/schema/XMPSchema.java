@@ -287,12 +287,13 @@ public class XMPSchema extends AbstractStructuredType
     }
 
     /**
-     * Get a TextProperty Type from its name
+     * Get a TextProperty Type by its name
      * 
      * @param name The property name.
-     * @return The Text Type property wanted
+     * @return The Text Type property wanted or null if not found.
+     * @throws BadFieldValueException If the property is not a text property.
      */
-    public TextType getUnqualifiedTextProperty(String name)
+    public TextType getUnqualifiedTextProperty(String name) throws BadFieldValueException
     {
         AbstractField prop = getAbstractProperty(name);
         if (prop != null)
@@ -301,10 +302,7 @@ public class XMPSchema extends AbstractStructuredType
             {
                 return (TextType) prop;
             }
-            else
-            {
-                throw new IllegalArgumentException("Property asked is not a Text Property");
-            }
+            throw new BadFieldValueException("Property asked is not a Text Property");
         }
         return null;
     }
@@ -314,23 +312,25 @@ public class XMPSchema extends AbstractStructuredType
      * 
      * @param name The property name.
      * @return The value of the text property or null if there is no value.
+     * @throws BadFieldValueException If the property is not a text property.
      * 
      */
-    public String getUnqualifiedTextPropertyValue(String name)
+    public String getUnqualifiedTextPropertyValue(String name) throws BadFieldValueException
     {
         TextType tt = getUnqualifiedTextProperty(name);
         return tt == null ? null : tt.getStringValue();
     }
 
     /**
-     * Get the Date property with its name
+     * Get a Date property by its name
      * 
      * @param qualifiedName
      *            The name of the property to get, it must include the namespace prefix, e.g. "pdf:Keywords".
      * @return Date Type property
+     * @throws BadFieldValueException If the property is not a date property.
      * 
      */
-    public DateType getDateProperty(String qualifiedName)
+    public DateType getDateProperty(String qualifiedName) throws BadFieldValueException
     {
         AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
@@ -339,10 +339,7 @@ public class XMPSchema extends AbstractStructuredType
             {
                 return (DateType) prop;
             }
-            else
-            {
-                throw new IllegalArgumentException("Property asked is not a Date Property");
-            }
+            throw new BadFieldValueException("Property asked is not a Date Property");
         }
         return null;
     }
@@ -353,9 +350,10 @@ public class XMPSchema extends AbstractStructuredType
      * @param simpleName
      *            the local name of the property to get
      * @return The value of the property as a calendar.
+     * @throws BadFieldValueException If the property is not a date property.
      * 
      */
-    public Calendar getDatePropertyValueAsSimple(String simpleName)
+    public Calendar getDatePropertyValueAsSimple(String simpleName) throws BadFieldValueException
     {
         return this.getDatePropertyValue(simpleName);
     }
@@ -366,10 +364,11 @@ public class XMPSchema extends AbstractStructuredType
      * @param qualifiedName
      *            The fully qualified property name for the date.
      * 
-     * @return The value of the property as a date.
+     * @return The value of the property as a date or null if it doesn't exist.
+     * @throws BadFieldValueException If the property is not a date property.
      * 
      */
-    public Calendar getDatePropertyValue(String qualifiedName)
+    public Calendar getDatePropertyValue(String qualifiedName) throws BadFieldValueException
     {
         AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
@@ -378,10 +377,7 @@ public class XMPSchema extends AbstractStructuredType
             {
                 return ((DateType) prop).getValue();
             }
-            else
-            {
-                throw new IllegalArgumentException("Property asked is not a Date Property");
-            }
+            throw new BadFieldValueException("Property asked is not a Date Property");
         }
         return null;
     }
@@ -424,13 +420,14 @@ public class XMPSchema extends AbstractStructuredType
     }
 
     /**
-     * Get a BooleanType property with its name
+     * Get a BooleanType property by its name.
      * 
      * @param qualifiedName
      *            the full qualified name of property wanted
-     * @return boolean Type property
+     * @return boolean Type property or null if it doesn't exist.
+     * @throws BadFieldValueException If the property is not a boolean property.
      */
-    public BooleanType getBooleanProperty(String qualifiedName)
+    public BooleanType getBooleanProperty(String qualifiedName) throws BadFieldValueException
     {
         AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
@@ -441,7 +438,7 @@ public class XMPSchema extends AbstractStructuredType
             }
             else
             {
-                throw new IllegalArgumentException("Property asked is not a Boolean Property");
+                throw new BadFieldValueException("Property asked is not a Boolean Property");
             }
         }
         return null;
@@ -453,8 +450,9 @@ public class XMPSchema extends AbstractStructuredType
      * @param simpleName
      *            the local name of property wanted
      * @return The value of the property as a boolean or null if the property does not exist.
+     * @throws BadFieldValueException If the property is not a boolean property.
      */
-    public Boolean getBooleanPropertyValueAsSimple(String simpleName)
+    public Boolean getBooleanPropertyValueAsSimple(String simpleName) throws BadFieldValueException
     {
         return this.getBooleanPropertyValue(simpleName);
     }
@@ -467,8 +465,9 @@ public class XMPSchema extends AbstractStructuredType
      *
      * @return The value of the property as a Boolean, or null if the property
      * does not exist.
+     * @throws BadFieldValueException If the property is not a boolean property.
      */
-    public Boolean getBooleanPropertyValue(String qualifiedName)
+    public Boolean getBooleanPropertyValue(String qualifiedName) throws BadFieldValueException
     {
         AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
@@ -479,7 +478,7 @@ public class XMPSchema extends AbstractStructuredType
             }
             else
             {
-                throw new IllegalArgumentException("Property asked is not a Boolean Property");
+                throw new BadFieldValueException("Property asked is not a Boolean Property");
             }
         }
         return null;
@@ -523,13 +522,14 @@ public class XMPSchema extends AbstractStructuredType
     }
 
     /**
-     * Get the Integer property with its name
+     * Get the Integer property by its name
      * 
      * @param qualifiedName
      *            the full qualified name of property wanted
-     * @return Integer Type property
+     * @return Integer Type property or null if it doesn't exist.
+     * @throws BadFieldValueException If the property is not an integer property.
      */
-    public IntegerType getIntegerProperty(String qualifiedName)
+    public IntegerType getIntegerProperty(String qualifiedName) throws BadFieldValueException
     {
         AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
@@ -538,10 +538,7 @@ public class XMPSchema extends AbstractStructuredType
             {
                 return ((IntegerType) prop);
             }
-            else
-            {
-                throw new IllegalArgumentException("Property asked is not an Integer Property");
-            }
+            throw new BadFieldValueException("Property asked is not an Integer Property");
         }
         return null;
     }
@@ -551,9 +548,10 @@ public class XMPSchema extends AbstractStructuredType
      * 
      * @param simpleName
      *            the local name of property wanted
-     * @return The value of the property as an integer.
+     * @return The value of the property as an integer or null if it doesn't exist.
+     * @throws BadFieldValueException If the property is not an integer property.
      */
-    public Integer getIntegerPropertyValueAsSimple(String simpleName)
+    public Integer getIntegerPropertyValueAsSimple(String simpleName) throws BadFieldValueException
     {
         return this.getIntegerPropertyValue(simpleName);
     }
@@ -564,9 +562,10 @@ public class XMPSchema extends AbstractStructuredType
      * @param qualifiedName
      *            The fully qualified property name for the integer.
      * 
-     * @return The value of the property as an integer.
+     * @return The value of the property as an integer or null if it doesn't exist.
+     * @throws BadFieldValueException If the property is not an integer property.
      */
-    public Integer getIntegerPropertyValue(String qualifiedName)
+    public Integer getIntegerPropertyValue(String qualifiedName) throws BadFieldValueException
     {
         AbstractField prop = getAbstractProperty(qualifiedName);
         if (prop != null)
@@ -575,10 +574,7 @@ public class XMPSchema extends AbstractStructuredType
             {
                 return ((IntegerType) prop).getValue();
             }
-            else
-            {
-                throw new IllegalArgumentException("Property asked is not an Integer Property");
-            }
+            throw new BadFieldValueException("Property asked is not an Integer Property");
         }
         return null;
     }
@@ -1069,9 +1065,10 @@ public class XMPSchema extends AbstractStructuredType
      * @param expectedLanguage
      *            The language code of the value. If null then "x-default" is assumed.
      * 
-     * @return The value of the language property.
+     * @return The value of the language property or null if it doesn't exist.
+     * @throws BadFieldValueException If the property is not a multi-lingual property.
      */
-    public String getUnqualifiedLanguagePropertyValue(String name, String expectedLanguage)
+    public String getUnqualifiedLanguagePropertyValue(String name, String expectedLanguage) throws BadFieldValueException
     {
         String language = (expectedLanguage != null) ? expectedLanguage : XmpConstants.X_DEFAULT;
         AbstractField property = getAbstractProperty(name);
@@ -1090,10 +1087,7 @@ public class XMPSchema extends AbstractStructuredType
                 }
                 return null;
             }
-            else
-            {
-                throw new IllegalArgumentException("The property '" + name + "' is not of Lang Alt type");
-            }
+            throw new BadFieldValueException("The property '" + name + "' is not of Lang Alt type");
         }
         return null;
     }
@@ -1107,8 +1101,9 @@ public class XMPSchema extends AbstractStructuredType
      *
      * @return A list of all languages, this will return an non-null empty list
      * if none have been defined, and null if the property doesn't exist.
+     * @throws BadFieldValueException If the property is not a multi-lingual property.
      */
-    public List<String> getUnqualifiedLanguagePropertyLanguagesValue(String name)
+    public List<String> getUnqualifiedLanguagePropertyLanguagesValue(String name) throws BadFieldValueException
     {
         AbstractField property = getAbstractProperty(name);
         if (property != null)
@@ -1131,10 +1126,7 @@ public class XMPSchema extends AbstractStructuredType
                 }
                 return retval;
             }
-            else
-            {
-                throw new IllegalArgumentException("The property '" + name + "' is not of Lang Alt type");
-            }
+            throw new BadFieldValueException("The property '" + name + "' is not of Lang Alt type");
         }
         // no property with that name
         return null;

@@ -25,13 +25,14 @@ import org.apache.xmpbox.XMPMetadata;
 
 import java.util.List;
 import org.apache.xmpbox.type.ArrayProperty;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.type.Types;
 
 /**
- * Representation of a Exif Schema
+ * Representation of an Exif Schema
  *
  */
 
@@ -298,33 +299,37 @@ public class ExifSchema extends XMPSchema
     }
 
     /**
-     * Return a list of languages defined in UserComment property
+     * Return a list of languages defined in the UserComment property.
      *
-     * @return list of UserComment languages values defined
+     * @return list of UserComment languages values defined or null if it doesn't exist.
+     * @throws BadFieldValueException If the UserComment property is not a multi-lingual property.
      */
-    public List<String> getUserCommentLanguages()
+    public List<String> getUserCommentLanguages() throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyLanguagesValue(USER_COMMENT);
     }
 
     /**
-     * Return a language value for UserComment property
+     * Return a language value for the UserComment property.
      *
      * @param lang
      *            language concerned
-     * @return the UserComment value for specified language
+     * @return the UserComment value for specified language or null if it doesn't exist.
+     * @throws BadFieldValueException If the UserComment property is not a multi-lingual property.
      */
-    public String getUserComment(String lang)
+    public String getUserComment(String lang) throws BadFieldValueException
     {
         return getUnqualifiedLanguagePropertyValue(USER_COMMENT, lang);
     }
 
     /**
-     * Return the default value for UserComment property
+     * Return the default value for the UserComment property.
      *
+     * @return the default value for the UserComment property or null if it doesn't exist.
+     * @throws BadFieldValueException If the UserComment property is not a multi-lingual property.
      * @see ExifSchema#getUserComment(String)
      */
-    public String getUserComment()
+    public String getUserComment() throws BadFieldValueException
     {
         return getUserComment(null);
     }
