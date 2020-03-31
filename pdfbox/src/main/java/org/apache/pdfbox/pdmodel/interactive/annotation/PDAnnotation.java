@@ -824,9 +824,11 @@ public abstract class PDAnnotation implements COSObjectable
     }
 
     /**
-     * This will retrieve the corresponding page of this annotation.
-     * 
-     * @return the corresponding page
+     * This will retrieve the corresponding page of this annotation. See also
+     * <a href="https://stackoverflow.com/a/36894982/535646">this answer</a> about what to do if
+     * the page isn't available.
+     *
+     * @return The corresponding page or null if not available.
      */
     public PDPage getPage()
     {
