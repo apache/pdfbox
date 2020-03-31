@@ -32,6 +32,7 @@ import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPBasicSchema;
+import org.apache.xmpbox.type.BadFieldValueException;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 
@@ -53,8 +54,9 @@ public final class ExtractMetadata
      *
      * @throws IOException If there is an error parsing the document.
      * @throws XmpParsingException
+     * @throws BadFieldValueException
      */
-    public static void main(String[] args) throws IOException, XmpParsingException
+    public static void main(String[] args) throws IOException, XmpParsingException, BadFieldValueException
     {
         if (args.length != 1)
         {
