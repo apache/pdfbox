@@ -76,31 +76,9 @@ public final class ExtractMetadata
                     {
                         XMPMetadata metadata = xmpParser.parse(meta.createInputStream());
 
-                        DublinCoreSchema dc = metadata.getDublinCoreSchema();
-                        if (dc != null)
-                        {
-                            display("Title:", dc.getTitle());
-                            display("Description:", dc.getDescription());
-                            listString("Creators: ", dc.getCreators());
-                            listCalendar("Dates:", dc.getDates());
-                            listString("Subjects:", dc.getSubjects());
-                        }
-
-                        AdobePDFSchema pdf = metadata.getAdobePDFSchema();
-                        if (pdf != null)
-                        {
-                            display("Keywords:", pdf.getKeywords());
-                            display("PDF Version:", pdf.getPDFVersion());
-                            display("PDF Producer:", pdf.getProducer());
-                        }
-
-                        XMPBasicSchema basic = metadata.getXMPBasicSchema();
-                        if (basic != null)
-                        {
-                            display("Create Date:", basic.getCreateDate());
-                            display("Modify Date:", basic.getModifyDate());
-                            display("Creator Tool:", basic.getCreatorTool());
-                        }
+                        showDublinCoreSchema(metadata);
+                        showAdobePDFSchema(metadata);
+                        showXMPBasicSchema(metadata);
                     }
                     catch (XmpParsingException e)
                     {
@@ -119,6 +97,41 @@ public final class ExtractMetadata
                     }
                 }
             }
+        }
+    }
+
+    private static void showXMPBasicSchema(XMPMetadata metadata)
+    {
+        XMPBasicSchema basic = metadata.getXMPBasicSchema();
+        if (basic != null)
+        {
+            display("Create Date:", basic.getCreateDate());
+            display("Modify Date:", basic.getModifyDate());
+            display("Creator Tool:", basic.getCreatorTool());
+        }
+    }
+
+    private static void showAdobePDFSchema(XMPMetadata metadata)
+    {
+        AdobePDFSchema pdf = metadata.getAdobePDFSchema();
+        if (pdf != null)
+        {
+            display("Keywords:", pdf.getKeywords());
+            display("PDF Version:", pdf.getPDFVersion());
+            display("PDF Producer:", pdf.getProducer());
+        }
+    }
+
+    private static void showDublinCoreSchema(XMPMetadata metadata) throws BadFieldValueException
+    {
+        DublinCoreSchema dc = metadata.getDublinCoreSchema();
+        if (dc != null)
+        {
+            display("Title:", dc.getTitle());
+            display("Description:", dc.getDescription());
+            listString("Creators: ", dc.getCreators());
+            listCalendar("Dates:", dc.getDates());
+            listString("Subjects:", dc.getSubjects());
         }
     }
 
