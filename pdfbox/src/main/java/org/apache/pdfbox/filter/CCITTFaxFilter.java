@@ -19,6 +19,8 @@ package org.apache.pdfbox.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PushbackInputStream;
+
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
@@ -69,7 +71,8 @@ final class CCITTFaxFilter extends Filter
             type = TIFFExtension.COMPRESSION_CCITT_T4; // Group 3 1D
             byte[] streamData = new byte[20];
             encoded.read(streamData);
-            encoded.reset();
+            encoded = new PushbackInputStream(encoded, streamData.length);
+            ((PushbackInputStream) encoded).unread(streamData);
             if (streamData[0] != 0 || (streamData[1] >> 4 != 1 && streamData[1] != 1))
             {
                 // leading EOL (0b000000000001) not found, search further and try RLE if not
