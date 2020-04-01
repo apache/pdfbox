@@ -1120,21 +1120,11 @@ public class XMPSchema extends AbstractStructuredType
                 for (AbstractField child : arrayProp.getContainer().getAllProperties())
                 {
                     Attribute text = child.getAttribute(XmpConstants.LANG_NAME);
-                    if (text != null)
-                    {
-                        retval.add(text.getValue());
-                    }
-                    else
-                    {
-                        retval.add(XmpConstants.X_DEFAULT);
-                    }
+                    retval.add(text != null ? text.getValue() : XmpConstants.X_DEFAULT);
                 }
                 return retval;
             }
-            else
-            {
-                throw new IllegalArgumentException("The property '" + name + "' is not of Lang Alt type");
-            }
+            throw new IllegalArgumentException("The property '" + name + "' is not of Lang Alt type");
         }
         // no property with that name
         return null;
