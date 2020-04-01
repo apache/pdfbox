@@ -265,12 +265,8 @@ public class COSArrayListTest {
     public void removeFromFilteredListByIndex() throws Exception {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
-        AnnotationFilter annotsFilter = new AnnotationFilter() {
-            @Override
-            public boolean accept(PDAnnotation annotation) {
-                return !(annotation instanceof PDAnnotationLink);
-            }
-        };
+        AnnotationFilter annotsFilter =
+                (PDAnnotation annotation) -> !(annotation instanceof PDAnnotationLink);
 
         COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
 
@@ -282,12 +278,8 @@ public class COSArrayListTest {
     public void removeFromFilteredListByObject() throws Exception {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
-        AnnotationFilter annotsFilter = new AnnotationFilter() {
-            @Override
-            public boolean accept(PDAnnotation annotation) {
-                return !(annotation instanceof PDAnnotationLink);
-            }
-        };
+        AnnotationFilter annotsFilter =
+                (PDAnnotation annotation) -> !(annotation instanceof PDAnnotationLink);
 
         COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
 
