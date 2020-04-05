@@ -106,7 +106,10 @@ public class TSAClient
         TimeStampToken token = response.getTimeStampToken();
         if (token == null)
         {
-            throw new IOException("Response does not have a time stamp token");
+            // https://www.ietf.org/rfc/rfc3161.html#section-2.4.2
+            throw new IOException("Response from " + url +
+                    " does not have a time stamp token, status: " + response.getStatus() +
+                    " (" + response.getStatusString() + ")");
         }
 
         return token.getEncoded();
