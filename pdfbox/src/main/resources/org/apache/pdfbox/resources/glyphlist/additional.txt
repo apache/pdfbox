@@ -66,10 +66,12 @@ bracketleftbig;005B
 bracketleftBig;005B
 bracketleftbigg;005B
 bracketleftBigg;005B
+bracketleftmath;005B
 bracketrightBig;005D
 bracketrightbig;005D
 bracketrightbigg;005D
 bracketrightBigg;005D
+bracketrightmath;005D
 ceilingleftbig;2308
 ceilingleftBig;2308
 ceilingleftBigg;2308
@@ -88,6 +90,8 @@ contintegraldisplay;222E
 contintegraltext;222E
 coproductdisplay;2210
 coproducttext;2210
+epsilon1;03B5
+equalmath;003D
 floorleftBig;230A
 floorleftbig;230A
 floorleftbigg;230A
@@ -112,10 +116,13 @@ parenleftBig;0028
 parenleftbig;0028
 parenleftBigg;0028
 parenleftbigg;0028
+parenleftmath;0028
 parenrightBig;0029
 parenrightbig;0029
 parenrightBigg;0029
 parenrightbigg;0029
+parenrightmath;0029
+plusmath;002B
 prime;2032
 productdisplay;220F
 producttext;220F
