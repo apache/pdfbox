@@ -455,7 +455,7 @@ public class CmapSubtable implements CmapLookup
     private void buildGlyphIdToCharacterCodeLookup(int maxGlyphId)
     {
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(maxGlyphId + 1);
-        for (Entry<Integer, Integer> entry : characterCodeToGlyphId.entrySet())
+        characterCodeToGlyphId.entrySet().forEach(entry ->
         {
             if (glyphIdToCharacterCode[entry.getValue()] == -1)
             {
@@ -476,7 +476,7 @@ public class CmapSubtable implements CmapLookup
                 }
                 mappedValues.add(entry.getKey());
             }
-        }
+        });
     }
 
     /**

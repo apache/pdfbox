@@ -328,10 +328,7 @@ public class PDSeedValueCertificate implements COSObjectable
         for (Map<String, String> subjectDNItem : subjectDN)
         {
             COSDictionary dict = new COSDictionary();
-            for (Map.Entry<String, String> entry : subjectDNItem.entrySet())
-            {
-                dict.setItem(entry.getKey(), new COSString(entry.getValue()));
-            }
+            subjectDNItem.forEach((key, value) -> dict.setItem(key, new COSString(value)));
             subjectDNDict.add(dict);
         }
         this.dictionary.setItem(COSName.SUBJECT_DN,

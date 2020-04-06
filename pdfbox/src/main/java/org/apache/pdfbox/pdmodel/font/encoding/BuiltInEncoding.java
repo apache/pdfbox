@@ -34,10 +34,7 @@ public class BuiltInEncoding extends Encoding
      */
     public BuiltInEncoding(Map<Integer, String> codeToName)
     {
-        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
-        {
-            add(entry.getKey(), entry.getValue());
-        }
+        codeToName.forEach((key, value) -> add(key, value));
     }
     
     @Override
