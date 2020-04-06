@@ -227,10 +227,7 @@ public final class PdfaExtensionHelper
         }
         // add the structured type to list
         PropertiesDescription pm = new PropertiesDescription();
-        for (Map.Entry<String, PropertyType> entry : structuredType.getDefinedProperties().entrySet())
-        {
-            pm.addNewProperty(entry.getKey(), entry.getValue());
-        }
+        structuredType.getDefinedProperties().forEach((key, value) -> pm.addNewProperty(key, value));
         tm.addToDefinedStructuredTypes(ttype, tns, pm);
     }
 

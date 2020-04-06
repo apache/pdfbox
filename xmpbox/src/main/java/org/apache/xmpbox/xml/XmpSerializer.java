@@ -191,8 +191,8 @@ public class XmpSerializer
     {
         // normalize the attributes list
         List<Attribute> toSerialize = normalizeAttributes(property);        
-        
-        for (Attribute attribute : toSerialize)
+
+        toSerialize.forEach(attribute ->
         {
             if (XmpConstants.RDF_NAMESPACE.equals(attribute.getNamespace()))
             {
@@ -202,12 +202,10 @@ public class XmpSerializer
             {
                 target.setAttribute(attribute.getName(), attribute.getValue());
             }
-        }
-        
-        for (Map.Entry<String, String> ns : property.getAllNamespacesWithPrefix().entrySet())
-        {
-            target.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + ns.getValue(), ns.getKey());
-        }
+        });
+
+        property.getAllNamespacesWithPrefix().forEach((key, value) ->
+                target.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + value, key));
     }
 
     /** Normalize the list of attributes.
