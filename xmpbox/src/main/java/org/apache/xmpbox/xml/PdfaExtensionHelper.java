@@ -22,7 +22,6 @@
 package org.apache.xmpbox.xml;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.PDFAExtensionSchema;
@@ -43,6 +42,7 @@ import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.Types;
 import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
