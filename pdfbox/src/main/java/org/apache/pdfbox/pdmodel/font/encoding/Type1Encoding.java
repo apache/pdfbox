@@ -37,7 +37,7 @@ public class Type1Encoding extends Encoding
         // todo: could optimise this by looking for specific subclasses
         Map<Integer,String> codeToName = encoding.getCodeToNameMap();
         Type1Encoding enc = new Type1Encoding();
-        codeToName.forEach((key, value) -> enc.add(key, value));
+        codeToName.forEach(enc::add);
         return enc;
     }
 

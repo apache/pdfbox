@@ -757,7 +757,7 @@ public class CFFParser
 
         // populate private dict
         Map<String, Object> privDict = readPrivateDict(privateDict);
-        privDict.forEach((key, value) -> font.addToPrivateDict(key, value));
+        privDict.forEach(font::addToPrivateDict);
 
         // local subrs
         int localSubrOffset = (Integer) privateDict.getNumber("Subrs", 0);

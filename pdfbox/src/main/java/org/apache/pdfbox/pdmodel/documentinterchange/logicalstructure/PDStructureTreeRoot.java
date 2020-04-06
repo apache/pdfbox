@@ -186,7 +186,7 @@ public class PDStructureTreeRoot extends PDStructureNode
     public void setRoleMap(Map<String, String> roleMap)
     {
         COSDictionary rmDic = new COSDictionary();
-        roleMap.forEach((key, value) -> rmDic.setName(key, value));
+        roleMap.forEach(rmDic::setName);
         this.getCOSObject().setItem(COSName.ROLE_MAP, rmDic);
     }
 
