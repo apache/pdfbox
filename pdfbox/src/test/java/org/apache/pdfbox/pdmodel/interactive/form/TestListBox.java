@@ -228,7 +228,9 @@ public class TestListBox extends TestCase
             choice.setSort(true);
             choice.setOptions(exportValues, displayValues);
             assertEquals(choice.getOptionsDisplayValues().get(0),"display01");
-            
+            assertEquals(choice.getOptionsDisplayValues().get(1),"display02");
+            assertEquals(choice.getOptionsDisplayValues().get(2),"display03");
+
             /*
              * Setting options with an empty list
              */
