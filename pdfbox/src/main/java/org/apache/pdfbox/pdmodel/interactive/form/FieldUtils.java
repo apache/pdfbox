@@ -30,8 +30,8 @@ import org.apache.pdfbox.cos.COSString;
  */
 public final class FieldUtils
 {
-    static Comparator<KeyValue> BY_VALUE_COMPARATOR = Comparator.comparing(KeyValue::getValue);
-    static Comparator<KeyValue> BY_KEY_COMPARATOR = Comparator.comparing(KeyValue::getKey);    
+    static final Comparator<KeyValue> BY_VALUE_COMPARATOR = Comparator.comparing(KeyValue::getValue);
+    static final Comparator<KeyValue> BY_KEY_COMPARATOR = Comparator.comparing(KeyValue::getKey);    
 
     /**
      * An implementation of a basic key value pair.
