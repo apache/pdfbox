@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,7 +30,9 @@ import org.apache.pdfbox.cos.COSString;
  */
 public final class FieldUtils
 {
-    
+    static Comparator<KeyValue> BY_VALUE_COMPARATOR = Comparator.comparing(KeyValue::getValue);
+    static Comparator<KeyValue> BY_KEY_COMPARATOR = Comparator.comparing(KeyValue::getKey);    
+
     /**
      * An implementation of a basic key value pair.
      * 
@@ -67,36 +68,6 @@ public final class FieldUtils
             return "(" + this.key + ", " + this.value + ")";
         }
     }
-    
-    /**
-     * Comparator to sort KeyValue by key.
-     */
-    static class KeyValueKeyComparator implements Serializable, Comparator<KeyValue>
-    {
-
-        private static final long serialVersionUID = 6715364290007167694L;
-
-        @Override
-        public int compare(KeyValue o1, KeyValue o2)
-        {
-            return o1.key.compareTo(o2.key);
-        }
-    }
-
-    /**
-     * Comparator to sort KeyValue by value.
-     */
-    static class KeyValueValueComparator implements Serializable, Comparator<KeyValue>
-    {
-
-        private static final long serialVersionUID = -3984095679894798265L;
-
-        @Override
-        public int compare(KeyValue o1, KeyValue o2)
-        {
-            return o1.value.compareTo(o2.value);
-        }
-    }
 
     /**
      * Constructor.
@@ -129,7 +100,7 @@ public final class FieldUtils
      */
     static void sortByValue(List<KeyValue> pairs)
     {
-        Collections.sort(pairs, new FieldUtils.KeyValueValueComparator());
+        pairs.sort(BY_VALUE_COMPARATOR);
     }
 
     /**
@@ -139,7 +110,7 @@ public final class FieldUtils
      */
     static void sortByKey(List<KeyValue> pairs)
     {
-        Collections.sort(pairs, new FieldUtils.KeyValueKeyComparator());
+        pairs.sort(BY_KEY_COMPARATOR);
     }
     
     /**
