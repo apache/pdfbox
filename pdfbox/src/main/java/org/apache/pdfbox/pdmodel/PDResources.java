@@ -140,10 +140,10 @@ public final class PDResources implements COSObjectable
         }
 
         PDFont font = null;
-        COSDictionary dict = (COSDictionary)get(COSName.FONT, name);
-        if (dict != null)
+        COSBase base = get(COSName.FONT, name);
+        if (base instanceof COSDictionary)
         {
-            font = PDFontFactory.createFont(dict, cache);
+            font = PDFontFactory.createFont((COSDictionary) base, cache);
         }
         
         if (cache != null && indirect != null)
@@ -244,10 +244,10 @@ public final class PDResources implements COSObjectable
 
         // get the instance
         PDExtendedGraphicsState extGState = null;
-        COSDictionary dict = (COSDictionary)get(COSName.EXT_G_STATE, name);
-        if (dict != null)
+        COSBase base = get(COSName.EXT_G_STATE, name);
+        if (base instanceof COSDictionary)
         {
-            extGState = new PDExtendedGraphicsState(dict);
+            extGState = new PDExtendedGraphicsState((COSDictionary) base);
         }
 
         if (cache != null)
@@ -280,10 +280,10 @@ public final class PDResources implements COSObjectable
 
         // get the instance
         PDShading shading = null;
-        COSDictionary dict = (COSDictionary)get(COSName.SHADING, name);
-        if (dict != null)
+        COSBase base = get(COSName.SHADING, name);
+        if (base instanceof COSDictionary)
         {
-            shading = PDShading.create(dict);
+            shading = PDShading.create((COSDictionary) base);
         }
         
         if (cache != null)
@@ -316,10 +316,10 @@ public final class PDResources implements COSObjectable
 
         // get the instance
         PDAbstractPattern pattern = null;
-        COSDictionary dict = (COSDictionary)get(COSName.PATTERN, name);
-        if (dict != null)
+        COSBase base = get(COSName.PATTERN, name);
+        if (base instanceof COSDictionary)
         {
-            pattern = PDAbstractPattern.create(dict);
+            pattern = PDAbstractPattern.create((COSDictionary) base);
         }
 
         if (cache != null)
@@ -350,10 +350,10 @@ public final class PDResources implements COSObjectable
 
         // get the instance
         PDPropertyList propertyList = null;
-        COSDictionary dict = (COSDictionary)get(COSName.PROPERTIES, name);
-        if (dict != null)
+        COSBase base = get(COSName.PROPERTIES, name);
+        if (base instanceof COSDictionary)
         {
-            propertyList = PDPropertyList.create(dict);
+            propertyList = PDPropertyList.create((COSDictionary) base);
         }
 
         if (cache != null)
