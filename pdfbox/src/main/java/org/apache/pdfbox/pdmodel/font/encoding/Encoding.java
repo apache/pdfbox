@@ -97,10 +97,7 @@ public abstract class Encoding implements COSObjectable
     protected void add(int code, String name)
     {
         codeToName.put(code, name);
-        if (!inverted.containsKey(name))
-        {
-            inverted.put(name, code);
-        }
+        inverted.putIfAbsent(name, code);
     }
 
     /**
