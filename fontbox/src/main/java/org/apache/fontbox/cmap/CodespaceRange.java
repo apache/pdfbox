@@ -33,9 +33,9 @@ public class CodespaceRange
      * Creates a new instance of CodespaceRange. The length of both arrays has to be the same.<br>
      * For one byte ranges startBytes and endBytes define a linear range of values. Double byte values define a
      * rectangular range not a linear range. Examples: <br>
-     * <00> <20> defines a linear range from 0x00 up to 0x20.<br>
-     * <8140> to <9FFC> defines a rectangular range. The high byte has to be within 0x81 and 0x9F and the low byte has
-     * to be within 0x40 and 0xFC
+     * &lt;00&gt; &lt;20&gt; defines a linear range from 0x00 up to 0x20.<br>
+     * &lt;8140&gt; to &lt;9FFC&gt; defines a rectangular range. The high byte has to be within 0x81 and 0x9F and the
+     * low byte has to be within 0x40 and 0xFC
      * 
      */
     public CodespaceRange(byte[] startBytes, byte[] endBytes)
