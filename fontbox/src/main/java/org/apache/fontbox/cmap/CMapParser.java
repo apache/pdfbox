@@ -243,10 +243,7 @@ public class CMapParser
             }
             byte[] startRange = (byte[]) nextToken;
             byte[] endRange = (byte[]) parseNextToken(cmapStream);
-            CodespaceRange range = new CodespaceRange();
-            range.setStart(startRange);
-            range.setEnd(endRange);
-            result.addCodespaceRange(range);
+            result.addCodespaceRange(new CodespaceRange(startRange, endRange));
         }
     }
 

@@ -16,8 +16,6 @@
  */
 package org.apache.fontbox.cmap;
 
-import static org.apache.fontbox.cmap.CMap.toInt;
-
 /**
  * This represents a single entry in the codespace range.
  *
@@ -25,14 +23,42 @@ import static org.apache.fontbox.cmap.CMap.toInt;
  */
 public class CodespaceRange
 {
-    private byte[] start;
-    private byte[] end;
-    private int startInt;
-    private int endInt;
+    private byte[] startBytes;
+    private byte[] endBytes;
+    private int[] start;
+    private int[] end;
     private int codeLength = 0;
     
     /**
+     * Creates a new instance of CodespaceRange. The length of both arrays has to be the same.<br>
+     * For one byte ranges startBytes and endBytes define a linear range of values. Double byte values define a
+     * rectangular range not a linear range. Examples: <br>
+     * <00> <20> defines a linear range from 0x00 up to 0x20.<br>
+     * <8140> to <9FFC> defines a rectangular range. The high byte has to be within 0x81 and 0x9F and the low byte has
+     * to be within 0x40 and 0xFC
+     * 
+     */
+    public CodespaceRange(byte[] startBytes, byte[] endBytes)
+    {
+        if (startBytes.length != endBytes.length)
+        {
+            throw new IllegalArgumentException(
+                    "The start and the end values must not have different lengths.");
+        }
+        start = new int[startBytes.length];
+        end = new int[endBytes.length];
+        for (int i = 0; i < startBytes.length; i++)
+        {
+            start[i] = startBytes[i] & 0xFF;
+            end[i] = endBytes[i] & 0xFF;
+        }
+        codeLength = endBytes.length;
+    }
+
+    /**
      * Creates a new instance of CodespaceRange.
+     * 
+     * @Deprecated to be removed in the next major release.
      */
     public CodespaceRange()
     {
@@ -48,43 +74,63 @@ public class CodespaceRange
         return codeLength;
     }
 
-    /** Getter for property end.
+    /**
+     * Getter for property end.
+     * 
      * @return Value of property end.
      *
+     * @Deprecated to be removed in the next major release
      */
     public byte[] getEnd()
     {
-        return end;
+        return endBytes;
     }
 
-    /** Setter for property end.
+    /**
+     * Setter for property end.
+     * 
      * @param endBytes New value of property end.
      *
+     * @Deprecated to be removed in the next major release
      */
     void setEnd(byte[] endBytes)
     {
-        end = endBytes;
-        endInt = toInt(endBytes, endBytes.length);
+        this.endBytes = endBytes;
+        end = new int[endBytes.length];
+        for (int i = 0; i < endBytes.length; i++)
+        {
+            end[i] = endBytes[i] & 0xFF;
+        }
     }
 
-    /** Getter for property start.
+    /**
+     * Getter for property start.
+     * 
      * @return Value of property start.
      *
+     * @Deprecated to be removed in the next major release
      */
     public byte[] getStart()
     {
-        return start;
+        return startBytes;
     }
 
-    /** Setter for property start.
+    /**
+     * Setter for property start.
+     * 
      * @param startBytes New value of property start.
      *
+     * @Deprecated to be removed in the next major release
      */
     void setStart(byte[] startBytes)
     {
-        start = startBytes;
-        codeLength = start.length;
-        startInt = toInt(startBytes, startBytes.length);
+        this.startBytes = startBytes;
+        start = new int[startBytes.length];
+        for (int i = 0; i < startBytes.length; i++)
+        {
+            start[i] = startBytes[i] & 0xFF;
+        }
+        codeLength = startBytes.length;
     }
 
     /**
@@ -101,15 +147,19 @@ public class CodespaceRange
     public boolean isFullMatch(byte[] code, int codeLen)
     {
         // code must be the same length as the bounding codes
-        if (codeLen == codeLength)
+        if (codeLength != codeLen)
         {
-            int value = toInt(code, codeLen);
-            if (value >= startInt && value <=endInt)
+            return false;
+        }
+        for (int i = 0; i < codeLength; i++)
+        {
+            int codeAsInt = code[i] & 0xFF;
+            if (codeAsInt < start[i] || codeAsInt > end[i])
             {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
     
 }
