@@ -16,8 +16,6 @@
  */
 package org.apache.fontbox.cmap;
 
-import static org.apache.fontbox.cmap.CMap.toInt;
-
 /**
  * This represents a single entry in the codespace range.
  *
@@ -25,17 +23,34 @@ import static org.apache.fontbox.cmap.CMap.toInt;
  */
 public class CodespaceRange
 {
-    private byte[] start;
-    private byte[] end;
-    private int startInt;
-    private int endInt;
-    private int codeLength = 0;
+    private final int[] start;
+    private final int[] end;
+    private final int codeLength;
     
     /**
-     * Creates a new instance of CodespaceRange.
+     * Creates a new instance of CodespaceRange. The length of both arrays has to be the same.<br>
+     * For one byte ranges startBytes and endBytes define a linear range of values. Double byte values define a rectangular
+     * range not a linear range. Examples: <br>
+     * <00> <20> defines a linear range from 0x00 up to 0x20.<br>
+     * <8140> to <9FFC> defines a rectangular range. The high byte has to be within 0x81 and 0x9F and the low byte has to be
+     * within 0x40 and 0xFC
+     * 
      */
-    public CodespaceRange()
+    public CodespaceRange(byte[] startBytes, byte[] endBytes)
     {
+        if (startBytes.length != endBytes.length)
+        {
+            throw new IllegalArgumentException(
+                    "The start and the end values must not have different lengths.");
+        }
+        start = new int[startBytes.length];
+        end = new int[endBytes.length];
+        for (int i = 0; i < startBytes.length; i++)
+        {
+            start[i] = startBytes[i] & 0xFF;
+            end[i] = endBytes[i] & 0xFF;
+        }
+        codeLength = endBytes.length;
     }
 
     /**
@@ -48,45 +63,6 @@ public class CodespaceRange
         return codeLength;
     }
 
-    /** Getter for property end.
-     * @return Value of property end.
-     *
-     */
-    public byte[] getEnd()
-    {
-        return end;
-    }
-
-    /** Setter for property end.
-     * @param endBytes New value of property end.
-     *
-     */
-    void setEnd(byte[] endBytes)
-    {
-        end = endBytes;
-        endInt = toInt(endBytes, endBytes.length);
-    }
-
-    /** Getter for property start.
-     * @return Value of property start.
-     *
-     */
-    public byte[] getStart()
-    {
-        return start;
-    }
-
-    /** Setter for property start.
-     * @param startBytes New value of property start.
-     *
-     */
-    void setStart(byte[] startBytes)
-    {
-        start = startBytes;
-        codeLength = start.length;
-        startInt = toInt(startBytes, startBytes.length);
-    }
-
     /**
      * Returns true if the given code bytes match this codespace range.
      */
@@ -96,20 +72,24 @@ public class CodespaceRange
     }
 
     /**
-     * Returns true if the given code bytes match this codespace range.
+     * Returns true if the given number of code bytes match this codespace range.
      */
     public boolean isFullMatch(byte[] code, int codeLen)
     {
         // code must be the same length as the bounding codes
-        if (codeLen == codeLength)
+        if (codeLength != codeLen)
         {
-            int value = toInt(code, codeLen);
-            if (value >= startInt && value <=endInt)
+            return false;
+        }
+        for (int i = 0; i < codeLength; i++)
+        {
+            int codeAsInt = code[i] & 0xFF;
+            if (codeAsInt < start[i] || codeAsInt > end[i])
             {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
-    
+
 }
