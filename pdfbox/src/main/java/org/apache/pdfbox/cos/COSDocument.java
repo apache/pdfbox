@@ -19,6 +19,7 @@ package org.apache.pdfbox.cos;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,10 +161,7 @@ public class COSDocument extends COSBase implements Closeable
     public COSStream createCOSStream(COSDictionary dictionary)
     {
         COSStream stream = new COSStream(scratchFile);
-        for (Map.Entry<COSName, COSBase> entry : dictionary.entrySet())
-        {
-            stream.setItem(entry.getKey(), entry.getValue());
-        }
+        dictionary.forEach((key, value) -> stream.setItem(key, value));
         return stream;
     }
 
@@ -178,7 +176,7 @@ public class COSDocument extends COSBase implements Closeable
         // within the pdf
         List<COSObjectKey> objectKeys = xrefTable.entrySet().stream() //
                 .filter(e -> e.getValue() > 0L) //
-                .sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue())) //
+                .sorted(Comparator.comparing(Entry::getValue)) //
                 .map(Entry::getKey) //
                 .collect(Collectors.toList());
         for (COSObjectKey objectKey : objectKeys)

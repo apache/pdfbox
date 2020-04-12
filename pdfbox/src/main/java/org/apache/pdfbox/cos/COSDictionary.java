@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1352,6 +1353,17 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     public Set<Map.Entry<COSName, COSBase>> entrySet()
     {
         return items.entrySet();
+    }
+
+    /**
+     * Convenience method that calls
+     * {@link Map#forEach(java.util.function.BiConsumer) Map.forEach(BiConsumer)}.
+     *
+     * @param action
+     */
+    public void forEach(BiConsumer<? super COSName, ? super COSBase> action)
+    {
+        items.forEach(action);
     }
 
     /**
