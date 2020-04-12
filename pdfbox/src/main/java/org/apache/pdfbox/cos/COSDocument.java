@@ -161,7 +161,7 @@ public class COSDocument extends COSBase implements Closeable
     public COSStream createCOSStream(COSDictionary dictionary)
     {
         COSStream stream = new COSStream(scratchFile);
-        dictionary.forEach((key, value) -> stream.setItem(key, value));
+        dictionary.forEach(stream::setItem);
         return stream;
     }
 
