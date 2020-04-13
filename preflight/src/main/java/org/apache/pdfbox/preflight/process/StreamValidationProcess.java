@@ -25,6 +25,7 @@ import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_INVALID_FILTER;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_STREAM_LENGTH_MISSING;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class StreamValidationProcess extends AbstractProcess
         // get all keys with a positive offset in ascending order to read the pdf linear
         List<COSObjectKey> objectKeys = cosDocument.getXrefTable().entrySet().stream() //
                 .filter(e -> e.getValue() > 0L) //
-                .sorted((e1, e2) -> e1.getValue().compareTo(e2.getValue())) //
+                .sorted(Comparator.comparing(Entry::getValue)) //
                 .map(Entry::getKey) //
                 .collect(Collectors.toList());
 

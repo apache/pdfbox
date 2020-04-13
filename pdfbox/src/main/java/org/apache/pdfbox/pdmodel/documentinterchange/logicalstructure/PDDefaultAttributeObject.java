@@ -19,7 +19,6 @@ package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -59,14 +58,10 @@ public class PDDefaultAttributeObject extends PDAttributeObject
     public List<String> getAttributeNames()
     {
         List<String> attrNames = new ArrayList<>();
-        for (Entry<COSName, COSBase> entry : this.getCOSObject().entrySet())
-        {
-            COSName key = entry.getKey();
-            if (!COSName.O.equals(key))
-            {
-                attrNames.add(key.getName());
-            }
-        }
+        this.getCOSObject().keySet().stream()
+                .filter(key -> !COSName.O.equals(key))
+                .map(COSName::getName)
+                .forEach(attrNames::add);
         return attrNames;
     }
 

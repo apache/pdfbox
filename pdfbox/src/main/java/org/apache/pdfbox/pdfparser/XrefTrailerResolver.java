@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -343,13 +342,13 @@ public class XrefTrailerResolver
         final Set<Long> refObjNrs = new HashSet<>();
         final long cmpVal = - objstmObjNr;
         
-        for ( Entry<COSObjectKey,Long> xrefEntry : resolvedXrefTrailer.xrefTable.entrySet() ) 
+        resolvedXrefTrailer.xrefTable.forEach((key, value) ->
         {
-            if ( xrefEntry.getValue() == cmpVal )
+            if (value == cmpVal)
             {
-                refObjNrs.add( xrefEntry.getKey().getNumber() );
+                refObjNrs.add(key.getNumber());
             }
-        }
+        });
         return refObjNrs;
     }
 

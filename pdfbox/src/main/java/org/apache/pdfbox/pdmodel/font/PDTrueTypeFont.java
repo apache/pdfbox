@@ -64,14 +64,13 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
     private static final Map<String, Integer> INVERTED_MACOS_ROMAN = new HashMap<>(250);
     static
     {
-        Map<Integer, String> codeToName = MacOSRomanEncoding.INSTANCE.getCodeToNameMap();
-        for (Map.Entry<Integer, String> entry : codeToName.entrySet())
+        MacOSRomanEncoding.INSTANCE.getCodeToNameMap().forEach((key, value) ->
         {
-            if (!INVERTED_MACOS_ROMAN.containsKey(entry.getValue()))
+            if (!INVERTED_MACOS_ROMAN.containsKey(value))
             {
-                INVERTED_MACOS_ROMAN.put(entry.getValue(), entry.getKey());
+                INVERTED_MACOS_ROMAN.put(value, key);
             }
-        }
+        });
     }
 
     private final TrueTypeFont ttf;

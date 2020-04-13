@@ -1410,17 +1410,17 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
      */
     public void addAll(COSDictionary dic)
     {
-        for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
+        dic.forEach((key, value) ->
         {
             /*
              * If we're at a second trailer, we have a linearized pdf file, meaning that the first Size entry represents
              * all of the objects so we don't need to grab the second.
              */
-            if (!COSName.SIZE.equals(entry.getKey()) || !items.containsKey(COSName.SIZE))
+            if (!COSName.SIZE.equals(key) || !items.containsKey(COSName.SIZE))
             {
-                setItem(entry.getKey(), entry.getValue());
+                setItem(key, value);
             }
-        }
+        });
     }
 
     /**

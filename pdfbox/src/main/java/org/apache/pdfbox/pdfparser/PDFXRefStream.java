@@ -21,7 +21,6 @@ import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -131,16 +130,14 @@ public class PDFXRefStream implements PDFXRef
      */
     public void addTrailerInfo(COSDictionary trailerDict)
     {
-        Set<Entry<COSName, COSBase>> entrySet = trailerDict.entrySet();
-        for ( Entry<COSName, COSBase> entry : entrySet )
+        trailerDict.forEach((key, value) ->
         {
-            COSName key = entry.getKey();
             if (COSName.INFO.equals(key) || COSName.ROOT.equals(key) || COSName.ENCRYPT.equals(key) 
                     || COSName.ID.equals(key) || COSName.PREV.equals(key))
             {
-                stream.setItem(key, entry.getValue());
+                stream.setItem(key, value);
             }
-        }
+        });
     }
 
     /**

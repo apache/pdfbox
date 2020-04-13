@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -455,26 +454,26 @@ public class CmapSubtable implements CmapLookup
     private void buildGlyphIdToCharacterCodeLookup(int maxGlyphId)
     {
         glyphIdToCharacterCode = newGlyphIdToCharacterCode(maxGlyphId + 1);
-        characterCodeToGlyphId.entrySet().forEach(entry ->
+        characterCodeToGlyphId.forEach((key, value) ->
         {
-            if (glyphIdToCharacterCode[entry.getValue()] == -1)
+            if (glyphIdToCharacterCode[value] == -1)
             {
                 // add new value to the array
-                glyphIdToCharacterCode[entry.getValue()] = entry.getKey();
+                glyphIdToCharacterCode[value] = key;
             }
             else
             {
                 // there is already a mapping for the given glyphId
-                List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(entry.getValue());
+                List<Integer> mappedValues = glyphIdToCharacterCodeMultiple.get(value);
                 if (mappedValues == null)
                 {
                     mappedValues = new ArrayList<>();
-                    glyphIdToCharacterCodeMultiple.put(entry.getValue(), mappedValues);
-                    mappedValues.add(glyphIdToCharacterCode[entry.getValue()]);
+                    glyphIdToCharacterCodeMultiple.put(value, mappedValues);
+                    mappedValues.add(glyphIdToCharacterCode[value]);
                     // mark value as multiple mapping
-                    glyphIdToCharacterCode[entry.getValue()] = Integer.MIN_VALUE;
+                    glyphIdToCharacterCode[value] = Integer.MIN_VALUE;
                 }
-                mappedValues.add(entry.getKey());
+                mappedValues.add(key);
             }
         });
     }

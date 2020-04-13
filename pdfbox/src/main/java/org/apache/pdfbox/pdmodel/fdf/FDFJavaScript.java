@@ -159,11 +159,11 @@ public class FDFJavaScript implements COSObjectable
     public void setDoc(Map<String, PDActionJavaScript> map)
     {
         COSArray array = new COSArray();
-        for (Map.Entry<String, PDActionJavaScript> entry : map.entrySet())
+        map.forEach((key, value) ->
         {
-            array.add(new COSString(entry.getKey()));
-            array.add(entry.getValue());
-        }
+            array.add(new COSString(key));
+            array.add(value);
+        });
         dictionary.setItem(COSName.DOC, array);
     }
 }

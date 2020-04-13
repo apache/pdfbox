@@ -106,12 +106,8 @@ final class PDCIDFontType2Embedder extends TrueTypeEmbedder
     {
         // build CID2GIDMap, because the content stream has been written with the old GIDs
         Map<Integer, Integer> cidToGid = new HashMap<>(gidToCid.size());
-        for (Map.Entry<Integer, Integer> entry : gidToCid.entrySet())
-        {
-            int newGID = entry.getKey();
-            int oldGID = entry.getValue();
-            cidToGid.put(oldGID, newGID);
-        }
+        gidToCid.forEach((newGID, oldGID) -> cidToGid.put(oldGID, newGID));
+        
         // build unicode mapping before subsetting as the subsetted font won't have a cmap
         buildToUnicodeCMap(gidToCid);
         // build vertical metrics before subsetting as the subsetted font won't have vhea, vmtx
