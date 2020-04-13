@@ -1853,18 +1853,14 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     private COSDictionary rebuildTrailer() throws IOException
     {
-        COSDictionary trailer = null;
         Map<COSObjectKey, Long> bfCOSObjectOffsets = getBFCOSObjectOffsets();
         // reset trailer resolver
         xrefTrailerResolver.reset();
         // use the found objects to rebuild the trailer resolver
         xrefTrailerResolver.nextXrefObj(0, XRefType.TABLE);
-        for (Entry<COSObjectKey, Long> entry : bfCOSObjectOffsets.entrySet())
-        {
-            xrefTrailerResolver.setXRef(entry.getKey(), entry.getValue());
-        }
+        bfCOSObjectOffsets.forEach(xrefTrailerResolver::setXRef);
         xrefTrailerResolver.setStartxref(0);
-        trailer = xrefTrailerResolver.getTrailer();
+        COSDictionary trailer = xrefTrailerResolver.getTrailer();
         document.setTrailer(trailer);
         boolean searchForObjStreamsDone = false;
         if (!bfSearchForTrailer(trailer) && !searchForTrailerItems(trailer))
