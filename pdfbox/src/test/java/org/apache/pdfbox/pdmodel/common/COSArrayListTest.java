@@ -66,7 +66,7 @@ public class COSArrayListTest {
      */
     @Before
     public void setUp() throws Exception {
-        annotationsList = new ArrayList<PDAnnotation>();
+        annotationsList = new ArrayList<>();
         PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
         PDAnnotationLink txtLink = new PDAnnotationLink();
         PDAnnotationCircle aCircle = new PDAnnotationCircle();
@@ -77,7 +77,7 @@ public class COSArrayListTest {
         annotationsList.add(txtLink);
         assertTrue(annotationsList.size() == 4);
 
-        tbcAnnotationsList = new ArrayList<PDAnnotation>();
+        tbcAnnotationsList = new ArrayList<>();
         tbcAnnotationsList.add(txtMark);
         tbcAnnotationsList.add(txtLink);
         tbcAnnotationsList.add(aCircle);
@@ -111,7 +111,7 @@ public class COSArrayListTest {
      */
     @Test
     public void getFromList() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
+        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         for (int i = 0; i < cosArrayList.size(); i++) {
             PDAnnotation annot = (PDAnnotation) cosArrayList.get(i);
@@ -131,7 +131,7 @@ public class COSArrayListTest {
      */
     // @Test
     public void addToList() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
+        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         // add new annotation
         PDAnnotationSquare aSquare = new PDAnnotationSquare();
@@ -152,7 +152,7 @@ public class COSArrayListTest {
      */
     @Test
     public void removeFromListByIndex() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
+        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 2;
         PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
@@ -174,7 +174,7 @@ public class COSArrayListTest {
      */
     @Test
     public void removeUniqueFromListByObject() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
+        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 2;
         PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
@@ -206,7 +206,7 @@ public class COSArrayListTest {
      */
     @Test
     public void removeAllUniqueFromListByObject() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
+        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 2;
         PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
@@ -226,7 +226,7 @@ public class COSArrayListTest {
      */
     @Test
     public void removeMultipleFromListByObject() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
+        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 1;
         PDAnnotation toBeRemoved = tbcAnnotationsList.get(positionToRemove);
@@ -247,7 +247,7 @@ public class COSArrayListTest {
      */
     @Test
     public void removeAllMultipleFromListByObject() throws Exception {
-        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<PDAnnotation>(annotationsList, annotationsArray);
+        COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 1;
         PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
@@ -265,8 +265,7 @@ public class COSArrayListTest {
     public void removeFromFilteredListByIndex() throws Exception {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
-        AnnotationFilter annotsFilter =
-                (PDAnnotation annotation) -> !(annotation instanceof PDAnnotationLink);
+        AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
 
         COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
 
@@ -278,8 +277,7 @@ public class COSArrayListTest {
     public void removeFromFilteredListByObject() throws Exception {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
-        AnnotationFilter annotsFilter =
-                (PDAnnotation annotation) -> !(annotation instanceof PDAnnotationLink);
+        AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
 
         COSArrayList<PDAnnotation> cosArrayList = (COSArrayList<PDAnnotation>) pdPage.getAnnotations(annotsFilter);
 
