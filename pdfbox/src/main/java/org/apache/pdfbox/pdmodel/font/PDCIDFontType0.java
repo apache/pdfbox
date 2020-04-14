@@ -305,7 +305,7 @@ public class PDCIDFontType0 extends PDCIDFont
      * Returns the name of the glyph with the given character code. This is done by looking up the
      * code in the parent font's ToUnicode map and generating a glyph name from that.
      */
-    private String getGlyphName(int code) throws IOException
+    private String getGlyphName(int code)
     {
         String unicodes = parent.toUnicode(code);
         if (unicodes == null)
