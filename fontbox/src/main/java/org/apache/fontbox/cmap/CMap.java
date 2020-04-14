@@ -131,7 +131,7 @@ public class CMap
             seq += String.format("0x%02X (%04o) ", bytes[i], bytes[i]);
         }
         LOG.warn("Invalid character code sequence " + seq + "in CMap " + cmapName);
-        // PDFBOX-4811 reposition after first byte
+        // PDFBOX-4811 reposition to where we were after initial read
         if (in.markSupported())
         {
             in.reset();
@@ -141,7 +141,7 @@ public class CMap
             LOG.warn("mark() and reset() not supported, " + (maxCodeLength - 1) +
                      " bytes have been skipped");
         }
-        return 0;
+        return toInt(bytes, minCodeLength); // Adobe Reader behavior
     }
 
     /**
