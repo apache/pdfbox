@@ -721,7 +721,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         byteOut.flush();
         incrementPart = byteOut.toByteArray();
 
-        // overwrite the ByteRange in the buffer
+        // overwrite the reserve ByteRange in the buffer
         byte[] byteRangeBytes = byteRange.getBytes(Charsets.ISO_8859_1);
         for (int i = 0; i < byteRangeLength; i++)
         {
@@ -853,9 +853,9 @@ public class COSWriter implements ICOSVisitor, Closeable
         long count = 1;
 
         List<Long> list = new ArrayList<Long>();
-        for( Object object : xRefEntriesList )
+        for (COSWriterXRefEntry object : xRefEntriesList)
         {
-            long nr = (int) ((COSWriterXRefEntry) object).getKey().getNumber();
+            long nr = object.getKey().getNumber();
             if (nr == last + 1)
             {
                 ++count;
