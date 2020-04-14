@@ -119,11 +119,6 @@ public class PDCIDFontType2 extends PDCIDFont
                         LOG.warn("Found CFF/OTF but expected embedded TTF font " + fd.getFontName());
                     }
                 }
-                catch (NullPointerException e) // TTF parser is buggy
-                {
-                    fontIsDamaged = true;
-                    LOG.warn("Could not read embedded OTF for font " + getBaseFont(), e);
-                }
                 catch (IOException e)
                 {
                     fontIsDamaged = true;

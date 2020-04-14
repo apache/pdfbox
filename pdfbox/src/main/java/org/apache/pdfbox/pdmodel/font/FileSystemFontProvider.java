@@ -195,10 +195,6 @@ final class FileSystemFontProvider extends FontProvider
                 }
                 return ttf;
             }
-            catch (NullPointerException e) // TTF parser is buggy
-            {
-                LOG.error("Could not load font file: " + file, e);
-            }
             catch (IOException e)
             {
                 LOG.error("Could not load font file: " + file, e);
@@ -594,10 +590,6 @@ final class FileSystemFontProvider extends FontProvider
                 }
             });
         }
-        catch (NullPointerException e) // TTF parser is buggy
-        {
-            LOG.error("Could not load font file: " + ttcFile, e);
-        }
         catch (IOException e)
         {
             LOG.error("Could not load font file: " + ttcFile, e);
@@ -630,10 +622,6 @@ final class FileSystemFontProvider extends FontProvider
                 TrueTypeFont ttf = parser.parse(ttfFile);
                 addTrueTypeFontImpl(ttf, ttfFile);
             }
-        }
-        catch (NullPointerException e) // TTF parser is buggy
-        {
-            LOG.error("Could not load font file: " + ttfFile, e);
         }
         catch (IOException e)
         {
