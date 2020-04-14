@@ -193,7 +193,7 @@ final class FileSystemFontProvider extends FontProvider
                 }
                 return ttf;
             }
-            catch (NullPointerException | IOException e)
+            catch (IOException e)
             {
                 // NPE due to TTF parser being buggy
                 LOG.error("Could not load font file: " + file, e);
@@ -568,7 +568,7 @@ final class FileSystemFontProvider extends FontProvider
         {
             ttc.processAllFonts(ttf -> addTrueTypeFontImpl(ttf, ttcFile));
         }
-        catch (NullPointerException | IOException e)
+        catch (IOException e)
         {
             // NPE due to TTF parser being buggy
             LOG.error("Could not load font file: " + ttcFile, e);
@@ -595,7 +595,7 @@ final class FileSystemFontProvider extends FontProvider
                 addTrueTypeFontImpl(ttf, ttfFile);
             }
         }
-        catch (NullPointerException | IOException e)
+        catch (IOException e)
         {
             // NPE due to TTF parser being buggy
             LOG.error("Could not load font file: " + ttfFile, e);
