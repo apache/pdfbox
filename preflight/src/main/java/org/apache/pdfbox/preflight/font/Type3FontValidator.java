@@ -375,7 +375,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         return widths;
     }
 
-    private PDType3CharProc getCharProc(int code) throws ValidationException
+    private PDType3CharProc getCharProc(int code)
     {
         PDType3CharProc charProc = font.getCharProc(code);
         if (charProc == null)
