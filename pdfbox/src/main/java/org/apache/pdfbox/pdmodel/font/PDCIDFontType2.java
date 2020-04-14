@@ -123,7 +123,6 @@ public class PDCIDFontType2 extends PDCIDFont
                 }
                 catch (IOException e)
                 {
-                    // NPE due to TTF parser being buggy
                     fontIsDamaged = true;
                     LOG.warn("Could not read embedded OTF for font " + getBaseFont(), e);
                 }

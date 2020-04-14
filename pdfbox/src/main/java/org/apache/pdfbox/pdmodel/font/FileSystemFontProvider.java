@@ -195,7 +195,6 @@ final class FileSystemFontProvider extends FontProvider
             }
             catch (IOException e)
             {
-                // NPE due to TTF parser being buggy
                 LOG.error("Could not load font file: " + file, e);
             }
             return null;
@@ -570,7 +569,6 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            // NPE due to TTF parser being buggy
             LOG.error("Could not load font file: " + ttcFile, e);
         }
     }
@@ -597,7 +595,6 @@ final class FileSystemFontProvider extends FontProvider
         }
         catch (IOException e)
         {
-            // NPE due to TTF parser being buggy
             LOG.error("Could not load font file: " + ttfFile, e);
         }
     }
