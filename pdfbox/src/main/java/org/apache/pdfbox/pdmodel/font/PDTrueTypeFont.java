@@ -197,11 +197,6 @@ public class PDTrueTypeFont extends PDSimpleFont implements PDVectorFont
                     TTFParser ttfParser = new TTFParser(true);
                     ttfFont = ttfParser.parse(ff2Stream.createInputStream());
                 }
-                catch (NullPointerException e) // TTF parser is buggy
-                {
-                    LOG.warn("Could not read embedded TTF for font " + getBaseFont(), e);
-                    fontIsDamaged = true;
-                }
                 catch (IOException e)
                 {
                     LOG.warn("Could not read embedded TTF for font " + getBaseFont(), e);
