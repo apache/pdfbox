@@ -600,11 +600,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             PDFXRefStream pdfxRefStream = new PDFXRefStream(doc);
 
             // add all entries from the incremental update.
-            List<COSWriterXRefEntry> xRefEntries2 = getXRefEntries();
-            for ( COSWriterXRefEntry cosWriterXRefEntry : xRefEntries2 )
-            {
-                pdfxRefStream.addEntry(cosWriterXRefEntry);
-            }
+            getXRefEntries().forEach(pdfxRefStream::addEntry);
 
             COSDictionary trailer = doc.getTrailer();
             if (incrementalUpdate)
@@ -715,7 +711,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         byteOut.flush();
         incrementPart = byteOut.toByteArray();
 
-        // overwrite the ByteRange in the buffer
+        // overwrite the reserve ByteRange in the buffer
         byte[] byteRangeBytes = byteRange.getBytes(StandardCharsets.ISO_8859_1);
         for (int i = 0; i < byteRangeLength; i++)
         {
@@ -852,9 +848,9 @@ public class COSWriter implements ICOSVisitor, Closeable
         long count = 1;
 
         List<Long> list = new ArrayList<>();
-        for( Object object : xRefEntriesList )
+        for (COSWriterXRefEntry object : xRefEntriesList)
         {
-            long nr = (int) ((COSWriterXRefEntry) object).getKey().getNumber();
+            long nr = object.getKey().getNumber();
             if (nr == last + 1)
             {
                 ++count;
