@@ -272,13 +272,13 @@ public abstract class PDSimpleFont extends PDFont
     }
 
     @Override
-    public String toUnicode(int code) throws IOException
+    public String toUnicode(int code)
     {
         return toUnicode(code, GlyphList.getAdobeGlyphList());
     }
 
     @Override
-    public String toUnicode(int code, GlyphList customGlyphList) throws IOException
+    public String toUnicode(int code, GlyphList customGlyphList)
     {
         // allow the glyph list to be overridden for the purpose of extracting Unicode
         // we only do this when the font's glyph list is the AGL, to avoid breaking Zapf Dingbats

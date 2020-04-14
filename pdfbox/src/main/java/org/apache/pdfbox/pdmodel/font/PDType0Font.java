@@ -494,7 +494,7 @@ public class PDType0Font extends PDFont implements PDVectorFont
     }
 
     @Override
-    public String toUnicode(int code) throws IOException
+    public String toUnicode(int code)
     {
         // try to use a ToUnicode CMap
         String unicode = super.toUnicode(code);
