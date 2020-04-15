@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -228,11 +229,7 @@ public class TestSymmetricKeyEncryption extends TestCase
      */
     public void testPDFBox4308() throws IOException
     {
-        byte[] inputFileAsByteArray;
-        try (InputStream is = new FileInputStream("target/pdfs/PDFBOX-4308.pdf"))
-        {
-            inputFileAsByteArray = IOUtils.toByteArray(is);
-        }
+        byte[] inputFileAsByteArray = Files.readAllBytes(Paths.get("target/pdfs/PDFBOX-4308.pdf"));
         int sizePriorToEncryption = inputFileAsByteArray.length;
 
         testSymmEncrForKeySize(40, false, sizePriorToEncryption, inputFileAsByteArray,
