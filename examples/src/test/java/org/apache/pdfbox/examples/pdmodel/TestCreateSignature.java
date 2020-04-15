@@ -18,12 +18,15 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -77,11 +80,12 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class TestCreateSignature
 {
-    private static final String inDir = "src/test/resources/org/apache/pdfbox/examples/signature/";
-    private static final String outDir = "target/test-output/";
-    private static final String keystorePath = inDir + "keystore.p12";
-    private static final String jpegPath = inDir + "stamp.jpg";
-    private static final String password = "123456";
+    private static final String IN_DIR = "src/test/resources/org/apache/pdfbox/examples/signature/";
+    private static final String OUT_DIR = "target/test-output/";
+    private static final String KEYSTORE_PATH = IN_DIR + "keystore.p12";
+    private static final String JPEG_PATH = IN_DIR + "stamp.jpg";
+    private static final String PASSWORD = "123456";
+    private static final String TSA_RESPONSE = "tsa_response.asn1";
     private static Certificate certificate;
 
     @Parameterized.Parameter
@@ -103,7 +107,7 @@ public class TestCreateSignature
         new File("target/test-output").mkdirs();
         
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
         certificate = keystore.getCertificateChain(keystore.aliases().nextElement())[0];
     }
 
@@ -121,16 +125,16 @@ public class TestCreateSignature
     {
         // load the keystore
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
 
         // sign PDF
-        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing = new CreateSignature(keystore, PASSWORD.toCharArray());
         signing.setExternalSigning(externallySign);
 
         final String fileName = getOutputFileName("signed{0}.pdf");
-        signing.signDetached(new File(inDir + "sign_me.pdf"), new File(outDir + fileName));
+        signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
 
-        checkSignature(new File(inDir, "sign_me.pdf"), new File(outDir, fileName));
+        checkSignature(new File(IN_DIR, "sign_me.pdf"), new File(OUT_DIR, fileName));
     }
 
     /**
@@ -151,12 +155,8 @@ public class TestCreateSignature
     public void testDetachedSHA256WithTSA()
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
     {
-        byte[] content;
         // mock TSA response content
-        try (InputStream input = new FileInputStream(inDir + "tsa_response.asn1"))
-        {
-            content = IOUtils.toByteArray(input);
-        }
+        byte[] content = Files.readAllBytes(Paths.get(IN_DIR, TSA_RESPONSE));
 
         // mock TSA server (RFC 3161)
         MockHttpServer mockServer = new MockHttpServer(15371);
@@ -170,14 +170,14 @@ public class TestCreateSignature
 
         // load the keystore
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
 
         // sign PDF (will fail due to nonce and timestamp differing)
         try
         {
-            String inPath = inDir + "sign_me_tsa.pdf";
-            String outPath = outDir + getOutputFileName("signed{0}_tsa.pdf");
-            CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+            String inPath = IN_DIR + "sign_me_tsa.pdf";
+            String outPath = OUT_DIR + getOutputFileName("signed{0}_tsa.pdf");
+            CreateSignature signing = new CreateSignature(keystore, PASSWORD.toCharArray());
             signing.setExternalSigning(externallySign);
             signing.signDetached(new File(inPath), new File(outPath), tsaUrl);
         }
@@ -204,18 +204,18 @@ public class TestCreateSignature
     {
         // load the keystore
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
 
         // sign PDF
-        String inPath = inDir + "sign_me.pdf";
+        String inPath = IN_DIR + "sign_me.pdf";
         File destFile;
-        try (FileInputStream fis = new FileInputStream(jpegPath))
+        try (FileInputStream fis = new FileInputStream(JPEG_PATH))
         {
-            CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
+            CreateVisibleSignature signing = new CreateVisibleSignature(keystore, PASSWORD.toCharArray());
             signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
             signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
             signing.setExternalSigning(externallySign);
-            destFile = new File(outDir + getOutputFileName("signed{0}_visible.pdf"));
+            destFile = new File(OUT_DIR + getOutputFileName("signed{0}_visible.pdf"));
             signing.signPDF(new File(inPath), destFile, null);
         }
 
@@ -240,9 +240,9 @@ public class TestCreateSignature
                                         CertificateException, UnrecoverableKeyException, 
                                         CMSException, OperatorCreationException, GeneralSecurityException
     {
-        String filename        = outDir + "EmptySignatureForm.pdf";
-        String filenameSigned1 = outDir + "EmptySignatureForm-signed1.pdf";
-        String filenameSigned2 = outDir + "EmptySignatureForm-signed2.pdf";
+        String filename        = OUT_DIR + "EmptySignatureForm.pdf";
+        String filenameSigned1 = OUT_DIR + "EmptySignatureForm-signed1.pdf";
+        String filenameSigned2 = OUT_DIR + "EmptySignatureForm-signed2.pdf";
 
         if (!externallySign)
         {
@@ -251,13 +251,13 @@ public class TestCreateSignature
 
         // load the keystore
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
 
         // create file with empty signature
         CreateEmptySignatureForm.main(new String[]{filename});
 
         // sign PDF
-        CreateSignature signing1 = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing1 = new CreateSignature(keystore, PASSWORD.toCharArray());
         signing1.setExternalSigning(false);
         signing1.signDetached(new File(filename), new File(filenameSigned1));
 
@@ -270,9 +270,9 @@ public class TestCreateSignature
         }
 
         // do visual signing in the field
-        try (FileInputStream fis = new FileInputStream(jpegPath))
+        try (FileInputStream fis = new FileInputStream(JPEG_PATH))
         {
-            CreateVisibleSignature signing2 = new CreateVisibleSignature(keystore, password.toCharArray());
+            CreateVisibleSignature signing2 = new CreateVisibleSignature(keystore, PASSWORD.toCharArray());
             signing2.setVisibleSignDesigner(filenameSigned1, 0, 0, -50, fis, 1);
             signing2.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
             signing2.setExternalSigning(externallySign);
@@ -317,15 +317,12 @@ public class TestCreateSignature
             {
                 COSString contents = (COSString) sig.getCOSObject().getDictionaryObject(COSName.CONTENTS);
 
-                byte[] buf = sig.getSignedContent(new FileInputStream(signedFile));
-
                 // verify that getSignedContent() brings the same content
                 // regardless whether from an InputStream or from a byte array
-                try (FileInputStream fis = new FileInputStream(signedFile))
-                {
-                    byte[] buf2 = sig.getSignedContent(IOUtils.toByteArray(fis));
-                    Assert.assertArrayEquals(buf, buf2);
-                }
+                byte[] totalFileContent = Files.readAllBytes(signedFile.toPath());
+                byte[] signedFileContent1 = sig.getSignedContent(new ByteArrayInputStream(totalFileContent));
+                byte[] signedFileContent2 = sig.getSignedContent(totalFileContent);
+                Assert.assertArrayEquals(signedFileContent1, signedFileContent2);
 
                 // verify that all getContents() methods returns the same content
                 try (FileInputStream fis = new FileInputStream(signedFile))
@@ -339,7 +336,7 @@ public class TestCreateSignature
                 // inspiration:
                 // http://stackoverflow.com/a/26702631/535646
                 // http://stackoverflow.com/a/9261365/535646
-                CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(buf), contents.getBytes());
+                CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(signedFileContent1), contents.getBytes());
                 Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
                 Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
                 SignerInformation signerInformation = signers.iterator().next();
@@ -428,23 +425,23 @@ public class TestCreateSignature
 
         // load the keystore
         KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
 
         // sign PDF
-        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing = new CreateSignature(keystore, PASSWORD.toCharArray());
         signing.setExternalSigning(externallySign);
 
         final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf");
         final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf");
-        signing.signDetached(new File("target/SimpleForm.pdf"), new File(outDir + fileNameSigned));
+        signing.signDetached(new File("target/SimpleForm.pdf"), new File(OUT_DIR + fileNameSigned));
 
-        checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameSigned));
+        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned));
         
-        try (PDDocument doc = Loader.loadPDF(new File(outDir, fileNameSigned)))
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
         {
             oldImage = new PDFRenderer(doc).renderImage(0);
             
-            FileOutputStream fileOutputStream = new FileOutputStream(new File(outDir, fileNameResaved1));
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved1));
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             field.setValue("New Value 1");
 
@@ -474,8 +471,8 @@ public class TestCreateSignature
             appearance.getNormalAppearance().getCOSObject().setNeedToBeUpdated(true);
             doc.saveIncremental(fileOutputStream);
         }
-        checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameResaved1));
-        try (PDDocument doc = Loader.loadPDF(new File(outDir, fileNameResaved1)))
+        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameResaved1));
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameResaved1)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
             Assert.assertEquals("New Value 1", field.getValueAsString());
