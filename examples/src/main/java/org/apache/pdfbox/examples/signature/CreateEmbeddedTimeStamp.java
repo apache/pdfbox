@@ -18,20 +18,19 @@
 package org.apache.pdfbox.examples.signature;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Comparator;
+import java.util.Optional;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
@@ -92,18 +91,18 @@ public class CreateEmbeddedTimeStamp
         try (PDDocument doc = Loader.loadPDF(inFile))
         {
             document = doc;
-            processTimeStamping(outFile, inFile.getAbsolutePath());
+            processTimeStamping(inFile, outFile);
         }
     }
 
     /**
-     * Processes the time-stamping of the Signature.
+     * Processes the time-stamping of the signature.
      * 
+     * @param inFile The existing PDF file
      * @param outFile Where the new file will be written to
-     * @param fileName of the existing file containing the pdf
      * @throws IOException
      */
-    private void processTimeStamping(File outFile, String fileName) throws IOException
+    private void processTimeStamping(File inFile, File outFile) throws IOException
     {
         int accessPermissions = SigUtils.getMDPPermission(document);
         if (accessPermissions == 1)
@@ -114,19 +113,16 @@ public class CreateEmbeddedTimeStamp
 
         try
         {
-            byte[] documentBytes;
-            try (FileInputStream fis = new FileInputStream(fileName))
-            {
-                documentBytes = IOUtils.toByteArray(fis);
-            }
+            byte[] documentBytes = Files.readAllBytes(inFile.toPath());
             processRelevantSignatures(documentBytes);
 
-            if (changedEncodedSignature != null)
+            if (changedEncodedSignature == null)
             {
-                try (FileOutputStream output = new FileOutputStream(outFile))
-                {
-                    embedNewSignatureIntoDocument(documentBytes, output);
-                }
+                throw new IllegalStateException("No signature");
+            }
+            try (FileOutputStream output = new FileOutputStream(outFile))
+            {
+                embedNewSignatureIntoDocument(documentBytes, output);
             }
         }
         catch (IOException | NoSuchAlgorithmException | CMSException e)
@@ -185,23 +181,27 @@ public class CreateEmbeddedTimeStamp
      */
     private void getRelevantSignature(PDDocument document)
     {
+        Comparator<PDSignature> comparatorByOffset =
+                Comparator.comparing(sig -> sig.getByteRange()[1]);
+
         // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
         // if a signature is assigned to a pre-defined empty signature field that isn't the last.
         // we get the last in time by looking at the offset in the PDF file.
-        SortedMap<Integer, PDSignature> sortedMap = new TreeMap<>();
-        for (PDSignature sig : document.getSignatureDictionaries())
+        Optional<PDSignature> optLastSignature =
+                document.getSignatureDictionaries().stream().
+                sorted(comparatorByOffset.reversed()).
+                findFirst();
+
+        if (!optLastSignature.isPresent())
         {
-            int sigOffset = sig.getByteRange()[1];
-            sortedMap.put(sigOffset, sig);
+            return;
         }
-        if (sortedMap.size() > 0)
+
+        PDSignature lastSignature = optLastSignature.get();
+        COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
+        if (COSName.SIG.equals(type))
         {
-            PDSignature lastSignature = sortedMap.get(sortedMap.lastKey());
-            COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
-            if (type.equals(COSName.SIG))
-            {
-                signature = lastSignature;
-            }
+            signature = lastSignature;
         }
     }
 
