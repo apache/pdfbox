@@ -250,11 +250,11 @@ public class TTFSubsetterTest
             assertEquals(4, subset.nameToGID("dieresis.uc"));
             
             PostScriptTable pst = subset.getPostScript();
-            assertEquals(pst.getName(0), ".notdef");
-            assertEquals(pst.getName(1), "O");
-            assertEquals(pst.getName(2), "Odieresis");
-            assertEquals(pst.getName(3), "uni200A");
-            assertEquals(pst.getName(4), "dieresis.uc");
+            assertEquals(".notdef", pst.getName(0));
+            assertEquals("O", pst.getName(1));
+            assertEquals("Odieresis", pst.getName(2));
+            assertEquals("uni200A", pst.getName(3));
+            assertEquals("dieresis.uc", pst.getName(4));
             
             assertTrue("Hair space path should be empty", subset.getPath("uni200A").getBounds2D().isEmpty());
             assertFalse("UC dieresis path should not be empty", subset.getPath("dieresis.uc").getBounds2D().isEmpty());
