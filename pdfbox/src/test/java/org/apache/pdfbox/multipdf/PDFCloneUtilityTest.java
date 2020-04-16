@@ -16,6 +16,7 @@
 package org.apache.pdfbox.multipdf;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import junit.framework.TestCase;
@@ -23,6 +24,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 
 /**
  * Test suite for PDFCloneUtility, see PDFBOX-2052.
@@ -96,5 +98,26 @@ public class PDFCloneUtilityTest extends TestCase
         PDDocument.load(new File(TESTDIR + CLONESRC), (String)null).close();
         PDDocument.load(new File(TESTDIR + CLONEDST)).close();
         PDDocument.load(new File(TESTDIR + CLONEDST), (String)null).close();
+    }
+
+    /**
+     * PDFBOX-4814: this tests merging a direct and an indirect COSDictionary, when "target" is
+     * indirect in cloneMerge().
+     *
+     * @throws IOException
+     */
+    public void testDirectIndirect() throws IOException
+    {
+        PDDocument doc1 = new PDDocument();
+
+        doc1.addPage(new PDPage());
+        doc1.getDocumentCatalog().setOCProperties(new PDOptionalContentProperties());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        doc1.save(baos);
+        PDDocument doc2 = PDDocument.load(baos.toByteArray());
+        PDFMergerUtility merger = new PDFMergerUtility();
+        merger.appendDocument(doc2, doc1);
+        doc2.close();
+        doc1.close();
     }
 }
