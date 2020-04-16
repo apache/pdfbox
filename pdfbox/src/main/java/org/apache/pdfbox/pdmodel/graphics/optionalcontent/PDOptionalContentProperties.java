@@ -107,7 +107,7 @@ public class PDOptionalContentProperties implements COSObjectable
 
     /** {@inheritDoc} */
     @Override
-    public COSBase getCOSObject()
+    public COSDictionary getCOSObject()
     {
         return this.dict;
     }
