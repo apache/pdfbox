@@ -193,10 +193,17 @@ public class PDFCloneUtility
           }
           else if( base instanceof COSArray )
           {
-              COSArray array = (COSArray)base;
-              for( int i=0; i<array.size(); i++ )
+              if (target instanceof COSObject)
               {
-                  ((COSArray)target).add( cloneForNewDocument( array.get( i ) ) );
+                  cloneMerge(base, ((COSObject) target).getObject());
+              }
+              else
+              {
+                  COSArray array = (COSArray) base;
+                  for (int i = 0; i < array.size(); i++)
+                  {
+                      ((COSArray) target).add(cloneForNewDocument(array.get(i)));
+                  }
               }
           }
           else if( base instanceof COSStream )
@@ -218,19 +225,26 @@ public class PDFCloneUtility
           }
           else if( base instanceof COSDictionary )
           {
-              COSDictionary dic = (COSDictionary)base;
-              clonedVersion.put( base, retval );
-              for( Map.Entry<COSName, COSBase> entry : dic.entrySet() )
+              if (target instanceof COSObject)
               {
-                  COSName key = entry.getKey();
-                  COSBase value = entry.getValue();
-                  if (((COSDictionary)target).getItem(key) != null)
+                  cloneMerge(base, ((COSObject) target).getObject());
+              }
+              else
+              {
+                  COSDictionary dic = (COSDictionary) base;
+                  clonedVersion.put(base, retval);
+                  for (Map.Entry<COSName, COSBase> entry : dic.entrySet())
                   {
-                      cloneMerge(value, ((COSDictionary)target).getItem(key));
-                  }
-                  else
-                  {
-                      ((COSDictionary)target).setItem( key, cloneForNewDocument(value));
+                      COSName key = entry.getKey();
+                      COSBase value = entry.getValue();
+                      if (((COSDictionary) target).getItem(key) != null)
+                      {
+                          cloneMerge(value, ((COSDictionary) target).getItem(key));
+                      }
+                      else
+                      {
+                          ((COSDictionary) target).setItem(key, cloneForNewDocument(value));
+                      }
                   }
               }
           }
