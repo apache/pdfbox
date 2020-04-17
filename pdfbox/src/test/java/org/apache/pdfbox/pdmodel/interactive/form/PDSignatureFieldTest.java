@@ -53,7 +53,7 @@ public class PDSignatureFieldTest
         sigField.setPartialName("SignatureField");
 
         assertEquals(sigField.getFieldType(), sigField.getCOSObject().getNameAsString(COSName.FT));
-        assertEquals(sigField.getFieldType(), "Sig");
+        assertEquals("Sig", sigField.getFieldType());
         
         assertEquals(COSName.ANNOT, sigField.getCOSObject().getItem(COSName.TYPE));
         assertEquals(PDAnnotationWidget.SUB_TYPE, sigField.getCOSObject().getNameAsString(COSName.SUBTYPE));

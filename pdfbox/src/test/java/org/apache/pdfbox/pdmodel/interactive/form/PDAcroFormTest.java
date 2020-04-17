@@ -73,7 +73,7 @@ public class PDAcroFormTest
         // the /Fields entry has been created with the AcroForm
         // as this is a required entry
         assertNotNull(acroForm.getFields());
-        assertEquals(acroForm.getFields().size(),0);
+        assertEquals(0, acroForm.getFields().size());
         
         // there shouldn't be an exception if there is no such field
         assertNull(acroForm.getField("foo"));
@@ -84,7 +84,7 @@ public class PDAcroFormTest
         
         // ensure there is always an empty collection returned
         assertNotNull(acroForm.getFields());
-        assertEquals(acroForm.getFields().size(),0);
+        assertEquals(0, acroForm.getFields().size());
 
         // there shouldn't be an exception if there is no such field
         assertNull(acroForm.getField("foo"));
@@ -95,7 +95,7 @@ public class PDAcroFormTest
     {
         assertTrue(acroForm.getDefaultAppearance().isEmpty());
         acroForm.setDefaultAppearance("/Helv 0 Tf 0 g");
-        assertEquals(acroForm.getDefaultAppearance(),"/Helv 0 Tf 0 g");
+        assertEquals("/Helv 0 Tf 0 g", acroForm.getDefaultAppearance());
     }
     
     @Test
