@@ -253,7 +253,7 @@ public class PNGConverterTest
         assertTrue(PNGConverter.checkChunkSane(null));
         chunk.bytes = "IHDRsomedummyvaluesDummyValuesAtEnd".getBytes();
         chunk.length = 19;
-        assertEquals(chunk.bytes.length, 35);
+        assertEquals(35, chunk.bytes.length);
 
         assertEquals("IHDRsomedummyvalues", new String(chunk.getData()));
 
