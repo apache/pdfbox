@@ -175,7 +175,7 @@ public class PDFontTest
         doc = PDDocument.load(outputFile);
 
         font = (PDType1Font) doc.getPage(0).getResources().getFont(COSName.getPDFName("F1"));
-        Assert.assertEquals(font.getEncoding(), WinAnsiEncoding.INSTANCE);
+        Assert.assertEquals(WinAnsiEncoding.INSTANCE, font.getEncoding());
 
         for (char c : text.toCharArray())
         {

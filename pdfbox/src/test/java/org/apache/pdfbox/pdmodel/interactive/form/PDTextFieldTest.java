@@ -48,7 +48,7 @@ public class PDTextFieldTest
         PDField textField = new PDTextField(acroForm);
         
         assertEquals(textField.getFieldType(), textField.getCOSObject().getNameAsString(COSName.FT));
-        assertEquals(textField.getFieldType(), "Tx");
+        assertEquals("Tx", textField.getFieldType());
     }
 
     @Test
