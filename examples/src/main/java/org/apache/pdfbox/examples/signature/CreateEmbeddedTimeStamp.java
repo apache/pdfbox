@@ -25,12 +25,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Optional;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.util.Hex;
@@ -142,66 +138,37 @@ public class CreateEmbeddedTimeStamp
     private void processRelevantSignatures(byte[] documentBytes)
             throws IOException, CMSException, NoSuchAlgorithmException
     {
-        getRelevantSignature(document);
-        if (signature != null)
-        {
-            byte[] sigBlock = signature.getContents(documentBytes);
-            CMSSignedData signedData = new CMSSignedData(sigBlock);
-
-            System.out.println("INFO: Byte Range: " + Arrays.toString(signature.getByteRange()));
-
-            if (tsaUrl != null && tsaUrl.length() > 0)
-            {
-                ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
-                signedData = validation.addSignedTimeStamp(signedData);
-            }
-
-            byte[] newEncoded = Hex.getBytes(signedData.getEncoded());
-            int maxSize = signature.getByteRange()[2] - signature.getByteRange()[1];
-            System.out.println(
-                    "INFO: New Signature has Size: " + newEncoded.length + " maxSize: " + maxSize);
-
-            if (newEncoded.length > maxSize - 2)
-            {
-                throw new IOException(
-                        "New Signature is too big for existing Signature-Placeholder. Max Place: "
-                                + maxSize);
-            }
-            else
-            {
-                changedEncodedSignature = newEncoded;
-            }
-        }
-    }
-
-    /**
-     * Extracts last Document-Signature from the document. The signature will be set on the signature-field.
-     *
-     * @param document to get the Signature from
-     */
-    private void getRelevantSignature(PDDocument document)
-    {
-        Comparator<PDSignature> comparatorByOffset =
-                Comparator.comparing(sig -> sig.getByteRange()[1]);
-
-        // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
-        // if a signature is assigned to a pre-defined empty signature field that isn't the last.
-        // we get the last in time by looking at the offset in the PDF file.
-        Optional<PDSignature> optLastSignature =
-                document.getSignatureDictionaries().stream().
-                sorted(comparatorByOffset.reversed()).
-                findFirst();
-
-        if (!optLastSignature.isPresent())
+        signature = SigUtils.getLastRelevantSignature(document);
+        if (signature == null)
         {
             return;
         }
 
-        PDSignature lastSignature = optLastSignature.get();
-        COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
-        if (COSName.SIG.equals(type))
+        byte[] sigBlock = signature.getContents(documentBytes);
+        CMSSignedData signedData = new CMSSignedData(sigBlock);
+
+        System.out.println("INFO: Byte Range: " + Arrays.toString(signature.getByteRange()));
+
+        if (tsaUrl != null && tsaUrl.length() > 0)
         {
-            signature = lastSignature;
+            ValidationTimeStamp validation = new ValidationTimeStamp(tsaUrl);
+            signedData = validation.addSignedTimeStamp(signedData);
+        }
+
+        byte[] newEncoded = Hex.getBytes(signedData.getEncoded());
+        int maxSize = signature.getByteRange()[2] - signature.getByteRange()[1];
+        System.out.println(
+                "INFO: New Signature has Size: " + newEncoded.length + " maxSize: " + maxSize);
+
+        if (newEncoded.length > maxSize - 2)
+        {
+            throw new IOException(
+                    "New Signature is too big for existing Signature-Placeholder. Max Place: "
+                    + maxSize);
+        }
+        else
+        {
+            changedEncodedSignature = newEncoded;
         }
     }
 

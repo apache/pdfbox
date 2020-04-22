@@ -21,9 +21,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
@@ -235,17 +235,21 @@ public class SigUtils
      */
     public static PDSignature getLastRelevantSignature(PDDocument document)
     {
-        SortedMap<Integer, PDSignature> sortedMap = new TreeMap<>();
-        for (PDSignature signature : document.getSignatureDictionaries())
+        Comparator<PDSignature> comparatorByOffset =
+                Comparator.comparing(sig -> sig.getByteRange()[1]);
+
+        // we can't use getLastSignatureDictionary() because this will fail (see PDFBOX-3978) 
+        // if a signature is assigned to a pre-defined empty signature field that isn't the last.
+        // we get the last in time by looking at the offset in the PDF file.
+        Optional<PDSignature> optLastSignature =
+                document.getSignatureDictionaries().stream().
+                sorted(comparatorByOffset.reversed()).
+                findFirst();
+        if (optLastSignature.isPresent())
         {
-            int sigOffset = signature.getByteRange()[1];
-            sortedMap.put(sigOffset, signature);
-        }
-        if (sortedMap.size() > 0)
-        {
-            PDSignature lastSignature = sortedMap.get(sortedMap.lastKey());
+            PDSignature lastSignature = optLastSignature.get();
             COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
-            if (type.equals(COSName.SIG) || type.equals(COSName.DOC_TIME_STAMP))
+            if (COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type))
             {
                 return lastSignature;
             }
