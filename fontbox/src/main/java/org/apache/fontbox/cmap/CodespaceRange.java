@@ -58,7 +58,7 @@ public class CodespaceRange
     /**
      * Creates a new instance of CodespaceRange.
      * 
-     * @Deprecated to be removed in the next major release.
+     * @deprecated to be removed in the next major release.
      */
     public CodespaceRange()
     {
@@ -79,7 +79,7 @@ public class CodespaceRange
      * 
      * @return Value of property end.
      *
-     * @Deprecated to be removed in the next major release
+     * @deprecated to be removed in the next major release
      */
     public byte[] getEnd()
     {
@@ -91,7 +91,7 @@ public class CodespaceRange
      * 
      * @param endBytes New value of property end.
      *
-     * @Deprecated to be removed in the next major release
+     * @deprecated to be removed in the next major release
      */
     void setEnd(byte[] endBytes)
     {
@@ -108,7 +108,7 @@ public class CodespaceRange
      * 
      * @return Value of property start.
      *
-     * @Deprecated to be removed in the next major release
+     * @deprecated to be removed in the next major release
      */
     public byte[] getStart()
     {
@@ -120,7 +120,7 @@ public class CodespaceRange
      * 
      * @param startBytes New value of property start.
      *
-     * @Deprecated to be removed in the next major release
+     * @deprecated to be removed in the next major release
      */
     void setStart(byte[] startBytes)
     {
