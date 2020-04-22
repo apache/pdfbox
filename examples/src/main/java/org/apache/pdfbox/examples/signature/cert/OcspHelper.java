@@ -307,7 +307,7 @@ public class OcspHelper
                     return;
                 }
             }
-            catch (CertificateException ex)
+            catch (CertificateEncodingException ex)
             {
                 // unlikely to happen because the certificate existed as an object
                 LOG.error(ex, ex);
