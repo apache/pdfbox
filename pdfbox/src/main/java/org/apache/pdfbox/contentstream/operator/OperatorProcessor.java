@@ -18,6 +18,7 @@ package org.apache.pdfbox.contentstream.operator;
 
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
+
 import java.util.List;
 import java.io.IOException;
 
@@ -78,13 +79,6 @@ public abstract class OperatorProcessor
      */
     public boolean checkArrayTypesClass(List<COSBase> operands, Class<?> clazz)
     {
-        for (COSBase base : operands)
-        {
-            if (!clazz.isInstance(base))
-            {
-                return false;
-            }
-        }
-        return true;
+        return operands.stream().allMatch(clazz::isInstance);
     }
 }
