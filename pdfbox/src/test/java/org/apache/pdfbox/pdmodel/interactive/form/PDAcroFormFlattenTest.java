@@ -137,7 +137,7 @@ public class PDAcroFormFlattenTest
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf";
         String targetFileName = "hidden_fields.pdf";
 
-        assertTrue(flattenAndCompare(sourceUrl, targetFileName));
+        flattenAndCompare(sourceUrl, targetFileName);
     }
 
     /*
@@ -276,9 +276,8 @@ public class PDAcroFormFlattenTest
     /*
      * Flatten and compare with generated image samples.
      */
-    private static boolean flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
+    private static void flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
     {
-
         generateSamples(sourceUrl,targetFileName);
 
         File inputFile = new File(IN_DIR, targetFileName);
@@ -296,8 +295,6 @@ public class PDAcroFormFlattenTest
         if (!testPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             fail("Rendering of " + outputFile + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
-            removeMatchingRenditions(inputFile);
-            return false;
         }
         else
         {
@@ -306,8 +303,6 @@ public class PDAcroFormFlattenTest
             inputFile.delete();
             outputFile.delete();
         }
-
-        return true;
     }
 
     /*
@@ -352,32 +347,6 @@ public class PDAcroFormFlattenTest
         }
         is.close();
         os.close();
-    }
-
-    /*
-     * Remove renditions for the PDF from the input directory for which there is no
-     * corresponding rendition in the output directory.
-     * Renditions in the output directory which were identical to the ones in the
-     * input directory will have been deleted by the TestPDFToImage utility.
-     */
-    private static void removeMatchingRenditions(final File inputFile)
-    {
-        File[] testFiles = inputFile.getParentFile().listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.startsWith(inputFile.getName()) && name.toLowerCase().endsWith(".png"));
-            }
-        });
-
-        for (File testFile : testFiles)
-        {
-            if (!new File(OUT_DIR, testFile.getName()).exists())
-            {
-                testFile.delete();
-            }
-        }
     }
 
     /*
