@@ -20,12 +20,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
 
@@ -59,6 +58,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-142 Filled template.
+     *
+     * @throws IOException
      */
     // @Test
     public void testFlattenPDFBOX142() throws IOException
@@ -71,6 +72,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-563 Filled template.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX563() throws IOException
@@ -83,6 +86,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-2469 Empty template.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX2469Empty() throws IOException
@@ -95,6 +100,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-2469 Filled template.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX2469Filled() throws IOException
@@ -107,6 +114,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-2586 Empty template.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX2586() throws IOException
@@ -119,6 +128,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-3083 Filled template rotated.
+     *
+     * @throws IOException
      */
     // @Test
     public void testFlattenPDFBOX3083() throws IOException
@@ -130,7 +141,9 @@ public class PDAcroFormFlattenTest
     }
 
     /*
-     * PDFBOX-3262 Hidden fields
+     * PDFBOX-3262 Hidden fields.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX3262() throws IOException
@@ -138,11 +151,13 @@ public class PDAcroFormFlattenTest
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf";
         String targetFileName = "hidden_fields.pdf";
 
-        assertTrue(flattenAndCompare(sourceUrl, targetFileName));
+        flattenAndCompare(sourceUrl, targetFileName);
     }
 
     /*
      * PDFBOX-3396 Signed Document 1.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX3396_1() throws IOException
@@ -155,6 +170,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-3396 Signed Document 2.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX3396_2() throws IOException
@@ -167,6 +184,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-3396 Signed Document 3.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX3396_3() throws IOException
@@ -179,6 +198,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-3396 Signed Document 4.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBOX3396_4() throws IOException
@@ -191,6 +212,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-3587 Empty template.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenOpenOfficeForm() throws IOException
@@ -203,6 +226,8 @@ public class PDAcroFormFlattenTest
 
     /*
      * PDFBOX-3587 Filled template.
+     *
+     * @throws IOException
      */
     // @Test
     public void testFlattenOpenOfficeFormFilled() throws IOException
@@ -216,6 +241,8 @@ public class PDAcroFormFlattenTest
 
     /**
      * PDFBOX-4157 Filled template.
+     *
+     * @throws IOException
      */
     // @Test
     public void testFlattenPDFBox4157() throws IOException
@@ -228,6 +255,8 @@ public class PDAcroFormFlattenTest
 
     /**
      * PDFBOX-4172 Filled template.
+     *
+     * @throws IOException
      */
     // @Test
     public void testFlattenPDFBox4172() throws IOException
@@ -240,6 +269,8 @@ public class PDAcroFormFlattenTest
 
     /**
      * PDFBOX-4615 Filled template.
+     *
+     * @throws IOException
      */
     // @Test
     public void testFlattenPDFBox4615() throws IOException
@@ -252,6 +283,8 @@ public class PDAcroFormFlattenTest
 
     /**
      * PDFBOX-4693: page is not rotated, but the appearance stream is.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBox4693() throws IOException
@@ -265,6 +298,8 @@ public class PDAcroFormFlattenTest
     /**
      * PDFBOX-4788: non-widget annotations are not to be removed on a page that has no widget
      * annotations.
+     *
+     * @throws IOException
      */
     @Test
     public void testFlattenPDFBox4788() throws IOException
@@ -277,10 +312,11 @@ public class PDAcroFormFlattenTest
 
     /*
      * Flatten and compare with generated image samples.
+     *
+     * @throws IOException
      */
-    private static boolean flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
+    private static void flattenAndCompare(String sourceUrl, String targetFileName) throws IOException
     {
-
         generateSamples(sourceUrl,targetFileName);
 
         File inputFile = new File(IN_DIR, targetFileName);
@@ -299,8 +335,6 @@ public class PDAcroFormFlattenTest
         if (!testPDFToImage.doTestFile(outputFile, IN_DIR.getAbsolutePath(), OUT_DIR.getAbsolutePath()))
         {
             fail("Rendering of " + outputFile + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
-            removeMatchingRenditions(inputFile);
-            return false;
         }
         else
         {
@@ -309,12 +343,12 @@ public class PDAcroFormFlattenTest
             inputFile.delete();
             outputFile.delete();
         }
-
-        return true;
     }
 
     /*
      * Generate the sample images to which the PDF will be compared after flatten.
+     *
+     * @throws IOException
      */
     private static void generateSamples(String sourceUrl, String targetFile) throws IOException
     {
@@ -339,47 +373,14 @@ public class PDAcroFormFlattenTest
 
     /*
      * Get a PDF from URL and copy to file for processing.
+     *
+     * @throws IOException
      */
     private static void getFromUrl(String sourceUrl, String targetFile) throws IOException
     {
-        URL url = new URL(sourceUrl);
-
-        try (InputStream is = url.openStream();
-            OutputStream os = new FileOutputStream(new File(IN_DIR,targetFile)))
+        try (InputStream is = new URL(sourceUrl).openStream())
         {
-            byte[] b = new byte[2048];
-            int length;
-
-            while ((length = is.read(b)) != -1)
-            {
-                os.write(b, 0, length);
-            }
-        }
-    }
-
-    /*
-     * Remove renditions for the PDF from the input directory for which there is no
-     * corresponding rendition in the output directory.
-     * Renditions in the output directory which were identical to the ones in the
-     * input directory will have been deleted by the TestPDFToImage utility.
-     */
-    private static void removeMatchingRenditions(final File inputFile)
-    {
-        File[] testFiles = inputFile.getParentFile().listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.startsWith(inputFile.getName()) && name.toLowerCase().endsWith(".png"));
-            }
-        });
-
-        for (File testFile : testFiles)
-        {
-            if (!new File(OUT_DIR, testFile.getName()).exists())
-            {
-                testFile.delete();
-            }
+            Files.copy(is, new File(IN_DIR, targetFile).toPath());
         }
     }
 
@@ -389,18 +390,10 @@ public class PDAcroFormFlattenTest
      */
     private static void removeAllRenditions(final File inputFile)
     {
-        File[] testFiles = inputFile.getParentFile().listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.startsWith(inputFile.getName()) && name.toLowerCase().endsWith(".png"));
-            }
-        });
+        File[] testFiles = inputFile.getParentFile().listFiles(
+                (File dir, String name) -> 
+                    (name.startsWith(inputFile.getName()) && name.toLowerCase().endsWith(".png")));
 
-        for (File testFile : testFiles)
-        {
-            testFile.delete();
-        }
+        Stream.of(testFiles).forEach(File::delete);
     }
 }
