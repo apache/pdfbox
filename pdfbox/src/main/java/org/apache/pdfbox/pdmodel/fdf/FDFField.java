@@ -125,7 +125,7 @@ public class FDFField implements COSObjectable
             List<String> items = (List<String>) value;
             for (String item : items)
             {
-                output.write("<value>" + escapeXML((String) item) + "</value>\n");
+                output.write("<value>" + escapeXML(item) + "</value>\n");
             }
         }
 
