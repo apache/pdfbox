@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,14 +48,21 @@ public class CMap
     private int minCodeLength = 4;
     private int maxCodeLength;
 
+    private int minCidLength = 4;
+    private int maxCidLength = 0;
+
     // code lengths
     private final List<CodespaceRange> codespaceRanges = new ArrayList<>();
 
     // Unicode mappings
-    private final Map<Integer,String> charToUnicode = new HashMap<>();
+    // one byte input values
+    private final Map<Integer, String> charToUnicodeOneByte = new HashMap<>();
+    // two byte input values
+    private final Map<Integer, String> charToUnicodeTwoBytes = new HashMap<>();
 
     // CID mappings
-    private final Map<Integer,Integer> codeToCid = new HashMap<>();
+    // map with all code to cid mappings organized by the origin byte length of the input value
+    private final Map<Integer, Map<Integer, Integer>> codeToCid = new HashMap<>();
     private final List<CIDRange> codeToCidRanges = new ArrayList<>();
 
     private static final String SPACE = " ";
@@ -83,7 +92,29 @@ public class CMap
      */
     public boolean hasUnicodeMappings()
     {
-        return !charToUnicode.isEmpty();
+        return !charToUnicodeOneByte.isEmpty() || !charToUnicodeTwoBytes.isEmpty();
+    }
+
+    /**
+     * Returns the sequence of Unicode characters for the given character code.
+     *
+     * This method exists for convenience. It may return false values as the origin byte length of the input value is
+     * unknown and the mapping for some input values aren't unique. <br>
+     * Example:<br>
+     * The two byte value 0x00, 0x65 maps to 0x20 <br>
+     * An input value of 0x65 always returns 0x20 even if the value has an origin byte length of 1.
+     *
+     * @param code character code
+     * @return Unicode characters (may be more than one, e.g "fi" ligature)
+     */
+    public String toUnicode(int code)
+    {
+        String unicode = code < 256 ? toUnicode(code, 1) : null;
+        if (unicode == null)
+        {
+            unicode = toUnicode(code, 2);
+        }
+        return unicode;
     }
 
     /**
@@ -92,14 +123,35 @@ public class CMap
      * @param code character code
      * @return Unicode characters (may be more than one, e.g "fi" ligature)
      */
-    public String toUnicode(int code)
+    public String toUnicode(int code, int length)
     {
-        return charToUnicode.get(code);
+        if (length == 1)
+        {
+            return charToUnicodeOneByte.get(code);
+        }
+        if (length == 2)
+        {
+            return charToUnicodeTwoBytes.get(code);
+        }
+        LOG.warn("Mappings with more than 2 bytes aren't supported");
+        return null;
+    }
+
+    /**
+     * Returns the sequence of Unicode characters for the given character code.
+     *
+     * @param code bytes of the character code
+     * @return Unicode characters (may be more than one, e.g "fi" ligature)
+     */
+    public String toUnicode(byte[] code)
+    {
+        return toUnicode(toInt(code), code.length);
     }
 
     /**
      * Reads a character code from a string in the content stream.
-     * <p>See "CMap Mapping" and "Handling Undefined Characters" in PDF32000 for more details.
+     * <p>
+     * See "CMap Mapping" and "Handling Undefined Characters" in PDF32000 for more details.
      *
      * @param in string stream
      * @return character code
@@ -112,25 +164,25 @@ public class CMap
         in.mark(maxCodeLength);
         for (int i = minCodeLength-1; i < maxCodeLength; i++)
         {
-            final int byteCount = i+1;
-            for (CodespaceRange range : codespaceRanges)
+            final int byteCount = i + 1;
+            if (codespaceRanges.stream().anyMatch(r -> r.isFullMatch(bytes, byteCount)))
             {
-                if (range.isFullMatch(bytes, byteCount))
-                {
-                    return toInt(bytes, byteCount);
-                }
+                return toInt(bytes, byteCount);
             }
             if (byteCount < maxCodeLength)
             {
                 bytes[byteCount] = (byte)in.read();
             }
         }
-        String seq = "";
-        for (int i = 0; i < maxCodeLength; ++i)
+        if (LOG.isWarnEnabled())
         {
-            seq += String.format("0x%02X (%04o) ", bytes[i], bytes[i]);
+            String seq = "";
+            for (int i = 0; i < maxCodeLength; ++i)
+            {
+                seq += String.format("0x%02X (%04o) ", bytes[i], bytes[i]);
+            }
+            LOG.warn("Invalid character code sequence " + seq + "in CMap " + cmapName);
         }
-        LOG.warn("Invalid character code sequence " + seq + "in CMap " + cmapName);
         // PDFBOX-4811 reposition to where we were after initial read
         if (in.markSupported())
         {
@@ -147,7 +199,15 @@ public class CMap
     /**
      * Returns an int for the given byte array
      */
-    static int toInt(byte[] data, int dataLen)
+    static int toInt(byte[] data)
+    {
+        return toInt(data, data.length);
+    }
+
+    /**
+     * Returns an int for the given byte array
+     */
+    private static int toInt(byte[] data, int dataLen)
     {
         int code = 0;
         for (int i = 0; i < dataLen; ++i)
@@ -161,19 +221,107 @@ public class CMap
     /**
      * Returns the CID for the given character code.
      *
+     * @param code character code as byte array
+     * @return CID
+     */
+    public int toCID(byte[] code)
+    {
+        if (!hasCIDMappings() || code.length < minCidLength || code.length > maxCidLength)
+        {
+            return 0;
+        }
+        Integer cid = null;
+        if (codeToCid.containsKey(code.length))
+        {
+            cid = codeToCid.get(code.length).get(toInt(code));
+        }
+        if (cid == null)
+        {
+            cid = toCIDFromRanges(code);
+        }
+        return cid;
+    }
+
+    /**
+     * Returns the CID for the given character code.
+     * 
+     * This method exists for convenience. It may return false values as the origin byte length of the input value is
+     * unknown and the mapping for some input values aren't unique. <br>
+     * Example:<br>
+     * The two byte value 0x00, 0x65 maps to 0x20 <br>
+     * An input value of 0x65 always returns 0x20 even if the value has an origin byte length of 1.
+     *
      * @param code character code
      * @return CID
      */
     public int toCID(int code)
     {
-        Integer cid = codeToCid.get(code);
-        if (cid != null)
+        if (!hasCIDMappings())
         {
-            return cid;
+            return 0;
         }
+        Integer cid = 0;
+        int length = minCidLength;
+        while (cid == 0 && (length <= maxCidLength))
+        {
+            cid = toCID(code, length++);
+        }
+        return cid;
+    }
+
+    /**
+     * Returns the CID for the given character code.
+     *
+     * @param code   character code
+     * @param length the origin byte length of the code
+     * @return CID
+     */
+    public int toCID(int code, int length)
+    {
+        if (!hasCIDMappings() || length < minCidLength || length > maxCidLength)
+        {
+            return 0;
+        }
+        Integer cid = null;
+        if (codeToCid.containsKey(length))
+        {
+            cid = codeToCid.get(length).get(code);
+        }
+        return cid != null ? cid : toCIDFromRanges(code, length);
+    }
+
+    /**
+     * Returns the CID for the given character code.
+     *
+     * @param code character code
+     * @return CID
+     */
+
+    private int toCIDFromRanges(int code, int length)
+    {
         for (CIDRange range : codeToCidRanges)
         {
-            int ch = range.map((char)code);
+            int ch = range.map(code, length);
+            if (ch != -1)
+            {
+                return ch;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the CID for the given character code.
+     *
+     * @param code character code
+     * @return CID
+     */
+
+    private int toCIDFromRanges(byte[] code)
+    {
+        for (CIDRange range : codeToCidRanges)
+        {
+            int ch = range.map(code);
             if (ch != -1)
             {
                 return ch;
@@ -184,7 +332,8 @@ public class CMap
 
     /**
      * Convert the given part of a byte array to an integer.
-     * @param data the byte array
+     * 
+     * @param data   the byte array
      * @param offset The offset into the byte array.
      * @param length The length of the data we are getting.
      * @return the resulting integer
@@ -209,8 +358,18 @@ public class CMap
     void addCharMapping(byte[] codes, String unicode)
     {
         int code = getCodeFromArray(codes, 0, codes.length);
-        charToUnicode.put(code, unicode);
-
+        if (codes.length == 1)
+        {
+            charToUnicodeOneByte.put(code, unicode);
+        }
+        else if (codes.length == 2)
+        {
+            charToUnicodeTwoBytes.put(code, unicode);
+        }
+        else
+        {
+            LOG.warn("Mappings with more than 2 bytes aren't supported yet");
+        }
         // fixme: ugly little hack
         if (SPACE.equals(unicode))
         {
@@ -224,9 +383,17 @@ public class CMap
      * @param code character code
      * @param cid CID
      */
-    void addCIDMapping(int code, int cid)
+    void addCIDMapping(byte[] code, int cid)
     {
-        codeToCid.put(cid, code);
+        Map<Integer, Integer> codeToCidMap = codeToCid.get(code.length);
+        if (codeToCidMap == null)
+        {
+            codeToCidMap = new HashMap<>();
+            codeToCid.put(code.length, codeToCidMap);
+            minCidLength = Math.min(minCidLength, code.length);
+            maxCidLength = Math.max(maxCidLength, code.length);
+        }
+        codeToCidMap.put(toInt(code), cid);
     }
 
     /**
@@ -237,16 +404,23 @@ public class CMap
      * @param cid the cid to be started with.
      *
      */
-    void addCIDRange(char from, char to, int cid)
+    void addCIDRange(byte[] from, byte[] to, int cid)
+    {
+        addCIDRange(codeToCidRanges, toInt(from), toInt(to), cid, from.length);
+    }
+
+    private void addCIDRange(List<CIDRange> cidRanges, int from, int to, int cid, int length)
     {
         CIDRange lastRange = null;
-        if (!codeToCidRanges.isEmpty())
+        if (!cidRanges.isEmpty())
         {
-            lastRange = codeToCidRanges.get(codeToCidRanges.size() - 1);
+            lastRange = cidRanges.get(cidRanges.size() - 1);
         }
-        if (lastRange == null || !lastRange.extend(from, to, cid))
+        if (lastRange == null || !lastRange.extend(from, to, cid, length))
         {
-            codeToCidRanges.add(new CIDRange(from, to, cid));
+            cidRanges.add(new CIDRange(from, to, cid, length));
+            minCidLength = Math.min(minCidLength, length);
+            maxCidLength = Math.max(maxCidLength, length);
         }
     }
 
@@ -271,9 +445,24 @@ public class CMap
     void useCmap(CMap cmap)
     {
         cmap.codespaceRanges.forEach(this::addCodespaceRange);
-        charToUnicode.putAll(cmap.charToUnicode);
-        codeToCid.putAll(cmap.codeToCid);
+        charToUnicodeOneByte.putAll(cmap.charToUnicodeOneByte);
+        charToUnicodeTwoBytes.putAll(cmap.charToUnicodeTwoBytes);
+        for (Entry<Integer, Map<Integer, Integer>> map : cmap.codeToCid.entrySet())
+        {
+            if (codeToCid.containsKey(map.getKey()))
+            {
+                codeToCid.get(map.getKey()).putAll(map.getValue());
+            }
+            else
+            {
+                codeToCid.put(map.getKey(), map.getValue());
+            }
+        }
         codeToCidRanges.addAll(cmap.codeToCidRanges);
+        maxCodeLength = Math.max(maxCodeLength, cmap.maxCodeLength);
+        minCodeLength = Math.min(minCodeLength, cmap.minCodeLength);
+        maxCidLength = Math.max(maxCidLength, cmap.maxCidLength);
+        minCidLength = Math.min(minCidLength, cmap.minCidLength);
     }
 
     /**

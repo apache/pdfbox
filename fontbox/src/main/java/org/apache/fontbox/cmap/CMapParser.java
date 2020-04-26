@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -289,32 +290,24 @@ public class CMapParser
                 break;
             }
             byte[] startCode = (byte[]) nextToken;
-            int start = createIntFromBytes(startCode);
             byte[] endCode = (byte[]) parseNextToken(cmapStream);
-            int end = createIntFromBytes(endCode);
             int mappedCode = (Integer) parseNextToken(cmapStream);
-            if (startCode.length <= 2 && endCode.length <= 2)
+            if (startCode.length == endCode.length)
             {
                 // some CMaps are using CID ranges to map single values
-                if (end == start)
+                if (Arrays.equals(startCode, endCode))
                 {
-                    result.addCIDMapping(mappedCode, start);
+                    result.addCIDMapping(startCode, mappedCode);
                 }
                 else
                 {
-                    result.addCIDRange((char) start, (char) end, mappedCode);
+                    result.addCIDRange(startCode, endCode, mappedCode);
                 }
             }
             else
             {
-                // TODO Is this even possible?
-                int endOfMappings = mappedCode + end - start;
-                while (mappedCode <= endOfMappings)
-                {
-                    int mappedCID = createIntFromBytes(startCode);
-                    result.addCIDMapping(mappedCode++, mappedCID);
-                    increment(startCode);
-                }
+                throw new IOException(
+                        "Error : ~cidrange values must not have different byte lengths");
             }
         }
     }
@@ -334,9 +327,8 @@ public class CMapParser
                 break;
             }
             byte[] inputCode = (byte[]) nextToken;
-            int mappedCode = (Integer) parseNextToken(cmapStream);
-            int mappedCID = createIntFromBytes(inputCode);
-            result.addCIDMapping(mappedCode, mappedCID);
+            int mappedCID = (Integer) parseNextToken(cmapStream);
+            result.addCIDMapping(inputCode, mappedCID);
         }
     }
 
@@ -356,8 +348,8 @@ public class CMapParser
             }
             byte[] startCode = (byte[]) nextToken;
             byte[] endCode = (byte[]) parseNextToken(cmapStream);
-            int start = CMap.toInt(startCode, startCode.length);
-            int end = CMap.toInt(endCode, endCode.length);
+            int start = CMap.toInt(startCode);
+            int end = CMap.toInt(endCode);
             // end has to be bigger than start or equal
             if (end < start)
             {
@@ -713,17 +705,6 @@ public class CMapParser
         {
             data[position] = (byte) (data[position] + 1);
         }
-    }
-
-    private int createIntFromBytes(byte[] bytes)
-    {
-        int intValue = bytes[0] & 0xFF;
-        if (bytes.length == 2)
-        {
-            intValue <<= 8;
-            intValue += bytes[1] & 0xFF;
-        }
-        return intValue;
     }
 
     private String createStringFromBytes(byte[] bytes)

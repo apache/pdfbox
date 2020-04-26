@@ -23,30 +23,68 @@ package org.apache.fontbox.cmap;
 class CIDRange
 {
 
-    private final char from;
+    private final int from;
+    private int to;
+    private final int unicode;
+    private final int codeLength;
 
-    private char to;
-
-    private final int cid;
-
-    CIDRange(char from, char to, int cid)
+    /**
+     * Constructor.
+     * 
+     * @param from       start value of COD range
+     * @param to         end value of CID range
+     * @param unicode        unicode start value
+     * @param codeLength byte length of CID values
+     */
+    CIDRange(int from, int to, int unicode, int codeLength)
     {
         this.from = from;
         this.to = to;
-        this.cid = cid;
+        this.unicode = unicode;
+        this.codeLength = codeLength;
+    }
+
+    /**
+     * Returns the byte length of the codes of the CID range.
+     * 
+     * @return the code length
+     */
+    public int getCodeLength()
+    {
+        return codeLength;
     }
 
     /**
      * Maps the given Unicode character to the corresponding CID in this range.
      *
-     * @param ch Unicode character
+     * @param bytes Unicode character
      * @return corresponding CID, or -1 if the character is out of range
      */
-    public int map(char ch)
+    public int map(byte[] bytes)
     {
-        if (from <= ch && ch <= to)
+        if (bytes.length == codeLength)
         {
-            return cid + (ch - from);
+            int ch = CMap.toInt(bytes);
+            if (from <= ch && ch <= to)
+            {
+                return unicode + (ch - from);
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Maps the given Unicode character to the corresponding CID in this range.
+     *
+     * @param code   Unicode character
+     * @param length origin byte length of the code
+     * @return corresponding CID, or -1 if the character is out of range
+     */
+    public int map(int code, int length)
+    {
+        if (length == codeLength && from <= code && code <= to)
+        {
+            return unicode + (code - from);
         }
         return -1;
     }
@@ -59,25 +97,26 @@ class CIDRange
      */
     public int unmap(int code)
     {
-        if (cid <= code && code <= cid + (to - from))
+        if (unicode <= code && code <= unicode + (to - from))
         {
-            return from + (code - cid);
+            return from + (code - unicode);
         }
         return -1;
     }
 
     /**
-     * Check if the given values represent a consecutive range of the given range. If so, extend the given range instead
-     * of creating a new one.
+     * Check if the given values represent a consecutive range of the given range. If so, extend the given range instead of
+     * creating a new one.
      * 
      * @param newFrom start value of the new range
-     * @param newTo end value of the new range
-     * @param newCid start CID value of the range
+     * @param newTo   end value of the new range
+     * @param newCid  start CID value of the range
+     * @param length  byte length of CIDs
      * @return true if the given range was extended
      */
-    public boolean extend(char newFrom, char newTo, int newCid)
+    public boolean extend(int newFrom, int newTo, int newCid, int length)
     {
-        if ((newFrom == to + 1) && (newCid == cid + to - from + 1))
+        if (codeLength == length && (newFrom == to + 1) && (newCid == unicode + to - from + 1))
         {
             to = newTo;
             return true;
