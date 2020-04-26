@@ -1156,7 +1156,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
                     RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
                 {
-                    System.out.println(graphics.getRenderingHints());
                     int w = Math.round(image.getWidth() * scaleX);
                     int h = Math.round(image.getHeight() * scaleY);
                     if (w < 1)
