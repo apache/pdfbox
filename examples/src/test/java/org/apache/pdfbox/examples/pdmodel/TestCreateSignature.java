@@ -174,7 +174,7 @@ public class TestCreateSignature
         // mock TSA server (RFC 3161)
         MockHttpServer mockServer = new MockHttpServer(15371);
         mockServer.startServer();
-        String tsaUrl = "http://localhost:" + mockServer.getServerPort() + "/";
+        String brokenMockTSA = "http://localhost:" + mockServer.getServerPort() + "/";
         MockHttpServer.MockHttpServerResponse response = new MockHttpServer.MockHttpServerResponse();
         response.setMockResponseContent(content);
         response.setMockResponseContentType("application/timestamp-reply");
@@ -193,7 +193,7 @@ public class TestCreateSignature
         {
             CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
             signing.setExternalSigning(externallySign);
-            signing.signDetached(new File(inPath), new File(outPath), tsaUrl);
+            signing.signDetached(new File(inPath), new File(outPath), brokenMockTSA);
             Assert.fail("This should have failed");
         }
         catch (IOException e)
