@@ -29,6 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Calendar;
+import org.apache.pdfbox.io.IOUtils;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
@@ -106,9 +107,17 @@ public class CreateSignature extends CreateSignatureBase
         FileOutputStream fos = new FileOutputStream(outFile);
 
         // sign
-        PDDocument doc = PDDocument.load(inFile);
-        signDetached(doc, fos);
-        doc.close();
+        PDDocument doc = null;
+        try
+        {
+            doc = PDDocument.load(inFile);
+            signDetached(doc, fos);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(doc);
+            IOUtils.closeQuietly(fos);
+        }
     }
 
     public void signDetached(PDDocument document, OutputStream output)
