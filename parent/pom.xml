@@ -192,6 +192,15 @@
             <build>
                 <plugins>
                     <plugin>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <!-- we don't want to DoS the TSA server, thus we test this only in pedantic mode -->
+                                <org.apache.pdfbox.examples.pdmodel.tsa>https://freetsa.org/tsr</org.apache.pdfbox.examples.pdmodel.tsa>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>org.apache.rat</groupId>
                         <artifactId>apache-rat-plugin</artifactId>
                         <executions>
