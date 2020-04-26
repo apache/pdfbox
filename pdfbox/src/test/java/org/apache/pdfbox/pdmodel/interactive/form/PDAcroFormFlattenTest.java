@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
@@ -380,7 +381,7 @@ public class PDAcroFormFlattenTest
     {
         try (InputStream is = new URL(sourceUrl).openStream())
         {
-            Files.copy(is, new File(IN_DIR, targetFile).toPath());
+            Files.copy(is, new File(IN_DIR, targetFile).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
