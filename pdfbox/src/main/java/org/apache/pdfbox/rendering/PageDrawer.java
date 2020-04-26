@@ -1847,17 +1847,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             visibles.add(!isHiddenOCG(prop));
         }
         COSName visibilityPolicy = ocmd.getVisibilityPolicy();
+        // visible if any of the entries in OCGs are OFF
         if (COSName.ANY_OFF.equals(visibilityPolicy))
         {
             for (boolean visible : visibles)
             {
                 if (!visible)
                 {
-                    return true;
+                    return false;
                 }
             }
-            return false;
+            return true;
         }
+        // visible only if all of the entries in OCGs are ON
         if (COSName.ALL_ON.equals(visibilityPolicy))
         {
             for (boolean visible : visibles)
@@ -1869,17 +1871,19 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             }
             return false;
         }
+        // visible only if all of the entries in OCGs are OFF
         if (COSName.ALL_OFF.equals(visibilityPolicy))
         {
             for (boolean visible : visibles)
             {
                 if (visible)
                 {
-                    return false;
+                    return true;
                 }
             }
-            return true;
+            return false;
         }
+        // visible if any of the entries in OCGs are ON
         // AnyOn is default
         for (boolean visible : visibles)
         {
