@@ -22,6 +22,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
+import java.awt.Image;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -1016,6 +1017,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             return;
         }
+        if (!isContentRendered())
+        {
+            return;
+        }
         Matrix ctm = getGraphicsState().getCurrentTransformationMatrix();
         AffineTransform at = ctm.createAffineTransform();
 
@@ -1191,10 +1196,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
             Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
-            if (isContentRendered())
-            {
-                graphics.fill(at.createTransformedShape(unitRect));
-            }
+            graphics.fill(at.createTransformedShape(unitRect));
         }
         else
         {
@@ -1208,10 +1210,43 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             int height = image.getHeight();
             imageTransform.scale(1.0 / width, -1.0 / height);
             imageTransform.translate(0, -height);
-            if (isContentRendered())
+
+            // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815:
+            // graphics.drawImage() has terrible quality when scaling down, even when
+            // RenderingHints.VALUE_INTERPOLATION_BICUBIC, VALUE_ALPHA_INTERPOLATION_QUALITY,
+            // VALUE_COLOR_RENDER_QUALITY and VALUE_RENDER_QUALITY are all set.
+            // A workaround is to get a pre-scaled image with Image.getScaledInstance()
+            // and then draw that one. To reduce differences in testing
+            // (partly because the method needs integer parameters), only smaller scalings
+            // will trigger the workaround. Because of the slowness we only do it if the user
+            // expects quality rendering and interpolation.
+            Matrix m = new Matrix(imageTransform);
+            float scaleX = Math.abs(m.getScalingFactorX());
+            float scaleY = Math.abs(m.getScalingFactorY());
+            Image imageToDraw = image;
+
+            if ((scaleX < 0.25f || scaleY < 0.25f) &&
+                RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
             {
-                graphics.drawImage(image, imageTransform, null);
+                System.out.println(graphics.getRenderingHints());
+                int w = Math.round(image.getWidth() * scaleX);
+                int h = Math.round(image.getHeight() * scaleY);
+                if (w < 1)
+                {
+                    w = 1;
+                }
+                if (h < 1)
+                {
+                    h = 1;
+                }
+                imageToDraw = image.getScaledInstance(
+                        w,
+                        h,
+                        Image.SCALE_SMOOTH);
+                imageTransform.scale(1 / scaleX, 1 / scaleY); // remove the scale
             }
+            graphics.drawImage(imageToDraw, imageTransform, null);
         }
     }
 
