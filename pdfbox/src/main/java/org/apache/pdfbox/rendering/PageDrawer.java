@@ -1842,57 +1842,30 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             LOG.info("/VE entry ignored in Optional Content Membership Dictionary");
         }
         List<Boolean> visibles = new ArrayList<>();
-        for (PDPropertyList prop : ocmd.getOCGs())
-        {
-            visibles.add(!isHiddenOCG(prop));
-        }
+        ocmd.getOCGs().forEach(prop -> visibles.add(!isHiddenOCG(prop)));
         COSName visibilityPolicy = ocmd.getVisibilityPolicy();
+        
         // visible if any of the entries in OCGs are OFF
         if (COSName.ANY_OFF.equals(visibilityPolicy))
         {
-            for (boolean visible : visibles)
-            {
-                if (!visible)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return visibles.stream().noneMatch(v -> !v);
         }
+
         // visible only if all of the entries in OCGs are ON
         if (COSName.ALL_ON.equals(visibilityPolicy))
         {
-            for (boolean visible : visibles)
-            {
-                if (!visible)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return visibles.stream().anyMatch(v -> !v);
         }
+
         // visible only if all of the entries in OCGs are OFF
         if (COSName.ALL_OFF.equals(visibilityPolicy))
         {
-            for (boolean visible : visibles)
-            {
-                if (visible)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return visibles.stream().anyMatch(v -> v);
         }
+
         // visible if any of the entries in OCGs are ON
         // AnyOn is default
-        for (boolean visible : visibles)
-        {
-            if (visible)
-            {
-                return false;
-            }
-        }
-        return true;
+        return visibles.stream().noneMatch(v -> v);
     }
 
     private static int getJavaVersion()
