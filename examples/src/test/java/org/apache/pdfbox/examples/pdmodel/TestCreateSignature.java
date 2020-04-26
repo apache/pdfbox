@@ -90,6 +90,7 @@ public class TestCreateSignature
     private static final String jpegPath = inDir + "stamp.jpg";
     private static final String password = "123456";
     private static Certificate certificate;
+    private static String tsa;
 
     @Parameterized.Parameter
     public boolean externallySign;
@@ -112,6 +113,7 @@ public class TestCreateSignature
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         keystore.load(new FileInputStream(keystorePath), password.toCharArray());
         certificate = keystore.getCertificateChain(keystore.aliases().nextElement())[0];
+        tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
     }
 
     /**
@@ -155,10 +157,12 @@ public class TestCreateSignature
      * @throws GeneralSecurityException
      * @throws CMSException
      * @throws OperatorCreationException
+     * @throws TSPException
      */
     @Test
     public void testDetachedSHA256WithTSA()
-            throws IOException, CMSException, OperatorCreationException, GeneralSecurityException
+            throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
+                   TSPException
     {
         // mock TSA response content
         InputStream input = new FileInputStream(inDir + "tsa_response.asn1");
@@ -179,22 +183,36 @@ public class TestCreateSignature
         KeyStore keystore = KeyStore.getInstance("PKCS12");
         keystore.load(new FileInputStream(keystorePath), password.toCharArray());
 
+        String inPath = inDir + "sign_me_tsa.pdf";
+        String outPath = outDir + getOutputFileName("signed{0}_tsa.pdf");
+
         // sign PDF (will fail due to nonce and timestamp differing)
         try
         {
-            String inPath = inDir + "sign_me_tsa.pdf";
-            String outPath = outDir + getOutputFileName("signed{0}_tsa.pdf");
             CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
             signing.setExternalSigning(externallySign);
             signing.signDetached(new File(inPath), new File(outPath), tsaUrl);
+            Assert.fail("This should have failed");
         }
         catch (IOException e)
         {
             Assert.assertTrue(e.getCause() instanceof TSPValidationException);
+            new File(outPath).delete();
         }
 
-        // TODO verify the signed PDF file
-        // TODO create a file signed with TSA
+        mockServer.stopServer();
+
+        if (tsa == null || tsa.isEmpty())
+        {
+            System.err.println("No TSA URL defined, test skipped");
+            return;
+        }
+
+        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+        signing.setExternalSigning(externallySign);
+        signing.signDetached(new File(inPath), new File(outPath), tsa);
+        checkSignature(new File(inPath), new File(outPath));
+        System.out.println("TSA test successful");
     }
     
     /**
