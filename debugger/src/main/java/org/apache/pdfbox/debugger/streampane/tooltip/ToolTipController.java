@@ -67,61 +67,61 @@ public class ToolTipController
     }
 
     /**
-     * Returns the tooltip text for the operator. null if there isn't any tooltip.
+     * Returns the tooltip text for the operator.
+     *
      * @param offset The position of the mouse in the text component.
      * @param textComponent JTextComponent instance.
-     * @return Tooltip text, String instance.
+     * @return Tooltip text or null if there isn't any tooltip.
      */
     public String getToolTip(int offset, JTextComponent textComponent)
     {
         this.textComponent = textComponent;
 
         String word = getWord(offset);
+        if (word == null)
+        {
+            return null;
+        }
+
         String rowText = getRowText(offset);
 
-        if (word != null)
+        ToolTip toolTip;
+        String colorSpaceName;
+        switch (word)
         {
-            ToolTip toolTip;
-            switch (word)
-            {
-                case OperatorName.SET_FONT_AND_SIZE:
-                    toolTip = new FontToolTip(resources, rowText);
-                    return toolTip.getToolTipText();
-                case OperatorName.STROKING_COLOR_N:
+            case OperatorName.SET_FONT_AND_SIZE:
+                toolTip = new FontToolTip(resources, rowText);
+                return toolTip.getToolTipText();
+            case OperatorName.STROKING_COLOR_N:
+                colorSpaceName = findColorSpace(offset, OperatorName.STROKING_COLORSPACE);
+                if (colorSpaceName != null)
                 {
-                    String colorSpaceName = findColorSpace(offset, OperatorName.STROKING_COLORSPACE);
-                    if (colorSpaceName != null)
-                    {
-                        toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
-                        return toolTip.getToolTipText();
-                    }
-                    break;
+                    toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
+                    return toolTip.getToolTipText();
                 }
-                case OperatorName.NON_STROKING_COLOR_N:
+                break;
+            case OperatorName.NON_STROKING_COLOR_N:
+                colorSpaceName = findColorSpace(offset, OperatorName.NON_STROKING_COLORSPACE);
+                if (colorSpaceName != null)
                 {
-                    String colorSpaceName = findColorSpace(offset, OperatorName.NON_STROKING_COLORSPACE);
-                    if (colorSpaceName != null)
-                    {
-                        toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
-                        return toolTip.getToolTipText();
-                    }
-                    break;
+                    toolTip = new SCNToolTip(resources, colorSpaceName, rowText);
+                    return toolTip.getToolTipText();
                 }
-                case OperatorName.STROKING_COLOR_RGB:
-                case OperatorName.NON_STROKING_RGB:
-                    toolTip = new RGToolTip(rowText);
-                    return toolTip.getToolTipText();
-                case OperatorName.STROKING_COLOR_CMYK:
-                case OperatorName.NON_STROKING_CMYK:
-                    toolTip = new KToolTip(rowText);
-                    return toolTip.getToolTipText();
-                case OperatorName.STROKING_COLOR_GRAY:
-                case OperatorName.NON_STROKING_GRAY:
-                    toolTip = new GToolTip(rowText);
-                    return toolTip.getToolTipText();
-                default:
-                    break;
-            }
+                break;
+            case OperatorName.STROKING_COLOR_RGB:
+            case OperatorName.NON_STROKING_RGB:
+                toolTip = new RGToolTip(rowText);
+                return toolTip.getToolTipText();
+            case OperatorName.STROKING_COLOR_CMYK:
+            case OperatorName.NON_STROKING_CMYK:
+                toolTip = new KToolTip(rowText);
+                return toolTip.getToolTipText();
+            case OperatorName.STROKING_COLOR_GRAY:
+            case OperatorName.NON_STROKING_GRAY:
+                toolTip = new GToolTip(rowText);
+                return toolTip.getToolTipText();
+            default:
+                break;
         }
         return null;
     }
