@@ -355,7 +355,6 @@ public final class LosslessFactory
             switch (imageType)
             {
                 case BufferedImage.TYPE_CUSTOM:
-                {
                     switch (imageRaster.getTransferType())
                     {
                         case DataBuffer.TYPE_USHORT:
@@ -372,26 +371,21 @@ public final class LosslessFactory
                             return null;
                     }
                     break;
-                }
 
                 case BufferedImage.TYPE_3BYTE_BGR:
                 case BufferedImage.TYPE_4BYTE_ABGR:
-                {
                     elementsInRowPerPixel = componentsPerPixel;
                     prevRow = new byte[width * elementsInRowPerPixel];
                     transferRow = new byte[width * elementsInRowPerPixel];
                     break;
-                }
 
                 case BufferedImage.TYPE_INT_BGR:
                 case BufferedImage.TYPE_INT_ARGB:
                 case BufferedImage.TYPE_INT_RGB:
-                {
                     elementsInRowPerPixel = 1;
                     prevRow = new int[width * elementsInRowPerPixel];
                     transferRow = new int[width * elementsInRowPerPixel];
                     break;
-                }
 
                 default:
                     // We can not handle this unknown format
