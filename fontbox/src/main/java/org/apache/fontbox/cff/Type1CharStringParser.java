@@ -17,9 +17,10 @@
 package org.apache.fontbox.cff;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,7 +124,7 @@ public class Type1CharStringParser
                 Integer numArgs = (Integer)sequence.remove(sequence.size()-1);
 
                 // othersubrs 0-3 have their own semantics
-                Stack<Integer> results = new Stack<>();
+                Deque<Integer> results = new ArrayDeque<>();
                 switch (othersubrNum)
                 {
                     case 0:
