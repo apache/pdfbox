@@ -301,7 +301,7 @@ public class PDDocumentInformation implements COSObjectable
      * 
      * @throws IllegalArgumentException if the parameter is invalid.
      */
-    public void IllegalArgumentException( String value )
+    public void setTrapped( String value )
     {
         if( value != null &&
             !value.equals( "True" ) &&
