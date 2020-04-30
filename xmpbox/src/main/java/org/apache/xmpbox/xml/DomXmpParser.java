@@ -24,11 +24,12 @@ package org.apache.xmpbox.xml;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Deque;
 import java.util.StringTokenizer;
 
 import javax.xml.XMLConstants;
@@ -894,8 +895,7 @@ public class DomXmpParser
 
     protected static class NamespaceFinder
     {
-
-        private final Stack<Map<String, String>> stack = new Stack<>();
+        private final Deque<Map<String, String>> stack = new ArrayDeque<>();
 
         protected void push(Element description)
         {
@@ -920,16 +920,7 @@ public class DomXmpParser
 
         protected boolean containsNamespace(String namespace)
         {
-            for (int i = stack.size() - 1; i >= 0; i--)
-            {
-                Map<String, String> map = stack.get(i);
-                if (map.containsValue(namespace))
-                {
-                    return true;
-                }
-            }
-            // else namespace not found
-            return false;
+            return stack.stream().anyMatch(map -> map.containsValue(namespace));
         }
 
     }
