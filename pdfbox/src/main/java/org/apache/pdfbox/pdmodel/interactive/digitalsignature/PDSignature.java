@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.digitalsignature;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -340,34 +341,34 @@ public class PDSignature implements COSObjectable
     int begin = byteRange[0]+byteRange[1]+1;
     int end = byteRange[2]-begin;
     
-    return getContents(new COSFilterInputStream(pdfFile,new int[] {begin,end}));
+    return getContents(new ByteArrayInputStream(pdfFile, begin, end));
   }
 
   private byte[] getContents(COSFilterInputStream fis) throws IOException 
   {
-    ByteArrayOutputStream byteOS = new ByteArrayOutputStream(1024);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
     byte[] buffer = new byte[1024];
-    int c;
-    while ((c = fis.read(buffer)) != -1)
+    int readLen;
+    while ((readLen = fis.read(buffer)) != -1)
     {
       // Filter < and (
       if(buffer[0]==0x3C || buffer[0]==0x28)
       {
-        byteOS.write(buffer, 1, c);
+        baos.write(buffer, 1, readLen);
       }
       // Filter > and )
-      else if(buffer[c-1]==0x3E || buffer[c-1]==0x29)
+      else if(buffer[readLen-1]==0x3E || buffer[readLen-1]==0x29)
       {
-        byteOS.write(buffer, 0, c-1);
+        baos.write(buffer, 0, readLen-1);
       }
       else
       {
-        byteOS.write(buffer, 0, c);
+        baos.write(buffer, 0, readLen);
       }
     }
     fis.close();
     
-    return COSString.createFromHexString(byteOS.toString("ISO-8859-1")).getBytes();
+    return COSString.createFromHexString(baos.toString("ISO-8859-1")).getBytes();
   }
   
   /**
