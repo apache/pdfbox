@@ -100,14 +100,17 @@ public class Type2CharString extends Type1CharString
         switch (name)
         {
             case "hstem":
+            case "hstemhm":
                 numbers = clearStack(numbers, numbers.size() % 2 != 0);
                 expandStemHints(numbers, true);
                 break;
             case "vstem":
+            case "vstemhm":
                 numbers = clearStack(numbers, numbers.size() % 2 != 0);
                 expandStemHints(numbers, false);
                 break;
             case "vmoveto":
+            case "hmoveto":
                 numbers = clearStack(numbers, numbers.size() > 1);
                 markPath();
                 addCommand(numbers, command);
@@ -143,12 +146,7 @@ public class Type2CharString extends Type1CharString
                 markPath();
                 addCommand(numbers, command);
                 break;
-            case "hmoveto":
-                numbers = clearStack(numbers, numbers.size() > 1);
-                markPath();
-                addCommand(numbers, command);
-                break;
-            case "vhcurveto":
+           case "vhcurveto":
                 drawAlternatingCurve(numbers, false);
                 break;
             case "hvcurveto":
@@ -196,10 +194,6 @@ public class Type2CharString extends Type1CharString
                 addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
                 break;
             }
-            case "hstemhm":
-                numbers = clearStack(numbers, numbers.size() % 2 != 0);
-                expandStemHints(numbers, true);
-                break;
             case "hintmask":
             case "cntrmask":
                 numbers = clearStack(numbers, numbers.size() % 2 != 0);
@@ -207,10 +201,6 @@ public class Type2CharString extends Type1CharString
                 {
                     expandStemHints(numbers, false);
                 }
-                break;
-            case "vstemhm":
-                numbers = clearStack(numbers, numbers.size() % 2 != 0);
-                expandStemHints(numbers, false);
                 break;
             case "rcurveline":
                 if (numbers.size() >= 2)
