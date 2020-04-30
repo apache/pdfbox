@@ -298,8 +298,10 @@ public class PDDocumentInformation implements COSObjectable
      * 'True', 'False', or 'Unknown'.
      *
      * @param value The new trapped value for the document.
+     * 
+     * @throws IllegalArgumentException if the parameter is invalid.
      */
-    public void setTrapped( String value )
+    public void IllegalArgumentException( String value )
     {
         if( value != null &&
             !value.equals( "True" ) &&
