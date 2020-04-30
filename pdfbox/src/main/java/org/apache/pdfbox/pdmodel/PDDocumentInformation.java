@@ -308,7 +308,7 @@ public class PDDocumentInformation implements COSObjectable
             !value.equals( "False" ) &&
             !value.equals( "Unknown" ) )
         {
-            throw new RuntimeException( "Valid values for trapped are " +
+            throw new IllegalArgumentException( "Valid values for trapped are " +
                                         "'True', 'False', or 'Unknown'" );
         }
 
