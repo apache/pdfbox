@@ -16,16 +16,19 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -72,5 +75,21 @@ public class PDSignatureFieldTest
         sigField.setPartialName("SignatureField");
 
         sigField.setValue("Can't set value using String");
+    }
+    
+    /**
+     * PDFBOX-4822: test get the signature contents.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testGetContents() throws IOException
+    {
+        // Normally, range0 + range1 = position of "<", and range2 = position after ">"
+        PDSignature signature = new PDSignature();
+        signature.setByteRange(new int[]{ 0, 10, 30, 10});
+        byte[] by = "AAAAAAAAAA<313233343536373839>BBBBBBBBBB".getBytes(StandardCharsets.ISO_8859_1);
+        assertEquals("123456789", new String(signature.getContents(by)));
+        assertEquals("123456789", new String(signature.getContents(new ByteArrayInputStream(by))));
     }
 }
