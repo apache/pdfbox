@@ -62,8 +62,9 @@ public class PDFText2HTML extends PDFTextStripper
      *
      * @throws IOException
      *             If there is a problem writing out the header to the document.
-     * @deprecated deprecated, use {@link #startDocument(PDDocument)}
+     * @deprecated use {@link #startDocument(PDDocument)}
      */
+    @Deprecated
     protected void writeHeader() throws IOException
     {
     }
