@@ -331,7 +331,7 @@ public class PDSignature implements COSObjectable
     {
         int[] byteRange = getByteRange();
         int begin = byteRange[0]+byteRange[1]+1;
-        int len = byteRange[2]-begin;
+        int len = byteRange[2]-begin-1;
 
         return getConvertedContents(new ByteArrayInputStream(pdfFile, begin, len));
     }
