@@ -96,9 +96,7 @@ public class TestPDPageContentStream extends TestCase
             {
                 // pass a non-stroking color in RGB and Gray color space
                 contentStream.setNonStrokingColor(0.1f, 0.2f, 0.3f);
-                contentStream.setNonStrokingColor(1, 2, 3);
                 contentStream.setNonStrokingColor(0.8f);
-                contentStream.setNonStrokingColor(8);
             }
 
             // now read the PDF stream and verify that the values are correct
@@ -108,14 +106,8 @@ public class TestPDPageContentStream extends TestCase
             assertEquals(0.2f, ((COSNumber) pageTokens.get(1)).floatValue());
             assertEquals(0.3f, ((COSNumber) pageTokens.get(2)).floatValue());
             assertEquals(OperatorName.NON_STROKING_RGB, ((Operator) pageTokens.get(3)).getName());
-            assertEquals(1 / 255f, ((COSNumber) pageTokens.get(4)).floatValue(), 0.00001d);
-            assertEquals(2 / 255f, ((COSNumber) pageTokens.get(5)).floatValue(), 0.00001d);
-            assertEquals(3 / 255f, ((COSNumber) pageTokens.get(6)).floatValue(), 0.00001d);
-            assertEquals(OperatorName.NON_STROKING_RGB, ((Operator) pageTokens.get(7)).getName());
-            assertEquals(0.8f, ((COSNumber) pageTokens.get(8)).floatValue());
-            assertEquals(OperatorName.NON_STROKING_GRAY, ((Operator) pageTokens.get(9)).getName());
-            assertEquals(8 / 255f, ((COSNumber) pageTokens.get(10)).floatValue(), 0.00001d);
-            assertEquals(OperatorName.NON_STROKING_GRAY, ((Operator) pageTokens.get(11)).getName());
+            assertEquals(0.8f, ((COSNumber) pageTokens.get(4)).floatValue());
+            assertEquals(OperatorName.NON_STROKING_GRAY, ((Operator) pageTokens.get(5)).getName());
 
             // same as above but for PDPageContentStream#setStrokingColor
             page = new PDPage();
@@ -125,9 +117,7 @@ public class TestPDPageContentStream extends TestCase
             {
                 // pass a non-stroking color in RGB and Gray color space
                 contentStream.setStrokingColor(0.5f, 0.6f, 0.7f);
-                contentStream.setStrokingColor(5, 6, 7);
                 contentStream.setStrokingColor(0.8f);
-                contentStream.setStrokingColor(8);
             }
 
             // now read the PDF stream and verify that the values are correct
@@ -137,14 +127,8 @@ public class TestPDPageContentStream extends TestCase
             assertEquals(0.6f, ((COSNumber) pageTokens.get(1)).floatValue());
             assertEquals(0.7f, ((COSNumber) pageTokens.get(2)).floatValue());
             assertEquals(OperatorName.STROKING_COLOR_RGB, ((Operator) pageTokens.get(3)).getName());
-            assertEquals(5 / 255f, ((COSNumber) pageTokens.get(4)).floatValue(), 0.00001d);
-            assertEquals(6 / 255f, ((COSNumber) pageTokens.get(5)).floatValue(), 0.00001d);
-            assertEquals(7 / 255f, ((COSNumber) pageTokens.get(6)).floatValue(), 0.00001d);
-            assertEquals(OperatorName.STROKING_COLOR_RGB, ((Operator) pageTokens.get(7)).getName());
-            assertEquals(0.8f, ((COSNumber) pageTokens.get(8)).floatValue());
-            assertEquals(OperatorName.STROKING_COLOR_GRAY, ((Operator) pageTokens.get(9)).getName());
-            assertEquals(8 / 255f, ((COSNumber) pageTokens.get(10)).floatValue(), 0.00001d);
-            assertEquals(OperatorName.STROKING_COLOR_GRAY, ((Operator) pageTokens.get(11)).getName());
+            assertEquals(0.8f, ((COSNumber) pageTokens.get(4)).floatValue());
+            assertEquals(OperatorName.STROKING_COLOR_GRAY, ((Operator) pageTokens.get(5)).getName());
         }
     }
 

@@ -715,28 +715,6 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Set the stroking color in the DeviceRGB color space. Range is 0..255.
-     *
-     * @param r The red value
-     * @param g The green value.
-     * @param b The blue value.
-     * @throws IOException If an IO error occurs while writing to the stream.
-     * @throws IllegalArgumentException If the parameters are invalid.
-     * @deprecated use
-     * {@link #setStrokingColor(float, float, float) setStrokingColor(r/255f, g/255f, b/255f)}
-     */
-    @Deprecated
-    public void setStrokingColor(int r, int g, int b) throws IOException
-    {
-        if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
-        {
-            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
-                    + String.format("(%d,%d,%d)", r, g, b));
-        }
-        setStrokingColor(r / 255f, g / 255f, b / 255f);
-    }
-
-    /**
      * Set the stroking color in the DeviceCMYK color space. Range is 0..1
      *
      * @param c The cyan value.
@@ -856,48 +834,6 @@ abstract class PDAbstractContentStream implements Closeable
     }
 
     /**
-     * Set the non stroking color in the DeviceRGB color space. Range is 0..255.
-     *
-     * @param r The red value
-     * @param g The green value.
-     * @param b The blue value.
-     * @throws IOException If an IO error occurs while writing to the stream.
-     * @throws IllegalArgumentException If the parameters are invalid.
-     * @deprecated use
-     * {@link #setNonStrokingColor(float, float, float) setNonStrokingColor(r/255f, g/255f, b/255f)}
-     */
-    @Deprecated
-    public void setNonStrokingColor(int r, int g, int b) throws IOException
-    {
-        if (isOutside255Interval(r) || isOutside255Interval(g) || isOutside255Interval(b))
-        {
-            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
-                    + String.format("(%d,%d,%d)", r, g, b));
-        }
-        setNonStrokingColor(r / 255f, g / 255f, b / 255f);
-    }
-
-    /**
-     * Set the non-stroking color in the DeviceCMYK color space. Range is 0..255.
-     *
-     * @param c The cyan value.
-     * @param m The magenta value.
-     * @param y The yellow value.
-     * @param k The black value.
-     * @throws IOException If an IO error occurs while writing to the stream.
-     * @throws IllegalArgumentException If the parameters are invalid.
-     */
-    public void setNonStrokingColor(int c, int m, int y, int k) throws IOException
-    {
-        if (isOutside255Interval(c) || isOutside255Interval(m) || isOutside255Interval(y) || isOutside255Interval(k))
-        {
-            throw new IllegalArgumentException("Parameters must be within 0..255, but are "
-                    + String.format("(%d,%d,%d,%d)", c, m, y, k));
-        }
-        setNonStrokingColor(c / 255f, m / 255f, y / 255f, k / 255f);
-    }
-
-    /**
      * Set the non-stroking color in the DeviceCMYK color space. Range is 0..1.
      *
      * @param c The cyan value.
@@ -919,24 +855,6 @@ abstract class PDAbstractContentStream implements Closeable
         writeOperand(k);
         writeOperator(OperatorName.NON_STROKING_CMYK);
         setNonStrokingColorSpaceStack(PDDeviceCMYK.INSTANCE);
-    }
-
-    /**
-     * Set the non-stroking color in the DeviceGray color space. Range is 0..255.
-     *
-     * @param g The gray value.
-     * @throws IOException If an IO error occurs while writing to the stream.
-     * @throws IllegalArgumentException If the parameter is invalid.
-     * @deprecated use {@link #setNonStrokingColor(float) setNonStrokingColor(g/255f)}
-     */
-    @Deprecated
-    public void setNonStrokingColor(int g) throws IOException
-    {
-        if (isOutside255Interval(g))
-        {
-            throw new IllegalArgumentException("Parameter must be within 0..255, but is " + g);
-        }
-        setNonStrokingColor(g / 255f);
     }
 
     /**
