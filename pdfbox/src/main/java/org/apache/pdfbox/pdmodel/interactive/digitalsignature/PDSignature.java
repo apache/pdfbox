@@ -351,20 +351,20 @@ public class PDSignature implements COSObjectable
     int readLen;
     while ((readLen = fis.read(buffer)) != -1)
     {
+      int writeLen = readLen;
+      int start = 0;
       // Filter < and (
       if(buffer[0]==0x3C || buffer[0]==0x28)
       {
-        baos.write(buffer, 1, readLen);
+          ++start;
+          --writeLen;
       }
-      // Filter > and )
-      else if(buffer[readLen-1]==0x3E || buffer[readLen-1]==0x29)
+      // Filter > and ) at the end
+      if(buffer[readLen-1]==0x3E || buffer[readLen-1]==0x29)
       {
-        baos.write(buffer, 0, readLen-1);
+          --writeLen;
       }
-      else
-      {
-        baos.write(buffer, 0, readLen);
-      }
+      baos.write(buffer, start, writeLen);
     }
     fis.close();
     
