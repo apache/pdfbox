@@ -640,6 +640,7 @@ public class CmapSubtable implements CmapLookup
      * @deprecated the mapping may be ambiguous, see {@link #getCharCodes(int)}. The first mapped value is returned by
      * default.
      */
+    @Deprecated
     public Integer getCharacterCode(int gid)
     {
         int code = getCharCode(gid);
