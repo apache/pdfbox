@@ -368,7 +368,16 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         Area clippingPath = getGraphicsState().getCurrentClippingPath();
         if (clippingPath != lastClip)
         {
-            graphics.setClip(clippingPath);
+            if (clippingPath.getPathIterator(null).isDone())
+            {
+                // PDFBOX-4822: avoid bug with java printing that empty clipping path is ignored by
+                // replacing with empty rectangle, works because this is not an empty path
+                graphics.setClip(new Rectangle());
+            }
+            else
+            {
+                graphics.setClip(clippingPath);
+            }
             if (initialClip != null)
             {
                 // apply the remembered initial clip, but transform it first
