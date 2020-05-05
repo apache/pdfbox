@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -447,17 +446,17 @@ public class CMap
         cmap.codespaceRanges.forEach(this::addCodespaceRange);
         charToUnicodeOneByte.putAll(cmap.charToUnicodeOneByte);
         charToUnicodeTwoBytes.putAll(cmap.charToUnicodeTwoBytes);
-        for (Entry<Integer, Map<Integer, Integer>> map : cmap.codeToCid.entrySet())
+        cmap.codeToCid.forEach((key, value) ->
         {
-            if (codeToCid.containsKey(map.getKey()))
+            if (codeToCid.containsKey(key))
             {
-                codeToCid.get(map.getKey()).putAll(map.getValue());
+                codeToCid.get(key).putAll(value);
             }
             else
             {
-                codeToCid.put(map.getKey(), map.getValue());
+                codeToCid.put(key, value);
             }
-        }
+        });
         codeToCidRanges.addAll(cmap.codeToCidRanges);
         maxCodeLength = Math.max(maxCodeLength, cmap.maxCodeLength);
         minCodeLength = Math.min(minCodeLength, cmap.minCodeLength);
