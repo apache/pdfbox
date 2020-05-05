@@ -20,6 +20,7 @@ package org.apache.fontbox.ttf.gsub;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,18 +86,9 @@ public class CompoundCharacterTokenizer
 
     private String getRegexFromTokens(Set<String> compoundWords)
     {
-        StringBuilder sb = new StringBuilder();
-
-        for (String compoundWord : compoundWords)
-        {
-            sb.append("(");
-            sb.append(compoundWord);
-            sb.append(")|");
-        }
-
-        sb.setLength(sb.length() - 1);
-
-        return sb.toString();
+        StringJoiner sj = new StringJoiner(")|(", "(", ")");
+        compoundWords.stream().forEach(sj::add);
+        return sj.toString();
     }
 
 }
