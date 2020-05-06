@@ -212,8 +212,7 @@ public final class ExtractText
                 AccessPermission ap = document.getCurrentAccessPermission();
                 if( ! ap.canExtractContent() )
                 {
-                    System.out.println( "You do not have permission to extract text" );
-                    //throw new IOException( "You do not have permission to extract text" );
+                    throw new IOException( "You do not have permission to extract text" );
                 }
                 
                 stopProcessing("Time for loading: ", startTime);
