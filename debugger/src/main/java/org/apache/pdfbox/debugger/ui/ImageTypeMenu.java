@@ -70,25 +70,22 @@ public final class ImageTypeMenu extends MenuBase
      */
     public void setImageTypeSelection(String selection)
     {
-        if (IMAGETYPE_RGB.equals(selection))
+        switch (selection)
         {
-            rgbItem.setSelected(true);
-        }
-        else if (IMAGETYPE_ARGB.equals(selection))
-        {
-            argbItem.setSelected(true);
-        }
-        else if (IMAGETYPE_GRAY.equals(selection))
-        {
-            grayItem.setSelected(true);
-        }
-        else if (IMAGETYPE_BITONAL.equals(selection))
-        {
-            bitonalItem.setSelected(true);
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case IMAGETYPE_RGB:
+                rgbItem.setSelected(true);
+                break;
+            case IMAGETYPE_ARGB:
+                argbItem.setSelected(true);
+                break;
+            case IMAGETYPE_GRAY:
+                grayItem.setSelected(true);
+                break;
+            case IMAGETYPE_BITONAL:
+                bitonalItem.setSelected(true);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid ImageType selection: " + selection);
         }
     }
 
@@ -117,25 +114,18 @@ public final class ImageTypeMenu extends MenuBase
 
     public static ImageType getImageType(String actionCommand)
     {
-        if (IMAGETYPE_RGB.equals(actionCommand))
+        switch (actionCommand)
         {
-            return ImageType.RGB;
-        }
-        else if (IMAGETYPE_ARGB.equals(actionCommand))
-        {
-            return ImageType.ARGB;
-        }
-        else if (IMAGETYPE_GRAY.equals(actionCommand))
-        {
-            return ImageType.GRAY;
-        }
-        else if (IMAGETYPE_BITONAL.equals(actionCommand))
-        {
-            return ImageType.BINARY;
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case IMAGETYPE_RGB:
+                return ImageType.RGB;
+            case IMAGETYPE_ARGB:
+                return ImageType.ARGB;
+            case IMAGETYPE_GRAY:
+                return ImageType.GRAY;
+            case IMAGETYPE_BITONAL:
+                return ImageType.BINARY;
+            default:
+                throw new IllegalArgumentException("Invalid ImageType actionCommand: " + actionCommand);
         }
     }
 

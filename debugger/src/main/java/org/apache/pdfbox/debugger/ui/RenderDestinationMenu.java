@@ -68,21 +68,19 @@ public final class RenderDestinationMenu extends MenuBase
      */
     public void setRenderDestinationSelection(String selection)
     {
-        if (RENDER_DESTINATION_EXPORT.equals(selection))
+        switch (selection)
         {
-            exportItem.setSelected(true);
-        }
-        else if (RENDER_DESTINATION_PRINT.equals(selection))
-        {
-            printItem.setSelected(true);
-        }
-        else if (RENDER_DESTINATION_VIEW.equals(selection))
-        {
-            viewItem.setSelected(true);
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case RENDER_DESTINATION_EXPORT:
+                exportItem.setSelected(true);
+                break;
+            case RENDER_DESTINATION_PRINT:
+                printItem.setSelected(true);
+                break;
+            case RENDER_DESTINATION_VIEW:
+                viewItem.setSelected(true);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid RenderDestination selection: " + selection);
         }
     }
 
@@ -107,21 +105,16 @@ public final class RenderDestinationMenu extends MenuBase
 
     public static RenderDestination getRenderDestination(String actionCommand)
     {
-        if (RENDER_DESTINATION_EXPORT.equals(actionCommand))
+        switch (actionCommand)
         {
-            return RenderDestination.EXPORT;
-        }
-        else if (RENDER_DESTINATION_PRINT.equals(actionCommand))
-        {
-            return RenderDestination.PRINT;
-        }
-        else if (RENDER_DESTINATION_VIEW.equals(actionCommand))
-        {
-            return RenderDestination.VIEW;
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case RENDER_DESTINATION_EXPORT:
+                return RenderDestination.EXPORT;
+            case RENDER_DESTINATION_PRINT:
+                return RenderDestination.PRINT;
+            case RENDER_DESTINATION_VIEW:
+                return RenderDestination.VIEW;
+            default:
+                throw new IllegalArgumentException("Invalid RenderDestination actionCommand: " + actionCommand);
         }
     }
 

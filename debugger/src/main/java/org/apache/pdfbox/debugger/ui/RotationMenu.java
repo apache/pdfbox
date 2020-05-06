@@ -69,25 +69,22 @@ public final class RotationMenu extends MenuBase
      */
     public void setRotationSelection(String selection)
     {
-        if (ROTATE_0_DEGREES.equals(selection))
+        switch (selection)
         {
-            rotate0Item.setSelected(true);
-        }
-        else if (ROTATE_90_DEGREES.equals(selection))
-        {
-            rotate90Item.setSelected(true);
-        }
-        else if (ROTATE_180_DEGREES.equals(selection))
-        {
-            rotate180Item.setSelected(true);
-        }
-        else if (ROTATE_270_DEGREES.equals(selection))
-        {
-            rotate270Item.setSelected(true);
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case ROTATE_0_DEGREES:
+                rotate0Item.setSelected(true);
+                break;
+            case ROTATE_90_DEGREES:
+                rotate90Item.setSelected(true);
+                break;
+            case ROTATE_180_DEGREES:
+                rotate180Item.setSelected(true);
+                break;
+            case ROTATE_270_DEGREES:
+                rotate270Item.setSelected(true);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid rotation selection: " + selection);
         }
     }
 
@@ -116,25 +113,18 @@ public final class RotationMenu extends MenuBase
 
     public static int getRotationDegrees(String actionCommand)
     {
-        if (ROTATE_0_DEGREES.equals(actionCommand))
+        switch (actionCommand)
         {
-            return 0;
-        }
-        else if (ROTATE_90_DEGREES.equals(actionCommand))
-        {
-            return 90;
-        }
-        else if (ROTATE_180_DEGREES.equals(actionCommand))
-        {
-            return 180;
-        }
-        else if (ROTATE_270_DEGREES.equals(actionCommand))
-        {
-            return 270;
-        }
-        else
-        {
-            throw new IllegalArgumentException();
+            case ROTATE_0_DEGREES:
+                return 0;
+            case ROTATE_90_DEGREES:
+                return 90;
+            case ROTATE_180_DEGREES:
+                return 180;
+            case ROTATE_270_DEGREES:
+                return 270;
+            default:
+                throw new IllegalArgumentException("Invalid RotationDegrees actionCommand " + actionCommand);
         }
     }
 
