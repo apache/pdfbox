@@ -120,83 +120,74 @@ public final class ExtractText
         String ext = ".txt";
         int startPage = 1;
         int endPage = Integer.MAX_VALUE;
-        for( int i=0; i<args.length; i++ )
+        for (int i = 0; i < args.length; i++)
         {
-            if( args[i].equals( PASSWORD ) )
+            switch (args[i])
             {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                password = args[i];
-            }
-            else if( args[i].equals( ENCODING ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                encoding = args[i];
-            }
-            else if( args[i].equals( START_PAGE ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                startPage = Integer.parseInt( args[i] );
-            }
-            else if( args[i].equals( HTML ) )
-            {
-                toHTML = true;
-                ext = ".html";
-            }
-            else if( args[i].equals( SORT ) )
-            {
-                sort = true;
-            }
-            else if( args[i].equals( IGNORE_BEADS ) )
-            {
-                separateBeads = false;
-            }
-            else if( args[i].equals( DEBUG ) )
-            {
-                debugOutput = true;
-            }
-            else if (args[i].equals(ALWAYSNEXT))
-            {
-                alwaysNext = true;
-            }
-            else if (args[i].equals(ROTATION_MAGIC))
-            {
-                rotationMagic = true;
-            }
-            else if( args[i].equals( END_PAGE ) )
-            {
-                i++;
-                if( i >= args.length )
-                {
-                    usage();
-                }
-                endPage = Integer.parseInt( args[i] );
-            }
-            else if( args[i].equals( CONSOLE ) )
-            {
-                toConsole = true;
-            }
-            else
-            {
-                if( pdfFile == null )
-                {
-                    pdfFile = args[i];
-                }
-                else
-                {
-                    outputFile = args[i];
-                }
+                case PASSWORD:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    password = args[i];
+                    break;
+                case ENCODING:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    encoding = args[i];
+                    break;
+                case START_PAGE:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    startPage = Integer.parseInt(args[i]);
+                    break;
+                case HTML:
+                    toHTML = true;
+                    ext = ".html";
+                    break;
+                case SORT:
+                    sort = true;
+                    break;
+                case IGNORE_BEADS:
+                    separateBeads = false;
+                    break;
+                case DEBUG:
+                    debugOutput = true;
+                    break;
+                case ALWAYSNEXT:
+                    alwaysNext = true;
+                    break;
+                case ROTATION_MAGIC:
+                    rotationMagic = true;
+                    break;
+                case END_PAGE:
+                    i++;
+                    if (i >= args.length)
+                    {
+                        usage();
+                    }
+                    endPage = Integer.parseInt(args[i]);
+                    break;
+                case CONSOLE:
+                    toConsole = true;
+                    break;
+                default:
+                    if (pdfFile == null)
+                    {
+                        pdfFile = args[i];
+                    }
+                    else
+                    {
+                        outputFile = args[i];
+                    }
+                    break;
             }
         }
 
@@ -221,7 +212,8 @@ public final class ExtractText
                 AccessPermission ap = document.getCurrentAccessPermission();
                 if( ! ap.canExtractContent() )
                 {
-                    throw new IOException( "You do not have permission to extract text" );
+                    System.out.println( "You do not have permission to extract text" );
+                    //throw new IOException( "You do not have permission to extract text" );
                 }
                 
                 stopProcessing("Time for loading: ", startTime);

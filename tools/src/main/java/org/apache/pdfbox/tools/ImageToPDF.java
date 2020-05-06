@@ -64,32 +64,29 @@ public final class ImageToPDF
         {
             if (args[i].startsWith("-"))
             {
-                if ("-resize".equals(args[i]))
+                switch (args[i])
                 {
-                    // will be modified to something more flexible
-                    app.resize = true;
-                }
-                else if ("-landscape".equals(args[i]))
-                {
-                    app.setLandscape(true);
-                }
-                else if ("-autoOrientation".equals(args[i]))
-                {
-                    app.setAutoOrientation(true);
-                }
-                else if ("-pageSize".equals(args[i]))
-                {
-                    i++;
-                    PDRectangle rectangle = createRectangle(args[i]);
-                    if (rectangle == null)
-                    {
+                    case "-resize":
+                        // will be modified to something more flexible
+                        app.resize = true;
+                        break;
+                    case "-landscape":
+                        app.setLandscape(true);
+                        break;
+                    case "-autoOrientation":
+                        app.setAutoOrientation(true);
+                        break;
+                    case "-pageSize":
+                        i++;
+                        PDRectangle rectangle = createRectangle(args[i]);
+                        if (rectangle == null)
+                        {
+                            throw new IOException("Unknown argument: " + args[i]);
+                        }
+                        app.setMediaBox(rectangle);
+                        break;
+                    default:
                         throw new IOException("Unknown argument: " + args[i]);
-                    }
-                    app.setMediaBox(rectangle);
-                }
-                else
-                {
-                    throw new IOException("Unknown argument: " + args[i]);
                 }
             }
             else
