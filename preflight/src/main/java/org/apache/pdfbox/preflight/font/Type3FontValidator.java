@@ -199,7 +199,7 @@ public class Type3FontValidator extends FontValidator<Type3Container>
         }
         else if (fontEncoding instanceof COSDictionary)
         {
-            checkEncodingAsDictionary((COSDictionary) fontDictionary);
+            checkEncodingAsDictionary(fontDictionary);
         }
         else
         {
