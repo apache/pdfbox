@@ -150,10 +150,7 @@ public class ValidationResult
     {
         if (errors != null)
         {
-            for (ValidationError validationError : errors)
-            {
-                addError(validationError);
-            }
+            errors.forEach(this::addError);
         }
     }
 

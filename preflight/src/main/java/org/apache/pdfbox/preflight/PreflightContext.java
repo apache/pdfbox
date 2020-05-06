@@ -215,11 +215,7 @@ public class PreflightContext implements Closeable
      */
     public void addValidationErrors(List<ValidationError> errors)
     {
-        PreflightDocument pfDoc = this.document;
-        for (ValidationError error : errors)
-        {
-            pfDoc.addValidationError(error);
-        }
+        errors.forEach(this.document::addValidationError);
     }
 
     public PreflightPath getValidationPath()

@@ -25,6 +25,7 @@ import java.awt.color.ICC_Profile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -328,13 +329,9 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
             {
                 final Map<String, PDSeparation> colorants = attr.getColorants();
                 numberOfColorants = colorants.size();
-                for (PDSeparation col : colorants.values())
-                {
-                    if (col != null)
-                    {
-                        processAllColorSpace(col);
-                    }
-                }
+                colorants.values().stream().
+                        filter(Objects::nonNull).
+                        forEachOrdered(this::processAllColorSpace);
                 PDDeviceNProcess process = attr.getProcess();
                 if (process != null)
                 {

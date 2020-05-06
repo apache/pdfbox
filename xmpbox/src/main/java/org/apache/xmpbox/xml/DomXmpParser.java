@@ -837,10 +837,7 @@ public class DomXmpParser
         }
 
         // now remove the child nodes
-        for (Node node : forDeletion)
-        {
-        	root.removeChild(node);
-        }
+        forDeletion.forEach(root::removeChild);
     }
 
     private AbstractStructuredType instanciateStructured(TypeMapping tm, Types type, String name,

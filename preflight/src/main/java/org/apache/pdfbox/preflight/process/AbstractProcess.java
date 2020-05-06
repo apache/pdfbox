@@ -40,10 +40,7 @@ public abstract class AbstractProcess implements ValidationProcess
 
     protected void addValidationErrors(PreflightContext ctx, List<ValidationError> errors)
     {
-        for (ValidationError error : errors)
-        {
-            addValidationError(ctx, error);
-        }
+        errors.forEach(error -> addValidationError(ctx, error));
     }
 
     /**
