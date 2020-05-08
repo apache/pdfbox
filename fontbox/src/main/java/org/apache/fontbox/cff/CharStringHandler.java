@@ -62,5 +62,5 @@ public interface CharStringHandler
      * @param command the CharStringCommand
      * @return a list of commands. This can be empty but never be null.
      */
-    public abstract List<Number> handleCommand(List<Number> numbers, CharStringCommand command);
+    List<Number> handleCommand(List<Number> numbers, CharStringCommand command);
 }
