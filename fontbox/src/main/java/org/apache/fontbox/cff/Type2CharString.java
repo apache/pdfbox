@@ -239,13 +239,13 @@ public class Type2CharString extends Type1CharString
         {
             if (flag)
             {
-                addCommand(Arrays.asList((Number) 0f, numbers.get(0).floatValue() + nominalWidthX),
+                addCommand(Arrays.asList(0, numbers.get(0).floatValue() + nominalWidthX),
                         new CharStringCommand(13));
                 numbers = numbers.subList(1, numbers.size());
             }
             else
             {
-                addCommand(Arrays.asList((Number) 0f, defWidthX), new CharStringCommand(13));
+                addCommand(Arrays.asList(0, defWidthX), new CharStringCommand(13));
             }
         }
         return numbers;
