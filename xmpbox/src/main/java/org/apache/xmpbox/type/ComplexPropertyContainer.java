@@ -24,6 +24,7 @@ package org.apache.xmpbox.type;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Object representation for arrays content This Class could be used to define directly a property with more than one
@@ -89,7 +90,7 @@ public class ComplexPropertyContainer
     /**
      * Return all children associated to this property
      * 
-     * @return All Properties contained in this container
+     * @return All Properties contained in this container, never null.
      */
     public List<AbstractField> getAllProperties()
     {
@@ -98,34 +99,25 @@ public class ComplexPropertyContainer
 
     /**
      * Return all properties with this specified localName.
-     * 
-     * @param localName
-     *            the local name wanted
-     * @return All properties with local name which match with localName given, or null if there are none.
+     *
+     * @param localName the local name wanted
+     * @return All properties with local name which match with localName given, or null if there are
+     * none.
      */
     public List<AbstractField> getPropertiesByLocalName(String localName)
     {
-        List<AbstractField> absFields = getAllProperties();
-        if (absFields != null)
+        List<AbstractField> list =
+                getAllProperties().stream().
+                filter(abstractField -> (abstractField.getPropertyName().equals(localName))).
+                collect(Collectors.toList());
+        if (list.isEmpty())
         {
-            List<AbstractField> list = new ArrayList<>();
-            for (AbstractField abstractField : absFields)
-            {
-                if (abstractField.getPropertyName().equals(localName))
-                {
-                    list.add(abstractField);
-                }
-            }
-            if (list.isEmpty())
-            {
-                return null;
-            }
-            else
-            {
-                return list;
-            }
+            return null;
         }
-        return null;
+        else
+        {
+            return list;
+        }
     }
 
     /**
@@ -211,9 +203,6 @@ public class ComplexPropertyContainer
         {
             return;
         }
-        for (AbstractField field : propList)
-        {
-            properties.remove(field);
-        }
+        propList.forEach(properties::remove);
     }
 }
