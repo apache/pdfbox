@@ -273,21 +273,19 @@ public final class PdfaExtensionHelper
         if (pos > 0)
         {
             String scard = valueType.substring(0, pos);
-            if ("seq".equals(scard))
+            switch (scard)
             {
-                card = Cardinality.Seq;
-            }
-            else if ("bag".equals(scard))
-            {
-                card = Cardinality.Bag;
-            }
-            else if ("alt".equals(scard))
-            {
-                card = Cardinality.Alt;
-            }
-            else
-            {
-                return null;
+                case "seq":
+                    card = Cardinality.Seq;
+                    break;
+                case "bag":
+                    card = Cardinality.Bag;
+                    break;
+                case "alt":
+                    card = Cardinality.Alt;
+                    break;
+                default:
+                    return null;
             }
         }
         String vt = valueType.substring(pos + 1);
