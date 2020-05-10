@@ -520,8 +520,17 @@ final class FontMapperImpl implements FontMapper
                 {
                     LOG.info("bestMatch for '" + baseFont + "': " + bestMatch.info);
                     FontBoxFont font = bestMatch.info.getFont();
+                    LOG.info("bestMatch2: " + font);
                     if (font instanceof OpenTypeFont)
                     {
+                        try
+                        {
+                            LOG.info("bestMatch3: " + ((OpenTypeFont) font).getCmap());
+                        }
+                        catch (IOException ex)
+                        {
+                            LOG.info(ex.getMessage(), ex);
+                        }
                         return new CIDFontMapping((OpenTypeFont)font, null, true);
                     }
                     else if (font != null)

@@ -650,6 +650,11 @@ final class FileSystemFontProvider extends FontProvider
                     fontInfoList.add(new FSIgnored(file, FontFormat.TTF, ttf.getName()));
                     return;
                 }
+                if (ttf.getUnicodeCmapLookup(false) == null)
+                {
+                    fontInfoList.add(new FSIgnored(file, FontFormat.TTF, "*skipnocmap*"));
+                    LOG.warn("Skipping font " + ttf.getName() + " with no cmap, in file " + file);
+                }
                 int macStyle = ttf.getHeader().getMacStyle();
 
                 int sFamilyClass = -1;
