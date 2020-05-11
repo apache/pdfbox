@@ -415,9 +415,9 @@ public class GlyphSubstitutionTable extends TTFTable
             }
             for (int featureIndex : langSysTable.featureIndices)
             {
-                if (enabledFeatures == null || 
-                        featureIndex < featureList.length && 
-                        enabledFeatures.contains(featureList[featureIndex].featureTag))
+                if (featureIndex < featureList.length &&
+                        (enabledFeatures == null ||
+                         enabledFeatures.contains(featureList[featureIndex].featureTag)))
                 {
                     result.add(featureList[featureIndex]);
                 }
