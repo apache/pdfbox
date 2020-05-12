@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.FontBoxFont;
 import org.apache.fontbox.ttf.OpenTypeFont;
 import org.apache.fontbox.ttf.TTFParser;
@@ -41,6 +43,8 @@ import org.apache.fontbox.type1.Type1Font;
  */
 final class FontMapperImpl implements FontMapper
 {
+    private static final Log LOG = LogFactory.getLog(FontMapperImpl.class);
+
     private static final FontCache fontCache = new FontCache(); // todo: static cache isn't ideal
     private FontProvider fontProvider;
     private Map<String, FontInfo> fontInfoByName;
@@ -467,6 +471,10 @@ final class FontMapperImpl implements FontMapper
         FontInfo info = fontInfoByName.get(postScriptName);
         if (info != null && info.getFormat() == format)
         {
+            if (LOG.isDebugEnabled())
+            {
+                LOG.debug(String.format("getFont('%s','%s') returns %s", format, postScriptName, info));
+            }
             return info;
         }
         return null;
@@ -513,6 +521,10 @@ final class FontMapperImpl implements FontMapper
                 FontMatch bestMatch = queue.poll();
                 if (bestMatch != null)
                 {
+                    if (LOG.isDebugEnabled())
+                    {
+                        LOG.debug("Best match for '" + baseFont + "': " + bestMatch.info);
+                    }
                     FontBoxFont font = bestMatch.info.getFont();
                     if (font instanceof OpenTypeFont)
                     {
