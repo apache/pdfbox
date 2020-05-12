@@ -229,7 +229,21 @@ final class FileSystemFontProvider extends FontProvider
         {
             try
             {
-                // todo JH: we don't yet support loading CFF fonts from OTC collections 
+                if (file.getName().toLowerCase().endsWith(".ttc"))
+                {
+                    @SuppressWarnings("squid:S2095")
+                    // ttc not closed here because it is needed later when ttf is accessed,
+                    // e.g. rendering PDF with non-embedded font which is in ttc file in our font directory
+                    TrueTypeCollection ttc = new TrueTypeCollection(file);
+                    TrueTypeFont ttf = ttc.getFontByName(postScriptName);
+                    if (ttf == null)
+                    {
+                        ttc.close();
+                        throw new IOException("Font " + postScriptName + " not found in " + file);
+                    }
+                    return (OpenTypeFont) ttf;
+                }
+
                 OTFParser parser = new OTFParser(false, true);
                 OpenTypeFont otf = parser.parse(file);
 
