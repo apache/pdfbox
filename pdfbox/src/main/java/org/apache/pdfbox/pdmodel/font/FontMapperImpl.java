@@ -471,7 +471,10 @@ final class FontMapperImpl implements FontMapper
         FontInfo info = fontInfoByName.get(postScriptName);
         if (info != null && info.getFormat() == format)
         {
-            LOG.info(String.format("getFont('%s','%s') returns %s", format, postScriptName, info));
+            if (LOG.isDebugEnabled())
+            {
+                LOG.debug(String.format("getFont('%s','%s') returns %s", format, postScriptName, info));
+            }
             return info;
         }
         return null;
@@ -518,19 +521,13 @@ final class FontMapperImpl implements FontMapper
                 FontMatch bestMatch = queue.poll();
                 if (bestMatch != null)
                 {
-                    LOG.info("bestMatch for '" + baseFont + "': " + bestMatch.info);
+                    if (LOG.isDebugEnabled())
+                    {
+                        LOG.debug("Best match for '" + baseFont + "': " + bestMatch.info);
+                    }
                     FontBoxFont font = bestMatch.info.getFont();
-                    LOG.info("bestMatch2: " + font);
                     if (font instanceof OpenTypeFont)
                     {
-                        try
-                        {
-                            LOG.info("bestMatch3: " + ((OpenTypeFont) font).getCmap());
-                        }
-                        catch (IOException ex)
-                        {
-                            LOG.info(ex.getMessage(), ex);
-                        }
                         return new CIDFontMapping((OpenTypeFont)font, null, true);
                     }
                     else if (font != null)
