@@ -176,9 +176,19 @@ public class GlyphSubstitutionTable extends TTFTable
             {
                 // catch corrupt file
                 // https://docs.microsoft.com/en-us/typography/opentype/spec/chapter2#flTbl
-                LOG.warn("FeatureRecord array not alphabetically sorted by FeatureTag: " +
-                           featureRecord.featureTag + " < " + prevFeatureTag);
-                return new FeatureRecord[0];
+                if (featureRecord.featureTag.matches("\\w{4}") && prevFeatureTag.matches("\\w{4}"))
+                {
+                    // ArialUni.ttf has many warnings but isn't corrupt, so we assume that only
+                    // strings with trash characters indicate real corruption
+                    LOG.debug("FeatureRecord array not alphabetically sorted by FeatureTag: " +
+                               featureRecord.featureTag + " < " + prevFeatureTag);
+                }
+                else
+                {
+                    LOG.warn("FeatureRecord array not alphabetically sorted by FeatureTag: " +
+                               featureRecord.featureTag + " < " + prevFeatureTag);
+                    return new FeatureRecord[0];
+                }                
             }
             featureOffsets[i] = data.readUnsignedShort();
             featureRecords[i] = featureRecord;
