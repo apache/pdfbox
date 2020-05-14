@@ -16,22 +16,23 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
-import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSArray;
-import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.pdmodel.MissingResourceException;
-import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
-
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.WritableRaster;
-import java.io.IOException;
 import java.awt.color.ColorSpace;
 import java.awt.image.ColorModel;
+import java.io.IOException;
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.pdmodel.MissingResourceException;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.ResourceCache;
 
 /**
@@ -217,6 +218,12 @@ public abstract class PDColorSpace implements COSObjectable
             {
                 throw new IOException("Invalid color space kind: " + name);
             }
+        }
+        else if (colorSpace instanceof COSDictionary && 
+                ((COSDictionary) colorSpace).containsKey(COSName.COLORSPACE))
+        {
+            // PDFBOX-4833: dictionary with /ColorSpace entry
+            return create(((COSDictionary) colorSpace).getDictionaryObject(COSName.COLORSPACE), resources, wasDefault);
         }
         else
         {
