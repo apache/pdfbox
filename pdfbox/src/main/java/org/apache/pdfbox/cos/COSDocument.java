@@ -165,6 +165,14 @@ public class COSDocument extends COSBase implements Closeable
         return stream;
     }
 
+    public COSStream createCOSStream(COSDictionary dictionary, long startPosition,
+            long streamLength)
+    {
+        COSStream stream = new COSStream(scratchFile,
+                parser.createRandomAccessReadView(startPosition, streamLength));
+        dictionary.forEach(stream::setItem);
+        return stream;
+    }
     /**
      * Get the dictionary containing the linearization information if the pdf is linearized.
      * 

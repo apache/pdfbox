@@ -16,7 +16,7 @@
 
 package org.apache.pdfbox.pdfparser;
 
-import java.io.BufferedOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -30,20 +30,23 @@ import java.io.OutputStream;
  *
  * @author Tilman Hausherr
  */
-class EndstreamOutputStream extends BufferedOutputStream
+class EndstreamOutputStream extends FilterOutputStream
 {
-    //TODO: replace this class with a PullBackOutputStream class if there ever is one
-    
     private boolean hasCR = false;
     private boolean hasLF = false;
     private int pos = 0;
     private boolean mustFilter = true;
+    private long length = 0;
 
     EndstreamOutputStream(OutputStream out)
     {
         super(out);
     }
 
+    public EndstreamOutputStream()
+    {
+        super(null);
+    }
     /**
      * Write CR and/or LF that were kept, then writes len bytes from the 
      * specified byte array starting at offset off to this output stream,
@@ -86,11 +89,11 @@ class EndstreamOutputStream extends BufferedOutputStream
                     // reset hasCR done too to avoid CR getting written in the flush
                     return;
                 }
-                super.write('\r');               
+                length++;
             }
             if (hasLF)
             {
-                super.write('\n');
+                length++;
                 hasLF = false;
             }
             // don't write CR, LF, or CR LF if at the end of the buffer
@@ -113,7 +116,7 @@ class EndstreamOutputStream extends BufferedOutputStream
                 }
             }
         }
-        super.write(b, off, len);
+        length += len;
         pos += len;
     }
 
@@ -129,11 +132,15 @@ class EndstreamOutputStream extends BufferedOutputStream
         // if there is only a CR and no LF, write it
         if (hasCR && !hasLF)
         {
-            super.write('\r');
+            length++;
             ++pos;
         }
         hasCR = false;
         hasLF = false;
-        super.flush();
+    }
+
+    public long getLength()
+    {
+        return length;
     }
 }

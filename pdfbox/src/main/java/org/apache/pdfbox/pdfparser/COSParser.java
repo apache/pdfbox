@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -45,6 +44,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.ICOSParser;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadView;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -573,6 +573,12 @@ public class COSParser extends BaseParser implements ICOSParser
         return parsedObj;
     }
 
+    @Override
+    public RandomAccessReadView createRandomAccessReadView(long startPosition, long streamLength)
+    {
+        return new RandomAccessReadView(source, startPosition, streamLength);
+    }
+
     /**
      * Parse the object for the given object number.  
      * 
@@ -804,9 +810,6 @@ public class COSParser extends BaseParser implements ICOSParser
                 "Wrong type of length object: " + lengthBaseObj.getClass().getSimpleName());
     }
     
-    private static final int STREAMCOPYBUFLEN = 8192;
-    private final byte[] streamCopyBuf = new byte[STREAMCOPYBUFLEN];
-
     /**
      * This will read a COSStream from the input stream using length attribute within dictionary. If
      * length attribute is a indirect reference it is first resolved to get the stream length. This
@@ -823,8 +826,6 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
-        COSStream stream = document.createCOSStream(dic);
-       
         // read 'stream'; this was already tested in parseObjectsDynamically()
         readString(); 
         
@@ -847,18 +848,23 @@ public class COSParser extends BaseParser implements ICOSParser
             }
         }
 
-        // get output stream to copy data to
-        try (OutputStream out = stream.createRawOutputStream())
+        COSStream stream = null;
+        long streamStartPosition = source.getPosition();
+        if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
         {
-            if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
-            {
-                readValidStream(out, streamLengthObj);
-            }
-            else
-            {
-                readUntilEndStream(new EndstreamOutputStream(out));
-            }
+            stream = document.createCOSStream(dic, streamStartPosition,
+                    streamLengthObj.longValue());
+            // skip stream
+            source.seek(source.getPosition() + streamLengthObj.intValue());
         }
+        else
+        {
+            // get output stream to copy data to
+            long streamLength = readUntilEndStream(new EndstreamOutputStream());
+            stream = document.createCOSStream(dic, streamStartPosition,
+                    streamLength);
+        }
+
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
         {
@@ -880,53 +886,49 @@ public class COSParser extends BaseParser implements ICOSParser
                     "Error reading stream, expected='endstream' actual='"
                     + endStream + "' at offset " + source.getPosition());
         }
-
         return stream;
     }
 
     /**
-     * This method will read through the current stream object until
-     * we find the keyword "endstream" meaning we're at the end of this
-     * object. Some pdf files, however, forget to write some endstream tags
-     * and just close off objects with an "endobj" tag so we have to handle
-     * this case as well.
+     * This method will read through the current stream object until we find the keyword "endstream" meaning we're at the
+     * end of this object. Some pdf files, however, forget to write some endstream tags and just close off objects with an
+     * "endobj" tag so we have to handle this case as well.
      * 
-     * This method is optimized using buffered IO and reduced number of
-     * byte compare operations.
+     * This method is optimized using buffered IO and reduced number of byte compare operations.
      * 
-     * @param out  stream we write out to.
+     * @param out stream we write out to.
      * 
      * @throws IOException if something went wrong
      */
-    private void readUntilEndStream( final OutputStream out ) throws IOException
+    private long readUntilEndStream(final EndstreamOutputStream out) throws IOException
     {
         int bufSize;
         int charMatchCount = 0;
         byte[] keyw = ENDSTREAM;
-        
+
         // last character position of shortest keyword ('endobj')
         final int quickTestOffset = 5;
-        
+
         // read next chunk into buffer; already matched chars are added to beginning of buffer
-        while ( ( bufSize = source.read( strmBuf, charMatchCount, STRMBUFLEN - charMatchCount ) ) > 0 ) 
+        while ((bufSize = source.read(strmBuf, charMatchCount, STRMBUFLEN - charMatchCount)) > 0)
         {
             bufSize += charMatchCount;
-            
+
             int bIdx = charMatchCount;
             int quickTestIdx;
-        
+
             // iterate over buffer, trying to find keyword match
-            for ( int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++ ) 
+            for (int maxQuicktestIdx = bufSize - quickTestOffset; bIdx < bufSize; bIdx++)
             {
                 // reduce compare operations by first test last character we would have to
                 // match if current one matches; if it is not a character from keywords
-                // we can move behind the test character; this shortcut is inspired by the 
+                // we can move behind the test character; this shortcut is inspired by the
                 // Boyer-Moore string search algorithm and can reduce parsing time by approx. 20%
                 quickTestIdx = bIdx + quickTestOffset;
                 if (charMatchCount == 0 && quickTestIdx < maxQuicktestIdx)
-                {                    
+                {
                     final byte ch = strmBuf[quickTestIdx];
-                    if ( ( ch > 't' ) || ( ch < 'a' ) ) 
+                    if ((ch > 't') || (ch < 'a'))
                     {
                         // last character we would have to match if current character would match
                         // is not a character from keywords -> jump behind and start over
@@ -934,80 +936,64 @@ public class COSParser extends BaseParser implements ICOSParser
                         continue;
                     }
                 }
-                
+
                 // could be negative - but we only compare to ASCII
                 final byte ch = strmBuf[bIdx];
-            
-                if ( ch == keyw[ charMatchCount ] ) 
+
+                if (ch == keyw[charMatchCount])
                 {
-                    if ( ++charMatchCount == keyw.length ) 
+                    if (++charMatchCount == keyw.length)
                     {
                         // match found
                         bIdx++;
                         break;
                     }
-                } 
-                else 
+                }
+                else
                 {
-                    if ( ( charMatchCount == 3 ) && ( ch == ENDOBJ[ charMatchCount ] ) ) 
+                    if ((charMatchCount == 3) && (ch == ENDOBJ[charMatchCount]))
                     {
                         // maybe ENDSTREAM is missing but we could have ENDOBJ
                         keyw = ENDOBJ;
                         charMatchCount++;
-                    } 
-                    else 
+                    }
+                    else
                     {
-                        // no match; incrementing match start by 1 would be dumb since we already know 
-                        // matched chars depending on current char read we may already have beginning 
-                        // of a new match: 'e': first char matched; 'n': if we are at match position 
-                        // idx 7 we already read 'e' thus 2 chars matched for each other char we have 
+                        // no match; incrementing match start by 1 would be dumb since we already know
+                        // matched chars depending on current char read we may already have beginning
+                        // of a new match: 'e': first char matched; 'n': if we are at match position
+                        // idx 7 we already read 'e' thus 2 chars matched for each other char we have
                         // to start matching first keyword char beginning with next read position
-                        charMatchCount = ( ch == E ) ? 1 : ( ( ch == N ) && ( charMatchCount == 7 ) ) ? 2 : 0;
+                        charMatchCount = (ch == E) ? 1
+                                : ((ch == N) && (charMatchCount == 7)) ? 2 : 0;
                         // search again for 'endstream'
                         keyw = ENDSTREAM;
                     }
-                } 
+                }
             }
-            
-            int contentBytes = Math.max( 0, bIdx - charMatchCount );
-            
+
+            int contentBytes = Math.max(0, bIdx - charMatchCount);
+
             // write buffer content until first matched char to output stream
-            if ( contentBytes > 0 )
+            if (contentBytes > 0)
             {
-                out.write( strmBuf, 0, contentBytes );
+                out.write(strmBuf, 0, contentBytes);
             }
-            if ( charMatchCount == keyw.length ) 
+            if (charMatchCount == keyw.length)
             {
                 // keyword matched; unread matched keyword (endstream/endobj) and following buffered content
-                source.rewind( bufSize - contentBytes );
+                source.rewind(bufSize - contentBytes);
                 break;
-            } 
-            else 
+            }
+            else
             {
                 // copy matched chars at start of buffer
-                System.arraycopy( keyw, 0, strmBuf, 0, charMatchCount );
-            }            
+                System.arraycopy(keyw, 0, strmBuf, 0, charMatchCount);
+            }
         }
         // this writes a lonely CR or drops trailing CR LF and LF
         out.flush();
-    }
-
-    private void readValidStream(OutputStream out, COSNumber streamLengthObj) throws IOException
-    {
-        long remainBytes = streamLengthObj.longValue();
-        while (remainBytes > 0)
-        {
-            final int chunk = (remainBytes > STREAMCOPYBUFLEN) ? STREAMCOPYBUFLEN : (int) remainBytes;
-            final int readBytes = source.read(streamCopyBuf, 0, chunk);
-            if (readBytes <= 0)
-            {
-                // shouldn't happen, the stream length has already been validated
-                throw new IOException("read error at offset " + source.getPosition()
-                        + ": expected " + chunk + " bytes, but read() returns " + readBytes);
-            }
-            out.write(streamCopyBuf, 0, readBytes);
-            remainBytes -= readBytes;
-        }
+        return out.getLength();
     }
 
     private boolean validateStreamLength(long streamLength) throws IOException
