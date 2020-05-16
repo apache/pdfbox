@@ -25,13 +25,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Provides buffered reading of content. Start of next bytes to be read can be set via seek method.
+ * Provides {@link InputStream} access to portions of a file combined with
+ * buffered reading of content. Start of next bytes to read can be set via seek
+ * method.
  * 
- * File is accessed via {@link RandomAccessFile} and is read in byte chunks which are cached.
+ * File is accessed via {@link RandomAccessFile} and is read in byte chunks
+ * which are cached.
  * 
  * @author Timo Boehme
  */
-public class RandomAccessBufferedFile implements RandomAccessRead
+public class RandomAccessBufferedFileInputStream
+extends InputStream implements RandomAccessRead
 {
     /**
      * The prefix for the temp file being used. 
@@ -79,7 +83,7 @@ public class RandomAccessBufferedFile implements RandomAccessRead
      * @param filename the filename of the file to be read.
      * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessBufferedFile( String filename ) throws IOException 
+    public RandomAccessBufferedFileInputStream( String filename ) throws IOException 
     {
         this(new File(filename));
     }
@@ -90,7 +94,7 @@ public class RandomAccessBufferedFile implements RandomAccessRead
      * @param file the file to be read.
      * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessBufferedFile( File file ) throws IOException 
+    public RandomAccessBufferedFileInputStream( File file ) throws IOException 
     {
         raFile = new RandomAccessFile(file, "r");
         fileLength = file.length();
@@ -104,7 +108,7 @@ public class RandomAccessBufferedFile implements RandomAccessRead
      * @param input the input stream to be read. It will be closed by this method.
      * @throws IOException if something went wrong while creating the temporary file.
      */
-    public RandomAccessBufferedFile( InputStream input ) throws IOException 
+    public RandomAccessBufferedFileInputStream( InputStream input ) throws IOException 
     {
         tempFile = createTmpFile(input);
         fileLength = tempFile.length();
@@ -263,6 +267,32 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     }
     
     @Override
+    public long skip( long n ) throws IOException
+    {
+        // test if we have to reduce skip count because of EOF
+        long toSkip = n;
+
+        if ( fileLength - fileOffset < toSkip )
+        {
+            toSkip = fileLength - fileOffset;
+        }
+
+        if ( ( toSkip < pageSize ) && ( ( offsetWithinPage + toSkip ) <= pageSize ) )
+        {
+            // we can skip within current page
+            offsetWithinPage += toSkip;
+            fileOffset += toSkip;
+        }
+        else
+        {
+            // seek to the page we will get after skipping
+            seek( fileOffset + toSkip );
+        }
+
+        return toSkip;
+    }
+    
+    @Override
     public long length() throws IOException
     {
         return fileLength;
@@ -303,6 +333,7 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     @Override
     public boolean isEOF() throws IOException
     {
-        return peek() == -1;
+        int peek = peek();
+        return peek == -1;
     }
 }

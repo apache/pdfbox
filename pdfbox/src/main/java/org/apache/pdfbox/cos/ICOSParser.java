@@ -18,8 +18,6 @@ package org.apache.pdfbox.cos;
 
 import java.io.IOException;
 
-import org.apache.pdfbox.io.RandomAccessReadView;
-
 public interface ICOSParser
 {
 
@@ -33,7 +31,5 @@ public interface ICOSParser
      * @throws IOException if something went wrong when dereferencing the COSBase object
      */
     public COSBase dereferenceCOSObject(COSObject obj) throws IOException;
-
-    public RandomAccessReadView createRandomAccessReadView(long startPosition, long streamLength);
 
 }

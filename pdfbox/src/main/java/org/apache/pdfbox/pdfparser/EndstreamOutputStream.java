@@ -16,7 +16,7 @@
 
 package org.apache.pdfbox.pdfparser;
 
-import java.io.FilterOutputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -30,23 +30,20 @@ import java.io.OutputStream;
  *
  * @author Tilman Hausherr
  */
-class EndstreamOutputStream extends FilterOutputStream
+class EndstreamOutputStream extends BufferedOutputStream
 {
+    //TODO: replace this class with a PullBackOutputStream class if there ever is one
+    
     private boolean hasCR = false;
     private boolean hasLF = false;
     private int pos = 0;
     private boolean mustFilter = true;
-    private long length = 0;
 
     EndstreamOutputStream(OutputStream out)
     {
         super(out);
     }
 
-    public EndstreamOutputStream()
-    {
-        super(null);
-    }
     /**
      * Write CR and/or LF that were kept, then writes len bytes from the 
      * specified byte array starting at offset off to this output stream,
@@ -89,11 +86,11 @@ class EndstreamOutputStream extends FilterOutputStream
                     // reset hasCR done too to avoid CR getting written in the flush
                     return;
                 }
-                length++;
+                super.write('\r');               
             }
             if (hasLF)
             {
-                length++;
+                super.write('\n');
                 hasLF = false;
             }
             // don't write CR, LF, or CR LF if at the end of the buffer
@@ -116,7 +113,7 @@ class EndstreamOutputStream extends FilterOutputStream
                 }
             }
         }
-        length += len;
+        super.write(b, off, len);
         pos += len;
     }
 
@@ -132,15 +129,11 @@ class EndstreamOutputStream extends FilterOutputStream
         // if there is only a CR and no LF, write it
         if (hasCR && !hasLF)
         {
-            length++;
+            super.write('\r');
             ++pos;
         }
         hasCR = false;
         hasLF = false;
-    }
-
-    public long getLength()
-    {
-        return length;
+        super.flush();
     }
 }

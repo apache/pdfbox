@@ -26,7 +26,7 @@ import java.io.InputStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessBufferedFile;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.FDFParser;
@@ -297,7 +297,7 @@ public class Loader
             MemoryUsageSetting memUsageSetting) throws IOException
     {
         @SuppressWarnings({ "squid:S2095" }) // raFile not closed here, may be needed for signing
-        RandomAccessBufferedFile raFile = new RandomAccessBufferedFile(file);
+        RandomAccessBufferedFileInputStream raFile = new RandomAccessBufferedFileInputStream(file);
         try
         {
             return Loader.loadPDF(raFile, password, keyStore, alias, memUsageSetting);
@@ -308,21 +308,8 @@ public class Loader
             throw ioe;
         }
     }
-    /**
-     * Parses a PDF.
-     * 
-     * @param rafile          RandomAccessRead of the file to be loaded
-     * @param password        password to be used for decryption
-     * @param keyStore        key store to be used for decryption when using public key security
-     * @param alias           alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
-     * 
-     * @return loaded document
-     * 
-     * @throws IOException in case of a file reading or parsing error
-     */
-    public static PDDocument loadPDF(RandomAccessRead raFile,
-            String password,
+
+    public static PDDocument loadPDF(RandomAccessBufferedFileInputStream raFile, String password,
             InputStream keyStore, String alias, MemoryUsageSetting memUsageSetting)
             throws IOException
     {

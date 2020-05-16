@@ -23,7 +23,7 @@ import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessBufferedFile;
+import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.visible.PDVisibleSigProperties;
@@ -79,7 +79,7 @@ public class SignatureOptions implements Closeable
      */
     public void setVisualSignature(File file) throws IOException
     {
-        initFromRandomAccessRead(new RandomAccessBufferedFile(file));
+        initFromRandomAccessRead(new RandomAccessBufferedFileInputStream(file));
     }
 
     /**
