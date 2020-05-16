@@ -66,7 +66,8 @@ final class FlateFilter extends Filter
     { 
         byte[] buf = new byte[2048];
         // skip zlib header
-        in.read(buf,0,2);
+        in.read();
+        in.read();
         int read = in.read(buf); 
         if (read > 0) 
         { 
