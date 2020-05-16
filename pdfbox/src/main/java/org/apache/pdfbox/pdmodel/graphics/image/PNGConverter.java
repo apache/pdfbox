@@ -496,7 +496,17 @@ final class PNGConverter
         @Override
         public int read() throws IOException
         {
-            throw new IllegalStateException("Only bulk reads are expected!");
+            if (!ensureStream())
+            {
+                return -1;
+            }
+            int ret = currentStream.read();
+            if (ret == -1)
+            {
+                currentStream = null;
+                return read();
+            }
+            return ret;
         }
 
         @Override
