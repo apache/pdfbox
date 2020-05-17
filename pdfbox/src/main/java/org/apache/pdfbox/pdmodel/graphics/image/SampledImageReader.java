@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.filter.DecodeOptions;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
@@ -97,7 +98,7 @@ final class SampledImageReader
             for (int y = 0; y < height; y++)
             {
                 int x = 0;
-                int readLen = iis.read(buff);
+                int readLen = (int) IOUtils.populateBuffer(iis, buff);
                 for (int r = 0; r < rowLen && r < readLen; r++)
                 {
                     int byteValue = buff[r];
@@ -301,7 +302,7 @@ final class SampledImageReader
             for (int y = 0; y < starty + scanHeight; y++)
             {
                 int x = 0;
-                int readLen = iis.read(buff);
+                int readLen = (int) IOUtils.populateBuffer(iis, buff);
                 if (y < starty || y % currentSubsampling > 0)
                 {
                     continue;
@@ -381,7 +382,7 @@ final class SampledImageReader
             if (startx == 0 && starty == 0 && scanWidth == width && scanHeight == height && currentSubsampling == 1)
             {
                 // we just need to copy all sample data, then convert to RGB image.
-                long inputResult = input.read(bank);
+                long inputResult = IOUtils.populateBuffer(input, bank);
                 if (Long.compare(inputResult, width * height * (long) numComponents) != 0)
                 {
                     LOG.debug("Tried reading " + width * height * (long) numComponents + " bytes but only " + inputResult + " bytes read");
@@ -398,7 +399,7 @@ final class SampledImageReader
             int i = 0;
             for (int y = 0; y < starty + scanHeight; ++y)
             {
-                long inputResult = input.read(tempBytes);
+                long inputResult = IOUtils.populateBuffer(input, tempBytes);
 
                 if (Long.compare(inputResult, tempBytes.length) != 0)
                 {
