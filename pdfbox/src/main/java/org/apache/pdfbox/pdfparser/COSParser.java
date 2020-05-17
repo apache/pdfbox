@@ -45,6 +45,7 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.ICOSParser;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadView;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
@@ -573,6 +574,12 @@ public class COSParser extends BaseParser implements ICOSParser
         return parsedObj;
     }
 
+    @Override
+    public RandomAccessReadView createRandomAccessReadView(long startPosition, long streamLength)
+    {
+        return new RandomAccessReadView(source, startPosition, streamLength);
+    }
+
     /**
      * Parse the object for the given object number.  
      * 
@@ -823,8 +830,6 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     protected COSStream parseCOSStream(COSDictionary dic) throws IOException
     {
-        COSStream stream = document.createCOSStream(dic);
-       
         // read 'stream'; this was already tested in parseObjectsDynamically()
         readString(); 
         
@@ -847,14 +852,21 @@ public class COSParser extends BaseParser implements ICOSParser
             }
         }
 
-        // get output stream to copy data to
-        try (OutputStream out = stream.createRawOutputStream())
+        COSStream stream;
+        long streamPosition = source.getPosition();
+        if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
         {
-            if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
-            {
-                readValidStream(out, streamLengthObj);
-            }
-            else
+            stream = document.createCOSStream(dic,
+                    streamPosition,
+                    streamLengthObj.longValue());
+            // skip stream
+            source.seek(source.getPosition() + streamLengthObj.intValue());
+        }
+        else
+        {
+            stream = document.createCOSStream(dic);
+            // get output stream to copy data to
+            try (OutputStream out = stream.createRawOutputStream())
             {
                 readUntilEndStream(new EndstreamOutputStream(out));
             }
@@ -990,24 +1002,6 @@ public class COSParser extends BaseParser implements ICOSParser
         }
         // this writes a lonely CR or drops trailing CR LF and LF
         out.flush();
-    }
-
-    private void readValidStream(OutputStream out, COSNumber streamLengthObj) throws IOException
-    {
-        long remainBytes = streamLengthObj.longValue();
-        while (remainBytes > 0)
-        {
-            final int chunk = (remainBytes > STREAMCOPYBUFLEN) ? STREAMCOPYBUFLEN : (int) remainBytes;
-            final int readBytes = source.read(streamCopyBuf, 0, chunk);
-            if (readBytes <= 0)
-            {
-                // shouldn't happen, the stream length has already been validated
-                throw new IOException("read error at offset " + source.getPosition()
-                        + ": expected " + chunk + " bytes, but read() returns " + readBytes);
-            }
-            out.write(streamCopyBuf, 0, readBytes);
-            remainBytes -= readBytes;
-        }
     }
 
     private boolean validateStreamLength(long streamLength) throws IOException
