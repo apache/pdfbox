@@ -333,7 +333,7 @@ public abstract class SecurityHandler
         if (decrypt)
         {
             // read IV from stream
-            int ivSize = data.read(iv);
+            int ivSize = (int) IOUtils.populateBuffer(data, iv);
             if (ivSize == -1)
             {
                 return false;
@@ -425,7 +425,7 @@ public abstract class SecurityHandler
             // PDFBOX-3229 check case where metadata is not encrypted despite /EncryptMetadata missing
             InputStream is = stream.createRawInputStream();
             byte buf[] = new byte[10];
-            is.read(buf);
+            IOUtils.populateBuffer(is, buf);
             is.close();
             if (Arrays.equals(buf, "<?xpacket ".getBytes(Charsets.ISO_8859_1)))
             {
