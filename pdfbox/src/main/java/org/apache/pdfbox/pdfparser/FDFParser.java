@@ -16,9 +16,7 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,8 +24,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-import org.apache.pdfbox.io.RandomAccessBuffer;
-import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
 public class FDFParser extends COSParser
@@ -41,36 +38,9 @@ public class FDFParser extends COSParser
      * 
      * @throws IOException If something went wrong.
      */
-    public FDFParser(String filename) throws IOException
+    public FDFParser(RandomAccessRead source) throws IOException
     {
-        this(new File(filename));
-    }
-
-    /**
-     * Constructs parser for given file using given buffer for temporary
-     * storage.
-     * 
-     * @param file the pdf to be parsed
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public FDFParser(File file) throws IOException
-    {
-        super(new RandomAccessFile(file, "r"));
-        fileLen = file.length();
-        init();
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param input input stream representing the pdf.
-     * @throws IOException If something went wrong.
-     */
-    public FDFParser(InputStream input) throws IOException
-    {
-        super(new RandomAccessBuffer(input));
-        fileLen = source.length();
+        super(source);
         init();
     }
 

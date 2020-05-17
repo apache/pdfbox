@@ -44,7 +44,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * <p>Using this class for {@link RandomAccess} buffers allows for a direct control
  * on the maximum memory usage and allows processing large files for which we
- * otherwise would get an {@link OutOfMemoryError} in case of using {@link RandomAccessBuffer}.</p>
+ * otherwise would get an {@link OutOfMemoryError} in case of using {@link RandomAccessReadBuffer}.</p>
  * 
  * <p>This base class for providing pages is thread safe (the buffer implementations are not).</p>
  */

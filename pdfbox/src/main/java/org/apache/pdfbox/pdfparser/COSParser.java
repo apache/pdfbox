@@ -171,10 +171,11 @@ public class COSParser extends BaseParser implements ICOSParser
      *
      * @param source input representing the pdf.
      */
-    public COSParser(RandomAccessRead source)
+    public COSParser(RandomAccessRead source) throws IOException
     {
         super(new RandomAccessSource(source));
         this.source = source;
+        fileLen = source.length();
     }
 
     /**
@@ -187,12 +188,13 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      */
     public COSParser(RandomAccessRead source, String password, InputStream keyStore,
-            String keyAlias)
+            String keyAlias) throws IOException
     {
         super(new RandomAccessSource(source));
         this.source = source;
         this.password = password;
         this.keyAlias = keyAlias;
+        fileLen = source.length();
         keyStoreInputStream = keyStore;
     }
 

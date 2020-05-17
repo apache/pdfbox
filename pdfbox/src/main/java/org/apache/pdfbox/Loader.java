@@ -25,8 +25,9 @@ import java.io.InputStream;
 
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFile;
+import org.apache.pdfbox.io.RandomAccessReadFile;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.FDFParser;
@@ -58,8 +59,7 @@ public class Loader
      */
     public static FDFDocument loadFDF(String filename) throws IOException
     {
-        FDFParser parser = new FDFParser(filename);
-        return parser.parse();
+        return Loader.loadFDF(new File(filename));
     }
 
     /**
@@ -73,7 +73,7 @@ public class Loader
      */
     public static FDFDocument loadFDF(File file) throws IOException
     {
-        FDFParser parser = new FDFParser(file);
+        FDFParser parser = new FDFParser(new RandomAccessReadFile(file));
         return parser.parse();
     }
 
@@ -88,7 +88,7 @@ public class Loader
      */
     public static FDFDocument loadFDF(InputStream input) throws IOException
     {
-        FDFParser parser = new FDFParser(input);
+        FDFParser parser = new FDFParser(new RandomAccessReadBuffer(input));
         return parser.parse();
     }
 
@@ -198,7 +198,7 @@ public class Loader
             MemoryUsageSetting memUsageSetting) throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
-        RandomAccessRead source = new RandomAccessBuffer(input);
+        RandomAccessRead source = new RandomAccessReadBuffer(input);
         PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
         return parser.parse();
     }

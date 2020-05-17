@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessBufferedFile;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFParser;
@@ -90,7 +90,7 @@ public class SignatureOptions implements Closeable
      */
     public void setVisualSignature(InputStream is) throws IOException
     {
-        initFromRandomAccessRead(new RandomAccessBuffer(is));
+        initFromRandomAccessRead(new RandomAccessReadBuffer(is));
     }
     
     private void initFromRandomAccessRead(RandomAccessRead rar) throws IOException

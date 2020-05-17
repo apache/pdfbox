@@ -122,7 +122,6 @@ public class PDFParser extends COSParser
                      String alias, ScratchFile scratchFile) throws IOException
     {
         super(source, decryptionPassword, keyStore, alias);
-        fileLen = source.length();
         init(scratchFile);
     }
     

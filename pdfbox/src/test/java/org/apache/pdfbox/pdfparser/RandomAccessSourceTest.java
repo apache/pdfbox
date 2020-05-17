@@ -19,7 +19,7 @@ package org.apache.pdfbox.pdfparser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.pdfbox.io.RandomAccessBuffer;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class RandomAccessSourceTest
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessBuffer(bais));
+                new RandomAccessReadBuffer(bais));
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(5);
@@ -51,7 +51,7 @@ public class RandomAccessSourceTest
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessBuffer(bais));
+                new RandomAccessReadBuffer(bais));
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
@@ -69,7 +69,7 @@ public class RandomAccessSourceTest
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessBuffer(bais));
+                new RandomAccessReadBuffer(bais));
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         byte[] buffer = new byte[4];
@@ -89,7 +89,7 @@ public class RandomAccessSourceTest
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessBuffer(bais));
+                new RandomAccessReadBuffer(bais));
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(6);
@@ -108,7 +108,7 @@ public class RandomAccessSourceTest
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessBuffer(bais));
+                new RandomAccessReadBuffer(bais));
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();

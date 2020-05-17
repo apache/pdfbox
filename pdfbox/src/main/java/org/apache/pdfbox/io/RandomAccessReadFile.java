@@ -21,12 +21,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * A RandomAccess implementation which allows data to be stored in a scratch file on the disk to
- * reduce memory consumption.
+ * A RandomAccessRead implementation backed by a java.io.RandomAccessFile.
  *
  * @author Ben Litchfield
  */
-public class RandomAccessFile implements RandomAccess
+public class RandomAccessReadFile implements RandomAccessRead
 {
     private final java.io.RandomAccessFile ras;
     private boolean isClosed;
@@ -35,12 +34,11 @@ public class RandomAccessFile implements RandomAccess
      * Constructor.
      *
      * @param file The file to write the data to.
-     * @param mode The writing mode.
      * @throws FileNotFoundException If the file cannot be created.
      */
-    public RandomAccessFile(File file, String mode) throws FileNotFoundException
+    public RandomAccessReadFile(File file) throws FileNotFoundException
     {
-        ras = new java.io.RandomAccessFile(file, mode);
+        ras = new java.io.RandomAccessFile(file, "r");
     }
     
     @Override
@@ -48,14 +46,6 @@ public class RandomAccessFile implements RandomAccess
     {
         ras.close();
         isClosed = true;
-    }
-    
-    @Override
-    public void clear() throws IOException
-    {
-        checkClosed();
-        ras.seek(0);
-        ras.setLength(0);
     }
     
     @Override
@@ -118,26 +108,6 @@ public class RandomAccessFile implements RandomAccess
     public boolean isClosed()
     {
         return isClosed;
-    }
-    
-    @Override
-    public void write(byte[] b, int offset, int length) throws IOException
-    {
-        checkClosed();
-        ras.write(b, offset, length);
-    }
-    
-    @Override
-    public void write(byte[] b) throws IOException
-    {
-        write(b, 0, b.length);
-    }
-    
-    @Override
-    public void write(int b) throws IOException
-    {
-        checkClosed();
-        ras.write(b);
     }
     
     @Override
