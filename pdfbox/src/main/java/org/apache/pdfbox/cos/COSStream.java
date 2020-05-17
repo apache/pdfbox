@@ -83,24 +83,18 @@ public class COSStream extends COSDictionary implements Closeable
     }
 
     /**
-     * Creates a new stream with an empty dictionary. Data is read from the given random accessview. Written data is
-     * stored in the given scratch file.
+     * Creates a new stream with an empty dictionary. Data is read from the given random accessview. Written data is stored
+     * in the given scratch file.
      *
      * @param scratchFile Scratch file for writing stream data.
+     * @throws IOException if the length of the random access view isn't available
      */
     public COSStream(ScratchFile scratchFile, RandomAccessReadView randomAccessReadView)
+            throws IOException
     {
         this(scratchFile);
         this.randomAccessReadView = randomAccessReadView;
-        try
-        {
-            setInt(COSName.LENGTH, (int) randomAccessReadView.length());
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        setInt(COSName.LENGTH, (int) randomAccessReadView.length());
     }
 
     /**

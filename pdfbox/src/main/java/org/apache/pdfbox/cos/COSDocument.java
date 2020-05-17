@@ -166,16 +166,17 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Creates a new COSStream using the current configuration for scratch files. Not for public use. Only COSParser
-     * should call this method.
+     * Creates a new COSStream using the current configuration for scratch files. Not for public use. Only COSParser should
+     * call this method.
      * 
-     * @param dictionary the corresponding dictionary
+     * @param dictionary    the corresponding dictionary
      * @param startPosition the start position within the source
-     * @param streamLength the stream length
+     * @param streamLength  the stream length
      * @return the new COSStream
+     * @throws IOException if the random access view can't be read
      */
     public COSStream createCOSStream(COSDictionary dictionary, long startPosition,
-            long streamLength)
+            long streamLength) throws IOException
     {
         COSStream stream = new COSStream(scratchFile,
                 parser.createRandomAccessReadView(startPosition, streamLength));
