@@ -152,20 +152,6 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Creates a new COSStream using the current configuration for scratch files.
-     * Not for public use. Only COSParser should call this method.
-     *
-     * @param dictionary the corresponding dictionary
-     * @return the new COSStream
-     */
-    public COSStream createCOSStream(COSDictionary dictionary)
-    {
-        COSStream stream = new COSStream(scratchFile);
-        dictionary.forEach(stream::setItem);
-        return stream;
-    }
-
-    /**
      * Creates a new COSStream using the current configuration for scratch files. Not for public use. Only COSParser should
      * call this method.
      * 

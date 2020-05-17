@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -854,25 +853,21 @@ public class COSParser extends BaseParser implements ICOSParser
             }
         }
 
-        COSStream stream;
-        long streamPosition = source.getPosition();
+
+        long streamStartPosition = source.getPosition();
+        long streamLength;
         if (streamLengthObj != null && validateStreamLength(streamLengthObj.longValue()))
         {
-            stream = document.createCOSStream(dic,
-                    streamPosition,
-                    streamLengthObj.longValue());
+            streamLength = streamLengthObj.longValue();
             // skip stream
             source.seek(source.getPosition() + streamLengthObj.intValue());
         }
         else
         {
-            stream = document.createCOSStream(dic);
-            // get output stream to copy data to
-            try (OutputStream out = stream.createRawOutputStream())
-            {
-                readUntilEndStream(new EndstreamOutputStream(out));
-            }
+            streamLength = readUntilEndStream(new EndstreamFilterStream());
         }
+        COSStream stream = document.createCOSStream(dic, streamStartPosition, streamLength);
+
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
         {
@@ -912,7 +907,7 @@ public class COSParser extends BaseParser implements ICOSParser
      * 
      * @throws IOException if something went wrong
      */
-    private void readUntilEndStream( final OutputStream out ) throws IOException
+    private long readUntilEndStream(final EndstreamFilterStream out) throws IOException
     {
         int bufSize;
         int charMatchCount = 0;
@@ -988,7 +983,7 @@ public class COSParser extends BaseParser implements ICOSParser
             // write buffer content until first matched char to output stream
             if ( contentBytes > 0 )
             {
-                out.write( strmBuf, 0, contentBytes );
+                out.filter(strmBuf, 0, contentBytes);
             }
             if ( charMatchCount == keyw.length ) 
             {
@@ -1003,7 +998,7 @@ public class COSParser extends BaseParser implements ICOSParser
             }            
         }
         // this writes a lonely CR or drops trailing CR LF and LF
-        out.flush();
+        return out.calculateLength();
     }
 
     private boolean validateStreamLength(long streamLength) throws IOException

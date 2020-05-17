@@ -16,33 +16,21 @@
 
 package org.apache.pdfbox.pdfparser;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 
 /**
- * This class is only for the readUntilEndStream method, to prevent a
- * final CR LF or LF (but not a final CR!) from being written to the output,
- * unless the beginning of the stream is assumed to be ASCII.
- * Only the 3-param write() method is implemented. This solves
- * PDFBOX-2079 and PDFBOX-2120 and avoids making readUntilEndStream() 
- * even more complex than it already is.
+ * This class is only for the readUntilEndStream method, to prevent a final CR LF or LF (but not a final CR!) from being
+ * written to the output, unless the beginning of the stream is assumed to be ASCII. This solves PDFBOX-2079 and
+ * PDFBOX-2120 and avoids making readUntilEndStream() even more complex than it already is.
  *
  * @author Tilman Hausherr
  */
-class EndstreamOutputStream extends BufferedOutputStream
+class EndstreamFilterStream
 {
-    //TODO: replace this class with a PullBackOutputStream class if there ever is one
-    
     private boolean hasCR = false;
     private boolean hasLF = false;
     private int pos = 0;
     private boolean mustFilter = true;
-
-    EndstreamOutputStream(OutputStream out)
-    {
-        super(out);
-    }
+    private long length = 0;
 
     /**
      * Write CR and/or LF that were kept, then writes len bytes from the 
@@ -52,10 +40,8 @@ class EndstreamOutputStream extends BufferedOutputStream
      * @param b byte array.
      * @param off offset.
      * @param len length of segment to write.
-     * @throws IOException 
      */
-    @Override
-    public synchronized void write(byte[] b, int off, int len) throws IOException
+    public void filter(byte[] b, int off, int len)
     {
         if (pos == 0 && len > 10)
         {
@@ -86,11 +72,11 @@ class EndstreamOutputStream extends BufferedOutputStream
                     // reset hasCR done too to avoid CR getting written in the flush
                     return;
                 }
-                super.write('\r');               
+                length++;
             }
             if (hasLF)
             {
-                super.write('\n');
+                length++;
                 hasLF = false;
             }
             // don't write CR, LF, or CR LF if at the end of the buffer
@@ -113,7 +99,7 @@ class EndstreamOutputStream extends BufferedOutputStream
                 }
             }
         }
-        super.write(b, off, len);
+        length += len;
         pos += len;
     }
 
@@ -121,19 +107,18 @@ class EndstreamOutputStream extends BufferedOutputStream
      * write out a single CR if one was kept. Don't write kept CR LF or LF, 
      * and then call the base method to flush.
      * 
-     * @throws IOException 
      */
-    @Override
-    public synchronized void flush() throws IOException
+    public long calculateLength()
     {
         // if there is only a CR and no LF, write it
         if (hasCR && !hasLF)
         {
-            super.write('\r');
+            length++;
             ++pos;
         }
         hasCR = false;
         hasLF = false;
-        super.flush();
+        return length;
     }
+
 }
