@@ -357,7 +357,7 @@ public abstract class SecurityHandler
         if (decrypt)
         {
             // read IV from stream
-            int ivSize = data.read(iv);
+            int ivSize = (int) IOUtils.populateBuffer(data, iv);
             if (ivSize == -1)
             {
                 return false;
@@ -457,7 +457,7 @@ public abstract class SecurityHandler
             try (InputStream is = stream.createRawInputStream())
             {
                 buf = new byte[10];
-                long isResult = is.read(buf);
+                long isResult = IOUtils.populateBuffer(is, buf);
 
                 if (Long.compare(isResult, buf.length) != 0)
                 {
