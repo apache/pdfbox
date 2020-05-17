@@ -315,7 +315,7 @@ final class SampledImageReader
             for (int y = 0; y < starty + scanHeight; y++)
             {
                 int x = 0;
-                int readLen = iis.read(buff);
+                int readLen = (int) IOUtils.populateBuffer(iis, buff);
                 if (y < starty || y % currentSubsampling > 0)
                 {
                     continue;
@@ -403,7 +403,7 @@ final class SampledImageReader
             if (startx == 0 && starty == 0 && scanWidth == width && scanHeight == height && currentSubsampling == 1)
             {
                 // we just need to copy all sample data, then convert to RGB image.
-                long inputResult = input.read(bank);
+                long inputResult = IOUtils.populateBuffer(input, bank);
                 if (inputResult != width * height * (long) numComponents)
                 {
                     LOG.debug("Tried reading " + width * height * (long) numComponents + " bytes but only " + inputResult + " bytes read");
@@ -420,7 +420,7 @@ final class SampledImageReader
             int i = 0;
             for (int y = 0; y < starty + scanHeight; ++y)
             {
-                input.read(tempBytes);
+                IOUtils.populateBuffer(input, tempBytes);
                 if (y < starty || y % currentSubsampling > 0)
                 {
                     continue;
