@@ -40,7 +40,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessBufferedFile;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
@@ -100,7 +100,7 @@ public class PreflightParser extends PDFParser
      */
     public PreflightParser(File file) throws IOException
     {
-        super(new RandomAccessBufferedFileInputStream(file));
+        super(new RandomAccessBufferedFile(file));
     }
 
     /**
@@ -112,7 +112,7 @@ public class PreflightParser extends PDFParser
      */
     public PreflightParser(File file, ScratchFile scratch) throws IOException
     {
-        super(new RandomAccessBufferedFileInputStream(file), scratch);
+        super(new RandomAccessBufferedFile(file), scratch);
     }
 
     /**

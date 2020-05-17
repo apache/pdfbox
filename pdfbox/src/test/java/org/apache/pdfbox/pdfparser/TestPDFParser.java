@@ -32,7 +32,7 @@ import java.net.URISyntaxException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.io.RandomAccessBufferedFileInputStream;
+import org.apache.pdfbox.io.RandomAccessBufferedFile;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -92,25 +92,25 @@ public class TestPDFParser
     @Test
     public void testPDFParserFile() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new File(PATH_OF_PDF)), MemoryUsageSetting.setupMainMemoryOnly());
+        executeParserTest(new RandomAccessBufferedFile(new File(PATH_OF_PDF)), MemoryUsageSetting.setupMainMemoryOnly());
     }
 
     @Test
     public void testPDFParserInputStream() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupMainMemoryOnly());
+        executeParserTest(new RandomAccessBufferedFile(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupMainMemoryOnly());
     }
 
     @Test
     public void testPDFParserFileScratchFile() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new File(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
+        executeParserTest(new RandomAccessBufferedFile(new File(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
     }
 
     @Test
     public void testPDFParserInputStreamScratchFile() throws IOException
     {
-        executeParserTest(new RandomAccessBufferedFileInputStream(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
+        executeParserTest(new RandomAccessBufferedFile(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
     }
     
     @Test
