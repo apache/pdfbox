@@ -866,8 +866,6 @@ public class COSParser extends BaseParser implements ICOSParser
         {
             streamLength = readUntilEndStream(new EndstreamFilterStream());
         }
-        COSStream stream = document.createCOSStream(dic, streamStartPosition, streamLength);
-
         String endStream = readString();
         if (endStream.equals("endobj") && isLenient)
         {
@@ -889,8 +887,7 @@ public class COSParser extends BaseParser implements ICOSParser
                     "Error reading stream, expected='endstream' actual='"
                     + endStream + "' at offset " + source.getPosition());
         }
-
-        return stream;
+        return document.createCOSStream(dic, streamStartPosition, streamLength);
     }
 
     /**
