@@ -812,9 +812,6 @@ public class COSParser extends BaseParser implements ICOSParser
                 "Wrong type of length object: " + lengthBaseObj.getClass().getSimpleName());
     }
     
-    private static final int STREAMCOPYBUFLEN = 8192;
-    private final byte[] streamCopyBuf = new byte[STREAMCOPYBUFLEN];
-
     /**
      * This will read a COSStream from the input stream using length attribute within dictionary. If
      * length attribute is a indirect reference it is first resolved to get the stream length. This
