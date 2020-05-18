@@ -16,7 +16,6 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +32,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
  * This will parse a PDF byte stream and extract operands and such.
@@ -68,7 +68,7 @@ public class PDFStreamParser extends BaseParser
      */
     public PDFStreamParser(byte[] bytes) throws IOException
     {
-        super(new InputStreamSource(new ByteArrayInputStream(bytes)));
+        super(new RandomAccessSource(new RandomAccessReadBuffer(bytes)));
     }
 
     /**
