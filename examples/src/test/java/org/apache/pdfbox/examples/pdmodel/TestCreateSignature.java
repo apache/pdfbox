@@ -189,11 +189,11 @@ public class TestCreateSignature
         String outPath = outDir + getOutputFileName("signed{0}_tsa.pdf");
 
         // sign PDF (will fail due to nonce and timestamp differing)
+        CreateSignature signing1 = new CreateSignature(keystore, password.toCharArray());
+        signing1.setExternalSigning(externallySign);
         try
         {
-            CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
-            signing.setExternalSigning(externallySign);
-            signing.signDetached(new File(inPath), new File(outPath), brokenMockTSA);
+            signing1.signDetached(new File(inPath), new File(outPath), brokenMockTSA);
             Assert.fail("This should have failed");
         }
         catch (IOException e)
@@ -210,9 +210,9 @@ public class TestCreateSignature
             return;
         }
 
-        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
-        signing.setExternalSigning(externallySign);
-        signing.signDetached(new File(inPath), new File(outPath), tsa);
+        CreateSignature signing2 = new CreateSignature(keystore, password.toCharArray());
+        signing2.setExternalSigning(externallySign);
+        signing2.signDetached(new File(inPath), new File(outPath), tsa);
         checkSignature(new File(inPath), new File(outPath));
         System.out.println("TSA test successful");
     }
