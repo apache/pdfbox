@@ -327,7 +327,7 @@ public class StandardSecurityHandler extends SecurityHandler
         }
 
         // If no owner password is set, use the user password instead.
-        if (ownerPassword.isEmpty())
+        if (ownerPassword.length() == 0)
         {
             ownerPassword = userPassword;
         }
