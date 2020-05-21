@@ -326,6 +326,12 @@ public class StandardSecurityHandler extends SecurityHandler
             userPassword = "";
         }
 
+        // If no owner password is set, use the user password instead.
+        if (ownerPassword.isEmpty())
+        {
+            ownerPassword = userPassword;
+        }
+
         int permissionInt = policy.getPermissions().getPermissionBytes();
 
         encryptionDictionary.setPermissions(permissionInt);
