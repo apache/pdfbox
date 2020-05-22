@@ -99,12 +99,6 @@ public class RandomAccessReadView implements RandomAccessRead
     @Override
     public int read(byte[] b) throws IOException
     {
-        checkClosed();
-        if (currentPosition >= streamLength)
-        {
-            return 0;
-        }
-        restorePosition();
         return read(b, 0, b.length);
     }
 
@@ -115,6 +109,10 @@ public class RandomAccessReadView implements RandomAccessRead
     public int read(byte[] b, int off, int len) throws IOException
     {
         checkClosed();
+        if (currentPosition >= streamLength)
+        {
+            return 0;
+        }
         restorePosition();
         int readBytes = randomAccessRead.read(b, off, Math.min(len, available()));
         currentPosition += readBytes;
