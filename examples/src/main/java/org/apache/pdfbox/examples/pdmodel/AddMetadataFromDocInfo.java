@@ -71,7 +71,10 @@ public final class AddMetadataFromDocInfo
                 }
                 PDDocumentCatalog catalog = document.getDocumentCatalog();
                 PDDocumentInformation info = document.getDocumentInformation();
-                
+
+                info.setCustomMetadataValue("custom.field.one", "value.one");
+                info.setCustomMetadataValue("custom.field.two", "value.two");
+
                 XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
                 AdobePDFSchema pdfSchema = metadata.createAndAddAdobePDFSchema();
