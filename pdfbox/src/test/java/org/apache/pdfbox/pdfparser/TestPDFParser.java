@@ -96,23 +96,11 @@ public class TestPDFParser
     }
 
     @Test
-    public void testPDFParserInputStream() throws IOException
-    {
-        executeParserTest(new RandomAccessBufferedFile(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupMainMemoryOnly());
-    }
-
-    @Test
     public void testPDFParserFileScratchFile() throws IOException
     {
         executeParserTest(new RandomAccessBufferedFile(new File(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
     }
 
-    @Test
-    public void testPDFParserInputStreamScratchFile() throws IOException
-    {
-        executeParserTest(new RandomAccessBufferedFile(new FileInputStream(PATH_OF_PDF)), MemoryUsageSetting.setupTempFileOnly());
-    }
-    
     @Test
     public void testPDFParserMissingCatalog() throws IOException, URISyntaxException
     {

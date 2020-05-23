@@ -17,9 +17,7 @@
 package org.apache.pdfbox.io;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -34,16 +32,10 @@ import java.util.Map;
  */
 public class RandomAccessBufferedFile implements RandomAccessRead
 {
-    /**
-     * The prefix for the temp file being used. 
-     */
-    private static final String TMP_FILE_PREFIX = "tmpPDFBox";
-
     private int pageSizeShift = 12;
     private int pageSize = 1 << pageSizeShift;
     private long pageOffsetMask = -1L << pageSizeShift;
     private int maxCachedPages = 1000;
-    private File tempFile;
 
     private byte[] lastRemovedCachePage = null;
 
@@ -96,45 +88,6 @@ public class RandomAccessBufferedFile implements RandomAccessRead
         raFile = new RandomAccessFile(file, "r");
         fileLength = file.length();
         seek(0);
-    }
-
-    /**
-     * Create a random access buffered file for the given input stream by copying the data to a temporary file.
-     *
-     * @param input the input stream to be read. It will be closed by this method.
-     * @throws IOException if something went wrong while creating the temporary file.
-     */
-    public RandomAccessBufferedFile( InputStream input ) throws IOException 
-    {
-        tempFile = createTmpFile(input);
-        fileLength = tempFile.length();
-        raFile = new RandomAccessFile(tempFile, "r");
-        seek(0);
-    }
-
-    private File createTmpFile(InputStream input) throws IOException
-    {
-        File tmpFile = File.createTempFile(TMP_FILE_PREFIX, ".pdf");
-        try (FileOutputStream fos = new FileOutputStream(tmpFile))
-        {
-            IOUtils.copy(input, fos);
-            return tmpFile;
-        }
-        finally
-        {
-            IOUtils.closeQuietly(input);
-        }
-    }
-
-    /**
-     * Remove the temporary file. A temporary file is created if this class is instantiated with an InputStream
-     */
-    private void deleteTempFile()
-    {
-        if (tempFile != null)
-        {
-            tempFile.delete();
-        }
     }
 
     /** Returns offset in file at which next byte would be read. */
@@ -272,7 +225,6 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     public void close() throws IOException
     {
         raFile.close();
-        deleteTempFile();
         pageCache.clear();
         isClosed = true;
     }
@@ -303,7 +255,6 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     @Override
     public boolean isEOF() throws IOException
     {
-        int peek = peek();
-        return peek == -1;
+        return peek() == -1;
     }
 }
