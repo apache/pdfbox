@@ -16,7 +16,6 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 [PDFBOX-XXXX] - TODO
 
-
 Release Contents
 ----------------
 
