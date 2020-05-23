@@ -78,6 +78,9 @@ public abstract class SecurityHandler
     /** indicates if the Metadata have to be decrypted of not. */
     private boolean decryptMetadata;
 
+    /** Can be used to allow stateless AES encryption */
+    private SecureRandom customSecureRandom;
+
     // PDFBOX-4453, PDFBOX-4477: Originally this was just a Set. This failed in rare cases
     // when a decrypted string was identical to an encrypted string.
     // Because COSString.equals() checks the contents, decryption was then skipped.
@@ -131,6 +134,16 @@ public abstract class SecurityHandler
     protected void setStreamFilterName(COSName streamFilterName)
     {
         this.streamFilterName = streamFilterName;
+    }
+
+    /**
+     * Set the custom SecureRandom.
+     * 
+     * @param secureRandom the custom SecureRandom for AES encryption
+     */
+    public void setCustomSecureRandom(SecureRandom customSecureRandom)
+    {
+        this.customSecureRandom = customSecureRandom;
     }
 
     /**
@@ -372,7 +385,7 @@ public abstract class SecurityHandler
         else
         {
             // generate random IV and write to stream
-            SecureRandom rnd = new SecureRandom();
+            SecureRandom rnd = getSecureRandom();
             rnd.nextBytes(iv);
             output.write(iv);
         }
@@ -380,9 +393,23 @@ public abstract class SecurityHandler
     }
 
     /**
+     * Returns a SecureRandom If customSecureRandom is not defined, instantiate a new SecureRandom
+     * 
+     * @return SecureRandom
+     */
+    private SecureRandom getSecureRandom()
+    {
+        if (customSecureRandom != null)
+        {
+            return customSecureRandom;
+        }
+        return new SecureRandom();
+    }
+
+    /**
      * This will dispatch to the correct method.
      *
-     * @param obj The object to decrypt.
+     * @param obj    The object to decrypt.
      * @param objNum The object number.
      * @param genNum The object generation Number.
      *

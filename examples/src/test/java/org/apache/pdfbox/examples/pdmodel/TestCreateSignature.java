@@ -32,12 +32,15 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.pdfbox.Loader;
@@ -53,6 +56,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
@@ -69,6 +73,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
+import org.bouncycastle.crypto.prng.FixedSecureRandom;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TSPValidationException;
@@ -554,6 +559,69 @@ public class TestCreateSignature
             DataBufferInt expectedData = (DataBufferInt) expectedImage1.getRaster().getDataBuffer();
             DataBufferInt actualData = (DataBufferInt) actualImage1.getRaster().getDataBuffer();
             Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+        }
+    }
+
+    @Test
+    public void testPDFBox4784() throws Exception
+    {
+
+        Date signingTime = new Date();
+
+        byte[] defaultSignedOne = signEncrypted(null, signingTime);
+        byte[] defaultSignedTwo = signEncrypted(null, signingTime);
+        Assert.assertFalse(Arrays.equals(defaultSignedOne, defaultSignedTwo));
+
+        // a dummy value for FixedSecureRandom is used (for real use-cases a secure value should be provided)
+        byte[] fixedRandomSignedOne = signEncrypted(new FixedSecureRandom(new byte[128]),
+                signingTime);
+        byte[] fixedRandomSignedTwo = signEncrypted(new FixedSecureRandom(new byte[128]),
+                signingTime);
+        Assert.assertTrue(Arrays.equals(fixedRandomSignedOne, fixedRandomSignedTwo));
+
+    }
+
+    private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws Exception
+    {
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
+
+        CreateSignature signing = new CreateSignature(keystore, PASSWORD.toCharArray());
+        signing.setExternalSigning(true);
+
+        File inFile = new File(IN_DIR + "sign_me_protected.pdf");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        PDDocument doc = null;
+        try
+        {
+            doc = Loader.loadPDF(inFile, " ");
+
+            if (secureRandom != null)
+            {
+                doc.getEncryption().getSecurityHandler().setCustomSecureRandom(secureRandom);
+            }
+
+            PDSignature signature = new PDSignature();
+            signature.setName("Example User");
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(signingTime);
+            signature.setSignDate(cal);
+
+            doc.addSignature(signature);
+            doc.setDocumentId(12345l);
+            ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(baos);
+            // invoke external signature service
+            byte[] cmsSignature = signing.sign(externalSigning.getContent());
+            // set signature bytes received from the service
+            externalSigning.setSignature(cmsSignature);
+
+            return baos.toByteArray();
+        }
+        finally
+        {
+            IOUtils.closeQuietly(doc);
+            IOUtils.closeQuietly(baos);
         }
     }
 }
