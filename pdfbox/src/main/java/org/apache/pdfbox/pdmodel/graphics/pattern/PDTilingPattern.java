@@ -25,6 +25,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -49,6 +50,8 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
     /** tiling type 3 = constant spacing and faster tiling. */
     public static final int TILING_CONSTANT_SPACING_FASTER_TILING = 3;
 
+    private final ResourceCache resourceCache;
+
     /**
      * Creates a new tiling pattern.
      */
@@ -60,6 +63,7 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
         
         // Resources required per PDF specification; when missing, pattern is not displayed in Adobe Reader
         setResources(new PDResources());
+        resourceCache = null;
     }
 
     /**
@@ -68,7 +72,18 @@ public class PDTilingPattern extends PDAbstractPattern implements PDContentStrea
      */
     public PDTilingPattern(COSDictionary dictionary)
     {
+        this(dictionary, null);
+    }
+
+    /**
+     * Creates a new tiling pattern from the given COS dictionary.
+     * @param dictionary The COSDictionary for this pattern.
+     * @param resourceCache The resource cache, may be null
+     */
+    public PDTilingPattern(COSDictionary dictionary, ResourceCache resourceCache)
+    {
         super(dictionary);
+        this.resourceCache = resourceCache;
     }
 
     @Override
