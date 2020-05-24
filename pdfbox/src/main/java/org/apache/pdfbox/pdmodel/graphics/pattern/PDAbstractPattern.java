@@ -23,6 +23,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.ResourceCache;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.util.Matrix;
 
@@ -45,12 +46,24 @@ public abstract class PDAbstractPattern implements COSObjectable
      */
     public static PDAbstractPattern create(COSDictionary dictionary) throws IOException
     {
+        return create(dictionary, null);
+    }
+
+    /**
+     * Create the correct PD Model pattern based on the COS base pattern.
+     * @param dictionary the COS pattern dictionary
+     * @param resourceCache the resource cache, may be null, useful for tiling patterns.
+     * @return the newly created pattern object
+     * @throws IOException If we are unable to create the PDPattern object.
+     */
+    public static PDAbstractPattern create(COSDictionary dictionary, ResourceCache resourceCache) throws IOException
+    {
         PDAbstractPattern pattern;
         int patternType = dictionary.getInt(COSName.PATTERN_TYPE, 0);
         switch (patternType)
         {
             case TYPE_TILING_PATTERN:
-                pattern = new PDTilingPattern(dictionary);
+                pattern = new PDTilingPattern(dictionary, resourceCache);
                 break;
             case TYPE_SHADING_PATTERN:
                 pattern = new PDShadingPattern(dictionary);
