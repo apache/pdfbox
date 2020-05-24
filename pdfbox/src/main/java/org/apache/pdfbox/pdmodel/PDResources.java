@@ -307,7 +307,7 @@ public final class PDResources implements COSObjectable
         COSBase base = get(COSName.PATTERN, name);
         if (base instanceof COSDictionary)
         {
-            pattern = PDAbstractPattern.create((COSDictionary) base);
+            pattern = PDAbstractPattern.create((COSDictionary) base, getResourceCache());
         }
 
         if (cache != null)
