@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.pdfparser;
+package org.apache.pdfbox.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Unittest for org.apache.pdfbox.pdfparser.InputStreamSource
+ * Unittest for org.apache.pdfbox.io.InputStreamRandomAccessRead
  */
-public class InputStreamSourceTest
+public class InputStreamRandomAccessReadTest
 {
     @Test
     public void testPositionSkip() throws IOException
@@ -32,7 +33,7 @@ public class InputStreamSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        InputStreamSource inputStreamSource = new InputStreamSource(bais);
+        InputStreamRandomAccessRead inputStreamSource = new InputStreamRandomAccessRead(bais);
 
         Assert.assertEquals(0, inputStreamSource.getPosition());
         inputStreamSource.skip(5);
@@ -47,7 +48,7 @@ public class InputStreamSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        InputStreamSource inputStreamSource = new InputStreamSource(bais);
+        InputStreamRandomAccessRead inputStreamSource = new InputStreamRandomAccessRead(bais);
 
         Assert.assertEquals(0, inputStreamSource.getPosition());
         inputStreamSource.read();
@@ -64,7 +65,7 @@ public class InputStreamSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        InputStreamSource inputStreamSource = new InputStreamSource(bais);
+        InputStreamRandomAccessRead inputStreamSource = new InputStreamRandomAccessRead(bais);
 
         Assert.assertEquals(0, inputStreamSource.getPosition());
         byte[] buffer = new byte[4];
@@ -83,7 +84,7 @@ public class InputStreamSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        InputStreamSource inputStreamSource = new InputStreamSource(bais);
+        InputStreamRandomAccessRead inputStreamSource = new InputStreamRandomAccessRead(bais);
 
         Assert.assertEquals(0, inputStreamSource.getPosition());
         inputStreamSource.skip(6);
@@ -101,7 +102,7 @@ public class InputStreamSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        InputStreamSource inputStreamSource = new InputStreamSource(bais);
+        InputStreamRandomAccessRead inputStreamSource = new InputStreamRandomAccessRead(bais);
 
         Assert.assertEquals(0, inputStreamSource.getPosition());
         inputStreamSource.read();

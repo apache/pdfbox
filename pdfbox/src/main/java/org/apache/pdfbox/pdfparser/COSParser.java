@@ -83,8 +83,6 @@ public class COSParser extends BaseParser implements ICOSParser
     private static final int STRMBUFLEN = 2048;
     private final byte[] strmBuf = new byte[ STRMBUFLEN ];
 
-    protected final RandomAccessRead source;
-
     private AccessPermission accessPermission;
     private InputStream keyStoreInputStream = null;
     @SuppressWarnings({"squid:S2068"})
@@ -172,8 +170,7 @@ public class COSParser extends BaseParser implements ICOSParser
      */
     public COSParser(RandomAccessRead source) throws IOException
     {
-        super(new RandomAccessSource(source));
-        this.source = source;
+        super(source);
         fileLen = source.length();
     }
 
@@ -189,8 +186,7 @@ public class COSParser extends BaseParser implements ICOSParser
     public COSParser(RandomAccessRead source, String password, InputStream keyStore,
             String keyAlias) throws IOException
     {
-        super(new RandomAccessSource(source));
-        this.source = source;
+        super(source);
         this.password = password;
         this.keyAlias = keyAlias;
         fileLen = source.length();

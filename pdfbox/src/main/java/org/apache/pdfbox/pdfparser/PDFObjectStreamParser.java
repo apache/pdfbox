@@ -24,6 +24,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.InputStreamRandomAccessRead;
 
 /**
  * This will parse a PDF 1.5 object stream and extract the object with given object number from the stream.
@@ -45,7 +46,7 @@ public class PDFObjectStreamParser extends BaseParser
      */
     public PDFObjectStreamParser(COSStream stream, COSDocument document) throws IOException
     {
-        super(new InputStreamSource(stream.createInputStream()));
+        super(new InputStreamRandomAccessRead(stream.createInputStream()));
         this.document = document;
         // get mandatory number of objects
         numberOfObjects = stream.getInt(COSName.N);
@@ -78,19 +79,19 @@ public class PDFObjectStreamParser extends BaseParser
             if (objectOffset != null) 
             {
                 // jump to the offset of the first object
-                long currentPosition = seqSource.getPosition();
+                long currentPosition = source.getPosition();
                 if (firstObject > 0 && currentPosition < firstObject)
                 {
-                    seqSource.skip(firstObject - (int) currentPosition);
+                    source.skip(firstObject - (int) currentPosition);
                 }
                 // jump to the offset of the object to be parsed
-                seqSource.skip(objectOffset);
+                source.skip(objectOffset);
                 streamObject = parseDirObject();
             }
         }
         finally
         {
-            seqSource.close();
+            source.close();
         }
         return streamObject;
     }

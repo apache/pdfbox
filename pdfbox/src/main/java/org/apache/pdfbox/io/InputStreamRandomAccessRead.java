@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.pdfparser;
+package org.apache.pdfbox.io;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
 
 /**
- * A SequentialSource backed by an InputStream.
+ * A RandomAccessRead backed by an InputStream.
  */
-final class InputStreamSource implements SequentialSource
+public final class InputStreamRandomAccessRead implements RandomAccessRead
 {
     private final PushbackInputStream input;
     private int position;
+    private boolean isClosed = false;
 
     /**
      * Constructor.
      * 
      * @param input The input stream to wrap.
      */
-    InputStreamSource(InputStream input)
+    public InputStreamRandomAccessRead(InputStream input)
     {
         this.input = new PushbackInputStream(input, 32767); // maximum length of a PDF string
         this.position = 0;
@@ -96,6 +97,32 @@ final class InputStreamSource implements SequentialSource
     }
 
     @Override
+    public boolean isEOF() throws IOException
+    {
+        return peek() == -1;
+    }
+
+    @Override
+    public void close() throws IOException
+    {
+        input.close();
+        isClosed = true;
+    }
+
+
+    @Override
+    public boolean isClosed()
+    {
+        return isClosed;
+    }
+
+    @Override
+    public int available() throws IOException
+    {
+        return input.available();
+    }
+
+    @Override
     public void unread(int b) throws IOException
     {
         input.unread(b);
@@ -117,14 +144,26 @@ final class InputStreamSource implements SequentialSource
     }
 
     @Override
-    public boolean isEOF() throws IOException
+    public boolean seekSupported()
     {
-        return peek() == -1;
+        return false;
     }
 
     @Override
-    public void close() throws IOException
+    public void rewind(int bytes) throws IOException
     {
-        input.close();
+        throw new UnsupportedOperationException(getClass().getName() + ".rewind is not supported!");
+    }
+
+    @Override
+    public void seek(long position) throws IOException
+    {
+        throw new UnsupportedOperationException(getClass().getName() + ".seek is not supported!");
+    }
+
+    @Override
+    public long length() throws IOException
+    {
+        throw new UnsupportedOperationException(getClass().getName() + ".length is not supported!");
     }
 }

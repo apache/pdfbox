@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package org.apache.pdfbox.pdfparser;
+package org.apache.pdfbox.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Unittest for org.apache.pdfbox.pdfparser.RandomAccessSource
+ * Unittest for org.apache.pdfbox.io.RandomAccessReadBuffer
  */
-public class RandomAccessSourceTest
+public class RandomAccessReadBufferTest
 {
     @Test
     public void testPositionSkip() throws IOException
@@ -34,8 +33,7 @@ public class RandomAccessSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessReadBuffer(bais));
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(5);
@@ -50,8 +48,7 @@ public class RandomAccessSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessReadBuffer(bais));
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
@@ -68,8 +65,7 @@ public class RandomAccessSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessReadBuffer(bais));
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         byte[] buffer = new byte[4];
@@ -88,8 +84,7 @@ public class RandomAccessSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessReadBuffer(bais));
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(6);
@@ -107,8 +102,7 @@ public class RandomAccessSourceTest
         byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
-        RandomAccessSource randomAccessSource = new RandomAccessSource(
-                new RandomAccessReadBuffer(bais));
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
         Assert.assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
