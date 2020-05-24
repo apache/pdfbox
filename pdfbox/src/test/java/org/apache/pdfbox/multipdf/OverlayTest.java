@@ -1,0 +1,145 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.pdfbox.multipdf;
+
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+/**
+ *
+ * @author Tilman Hausherr
+ */
+public class OverlayTest
+{
+    private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
+    private static final File OUT_DIR = new File("target/test-output/overlay");
+    
+    public OverlayTest()
+    {
+    }
+    
+    @BeforeClass
+    public static void setUpClass()
+    {
+    }
+    
+    @AfterClass
+    public static void tearDownClass()
+    {
+    }
+    
+    @Before
+    public void setUp()
+    {
+        OUT_DIR.mkdirs();
+    }
+    
+    @After
+    public void tearDown()
+    {
+    }
+
+    @Test
+    public void testRotatedOverlays() throws Exception
+    {
+        testRotatedOverlay(0);
+        testRotatedOverlay(90);
+        testRotatedOverlay(180);
+        testRotatedOverlay(270);
+    }
+
+    private void testRotatedOverlay(int rotation) throws IOException
+    {
+        // do the overlaying
+        PDDocument baseDocument = Loader.loadPDF(new File(IN_DIR, "OverlayTestBaseRot0.pdf"));
+        Overlay overlay = new Overlay();
+        overlay.setInputPDF(baseDocument);
+        PDDocument overlayDocument = Loader.loadPDF(new File(IN_DIR, "rot" + rotation + ".pdf"));
+        overlay.setDefaultOverlayPDF(overlayDocument);
+        PDDocument overlayedResultPDF = overlay.overlay(new HashMap<Integer, String>());
+        overlayedResultPDF.save(new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf"));
+        overlayedResultPDF.close();
+        baseDocument.close();
+        overlayDocument.close();
+
+        // render model and result
+        File modelFile = new File(IN_DIR, "Overlayed-with-rot" + rotation + ".pdf");
+        File resultFile = new File(OUT_DIR, "Overlayed-with-rot" + rotation + ".pdf");
+
+        PDDocument modelDocument = Loader.loadPDF(modelFile);
+        BufferedImage modelImage = new PDFRenderer(modelDocument).renderImage(0);
+        modelDocument.close();
+
+        PDDocument resultDocument = Loader.loadPDF(resultFile);
+        BufferedImage resultImage = new PDFRenderer(resultDocument).renderImage(0);
+        resultDocument.close();
+
+        // compare images
+        Assert.assertEquals(modelImage.getWidth(), resultImage.getWidth());
+        Assert.assertEquals(modelImage.getHeight(), resultImage.getHeight());
+        Assert.assertEquals(modelImage.getType(), resultImage.getType());
+
+        DataBufferInt modelDataBuffer = (DataBufferInt) modelImage.getRaster().getDataBuffer();
+        DataBufferInt resultDataBuffer = (DataBufferInt) resultImage.getRaster().getDataBuffer();
+
+        Assert.assertArrayEquals(modelDataBuffer.getData(), resultDataBuffer.getData());
+    }
+    
+    // code used to create the base file
+    private void createBaseFile() throws IOException
+    {
+        PDDocument doc = new PDDocument();
+        PDPage page = new PDPage();
+        PDPageContentStream cs = new PDPageContentStream(doc, page);
+        float fontHeight = 12;
+        float y = page.getMediaBox().getHeight() - fontHeight * 2;
+        PDFont font = PDType1Font.HELVETICA;
+        cs.setFont(font, fontHeight);
+        cs.beginText();
+        cs.setLeading(fontHeight * 2 + 1);
+        cs.newLineAtOffset(fontHeight * 2, y);
+        while (y > fontHeight * 2)
+        {
+            cs.showText("A quick movement of the enemy will jeopardize six gunboats. " +
+                        "Heavy boxes perform quick waltzes and jigs.");
+            cs.newLine();
+            y -= fontHeight * 2;
+        }
+        cs.endText();
+        cs.close();
+        doc.addPage(page);
+        doc.save("OverlayTestBaseRot0.pdf");
+        doc.close();
+    }
+}
