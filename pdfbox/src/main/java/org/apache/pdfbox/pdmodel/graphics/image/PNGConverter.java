@@ -409,6 +409,7 @@ final class PNGConverter
                         break;
                     iccProfileDataStart++;
                 }
+                iccProfileDataStart++;
                 if (iccProfileDataStart >= state.iCCP.length)
                 {
                     LOG.error("Invalid iCCP chunk, to few bytes");
