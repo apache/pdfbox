@@ -76,41 +76,47 @@ final class FlateFilter extends Filter
             inflater.setInput(buf,0,read);
             byte[] res = new byte[1024];
             boolean dataWritten = false;
-            while (true) 
-            { 
-                int resRead = 0;
-                try
-                {
-                    resRead = inflater.inflate(res);
-                }
-                catch(DataFormatException exception)
-                {
-                    if (dataWritten)
-                    {
-                        // some data could be read -> don't throw an exception
-                        LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
-                        break;
-                    }
-                    else
-                    {
-                        // nothing could be read -> re-throw exception
-                        throw exception;
-                    }
-                }
-                if (resRead != 0) 
+            try
+            {
+                while (true) 
                 { 
-                    out.write(res,0,resRead);
-                    dataWritten = true;
-                    continue; 
-                } 
-                if (inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
-                {
-                    break;
-                } 
-                read = in.read(buf); 
-                inflater.setInput(buf,0,read);
+                    int resRead = 0;
+                    try
+                    {
+                        resRead = inflater.inflate(res);
+                    }
+                    catch(DataFormatException exception)
+                    {
+                        if (dataWritten)
+                        {
+                            // some data could be read -> don't throw an exception
+                            LOG.warn("FlateFilter: premature end of stream due to a DataFormatException");
+                            break;
+                        }
+                        else
+                        {
+                            // nothing could be read -> re-throw exception
+                            throw exception;
+                        }
+                    }
+                    if (resRead != 0) 
+                    { 
+                        out.write(res,0,resRead);
+                        dataWritten = true;
+                        continue; 
+                    } 
+                    if (inflater.finished() || inflater.needsDictionary() || in.available() == 0) 
+                    {
+                        break;
+                    } 
+                    read = in.read(buf); 
+                    inflater.setInput(buf,0,read);
+                }
             }
-            inflater.end();
+            finally
+            {
+                inflater.end();
+            }
         }
         out.flush();
     }
