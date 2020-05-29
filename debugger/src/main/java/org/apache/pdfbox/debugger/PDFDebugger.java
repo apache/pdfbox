@@ -964,7 +964,6 @@ public class PDFDebugger extends JFrame
         }
         else if (COSName.THUMB.equals(key))
         {
-            resourcesDic = null;
             isThumb = true;
         }
         else if (COSName.IMAGE.equals((stream).getCOSName(COSName.SUBTYPE)))
