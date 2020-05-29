@@ -650,11 +650,7 @@ public class TestCreateSignature
             doc.setDocumentId(12345l);
             ExternalSigningSupport externalSigning = doc.saveIncrementalForExternalSigning(baos);
             // invoke external signature service
-            byte[] cmsSignature = signing.sign(externalSigning.getContent());
-            // set signature bytes received from the service
-            externalSigning.setSignature(cmsSignature);
-
-            return baos.toByteArray();
+            return IOUtils.toByteArray(externalSigning.getContent());
         }
         finally
         {
