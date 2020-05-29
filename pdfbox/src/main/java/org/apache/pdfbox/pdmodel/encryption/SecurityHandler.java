@@ -139,7 +139,7 @@ public abstract class SecurityHandler
     /**
      * Set the custom SecureRandom.
      * 
-     * @param secureRandom the custom SecureRandom for AES encryption
+     * @param customSecureRandom the custom SecureRandom for AES encryption
      */
     public void setCustomSecureRandom(SecureRandom customSecureRandom)
     {
