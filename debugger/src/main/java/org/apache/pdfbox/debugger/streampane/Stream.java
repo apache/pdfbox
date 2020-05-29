@@ -97,7 +97,7 @@ public class Stream
      */
     public List<String> getFilterList()
     {
-        return new ArrayList(filters.keySet());
+        return new ArrayList<String>(filters.keySet());
     }
 
     /**
