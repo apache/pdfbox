@@ -257,11 +257,7 @@ public class PanoseFlag extends Flag
 
     public final byte[] getPanoseBytes(COSDictionary style)
     {
-        if (style != null)
-        {
-            COSString panose = (COSString)style.getDictionaryObject(COSName.PANOSE);
-            return panose.getBytes();
-        }
-        return null;
+        COSString panose = (COSString)style.getDictionaryObject(COSName.PANOSE);
+        return panose.getBytes();
     }
 }
