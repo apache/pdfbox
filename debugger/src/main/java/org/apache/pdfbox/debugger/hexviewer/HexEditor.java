@@ -136,6 +136,7 @@ class HexEditor extends JPanel implements SelectionChangeListener
             @Override
             public void actionPerformed(ActionEvent actionEvent)
             {
+                // do nothing
             }
         };
 
