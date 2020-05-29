@@ -80,7 +80,7 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>${bouncycastle.version}</version>
+                <version>${bouncycastle.version}.01</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
