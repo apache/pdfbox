@@ -28,7 +28,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
-import org.apache.pdfbox.io.RandomAccessReadFile;
+import org.apache.pdfbox.io.RandomAccessReadMemoryMappedFile;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
@@ -189,7 +189,7 @@ public final class CCITTFactory
     public static PDImageXObject createFromFile(PDDocument document, File file, int number)
             throws IOException
     {
-        try (RandomAccessReadFile raf = new RandomAccessReadFile(file))
+        try (RandomAccessRead raf = new RandomAccessReadMemoryMappedFile(file))
         {
             return createFromRandomAccessImpl(document, raf, number);
         }

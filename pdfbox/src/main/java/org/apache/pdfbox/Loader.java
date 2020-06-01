@@ -26,8 +26,7 @@ import java.io.InputStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
-import org.apache.pdfbox.io.RandomAccessBufferedFile;
-import org.apache.pdfbox.io.RandomAccessReadFile;
+import org.apache.pdfbox.io.RandomAccessReadMemoryMappedFile;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.FDFParser;
@@ -73,7 +72,7 @@ public class Loader
      */
     public static FDFDocument loadFDF(File file) throws IOException
     {
-        FDFParser parser = new FDFParser(new RandomAccessReadFile(file));
+        FDFParser parser = new FDFParser(new RandomAccessReadMemoryMappedFile(file));
         return parser.parse();
     }
 
@@ -297,7 +296,8 @@ public class Loader
             MemoryUsageSetting memUsageSetting) throws IOException
     {
         @SuppressWarnings({ "squid:S2095" }) // raFile not closed here, may be needed for signing
-        RandomAccessBufferedFile raFile = new RandomAccessBufferedFile(file);
+        // RandomAccessBufferedFile raFile = new RandomAccessBufferedFile(file);
+        RandomAccessReadMemoryMappedFile raFile = new RandomAccessReadMemoryMappedFile(file);
         try
         {
             return Loader.loadPDF(raFile, password, keyStore, alias, memUsageSetting);
