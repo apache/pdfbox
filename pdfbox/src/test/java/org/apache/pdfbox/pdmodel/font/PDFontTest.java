@@ -193,23 +193,13 @@ public class PDFontTest
     @Test
     public void testPDFox4318() throws IOException
     {
-        try
-        {
-            PDType1Font.HELVETICA_BOLD.encode("\u0080");
-            Assert.fail("should have thrown IllegalArgumentException");
-        }
-        catch (IllegalArgumentException ex)
-        {
-        }
+        Assert.assertThrows("should have thrown IllegalArgumentException",
+                            IllegalArgumentException.class,
+                            () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"));
         PDType1Font.HELVETICA_BOLD.encode("€");
-        try
-        {
-            PDType1Font.HELVETICA_BOLD.encode("\u0080");
-            Assert.fail("should have thrown IllegalArgumentException");
-        }
-        catch (IllegalArgumentException ex)
-        {
-        }
+        Assert.assertThrows("should have thrown IllegalArgumentException",
+                            IllegalArgumentException.class,
+                            () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"));
     }
 
     private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
