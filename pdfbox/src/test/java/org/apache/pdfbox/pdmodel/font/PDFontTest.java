@@ -21,8 +21,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.Loader;
@@ -275,5 +277,51 @@ public class PDFontTest
             doc.save(baos);
         }
         return baos.toByteArray();
+    }
+
+    /**
+     * Check that font can be deleted after usage.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testDeleteFont() throws IOException
+    {
+        File tempFontFile = new File(OUT_DIR, "LiberationSans-Regular.ttf");
+        File tempPdfFile = new File(OUT_DIR, "testDeleteFont.pdf");
+        String text = "Test PDFBOX-4823";
+
+        try (InputStream is = PDFont.class.getResourceAsStream(
+                "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf"))
+        {
+            Files.copy(is, tempFontFile.toPath());
+        }
+
+        try (PDDocument doc = new PDDocument())
+        {
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            try (PDPageContentStream cs = new PDPageContentStream(doc, page))
+            {
+                PDFont font = PDType0Font.load(doc, tempFontFile);
+                cs.beginText();
+                cs.setFont(font, 50);
+                cs.newLineAtOffset(50, 700);
+                cs.showText(text);
+                cs.endText();
+            }
+            doc.save(tempPdfFile);
+        }
+
+        Files.delete(tempFontFile.toPath());    
+
+        try (PDDocument doc = Loader.loadPDF(tempPdfFile))
+        {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String extractedText = stripper.getText(doc);
+            Assert.assertEquals(text, extractedText.trim());
+        }
+
+        Files.delete(tempPdfFile.toPath());    
     }
 }
