@@ -18,6 +18,7 @@ package org.apache.pdfbox.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,31 +28,31 @@ import java.util.List;
  */
 public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
 {
-    // default chunk size is 1kb
-    private static final int DEFAULT_CHUNK_SIZE = 1024;
+    // default chunk size is 4kb
+    private static final int DEFAULT_CHUNK_SIZE_4KB = 1 << 12;
     // use the default chunk size
-    private int chunkSize = DEFAULT_CHUNK_SIZE;
+    private int chunkSize = DEFAULT_CHUNK_SIZE_4KB;
     // list containing all chunks
-    private List<byte[]> bufferList = null;
+    private List<ByteBuffer> bufferList = null;
     // current chunk
-    private byte[] currentBuffer;
+    private ByteBuffer currentBuffer;
     // current pointer to the whole buffer
-    private long pointer;
+    private long pointer = 0;
     // current pointer for the current chunk
-    private int currentBufferPointer;
+    private int currentBufferPointer = 0;
     // size of the whole buffer
-    private long size;
+    private long size = 0;
     // current chunk list index
-    private int bufferListIndex;
+    private int bufferListIndex = 0;
     // maximum chunk list index
-    private int bufferListMaxIndex;
+    private int bufferListMaxIndex = 0;
 
     /**
      * Default constructor.
      */
-    public RandomAccessReadBuffer()
+    private RandomAccessReadBuffer()
     {
-        this(DEFAULT_CHUNK_SIZE);
+        this(DEFAULT_CHUNK_SIZE_4KB);
     }
 
     /**
@@ -62,13 +63,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         // starting with one chunk
         bufferList = new ArrayList<>();
         chunkSize = definedChunkSize;
-        currentBuffer = new byte[chunkSize];
+        currentBuffer = ByteBuffer.allocate(chunkSize);
         bufferList.add(currentBuffer);
-        pointer = 0;
-        currentBufferPointer = 0;
-        size = 0;
-        bufferListIndex = 0;
-        bufferListMaxIndex = 0;
     }
 
     /**
@@ -78,17 +74,12 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
      */
     public RandomAccessReadBuffer(byte[] input)
     {
-        // this is a special case. The given byte array is used as the one
-        // and only chunk.
+        // this is a special case. Wrap the given byte array to one ByteBuffer.
         bufferList = new ArrayList<>(1);
         chunkSize = input.length;
-        currentBuffer = input;
-        bufferList.add(currentBuffer);
-        pointer = 0;
-        currentBufferPointer = 0;
         size = chunkSize;
-        bufferListIndex = 0;
-        bufferListMaxIndex = 0;
+        currentBuffer = ByteBuffer.wrap(input);
+        bufferList.add(currentBuffer);
     }
 
     /**
@@ -100,11 +91,26 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
     public RandomAccessReadBuffer(InputStream input) throws IOException
     {
         this();
-        byte[] byteBuffer = new byte[8192];
         int bytesRead = 0;
-        while ((bytesRead = input.read(byteBuffer)) > -1)
+        while (input.available() > 0)
         {
-            write(byteBuffer, 0, bytesRead);
+            int remainingBytes = chunkSize;
+            int offset = 0;
+            while (remainingBytes > 0
+                    && (bytesRead = input.read(currentBuffer.array(), offset, remainingBytes)) > -1)
+            {
+                remainingBytes -= bytesRead;
+                offset += bytesRead;
+            }
+            size += offset;
+            if (remainingBytes == 0 && input.available() > 0)
+            {
+                expandBuffer();
+            }
+            else
+            {
+                currentBuffer.limit(offset);
+            }
         }
         seek(0);
     }
@@ -115,15 +121,18 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         RandomAccessReadBuffer copy = new RandomAccessReadBuffer(chunkSize);
 
         copy.bufferList = new ArrayList<>(bufferList.size());
-        for (byte [] buffer : bufferList)
+        for (ByteBuffer buffer : bufferList)
         {
-            byte [] newBuffer = new byte [buffer.length];
-            System.arraycopy(buffer,0,newBuffer,0,buffer.length);
+            ByteBuffer newBuffer = ByteBuffer.allocate(buffer.limit());
+            int originPosition = buffer.position();
+            buffer.rewind();
+            newBuffer.put(buffer);
             copy.bufferList.add(newBuffer);
+            buffer.position(originPosition);
         }
-        if (currentBuffer!=null)
+        if (currentBuffer != null)
         {
-            copy.currentBuffer = copy.bufferList.get(copy.bufferList.size()-1);
+            copy.currentBuffer = copy.bufferList.get(copy.bufferList.size() - 1);
         }
         else
         {
@@ -146,10 +155,6 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
     {
         currentBuffer = null;
         bufferList.clear();
-        pointer = 0;
-        currentBufferPointer = 0;
-        size = 0;
-        bufferListIndex = 0;
     }
 
     /**
@@ -161,14 +166,14 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         checkClosed();
         if (position < 0)
         {
-            throw new IOException("Invalid position "+position);
+            throw new IOException("Invalid position " + position);
         }
         pointer = position;
         if (pointer < size)
         {
             // calculate the chunk list index
-            bufferListIndex = (int)(pointer / chunkSize);
-            currentBufferPointer = (int)(pointer % chunkSize);
+            bufferListIndex = (int) (pointer / chunkSize);
+            currentBufferPointer = (int) (pointer % chunkSize);
             currentBuffer = bufferList.get(bufferListIndex);
         }
         else
@@ -177,7 +182,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
             // jump to the end of the buffer
             bufferListIndex = bufferListMaxIndex;
             currentBuffer = bufferList.get(bufferListIndex);
-            currentBufferPointer = (int)(size % chunkSize);
+            currentBufferPointer = (int) (size % chunkSize);
         }
     }
 
@@ -187,8 +192,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
     @Override
     public long getPosition() throws IOException
     {
-       checkClosed();
-       return pointer;
+        checkClosed();
+        return pointer;
     }
     
     /**
@@ -215,7 +220,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
             }
         }
         pointer++;
-        return currentBuffer[currentBufferPointer++] & 0xff;
+        return currentBuffer.get(currentBufferPointer++) & 0xff;
     }
 
     /**
@@ -247,7 +252,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         {
             return 0;
         }
-        int maxLength = (int) Math.min(length, size-pointer);
+        int maxLength = (int) Math.min(length, size - pointer);
         int remainingBytes = chunkSize - currentBufferPointer;
         // no more bytes left
         if (remainingBytes == 0)
@@ -257,7 +262,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         if (maxLength >= remainingBytes)
         {
             // copy the remaining bytes from the current buffer
-            System.arraycopy(currentBuffer, currentBufferPointer, b, offset, remainingBytes);
+            System.arraycopy(currentBuffer.array(), currentBufferPointer, b, offset,
+                    remainingBytes);
             // end of file reached
             currentBufferPointer += remainingBytes;
             pointer += remainingBytes;
@@ -266,7 +272,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         else
         {
             // copy the remaining bytes from the whole buffer
-            System.arraycopy(currentBuffer, currentBufferPointer, b, offset, maxLength);
+            System.arraycopy(currentBuffer.array(), currentBufferPointer, b, offset, maxLength);
             // end of file reached
             currentBufferPointer += maxLength;
             pointer += maxLength;
@@ -284,54 +290,6 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         return size;
     }
 
-    private void write(byte[] b, int offset, int length) throws IOException
-    {
-        checkClosed();
-        long newSize = pointer + length;
-        int remainingBytes = chunkSize - currentBufferPointer;
-        if (length >= remainingBytes)
-        {
-            if (newSize > Integer.MAX_VALUE)
-            {
-                throw new IOException("RandomAccessBuffer overflow");
-            }
-            // copy the first bytes to the current buffer
-            System.arraycopy(b, offset, currentBuffer, currentBufferPointer, remainingBytes);
-            int newOffset = offset + remainingBytes;
-            long remainingBytes2Write = length - remainingBytes;
-            // determine how many buffers are needed for the remaining bytes
-            int numberOfNewArrays = (int) remainingBytes2Write / chunkSize;
-            for (int i = 0; i < numberOfNewArrays; i++)
-            {
-                expandBuffer();
-                System.arraycopy(b, newOffset, currentBuffer, currentBufferPointer, chunkSize);
-                newOffset += chunkSize;
-            }
-            // are there still some bytes to be written?
-            remainingBytes2Write -= numberOfNewArrays * (long) chunkSize;
-            if (remainingBytes2Write >= 0)
-            {
-                expandBuffer();
-                if (remainingBytes2Write > 0)
-                {
-                    System.arraycopy(b, newOffset, currentBuffer, currentBufferPointer,
-                            (int) remainingBytes2Write);
-                }
-                currentBufferPointer = (int) remainingBytes2Write;
-            }
-        }
-        else
-        {
-            System.arraycopy(b, offset, currentBuffer, currentBufferPointer, length);
-            currentBufferPointer += length;
-        }
-        pointer += length;
-        if (pointer > this.size)
-        {
-            this.size = pointer;
-        }
-    }
-
     /**
      * create a new buffer chunk and adjust all pointers and indices.
      */
@@ -345,7 +303,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         else
         {
             // create a new chunk and add it to the buffer
-            currentBuffer = new byte[chunkSize];
+            currentBuffer = ByteBuffer.allocate(chunkSize);
             bufferList.add(currentBuffer);
             currentBufferPointer = 0;
             bufferListMaxIndex++;
@@ -372,12 +330,11 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
      */
     private void checkClosed() throws IOException
     {
-        if (currentBuffer==null)
+        if (currentBuffer == null)
         {
             // consider that the rab is closed if there is no current buffer
             throw new IOException("RandomAccessBuffer already closed");
         }
-        
     }
 
     /**
@@ -440,4 +397,5 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
     {
         return read(b, 0, b.length);
     }
+
 }
