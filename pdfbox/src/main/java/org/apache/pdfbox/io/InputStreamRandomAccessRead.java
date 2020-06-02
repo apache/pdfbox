@@ -166,4 +166,10 @@ public final class InputStreamRandomAccessRead implements RandomAccessRead
     {
         throw new UnsupportedOperationException(getClass().getName() + ".length is not supported!");
     }
+
+    @Override
+    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    {
+        throw new IOException(getClass().getName() + ".createView isn't supported.");
+    }
 }

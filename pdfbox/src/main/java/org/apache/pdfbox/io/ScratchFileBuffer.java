@@ -504,4 +504,11 @@ class ScratchFileBuffer implements RandomAccess
             super.finalize();
         }
     }
+
+    @Override
+    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    {
+        return new RandomAccessReadView(this, startPosition, streamLength);
+    }
+
 }

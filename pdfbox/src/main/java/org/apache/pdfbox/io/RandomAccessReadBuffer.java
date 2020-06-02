@@ -115,6 +115,22 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         seek(0);
     }
 
+    private RandomAccessReadBuffer(RandomAccessReadBuffer parent)
+    {
+        chunkSize = parent.chunkSize;
+        size = parent.size;
+        bufferListMaxIndex = parent.bufferListMaxIndex;
+        bufferList = new ArrayList<>(parent.bufferList.size());
+        for (ByteBuffer buffer : parent.bufferList)
+        {
+            ByteBuffer newBuffer = buffer.duplicate();
+            newBuffer.rewind();
+            bufferList.add(newBuffer);
+        }
+        currentBuffer = bufferList.get(0);
+        
+    }
+
     @Override
     public RandomAccessReadBuffer clone()
     {
@@ -396,6 +412,13 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
     public int read(byte[] b) throws IOException
     {
         return read(b, 0, b.length);
+    }
+
+    @Override
+    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    {
+        return new RandomAccessReadView(new RandomAccessReadBuffer(this), startPosition,
+                streamLength);
     }
 
 }

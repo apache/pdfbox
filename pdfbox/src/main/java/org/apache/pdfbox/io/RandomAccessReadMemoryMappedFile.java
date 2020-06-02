@@ -18,7 +18,7 @@ package org.apache.pdfbox.io;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumSet;
@@ -31,13 +31,13 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
 {
 
     // mapped byte buffer
-    private MappedByteBuffer mappedByteBuffer;
+    private ByteBuffer mappedByteBuffer;
 
     // size of the whole file
     private final long size;
 
     // file channel of the file to be read
-    private final FileChannel fileChannel;
+    private FileChannel fileChannel;
 
     /**
      * Default constructor.
@@ -65,13 +65,23 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, size);
     }
 
+    private RandomAccessReadMemoryMappedFile(RandomAccessReadMemoryMappedFile parent)
+    {
+        mappedByteBuffer = parent.mappedByteBuffer.duplicate();
+        size = parent.size;
+        mappedByteBuffer.rewind();
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void close() throws IOException
     {
-        fileChannel.close();
+        if (fileChannel != null)
+        {
+            fileChannel.close();
+        }
         mappedByteBuffer = null;
     }
 
@@ -156,7 +166,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     @Override
     public boolean isClosed()
     {
-        return !fileChannel.isOpen();
+        return mappedByteBuffer == null;
     }
 
     /**
@@ -209,5 +219,12 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     public int read(byte[] b) throws IOException
     {
         return read(b, 0, b.length);
+    }
+
+    @Override
+    public RandomAccessReadView createView(long startPosition, long streamLength)
+    {
+        return new RandomAccessReadView(new RandomAccessReadMemoryMappedFile(this), startPosition,
+                streamLength);
     }
 }

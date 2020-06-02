@@ -573,8 +573,9 @@ public class COSParser extends BaseParser implements ICOSParser
 
     @Override
     public RandomAccessReadView createRandomAccessReadView(long startPosition, long streamLength)
+            throws IOException
     {
-        return new RandomAccessReadView(source, startPosition, streamLength);
+        return source.createView(startPosition, streamLength);
     }
 
     /**

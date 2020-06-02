@@ -257,4 +257,10 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     {
         return peek() == -1;
     }
+
+    @Override
+    public RandomAccessReadView createView(long startPosition, long streamLength) throws IOException
+    {
+        return new RandomAccessReadView(this, startPosition, streamLength);
+    }
 }
