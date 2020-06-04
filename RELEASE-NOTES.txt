@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.19
+Release Notes -- Apache PDFBox -- Version 2.0.20
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.18 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.19 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,47 +14,44 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-4720] - cmap entries "<0000> <FFFF> <0000>" are cut
-[PDFBOX-4722] - TestTextStripper doesn't detect when less output
-[PDFBOX-4724] - Wrong calculation of position in InputStreamSource#readFully
-[PDFBOX-4727] - ExtractEmbeddedFiles.java example uses name tree keys as file names
-[PDFBOX-4730] - /OC in form and image XObjects not handled
-[PDFBOX-4738] - getDocument().getObjects() returns nothing for split result documents
-[PDFBOX-4741] - NullPointerException in PlainText constructor
-[PDFBOX-4742] - Incorrect handling of float Infinity and NaN
-[PDFBOX-4745] - COSObjectKey.hashCode doesn't work for generation numbers > 0
-[PDFBOX-4750] - java.io.IOException: Error:Unknown type in content stream:COSNull{}
-[PDFBOX-4753] - NumberFormatException while parsing a certain PDF document
-[PDFBOX-4755] - Fonts improperly rendered
-[PDFBOX-4756] - ScratchFileBuffer seek beyond the last page
-[PDFBOX-4760] - wordSeparator not being inserted when word ends with " "
-[PDFBOX-4763] - Can't get inline image raw data
-[PDFBOX-4765] - NPE in ExtractImages.ImageGraphicsEngine().run()
-[PDFBOX-4771] - JPEG image with transparency can't be extracted
-[PDFBOX-4772] - Improve memory consumption of PDAbstractAppearanceHandler (2)
-[PDFBOX-4777] - Avoid OOM for malformed PDFs using a huge First valkue within object streams
-
-New Feature
-
-[PDFBOX-4721] - Move Apache PDFBox from a low-API model
+[PDFBOX-756] - Some characters from TeX-created files are mapped into ASCII range 1-31
+[PDFBOX-4516] - PDFBox text and images are blurry even after rendering with high DPI
+[PDFBOX-4783] - empty annotation appearance BBox brings "Multiplying two matrices produces illegal values"
+[PDFBOX-4788] - Flattening fields results in non-widget annotations being removed
+[PDFBOX-4793] - Questionable fallback font for some embedded chinese fonts
+[PDFBOX-4794] - NPE in ExtractImages.ImageGraphicsEngine().run() (2)
+[PDFBOX-4799] - isartor-6-2-2-t02-fail-a.pdf fails on jdk15 with ArrayIndexOutOfBoundsException
+[PDFBOX-4800] - Parsing of numbers does not always terminate at actual end of number
+[PDFBOX-4801] - ArrayIndexOutOfBoundsException in PDICCBased.toRGB()
+[PDFBOX-4805] - Regression in 2.0.19
+[PDFBOX-4807] - COSString cannot be cast to COSDictionary
+[PDFBOX-4811] - Glyphs getting lost when rendering
+[PDFBOX-4814] - Wrong COSType for OCProperties after merge
+[PDFBOX-4817] - Generated XMP Metadata with other XSLT processor are XML invalid
+[PDFBOX-4819] - Optional Content Membership Dictionaries (OCMD) incorrect
+[PDFBOX-4821] - My PDF document is not printed correctly. Rendering it works.
+[PDFBOX-4822] - Off-by-one error in PDSignature.getConvertedContents()
+[PDFBOX-4824] - NullpointerException with PDFDebugger
+[PDFBOX-4825] - PDPushButton.getOnValues() throws IllegalStateException
+[PDFBOX-4828] - Encode a text using the vertical type of the font in the attachment, which succeeded in version 2.0.12 but failed in version 2.0.19
+[PDFBOX-4833] - PDColorSpace#create IOException, expected a name or array but got COSDictionary
+[PDFBOX-4849] - FlateFilter Inflater leaks
+[PDFBOX-4851] - Image rendering issue 2
 
 Improvement
 
-[PDFBOX-4734] - ExtractImages should create CCITT G4 compressed TIFF files when possible
-[PDFBOX-4735] - WriteDecodedDoc should create an xref table instead of an xref stream
-[PDFBOX-4762] - Inconsistent handling of incorrect data
-[PDFBOX-4766] - PDInlineImage.getSuffix() returns null
-[PDFBOX-4779] - PDFBOX: Update Bouncy Castle Crypto to version 1.64
+[PDFBOX-4784] - Possibility to provide the SecureRandom to SecurityHandler
+[PDFBOX-4804] - Remove no longer needed parameter from PDFStreamEngine#show*Glyph
+[PDFBOX-4810] - Improve CodespaceRange to be in line with the spec
+[PDFBOX-4844] - Pass resourceCache to patterns
+
+Test
+
+[PDFBOX-4854] - Add test that font can be deleted after usage
 
 Task
 
-[PDFBOX-4757] - Enable as much PDAcroFormFlattenTest tests as possible
-[PDFBOX-4759] - Add tests for PDFBOX-4153 and PDFBOX-4490
-
-Sub-task
-
-[PDFBOX-4731] - Support RenderDestination
-[PDFBOX-4732] - Support ImageType
+[PDFBOX-4813] - Remove catching NullPointerException
 
 Release Contents
 ----------------
