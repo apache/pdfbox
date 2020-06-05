@@ -86,7 +86,8 @@ public class UniquePropertiesValidation
                 filter(field -> propertyName.equals(field.getPropertyName())).count() > 1)
         {
             ve.add(new ValidationError(PreflightConstants.ERROR_METADATA_PROPERTY_FORMAT,
-                    propertyName + " property is not unique in schema " + schema.getNamespace()));
+                    "property '" + schema.getPrefix() + ":" + propertyName +
+                    "' occurs multiple times"));
         }
     }
 }
