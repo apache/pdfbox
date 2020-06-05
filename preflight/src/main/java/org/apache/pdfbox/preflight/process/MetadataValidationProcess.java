@@ -29,10 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.cos.COSBase;
-import org.apache.pdfbox.cos.COSDictionary;
-import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
@@ -45,8 +42,8 @@ import org.apache.pdfbox.preflight.metadata.PDFAIdentificationValidation;
 import org.apache.pdfbox.preflight.metadata.RDFAboutAttributeConcordanceValidation;
 import org.apache.pdfbox.preflight.metadata.RDFAboutAttributeConcordanceValidation.DifferentRDFAboutException;
 import org.apache.pdfbox.preflight.metadata.SynchronizedMetaDataValidation;
+import org.apache.pdfbox.preflight.metadata.UniquePropertiesValidation;
 import org.apache.pdfbox.preflight.metadata.XpacketParsingException;
-import org.apache.pdfbox.preflight.utils.COSUtils;
 import org.apache.pdfbox.util.Hex;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.XMPBasicSchema;
@@ -89,6 +86,10 @@ public class MetadataValidationProcess extends AbstractProcess
             // Call metadata synchronization checking
             addValidationErrors(ctx,
                     new SynchronizedMetaDataValidation().validateMetadataSynchronization(document, metadata));
+
+            // Call metadata uniqueness checking
+            addValidationErrors(ctx,
+                    new UniquePropertiesValidation().validatePropertiesUniqueness(document, metadata));
 
             // Call PDF/A Identifier checking
             addValidationErrors(ctx, new PDFAIdentificationValidation().validatePDFAIdentifer(metadata));
