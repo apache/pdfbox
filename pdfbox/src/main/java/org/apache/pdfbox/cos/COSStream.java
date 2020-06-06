@@ -68,7 +68,7 @@ public class COSStream extends COSDictionary implements Closeable
      */
     public COSStream()
     {
-        this(ScratchFile.getMainMemoryOnlyInstance());
+        this(null);
     }
     
     /**

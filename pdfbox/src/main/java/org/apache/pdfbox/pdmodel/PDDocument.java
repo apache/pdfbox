@@ -48,7 +48,6 @@ import org.apache.pdfbox.cos.COSUpdateInfo;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -167,20 +166,7 @@ public class PDDocument implements Closeable
      */
     public PDDocument(MemoryUsageSetting memUsageSetting)
     {
-        ScratchFile scratchFile = null;
-        try
-        {
-            scratchFile = new ScratchFile(memUsageSetting);
-        }
-        catch (IOException ioe)
-        {
-            LOG.warn("Error initializing scratch file: " + ioe.getMessage() +
-                     ". Fall back to main memory usage only.", ioe);
-            
-            scratchFile = ScratchFile.getMainMemoryOnlyInstance();
-        }
-        
-        document = new COSDocument(scratchFile);
+        document = new COSDocument(memUsageSetting);
         pdfSource = null;
 
         // First we need a trailer

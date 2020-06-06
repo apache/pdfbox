@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.ScratchFile;
 
 /**
@@ -98,7 +99,7 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument()
     {
-        this(ScratchFile.getMainMemoryOnlyInstance(), null);
+        this(MemoryUsageSetting.setupMainMemoryOnly());
     }
 
     /**
@@ -112,15 +113,24 @@ public class COSDocument extends COSBase implements Closeable
     }
 
     /**
-     * Constructor that will use the provide memory handler for storage of the
-     * PDF streams.
+     * Constructor that will use the provide memory settings for storage of the PDF streams.
      *
-     * @param scratchFile memory handler for buffering of PDF streams
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
      * 
      */
-    public COSDocument(ScratchFile scratchFile)
+    public COSDocument(MemoryUsageSetting memUsageSetting)
     {
-        this(scratchFile, null);
+        try
+        {
+            scratchFile = new ScratchFile(memUsageSetting);
+        }
+        catch (IOException ioe)
+        {
+            LOG.warn("Error initializing scratch file: " + ioe.getMessage()
+                    + ". Fall back to main memory usage only.", ioe);
+
+            scratchFile = ScratchFile.getMainMemoryOnlyInstance();
+        }
     }
 
     /**
@@ -132,7 +142,8 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(ScratchFile scratchFile, ICOSParser parser)
     {
-        this.scratchFile = scratchFile;
+        this.scratchFile = scratchFile != null ? scratchFile
+                : ScratchFile.getMainMemoryOnlyInstance();
         this.parser = parser;
     }
 

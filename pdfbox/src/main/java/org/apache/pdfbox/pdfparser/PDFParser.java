@@ -45,7 +45,7 @@ public class PDFParser extends COSParser
      */
     public PDFParser(RandomAccessRead source) throws IOException
     {
-        this(source, "", ScratchFile.getMainMemoryOnlyInstance());
+        this(source, "", null);
     }
 
     /**
@@ -71,7 +71,7 @@ public class PDFParser extends COSParser
      */
     public PDFParser(RandomAccessRead source, String decryptionPassword) throws IOException
     {
-        this(source, decryptionPassword, ScratchFile.getMainMemoryOnlyInstance());
+        this(source, decryptionPassword, null);
     }
 
     /**
@@ -103,7 +103,7 @@ public class PDFParser extends COSParser
     public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
             String alias) throws IOException
     {
-        this(source, decryptionPassword, keyStore, alias, ScratchFile.getMainMemoryOnlyInstance());
+        this(source, decryptionPassword, keyStore, alias, null);
     }
 
     /**
