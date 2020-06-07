@@ -440,10 +440,20 @@ public class Loader
     public static PDDocument loadPDF(InputStream input, String password, InputStream keyStore,
             String alias, MemoryUsageSetting memUsageSetting) throws IOException
     {
-        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
+        ScratchFile scratchFile = null;
         try
         {
-            RandomAccessRead source = scratchFile.createBuffer(input);
+            RandomAccessRead source;
+            if (memUsageSetting.useMainMemory() && !memUsageSetting.isMainMemoryRestricted())
+            {
+                // use RandomAccessReadBuffer instead of a ScratchFile for the input if MainMemoryOnly is configured
+                source = new RandomAccessReadBuffer(input);
+            }
+            else
+            {
+                scratchFile = new ScratchFile(memUsageSetting);
+                source = scratchFile.createBuffer(input);
+            }
             PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
             return parser.parse();
         }
