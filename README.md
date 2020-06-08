@@ -1,4 +1,4 @@
-Apache PDFBox <http://pdfbox.apache.org/>
+Apache PDFBox <https://pdfbox.apache.org/>
 ===================================================
 
 The Apache PDFBox library is an open source Java tool for working with PDF 
@@ -7,18 +7,18 @@ of existing documents and the ability to extract content from documents.
 PDFBox also includes several command line utilities. PDFBox is published
 under the Apache License, Version 2.0.
 
-PDFBox is a project of the Apache Software Foundation <http://www.apache.org/>.
+PDFBox is a project of the Apache Software Foundation <https://www.apache.org/>.
 
 Binary Downloads
 ----------------
 
 You can download binary versions for releases currently under development or older
-releases from our [Download Page](http://pdfbox.apache.org/download.cgi).
+releases from our [Download Page](https://pdfbox.apache.org/download.cgi).
 
 Build
 -----
 
-You need Java 8 (or higher) and Maven 3 <http://maven.apache.org/> to
+You need Java 8 (or higher) and Maven 3 <https://maven.apache.org/> to
 build PDFBox. The recommended build command is:
 
     mvn clean install
@@ -33,7 +33,7 @@ Contribute
 There are various ways to help us improve PDFBox. 
 
 - look at the [Issue Tracker](https://issues.apache.org/jira/browse/PDFBOX) to help us fix bugs.
-- answer questions on our [Users Mailing List](http://pdfbox.apache.org/mailinglists.html "Subscribe to Mailing List").
+- answer questions on our [Users Mailing List](https://pdfbox.apache.org/mailinglists.html "Subscribe to Mailing List").
 - help us enhance the [Examples](https://svn.apache.org/repos/asf/pdfbox/trunk/examples/)
 - help us to enhance the [PDFBox Documentation](https://git-wip-us.apache.org/repos/asf/pdfbox-docs)
 or on [GitHub](https://github.com/apache/pdfbox-docs). 
@@ -41,7 +41,7 @@ or on [GitHub](https://github.com/apache/pdfbox-docs).
 Support
 -------
 
-**Please follow the guidelines at our [Support Page](http://pdfbox.apache.org/support.html).**
+**Please follow the guidelines at our [Support Page](https://pdfbox.apache.org/support.html).**
 
 If you have questions about how to use PDFBox do ask on the
 [Users Mailing List](/mailinglists.html "Subscribe to Mailing List").
@@ -50,7 +50,7 @@ This will get you help from the entire community.
 The PDFBox examples and the test code in the sources will also provide additional information.
 
 And there are additional resources available on sites such as
-[Stack Overflow](http://stackoverflow.com/search?q=pdfbox "Stack Overflow").
+[Stack Overflow](https://stackoverflow.com/search?q=pdfbox "Stack Overflow").
 
 If you are sure you have found a bug the please report the issue in our 
 [Issue Tracker](https://issues.apache.org/jira/browse/PDFBOX). 
@@ -91,7 +91,7 @@ The ASF licenses this file to You under the Apache License, Version 2.0
 (the "License"); you may not use this file except in compliance with
 the License.  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+     https://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -108,7 +108,7 @@ and/or re-export to another country, of encryption software.  BEFORE using
 any encryption software, please  check your country's laws, regulations and
 policies concerning the import, possession, or use, and re-export of
 encryption software, to  see if this is permitted.  See
-<http://www.wassenaar.org/> for more information.
+<https://www.wassenaar.org/> for more information.
 
 The U.S. Government Department of Commerce, Bureau of Industry and
 Security (BIS), has classified this software as Export Commodity Control
