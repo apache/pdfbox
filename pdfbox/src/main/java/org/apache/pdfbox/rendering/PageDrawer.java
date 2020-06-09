@@ -1190,18 +1190,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
         AffineTransform imageTransform = new AffineTransform(at);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        imageTransform.scale(1.0 / width, -1.0 / height);
+        imageTransform.translate(0, -height);
+
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if( softMask != null )
         {
-            imageTransform.scale(1, -1);
-            imageTransform.translate(0, -1);
-            Paint awtPaint = new TexturePaint(image,
-                    new Rectangle2D.Double(imageTransform.getTranslateX(), imageTransform.getTranslateY(),
-                            imageTransform.getScaleX(), imageTransform.getScaleY()));
+            Rectangle2D rectangle = new Rectangle2D.Float(0, 0, width, height);
+            Paint awtPaint = new TexturePaint(image, rectangle);
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
-            Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
-            graphics.fill(at.createTransformedShape(unitRect));
+
+            AffineTransform originalTransform = graphics.getTransform();
+            graphics.transform(imageTransform);
+            graphics.fill(rectangle);
+            graphics.setTransform(originalTransform);
         }
         else
         {
@@ -1210,11 +1215,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 image = applyTransferFunction(image, transfer);
             }
-
-            int width = image.getWidth();
-            int height = image.getHeight();
-            imageTransform.scale(1.0 / width, -1.0 / height);
-            imageTransform.translate(0, -height);
 
             // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815:
             // graphics.drawImage() has terrible quality when scaling down, even when
@@ -1234,15 +1234,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
             {
-                // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815:
-                // graphics.drawImage() has terrible quality when scaling down, even when
-                // RenderingHints.VALUE_INTERPOLATION_BICUBIC, VALUE_ALPHA_INTERPOLATION_QUALITY,
-                // VALUE_COLOR_RENDER_QUALITY and VALUE_RENDER_QUALITY are all set.
-                // A workaround is to get a pre-scaled image with Image.getScaledInstance()
-                // and then draw that one. To reduce differences in testing
-                // (partly because the method needs integer parameters), only smaller scalings
-                // will trigger the workaround. Because of the slowness we only do it if the user
-                // expects quality rendering and interpolation.
                 int w = Math.round(image.getWidth() * scaleX);
                 int h = Math.round(image.getHeight() * scaleY);
                 if (w < 1)
