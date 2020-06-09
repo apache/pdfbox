@@ -1121,18 +1121,23 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         graphics.setComposite(getGraphicsState().getNonStrokingJavaComposite());
         setClip();
         AffineTransform imageTransform = new AffineTransform(at);
+        int width = image.getWidth();
+        int height = image.getHeight();
+        imageTransform.scale(1.0 / width, -1.0 / height);
+        imageTransform.translate(0, -height);
+
         PDSoftMask softMask = getGraphicsState().getSoftMask();
         if( softMask != null )
         {
-            imageTransform.scale(1, -1);
-            imageTransform.translate(0, -1);
-            Paint awtPaint = new TexturePaint(image,
-                    new Rectangle2D.Double(imageTransform.getTranslateX(), imageTransform.getTranslateY(),
-                            imageTransform.getScaleX(), imageTransform.getScaleY()));
+            Rectangle2D rectangle = new Rectangle2D.Float(0, 0, width, height);
+            Paint awtPaint = new TexturePaint(image, rectangle);
             awtPaint = applySoftMaskToPaint(awtPaint, softMask);
             graphics.setPaint(awtPaint);
-            Rectangle2D unitRect = new Rectangle2D.Float(0, 0, 1, 1);
-            graphics.fill(at.createTransformedShape(unitRect));
+
+            AffineTransform originalTransform = graphics.getTransform();
+            graphics.transform(imageTransform);
+            graphics.fill(rectangle);
+            graphics.setTransform(originalTransform);
         }
         else
         {
@@ -1141,11 +1146,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             {
                 image = applyTransferFunction(image, transfer);
             }
-
-            int width = image.getWidth();
-            int height = image.getHeight();
-            imageTransform.scale(1.0 / width, -1.0 / height);
-            imageTransform.translate(0, -height);
 
             // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815:
             // graphics.drawImage() has terrible quality when scaling down, even when
