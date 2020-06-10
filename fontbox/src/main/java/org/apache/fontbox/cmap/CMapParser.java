@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.cmap;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class CMapParser
      */
     public CMap parsePredefined(String name) throws IOException
     {
-        try (InputStream input = getExternalCMap(name))
+        try (InputStream input = new BufferedInputStream(getExternalCMap(name)))
         {
             return parse(input);
         }
@@ -140,9 +141,11 @@ public class CMapParser
 
     private void parseUsecmap(LiteralName useCmapName, CMap result) throws IOException
     {
-        InputStream useStream = getExternalCMap(useCmapName.name);
-        CMap useCMap = parse(useStream);
-        result.useCmap(useCMap);
+        try (InputStream useStream = new BufferedInputStream(getExternalCMap(useCmapName.name)))
+        {
+            CMap useCMap = parse(useStream);
+            result.useCmap(useCMap);
+        }
     }
 
     private void parseLiteralName(LiteralName literal, PushbackInputStream cmapStream, CMap result) throws IOException

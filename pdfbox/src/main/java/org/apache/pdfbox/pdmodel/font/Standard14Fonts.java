@@ -17,6 +17,7 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -113,12 +114,9 @@ final class Standard14Fonts
         }
 
         String resourceName = "/org/apache/pdfbox/resources/afm/" + afmName + ".afm";
-        try (InputStream afmStream = PDType1Font.class.getResourceAsStream(resourceName))
+        try (InputStream resourceAsStream = PDType1Font.class.getResourceAsStream(resourceName);
+             InputStream afmStream = new BufferedInputStream(resourceAsStream))
         {
-            if (afmStream == null)
-            {
-                throw new IOException(resourceName + " not found");
-            }
             AFMParser parser = new AFMParser(afmStream);
             FontMetrics metric = parser.parse(true);
             STANDARD14_AFM_MAP.put(fontName, metric);

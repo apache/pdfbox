@@ -48,9 +48,10 @@ public final class GlyphList
     private static GlyphList load(String filename, int numberOfEntries)
     {
         String path = "/org/apache/pdfbox/resources/glyphlist/";
-        try
+        //no need to use a BufferedInputSteam here, as GlyphList uses a BufferedReader
+        try (InputStream resourceAsStream = GlyphList.class.getResourceAsStream(path + filename))
         {
-            return new GlyphList(GlyphList.class.getResourceAsStream(path + filename), numberOfEntries);
+            return new GlyphList(resourceAsStream, numberOfEntries);
         }
         catch (IOException e)
         {

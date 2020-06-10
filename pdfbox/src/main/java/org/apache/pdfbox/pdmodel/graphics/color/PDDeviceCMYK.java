@@ -25,6 +25,7 @@ import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 
 import java.io.InputStream;
@@ -96,12 +97,9 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
 
         String name = "/org/apache/pdfbox/resources/icc/ISOcoated_v2_300_bas.icc";
 
-        try (InputStream is = PDDeviceCMYK.class.getResourceAsStream(name))
+        try (InputStream resourceAsStream = PDDeviceCMYK.class.getResourceAsStream(name);
+             InputStream is = new BufferedInputStream(resourceAsStream))
         {
-            if (is == null)
-            {
-                throw new IOException("Error loading resource: " + name);
-            }
             return ICC_Profile.getInstance(is);
         }
     }
