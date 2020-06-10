@@ -34,7 +34,7 @@ public class FDFParser extends COSParser
     /**
      * Constructs parser for given file using memory buffer.
      * 
-     * @param filename the filename of the pdf to be parsed
+     * @param source the source of the pdf to be parsed
      * 
      * @throws IOException If something went wrong.
      */

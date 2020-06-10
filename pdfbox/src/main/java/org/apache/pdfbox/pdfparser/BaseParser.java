@@ -956,7 +956,7 @@ public abstract class BaseParser
     }
 
     /**
-     * Reads given pattern from {@link #seqSource}. Skipping whitespace at start and end if wanted.
+     * Reads given pattern from {@link #source}. Skipping whitespace at start and end if wanted.
      * 
      * @param expectedString pattern to be skipped
      * @param skipSpaces if set to true spaces before and after the string will be skipped
@@ -1327,7 +1327,7 @@ public abstract class BaseParser
      * delimiters are any non digit values.
      *
      * @return the token to parse as integer or long by the calling method.
-     * @throws IOException throws by the {@link #seqSource} methods.
+     * @throws IOException throws by the {@link #source} methods.
      */
     protected final StringBuilder readStringNumber() throws IOException
     {

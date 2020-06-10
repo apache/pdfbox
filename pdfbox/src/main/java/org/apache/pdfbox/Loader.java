@@ -312,7 +312,7 @@ public class Loader
     /**
      * Parses a PDF.
      * 
-     * @param rafile random access read representing the pdf to be loaded
+     * @param raFile random access read representing the pdf to be loaded
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
