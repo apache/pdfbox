@@ -16,6 +16,7 @@
  */
 package org.apache.fontbox.cmap;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -446,12 +447,7 @@ public class CMapParser
      */
     protected InputStream getExternalCMap(String name) throws IOException
     {
-        InputStream is = getClass().getResourceAsStream(name);
-        if (is == null)
-        {
-            throw new IOException("Error: Could not find referenced cmap stream " + name);
-        }
-        return is;
+        return new BufferedInputStream(getClass().getResourceAsStream(name));
     }
 
     private Object parseNextToken(PushbackInputStream is) throws IOException

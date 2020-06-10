@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.text;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -1842,17 +1843,10 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     static
     {
         String path = "/org/apache/pdfbox/resources/text/BidiMirroring.txt";
-        InputStream input = PDFTextStripper.class.getResourceAsStream(path);
+        InputStream input = new BufferedInputStream(PDFTextStripper.class.getResourceAsStream(path));
         try
         {
-            if (input != null)
-            {
-                parseBidiFile(input);
-            }
-            else
-            {
-                LOG.warn("Could not find '" + path + "', mirroring char map will be empty: ");
-            }
+            parseBidiFile(input);
         }
         catch (IOException e)
         {
