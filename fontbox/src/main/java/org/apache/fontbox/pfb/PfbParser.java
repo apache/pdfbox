@@ -140,10 +140,20 @@ public class PfbParser
             size += in.read() << 8;
             size += in.read() << 16;
             size += in.read() << 24;
+            if (size < 0)
+            {
+                throw new IOException("PFB record size is negative: " + size);
+            }
             lengths[records] = size;
             if (pointer >= pfbdata.length)
             {
                 throw new EOFException("attempted to read past EOF");
+            }
+            if (size > pfbdata.length - pointer)
+            {
+                throw new IOException("PFB record size (" + size +
+                        ") doesn't fit in buffer, position: " + pointer +
+                        ", total length: " + pfbdata.length);
             }
             int got = in.read(pfbdata, pointer, size);
             if (got < 0) 
