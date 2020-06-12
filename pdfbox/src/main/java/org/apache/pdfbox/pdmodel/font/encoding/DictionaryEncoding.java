@@ -180,6 +180,11 @@ public class DictionaryEncoding extends Encoding
     @Override
     public String getEncodingName()
     {
+        if (baseEncoding == null)
+        {
+            // In type 3 the /Differences array shall specify the complete character encoding
+            return "differences";
+        }
         return baseEncoding.getEncodingName() + " with differences";
     }
 }
