@@ -40,7 +40,68 @@ public class MatrixTest
     }
 
     @Test
-    public void testMultiplication() throws Exception
+    public void testMultiplication()
+    {
+        // These matrices will not change - we use it to drive the various multiplications.
+        final Matrix const1 = new Matrix();
+        final Matrix const2 = new Matrix();
+
+        // Create matrix with values
+        // [ 0, 1, 2
+        // 1, 2, 3
+        // 2, 3, 4]
+        for (int x = 0; x < 3; x++)
+        {
+            for (int y = 0; y < 3; y++)
+            {
+                const1.setValue(x, y, x + y);
+                const2.setValue(x, y, 8 + x + y);
+            }
+        }
+
+        float[] m1MultipliedByM1 = new float[] { 5,  8,  11,  8, 14, 20, 11, 20,  29 };
+        float[] m1MultipliedByM2 = new float[] { 29, 32, 35, 56, 62, 68, 83, 92, 101 };
+        float[] m2MultipliedByM1 = new float[] { 29, 56, 83, 32, 62, 92, 35, 68, 101 };
+
+        Matrix var1 = const1.clone();
+        Matrix var2 = const2.clone();
+
+        // Multiply two matrices together producing a new result matrix.
+        Matrix result = var1.multiply(var2);
+        assertEquals(const1, var1);
+        assertEquals(const2, var2);
+        assertMatrixValuesEqualTo(m1MultipliedByM2, result);
+
+        // Multiply two matrices together with the result being written to a third matrix
+        // (Any existing values there will be overwritten).
+        result = var1.multiply(var2);
+        assertEquals(const1, var1);
+        assertEquals(const2, var2);
+        assertMatrixValuesEqualTo(m1MultipliedByM2, result);
+
+        // Multiply two matrices together with the result being written into 'this' matrix
+        var1 = const1.clone();
+        var2 = const2.clone();
+        var1.concatenate(var2);
+        assertEquals(const2, var2);
+        assertMatrixValuesEqualTo(m2MultipliedByM1, var1);
+
+        var1 = const1.clone();
+        var2 = const2.clone();
+        result = Matrix.concatenate(var1, var2);
+        assertEquals(const1, var1);
+        assertEquals(const2, var2);
+        assertMatrixValuesEqualTo(m2MultipliedByM1, result);
+
+        // Multiply the same matrix with itself with the result being written into 'this' matrix
+        var1 = const1.clone();
+        result = var1.multiply(var1);
+        assertEquals(const1, var1);
+        assertMatrixValuesEqualTo(m1MultipliedByM1, result);
+    }
+
+    @Test
+    public void testOldMultiplication() throws Exception
     {
         // This matrix will not change - we use it to drive the various multiplications.
         final Matrix testMatrix = new Matrix();
@@ -190,4 +251,19 @@ public class MatrixTest
         }
     }
     
+    //Uncomment annotation to run the test
+    // @Test
+    public void testMultiplicationPerformance() {
+        long start = System.currentTimeMillis();
+        Matrix c;
+        Matrix d;
+        for (int i=0; i<100000000; i++) {
+            c = new Matrix(15, 3, 235, 55, 422, 1);
+            d = new Matrix(45, 345, 23, 551, 66, 832);
+            c.multiply(d);
+            c.concatenate(d);
+        }
+        long stop = System.currentTimeMillis();
+        System.out.println("Matrix multiplication took " + (stop - start) + "ms.");
+    }
 }
