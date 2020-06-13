@@ -172,9 +172,7 @@ final class Standard14Fonts
 
         if (FONTS.get(baseName) == null)
         {
-            // baseName is a reference to a string that was statically
-            // put in the ALIASES map so we can safely synchronize on it
-            synchronized (baseName)
+            synchronized (FONTS)
             {
                 if (FONTS.get(baseName) == null)
                 {
