@@ -226,7 +226,7 @@ public final class Matrix implements Cloneable
      */
     public void concatenate(Matrix matrix)
     {
-        matrix.multiply(this, this);
+        single = checkFloatValues(multiplyArrays(matrix.single, single));
     }
 
     /**
@@ -280,44 +280,22 @@ public final class Matrix implements Cloneable
      */
     public Matrix multiply(Matrix other)
     {
-        return multiply(other, new Matrix());
+        return new Matrix(checkFloatValues(multiplyArrays(single, other.single)));
     }
 
-    /**
-     * This method multiplies this Matrix with the specified other Matrix, storing the product in the specified result
-     * Matrix. It is allowed to have (other == this) or (result == this) or indeed (other == result).</br>
-     * See {@link #multiply(Matrix)} if you need a version with a single operator.
-     *
-     * @param other the second operand Matrix in the multiplication; required
-     * @param result the Matrix instance into which the result should be stored. If result is null, a new Matrix
-     * instance is created.
-     * @return the result.
-     */
-    public Matrix multiply( Matrix other, Matrix result )
+    private float[] checkFloatValues(float[] values)
     {
-        float[] c = result != null && result != other && result != this ? result.single
-                : new float[SIZE];
-
-        multiplyArrays(single, other.single, c);
-
-        if (!Float.isFinite(c[0]) || !Float.isFinite(c[1]) || !Float.isFinite(c[2])
-                || !Float.isFinite(c[3]) || !Float.isFinite(c[4]) || !Float.isFinite(c[5])
-                || !Float.isFinite(c[6]) || !Float.isFinite(c[7]) || !Float.isFinite(c[8]))
+        if (!Float.isFinite(values[0]) || !Float.isFinite(values[1]) || !Float.isFinite(values[2])
+                || !Float.isFinite(values[3]) || !Float.isFinite(values[4]) || !Float.isFinite(values[5])
+                || !Float.isFinite(values[6]) || !Float.isFinite(values[7]) || !Float.isFinite(values[8]))
             throw new IllegalArgumentException("Multiplying two matrices produces illegal values");
-
-        if (result == null)
-        {
-            return new Matrix(c);
-        }
-        else
-        {
-            result.single = c;
-            return result;
-        }
+        return values;
     }
 
-    private void multiplyArrays(float[] a, float[] b, float[] c)
+
+    private float[] multiplyArrays(float[] a, float[] b)
     {
+        float[] c = new float[SIZE];
         c[0] = a[0] * b[0] + a[1] * b[3] + a[2] * b[6];
         c[1] = a[0] * b[1] + a[1] * b[4] + a[2] * b[7];
         c[2] = a[0] * b[2] + a[1] * b[5] + a[2] * b[8];
@@ -327,6 +305,7 @@ public final class Matrix implements Cloneable
         c[6] = a[6] * b[0] + a[7] * b[3] + a[8] * b[6];
         c[7] = a[6] * b[1] + a[7] * b[4] + a[8] * b[7];
         c[8] = a[6] * b[2] + a[7] * b[5] + a[8] * b[8];
+        return c;
     }
     /**
      * Transforms the given point by this matrix.

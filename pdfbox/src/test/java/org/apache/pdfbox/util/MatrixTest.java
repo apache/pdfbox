@@ -133,31 +133,9 @@ public class MatrixTest
         assertMatrixValuesEqualTo(new float[] { 0, 1, 2, 1, 2, 3, 2, 3, 4 }, m2);
         assertMatrixValuesEqualTo(new float[] { 5, 8, 11, 8, 14, 20, 11, 20, 29 }, product);
 
-        // Multiply two matrices together with the result being written to a third matrix
-        // (Any existing values there will be overwritten).
-        Matrix resultMatrix = new Matrix();
-
-        Matrix retVal = m1.multiply(m2, resultMatrix);
-        assertSame(retVal, resultMatrix);
+        Matrix retVal = m1.multiply(m2);
         // Operand 1 should not have changed
         assertMatrixValuesEqualTo(new float[] { 0, 1, 2, 1, 2, 3, 2, 3, 4 }, m1);
-        // Operand 2 should not have changed
-        assertMatrixValuesEqualTo(new float[] { 0, 1, 2, 1, 2, 3, 2, 3, 4 }, m2);
-        assertMatrixValuesEqualTo(new float[] { 5, 8, 11, 8, 14, 20, 11, 20, 29 }, resultMatrix);
-
-        // Multiply two matrices together with the result being written into the other matrix
-        retVal = m1.multiply(m2, m2);
-        assertSame(retVal, m2);
-        // Operand 1 should not have changed
-        assertMatrixValuesEqualTo(new float[] { 0, 1, 2, 1, 2, 3, 2, 3, 4 }, m1);
-        assertMatrixValuesEqualTo(new float[] { 5, 8, 11, 8, 14, 20, 11, 20, 29 }, retVal);
-
-        // Multiply two matrices together with the result being written into 'this' matrix
-        m1 = testMatrix.clone();
-        m2 = testMatrix.clone();
-
-        retVal = m1.multiply(m2, m1);
-        assertSame(retVal, m1);
         // Operand 2 should not have changed
         assertMatrixValuesEqualTo(new float[] { 0, 1, 2, 1, 2, 3, 2, 3, 4 }, m2);
         assertMatrixValuesEqualTo(new float[] { 5, 8, 11, 8, 14, 20, 11, 20, 29 }, retVal);
@@ -165,8 +143,9 @@ public class MatrixTest
         // Multiply the same matrix with itself with the result being written into 'this' matrix
         m1 = testMatrix.clone();
 
-        retVal = m1.multiply(m1, m1);
-        assertSame(retVal, m1);
+        retVal = m1.multiply(m1);
+        // Operand 1 should not have changed
+        assertMatrixValuesEqualTo(new float[] { 0, 1, 2, 1, 2, 3, 2, 3, 4 }, m1);
         assertMatrixValuesEqualTo(new float[] { 5, 8, 11, 8, 14, 20, 11, 20, 29 }, retVal);
     }
 
@@ -175,7 +154,7 @@ public class MatrixTest
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.MAX_VALUE);
-        m.multiply(m, m);
+        m.multiply(m);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -183,7 +162,7 @@ public class MatrixTest
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.NaN);
-        m.multiply(m, m);
+        m.multiply(m);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -191,7 +170,7 @@ public class MatrixTest
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.POSITIVE_INFINITY);
-        m.multiply(m, m);
+        m.multiply(m);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -199,7 +178,7 @@ public class MatrixTest
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.NEGATIVE_INFINITY);
-        m.multiply(m, m);
+        m.multiply(m);
     }
 
     /**
