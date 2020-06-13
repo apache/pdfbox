@@ -109,9 +109,9 @@ final class Standard14Fonts
      * jar under /org/apache/pdfbox/resources/afm/
      *
      * @param fontName one of the standard 14 font names for which to lod the metrics.
-     * @throws IllegalArgumentException if no metrics exist for that font.
+     * @throws IOException if no metrics exist for that font.
      */
-    private static void loadMetrics(String fontName)
+    private static void loadMetrics(String fontName) throws IOException
     {
         String resourceName = "/org/apache/pdfbox/resources/afm/" + fontName + ".afm";
         try (InputStream resourceAsStream = PDType1Font.class.getResourceAsStream(resourceName);
@@ -120,10 +120,6 @@ final class Standard14Fonts
             AFMParser parser = new AFMParser(afmStream);
             FontMetrics metric = parser.parse(true);
             FONTS.put(fontName, metric);
-        }
-        catch (IOException e)
-        {
-            throw new IllegalArgumentException(e);
         }
     }
 
@@ -177,7 +173,14 @@ final class Standard14Fonts
             {
                 if (FONTS.get(baseName) == null)
                 {
-                    loadMetrics(baseName);
+                    try
+                    {
+                        loadMetrics(baseName);
+                    }
+                    catch (IOException e)
+                    {
+                        throw new IllegalArgumentException(e);
+                    }
                 }
             }
         }
