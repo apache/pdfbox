@@ -139,14 +139,6 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         super.processPage(page);
     }
 
-    @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
-            throws IOException
-    {
-        // call deprecated method to ensure binary compatibility if not overridden
-        showGlyph(textRenderingMatrix, font, code, font.toUnicode(code), displacement);
-    }
-
     /**
      * Called when a glyph is to be processed. The heuristic calculations here were originally
      * written by Ben Litchfield for PDFStreamEngine.
