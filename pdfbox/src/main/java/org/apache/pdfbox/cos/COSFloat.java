@@ -92,42 +92,36 @@ public class COSFloat extends COSNumber
     
     private void checkMinMaxValues()
     {
-        float floatValue = value.floatValue();
-        double doubleValue = value.doubleValue();
-        boolean valueReplaced = false;
-        // check for huge values
-        if (Float.isInfinite(floatValue))
-        {      
+        int signum = value.signum();
+        // don't check 0 values
+        if (signum != 0)
+        {
+            double doubleValue = value.doubleValue();
+            // check for huge values
             if (Math.abs(doubleValue) > Float.MAX_VALUE)
             {
-                floatValue = Float.MAX_VALUE * (Float.compare(floatValue, Float.POSITIVE_INFINITY) == 0 ? 1 : -1);
-                valueReplaced = true;
+                value = BigDecimal.valueOf(signum * Float.MAX_VALUE);
+                valueAsString = value.toPlainString();
             }
-        }
-        // check for very small values
-        else if (Float.compare(floatValue, 0) == 0 && Double.compare(doubleValue, 0) != 0 &&
-                 Math.abs(doubleValue) < Float.MIN_NORMAL)
-        {
-            floatValue = Float.MIN_NORMAL;
-            floatValue *= doubleValue >= 0  ? 1 : -1;
-            valueReplaced = true;
-        }
-        if (valueReplaced)
-        {
-            value = BigDecimal.valueOf(floatValue);
-            valueAsString = removeNullDigits(value.toPlainString());
+            // check for very small values
+            else if (Math.abs(doubleValue) < Float.MIN_NORMAL)
+            {
+                value = BigDecimal.valueOf(signum * Float.MIN_NORMAL);
+                valueAsString = value.toPlainString();
+            }
         }
     }
     
     private String removeNullDigits(String plainStringValue)
     {
         // remove fraction digit "0" only
-        if (plainStringValue.indexOf('.') > -1 && !plainStringValue.endsWith(".0"))
+        int lastIndex = plainStringValue.lastIndexOf('.');
+        if (lastIndex > 0)
         {
-            while (plainStringValue.endsWith("0") && !plainStringValue.endsWith(".0"))
-            {
-                plainStringValue = plainStringValue.substring(0,plainStringValue.length()-1);
-            }
+            int i = plainStringValue.length() - 1;
+            while (i > lastIndex + 1 && plainStringValue.charAt(i) == '0')
+                i--;
+            return plainStringValue.substring(0, i + 1);
         }
         return plainStringValue;
     }
