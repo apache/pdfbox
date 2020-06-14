@@ -181,7 +181,15 @@ abstract class TrueTypeEmbedder implements Subsetter
         fd.setFontName(ttf.getName());
 
         OS2WindowsMetricsTable os2 = ttf.getOS2Windows();
+        if (os2 == null)
+        {
+            throw new IOException("os2 table is missing in font " + ttf.getName());
+        }
         PostScriptTable post = ttf.getPostScript();
+        if (post == null)
+        {
+            throw new IOException("post table is missing in font " + ttf.getName());            
+        }
 
         // Flags
         fd.setFixedPitch(post.getIsFixedPitch() > 0 ||
