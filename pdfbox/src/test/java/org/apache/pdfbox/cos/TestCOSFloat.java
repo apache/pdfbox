@@ -117,7 +117,7 @@ public class TestCOSFloat extends TestCOSNumber
                 assertTrue(test1.equals(test1));
                 // Symmetric is preserved ( x==y then y==x)
                 assertTrue(test2.equals(test3));
-                assertTrue(test1.equals(test2));
+                assertTrue(test3.equals(test2));
                 // Transitive (if x==y && y==z then x==z)
                 assertTrue(test1.equals(test2));
                 assertTrue(test2.equals(test3));
@@ -275,9 +275,17 @@ public class TestCOSFloat extends TestCOSNumber
             {
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.writePDF(outStream);
-                assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
-                assertEquals(floatToString(num), outStream.toString("ISO-8859-1"));
-                testByteArrays(floatToString(num).getBytes(StandardCharsets.ISO_8859_1), outStream.toByteArray());
+
+                String expected = floatToString(cosFloat.floatValue());
+                assertEquals(expected, outStream.toString("ISO-8859-1"));
+                assertEquals("COSFloat{" + expected + "}", cosFloat.toString());
+
+                expected = floatToString(num);
+                assertEquals(expected, outStream.toString("ISO-8859-1"));
+                assertEquals("COSFloat{" + expected + "}", cosFloat.toString());
+                testByteArrays(expected.getBytes(StandardCharsets.ISO_8859_1),
+                        outStream.toByteArray());
+
                 outStream.reset();
             }
             catch (IOException e)
@@ -306,6 +314,117 @@ public class TestCOSFloat extends TestCOSNumber
         // PDFBOX-4289
         COSFloat cosFloat = new COSFloat("--16.33");
         assertEquals(-16.33f, cosFloat.floatValue());
+    }
+
+    public void testVerySmallValues() throws IOException
+    {
+        double smallValue = Float.MIN_VALUE / 10d;
+
+        assertEquals("Test must be performed with a value smaller than Float.MIN_VALUE.", -1,
+                Double.compare(smallValue, Float.MIN_VALUE));
+
+        // 1.4012984643248171E-46
+        String asString = String.valueOf(smallValue);
+        COSFloat cosFloat = new COSFloat(asString);
+        assertEquals(Float.MIN_NORMAL, cosFloat.floatValue());
+
+        // 0.00000000000000000000000000000000000000000000014012984643248171
+        asString = new BigDecimal(asString).toPlainString();
+        cosFloat = new COSFloat(asString);
+        assertEquals(Float.MIN_NORMAL, cosFloat.floatValue());
+
+        smallValue *= -1;
+
+        // -1.4012984643248171E-46
+        asString = String.valueOf(smallValue);
+        cosFloat = new COSFloat(asString);
+        assertEquals(-Float.MIN_NORMAL, cosFloat.floatValue());
+
+        // -0.00000000000000000000000000000000000000000000014012984643248171
+        asString = new BigDecimal(asString).toPlainString();
+        cosFloat = new COSFloat(asString);
+        assertEquals(-Float.MIN_NORMAL, cosFloat.floatValue());
+    }
+
+    public void testVeryLargeValues() throws IOException
+    {
+        double largeValue = Float.MAX_VALUE * 10d;
+
+        assertEquals("Test must be performed with a value larger than Float.MAX_VALUE.", 1,
+                Double.compare(largeValue, Float.MIN_VALUE));
+
+        // 1.4012984643248171E-46
+        String asString = String.valueOf(largeValue);
+        COSFloat cosFloat = new COSFloat(asString);
+        assertEquals(Float.MAX_VALUE, cosFloat.floatValue());
+
+        // 0.00000000000000000000000000000000000000000000014012984643248171
+        asString = new BigDecimal(asString).toPlainString();
+        cosFloat = new COSFloat(asString);
+        assertEquals(Float.MAX_VALUE, cosFloat.floatValue());
+
+        largeValue *= -1;
+
+        // -1.4012984643248171E-46
+        asString = String.valueOf(largeValue);
+        cosFloat = new COSFloat(asString);
+        assertEquals(-Float.MAX_VALUE, cosFloat.floatValue());
+
+        // -0.00000000000000000000000000000000000000000000014012984643248171
+        asString = new BigDecimal(asString).toPlainString();
+        cosFloat = new COSFloat(asString);
+        assertEquals(-Float.MAX_VALUE, cosFloat.floatValue());
+    }
+
+    public void testMisplacedNegative() throws IOException
+    {
+        // PDFBOX-2990, PDFBOX-3369 have 0.00000-33917698
+        // PDFBOX-3500 has 0.-262
+
+        COSFloat cosFloat = new COSFloat("0.00000-33917698");
+        assertEquals(new COSFloat("-0.0000033917698"), cosFloat);
+
+        cosFloat = new COSFloat("0.-262");
+        assertEquals(new COSFloat("-0.262"), cosFloat);
+    }
+
+    public void testDuplicateMisplacedNegative()
+    {
+        try
+        {
+            new COSFloat("0.-26-2");
+            fail("Was expecting an IOException");
+        }
+        catch (IOException expected)
+        {
+        }
+
+        try
+        {
+            new COSFloat("-0.-262");
+            fail("Was expecting an IOException");
+        }
+        catch (IOException expected)
+        {
+        }
+
+        try
+        {
+            new COSFloat("---0.262");
+            fail("Was expecting an IOException");
+        }
+        catch (IOException expected)
+        {
+        }
+
+        try
+        {
+            new COSFloat("--0.2-62");
+            fail("Was expecting an IOException");
+        }
+        catch (IOException expected)
+        {
+        }
     }
 
     private String floatToString(float value)
