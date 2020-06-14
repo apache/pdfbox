@@ -2415,8 +2415,8 @@ public class COSParser extends BaseParser implements ICOSParser
             xrefTrailerResolver.nextXrefObj( objByteOffset, XRefType.STREAM );
             xrefTrailerResolver.setTrailer( stream );
         }        
-        PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, document, xrefTrailerResolver);
-        parser.parse();
+        PDFXrefStreamParser parser = new PDFXrefStreamParser(stream, document);
+        parser.parse(xrefTrailerResolver);
     }
 
     /**

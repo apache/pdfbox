@@ -40,31 +40,30 @@ import org.apache.pdfbox.cos.COSObjectKey;
 public class PDFXrefStreamParser extends BaseParser
 {
     private final COSStream stream;
-    private final XrefTrailerResolver xrefTrailerResolver;
 
     /**
      * Constructor.
      *
      * @param stream The stream to parse.
      * @param document The document for the current parsing.
-     * @param resolver resolver to read the xref/trailer information
      *
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFXrefStreamParser(COSStream stream, COSDocument document, XrefTrailerResolver resolver)
+    public PDFXrefStreamParser(COSStream stream, COSDocument document)
             throws IOException
     {
         super(new InputStreamRandomAccessRead(stream.createInputStream()));
-        this.stream = stream;
         this.document = document;
-        this.xrefTrailerResolver = resolver;
+        this.stream = stream;
     }
 
     /**
      * Parses through the unfiltered stream and populates the xrefTable HashMap.
+     * 
+     * @param resolver resolver to read the xref/trailer information
      * @throws IOException If there is an error while parsing the stream.
      */
-    public void parse() throws IOException
+    public void parse(XrefTrailerResolver resolver) throws IOException
     {
         COSArray wArray = stream.getCOSArray(COSName.W);
         if (wArray == null)
@@ -167,7 +166,7 @@ public class PDFXrefStreamParser extends BaseParser
                         genNum += (currLine[i + w0 + w1] & 0x00ff) << ((w2 - i - 1) * 8);
                     }
                     COSObjectKey objKey = new COSObjectKey(objID, genNum);
-                    xrefTrailerResolver.setXRef(objKey, offset);
+                    resolver.setXRef(objKey, offset);
                     break;
                 case 2:
                     /*
@@ -186,11 +185,17 @@ public class PDFXrefStreamParser extends BaseParser
                         objstmObjNr += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
                     }    
                     objKey = new COSObjectKey( objID, 0 );
-                    xrefTrailerResolver.setXRef( objKey, -objstmObjNr );
+                    resolver.setXRef(objKey, -objstmObjNr);
                     break;
                 default:
                     break;
             }
         }
+        if (source != null)
+        {
+            source.close();
+        }
+        document = null;
     }
+
 }
