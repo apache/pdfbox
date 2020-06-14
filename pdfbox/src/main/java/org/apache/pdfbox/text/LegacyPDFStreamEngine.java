@@ -139,12 +139,22 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         super.processPage(page);
     }
 
+    @Override
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+            throws IOException
+    {
+        // call deprecated method to ensure binary compatibility if not overridden
+        showGlyph(textRenderingMatrix, font, code, font.toUnicode(code), displacement);
+    }
+
     /**
      * Called when a glyph is to be processed. The heuristic calculations here were originally
      * written by Ben Litchfield for PDFStreamEngine.
      */
     @Override
-    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement)
+    protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code,
+            String unicode,
+            Vector displacement)
             throws IOException
     {
         //
@@ -295,17 +305,17 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         float spaceWidthDisplay = spaceWidthText * textRenderingMatrix.getScalingFactorX();
 
         // use our additional glyph list for Unicode mapping
-        String unicode = font.toUnicode(code, glyphList);
+        String unicodeMapping = font.toUnicode(code, glyphList);
 
         // when there is no Unicode mapping available, Acrobat simply coerces the character code
         // into Unicode, so we do the same. Subclasses of PDFStreamEngine don't necessarily want
         // this, which is why we leave it until this point in PDFTextStreamEngine.
-        if (unicode == null)
+        if (unicodeMapping == null)
         {
             if (font instanceof PDSimpleFont)
             {
                 char c = (char) code;
-                unicode = new String(new char[] { c });
+                unicodeMapping = new String(new char[] { c });
             }
             else
             {
@@ -331,7 +341,8 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         processTextPosition(new TextPosition(pageRotation, pageSize.getWidth(),
                 pageSize.getHeight(), translatedTextRenderingMatrix, nextX, nextY,
                 Math.abs(dyDisplay), dxDisplay,
-                Math.abs(spaceWidthDisplay), unicode, new int[] { code } , font, fontSize,
+                Math.abs(spaceWidthDisplay), unicodeMapping, new int[] { code }, font,
+                fontSize,
                 (int)(fontSize * textMatrix.getScalingFactorX())));
     }
 
