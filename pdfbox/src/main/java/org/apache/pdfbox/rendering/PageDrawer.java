@@ -1161,12 +1161,15 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             float scaleY = Math.abs(m.getScalingFactorY());
             Image imageToDraw = image;
 
-            if ((scaleX < 0.25f || scaleY < 0.25f) &&
+            AffineTransform graphicsTransformA = graphics.getTransform();
+            Matrix graphicsTransformM = new Matrix(graphicsTransformA);                
+
+            if ((scaleX * graphicsTransformM.getScalingFactorX() < 1 || scaleY * graphicsTransformM.getScalingFactorY() < 1) &&
                 RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
             {
-                int w = Math.round(image.getWidth() * scaleX);
-                int h = Math.round(image.getHeight() * scaleY);
+                int w = Math.round(image.getWidth() * scaleX * Math.abs(graphicsTransformM.getScalingFactorX()));
+                int h = Math.round(image.getHeight() * scaleY * Math.abs(graphicsTransformM.getScalingFactorY()));
                 if (w < 1)
                 {
                     w = 1;
@@ -1180,8 +1183,17 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         h,
                         Image.SCALE_SMOOTH);
                 imageTransform.scale(1 / scaleX, 1 / scaleY); // remove the scale
+                imageTransform.preConcatenate(graphicsTransformA);
+                imageTransform.scale(1 / Math.abs(graphicsTransformM.getScalingFactorX()),
+                                     1 / Math.abs(graphicsTransformM.getScalingFactorY()));
+                graphics.setTransform(new AffineTransform());
+                graphics.drawImage(imageToDraw, imageTransform, null);
+                graphics.setTransform(graphicsTransformA);
             }
-            graphics.drawImage(imageToDraw, imageTransform, null);
+            else
+            {
+                graphics.drawImage(imageToDraw, imageTransform, null);
+            }
         }
     }
 
