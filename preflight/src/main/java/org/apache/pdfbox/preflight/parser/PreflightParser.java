@@ -611,7 +611,7 @@ public class PreflightParser extends PDFParser
             COSNumber number = (COSNumber) result;
             if (number instanceof COSFloat)
             {
-                Double real = number.doubleValue();
+                float real = number.floatValue();
                 if (real > MAX_POSITIVE_FLOAT || real < MAX_NEGATIVE_FLOAT)
                 {
                     addValidationError(new ValidationError(ERROR_SYNTAX_NUMERIC_RANGE,
