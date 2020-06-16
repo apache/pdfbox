@@ -90,7 +90,18 @@ abstract class TrueTypeEmbedder implements Subsetter
         if (!embedSubset)
         {
             // full embedding
-            PDStream stream = new PDStream(document, ttf.getOriginalData(), COSName.FLATE_DECODE);
+            
+            // TrueType collections are not supported
+            InputStream is = ttf.getOriginalData();
+            byte b[] = new byte[4];
+            is.mark(b.length); // "is" is FileInputStream or ByteArrayInputStream
+            if (is.read(b) == b.length && new String(b).equals("ttcf"))
+            {
+                is.close();
+                throw new IOException("Full embedding of TrueType font collections not supported");
+            }
+            is.reset();
+            PDStream stream = new PDStream(document, is, COSName.FLATE_DECODE);
             stream.getCOSObject().setLong(COSName.LENGTH1, ttf.getOriginalDataSize());
             fontDescriptor.setFontFile2(stream);
         }
