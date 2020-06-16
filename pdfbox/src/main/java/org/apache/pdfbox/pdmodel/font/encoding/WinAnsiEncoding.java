@@ -251,7 +251,7 @@ public class WinAnsiEncoding extends Encoding
             {0236, "zcaron"},
             {060, "zero"},
             // adding some additional mappings as defined in Appendix D of the pdf spec
-            {0240, "space"},
+            {0240, "nbspace"},
             {0255, "hyphen"}
     };
 
