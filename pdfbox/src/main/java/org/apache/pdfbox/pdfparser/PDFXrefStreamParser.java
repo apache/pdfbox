@@ -39,7 +39,8 @@ import org.apache.pdfbox.cos.COSObjectKey;
  */
 public class PDFXrefStreamParser extends BaseParser
 {
-    private final COSStream stream;
+    private final int[] w = new int[3];
+    private final List<Long> objNums = new ArrayList<>();
 
     /**
      * Constructor.
@@ -54,21 +55,26 @@ public class PDFXrefStreamParser extends BaseParser
     {
         super(new InputStreamRandomAccessRead(stream.createInputStream()));
         this.document = document;
-        this.stream = stream;
+        try
+        {
+            initParserValues(stream);
+        }
+        catch (IOException exception)
+        {
+            close();
+        }
     }
 
-    /**
-     * Parses through the unfiltered stream and populates the xrefTable HashMap.
-     * 
-     * @param resolver resolver to read the xref/trailer information
-     * @throws IOException If there is an error while parsing the stream.
-     */
-    public void parse(XrefTrailerResolver resolver) throws IOException
+    private void initParserValues(COSStream stream) throws IOException
     {
         COSArray wArray = stream.getCOSArray(COSName.W);
         if (wArray == null)
         {
             throw new IOException("/W array is missing in Xref stream");
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            w[i] = wArray.getInt(i, 0);
         }
 
         COSArray indexArray = stream.getCOSArray(COSName.INDEX);
@@ -79,8 +85,6 @@ public class PDFXrefStreamParser extends BaseParser
             indexArray.add(COSInteger.ZERO);
             indexArray.add(COSInteger.get(stream.getInt(COSName.SIZE, 0)));
         }
-
-        List<Long> objNums = new ArrayList<>();
 
         /*
          * Populates objNums with all object numbers available
@@ -109,22 +113,39 @@ public class PDFXrefStreamParser extends BaseParser
                 objNums.add(objID + i);
             }
         }
-        Iterator<Long> objIter = objNums.iterator();
+    }
+
+    private void close() throws IOException
+    {
+        if (source != null)
+        {
+            source.close();
+        }
+        document = null;
+        objNums.clear();
+    }
+
+    /**
+     * Parses through the unfiltered stream and populates the xrefTable HashMap.
+     * 
+     * @param resolver resolver to read the xref/trailer information
+     * @throws IOException If there is an error while parsing the stream.
+     */
+    public void parse(XrefTrailerResolver resolver) throws IOException
+    {
         /*
          * Calculating the size of the line in bytes
          */
-        int w0 = wArray.getInt(0, 0);
-        int w1 = wArray.getInt(1, 0);
-        int w2 = wArray.getInt(2, 0);
-        int lineSize = w0 + w1 + w2;
+        int lineSize = w[0] + w[1] + w[2];
 
+        Iterator<Long> objIter = objNums.iterator();
         while (!isEOF() && objIter.hasNext())
         {
             byte[] currLine = new byte[lineSize];
             source.read(currLine);
 
             int type;            
-            if (w0 == 0)
+            if (w[0] == 0)
             {
                 // "If the first element is zero, 
                 // the type field shall not be present, and shall default to type 1"
@@ -137,9 +158,9 @@ public class PDFXrefStreamParser extends BaseParser
                  * Grabs the number of bytes specified for the first column in
                  * the W array and stores it.
                  */
-                for (int i = 0; i < w0; i++)
+                for (int i = 0; i < w[0]; i++)
                 {
-                    type += (currLine[i] & 0x00ff) << ((w0 - i - 1) * 8);
+                    type += (currLine[i] & 0x00ff) << ((w[0] - i - 1) * 8);
                 }
             }
             //Need to remember the current objID
@@ -156,14 +177,14 @@ public class PDFXrefStreamParser extends BaseParser
                     break;
                 case 1:
                     int offset = 0;
-                    for(int i = 0; i < w1; i++)
+                    for (int i = 0; i < w[1]; i++)
                     {
-                        offset += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
+                        offset += (currLine[i + w[0]] & 0x00ff) << ((w[1] - i - 1) * 8);
                     }
                     int genNum = 0;
-                    for(int i = 0; i < w2; i++)
+                    for (int i = 0; i < w[2]; i++)
                     {
-                        genNum += (currLine[i + w0 + w1] & 0x00ff) << ((w2 - i - 1) * 8);
+                        genNum += (currLine[i + w[0] + w[1]] & 0x00ff) << ((w[2] - i - 1) * 8);
                     }
                     COSObjectKey objKey = new COSObjectKey(objID, genNum);
                     resolver.setXRef(objKey, offset);
@@ -180,9 +201,9 @@ public class PDFXrefStreamParser extends BaseParser
                      * distinguish from file offsets
                      */
                     int objstmObjNr = 0;
-                    for(int i = 0; i < w1; i++)
+                    for (int i = 0; i < w[1]; i++)
                     {
-                        objstmObjNr += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
+                        objstmObjNr += (currLine[i + w[0]] & 0x00ff) << ((w[1] - i - 1) * 8);
                     }    
                     objKey = new COSObjectKey( objID, 0 );
                     resolver.setXRef(objKey, -objstmObjNr);
@@ -191,11 +212,7 @@ public class PDFXrefStreamParser extends BaseParser
                     break;
             }
         }
-        if (source != null)
-        {
-            source.close();
-        }
-        document = null;
+        close();
     }
 
 }
