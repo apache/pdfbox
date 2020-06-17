@@ -93,7 +93,7 @@ abstract class TrueTypeEmbedder implements Subsetter
             
             // TrueType collections are not supported
             InputStream is = ttf.getOriginalData();
-            byte b[] = new byte[4];
+            byte[] b = new byte[4];
             is.mark(b.length);
             if (is.read(b) == b.length && new String(b).equals("ttcf"))
             {
