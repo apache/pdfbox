@@ -1147,7 +1147,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 image = applyTransferFunction(image, transfer);
             }
 
-            // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815:
+            // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815, PDFBOX-4886, PDFBOX-4863:
             // graphics.drawImage() has terrible quality when scaling down, even when
             // RenderingHints.VALUE_INTERPOLATION_BICUBIC, VALUE_ALPHA_INTERPOLATION_QUALITY,
             // VALUE_COLOR_RENDER_QUALITY and VALUE_RENDER_QUALITY are all set.
@@ -1156,20 +1156,21 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // (partly because the method needs integer parameters), only smaller scalings
             // will trigger the workaround. Because of the slowness we only do it if the user
             // expects quality rendering and interpolation.
-            Matrix m = new Matrix(imageTransform);
-            float scaleX = Math.abs(m.getScalingFactorX());
-            float scaleY = Math.abs(m.getScalingFactorY());
+            Matrix imageTransformMatrix = new Matrix(imageTransform);
+            float imageScaleX = Math.abs(imageTransformMatrix.getScalingFactorX());
+            float imageScaleY = Math.abs(imageTransformMatrix.getScalingFactorY());
+            AffineTransform graphicsTransformA = graphics.getTransform();
+            Matrix graphicsTransformM = new Matrix(graphicsTransformA);    
+            float graphicsScaleX = Math.abs(graphicsTransformM.getScalingFactorX());
+            float graphicsScaleY = Math.abs(graphicsTransformM.getScalingFactorY());
             Image imageToDraw = image;
 
-            AffineTransform graphicsTransformA = graphics.getTransform();
-            Matrix graphicsTransformM = new Matrix(graphicsTransformA);                
-
-            if ((scaleX * graphicsTransformM.getScalingFactorX() < 1 || scaleY * graphicsTransformM.getScalingFactorY() < 1) &&
+            if ((imageScaleX * graphicsScaleX < 0.5 || imageScaleY * graphicsScaleY < 0.5) &&
                 RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
             {
-                int w = Math.round(image.getWidth() * scaleX * Math.abs(graphicsTransformM.getScalingFactorX()));
-                int h = Math.round(image.getHeight() * scaleY * Math.abs(graphicsTransformM.getScalingFactorY()));
+                int w = Math.round(image.getWidth() * imageScaleX * graphicsScaleX);
+                int h = Math.round(image.getHeight() * imageScaleY * graphicsScaleY);
                 if (w < 1)
                 {
                     w = 1;
@@ -1182,10 +1183,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                         w,
                         h,
                         Image.SCALE_SMOOTH);
-                imageTransform.scale(1 / scaleX, 1 / scaleY); // remove the scale
+
+                imageTransform.scale(1 / imageScaleX, 1 / imageScaleY); // remove the scale
                 imageTransform.preConcatenate(graphicsTransformA);
-                imageTransform.scale(1 / Math.abs(graphicsTransformM.getScalingFactorX()),
-                                     1 / Math.abs(graphicsTransformM.getScalingFactorY()));
+                imageTransform.scale(1 / graphicsScaleX, 1 / graphicsScaleY);
                 graphics.setTransform(new AffineTransform());
                 graphics.drawImage(imageToDraw, imageTransform, null);
                 graphics.setTransform(graphicsTransformA);
