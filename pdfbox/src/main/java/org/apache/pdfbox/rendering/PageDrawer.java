@@ -1157,43 +1157,32 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // will trigger the workaround. Because of the slowness we only do it if the user
             // expects quality rendering and interpolation.
             Matrix imageTransformMatrix = new Matrix(imageTransform);
-            float imageScaleX = Math.abs(imageTransformMatrix.getScalingFactorX());
-            float imageScaleY = Math.abs(imageTransformMatrix.getScalingFactorY());
             AffineTransform graphicsTransformA = graphics.getTransform();
-            Matrix graphicsTransformM = new Matrix(graphicsTransformA);    
-            float graphicsScaleX = Math.abs(graphicsTransformM.getScalingFactorX());
-            float graphicsScaleY = Math.abs(graphicsTransformM.getScalingFactorY());
-            Image imageToDraw = image;
+            Matrix graphicsTransformMatrix = new Matrix(graphicsTransformA);    
+            float scaleX = Math.abs(imageTransformMatrix.getScalingFactorX() * graphicsTransformMatrix.getScalingFactorX());
+            float scaleY = Math.abs(imageTransformMatrix.getScalingFactorY() * graphicsTransformMatrix.getScalingFactorY());
 
-            if ((imageScaleX * graphicsScaleX < 0.5 || imageScaleY * graphicsScaleY < 0.5) &&
+            if ((scaleX < 0.5 || scaleY < 0.5) &&
                 RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
             {
-                int w = Math.round(image.getWidth() * imageScaleX * graphicsScaleX);
-                int h = Math.round(image.getHeight() * imageScaleY * graphicsScaleY);
-                if (w < 1)
+                int w = Math.round(image.getWidth() * scaleX);
+                int h = Math.round(image.getHeight() * scaleY);
+                if (w < 1 || h < 1)
                 {
-                    w = 1;
+                    graphics.drawImage(image, imageTransform, null);
+                    return;
                 }
-                if (h < 1)
-                {
-                    h = 1;
-                }
-                imageToDraw = image.getScaledInstance(
-                        w,
-                        h,
-                        Image.SCALE_SMOOTH);
-
-                imageTransform.scale(1 / imageScaleX, 1 / imageScaleY); // remove the scale
+                Image imageToDraw = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+                imageTransform.scale(1 / scaleX, 1 / scaleY); // remove the scale
                 imageTransform.preConcatenate(graphicsTransformA);
-                imageTransform.scale(1 / graphicsScaleX, 1 / graphicsScaleY);
                 graphics.setTransform(new AffineTransform());
                 graphics.drawImage(imageToDraw, imageTransform, null);
                 graphics.setTransform(graphicsTransformA);
             }
             else
             {
-                graphics.drawImage(imageToDraw, imageTransform, null);
+                graphics.drawImage(image, imageTransform, null);
             }
         }
     }
