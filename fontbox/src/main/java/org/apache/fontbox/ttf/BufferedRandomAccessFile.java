@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class is a version of the one published at
@@ -33,6 +35,8 @@ import java.io.RandomAccessFile;
  */
 public class BufferedRandomAccessFile extends RandomAccessFile
 {
+    private static final Log LOG = LogFactory.getLog(BufferedRandomAccessFile.class);
+
     /**
      * Uses a byte instead of a char buffer for efficiency reasons.
      */
@@ -66,6 +70,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             throws FileNotFoundException
     {
         super(filename, mode);
+LOG.debug("filename: " + filename);
         BUFSIZE = bufsize;
         buffer = new byte[BUFSIZE];
     }
@@ -86,6 +91,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
             throws FileNotFoundException
     {
         super(file, mode);
+LOG.debug("file: " + file);
         BUFSIZE = bufsize;
         buffer = new byte[BUFSIZE];
     }
@@ -148,6 +154,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
+LOG.debug("b size: " + b.length + ", off: " + off + ", len: " + len);
         int leftover = bufend - bufpos;
         if (len <= leftover)
         {
@@ -159,7 +166,9 @@ public class BufferedRandomAccessFile extends RandomAccessFile
         bufpos += leftover;
         if (fillBuffer() > 0)
         {
+LOG.debug("leftover: " + leftover);
             int bytesRead = read(b, off + leftover, len - leftover);
+LOG.debug("bytesRead: " + bytesRead);
             if (bytesRead > 0)
             {
                 leftover += bytesRead;
