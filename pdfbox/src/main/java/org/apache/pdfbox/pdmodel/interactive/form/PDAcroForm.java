@@ -318,9 +318,7 @@ public final class PDAcroForm implements COSObjectable
                 {
                     annotations.add(annotation);                 
                 }
-                else if (!annotation.isInvisible() && !annotation.isHidden() &&
-                         annotation.getNormalAppearanceStream() != null && 
-                         annotation.getNormalAppearanceStream().getBBox() != null)
+                else if (isVisibleAnnotation(annotation))
                 {
                     contentStream = new PDPageContentStream(document, page, AppendMode.APPEND, true, !isContentStreamWrapped);
                     isContentStreamWrapped = true;
@@ -394,8 +392,22 @@ public final class PDAcroForm implements COSObjectable
         
         // remove XFA for hybrid forms
         dictionary.removeItem(COSName.XFA);
-        
-    }    
+    }
+
+    private boolean isVisibleAnnotation(PDAnnotation annotation)
+    {
+        if (annotation.isInvisible() || annotation.isHidden())
+        {
+            return false;
+        }
+        PDAppearanceStream normalAppearanceStream = annotation.getNormalAppearanceStream();
+        if (normalAppearanceStream == null)
+        {
+            return false;
+        }
+        PDRectangle bbox = normalAppearanceStream.getBBox();
+        return bbox != null && bbox.getWidth() > 0 && bbox.getHeight() > 0;
+    }
 
     /**
      * Refreshes the appearance streams and appearance dictionaries for 

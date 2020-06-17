@@ -273,6 +273,20 @@ public class PDAcroFormFlattenTest
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
+    /**
+     * PDFBOX-4889: appearance streams with empty /BBox.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testFlattenPDFBox4889() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf";
+        String targetFileName = "PDFBOX-4889.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
     /*
      * Flatten and compare with generated image samples.
      */
