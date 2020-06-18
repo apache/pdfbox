@@ -19,6 +19,7 @@ package org.apache.pdfbox.examples.pdmodel;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -54,7 +55,9 @@ public final class HelloWorldType1
             PDPage page = new PDPage();
             doc.addPage(page);
 
-            PDFont font = new PDType1Font(doc, new FileInputStream(pfbPath));
+            InputStream is = new FileInputStream(pfbPath);
+            PDFont font = new PDType1Font(doc, is);
+            is.close();
 
             PDPageContentStream contents = new PDPageContentStream(doc, page);
             contents.beginText();
