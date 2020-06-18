@@ -174,15 +174,7 @@ public class PDType1Font extends PDSimpleFont
      */
     public PDType1Font(PDDocument doc, InputStream pfbIn) throws IOException
     {
-        PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, pfbIn, null);
-        encoding = embedder.getFontEncoding();
-        glyphList = embedder.getGlyphList();
-        type1font = embedder.getType1Font();
-        genericFont = embedder.getType1Font();
-        isEmbedded = true;
-        isDamaged = false;
-        fontMatrixTransform = new AffineTransform();
-        codeToBytesMap = new HashMap<Integer,byte[]>();
+        this(doc, pfbIn, null);
     }
 
     /**
@@ -196,7 +188,7 @@ public class PDType1Font extends PDSimpleFont
     public PDType1Font(PDDocument doc, InputStream pfbIn, Encoding encoding) throws IOException
     {
         PDType1FontEmbedder embedder = new PDType1FontEmbedder(doc, dict, pfbIn, encoding);
-        this.encoding = encoding;
+        this.encoding = encoding == null ? embedder.getFontEncoding() : encoding;
         glyphList = embedder.getGlyphList();
         type1font = embedder.getType1Font();
         genericFont = embedder.getType1Font();
