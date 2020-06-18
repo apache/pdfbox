@@ -22,11 +22,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.fontbox.ttf.TTFParser;
+import org.apache.fontbox.ttf.TrueTypeCollection;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.util.autodetect.FontFileFinder;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -200,6 +205,43 @@ public class PDFontTest
         Assert.assertThrows("should have thrown IllegalArgumentException",
                             IllegalArgumentException.class,
                             () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"));
+    }
+
+    @Test
+    public void testFullEmbeddingTTC() throws IOException
+    {
+        FontFileFinder fff = new FontFileFinder();
+        TrueTypeCollection ttc = null;
+        for (URI uri : fff.find())
+        {
+            if (uri.getPath().endsWith(".ttc"))
+            {
+                File file = new File(uri);
+                System.out.println("TrueType collection file: " + file);
+                ttc = new TrueTypeCollection(file);
+                break;
+            }
+        }
+        if (ttc == null)
+        {
+            System.out.println("testFullEmbeddingTTC skipped, no .ttc files available");
+            return;
+        }
+
+        final List<String> names = new ArrayList<>();
+        ttc.processAllFonts((TrueTypeFont ttf) ->
+        {
+            System.out.println("TrueType font in collection: " + ttf.getName());
+            names.add(ttf.getName());
+        });
+
+        TrueTypeFont ttf = ttc.getFontByName(names.get(0)); // take the first one
+        System.out.println("TrueType font used for test: " + ttf.getName());
+
+        IOException ex = Assert.assertThrows("should have thrown IOException",
+                IOException.class,
+                () -> PDType0Font.load(new PDDocument(), ttf, false));
+        Assert.assertEquals("Full embedding of TrueType font collections not supported", ex.getMessage());
     }
 
     private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
