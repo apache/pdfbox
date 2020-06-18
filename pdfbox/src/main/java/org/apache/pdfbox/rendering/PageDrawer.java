@@ -1174,7 +1174,10 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                     return;
                 }
                 Image imageToDraw = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
-                imageTransform.scale(1 / scaleX, 1 / scaleY); // remove the scale
+                // remove the scale (extracted from w and h, to have it from the rounded values
+                // hoping to reverse the rounding: without this, we get an horizontal line
+                // when rendering PDFJS-8860-Pattern-Size1.pdf at 100% )
+                imageTransform.scale(1f / w * image.getWidth(), 1f / h * image.getHeight());
                 imageTransform.preConcatenate(graphicsTransformA);
                 graphics.setTransform(new AffineTransform());
                 graphics.drawImage(imageToDraw, imageTransform, null);
