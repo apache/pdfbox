@@ -223,6 +223,13 @@ public class PreflightParser extends PDFParser
         objectKeys.forEach(key -> document.getObjectFromPool(key).getObject());
     }
 
+    @Override
+    protected boolean resetTrailerResolver()
+    {
+        // Don't reset the xref trailer resolver after parsing as it is needed for validation
+        return false;
+    }
+
     /**
      * Check that the PDF header match rules of the PDF/A specification. First line (offset 0) must
      * be a comment with the PDF version (version 1.0 isn't conform to the PDF/A specification)
