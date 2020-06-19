@@ -159,6 +159,7 @@ public class BufferedRandomAccessFile extends RandomAccessFile
         bufpos += leftover;
         if (fillBuffer() > 0)
         {
+            //TODO PDFBOX-4890 remove recursive call. When done, remove Math.min() in TTFDataStream.read()
             int bytesRead = read(b, off + leftover, len - leftover);
             if (bytesRead > 0)
             {
