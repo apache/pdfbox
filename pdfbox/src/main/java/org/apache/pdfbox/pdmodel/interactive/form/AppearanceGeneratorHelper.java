@@ -795,7 +795,7 @@ class AppearanceGeneratorHelper
                 {
                     float width = contentRect.getWidth() - contentRect.getLowerLeftX();
                     float fs = MINIMUM_FONT_SIZE;
-                    while (fs <= MAXIMUM_FONT_SIZE)
+                    while (fs <= DEFAULT_FONT_SIZE)
                     {
                         // determine the number of lines needed for this font and contentRect
                         int numLines = 0;
@@ -815,7 +815,7 @@ class AppearanceGeneratorHelper
                         }
                         fs++;
                     }
-                    return Math.min(fs, MAXIMUM_FONT_SIZE);
+                    return Math.min(fs, DEFAULT_FONT_SIZE);
                 }
                 
                 // Acrobat defaults to 12 for multiline text with size 0

@@ -17,11 +17,17 @@
 
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.After;
 import org.junit.Before;
@@ -96,6 +102,60 @@ public class MultilineFieldsTest
             System.err.println ("Rendering of " + file + " failed or is not identical to expected rendering in " + IN_DIR + " directory");
         }       
     }
+
+    // Test for PDFBOX-3812
+    @Test
+    public void testMultilineAuto() throws IOException
+    {
+        PDDocument document = Loader.loadPDF(new File(IN_DIR, "PDFBOX3812-acrobat-multiline-auto.pdf"));
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+
+        // Get and store the field sizes in the original PDF
+        PDTextField fieldMultiline = (PDTextField) acroForm.getField("Multiline");
+        float fontSizeMultiline = getFontSizeFromAppearanceStream(fieldMultiline);
+
+        PDTextField fieldSingleline = (PDTextField) acroForm.getField("Singleline");
+        float fontSizeSingleline = getFontSizeFromAppearanceStream(fieldSingleline);
+
+        PDTextField fieldMultilineAutoscale = (PDTextField) acroForm.getField("MultilineAutoscale");
+        float fontSizeMultilineAutoscale = getFontSizeFromAppearanceStream(fieldMultilineAutoscale);
+
+        PDTextField fieldSinglelineAutoscale = (PDTextField) acroForm.getField("SinglelineAutoscale");
+        float fontSizeSinglelineAutoscale = getFontSizeFromAppearanceStream(fieldSinglelineAutoscale);
+
+        fieldMultiline.setValue("Multiline - Fixed");
+        fieldSingleline.setValue("Singleline - Fixed");
+        fieldMultilineAutoscale.setValue("Multiline - auto");
+        fieldSinglelineAutoscale.setValue("Singleline - auto");
+
+        assertEquals(fontSizeMultiline, getFontSizeFromAppearanceStream(fieldMultiline), 0.001f);
+        assertEquals(fontSizeSingleline, getFontSizeFromAppearanceStream(fieldSingleline), 0.001f);
+        assertEquals(fontSizeMultilineAutoscale, getFontSizeFromAppearanceStream(fieldMultilineAutoscale), 0.001f);
+        assertEquals(fontSizeSinglelineAutoscale, getFontSizeFromAppearanceStream(fieldSinglelineAutoscale), 0.025f);
+    }
+
+    private float getFontSizeFromAppearanceStream(PDField field) throws IOException
+    {
+    	PDAnnotationWidget widget = field.getWidgets().get(0);
+    	PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream().getContents());
+    	
+    	Object token = parser.parseNextToken();
+    	    	
+    	while (token != null)
+    	{
+            if (token instanceof COSName && ((COSName) token).getName().equals("Helv"))
+    		{
+                token = parser.parseNextToken();
+                if (token != null && token instanceof COSNumber)
+                {
+                    return ((COSNumber) token).floatValue();
+                }
+            }
+            token = parser.parseNextToken();
+        }
+        return 0;
+    }
+
     
     @After
     public void tearDown() throws IOException
