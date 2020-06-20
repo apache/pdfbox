@@ -155,10 +155,10 @@ public class PDFXrefStreamParser extends BaseParser
                      */
                     break;
                 case 1:
-                    int offset = 0;
+                    long offset = 0;
                     for(int i = 0; i < w1; i++)
                     {
-                        offset += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
+                        offset += ((long) currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
                     }
                     int genNum = 0;
                     for(int i = 0; i < w2; i++)
@@ -179,10 +179,10 @@ public class PDFXrefStreamParser extends BaseParser
                      * table but add object stream number with minus sign in order to
                      * distinguish from file offsets
                      */
-                    int objstmObjNr = 0;
+                    long objstmObjNr = 0;
                     for(int i = 0; i < w1; i++)
                     {
-                        objstmObjNr += (currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
+                        objstmObjNr += ((long) currLine[i + w0] & 0x00ff) << ((w1 - i - 1) * 8);
                     }    
                     objKey = new COSObjectKey( objID, 0 );
                     xrefTrailerResolver.setXRef( objKey, -objstmObjNr );
