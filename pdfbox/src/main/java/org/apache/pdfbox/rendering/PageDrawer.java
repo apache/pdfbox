@@ -1216,7 +1216,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 image = applyTransferFunction(image, transfer);
             }
 
-            // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815:
+            // PDFBOX-4516, PDFBOX-4527, PDFBOX-4815, PDFBOX-4886, PDFBOX-4863:
             // graphics.drawImage() has terrible quality when scaling down, even when
             // RenderingHints.VALUE_INTERPOLATION_BICUBIC, VALUE_ALPHA_INTERPOLATION_QUALITY,
             // VALUE_COLOR_RENDER_QUALITY and VALUE_RENDER_QUALITY are all set.
@@ -1225,32 +1225,37 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             // (partly because the method needs integer parameters), only smaller scalings
             // will trigger the workaround. Because of the slowness we only do it if the user
             // expects quality rendering and interpolation.
-            Matrix m = new Matrix(imageTransform);
-            float scaleX = Math.abs(m.getScalingFactorX());
-            float scaleY = Math.abs(m.getScalingFactorY());
-            Image imageToDraw = image;
+            Matrix imageTransformMatrix = new Matrix(imageTransform);
+            AffineTransform graphicsTransformA = graphics.getTransform();
+            Matrix graphicsTransformMatrix = new Matrix(graphicsTransformA);    
+            float scaleX = Math.abs(imageTransformMatrix.getScalingFactorX() * graphicsTransformMatrix.getScalingFactorX());
+            float scaleY = Math.abs(imageTransformMatrix.getScalingFactorY() * graphicsTransformMatrix.getScalingFactorY());
 
-            if ((scaleX < 0.25f || scaleY < 0.25f) &&
+            if ((scaleX < 0.5 || scaleY < 0.5) &&
                 RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
             {
                 int w = Math.round(image.getWidth() * scaleX);
                 int h = Math.round(image.getHeight() * scaleY);
-                if (w < 1)
+                if (w < 1 || h < 1)
                 {
-                    w = 1;
+                    graphics.drawImage(image, imageTransform, null);
+                    return;
                 }
-                if (h < 1)
-                {
-                    h = 1;
-                }
-                imageToDraw = image.getScaledInstance(
-                        w,
-                        h,
-                        Image.SCALE_SMOOTH);
-                imageTransform.scale(1 / scaleX, 1 / scaleY); // remove the scale
+                Image imageToDraw = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+                // remove the scale (extracted from w and h, to have it from the rounded values
+                // hoping to reverse the rounding: without this, we get an horizontal line
+                // when rendering PDFJS-8860-Pattern-Size1.pdf at 100% )
+                imageTransform.scale(1f / w * image.getWidth(), 1f / h * image.getHeight());
+                imageTransform.preConcatenate(graphicsTransformA);
+                graphics.setTransform(new AffineTransform());
+                graphics.drawImage(imageToDraw, imageTransform, null);
+                graphics.setTransform(graphicsTransformA);
             }
-            graphics.drawImage(imageToDraw, imageTransform, null);
+            else
+            {
+                graphics.drawImage(image, imageTransform, null);
+            }
         }
     }
 
