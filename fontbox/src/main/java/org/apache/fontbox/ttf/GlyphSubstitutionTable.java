@@ -405,7 +405,7 @@ public class GlyphSubstitutionTable extends TTFTable
      *
      * @param langSysTables The {@code LangSysTable}s indicating {@code FeatureRecord}s to search
      * for
-     * @param enabledFeatures An optional whitelist of feature tags ({@code null} to allow all)
+     * @param enabledFeatures An optional list of feature tags ({@code null} to allow all)
      * @return The indicated {@code FeatureRecord}s
      */
     private List<FeatureRecord> getFeatureRecords(Collection<LangSysTable> langSysTables,
@@ -513,8 +513,8 @@ public class GlyphSubstitutionTable extends TTFTable
 
     /**
      * Apply glyph substitutions to the supplied gid. The applicable substitutions are determined by
-     * the {@code scriptTags} which indicate the language of the gid, and by the
-     * {@code enabledFeatures} which acts as a whitelist.
+     * the {@code scriptTags} which indicate the language of the gid, and by the list of
+     * {@code enabledFeatures}.
      *
      * To ensure that a single gid isn't mapped to multiple substitutions, subsequent invocations
      * with the same gid will return the same result as the first, regardless of script or enabled
@@ -522,7 +522,7 @@ public class GlyphSubstitutionTable extends TTFTable
      *
      * @param gid GID
      * @param scriptTags Script tags applicable to the gid (see {@link OpenTypeScript})
-     * @param enabledFeatures Whitelist of features to apply
+     * @param enabledFeatures list of features to apply
      */
     public int getSubstitution(int gid, String[] scriptTags, List<String> enabledFeatures)
     {
