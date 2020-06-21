@@ -251,8 +251,7 @@ abstract class TTFDataStream implements Closeable
         int totalAmountRead = 0;
         // read at most numberOfBytes bytes from the stream.
         while (totalAmountRead < numberOfBytes
-               //TODO PDFBOX-4890: remove Math.min() after removing recursive call from BufferedRandomAccessFile.read
-                && (amountRead = read(data, totalAmountRead, Math.min(numberOfBytes - totalAmountRead, 65536))) != -1)
+                && (amountRead = read(data, totalAmountRead, numberOfBytes - totalAmountRead)) != -1)
         {
             totalAmountRead += amountRead;
         }
