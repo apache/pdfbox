@@ -26,6 +26,7 @@ import org.junit.Test;
 
 /**
  * @author Cameron Rollhieser
+ * @author Tilman Hausherr
  */
 public class BufferedRandomAccessFileTest
 {
@@ -47,14 +48,108 @@ public class BufferedRandomAccessFileTest
         outputStream.close();
 
         final byte[] readBuffer = new byte[2];
-        final BufferedRandomAccessFile buffer = new BufferedRandomAccessFile(file, "r", 4);
+        final BufferedRandomAccessFile braf = new BufferedRandomAccessFile(file, "r", 4);
 
         int amountRead;
         int totalAmountRead = 0;
-        while ((amountRead = buffer.read(readBuffer, 0, 2)) != -1)
+        while ((amountRead = braf.read(readBuffer, 0, 2)) != -1)
         {
             totalAmountRead += amountRead;
         }
         Assert.assertEquals(10, totalAmountRead);
+        braf.close();
+        file.delete();
+    }
+
+    /**
+     * Test several reading patterns, both reading within a buffer and across buffer.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testReadBuffer() throws IOException
+    {
+        final File file = File.createTempFile("apache-pdfbox", ".dat");
+
+        OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(file));
+        final String content = "012345678A012345678B012345678C012345678D";
+        outputStream.write(content.getBytes("UTF-8"));
+        outputStream.flush();
+        outputStream.close();
+
+        final byte[] readBuffer = new byte[40];
+        final BufferedRandomAccessFile braf = new BufferedRandomAccessFile(file, "r", 10);
+
+        int count = 4;
+        int bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(4, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("0123", new String(readBuffer, 0, count));
+
+        count = 6;
+        bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(10, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("45678A", new String(readBuffer, 0, count));
+
+        count = 10;
+        bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(20, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("012345678B", new String(readBuffer, 0, count));
+
+        count = 10;
+        bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(30, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("012345678C", new String(readBuffer, 0, count));
+
+        count = 10;
+        bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(40, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("012345678D", new String(readBuffer, 0, count));
+        
+        Assert.assertEquals(-1, braf.read());
+
+        braf.seek(0);
+        braf.read(readBuffer, 0, 7);
+        Assert.assertEquals(7, braf.getFilePointer());
+        
+        count = 16;
+        bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(23, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("78A012345678B012", new String(readBuffer, 0, count));
+
+        bytesRead = braf.read(readBuffer, 0, 99);
+        Assert.assertEquals(40, braf.getFilePointer());
+        Assert.assertEquals(17, bytesRead);
+        Assert.assertEquals("345678C012345678D", new String(readBuffer, 0, 17));
+
+        Assert.assertEquals(-1, braf.read());
+
+        braf.seek(0);
+        braf.read(readBuffer, 0, 7);
+        Assert.assertEquals(7, braf.getFilePointer());
+
+        count = 23;
+        bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(30, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("78A012345678B012345678C", new String(readBuffer, 0, count));
+
+        braf.seek(0);
+        braf.read(readBuffer, 0, 10);
+        Assert.assertEquals(10, braf.getFilePointer());
+        count = 23;
+        bytesRead = braf.read(readBuffer, 0, count);
+        Assert.assertEquals(33, braf.getFilePointer());
+        Assert.assertEquals(count, bytesRead);
+        Assert.assertEquals("012345678B012345678C012", new String(readBuffer, 0, count));
+
+        braf.close();
+
+        file.delete();
     }
 }

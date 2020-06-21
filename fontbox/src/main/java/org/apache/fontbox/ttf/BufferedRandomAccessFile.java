@@ -148,25 +148,37 @@ public class BufferedRandomAccessFile extends RandomAccessFile
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
-        int leftover = bufend - bufpos;
-        if (len <= leftover)
+        int curLen = len; // length of what is left to read (shrinks)
+        int curOff = off; // offset where to put read data (grows)
+        int totalRead = 0;
+
+        while (true)
         {
-            System.arraycopy(buffer, bufpos, b, off, len);
-            bufpos += len;
-            return len;
-        }
-        System.arraycopy(buffer, bufpos, b, off, leftover);
-        bufpos += leftover;
-        if (fillBuffer() > 0)
-        {
-            //TODO PDFBOX-4890 remove recursive call. When done, remove Math.min() in TTFDataStream.read()
-            int bytesRead = read(b, off + leftover, len - leftover);
-            if (bytesRead > 0)
+            int leftover = bufend - bufpos;
+            if (curLen <= leftover)
             {
-                leftover += bytesRead;
+                System.arraycopy(buffer, bufpos, b, curOff, curLen);
+                bufpos += curLen;
+                return totalRead + curLen;
+            }
+            // curLen > leftover, we need to read more than what remains in buffer
+            System.arraycopy(buffer, bufpos, b, curOff, leftover);
+            totalRead += leftover;
+            bufpos += leftover;
+            if (fillBuffer() > 0)
+            {
+                curOff += leftover;
+                curLen -= leftover;
+            }
+            else
+            {
+                if (totalRead == 0)
+                {
+                    return -1;
+                }
+                return totalRead;
             }
         }
-        return leftover > 0 ? leftover : -1;
     }
 
     /**
