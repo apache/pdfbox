@@ -261,7 +261,9 @@ public class CertInformationCollector
         if (certInfo.issuerCertificate == null)
         {
             throw new IOException(
-                    "No Issuer Certificate found for Cert: " + certificate.getSubjectX500Principal());
+                    "No Issuer Certificate found for Cert: '" +
+                            certificate.getSubjectX500Principal() + "', i.e. Cert '" +
+                            certificate.getIssuerX500Principal() + "' is missing in the chain");
         }
     }
 
