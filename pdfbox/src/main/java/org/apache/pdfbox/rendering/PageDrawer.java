@@ -1080,6 +1080,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 Graphics2D g = (Graphics2D) renderedPaint.getGraphics();
                 g.translate(-bounds.getMinX(), -bounds.getMinY());
                 g.setPaint(paint);
+                g.setRenderingHints(graphics.getRenderingHints());
                 g.fill(bounds);
                 g.dispose();
 
@@ -1091,6 +1092,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 AffineTransform imageTransform = new AffineTransform(at);
                 imageTransform.scale(1.0 / mask.getWidth(), -1.0 / mask.getHeight());
                 imageTransform.translate(0, -mask.getHeight());
+                g.setRenderingHints(graphics.getRenderingHints());
                 g.drawImage(mask, imageTransform, null);
                 g.dispose();
 
