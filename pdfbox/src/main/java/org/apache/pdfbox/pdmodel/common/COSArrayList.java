@@ -60,7 +60,7 @@ public class COSArrayList<E> implements List<E>
     }
 
     /**
-     * Create the COSArrayList specifing the List and the backing COSArray.
+     * Create the COSArrayList specifying the List and the backing COSArray.
      * 
      * <p>User of this constructor need to ensure that the entries in the List and
      * the backing COSArray are matching i.e. the COSObject of the List entry is

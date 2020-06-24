@@ -46,7 +46,7 @@ public class COSArrayListTest {
 
     // next two entries are to be used for comparison with
     // COSArrayList behaviour in order to ensure that the
-    // intented object is now at the correct position.
+    // intended object is now at the correct position.
     // Will also be used for Collection/Array based setting
     // and comparison
     static List<PDAnnotation> tbcAnnotationsList;
@@ -63,7 +63,7 @@ public class COSArrayListTest {
     private static final File OUT_DIR = new File("target/test-output/pdmodel/common");
 
     /*
-     * Create thre new different annotations an add them to the Java List/Array as
+     * Create three new different annotations and add them to the Java List/Array as
      * well as PDFBox List/Array implementations.
      */
     @Before
