@@ -47,6 +47,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
+import org.apache.pdfbox.examples.signature.CreateEmbeddedTimeStamp;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
@@ -149,9 +150,21 @@ public class TestCreateSignature
         signing.setExternalSigning(externallySign);
 
         final String fileName = getOutputFileName("signed{0}.pdf");
+        final String fileName2 = getOutputFileName("signed{0}-late-tsa.pdf");
         signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
 
-        checkSignature(new File(IN_DIR, "sign_me.pdf"), new File(OUT_DIR, fileName));
+        checkSignature(new File(IN_DIR, "sign_me.pdf"), new File(OUT_DIR, fileName), false);
+
+        // Also test CreateEmbeddedTimeStamp if tsa URL is available
+        if (tsa == null || tsa.isEmpty())
+        {
+            System.err.println("No TSA URL defined, test skipped");
+            return;
+        }
+        
+        CreateEmbeddedTimeStamp tsaSigning = new CreateEmbeddedTimeStamp(tsa);
+        tsaSigning.embedTimeStamp(new File(OUT_DIR, fileName), new File(OUT_DIR, fileName2));
+        checkSignature(new File(OUT_DIR, fileName), new File(OUT_DIR, fileName2), true);
     }
 
     /**
@@ -219,7 +232,7 @@ public class TestCreateSignature
         CreateSignature signing2 = new CreateSignature(keystore, PASSWORD.toCharArray());
         signing2.setExternalSigning(externallySign);
         signing2.signDetached(new File(inPath), new File(outPath), tsa);
-        checkSignature(new File(inPath), new File(outPath));
+        checkSignature(new File(inPath), new File(outPath), true);
         System.out.println("TSA test successful");
     }
     
@@ -254,7 +267,7 @@ public class TestCreateSignature
             signing.signPDF(new File(inPath), destFile, null);
         }
 
-        checkSignature(new File(inPath), destFile);
+        checkSignature(new File(inPath), destFile, false);
     }
 
     /**
@@ -298,7 +311,7 @@ public class TestCreateSignature
         signing1.setExternalSigning(false);
         signing1.signDetached(new File(filename), new File(filenameSigned1));
 
-        checkSignature(new File(filename), new File(filenameSigned1));
+        checkSignature(new File(filename), new File(filenameSigned1), false);
 
         try (PDDocument doc1 = Loader.loadPDF(new File(filenameSigned1)))
         {
@@ -316,7 +329,7 @@ public class TestCreateSignature
             signing2.signPDF(new File(filenameSigned1), new File(filenameSigned2), null, "Signature1");
         }
 
-        checkSignature(new File(filenameSigned1), new File(filenameSigned2));
+        checkSignature(new File(filenameSigned1), new File(filenameSigned2), false);
 
         try (PDDocument doc2 = Loader.loadPDF(new File(filenameSigned2)))
         {
@@ -331,7 +344,7 @@ public class TestCreateSignature
     }
 
     // This check fails with a file created with the code before PDFBOX-3011 was solved.
-    private void checkSignature(File origFile, File signedFile)
+    private void checkSignature(File origFile, File signedFile, boolean checkTimeStamp)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
             TSPException
     {
@@ -390,9 +403,14 @@ public class TestCreateSignature
                 }
 
                 TimeStampToken timeStampToken = extractTimeStampTokenFromSignerInformation(signerInformation);
-                if (timeStampToken != null)
+                if (checkTimeStamp)
                 {
+                    Assert.assertNotNull(timeStampToken);
                     validateTimestampToken(timeStampToken);
+                }
+                else
+                {
+                    Assert.assertNull(timeStampToken);
                 }
             }
         }
@@ -510,7 +528,7 @@ public class TestCreateSignature
         final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf");
         signing.signDetached(new File("target/SimpleForm.pdf"), new File(OUT_DIR + fileNameSigned));
 
-        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned));
+        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned), false);
         
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
         {
@@ -546,7 +564,7 @@ public class TestCreateSignature
             appearance.getNormalAppearance().getCOSObject().setNeedToBeUpdated(true);
             doc.saveIncremental(fileOutputStream);
         }
-        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameResaved1));
+        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameResaved1), false);
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameResaved1)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
