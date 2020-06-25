@@ -36,6 +36,7 @@ import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -140,10 +141,18 @@ public class CertInformationCollector
         {
             return;
         }
-        Attribute tsAttribute = signerInformation.getUnsignedAttributes()
+        Attribute tsAttribute = unsignedAttributes
                 .get(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
-
-        ASN1Object tsSeq = (ASN1Object) tsAttribute.getAttrValues().getObjectAt(0);
+        if (tsAttribute == null)
+        {
+            return;
+        }
+        ASN1Encodable obj0 = tsAttribute.getAttrValues().getObjectAt(0);
+        if (!(obj0 instanceof ASN1Object))
+        {
+            return;
+        }
+        ASN1Object tsSeq = (ASN1Object) obj0;
 
         try
         {
