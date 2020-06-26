@@ -145,7 +145,7 @@ public class CreateEmbeddedTimeStamp
     private void processRelevantSignatures(byte[] documentBytes)
             throws IOException, CMSException, NoSuchAlgorithmException
     {
-        SigUtils.getLastRelevantSignature(document);
+        signature = SigUtils.getLastRelevantSignature(document);
         if (signature == null)
         {
             return;
