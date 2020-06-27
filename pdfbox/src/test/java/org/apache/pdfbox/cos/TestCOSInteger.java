@@ -104,15 +104,6 @@ public class TestCOSInteger extends TestCOSNumber
     }
 
     @Override
-    public void testDoubleValue()
-    {
-        for (int i = -1000; i < 3000; i += 200)
-        {
-            assertEquals((double) i, COSInteger.get(i).doubleValue());
-        }
-    }
-
-    @Override
     public void testIntValue()
     {
         for (int i = -1000; i < 3000; i += 200)

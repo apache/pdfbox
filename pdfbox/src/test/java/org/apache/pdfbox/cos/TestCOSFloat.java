@@ -89,7 +89,7 @@ public class TestCOSFloat extends TestCOSNumber
                 }
                 catch (AssertionError a)
                 {
-                    fail("num = " + num + ", seed = " + seed);
+                    fail("num = " + num + ", seed = " + seed + ", message: " + a.getMessage());
                 }
             }
         }
@@ -171,26 +171,6 @@ public class TestCOSFloat extends TestCOSNumber
     public void testFloatValue()
     {
         new FloatValueTester().runTests();
-    }
-
-    class DoubleValueTester extends BaseTester
-    {
-
-        @Override
-        void runTest(float num)
-        {
-            COSFloat testFloat = new COSFloat(num);
-            // compare the string representation instead of the numeric values 
-            // as the cast from float to double adds some more fraction digits
-            assertEquals(Float.toString(num), Double.toString(testFloat.doubleValue()));
-        }
-
-    }
-
-    @Override
-    public void testDoubleValue()
-    {
-        new DoubleValueTester().runTests();
     }
 
     class IntValueTester extends BaseTester
@@ -425,6 +405,15 @@ public class TestCOSFloat extends TestCOSNumber
         catch (IOException expected)
         {
         }
+    }
+
+    public void testStubOperatorMinMaxValues()
+    {
+        float largeValue = 32768f;
+        float largeNegativeValue = -32768f;
+
+        assertEquals(largeValue, new COSFloat(largeValue).floatValue());
+        assertEquals(largeNegativeValue, new COSFloat(largeNegativeValue).floatValue());
     }
 
     private String floatToString(float value)

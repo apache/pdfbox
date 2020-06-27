@@ -25,11 +25,11 @@ import java.nio.charset.StandardCharsets;
  * This class represents a floating point number in a PDF document.
  *
  * @author Ben Litchfield
- * 
+ *
  */
 public class COSFloat extends COSNumber
 {
-    private BigDecimal value;
+    private Float value;
     private String valueAsString;
 
     /**
@@ -39,10 +39,7 @@ public class COSFloat extends COSNumber
      */
     public COSFloat( float aFloat )
     {
-        // use a BigDecimal as intermediate state to avoid 
-        // a floating point string representation of the float value
-        value = new BigDecimal(String.valueOf(aFloat));
-        valueAsString = removeNullDigits(value.toPlainString());
+        value = aFloat;
     }
 
     /**
@@ -56,9 +53,8 @@ public class COSFloat extends COSNumber
     {
         try
         {
-            valueAsString = aFloat; 
-            value = new BigDecimal( valueAsString );
-            checkMinMaxValues();
+            valueAsString = aFloat;
+            value = Float.parseFloat(aFloat);
         }
         catch( NumberFormatException e )
         {
@@ -78,37 +74,41 @@ public class COSFloat extends COSNumber
             {
                 throw new IOException("Error expected floating point number actual='" + aFloat + "'", e);
             }
+
             try
             {
-                value = new BigDecimal(valueAsString);
-                checkMinMaxValues();
+                value = Float.parseFloat(valueAsString);
             }
             catch (NumberFormatException e2)
             {
                 throw new IOException("Error expected floating point number actual='" + aFloat + "'", e2);
             }
         }
+        checkMinMaxValues();
     }
-    
+
+
     private void checkMinMaxValues()
     {
-        int signum = value.signum();
-        // don't check 0 values
-        if (signum != 0)
+        if (value == Float.POSITIVE_INFINITY)
         {
-            double doubleValue = value.doubleValue();
-            // check for huge values
-            if (Math.abs(doubleValue) > Float.MAX_VALUE)
-            {
-                value = BigDecimal.valueOf(signum * Float.MAX_VALUE);
-                valueAsString = value.toPlainString();
-            }
-            // check for very small values
-            else if (Math.abs(doubleValue) < Float.MIN_NORMAL)
-            {
-                value = BigDecimal.valueOf(signum * Float.MIN_NORMAL);
-                valueAsString = value.toPlainString();
-            }
+            value = Float.MAX_VALUE;
+        }
+        else if (value == Float.NEGATIVE_INFINITY)
+        {
+            value = -Float.MAX_VALUE;
+        }
+        else if (value > 0 && value < Float.MIN_NORMAL)
+        {
+            value = Float.MIN_NORMAL;
+        }
+        else if (value < 0 && value > -Float.MIN_NORMAL)
+        {
+            value = -Float.MIN_NORMAL;
+        }
+        else if (value == 0 && valueAsString.matches(".*[1-9].*"))
+        {
+            value = valueAsString.startsWith("-") ? -Float.MIN_NORMAL : Float.MIN_NORMAL;
         }
     }
     
@@ -134,18 +134,7 @@ public class COSFloat extends COSNumber
     @Override
     public float floatValue()
     {
-        return value.floatValue();
-    }
-
-    /**
-     * The value of the double object that this one wraps.
-     *
-     * @return The double of this object.
-     */
-    @Override
-    public double doubleValue()
-    {
-        return value.doubleValue();
+        return value;
     }
 
     /**
@@ -176,8 +165,8 @@ public class COSFloat extends COSNumber
     @Override
     public boolean equals( Object o )
     {
-        return o instanceof COSFloat && 
-                Float.floatToIntBits(((COSFloat)o).value.floatValue()) == Float.floatToIntBits(value.floatValue());
+        return o instanceof COSFloat &&
+                Float.floatToIntBits(((COSFloat)o).value) == Float.floatToIntBits(value);
     }
 
     /**
@@ -195,7 +184,20 @@ public class COSFloat extends COSNumber
     @Override
     public String toString()
     {
-        return "COSFloat{" + valueAsString + "}";
+        return "COSFloat{" + formatString() + "}";
+    }
+
+    /**
+     * Builds, if needed, and returns the a string representation of the current value.
+     * @return current value as string.
+     */
+    private String formatString()
+    {
+        if (valueAsString == null)
+        {
+            valueAsString = removeNullDigits(new BigDecimal(String.valueOf(value)).toPlainString());
+        }
+        return valueAsString;
     }
 
     /**
@@ -219,6 +221,6 @@ public class COSFloat extends COSNumber
      */
     public void writePDF( OutputStream output ) throws IOException
     {
-        output.write(valueAsString.getBytes(StandardCharsets.ISO_8859_1));
+        output.write(formatString().getBytes(StandardCharsets.ISO_8859_1));
     }
 }

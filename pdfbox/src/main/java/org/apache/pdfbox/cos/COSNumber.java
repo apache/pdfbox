@@ -33,13 +33,6 @@ public abstract class COSNumber extends COSBase
     public abstract float floatValue();
 
     /**
-     * This will get the double value of this number.
-     *
-     * @return The double value of this number.
-     */
-    public abstract double doubleValue();
-
-    /**
      * This will get the integer value of this number.
      *
      * @return The integer value of this number.

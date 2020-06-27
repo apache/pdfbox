@@ -30,11 +30,6 @@ public abstract class TestCOSNumber extends TestCOSBase
     public abstract void testFloatValue();
 
     /**
-     * Test doubleValue() - test that the correct double value is returned.
-     */
-    public abstract void testDoubleValue();
-
-    /**
      * Test intValue() - test that the correct int value is returned.
      */
     public abstract void testIntValue();
