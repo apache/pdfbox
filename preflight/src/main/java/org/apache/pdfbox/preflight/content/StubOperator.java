@@ -255,7 +255,8 @@ public class StubOperator extends OperatorProcessor
             }
 
             if (arg instanceof COSFloat
-                    && (((COSFloat) arg).doubleValue() > MAX_POSITIVE_FLOAT || ((COSFloat) arg).doubleValue() < MAX_NEGATIVE_FLOAT))
+                    && (((COSFloat) arg).floatValue() > MAX_POSITIVE_FLOAT
+                            || ((COSFloat) arg).floatValue() < MAX_NEGATIVE_FLOAT))
             {
                 throw createLimitError(ERROR_SYNTAX_NUMERIC_RANGE, "Invalid float range in a Number operand");
             }
