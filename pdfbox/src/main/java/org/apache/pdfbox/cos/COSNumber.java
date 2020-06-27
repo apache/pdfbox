@@ -49,6 +49,8 @@ public abstract class COSNumber extends COSBase
      * This will get the double value of this number.
      *
      * @return The double value of this number.
+     * 
+     * @deprecated will be removed in a future release
      */
     public abstract double doubleValue();
 

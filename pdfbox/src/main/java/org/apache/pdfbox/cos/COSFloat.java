@@ -146,6 +146,8 @@ public class COSFloat extends COSNumber
      * The value of the double object that this one wraps.
      *
      * @return The double of this object.
+     * 
+     * @deprecated will be removed in a future release
      */
     @Override
     public double doubleValue()

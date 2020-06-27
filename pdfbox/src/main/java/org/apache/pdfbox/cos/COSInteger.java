@@ -143,6 +143,8 @@ public final class COSInteger extends COSNumber
      * polymorphic access to value as float.
      *
      * @return The double value of this object.
+     * 
+     * @deprecated will be removed in a future release
      */
     @Override
     public double doubleValue()
