@@ -306,7 +306,10 @@ public class PDFunctionType0 extends PDFunction
                 {
                     coord[step] = inPrev[step];
                     int[] tmpSample = getSamples()[calcSampleIndex(coord)];
-                    System.arraycopy(tmpSample, 0, resultSample, 0, numberOfOutputValues);
+                    for (int i = 0; i < numberOfOutputValues; ++i)
+                    {
+                        resultSample[i] = tmpSample[i];
+                    }
                     return resultSample;
                 }
                 coord[step] = inPrev[step];
