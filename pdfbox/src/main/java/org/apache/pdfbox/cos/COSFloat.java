@@ -53,22 +53,22 @@ public class COSFloat extends COSNumber
     {
         try
         {
-            valueAsString = aFloat;
             value = Float.parseFloat(aFloat);
+            valueAsString = checkMinMaxValues(aFloat) ? null : aFloat;
         }
         catch( NumberFormatException e )
         {
             if (aFloat.startsWith("--"))
             {
                 // PDFBOX-4289 has --16.33
-                valueAsString = aFloat.substring(1);
+                aFloat = aFloat.substring(1);
             }
-            else if (aFloat.matches("^0\\.0*\\-\\d+"))
+            else if (aFloat.matches("^0\\.0*-\\d+"))
             {
                 // PDFBOX-2990 has 0.00000-33917698
                 // PDFBOX-3369 has 0.00-35095424
                 // PDFBOX-3500 has 0.-262
-                valueAsString = "-" + valueAsString.replaceFirst("\\-", "");
+                aFloat = "-" + aFloat.replaceFirst("-", "");
             }
             else
             {
@@ -77,18 +77,26 @@ public class COSFloat extends COSNumber
 
             try
             {
-                value = Float.parseFloat(valueAsString);
+                value = Float.parseFloat(aFloat);
+                checkMinMaxValues(aFloat);
             }
             catch (NumberFormatException e2)
             {
                 throw new IOException("Error expected floating point number actual='" + aFloat + "'", e2);
             }
         }
-        checkMinMaxValues();
+
     }
 
-
-    private void checkMinMaxValues()
+    /**
+     * Check and coerce the value field to be between MIN_NORMAL and MAX_VALUE. Returns "true" if the value was
+     * replaced.
+     * 
+     * @param aFloat the original String representation for the value.
+     * 
+     * @return true if the value was replaced
+     */
+    private boolean checkMinMaxValues(String aFloat)
     {
         if (value == Float.POSITIVE_INFINITY)
         {
@@ -106,21 +114,32 @@ public class COSFloat extends COSNumber
         {
             value = -Float.MIN_NORMAL;
         }
-        else if (value == 0 && valueAsString.matches(".*[1-9].*"))
+        else if (value == 0 && aFloat.matches(".*[1-9].*"))
         {
-            value = valueAsString.startsWith("-") ? -Float.MIN_NORMAL : Float.MIN_NORMAL;
+            value = aFloat.startsWith("-") ? -Float.MIN_NORMAL : Float.MIN_NORMAL;
         }
+        else
+        {
+            return false;
+        }
+        return true;
     }
     
-    private String removeNullDigits(String plainStringValue)
+    /**
+     * If the string represents a floating point number, this will remove all trailing zeros
+     * 
+     * @param plainStringValue a decimal number
+     */
+    private String trimZeros(String plainStringValue)
     {
-        // remove fraction digit "0" only
         int lastIndex = plainStringValue.lastIndexOf('.');
         if (lastIndex > 0)
         {
             int i = plainStringValue.length() - 1;
             while (i > lastIndex + 1 && plainStringValue.charAt(i) == '0')
+            {
                 i--;
+            }
             return plainStringValue.substring(0, i + 1);
         }
         return plainStringValue;
@@ -195,7 +214,7 @@ public class COSFloat extends COSNumber
     {
         if (valueAsString == null)
         {
-            valueAsString = removeNullDigits(new BigDecimal(String.valueOf(value)).toPlainString());
+            valueAsString = trimZeros(new BigDecimal(String.valueOf(value)).toPlainString());
         }
         return valueAsString;
     }
