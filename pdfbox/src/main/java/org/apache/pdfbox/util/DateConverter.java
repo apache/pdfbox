@@ -285,7 +285,7 @@ public final class DateConverter
      */
     static String formatTZoffset(long millis, String sep)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("Z"); // #hhmm
+        SimpleDateFormat sdf = new SimpleDateFormat("Z", Locale.ENGLISH); // #hhmm
         sdf.setTimeZone(new SimpleTimeZone(restrainTZoffset(millis),"unknown"));
         String tz = sdf.format(new Date());
         return tz.substring(0,3) + sep + tz.substring(3);
@@ -387,8 +387,7 @@ public final class DateConverter
      */
     static GregorianCalendar newGreg()
     {
-        GregorianCalendar retCal = new GregorianCalendar(Locale.ENGLISH);
-        retCal.setTimeZone(new SimpleTimeZone(0, "UTC"));
+        GregorianCalendar retCal = new GregorianCalendar(new SimpleTimeZone(0, "UTC"), Locale.ENGLISH);
         retCal.setLenient(false);
         retCal.set(Calendar.MILLISECOND, 0);
         return retCal;
