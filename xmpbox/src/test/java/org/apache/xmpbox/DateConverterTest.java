@@ -79,6 +79,13 @@ public class DateConverterTest
         jaxbCal = javax.xml.bind.DatatypeConverter.parseDateTime("2015-02-02T16:37:19.192+01:00");
         convDate = DateConverter.toCalendar("2015-02-02T16:37:19.192Europe/Berlin");
         assertEquals(dateFormat.format(jaxbCal.getTime()), dateFormat.format(convDate.getTime()));
+
+        // PDFBOX-4902: half-hour TZ
+        String time = "2015-02-02T16:37:19.192+05:30";
+        jaxbCal = javax.xml.bind.DatatypeConverter.parseDateTime(time);
+        assertEquals(time, DateConverter.toISO8601(jaxbCal, true));
+        convDate = DateConverter.toCalendar(time);
+        assertEquals(dateFormat.format(jaxbCal.getTime()), dateFormat.format(convDate.getTime()));
     }
     
     /**
