@@ -74,7 +74,7 @@ public final class ExtractMetadata
                     DomXmpParser xmpParser = new DomXmpParser();
                     try
                     {
-                        XMPMetadata metadata = xmpParser.parse(meta.createInputStream());
+                        XMPMetadata metadata = xmpParser.parse(meta.toByteArray());
 
                         showDublinCoreSchema(metadata);
                         showAdobePDFSchema(metadata);
