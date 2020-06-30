@@ -86,7 +86,7 @@ public class CreatePDFATest extends TestCase
         PDDocumentCatalog catalog = document.getDocumentCatalog();
         PDMetadata meta = catalog.getMetadata();
         DomXmpParser xmpParser = new DomXmpParser();
-        XMPMetadata metadata = xmpParser.parse(meta.createInputStream());
+        XMPMetadata metadata = xmpParser.parse(meta.toByteArray());
         DublinCoreSchema dc = metadata.getDublinCoreSchema();
         assertEquals(pdfaFilename, dc.getTitle());
         document.close();
