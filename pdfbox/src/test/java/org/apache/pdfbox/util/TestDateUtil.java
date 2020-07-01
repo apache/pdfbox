@@ -167,6 +167,10 @@ public class TestDateUtil extends TestCase
 
             // PDFBOX-1219
             checkParse(2001, 1,31,10,33, 0, +1, 0,  "2001-01-31T10:33+01:00  ");   
+
+            // Same with milliseconds
+            checkParse(2001, 1,31,10,33, 0, +1, 0,  "2001-01-31T10:33.123+01:00");
+
             // PDFBOX-465
             checkParse(2002, 5,12, 9,47, 0, 0, 0, "9:47 5/12/2002");  
             // PDFBOX-465
@@ -215,6 +219,7 @@ public class TestDateUtil extends TestCase
             
             checkParse(2000, 2,29, 0, 0, 0, 0, 0, "2000 Feb 29"); // valid date
             checkParse(2000, 2,29, 0, 0, 0,+11, 0, " 2000 Feb 29 GMT + 11:00"); // valid date
+            checkParse(2000, 2,29, 0, 0, 0,+11, 0, " 2000 Feb 29 UTC + 11:00"); // valid date
             checkParse(BAD, 0, 0, 0, 0, 0,  0, 0, "2100 Feb 29 GMT+11"); // invalid date
             checkParse(2012, 2,29, 0, 0, 0,+11, 0, "2012 Feb 29 GMT+11"); // valid date
             checkParse(BAD, 0, 0, 0, 0, 0,  0, 0, "2012 Feb 30 GMT+11"); // invalid date

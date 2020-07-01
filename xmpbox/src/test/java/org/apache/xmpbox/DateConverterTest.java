@@ -86,6 +86,18 @@ public class DateConverterTest
         assertEquals(time, DateConverter.toISO8601(jaxbCal, true));
         convDate = DateConverter.toCalendar(time);
         assertEquals(dateFormat.format(jaxbCal.getTime()), dateFormat.format(convDate.getTime()));
+
+        time = "2015-02-02T16:37:19.192-05:30";
+        jaxbCal = javax.xml.bind.DatatypeConverter.parseDateTime(time);
+        assertEquals(time, DateConverter.toISO8601(jaxbCal, true));
+        convDate = DateConverter.toCalendar(time);
+        assertEquals(dateFormat.format(jaxbCal.getTime()), dateFormat.format(convDate.getTime()));
+
+        time = "2015-02-02T16:37:19.192+10:30";
+        jaxbCal = javax.xml.bind.DatatypeConverter.parseDateTime(time);
+        assertEquals(time, DateConverter.toISO8601(jaxbCal, true));
+        convDate = DateConverter.toCalendar(time);
+        assertEquals(dateFormat.format(jaxbCal.getTime()), dateFormat.format(convDate.getTime()));
     }
     
     /**
