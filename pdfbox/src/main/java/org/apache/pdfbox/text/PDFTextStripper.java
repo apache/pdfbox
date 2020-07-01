@@ -217,6 +217,11 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
     /**
      * This will return the text of a document. See writeText. <br>
      * NOTE: The document must not be encrypted when coming into this method.
+     * 
+     * <p>IMPORTANT: By default, text extraction is done in the same sequence as the text in the PDF page content stream.
+     * PDF is a graphic format, not a text format, and unlike HTML, it has no requirements that text one on page
+     * be rendered in a certain order. The order is the one that was determined by the software that created the
+     * PDF. To get text sorted from left to right and top to botton, use {@link #setSortByPosition(boolean)}.
      *
      * @param doc The document to get the text from.
      * @return The text of the PDF document.
