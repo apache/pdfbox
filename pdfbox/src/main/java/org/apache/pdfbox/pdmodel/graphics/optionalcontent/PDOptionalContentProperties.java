@@ -224,7 +224,11 @@ public class PDOptionalContentProperties implements COSObjectable
      */
     public String[] getGroupNames()
     {
-        COSArray ocgs = (COSArray)dict.getDictionaryObject(COSName.OCGS);
+        COSArray ocgs = dict.getCOSArray(COSName.OCGS);
+        if (ocgs == null)
+        {
+            return new String[0];
+        }
         int size = ocgs.size();
         String[] groups = new String[size];
         for (int i = 0; i < size; i++)
