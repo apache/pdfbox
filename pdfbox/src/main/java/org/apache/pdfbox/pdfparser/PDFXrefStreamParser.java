@@ -133,86 +133,50 @@ public class PDFXrefStreamParser extends BaseParser
      */
     public void parse(XrefTrailerResolver resolver) throws IOException
     {
-        /*
-         * Calculating the size of the line in bytes
-         */
-        int lineSize = w[0] + w[1] + w[2];
-
+        byte[] currLine = new byte[w[0] + w[1] + w[2]];
         Iterator<Long> objIter = objNums.iterator();
         while (!isEOF() && objIter.hasNext())
         {
-            byte[] currLine = new byte[lineSize];
             source.read(currLine);
 
-            int type;            
-            if (w[0] == 0)
+            // get the current objID
+            Long objID = objIter.next();
+
+            // default value is 1 if w[0] == 0, otherwise parse first field
+            int type = w[0] == 0 ? 1 : (int) parseValue(currLine, 0, w[0]);
+            // Skip free objects (type 0) and invalid types
+            if (type == 0)
             {
-                // "If the first element is zero, 
-                // the type field shall not be present, and shall default to type 1"
-                type = 1;
+                continue;
+            }
+            // second field holds the offset (type 1) or the object stream number (type 2)
+            long offset = parseValue(currLine, w[0], w[1]);
+            // third field holds the generation number for type 1 entries
+            int genNum = type == 1 ? (int) parseValue(currLine, w[0] + w[1], w[2]) : 0;
+            COSObjectKey objKey = new COSObjectKey(objID, genNum);
+            if (type == 1)
+            {
+                resolver.setXRef(objKey, offset);
             }
             else
             {
-                type = 0;
-                /*
-                 * Grabs the number of bytes specified for the first column in
-                 * the W array and stores it.
-                 */
-                for (int i = 0; i < w[0]; i++)
-                {
-                    type += (currLine[i] & 0x00ff) << ((w[0] - i - 1) * 8);
-                }
-            }
-            //Need to remember the current objID
-            Long objID = objIter.next();
-            /*
-             * 3 different types of entries.
-             */
-            switch(type)
-            {
-                case 0:
-                    /*
-                     * Skipping free objects
-                     */
-                    break;
-                case 1:
-                    long offset = 0;
-                    for (int i = 0; i < w[1]; i++)
-                    {
-                        offset += ((long) currLine[i + w[0]] & 0x00ff) << ((w[1] - i - 1) * 8);
-                    }
-                    int genNum = 0;
-                    for (int i = 0; i < w[2]; i++)
-                    {
-                        genNum += (currLine[i + w[0] + w[1]] & 0x00ff) << ((w[2] - i - 1) * 8);
-                    }
-                    COSObjectKey objKey = new COSObjectKey(objID, genNum);
-                    resolver.setXRef(objKey, offset);
-                    break;
-                case 2:
-                    /*
-                     * object stored in object stream: 
-                     * 2nd argument is object number of object stream
-                     * 3rd argument is index of object within object stream
-                     * 
-                     * For XRef aware parsers we have to know which objects contain
-                     * object streams. We will store this information in normal xref mapping
-                     * table but add object stream number with minus sign in order to
-                     * distinguish from file offsets
-                     */
-                    long objstmObjNr = 0;
-                    for (int i = 0; i < w[1]; i++)
-                    {
-                        objstmObjNr += ((long) currLine[i + w[0]] & 0x00ff) << ((w[1] - i - 1) * 8);
-                    }    
-                    objKey = new COSObjectKey( objID, 0 );
-                    resolver.setXRef(objKey, -objstmObjNr);
-                    break;
-                default:
-                    break;
+                // For XRef aware parsers we have to know which objects contain object streams. We will store this
+                // information in normal xref mapping table but add object stream number with minus sign in order to
+                // distinguish from file offsets
+                resolver.setXRef(objKey, -offset);
             }
         }
         close();
+    }
+
+    private long parseValue(byte[] data, int start, int length)
+    {
+        long value = 0;
+        for (int i = 0; i < length; i++)
+        {
+            value += ((long) data[i + start] & 0x00ff) << ((length - i - 1) * 8);
+        }
+        return value;
     }
 
 }
