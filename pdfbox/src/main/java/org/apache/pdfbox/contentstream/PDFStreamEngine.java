@@ -735,13 +735,7 @@ public abstract class PDFStreamEngine
             Vector w = font.getDisplacement(code);
 
             // process the decoded glyph
-            saveGraphicsState();
-            Matrix textMatrixOld = textMatrix;
-            Matrix textLineMatrixOld = textLineMatrix;
             showGlyph(textRenderingMatrix, font, code, w);
-            textMatrix = textMatrixOld;
-            textLineMatrix = textLineMatrixOld;
-            restoreGraphicsState();
 
             // calculate the combined displacements
             float tx;
