@@ -76,16 +76,13 @@ public class PDSignatureField extends PDTerminalField
     private String generatePartialName()
     {
         String fieldName = "Signature";
-        Set<String> sigNames = new HashSet<String>();
+        Set<String> nameSet = new HashSet<String>();
         for (PDField field : getAcroForm().getFieldTree())
         {
-            if(field instanceof PDSignatureField)
-            {
-                sigNames.add(field.getPartialName());
-            }
+            nameSet.add(field.getPartialName());
         }
         int i = 1;
-        while(sigNames.contains(fieldName+i))
+        while (nameSet.contains(fieldName + i))
         {
             ++i;
         }
