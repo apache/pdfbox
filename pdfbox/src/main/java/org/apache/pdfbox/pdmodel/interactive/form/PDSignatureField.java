@@ -84,17 +84,14 @@ public class PDSignatureField extends PDField
       String fieldName = "Signature";
       int i = 1;
       
-      Set<String> sigNames = new HashSet<String>();
+      Set<String> nameSet = new HashSet<String>();
       
       for ( Object object : fields )
       {
-        if(object instanceof PDSignatureField)
-        {
-          sigNames.add(((PDSignatureField)object).getPartialName());
-        }
+          nameSet.add(((PDField) object).getPartialName());
       }
 
-      while(sigNames.contains(fieldName+i))
+      while (nameSet.contains(fieldName + i))
       {
         ++i;
       }
