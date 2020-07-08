@@ -484,7 +484,7 @@ public class PDTrueTypeFont extends PDSimpleFont
                     } 
                     catch (FontFormatException e)
                     {
-                        log.info("Can't read the embedded font " + fd.getFontName() );
+                        log.info("Can't read the embedded font " + fd.getFontName() + ": " + e.getMessage(), e);
                     }
                 }
                 finally

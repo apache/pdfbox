@@ -82,9 +82,9 @@ public class PDCIDFontType2Font extends PDCIDFont
                 // create a font with the embedded data
                 awtFont = Font.createFont(Font.TRUETYPE_FONT, is);
             }
-            catch( FontFormatException f )
+            catch( FontFormatException e )
             {
-                LOG.info("Can't read the embedded font " + fd.getFontName() );
+                LOG.info("Can't read the embedded font " + fd.getFontName() + ": " + e.getMessage(), e);
             }
             finally
             {
