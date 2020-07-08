@@ -260,6 +260,12 @@ public class StandardColorSpaceHelper implements ColorSpaceHelper
                 }
             }
         }        
+        catch (ArrayIndexOutOfBoundsException e)
+        {
+            // this is not a ICC_Profile
+            context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID_COLOR_SPACE_ICCBASED,
+                    "ICCBase color space is invalid. Caused By: " + e.getMessage()));
+        }
         catch (IllegalArgumentException e)
         {
             // this is not a ICC_Profile
