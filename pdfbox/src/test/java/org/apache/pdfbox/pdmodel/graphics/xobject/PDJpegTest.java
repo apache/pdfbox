@@ -221,6 +221,9 @@ public class PDJpegTest extends TestCase
      */
     public void testCreateJpegINT_ARGB() throws IOException, COSVisitorException
     {
+        System.out.println("java.runtime.name: " + System.getProperty("java.runtime.name"));
+        System.out.println("java.specification.version: " + System.getProperty("java.specification.version"));
+        System.out.println("java.version: " + System.getProperty("java.version"));
         PDDocument document = new PDDocument();
         BufferedImage awtImage = createInterestingImage(BufferedImage.TYPE_INT_ARGB);
 
