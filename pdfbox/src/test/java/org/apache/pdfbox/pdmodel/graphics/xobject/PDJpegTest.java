@@ -180,7 +180,16 @@ public class PDJpegTest extends TestCase
      * @throws org.apache.pdfbox.exceptions.COSVisitorException
      */
     public void testCreateJpeg4BYTE_ABGR() throws IOException, COSVisitorException
-    {
+    {        
+        // workaround Open JDK bug
+        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
+        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
+                && (System.getProperty("java.specification.version").equals("1.6")
+                || System.getProperty("java.specification.version").equals("1.7")
+                || System.getProperty("java.specification.version").equals("1.8")))
+        {
+            return;
+        }
         PDDocument document = new PDDocument();
         BufferedImage awtImage = createInterestingImage(BufferedImage.TYPE_4BYTE_ABGR);
 
@@ -220,10 +229,16 @@ public class PDJpegTest extends TestCase
      * @throws org.apache.pdfbox.exceptions.COSVisitorException
      */
     public void testCreateJpegINT_ARGB() throws IOException, COSVisitorException
-    {
-        System.out.println("java.runtime.name: " + System.getProperty("java.runtime.name"));
-        System.out.println("java.specification.version: " + System.getProperty("java.specification.version"));
-        System.out.println("java.version: " + System.getProperty("java.version"));
+    {           
+        // workaround Open JDK bug
+        // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
+        if (System.getProperty("java.runtime.name").equals("OpenJDK Runtime Environment")
+                && (System.getProperty("java.specification.version").equals("1.6")
+                || System.getProperty("java.specification.version").equals("1.7")
+                || System.getProperty("java.specification.version").equals("1.8")))
+        {
+            return;
+        }
         PDDocument document = new PDDocument();
         BufferedImage awtImage = createInterestingImage(BufferedImage.TYPE_INT_ARGB);
 
