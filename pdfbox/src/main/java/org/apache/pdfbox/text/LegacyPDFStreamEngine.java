@@ -20,6 +20,7 @@ import java.io.InputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
+import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -33,12 +34,14 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
+import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.state.Concatenate;
 import org.apache.pdfbox.contentstream.operator.state.Restore;
 import org.apache.pdfbox.contentstream.operator.state.Save;
@@ -81,6 +84,8 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     private Matrix translateMatrix;
     private final GlyphList glyphList;
 
+    float currentFontHeight = -1;
+    
     /**
      * Constructor.
      */
@@ -97,7 +102,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         addOperator(new SetCharSpacing());
         addOperator(new MoveText());
         addOperator(new MoveTextSetLeading());
-        addOperator(new SetFontAndSize());
+        addOperator(new CapturingSetFontAndSize());
         addOperator(new ShowText());
         addOperator(new ShowTextAdjusted());
         addOperator(new SetTextLeading());
@@ -163,48 +168,6 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         float horizontalScaling = state.getTextState().getHorizontalScaling() / 100f;
         Matrix textMatrix = getTextMatrix();
 
-        BoundingBox bbox = font.getBoundingBox();
-        if (bbox.getLowerLeftY() < Short.MIN_VALUE)
-        {
-            // PDFBOX-2158 and PDFBOX-3130
-            // files by Salmat eSolutions / ClibPDF Library
-            bbox.setLowerLeftY(- (bbox.getLowerLeftY() + 65536));
-        }
-        // 1/2 the bbox is used as the height todo: why?
-        float glyphHeight = bbox.getHeight() / 2;
-        
-        // sometimes the bbox has very high values, but CapHeight is OK
-        PDFontDescriptor fontDescriptor = font.getFontDescriptor();
-        if (fontDescriptor != null)
-        {
-            float capHeight = fontDescriptor.getCapHeight();
-            if (Float.compare(capHeight, 0) != 0 &&
-                (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0))
-            {
-                glyphHeight = capHeight;
-            }
-            // PDFBOX-3464, PDFBOX-4480, PDFBOX-4553:
-            // sometimes even CapHeight has very high value, but Ascent and Descent are ok
-            float ascent = fontDescriptor.getAscent();
-            float descent = fontDescriptor.getDescent();
-            if (capHeight > ascent && ascent > 0 && descent < 0 &&
-                ((ascent - descent) / 2 < glyphHeight || Float.compare(glyphHeight, 0) == 0))
-            {
-                glyphHeight = (ascent - descent) / 2;
-            }
-        }
-
-        // transformPoint from glyph space -> text space
-        float height;
-        if (font instanceof PDType3Font)
-        {
-            height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
-        }
-        else
-        {
-            height = glyphHeight / 1000;
-        }
-
         float displacementX = displacement.getX();
         // the sorting algorithm is based on the width of the character. As the displacement
         // for vertical characters doesn't provide any suitable value for it, we have to 
@@ -254,7 +217,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
 
         // (modified) width and height calculations
         float dxDisplay = nextX - textRenderingMatrix.getTranslateX();
-        float dyDisplay = height * textRenderingMatrix.getScalingFactorY();
+        float dyDisplay = currentFontHeight * textRenderingMatrix.getScalingFactorY();
 
         //
         // start of the original method
@@ -339,6 +302,61 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     }
 
     /**
+     * Compute the font height. Override this if you want to use own calculations.
+     * 
+     * @param font the font.
+     * @return the font height.
+     * 
+     * @throws IOException if there is an error while getting the font bounding box.
+     */
+    protected float computeFontHeight(PDFont font) throws IOException
+    {
+        BoundingBox bbox = font.getBoundingBox();
+        if (bbox.getLowerLeftY() < Short.MIN_VALUE)
+        {
+            // PDFBOX-2158 and PDFBOX-3130
+            // files by Salmat eSolutions / ClibPDF Library
+            bbox.setLowerLeftY(- (bbox.getLowerLeftY() + 65536));
+        }
+        // 1/2 the bbox is used as the height todo: why?
+        float glyphHeight = bbox.getHeight() / 2;
+
+        // sometimes the bbox has very high values, but CapHeight is OK
+        PDFontDescriptor fontDescriptor = font.getFontDescriptor();
+        if (fontDescriptor != null)
+        {
+            float capHeight = fontDescriptor.getCapHeight();
+            if (Float.compare(capHeight, 0) != 0 &&
+                    (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0))
+            {
+                glyphHeight = capHeight;
+            }
+            // PDFBOX-3464, PDFBOX-4480, PDFBOX-4553:
+            // sometimes even CapHeight has very high value, but Ascent and Descent are ok
+            float ascent = fontDescriptor.getAscent();
+            float descent = fontDescriptor.getDescent();
+            if (capHeight > ascent && ascent > 0 && descent < 0 &&
+                    ((ascent - descent) / 2 < glyphHeight || Float.compare(glyphHeight, 0) == 0))
+            {
+                glyphHeight = (ascent - descent) / 2;
+            }
+        }
+
+        // transformPoint from glyph space -> text space
+        float height;
+        if (font instanceof PDType3Font)
+        {
+            height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
+        }
+        else
+        {
+            height = glyphHeight / 1000;
+        }
+
+        return height;
+    }
+
+    /**
      * A method provided as an event interface to allow a subclass to perform some specific
      * functionality when text needs to be processed.
      *
@@ -347,5 +365,16 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     protected void processTextPosition(TextPosition text)
     {
         // subclasses can override to provide specific functionality
+    }
+
+    private class CapturingSetFontAndSize extends SetFontAndSize
+    {
+        @Override
+        public void process(Operator operator, List<COSBase> arguments) throws IOException
+        {
+            super.process(operator, arguments);
+            PDFont font = context.getGraphicsState().getTextState().getFont();
+            currentFontHeight = computeFontHeight(font);
+        }
     }
 }
