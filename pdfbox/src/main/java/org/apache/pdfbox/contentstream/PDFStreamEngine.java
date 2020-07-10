@@ -405,8 +405,13 @@ public abstract class PDFStreamEngine
         // clip to bounding box
         clipToRect(tilingPattern.getBBox());
 
+        // save text matrices (pattern stream may contain BT/ET, see PDFBOX-4896)
+        Matrix textMatrixSave = textMatrix;
+        Matrix textLineMatrixSave = textLineMatrix;
         processStreamOperators(tilingPattern);
-
+        textMatrix = textMatrixSave;
+        textLineMatrix = textLineMatrixSave;
+        
         initialMatrix = parentMatrix;
         restoreGraphicsStack(savedStack);
         popResources(parent);
