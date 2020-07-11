@@ -216,14 +216,11 @@ public class ExtGStateValidationProcess extends AbstractProcess
      */
     private void checkSoftMask(PreflightContext context, COSDictionary egs)
     {
-        if (egs.containsKey(COSName.SMASK))
+        if (egs.containsKey(COSName.SMASK) && !COSName.NONE.equals(egs.getCOSName(COSName.SMASK)))
         {
-            if (!COSName.NONE.equals(egs.getCOSName(COSName.SMASK)))
-            {
-                // ---- Soft Mask is valid only if it is a COSName equals to None
-                context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_SOFT_MASK,
-                        "SoftMask must be null or None"));
-            }
+            // ---- Soft Mask is valid only if it is a COSName equals to None
+            context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_SOFT_MASK,
+                    "SoftMask must be null or None"));
         }
     }
 
