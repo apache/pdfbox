@@ -24,7 +24,7 @@ package org.apache.pdfbox.preflight.process;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,11 +38,19 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
-import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ACTIONS_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.*;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_NAMED;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTION;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_ICC_PROFILE_MULTIPLE;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_GRAPHIC_OUTPUT_INTENT_S_VALUE_INVALID;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_LANG_NOT_RFC1766;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_NOCATALOG;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER_CATALOG_EMBEDDEDFILES;
+import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_TRAILER_CATALOG_OCPROPERTIES;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.ValidationException;
@@ -58,84 +66,34 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 public class CatalogValidationProcess extends AbstractProcess
 {
 
-    protected PDDocumentCatalog catalog;
+    private static final List<String> listICC = Arrays.asList(//
+            "FOGRA43", "CGATS TR 006", "CGATS TR006", "FOGRA39", "JC200103", "FOGRA27", "EUROSB104",
+            "FOGRA45", "FOGRA46", "FOGRA41", "CGATS TR 001", "CGATS TR001", "CGATS TR 003",
+            "CGATS TR003", "CGATS TR 005", "CGATS TR005", "FOGRA28", "JCW2003", "EUROSB204",
+            "FOGRA47", "FOGRA44", "FOGRA29", "JC200104", "FOGRA40", "FOGRA30", "FOGRA42", "IFRA26",
+            "JCN2002", "CGATS TR 002", "CGATS TR002", "FOGRA33", "FOGRA37", "FOGRA31", "FOGRA35",
+            "FOGRA32", "FOGRA34", "FOGRA36", "FOGRA38", "sRGB", "sRGB IEC61966-2.1",
+            "Adobe RGB (1998)", "bg-sRGB", "sYCC", "scRGB", "scRGB-nl", "scYCC-nl", "ROMM RGB",
+            "RIMM RGB", "ERIMM RGB", "eciRGB", "opRGB");
 
-    protected List<String> listICC = new ArrayList<>();
+    private PDDocumentCatalog catalog;
 
     public CatalogValidationProcess()
     {
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA43);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_006);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR006);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA39);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_JC200103);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA27);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_EUROSB104);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA45);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA46);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA41);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_001);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_003);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_005);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR001);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR003);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR005);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA28);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_JCW2003);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_EUROSB204);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA47);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA44);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA29);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_JC200104);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA40);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA30);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA42);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_IFRA26);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_JCN2002);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_002);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR002);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA33);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA37);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA31);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA35);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA32);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA34);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA36);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA38);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_sRGB);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_sRGB_IEC);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_Adobe);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_bg_sRGB);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_sYCC);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_scRGB);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_scRGB_nl);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_scYCC_nl);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_ROMM);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_RIMM);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_ERIMM);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_eciRGB);
-        listICC.add(ICC_CHARACTERIZATION_DATA_REGISTRY_opRGB);
     }
 
-    protected boolean isStandardICCCharacterization(String name)
+    private boolean isStandardICCCharacterization(String name)
     {
-        for (String iccStandard : listICC)
-        {
-            if (iccStandard.contains(name))
-            {
-                return true;
-            }
-        }
-        return false;
+        return listICC.stream().anyMatch(i -> i.contains(name));
     }
 
     @Override
     public void validate(PreflightContext ctx) throws ValidationException
     {
         PDDocument pdfbox = ctx.getDocument();
-        this.catalog = pdfbox.getDocumentCatalog();
+        catalog = pdfbox.getDocumentCatalog();
 
-        if (this.catalog == null)
+        if (catalog == null)
         {
             ctx.addValidationError(new ValidationError(ERROR_SYNTAX_NOCATALOG, "There are no Catalog entry in the Document"));
         } 
@@ -154,15 +112,13 @@ public class CatalogValidationProcess extends AbstractProcess
      * is present.
      * 
      * @param ctx
-     * @throws ValidationException
-     *             Propagate the ActionManager exception
+     * @throws ValidationException Propagate the ActionManager exception
      */
-    protected void validateActions(PreflightContext ctx) throws ValidationException
+    private void validateActions(PreflightContext ctx) throws ValidationException
     {
         ContextHelper.validateElement(ctx, catalog.getCOSObject(), ACTIONS_PROCESS);
         // AA entry if forbidden in PDF/A-1
-        COSBase aa = catalog.getCOSObject().getItem(COSName.AA);
-        if (aa != null)
+        if (catalog.getCOSObject().containsKey(COSName.AA))
         {
             addValidationError(ctx, new ValidationError(ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTION,
                     "The AA field is forbidden for the Catalog  when the PDF is a PDF/A"));
@@ -174,12 +130,11 @@ public class CatalogValidationProcess extends AbstractProcess
      * present.
      * 
      * @param ctx
-     * @throws ValidationException
      */
-    protected void validateLang(PreflightContext ctx) throws ValidationException
+    private void validateLang(PreflightContext ctx)
     {
         String lang = catalog.getLanguage();
-        if (lang != null && !"".equals(lang) && !lang.matches("[A-Za-z]{1,8}(-[A-Za-z]{1,8})*"))
+        if (lang != null && !lang.isEmpty() && !lang.matches("[A-Za-z]{1,8}(-[A-Za-z]{1,8})*"))
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_LANG_NOT_RFC1766));
         }
@@ -189,15 +144,13 @@ public class CatalogValidationProcess extends AbstractProcess
      * A Catalog shall not contain the EmbeddedFiles entry.
      * 
      * @param ctx
-     * @throws ValidationException
      */
-    protected void validateNames(PreflightContext ctx) throws ValidationException
+    private void validateNames(PreflightContext ctx)
     {
         PDDocumentNameDictionary names = catalog.getNames();
         if (names != null)
         {
-            PDEmbeddedFilesNameTreeNode efs = names.getEmbeddedFiles();
-            if (efs != null)
+            if (names.getEmbeddedFiles() != null)
             {
                 addValidationError(ctx, new ValidationError(ERROR_SYNTAX_TRAILER_CATALOG_EMBEDDEDFILES,
                         "EmbeddedFile entry is present in the Names dictionary"));
@@ -214,9 +167,8 @@ public class CatalogValidationProcess extends AbstractProcess
      * A Catalog shall not contain the OCPProperties (Optional Content Properties) entry.
      * 
      * @param ctx
-     * @throws ValidationException
      */
-    protected void validateOCProperties(PreflightContext ctx) throws ValidationException
+    private void validateOCProperties(PreflightContext ctx)
     {
         if (catalog.getOCProperties() != null)
         {
@@ -236,7 +188,7 @@ public class CatalogValidationProcess extends AbstractProcess
      * @param ctx
      * @throws ValidationException
      */
-    public void validateOutputIntent(PreflightContext ctx) throws ValidationException
+    private void validateOutputIntent(PreflightContext ctx) throws ValidationException
     {
         COSArray outputIntents = catalog.getCOSObject().getCOSArray(COSName.OUTPUT_INTENTS);
         Map<COSObjectKey, Boolean> tmpDestOutputProfile = new HashMap<>();
@@ -285,7 +237,7 @@ public class CatalogValidationProcess extends AbstractProcess
                 if (config.isLazyValidation() && !isStandardICCCharacterization(outputConditionIdentifier))
                 {
                     String info = outputIntentDict.getString(COSName.INFO);
-                    if (info == null || "".equals(info))
+                    if (info == null || info.isEmpty())
                     {
                         ValidationError error = new ValidationError(ERROR_GRAPHIC_OUTPUT_INTENT_INVALID_ENTRY,
                                 "The Info entry of a OutputIntent dictionary is missing");
@@ -314,7 +266,8 @@ public class CatalogValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @throws ValidationException
      */
-    protected void validateICCProfile(COSBase destOutputProfile, Map<COSObjectKey, Boolean> mapDestOutputProfile,
+    private void validateICCProfile(COSBase destOutputProfile,
+            Map<COSObjectKey, Boolean> mapDestOutputProfile,
             PreflightContext ctx) throws ValidationException
             {
         try

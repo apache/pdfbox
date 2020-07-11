@@ -27,6 +27,10 @@ package org.apache.pdfbox.preflight;
 public class PreflightConstants
 {
 
+    private PreflightConstants()
+    {
+    }
+
     public static final String FORMAT_PDF_A1B = "PDF/A1-b";
     public static final String FORMAT_PDF_A1A = "PDF/A1-a";
 
@@ -90,57 +94,6 @@ public class PreflightConstants
     public static final String ACTION_DICTIONARY_VALUE_ATYPE_NAMED_FIRST = "FirstPage";
     public static final String ACTION_DICTIONARY_VALUE_ATYPE_NAMED_LAST = "LastPage";
 
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA43 = "FOGRA43";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_006 = "CGATS TR 006";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR006 = "CGATS TR006";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA39 = "FOGRA39";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_JC200103 = "JC200103";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA27 = "FOGRA27";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_EUROSB104 = "EUROSB104";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA45 = "FOGRA45";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA46 = "FOGRA46";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA41 = "FOGRA41";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_001 = "CGATS TR 001";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR001 = "CGATS TR001";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_003 = "CGATS TR 003";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR003 = "CGATS TR003";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_005 = "CGATS TR 005";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR005 = "CGATS TR005";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA28 = "FOGRA28";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_JCW2003 = "JCW2003";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_EUROSB204 = "EUROSB204";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA47 = "FOGRA47";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA44 = "FOGRA44";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA29 = "FOGRA29";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_JC200104 = "JC200104";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA40 = "FOGRA40";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA30 = "FOGRA30";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA42 = "FOGRA42";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_IFRA26 = "IFRA26";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_JCN2002 = "JCN2002";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR_002 = "CGATS TR 002";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_CGATS_TR002 = "CGATS TR002";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA33 = "FOGRA33";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA37 = "FOGRA37";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA31 = "FOGRA31";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA35 = "FOGRA35";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA32 = "FOGRA32";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA34 = "FOGRA34";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA36 = "FOGRA36";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_FOGRA38 = "FOGRA38";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_sRGB = "sRGB";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_sRGB_IEC = "sRGB IEC61966-2.1";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_Adobe = "Adobe RGB (1998)";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_bg_sRGB = "bg-sRGB";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_sYCC = "sYCC";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_scRGB = "scRGB";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_scRGB_nl = "scRGB-nl";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_scYCC_nl = "scYCC-nl";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_ROMM = "ROMM RGB";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_RIMM = "RIMM RGB";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_ERIMM = "ERIMM RGB";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_eciRGB = "eciRGB";
-    public static final String ICC_CHARACTERIZATION_DATA_REGISTRY_opRGB = "opRGB";
     
     /**
      * Error code uses by the Validator when there is an error without error code.
