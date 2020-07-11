@@ -216,9 +216,8 @@ public class ExtGStateValidationProcess extends AbstractProcess
      */
     private void checkSoftMask(PreflightContext context, COSDictionary egs)
     {
-        COSBase smVal = egs.getDictionaryObject(COSName.SMASK);
-        if (smVal != null && 
-                !(smVal instanceof COSName && COSName.NONE.equals(smVal)))
+        COSName smVal = egs.getCOSName(COSName.SMASK);
+        if (smVal != null && !COSName.NONE.equals(smVal))
         {
             // ---- Soft Mask is valid only if it is a COSName equals to None
             context.addValidationError(new ValidationError(ERROR_TRANSPARENCY_EXT_GS_SOFT_MASK,
@@ -297,7 +296,7 @@ public class ExtGStateValidationProcess extends AbstractProcess
      */
     protected void checkTRKey(PreflightContext context, COSDictionary egs)
     {
-        if (egs.getItem(COSName.TR) != null)
+        if (egs.containsKey(COSName.TR))
         {
             context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_KEY,
                     "No TR key expected in Extended graphics state"));
@@ -312,13 +311,14 @@ public class ExtGStateValidationProcess extends AbstractProcess
      */
     protected void checkTR2Key(PreflightContext context, COSDictionary egs)
     {
-        if (egs.getItem("TR2") != null)
+        if (egs.containsKey(COSName.TR2))
         {
-            String s = egs.getNameAsString("TR2");
+            String s = egs.getNameAsString(COSName.TR2);
             if (!"Default".equals(s))
             {
-                context.addValidationError(new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
-                        "TR2 key only expect 'Default' value, not '" + s + "'"));
+                context.addValidationError(
+                        new ValidationError(ERROR_GRAPHIC_UNEXPECTED_VALUE_FOR_KEY,
+                                "TR2 key only expect 'Default' value, not '" + s + "'"));
             }
         }
     }
