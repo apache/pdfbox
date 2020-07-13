@@ -78,7 +78,9 @@ public abstract class TestCOSNumber extends TestCOSBase
             {
                 // PASS
             }
-
+            // PDFBOX-2569: some numbers start with "+"
+            assertEquals(COSNumber.get("1"), COSNumber.get("+1"));
+            assertEquals(COSNumber.get("123"), COSNumber.get("+123"));
         }
         catch (IOException e)
         {

@@ -94,12 +94,17 @@ public abstract class COSNumber extends COSBase
                 throw new IOException("Not a number: " + number);
             }
         } 
-        else if (number.indexOf('.') == -1 && (number.toLowerCase().indexOf('e') == -1)) 
+        else if (isFloat(number))
+        {
+            return new COSFloat(number);
+        }
+        else
         {
             try
             {
                 if (number.charAt(0) == '+')
                 {
+                    // PDFBOX-2569: some numbers start with "+"
                     return COSInteger.get(Long.parseLong(number.substring(1)));
                 }
                 return COSInteger.get(Long.parseLong(number));
@@ -107,12 +112,28 @@ public abstract class COSNumber extends COSBase
             catch( NumberFormatException e )
             {
                 // might be a huge number, see PDFBOX-3116
-                return new COSFloat(number);
+                char digit = number.charAt(0);
+                if (digit == '-')
+                {
+                    return new COSFloat(-Float.MAX_VALUE);
+                }
+
+                return new COSFloat(Float.MAX_VALUE);
             }
-        } 
-        else 
-        {
-            return new COSFloat(number);
         }
+    }
+
+    private static boolean isFloat( String number )
+    {
+        int length = number.length();
+        for (int i = 0; i < length; i++)
+        {
+            char digit = number.charAt(i);
+            if (digit == '.' || digit == 'e')
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
