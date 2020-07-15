@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,9 +44,13 @@ import junit.framework.TestSuite;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.TestPDPageTree;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
@@ -590,6 +593,88 @@ public class TestTextStripper extends TestCase
             {
                 fail("One or more failures, see test log for details");
             }
+    }
+
+    public void testTabula() throws IOException
+    {
+        File pdfFile = new File("src/test/resources/input","eu-001.pdf");
+        File outFile = new File("target/test-output","eu-001.pdf-tabula.txt");
+        File expectedOutFile = new File("src/test/resources/input","eu-001.pdf-tabula.txt");
+        File diffFile = new File("target/test-output","eu-001.pdf-tabula-diff.txt");
+        PDDocument tabulaDocument = Loader.loadPDF(pdfFile);
+        PDFTextStripper tabulaStripper = new PDFTabulaTextStripper();
+
+        try (OutputStream os = new FileOutputStream(outFile))
+        {
+            os.write(0xEF);
+            os.write(0xBB);
+            os.write(0xBF);
+
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(os, ENCODING)))
+            {
+                tabulaStripper.writeText(tabulaDocument, writer);
+            }
+        }
+
+        compareResult(expectedOutFile, outFile, pdfFile, false, diffFile);
+        
+        assertFalse(bFail);
+    }
+
+    private class PDFTabulaTextStripper extends PDFTextStripper
+    {
+        PDFTabulaTextStripper() throws IOException
+        {
+            // empty
+        }
+
+        @Override
+        protected float computeFontHeight(PDFont font) throws IOException
+        {
+            BoundingBox bbox = font.getBoundingBox();
+            if (bbox.getLowerLeftY() < Short.MIN_VALUE)
+            {
+                // PDFBOX-2158 and PDFBOX-3130
+                // files by Salmat eSolutions / ClibPDF Library
+                bbox.setLowerLeftY(-(bbox.getLowerLeftY() + 65536));
+            }
+            // 1/2 the bbox is used as the height todo: why?
+            float glyphHeight = bbox.getHeight() / 2;
+
+            // sometimes the bbox has very high values, but CapHeight is OK
+            PDFontDescriptor fontDescriptor = font.getFontDescriptor();
+            if (fontDescriptor != null)
+            {
+                float capHeight = fontDescriptor.getCapHeight();
+                if (Float.compare(capHeight, 0) != 0
+                        && (capHeight < glyphHeight || Float.compare(glyphHeight, 0) == 0))
+                {
+                    glyphHeight = capHeight;
+                }
+                // PDFBOX-3464, PDFBOX-448:
+                // sometimes even CapHeight has very high value, but Ascent and Descent are ok
+                float ascent = fontDescriptor.getAscent();
+                float descent = fontDescriptor.getDescent();
+                if (ascent > 0 && descent < 0
+                        && ((ascent - descent) / 2 < glyphHeight || Float.compare(glyphHeight, 0) == 0))
+                {
+                    glyphHeight = (ascent - descent) / 2;
+                }
+            }
+
+            // transformPoint from glyph space -> text space
+            float height;
+            if (font instanceof PDType3Font)
+            {
+                height = font.getFontMatrix().transformPoint(0, glyphHeight).y;
+            }
+            else
+            {
+                height = glyphHeight / 1000;
+            }
+
+            return height;
+        }
     }
 
     /**
