@@ -250,7 +250,6 @@ public class TestTextStripper extends TestCase
             }
         }
 
-        //System.out.println("  " + inFile + (bSort ? " (sorted)" : ""));
         try (PDDocument document = Loader.loadPDF(inFile))
         {
             File outFile;
@@ -302,113 +301,114 @@ public class TestTextStripper extends TestCase
                 return;
             }
             
-            boolean localFail = false;
+            compareResult(expectedFile, outFile, inFile, bSort, diffFile);
+        }
+    }
 
-            try (LineNumberReader expectedReader = 
-                    new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), ENCODING));
-                 LineNumberReader actualReader = 
-                    new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), ENCODING)))
-            {    
-                while (true)
+    private void compareResult(File expectedFile, File outFile, File inFile, boolean bSort, File diffFile)
+            throws IOException
+    {
+        boolean localFail = false;
+        
+        try (LineNumberReader expectedReader =
+                new LineNumberReader(new InputStreamReader(new FileInputStream(expectedFile), ENCODING));
+                LineNumberReader actualReader =
+                        new LineNumberReader(new InputStreamReader(new FileInputStream(outFile), ENCODING)))
+        {
+            while (true)
+            {
+                String expectedLine = expectedReader.readLine();
+                while( expectedLine != null && expectedLine.trim().length() == 0 )
                 {
-                    String expectedLine = expectedReader.readLine();
-                    while( expectedLine != null && expectedLine.trim().length() == 0 )
-                    {
-                        expectedLine = expectedReader.readLine();
-                    }
-                    String actualLine = actualReader.readLine();
-                    while( actualLine != null && actualLine.trim().length() == 0 )
-                    {
-                        actualLine = actualReader.readLine();
-                    }
-                    if (!stringsEqual(expectedLine, actualLine))
-                    {
-                        this.bFail = true;
-                        localFail = true;
-                        log.error("FAILURE: Line mismatch for file " + inFile.getName() +
-                                " (sort = "+bSort+")" +
-                                " at expected line: " + expectedReader.getLineNumber() +
-                                " at actual line: " + actualReader.getLineNumber() +
-                                "\nexpected line was: \"" + expectedLine + "\"" +
-                                "\nactual line was:   \"" + actualLine + "\"" + "\n");
-                        
-                        //lets report all lines, even though this might produce some verbose logging
-                        //break;
-                    }
+                    expectedLine = expectedReader.readLine();
+                }
+                String actualLine = actualReader.readLine();
+                while( actualLine != null && actualLine.trim().length() == 0 )
+                {
+                    actualLine = actualReader.readLine();
+                }
+                if (!stringsEqual(expectedLine, actualLine))
+                {
+                    this.bFail = true;
+                    localFail = true;
+                    log.error("FAILURE: Line mismatch for file " + inFile.getName() +
+                            " (sort = "+bSort+")" +
+                                    " at expected line: " + expectedReader.getLineNumber() +
+                            " at actual line: " + actualReader.getLineNumber() +
+                            "\nexpected line was: \"" + expectedLine + "\"" +
+                                    "\nactual line was:   \"" + actualLine + "\"" + "\n");
                     
-                    if( expectedLine == null || actualLine==null)
-                    {
-                        break;
-                    }
+                    //lets report all lines, even though this might produce some verbose logging
+                    //break;
                 }
-            }
-            if (!localFail)
-            {
-                outFile.delete();
-            }
-            else
-            {
-                // https://code.google.com/p/java-diff-utils/wiki/SampleUsage
-                List<String> original = fileToLines(expectedFile);
-                List<String> revised = fileToLines(outFile);
-
-                // Compute diff. Get the Patch object. Patch is the container for computed deltas.
-                Patch<String> patch = DiffUtils.diff(original, revised);
-
-                try (PrintStream diffPS = new PrintStream(diffFile, ENCODING))
+                
+                if (expectedLine == null || actualLine == null)
                 {
-                    for (Object delta : patch.getDeltas())
-                    {
-                        if (delta instanceof ChangeDelta)
-                        {
-                            ChangeDelta cdelta = (ChangeDelta) delta;
-                            diffPS.println("Org: " + cdelta.getOriginal());
-                            diffPS.println("New: " + cdelta.getRevised());
-                            diffPS.println();
-                        }
-                        else if (delta instanceof DeleteDelta)
-                        {
-                            DeleteDelta ddelta = (DeleteDelta) delta;
-                            diffPS.println("Org: " + ddelta.getOriginal());
-                            diffPS.println("New: " + ddelta.getRevised());
-                            diffPS.println();
-                        }
-                        else if (delta instanceof InsertDelta)
-                        {
-                            InsertDelta idelta = (InsertDelta) delta;
-                            diffPS.println("Org: " + idelta.getOriginal());
-                            diffPS.println("New: " + idelta.getRevised());
-                            diffPS.println();
-                        }
-                        else
-                        {
-                            diffPS.println(delta);
-                        }
-                    }
+                    break;
                 }
+            }
+        }
+        if (!localFail)
+        {
+            outFile.delete();
+        }
+        else
+        {
+            // https://code.google.com/p/java-diff-utils/wiki/SampleUsage
+            List<String> original = fileToLines(expectedFile);
+            List<String> revised = fileToLines(outFile);
+            
+            // Compute diff. Get the Patch object. Patch is the container for computed deltas.
+            Patch<String> patch = DiffUtils.diff(original, revised);
+            
+            try (PrintStream diffPS = new PrintStream(diffFile, ENCODING))
+            {
+                patch.getDeltas().forEach(delta ->
+                {
+                    if (delta instanceof ChangeDelta)
+                    {
+                        ChangeDelta cdelta = (ChangeDelta) delta;
+                        diffPS.println("Org: " + cdelta.getOriginal());
+                        diffPS.println("New: " + cdelta.getRevised());
+                        diffPS.println();
+                    }
+                    else if (delta instanceof DeleteDelta)
+                    {
+                        DeleteDelta ddelta = (DeleteDelta) delta;
+                        diffPS.println("Org: " + ddelta.getOriginal());
+                        diffPS.println("New: " + ddelta.getRevised());
+                        diffPS.println();
+                    }
+                    else if (delta instanceof InsertDelta)
+                    {
+                        InsertDelta idelta = (InsertDelta) delta;
+                        diffPS.println("Org: " + idelta.getOriginal());
+                        diffPS.println("New: " + idelta.getRevised());
+                        diffPS.println();
+                    }
+                    else
+                    {
+                        diffPS.println(delta);
+                    }
+                });
             }
         }
     }
     
     // Helper method for get the file content
-    private static List<String> fileToLines(File file)
+    private static List<String> fileToLines(File file) throws IOException
     {
         List<String> lines = new LinkedList<>();
         String line;
-        try
+
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), ENCODING)))
         {
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), ENCODING)))
+            while ((line = in.readLine()) != null)
             {
-                while ((line = in.readLine()) != null)
-                {
-                    lines.add(line);
-                }
+                lines.add(line);
             }
         }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+
         return lines;
     }
 
@@ -547,14 +547,7 @@ public class TestTextStripper extends TestCase
      */
     private void doTestDir(File inDir, File outDir) throws Exception 
     {
-        File[] testFiles = inDir.listFiles(new FilenameFilter() 
-        {
-            @Override
-            public boolean accept(File dir, String name) 
-            {
-                return (name.endsWith(".pdf"));
-            }
-        });
+        File[] testFiles = inDir.listFiles((File dir, String name) -> name.endsWith(".pdf"));
         for (File testFile : testFiles) 
         {
             //Test without sorting
