@@ -146,7 +146,8 @@ public final class CertificateVerifier
             PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
                     cert, trustAnchors, intermediateCerts, signDate);
 
-            LOG.info("Certification chain verified successfully");
+            LOG.info("Certification chain verified successfully up to this root: " +
+                    verifiedCertChain.getTrustAnchor().getTrustedCert().getSubjectX500Principal());
 
             checkRevocations(cert, certSet, signDate);
 
@@ -312,10 +313,10 @@ public final class CertificateVerifier
             }
             ASN1TaggedObject location = (ASN1TaggedObject) obj.getObjectAt(1);
             ASN1OctetString uri = (ASN1OctetString) location.getObject();
+            String urlString = new String(uri.getOctets());
             InputStream in = null;
             try
             {
-                String urlString = new String(uri.getOctets());
                 LOG.info("CA issuers URL: " + urlString);
                 in = new URL(urlString).openStream();
                 CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
@@ -328,7 +329,7 @@ public final class CertificateVerifier
             }
             catch (IOException ex)
             {
-                LOG.warn(ex.getMessage(), ex);
+                LOG.warn(urlString + " failure: " + ex.getMessage(), ex);
             }
             catch (CertificateException ex)
             {
