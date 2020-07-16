@@ -2389,9 +2389,13 @@ public class COSParser extends BaseParser implements ICOSParser
                     try
                     {
                         long currOffset = Long.parseLong(splitString[0]);
-                        int currGenID = Integer.parseInt(splitString[1]);
-                        COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
-                        xrefTrailerResolver.setXRef(objKey, currOffset);
+                        // skip 0 offsets
+                        if (currOffset > 0)
+                        {
+                            int currGenID = Integer.parseInt(splitString[1]);
+                            COSObjectKey objKey = new COSObjectKey(currObjID, currGenID);
+                            xrefTrailerResolver.setXRef(objKey, currOffset);
+                        }
                     }
                     catch(NumberFormatException e)
                     {
