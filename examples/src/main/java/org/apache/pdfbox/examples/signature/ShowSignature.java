@@ -471,6 +471,19 @@ public final class ShowSignature
                     certFromTimeStamp,
                     timeStampToken.getTimeStampInfo().getGenTime());
             SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
+
+            // compare the hash of the signature with the hash in the timestamp
+            byte[] tsMessageImprintDigest = timeStampToken.getTimeStampInfo().getMessageImprintDigest();
+            String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
+            byte[] sigMessageImprintDigest = MessageDigest.getInstance(hashAlgorithm).digest(signerInformation.getSignature());
+            if (Arrays.equals(tsMessageImprintDigest, sigMessageImprintDigest))
+            {
+                System.out.println("timestamp signature verified");
+            }
+            else
+            {
+                System.err.println("timestamp signature verification failed");
+            }
         }
 
         try
