@@ -407,6 +407,12 @@ public class TestCreateSignature
                 {
                     Assert.assertNotNull(timeStampToken);
                     validateTimestampToken(timeStampToken);
+
+                    // compare the hash of the signed content with the hash in the timestamp
+                    byte[] tsMessageImprintDigest = timeStampToken.getTimeStampInfo().getMessageImprintDigest();
+                    String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
+                    byte[] sigMessageImprintDigest = MessageDigest.getInstance(hashAlgorithm).digest(signerInformation.getSignature());
+                    Assert.assertArrayEquals("timestamp signature verification failed", sigMessageImprintDigest, tsMessageImprintDigest);                    
                 }
                 else
                 {
