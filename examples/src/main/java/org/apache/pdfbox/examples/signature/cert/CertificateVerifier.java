@@ -145,7 +145,8 @@ public final class CertificateVerifier
             PKIXCertPathBuilderResult verifiedCertChain = verifyCertificate(
                     cert, trustAnchors, intermediateCerts, signDate);
 
-            LOG.info("Certification chain verified successfully");
+            LOG.info("Certification chain verified successfully up to this root: " +
+                    verifiedCertChain.getTrustAnchor().getTrustedCert().getSubjectX500Principal());
 
             checkRevocations(cert, certSet, signDate);
 
@@ -302,7 +303,11 @@ public final class CertificateVerifier
                 altCerts.forEach(altCert -> resultSet.add((X509Certificate) altCert));
                 LOG.info("CA issuers URL: " + altCerts.size() + " certificate(s) downloaded");
             }
-            catch (IOException | CertificateException ex)
+            catch (IOException ex)
+            {
+                LOG.warn(urlString + " failure: " + ex.getMessage(), ex);
+            }
+            catch (CertificateException ex)
             {
                 LOG.warn(ex.getMessage(), ex);
             }
