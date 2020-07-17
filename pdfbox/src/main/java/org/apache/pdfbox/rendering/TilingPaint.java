@@ -169,9 +169,8 @@ class TilingPaint implements Paint
                 Math.abs(patternMatrix.getScalingFactorY()));
 
         // move origin to (0,0)
-        newPatternMatrix.concatenate(
-                Matrix.getTranslateInstance(-pattern.getBBox().getLowerLeftX(),
-                        -pattern.getBBox().getLowerLeftY()));
+        PDRectangle bBox = pattern.getBBox();
+        newPatternMatrix.translate(-bBox.getLowerLeftX(), -bBox.getLowerLeftY());
 
         // render using PageDrawer
         drawer.drawTilingPattern(graphics, pattern, colorSpace, color, newPatternMatrix);

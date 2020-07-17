@@ -366,8 +366,7 @@ public final class PDAcroForm implements COSObjectable
                             xScale = fieldRect.getWidth() / bbox.getWidth();
                             yScale = fieldRect.getHeight() / bbox.getHeight();
                         }
-                        Matrix scalingMatrix = Matrix.getScaleInstance(xScale, yScale);
-                        transformationMatrix.concatenate(scalingMatrix);
+                        transformationMatrix.scale(xScale, yScale);
                         transformed = true;
                     }
 

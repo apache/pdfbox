@@ -301,10 +301,9 @@ public abstract class PDFStreamEngine
             // compute a matrix which scales and translates the transformed appearance box to align
             // with the edges of the annotation's rectangle
             Matrix a = Matrix.getTranslateInstance(rect.getLowerLeftX(), rect.getLowerLeftY());
-            a.concatenate(Matrix.getScaleInstance((float)(rect.getWidth() / transformedBox.getWidth()),
-                    (float)(rect.getHeight() / transformedBox.getHeight())));
-            a.concatenate(Matrix.getTranslateInstance((float) -transformedBox.getX(),
-                    (float) -transformedBox.getY()));
+            a.scale((float)(rect.getWidth() / transformedBox.getWidth()),
+                    (float)(rect.getHeight() / transformedBox.getHeight()));
+            a.translate((float) -transformedBox.getX(), (float) -transformedBox.getY());
 
             // Matrix shall be concatenated with A to form a matrix AA that maps from the appearance's
             // coordinate system to the annotation's rectangle in default user space
@@ -652,7 +651,7 @@ public abstract class PDFStreamEngine
     protected void applyTextAdjustment(float tx, float ty)
     {
         // update the text matrix
-        textMatrix.concatenate(Matrix.getTranslateInstance(tx, ty));
+        textMatrix.translate(tx, ty);
     }
 
     /**
@@ -739,7 +738,7 @@ public abstract class PDFStreamEngine
             }
 
             // update the text matrix
-            textMatrix.concatenate(Matrix.getTranslateInstance(tx, ty));
+            textMatrix.translate(tx, ty);
         }
     }
 
