@@ -15,9 +15,12 @@
  */
 package org.apache.pdfbox.util;
 
+import java.io.IOException;
+import java.util.Locale;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  *
@@ -48,17 +51,34 @@ public class TestHexUtil extends TestCase
         assertArrayEquals(new char[]{'5','E','2','E','5','2','A','9'}, Hex.getCharsUTF16BE("帮助"));
     }
 
-    private void assertArrayEquals(char[] expected, char[] actual)
+    /**
+     * Test getBytes() and getString() and decodeHex()
+     */
+    public void testMisc() throws IOException
     {
-        assertEquals("Length of char array not equal", expected.length, actual.length);
-        for (int idx = 0; idx < expected.length; idx++)
+        byte[] byteSrcArray = new byte[256];
+        for (int i = 0; i < 256; ++i)
         {
-            if (expected[idx] != actual[idx])
-            {
-                fail(String.format("Character at index %d not equal. Expected '%c' but got '%c'", 
-                        idx, expected[idx], actual[idx]));
-            }
+            byteSrcArray[i] = (byte) i;
+
+            byte[] bytes = Hex.getBytes((byte) i);
+            assertEquals(2, bytes.length);
+            String s2 = String.format(Locale.US, "%02X", i);
+            assertArrayEquals(s2.getBytes(Charsets.US_ASCII), bytes);
+            s2 = Hex.getString((byte) i);
+            assertArrayEquals(s2.getBytes(Charsets.US_ASCII), bytes);
+            
+            assertArrayEquals(new byte[]{(byte) i}, Hex.decodeHex(s2));
         }
+        byte[] byteDstArray = Hex.getBytes(byteSrcArray);
+        assertEquals(byteDstArray.length, byteSrcArray.length * 2);
+
+        String dstString = Hex.getString(byteSrcArray);
+        assertEquals(dstString.length(), byteSrcArray.length * 2);
+
+        assertArrayEquals(dstString.getBytes(Charsets.US_ASCII), byteDstArray);
+        
+        assertArrayEquals(byteSrcArray, Hex.decodeHex(dstString));
     }
 
     /**
