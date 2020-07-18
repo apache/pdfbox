@@ -77,7 +77,7 @@ public abstract class COSNumber extends COSBase
      */
     public static COSNumber get( String number ) throws IOException
     {
-        if (number.length() == 1) 
+        if (number.length() == 1)
         {
             char digit = number.charAt(0);
             if ('0' <= digit && digit <= '9') 
@@ -112,13 +112,7 @@ public abstract class COSNumber extends COSBase
             catch( NumberFormatException e )
             {
                 // might be a huge number, see PDFBOX-3116
-                char digit = number.charAt(0);
-                if (digit == '-')
-                {
-                    return new COSFloat(-Float.MAX_VALUE);
-                }
-
-                return new COSFloat(Float.MAX_VALUE);
+                return new COSFloat(number);
             }
         }
     }
