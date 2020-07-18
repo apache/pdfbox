@@ -317,6 +317,8 @@ public class TestCOSFloat extends TestCOSNumber
         COSNumber cosNumber = COSFloat.get("18446744073307448448");
         assertTrue(cosNumber instanceof COSFloat);
         assertEquals(1.8446744E19f, cosNumber.floatValue());
+        assertEquals(new COSFloat(18446744073307448448f), COSNumber.get("18446744073307448448"));
+        assertEquals(new COSFloat(-18446744073307448448f), COSNumber.get("-18446744073307448448"));
     }
 
     private String floatToString(float value)
