@@ -307,6 +307,18 @@ public class TestCOSFloat extends TestCOSNumber
         assertEquals(-16.33f, cosFloat.floatValue());
     }
 
+    /**
+     * PDFBOX-4895: large number, too big for a long but small enough to fit into a float.
+     * 
+     * @throws IOException 
+     */
+    public void testLargeNumber() throws IOException
+    {
+        COSNumber cosNumber = COSFloat.get("18446744073307448448");
+        assertTrue(cosNumber instanceof COSFloat);
+        assertEquals(1.8446744E19f, cosNumber.floatValue());
+    }
+
     private String floatToString(float value)
     {
         // use a BigDecimal as intermediate state to avoid 
