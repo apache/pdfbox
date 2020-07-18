@@ -17,6 +17,7 @@ package org.apache.pdfbox.util;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
+import org.apache.pdfbox.cos.COSName;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -37,6 +38,43 @@ public class MatrixTest
         Matrix m2 = m1.clone();
         assertNotSame(m1, m2);
         assertMatrixIsPristine(m2);
+    }
+
+    @Test
+    public void testGetScalingFactor()
+    {
+        // check scaling factor of an initial matrix
+        Matrix m1 = new Matrix();
+        assertEquals(1, m1.getScalingFactorX(), 0);
+        assertEquals(1, m1.getScalingFactorY(), 0);
+
+        // check scaling factor of an initial matrix
+        Matrix m2 = new Matrix(2, 4, 4, 2, 0, 0);
+        assertEquals((float) Math.sqrt(20), m2.getScalingFactorX(), 0);
+        assertEquals((float) Math.sqrt(20), m2.getScalingFactorY(), 0);
+    }
+
+    @Test
+    public void testCreateMatrixUsingInvalidInput()
+    {
+        // anything but a COSArray is invalid and leads to an initial matrix
+        Matrix createMatrix = Matrix.createMatrix(COSName.A);
+        assertMatrixIsPristine(createMatrix);
+
+        // a COSArray with fewer than 6 entries leads to an initial matrix
+        COSArray cosArray = new COSArray();
+        cosArray.add(COSName.A);
+        createMatrix = Matrix.createMatrix(cosArray);
+        assertMatrixIsPristine(createMatrix);
+
+        // a COSArray containing other kind of objects than COSNumber leads to an initial matrix
+        cosArray = new COSArray();
+        for (int i = 0; i < 6; i++)
+        {
+            cosArray.add(COSName.A);
+        }
+        createMatrix = Matrix.createMatrix(cosArray);
+        assertMatrixIsPristine(createMatrix);
     }
 
     @Test
@@ -217,6 +255,64 @@ public class MatrixTest
         assertEquals(new COSFloat(2), toCOSArray.get(4));
         assertEquals(new COSFloat(0), toCOSArray.get(5));
         
+    }
+
+    @Test
+    public void testGetValues()
+    {
+        Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
+        float[][] values = m.getValues();
+        assertEquals(2, values[0][0], 0);
+        assertEquals(4, values[0][1], 0);
+        assertEquals(0, values[0][2], 0);
+        assertEquals(4, values[1][0], 0);
+        assertEquals(2, values[1][1], 0);
+        assertEquals(0, values[1][2], 0);
+        assertEquals(15, values[2][0], 0);
+        assertEquals(30, values[2][1], 0);
+        assertEquals(1, values[2][2], 0);
+    }
+
+    @Test
+    public void testScaling()
+    {
+        Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
+        m.scale(2, 3);
+        // first row, multiplication with 2
+        assertEquals(4, m.getValue(0, 0), 0);
+        assertEquals(8, m.getValue(0, 1), 0);
+        assertEquals(0, m.getValue(0, 2), 0);
+
+        // second row, multiplication with 3
+        assertEquals(12, m.getValue(1, 0), 0);
+        assertEquals(6, m.getValue(1, 1), 0);
+        assertEquals(0, m.getValue(1, 2), 0);
+
+        // third row, no changes at all
+        assertEquals(15, m.getValue(2, 0), 0);
+        assertEquals(30, m.getValue(2, 1), 0);
+        assertEquals(1, m.getValue(2, 2), 0);
+    }
+
+    @Test
+    public void testTranslation()
+    {
+        Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
+        m.translate(2, 3);
+        // first row, no changes at all
+        assertEquals(2, m.getValue(0, 0), 0);
+        assertEquals(4, m.getValue(0, 1), 0);
+        assertEquals(0, m.getValue(0, 2), 0);
+
+        // second row, no changes at all
+        assertEquals(4, m.getValue(1, 0), 0);
+        assertEquals(2, m.getValue(1, 1), 0);
+        assertEquals(0, m.getValue(1, 2), 0);
+
+        // third row, translated values
+        assertEquals(31, m.getValue(2, 0), 0);
+        assertEquals(44, m.getValue(2, 1), 0);
+        assertEquals(1, m.getValue(2, 2), 0);
     }
 
     /**
