@@ -236,12 +236,10 @@
                     <executable>${jdk.path}/bin/javac</executable>
                     <fork>true</fork>
                     <!-- enable these when getting CompilationFailureException without explanation: -->
-                    <compilerArgs>
-                        <arg>-verbose</arg>
-                        <arg>-J-Xmx1g</arg>
-                        <arg>-J-XX:PermSize=256m</arg>
-                        <arg>-J-XX:MaxPermSize=512m</arg>
-                    </compilerArgs>
+                    <!--
+                    <compilerArgument>-verbose</compilerArgument>
+                    <verbose>true</verbose>
+                    -->
                 </configuration>
             </plugin>
             <plugin>
