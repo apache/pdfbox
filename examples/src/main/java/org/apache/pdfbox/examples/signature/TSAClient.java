@@ -46,7 +46,7 @@ public class TSAClient
 {
     private static final Log LOG = LogFactory.getLog(TSAClient.class);
 
-    static private DigestAlgorithmIdentifierFinder algorithmOidFinder =
+    private static final DigestAlgorithmIdentifierFinder ALGORITHM_OID_FINDER =
             new DefaultDigestAlgorithmIdentifierFinder();
 
     private final URL url;
@@ -88,7 +88,7 @@ public class TSAClient
         // generate TSA request
         TimeStampRequestGenerator tsaGenerator = new TimeStampRequestGenerator();
         tsaGenerator.setCertReq(true);
-        ASN1ObjectIdentifier oid = algorithmOidFinder.find(digest.getAlgorithm()).getAlgorithm();
+        ASN1ObjectIdentifier oid = ALGORITHM_OID_FINDER.find(digest.getAlgorithm()).getAlgorithm();
         TimeStampRequest request = tsaGenerator.generate(oid, hash, BigInteger.valueOf(nonce));
 
         // get TSA response
