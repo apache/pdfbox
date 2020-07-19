@@ -29,9 +29,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
-import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.operator.DefaultDigestAlgorithmIdentifierFinder;
+import org.bouncycastle.operator.DigestAlgorithmIdentifierFinder;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampRequest;
 import org.bouncycastle.tsp.TimeStampRequestGenerator;
@@ -46,6 +45,9 @@ import org.bouncycastle.tsp.TimeStampToken;
 public class TSAClient
 {
     private static final Log LOG = LogFactory.getLog(TSAClient.class);
+
+    static private DigestAlgorithmIdentifierFinder algorithmOidFinder =
+            new DefaultDigestAlgorithmIdentifierFinder();
 
     private final URL url;
     private final String username;
@@ -86,7 +88,7 @@ public class TSAClient
         // generate TSA request
         TimeStampRequestGenerator tsaGenerator = new TimeStampRequestGenerator();
         tsaGenerator.setCertReq(true);
-        ASN1ObjectIdentifier oid = getHashObjectIdentifier(digest.getAlgorithm());
+        ASN1ObjectIdentifier oid = algorithmOidFinder.find(digest.getAlgorithm()).getAlgorithm();
         TimeStampRequest request = tsaGenerator.generate(oid, hash, BigInteger.valueOf(nonce));
 
         // get TSA response
@@ -151,29 +153,5 @@ public class TSAClient
         LOG.debug("Received response from TSA server");
 
         return response;
-    }
-
-    // returns the ASN.1 OID of the given hash algorithm
-    private ASN1ObjectIdentifier getHashObjectIdentifier(String algorithm)
-    {
-        switch (algorithm)
-        {
-            case "MD2":
-                return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md2.getId());
-            case "MD5":
-                return new ASN1ObjectIdentifier(PKCSObjectIdentifiers.md5.getId());
-            case "SHA-1":
-                return new ASN1ObjectIdentifier(OIWObjectIdentifiers.idSHA1.getId());
-            case "SHA-224":
-                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha224.getId());
-            case "SHA-256":
-                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha256.getId());
-            case "SHA-384":
-                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha384.getId());
-            case "SHA-512":
-                return new ASN1ObjectIdentifier(NISTObjectIdentifiers.id_sha512.getId());
-            default:
-                return new ASN1ObjectIdentifier(algorithm);
-        }
     }
 }
