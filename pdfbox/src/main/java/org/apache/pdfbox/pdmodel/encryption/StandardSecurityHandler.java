@@ -1084,7 +1084,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     {
         try
         {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigests.getSHA256();
             byte[] k = md.digest(input);
             
             byte[] e = null;
@@ -1153,22 +1153,14 @@ public final class StandardSecurityHandler extends SecurityHandler
         }
     }
 
-    private static byte[] computeSHA256(byte[] input, byte[] password, byte[] userKey) 
-            throws IOException
+    private static byte[] computeSHA256(byte[] input, byte[] password, byte[] userKey)
     {
-        try
-        {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(input);
-            md.update(password);
-            return userKey == null ? md.digest() : md.digest(userKey);
-        }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new IOException(e);
-        }
+        MessageDigest md = MessageDigests.getSHA256();
+        md.update(input);
+        md.update(password);
+        return userKey == null ? md.digest() : md.digest(userKey);
     }
-    
+
     private static byte[] concat(byte[] a, byte[] b)
     {
         byte[] o = new byte[a.length + b.length];
