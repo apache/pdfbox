@@ -313,10 +313,6 @@ public class SigUtils
             X509Certificate certFromSignedData, Date signDate)
             throws CertificateVerificationException, CertificateException
     {
-        // Verify certificate chain (new since 10/2018)
-        // Please post bad PDF files that succeed and
-        // good PDF files that fail in
-        // https://issues.apache.org/jira/browse/PDFBOX-3017
         Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
         Set<X509Certificate> additionalCerts = new HashSet<>();
         JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
