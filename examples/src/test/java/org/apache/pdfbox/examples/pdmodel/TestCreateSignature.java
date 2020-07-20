@@ -48,27 +48,22 @@ import org.apache.pdfbox.examples.signature.CreateEmbeddedTimeStamp;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
+import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.ExternalSigningSupport;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.Hex;
 import org.apache.wink.client.MockHttpServer;
-import org.bouncycastle.asn1.ASN1Object;
-import org.bouncycastle.asn1.cms.Attribute;
-import org.bouncycastle.asn1.cms.AttributeTable;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
-import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -393,11 +388,11 @@ public class TestCreateSignature
                 Assert.fail("Signature verification failed");
             }
 
-            TimeStampToken timeStampToken = extractTimeStampTokenFromSignerInformation(signerInformation);
+            TimeStampToken timeStampToken = SigUtils.extractTimeStampTokenFromSignerInformation(signerInformation);
             if (checkTimeStamp)
             {
                 Assert.assertNotNull(timeStampToken);
-                validateTimestampToken(timeStampToken);
+                SigUtils.validateTimestampToken(timeStampToken);
 
                 // compare the hash of the signed content with the hash in the timestamp
                 byte[] tsMessageImprintDigest = timeStampToken.getTimeStampInfo().getMessageImprintDigest();
@@ -411,37 +406,6 @@ public class TestCreateSignature
             }
         }
         document.close();
-    }
-
-    private void validateTimestampToken(TimeStampToken timeStampToken)
-            throws TSPException, CertificateException, OperatorCreationException, IOException
-    {
-        // https://stackoverflow.com/questions/42114742/
-        @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
-        Collection<X509CertificateHolder> tstMatches =
-                timeStampToken.getCertificates().getMatches((Selector<X509CertificateHolder>) timeStampToken.getSID());
-        X509CertificateHolder holder = tstMatches.iterator().next();
-        SignerInformationVerifier siv = new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(holder);
-        timeStampToken.validate(siv);
-    }
-
-    private TimeStampToken extractTimeStampTokenFromSignerInformation(SignerInformation signerInformation)
-            throws CMSException, IOException, TSPException
-    {
-        if (signerInformation.getUnsignedAttributes() == null)
-        {
-            return null;
-        }
-        AttributeTable unsignedAttributes = signerInformation.getUnsignedAttributes();
-        // https://stackoverflow.com/questions/1647759/how-to-validate-if-a-signed-jar-contains-a-timestamp
-        Attribute attribute = unsignedAttributes.get(PKCSObjectIdentifiers.id_aa_signatureTimeStampToken);
-        if (attribute == null)
-        {
-            return null;
-        }
-        ASN1Object obj = (ASN1Object) attribute.getAttrValues().getObjectAt(0);
-        CMSSignedData signedTSTData = new CMSSignedData(obj.getEncoded());
-        return new TimeStampToken(signedTSTData);
     }
 
     private String calculateDigestString(InputStream inputStream) throws NoSuchAlgorithmException, IOException
