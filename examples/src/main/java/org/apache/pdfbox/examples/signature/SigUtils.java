@@ -22,14 +22,19 @@ import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
+import org.apache.pdfbox.examples.signature.cert.CertificateVerifier;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
@@ -39,6 +44,7 @@ import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.KeyPurposeId;
 import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
@@ -48,6 +54,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.bouncycastle.util.Selector;
+import org.bouncycastle.util.Store;
 
 /**
  * Utility class for the signature / timestamp examples.
@@ -288,5 +295,43 @@ public class SigUtils
         SignerInformationVerifier siv = 
                 new JcaSimpleSignerInfoVerifierBuilder().setProvider(SecurityProvider.getProvider()).build(certificateHolder);
         timeStampToken.validate(siv);
+    }
+
+    /**
+     * Verify the certificate chain up to the root, including OCSP or CRL. However this does not
+     * test whether the root certificate is in a trusted list.<br><br>
+     * Please post bad PDF files that succeed and good PDF files that fail in
+     * <a href="https://issues.apache.org/jira/browse/PDFBOX-3017">PDFBOX-3017</a>.
+     *
+     * @param certificatesStore
+     * @param certFromSignedData
+     * @param signDate
+     * @throws CertificateVerificationException
+     * @throws CertificateException
+     */
+    public static void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
+            X509Certificate certFromSignedData, Date signDate)
+            throws CertificateVerificationException, CertificateException
+    {
+        // Verify certificate chain (new since 10/2018)
+        // Please post bad PDF files that succeed and
+        // good PDF files that fail in
+        // https://issues.apache.org/jira/browse/PDFBOX-3017
+        Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
+        Set<X509Certificate> additionalCerts = new HashSet<>();
+        JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
+        for (X509CertificateHolder certHolder : certificateHolders)
+        {
+            X509Certificate certificate = certificateConverter.getCertificate(certHolder);
+            if (!certificate.equals(certFromSignedData))
+            {
+                additionalCerts.add(certificate);
+            }
+        }
+        CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true, signDate);
+        //TODO check whether the root certificate is in our trusted list.
+        // For the EU, get a list here:
+        // https://ec.europa.eu/digital-single-market/en/eu-trusted-lists-trust-service-providers
+        // ( getRootCertificates() is not helpful because these are SSL certificates)
     }
 }

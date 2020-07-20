@@ -40,7 +40,6 @@ import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.logging.Log;
@@ -239,7 +238,7 @@ public final class ShowSignature
                                     {
                                         @SuppressWarnings("unchecked")
                                         Store<X509CertificateHolder> store = new JcaCertStore(certs);
-                                        verifyCertificateChain(store, cert, sig.getSignDate().getTime());
+                                        SigUtils.verifyCertificateChain(store, cert, sig.getSignDate().getTime());
                                     }
                                 }
                                 break;
@@ -398,7 +397,7 @@ public final class ShowSignature
         X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
         SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
         SigUtils.validateTimestampToken(timeStampToken);
-        verifyCertificateChain(timeStampToken.getCertificates(),
+        SigUtils.verifyCertificateChain(timeStampToken.getCertificates(),
                 certFromTimeStamp,
                 timeStampToken.getTimeStampInfo().getGenTime());
     }
@@ -467,7 +466,7 @@ public final class ShowSignature
             HashSet<X509CertificateHolder> certificateHolderSet = new HashSet<>();
             certificateHolderSet.addAll(certificatesStore.getMatches(null));
             certificateHolderSet.addAll(timeStampToken.getCertificates().getMatches(null));
-            verifyCertificateChain(new CollectionStore<>(certificateHolderSet),
+            SigUtils.verifyCertificateChain(new CollectionStore<>(certificateHolderSet),
                     certFromTimeStamp,
                     timeStampToken.getTimeStampInfo().getGenTime());
             SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
@@ -551,39 +550,13 @@ public final class ShowSignature
 
             if (sig.getSignDate() != null)
             {
-                verifyCertificateChain(certificatesStore, certFromSignedData, sig.getSignDate().getTime());
+                SigUtils.verifyCertificateChain(certificatesStore, certFromSignedData, sig.getSignDate().getTime());
             }
             else
             {
                 System.err.println("Certificate cannot be verified without signing time");
             }
         }
-    }
-
-    private void verifyCertificateChain(Store<X509CertificateHolder> certificatesStore,
-            X509Certificate certFromSignedData, Date signDate)
-            throws CertificateVerificationException, CertificateException
-    {
-        // Verify certificate chain (new since 10/2018)
-        // Please post bad PDF files that succeed and
-        // good PDF files that fail in
-        // https://issues.apache.org/jira/browse/PDFBOX-3017
-        Collection<X509CertificateHolder> certificateHolders = certificatesStore.getMatches(null);
-        Set<X509Certificate> additionalCerts = new HashSet<>();
-        JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
-        for (X509CertificateHolder certHolder : certificateHolders)
-        {
-            X509Certificate certificate = certificateConverter.getCertificate(certHolder);
-            if (!certificate.equals(certFromSignedData))
-            {
-                additionalCerts.add(certificate);
-            }
-        }
-        CertificateVerifier.verifyCertificate(certFromSignedData, additionalCerts, true, signDate);
-        //TODO check whether the root certificate is in our trusted list.
-        // For the EU, get a list here:
-        // https://ec.europa.eu/digital-single-market/en/eu-trusted-lists-trust-service-providers
-        // ( getRootCertificates() is not helpful because these are SSL certificates)
     }
 
     // for later use: get all root certificates. Will be used to check
