@@ -551,8 +551,10 @@ LOG.info("3 getResponseOcsp");
      */
     private OCSPReq generateOCSPRequest() throws OCSPException, IOException
     {
+        LOG.info("1 generateOCSPRequest");
         Security.addProvider(SecurityProvider.getProvider());
 
+        LOG.info("2 generateOCSPRequest");
         // Generate the ID for the certificate we are looking for
         CertificateID certId;
         try
@@ -560,6 +562,7 @@ LOG.info("3 getResponseOcsp");
             certId = new CertificateID(new SHA1DigestCalculator(),
                     new JcaX509CertificateHolder(issuerCertificate),
                     certificateToCheck.getSerialNumber());
+            LOG.info("3 generateOCSPRequest");
         }
         catch (CertificateEncodingException e)
         {
@@ -572,15 +575,20 @@ LOG.info("3 getResponseOcsp");
 
         Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
                 false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
-
+        LOG.info("4 generateOCSPRequest");
         encodedNonce = new DEROctetString(new DEROctetString(create16BytesNonce()));
+        LOG.info("5 generateOCSPRequest");
         Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
                 encodedNonce);
 
+        LOG.info("6 generateOCSPRequest");
         OCSPReqBuilder builder = new OCSPReqBuilder();
+        LOG.info("7 generateOCSPRequest");
         builder.setRequestExtensions(
                 new Extensions(new Extension[] { responseExtension, nonceExtension }));
+        LOG.info("8 generateOCSPRequest");
         builder.addRequest(certId);
+        LOG.info("9 generateOCSPRequest");
         return builder.build();
     }
 
