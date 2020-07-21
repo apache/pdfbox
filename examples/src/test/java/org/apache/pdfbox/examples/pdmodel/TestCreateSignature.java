@@ -135,6 +135,7 @@ public class TestCreateSignature
      * @throws CMSException
      * @throws OperatorCreationException
      * @throws TSPException
+     * @throws CertificateVerificationException
      */
     @Test
     public void testDetachedSHA256()
@@ -181,6 +182,7 @@ public class TestCreateSignature
      * @throws CMSException
      * @throws OperatorCreationException
      * @throws TSPException
+     * @throws CertificateVerificationException
      */
     @Test
     public void testDetachedSHA256WithTSA()
@@ -246,6 +248,7 @@ public class TestCreateSignature
      * @throws OperatorCreationException
      * @throws GeneralSecurityException
      * @throws TSPException
+     * @throws CertificateVerificationException
      */
     @Test
     public void testCreateVisibleSignature()
@@ -257,7 +260,7 @@ public class TestCreateSignature
         keystore.load(new FileInputStream(keystorePath), password.toCharArray());
 
         // sign PDF
-        String inPath = inDir + "sign_me.pdf";
+        String inPath = inDir + "sign_me_visible.pdf";
         FileInputStream fis = new FileInputStream(jpegPath);
         CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
         signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
@@ -284,6 +287,7 @@ public class TestCreateSignature
      * @throws OperatorCreationException
      * @throws GeneralSecurityException
      * @throws TSPException
+     * @throws CertificateVerificationException
      */
     @Test
     public void testPDFBox3978() throws IOException, NoSuchAlgorithmException, KeyStoreException, 
@@ -415,7 +419,8 @@ public class TestCreateSignature
                 Store<X509CertificateHolder> tsCertStore = timeStampToken.getCertificates();
 
                 // get the certificate from the timeStampToken
-                Collection<X509CertificateHolder> tsCertStoreMatches = tsCertStore.getMatches(null);
+                @SuppressWarnings("unchecked") // TimeStampToken.getSID() is untyped
+                Collection<X509CertificateHolder> tsCertStoreMatches = tsCertStore.getMatches(timeStampToken.getSID());
                 X509CertificateHolder certHolderFromTimeStamp = tsCertStoreMatches.iterator().next();
                 X509Certificate certFromTimeStamp = new JcaX509CertificateConverter().getCertificate(certHolderFromTimeStamp);
 
