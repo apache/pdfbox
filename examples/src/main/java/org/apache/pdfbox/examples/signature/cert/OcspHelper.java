@@ -156,9 +156,12 @@ public class OcspHelper
     private void verifyOcspResponse(OCSPResp ocspResponse)
             throws OCSPException, RevokedCertificateException, IOException
     {
+        LOG.info("1 verifyOcspResponse");
         verifyRespStatus(ocspResponse);
+        LOG.info("2 verifyOcspResponse done");
 
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
+        LOG.info("3 getResponseObject done");
         if (basicResponse != null)
         {
             ResponderID responderID = basicResponse.getResponderId().toASN1Primitive();
@@ -174,14 +177,18 @@ public class OcspHelper
             X500Name name = responderID.getName();
             if (name != null)
             {
+LOG.info("4 findResponderCertificateByName");
                 findResponderCertificateByName(basicResponse, name);
+LOG.info("5 findResponderCertificateByName done");
             }
             else
             {
                 byte[] keyHash = responderID.getKeyHash();
                 if (keyHash != null)
                 {
+LOG.info("6 findResponderCertificateByKeyHash");
                     findResponderCertificateByKeyHash(basicResponse, keyHash);
+LOG.info("7 findResponderCertificateByKeyHash done");
                 }
                 else
                 {
@@ -196,16 +203,21 @@ public class OcspHelper
 
             try
             {
+LOG.info("8 checkResponderCertificateUsage");
                 SigUtils.checkResponderCertificateUsage(ocspResponderCertificate);
+LOG.info("9 checkResponderCertificateUsage done");
             }
             catch (CertificateParsingException ex)
             {
                 // unlikely to happen because the certificate existed as an object
                 LOG.error(ex, ex);
             }
+LOG.info("10 checkOcspSignature");
             checkOcspSignature(ocspResponderCertificate, basicResponse);
+LOG.info("11 checkOcspSignature done");
 
             boolean nonceChecked = checkNonce(basicResponse);
+LOG.info("12 checkNonce done");
 
             SingleResp[] responses = basicResponse.getResponses();
             if (responses.length != 1)
