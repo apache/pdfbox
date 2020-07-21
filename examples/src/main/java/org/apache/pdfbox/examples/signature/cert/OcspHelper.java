@@ -129,8 +129,11 @@ public class OcspHelper
      */
     public OCSPResp getResponseOcsp() throws IOException, OCSPException, RevokedCertificateException
     {
+LOG.info("1 getResponseOcsp");
         OCSPResp ocspResponse = performRequest();
+LOG.info("2 getResponseOcsp");
         verifyOcspResponse(ocspResponse);
+LOG.info("3 getResponseOcsp");
         return ocspResponse;
     }
 
@@ -156,12 +159,9 @@ public class OcspHelper
     private void verifyOcspResponse(OCSPResp ocspResponse)
             throws OCSPException, RevokedCertificateException, IOException
     {
-        LOG.info("1 verifyOcspResponse");
         verifyRespStatus(ocspResponse);
-        LOG.info("2 verifyOcspResponse done");
 
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
-        LOG.info("3 getResponseObject done");
         if (basicResponse != null)
         {
             ResponderID responderID = basicResponse.getResponderId().toASN1Primitive();
@@ -177,18 +177,14 @@ public class OcspHelper
             X500Name name = responderID.getName();
             if (name != null)
             {
-LOG.info("4 findResponderCertificateByName");
                 findResponderCertificateByName(basicResponse, name);
-LOG.info("5 findResponderCertificateByName done");
             }
             else
             {
                 byte[] keyHash = responderID.getKeyHash();
                 if (keyHash != null)
                 {
-LOG.info("6 findResponderCertificateByKeyHash");
                     findResponderCertificateByKeyHash(basicResponse, keyHash);
-LOG.info("7 findResponderCertificateByKeyHash done");
                 }
                 else
                 {
@@ -203,21 +199,16 @@ LOG.info("7 findResponderCertificateByKeyHash done");
 
             try
             {
-LOG.info("8 checkResponderCertificateUsage");
                 SigUtils.checkResponderCertificateUsage(ocspResponderCertificate);
-LOG.info("9 checkResponderCertificateUsage done");
             }
             catch (CertificateParsingException ex)
             {
                 // unlikely to happen because the certificate existed as an object
                 LOG.error(ex, ex);
             }
-LOG.info("10 checkOcspSignature");
             checkOcspSignature(ocspResponderCertificate, basicResponse);
-LOG.info("11 checkOcspSignature done");
 
             boolean nonceChecked = checkNonce(basicResponse);
-LOG.info("12 checkNonce done");
 
             SingleResp[] responses = basicResponse.getResponses();
             if (responses.length != 1)
@@ -463,33 +454,42 @@ LOG.info("12 checkNonce done");
      */
     private OCSPResp performRequest() throws IOException, OCSPException
     {
+        LOG.info("1 performRequest");
         OCSPReq request = generateOCSPRequest();
+        LOG.info("2 performRequest");
         URL url = new URL(ocspUrl);
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+        LOG.info("3 performRequest");
         try
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
             httpConnection.setRequestProperty("Accept", "application/ocsp-response");
             httpConnection.setDoOutput(true);
+            LOG.info("4 performRequest");
             try (OutputStream out = httpConnection.getOutputStream())
             {
+                LOG.info("5 performRequest");
                 out.write(request.getEncoded());
             }
-
+            LOG.info("6 performRequest");
             if (httpConnection.getResponseCode() != 200)
             {
                 throw new IOException("OCSP: Could not access url, ResponseCode: "
                         + httpConnection.getResponseCode());
             }
+            LOG.info("7 performRequest");
             // Get response
             try (InputStream in = (InputStream) httpConnection.getContent())
             {
+                LOG.info("8 performRequest");
                 return new OCSPResp(in);
             }
         }
         finally
         {
+            LOG.info("9 performRequest");
             httpConnection.disconnect();
+            LOG.info("10 performRequest");
         }
     }
 
