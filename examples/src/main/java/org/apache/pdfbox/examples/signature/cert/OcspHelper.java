@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
@@ -562,7 +563,6 @@ LOG.info("3 getResponseOcsp");
             certId = new CertificateID(new SHA1DigestCalculator(),
                     new JcaX509CertificateHolder(issuerCertificate),
                     certificateToCheck.getSerialNumber());
-            LOG.info("3 generateOCSPRequest");
         }
         catch (CertificateEncodingException e)
         {
@@ -573,8 +573,16 @@ LOG.info("3 getResponseOcsp");
         // Support for any specific extension is OPTIONAL. The critical flag
         // SHOULD NOT be set for any of them.
 
-        Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
-                false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
+        LOG.info("3 generateOCSPRequest");
+//        Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
+//                false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
+        ASN1ObjectIdentifier id_pkix_ocsp_basic = OCSPObjectIdentifiers.id_pkix_ocsp_basic;
+        LOG.info("3.0 generateOCSPRequest");
+        DLSequence dlSeq = new DLSequence(id_pkix_ocsp_basic);
+        LOG.info("3.1 generateOCSPRequest");
+        byte[] encodedDlSeq = dlSeq.getEncoded();
+        LOG.info("3.2 generateOCSPRequest");
+        Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response, false, encodedDlSeq);
         LOG.info("4 generateOCSPRequest");
         encodedNonce = new DEROctetString(new DEROctetString(create16BytesNonce()));
         LOG.info("5 generateOCSPRequest");
