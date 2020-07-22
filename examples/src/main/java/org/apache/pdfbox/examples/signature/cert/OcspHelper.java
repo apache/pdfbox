@@ -130,11 +130,8 @@ public class OcspHelper
      */
     public OCSPResp getResponseOcsp() throws IOException, OCSPException, RevokedCertificateException
     {
-LOG.info("1 getResponseOcsp");
         OCSPResp ocspResponse = performRequest();
-LOG.info("2 getResponseOcsp");
         verifyOcspResponse(ocspResponse);
-LOG.info("3 getResponseOcsp");
         return ocspResponse;
     }
 
@@ -455,42 +452,32 @@ LOG.info("3 getResponseOcsp");
      */
     private OCSPResp performRequest() throws IOException, OCSPException
     {
-        LOG.info("1 performRequest");
         OCSPReq request = generateOCSPRequest();
-        LOG.info("2 performRequest");
         URL url = new URL(ocspUrl);
         HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-        LOG.info("3 performRequest");
         try
         {
             httpConnection.setRequestProperty("Content-Type", "application/ocsp-request");
             httpConnection.setRequestProperty("Accept", "application/ocsp-response");
             httpConnection.setDoOutput(true);
-            LOG.info("4 performRequest");
             try (OutputStream out = httpConnection.getOutputStream())
             {
-                LOG.info("5 performRequest");
                 out.write(request.getEncoded());
             }
-            LOG.info("6 performRequest");
             if (httpConnection.getResponseCode() != 200)
             {
                 throw new IOException("OCSP: Could not access url, ResponseCode: "
                         + httpConnection.getResponseCode());
             }
-            LOG.info("7 performRequest");
             // Get response
             try (InputStream in = (InputStream) httpConnection.getContent())
             {
-                LOG.info("8 performRequest");
                 return new OCSPResp(in);
             }
         }
         finally
         {
-            LOG.info("9 performRequest");
             httpConnection.disconnect();
-            LOG.info("10 performRequest");
         }
     }
 
@@ -584,21 +571,19 @@ LOG.info("3 getResponseOcsp");
         LOG.info("3.2 generateOCSPRequest");
         ASN1ObjectIdentifier id_pkix_ocsp_response = OCSPObjectIdentifiers.id_pkix_ocsp_response;
         LOG.info("3.3 generateOCSPRequest");
-        Extension responseExtension = new Extension(id_pkix_ocsp_response, false, encodedDlSeq);
+        DEROctetString derOctetString = new DEROctetString(encodedDlSeq);
+        LOG.info("3.4 generateOCSPRequest");
+        Extension responseExtension = new Extension(id_pkix_ocsp_response, false, derOctetString);
         LOG.info("4 generateOCSPRequest");
         encodedNonce = new DEROctetString(new DEROctetString(create16BytesNonce()));
         LOG.info("5 generateOCSPRequest");
         Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
                 encodedNonce);
 
-        LOG.info("6 generateOCSPRequest");
         OCSPReqBuilder builder = new OCSPReqBuilder();
-        LOG.info("7 generateOCSPRequest");
         builder.setRequestExtensions(
                 new Extensions(new Extension[] { responseExtension, nonceExtension }));
-        LOG.info("8 generateOCSPRequest");
         builder.addRequest(certId);
-        LOG.info("9 generateOCSPRequest");
         return builder.build();
     }
 
