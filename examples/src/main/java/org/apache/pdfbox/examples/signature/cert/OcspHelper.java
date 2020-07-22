@@ -595,15 +595,19 @@ public class OcspHelper
             {
                 // SecureRandom is preferred to Random
                 // late init because of NoSuchAlgorithmException
+                LOG.info("1 create16BytesNonce");
                 rand = SecureRandom.getInstanceStrong();
+                LOG.info("2 create16BytesNonce");
             }
             catch (NoSuchAlgorithmException ex)
             {
                 throw new IOException(ex);
             }
         }
+        LOG.info("3 create16BytesNonce");
         byte[] nonce = new byte[16];
         rand.nextBytes(nonce);
+        LOG.info("4 create16BytesNonce");
         return nonce;
     }
 
