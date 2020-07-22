@@ -40,7 +40,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 import org.bouncycastle.asn1.DLSequence;
 import org.bouncycastle.asn1.ocsp.OCSPObjectIdentifiers;
@@ -157,9 +156,12 @@ public class OcspHelper
     private void verifyOcspResponse(OCSPResp ocspResponse)
             throws OCSPException, RevokedCertificateException, IOException
     {
+        LOG.info("1 verifyOcspResponse");
         verifyRespStatus(ocspResponse);
+        LOG.info("2 verifyOcspResponse done");
 
         BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResponse.getResponseObject();
+        LOG.info("3 getResponseObject done");
         if (basicResponse != null)
         {
             ResponderID responderID = basicResponse.getResponderId().toASN1Primitive();
@@ -175,14 +177,18 @@ public class OcspHelper
             X500Name name = responderID.getName();
             if (name != null)
             {
+LOG.info("4 findResponderCertificateByName");
                 findResponderCertificateByName(basicResponse, name);
+LOG.info("5 findResponderCertificateByName done");
             }
             else
             {
                 byte[] keyHash = responderID.getKeyHash();
                 if (keyHash != null)
                 {
+LOG.info("6 findResponderCertificateByKeyHash");
                     findResponderCertificateByKeyHash(basicResponse, keyHash);
+LOG.info("7 findResponderCertificateByKeyHash done");
                 }
                 else
                 {
@@ -197,16 +203,21 @@ public class OcspHelper
 
             try
             {
+LOG.info("8 checkResponderCertificateUsage");
                 SigUtils.checkResponderCertificateUsage(ocspResponderCertificate);
+LOG.info("9 checkResponderCertificateUsage done");
             }
             catch (CertificateParsingException ex)
             {
                 // unlikely to happen because the certificate existed as an object
                 LOG.error(ex, ex);
             }
+LOG.info("10 checkOcspSignature");
             checkOcspSignature(ocspResponderCertificate, basicResponse);
+LOG.info("11 checkOcspSignature done");
 
             boolean nonceChecked = checkNonce(basicResponse);
+LOG.info("12 checkNonce done");
 
             SingleResp[] responses = basicResponse.getResponses();
             if (responses.length != 1)
@@ -464,6 +475,7 @@ public class OcspHelper
             {
                 out.write(request.getEncoded());
             }
+
             if (httpConnection.getResponseCode() != 200)
             {
                 throw new IOException("OCSP: Could not access url, ResponseCode: "
@@ -539,10 +551,8 @@ public class OcspHelper
      */
     private OCSPReq generateOCSPRequest() throws OCSPException, IOException
     {
-        LOG.info("1 generateOCSPRequest");
         Security.addProvider(SecurityProvider.getProvider());
 
-        LOG.info("2 generateOCSPRequest");
         // Generate the ID for the certificate we are looking for
         CertificateID certId;
         try
@@ -560,23 +570,10 @@ public class OcspHelper
         // Support for any specific extension is OPTIONAL. The critical flag
         // SHOULD NOT be set for any of them.
 
-        LOG.info("3 generateOCSPRequest");
-//        Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
-//                false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
-        ASN1ObjectIdentifier id_pkix_ocsp_basic = OCSPObjectIdentifiers.id_pkix_ocsp_basic;
-        LOG.info("3.0 generateOCSPRequest");
-        DLSequence dlSeq = new DLSequence(id_pkix_ocsp_basic);
-        LOG.info("3.1 generateOCSPRequest");
-        byte[] encodedDlSeq = dlSeq.getEncoded();
-        LOG.info("3.2 generateOCSPRequest");
-        ASN1ObjectIdentifier id_pkix_ocsp_response = OCSPObjectIdentifiers.id_pkix_ocsp_response;
-        LOG.info("3.3 generateOCSPRequest");
-        DEROctetString derOctetString = new DEROctetString(encodedDlSeq);
-        LOG.info("3.4 generateOCSPRequest");
-        Extension responseExtension = new Extension(id_pkix_ocsp_response, false, derOctetString);
-        LOG.info("4 generateOCSPRequest");
+        Extension responseExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_response,
+                false, new DLSequence(OCSPObjectIdentifiers.id_pkix_ocsp_basic).getEncoded());
+
         encodedNonce = new DEROctetString(new DEROctetString(create16BytesNonce()));
-        LOG.info("5 generateOCSPRequest");
         Extension nonceExtension = new Extension(OCSPObjectIdentifiers.id_pkix_ocsp_nonce, false,
                 encodedNonce);
 
@@ -595,19 +592,15 @@ public class OcspHelper
             {
                 // SecureRandom is preferred to Random
                 // late init because of NoSuchAlgorithmException
-                LOG.info("1 create16BytesNonce");
                 rand = SecureRandom.getInstanceStrong();
-                LOG.info("2 create16BytesNonce");
             }
             catch (NoSuchAlgorithmException ex)
             {
                 throw new IOException(ex);
             }
         }
-        LOG.info("3 create16BytesNonce");
         byte[] nonce = new byte[16];
         rand.nextBytes(nonce);
-        LOG.info("4 create16BytesNonce");
         return nonce;
     }
 
