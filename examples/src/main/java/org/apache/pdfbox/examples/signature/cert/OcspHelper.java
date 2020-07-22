@@ -85,7 +85,9 @@ public class OcspHelper
     private DEROctetString encodedNonce;
     private X509Certificate ocspResponderCertificate;
     private final JcaX509CertificateConverter certificateConverter = new JcaX509CertificateConverter();
-    private static Random rand = null;
+    
+    // SecureRandom.getInstanceStrong() would be better, but sometimes blocks on Linux
+    private static final Random RANDOM = new SecureRandom();
 
     /**
      * @param checkCertificate Certificate to be OCSP-checked
@@ -572,23 +574,10 @@ public class OcspHelper
         return builder.build();
     }
 
-    private synchronized byte[] create16BytesNonce() throws IOException
+    private byte[] create16BytesNonce()
     {
-        if (rand == null)
-        {
-            try
-            {
-                // SecureRandom is preferred to Random
-                // late init because of NoSuchAlgorithmException
-                rand = SecureRandom.getInstanceStrong();
-            }
-            catch (NoSuchAlgorithmException ex)
-            {
-                throw new IOException(ex);
-            }
-        }
         byte[] nonce = new byte[16];
-        rand.nextBytes(nonce);
+        RANDOM.nextBytes(nonce);
         return nonce;
     }
 
