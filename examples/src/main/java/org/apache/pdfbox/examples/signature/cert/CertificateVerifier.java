@@ -112,12 +112,38 @@ public final class CertificateVerifier
                 throw new CertificateVerificationException("The certificate is self-signed.");
             }
 
-            Set<X509Certificate> certSet = CertificateVerifier.downloadExtraCertificates(cert);
-            int downloadSize = certSet.size();
+            Set<X509Certificate> certSet = new HashSet<>();
             certSet.addAll(additionalCerts);
+
+            // Download extra certificates. However, each downloaded certificate can lead to
+            // more extra certificates, e.g. with the file from PDFBOX-4091, which has
+            // an incomplete chain.
+            Set<X509Certificate> certsToTrySet = new HashSet<>();
+            certsToTrySet.add(cert);
+            int downloadSize = 0;
+            while (!certsToTrySet.isEmpty())
+            {
+                Set<X509Certificate> nextCertsToTrySet = new HashSet<>();
+                for (X509Certificate tryCert : certsToTrySet)
+                {
+                    Set<X509Certificate> downloadedExtraCertificatesSet =
+                            CertificateVerifier.downloadExtraCertificates(tryCert);
+                    for (X509Certificate downloadedCertificate : downloadedExtraCertificatesSet)
+                    {
+                        if (!certSet.contains(downloadedCertificate))
+                        {
+                            nextCertsToTrySet.add(downloadedCertificate);
+                            certSet.add(downloadedCertificate);
+                            downloadSize++;
+                        }
+                    }
+                }
+                certsToTrySet = nextCertsToTrySet;
+            }
+
             if (downloadSize > 0)
             {
-                LOG.info("CA issuers: " + (certSet.size() - additionalCerts.size()) + " downloaded certificate(s) are new");
+                LOG.info("CA issuers: " + downloadSize + " downloaded certificate(s) are new");
             }
 
             // Prepare a set of trust anchors (set of root CA certificates)
