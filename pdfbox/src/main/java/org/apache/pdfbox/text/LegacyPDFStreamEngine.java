@@ -16,11 +16,17 @@
  */
 package org.apache.pdfbox.text;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.WeakHashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.contentstream.PDFStreamEngine;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.font.encoding.GlyphList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -32,16 +38,9 @@ import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.graphics.state.PDGraphicsState;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.fontbox.ttf.TrueTypeFont;
-import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.pdfbox.util.Vector;
 import org.apache.pdfbox.contentstream.operator.DrawObject;
-import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.state.Concatenate;
 import org.apache.pdfbox.contentstream.operator.state.Restore;
 import org.apache.pdfbox.contentstream.operator.state.Save;
@@ -63,6 +62,7 @@ import org.apache.pdfbox.contentstream.operator.text.SetTextRenderingMode;
 import org.apache.pdfbox.contentstream.operator.text.SetTextRise;
 import org.apache.pdfbox.contentstream.operator.text.SetWordSpacing;
 import org.apache.pdfbox.contentstream.operator.text.ShowText;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.font.PDFontDescriptor;
 
 /**
@@ -83,9 +83,8 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     private PDRectangle pageSize;
     private Matrix translateMatrix;
     private final GlyphList glyphList;
+    private final Map<COSDictionary, Float> fontHeightMap = new WeakHashMap<>();
 
-    float currentFontHeight = -1;
-    
     /**
      * Constructor.
      */
@@ -102,7 +101,7 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
         addOperator(new SetCharSpacing());
         addOperator(new MoveText());
         addOperator(new MoveTextSetLeading());
-        addOperator(new CapturingSetFontAndSize());
+        addOperator(new SetFontAndSize());
         addOperator(new ShowText());
         addOperator(new ShowTextAdjusted());
         addOperator(new SetTextLeading());
@@ -217,7 +216,13 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
 
         // (modified) width and height calculations
         float dxDisplay = nextX - textRenderingMatrix.getTranslateX();
-        float dyDisplay = currentFontHeight * textRenderingMatrix.getScalingFactorY();
+        Float fontHeight = fontHeightMap.get(font.getCOSObject());
+        if (fontHeight == null)
+        {
+            fontHeight = computeFontHeight(font);
+            fontHeightMap.put(font.getCOSObject(), fontHeight);
+        }
+        float dyDisplay = fontHeight * textRenderingMatrix.getScalingFactorY();
 
         //
         // start of the original method
@@ -365,16 +370,5 @@ class LegacyPDFStreamEngine extends PDFStreamEngine
     protected void processTextPosition(TextPosition text)
     {
         // subclasses can override to provide specific functionality
-    }
-
-    private class CapturingSetFontAndSize extends SetFontAndSize
-    {
-        @Override
-        public void process(Operator operator, List<COSBase> arguments) throws IOException
-        {
-            super.process(operator, arguments);
-            PDFont font = context.getGraphicsState().getTextState().getFont();
-            currentFontHeight = computeFontHeight(font);
-        }
     }
 }
