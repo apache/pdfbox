@@ -62,7 +62,7 @@ public abstract class COSNumber extends COSBase
             char digit = number.charAt(0);
             if ('0' <= digit && digit <= '9') 
             {
-                return COSInteger.get(digit - '0');
+                return COSInteger.get((long) digit - '0');
             } 
             else if (digit == '-' || digit == '.') 
             {
@@ -86,8 +86,14 @@ public abstract class COSNumber extends COSBase
             }
             catch( NumberFormatException e )
             {
-                // might be a huge number, see PDFBOX-3116
-                return new COSFloat(number);
+                // check if the given string could be a number at all
+                String numberString = number.startsWith("+") || number.startsWith("-")
+                        ? number.substring(1) : number;
+                if (!numberString.matches("[0-9]*"))
+                {
+                    throw new IOException("Not a number: " + number);
+                }
+                return null;
             }
         }
     }

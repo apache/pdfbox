@@ -106,17 +106,11 @@ public class COSFloat extends COSNumber
         {
             value = -Float.MAX_VALUE;
         }
-        else if (value > 0 && value < Float.MIN_NORMAL)
+        else if (Math.abs(value) < Float.MIN_NORMAL)
         {
-            value = Float.MIN_NORMAL;
-        }
-        else if (value < 0 && value > -Float.MIN_NORMAL)
-        {
-            value = -Float.MIN_NORMAL;
-        }
-        else if (value == 0 && aFloat.matches(".*[1-9].*"))
-        {
-            value = aFloat.startsWith("-") ? -Float.MIN_NORMAL : Float.MIN_NORMAL;
+            // values smaller than the smallest possible float value are converted to 0
+            // see PDF spec, chapter 2 of Appendix C Implementation Limits
+            value = 0f;
         }
         else
         {

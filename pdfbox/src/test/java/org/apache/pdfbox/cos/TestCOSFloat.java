@@ -306,24 +306,24 @@ public class TestCOSFloat extends TestCOSNumber
         // 1.4012984643248171E-46
         String asString = String.valueOf(smallValue);
         COSFloat cosFloat = new COSFloat(asString);
-        assertEquals(Float.MIN_NORMAL, cosFloat.floatValue());
+        assertEquals(0.0f, cosFloat.floatValue());
 
         // 0.00000000000000000000000000000000000000000000014012984643248171
         asString = new BigDecimal(asString).toPlainString();
         cosFloat = new COSFloat(asString);
-        assertEquals(Float.MIN_NORMAL, cosFloat.floatValue());
+        assertEquals(0.0f, cosFloat.floatValue());
 
         smallValue *= -1;
 
         // -1.4012984643248171E-46
         asString = String.valueOf(smallValue);
         cosFloat = new COSFloat(asString);
-        assertEquals(-Float.MIN_NORMAL, cosFloat.floatValue());
+        assertEquals(0.0f, cosFloat.floatValue());
 
         // -0.00000000000000000000000000000000000000000000014012984643248171
         asString = new BigDecimal(asString).toPlainString();
         cosFloat = new COSFloat(asString);
-        assertEquals(-Float.MIN_NORMAL, cosFloat.floatValue());
+        assertEquals(0.0f, cosFloat.floatValue());
     }
 
     public void testVeryLargeValues() throws IOException
@@ -416,20 +416,6 @@ public class TestCOSFloat extends TestCOSNumber
         assertEquals(largeNegativeValue, new COSFloat(largeNegativeValue).floatValue());
     }
     
-    /**
-     * PDFBOX-4895: large number, too big for a long but small enough to fit into a float.
-     * 
-     * @throws IOException 
-     */
-    public void testLargeNumber() throws IOException
-    {
-        COSNumber cosNumber = COSFloat.get("18446744073307448448");
-        assertTrue(cosNumber instanceof COSFloat);
-        assertEquals(1.8446744E19f, cosNumber.floatValue());
-        assertEquals(new COSFloat(18446744073307448448f), COSNumber.get("18446744073307448448"));
-        assertEquals(new COSFloat(-18446744073307448448f), COSNumber.get("-18446744073307448448"));
-    }
-
     private String floatToString(float value)
     {
         // use a BigDecimal as intermediate state to avoid 
