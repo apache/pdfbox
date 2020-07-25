@@ -62,7 +62,7 @@ public class StringPane
         String text = cosString.getString();
         for (char c : text.toCharArray())
         {
-            if (Character.isISOControl(c))
+            if (Character.isISOControl(c) && c != '\n' && c != '\r' && c != '\t')
             {
                 text = "<" + cosString.toHexString() + ">";
                 break;
