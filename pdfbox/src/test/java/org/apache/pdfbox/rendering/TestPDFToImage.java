@@ -327,6 +327,7 @@ public class TestPDFToImage
                         LOG.info("*** TEST OK *** for file: " + inFile.getName());
                         LOG.info("Deleting: " + outFile.getName());
                         outFile.delete();
+                        outFile.deleteOnExit();
                     }
                 }
                 else
@@ -334,6 +335,7 @@ public class TestPDFToImage
                     LOG.info("*** TEST OK *** for file: " + inFile.getName());
                     LOG.info("Deleting: " + outFile.getName());
                     outFile.delete();
+                    outFile.deleteOnExit();
                 }
             }
         }
