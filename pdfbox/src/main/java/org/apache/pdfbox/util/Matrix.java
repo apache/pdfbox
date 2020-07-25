@@ -447,8 +447,6 @@ public final class Matrix implements Cloneable
      */
     public float getScalingFactorX()
     {
-        float xScale = single[0];
-
         /*
          * BM: if the trm is rotated, the calculation is a little more complicated
          *
@@ -466,12 +464,12 @@ public final class Matrix implements Cloneable
          * sqrt(x2) =
          * abs(x)
          */
-        if( !(Float.compare(single[1], 0.0f) == 0 && Float.compare(single[3], 0.0f) ==0) )
+        if (Float.compare(single[1], 0.0f) != 0)
         {
-            xScale = (float)Math.sqrt(Math.pow(single[0], 2)+
+            return (float) Math.sqrt(Math.pow(single[0], 2) +
                                       Math.pow(single[1], 2));
         }
-        return xScale;
+        return single[0];
     }
 
     /**
@@ -481,13 +479,12 @@ public final class Matrix implements Cloneable
      */
     public float getScalingFactorY()
     {
-        float yScale = single[4];
-        if( !(Float.compare(single[1], 0.0f) == 0 && Float.compare(single[3], 0.0f) == 0) )
+        if (Float.compare(single[3], 0.0f) != 0)
         {
-            yScale = (float)Math.sqrt(Math.pow(single[3], 2)+
+            return (float) Math.sqrt(Math.pow(single[3], 2) +
                                       Math.pow(single[4], 2));
         }
-        return yScale;
+        return single[4];
     }
 
     /**
