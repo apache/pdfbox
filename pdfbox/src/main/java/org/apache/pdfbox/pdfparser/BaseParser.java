@@ -93,15 +93,15 @@ public abstract class BaseParser
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final String TRUE = "true";
+    private static final char[] TRUE = new char[] { 't', 'r', 'u', 'e' };
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final String FALSE = "false";
+    private static final char[] FALSE = new char[] { 'f', 'a', 'l', 's', 'e' };
     /**
      * This is a string constant that will be used for comparisons.
      */
-    private static final String NULL = "null";
+    private static final char[] NULL = new char[] { 'n', 'u', 'l', 'l' };
 
     /**
      * ASCII code for line feed.
@@ -847,19 +847,19 @@ public abstract class BaseParser
         case 'n':   
         {
             // null
-            readExpectedString(NULL);
+            readExpectedString(NULL, false);
             retval = COSNull.NULL;
             break;
         }
         case 't':
         {
-            readExpectedString(TRUE);
+            readExpectedString(TRUE, false);
             retval = COSBoolean.TRUE;
             break;
         }
         case 'f':
         {
-            readExpectedString(FALSE);
+            readExpectedString(FALSE, false);
             retval = COSBoolean.FALSE;
             break;
         }
@@ -943,18 +943,6 @@ public abstract class BaseParser
         return buffer.toString();
     }
     
-    /**
-     * Read one String and throw an exception if it is not the expected value.
-     *
-     * @param expectedString the String value that is expected.
-     * @throws IOException if the String char is not the expected value or if an
-     * I/O error occurs.
-     */
-    protected void readExpectedString(String expectedString) throws IOException
-    {
-        readExpectedString(expectedString.toCharArray(), false);
-    }
-
     /**
      * Reads given pattern from {@link #source}. Skipping whitespace at start and end if wanted.
      * 
