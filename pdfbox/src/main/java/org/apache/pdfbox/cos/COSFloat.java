@@ -54,7 +54,7 @@ public class COSFloat extends COSNumber
         try
         {
             value = Float.parseFloat(aFloat);
-            valueAsString = checkMinMaxValues(aFloat) ? null : aFloat;
+            valueAsString = checkMinMaxValues() ? null : aFloat;
         }
         catch( NumberFormatException e )
         {
@@ -78,7 +78,7 @@ public class COSFloat extends COSNumber
             try
             {
                 value = Float.parseFloat(aFloat);
-                checkMinMaxValues(aFloat);
+                checkMinMaxValues();
             }
             catch (NumberFormatException e2)
             {
@@ -92,11 +92,9 @@ public class COSFloat extends COSNumber
      * Check and coerce the value field to be between MIN_NORMAL and MAX_VALUE. Returns "true" if the value was
      * replaced.
      * 
-     * @param aFloat the original String representation for the value.
-     * 
      * @return true if the value was replaced
      */
-    private boolean checkMinMaxValues(String aFloat)
+    private boolean checkMinMaxValues()
     {
         if (value == Float.POSITIVE_INFINITY)
         {
