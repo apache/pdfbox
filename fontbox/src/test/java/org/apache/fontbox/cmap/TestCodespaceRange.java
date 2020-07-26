@@ -46,11 +46,17 @@ public class TestCodespaceRange extends TestCase
      */
     public void testConstructor()
     {
+        // PDFBOX-4923 "1 begincodespacerange <00> <ffff> endcodespacerange" case is accepted
         byte[] startBytes1 = new byte[] { 0x00 };
-        byte[] endBytes2 = new byte[] { 0x01, 0x20 };
+        byte[] endBytes2 = new byte[] { -1, -1 };
+        new CodespaceRange(startBytes1, endBytes2);
+
+        // other cases of different lengths are not
+        byte[] startBytes3 = new byte[] { 0x01 };
+        byte[] endBytes4 = new byte[] { 0x01, 0x20 };
         try
         {
-            new CodespaceRange(startBytes1, endBytes2);
+            new CodespaceRange(startBytes3, endBytes4);
             fail("The constructor should have thrown an IllegalArgumentException exception.");
         }
         catch (IllegalArgumentException exception)

@@ -37,19 +37,26 @@ public class CodespaceRange
      * &lt;8140&gt; to &lt;9FFC&gt; defines a rectangular range. The high byte has to be within 0x81 and 0x9F and the
      * low byte has to be within 0x40 and 0xFC
      * 
+     * @param startBytes
+     * @param endBytes
      */
     public CodespaceRange(byte[] startBytes, byte[] endBytes)
     {
-        if (startBytes.length != endBytes.length)
+        byte[] correctedStartBytes = startBytes;
+        if (startBytes.length != endBytes.length && startBytes.length == 1 && startBytes[0] == 0)
+        {
+            correctedStartBytes = new byte[endBytes.length];
+        }
+        else if (startBytes.length != endBytes.length)
         {
             throw new IllegalArgumentException(
                     "The start and the end values must not have different lengths.");
         }
-        start = new int[startBytes.length];
+        start = new int[correctedStartBytes.length];
         end = new int[endBytes.length];
-        for (int i = 0; i < startBytes.length; i++)
+        for (int i = 0; i < correctedStartBytes.length; i++)
         {
-            start[i] = startBytes[i] & 0xFF;
+            start[i] = correctedStartBytes[i] & 0xFF;
             end[i] = endBytes[i] & 0xFF;
         }
         codeLength = endBytes.length;
