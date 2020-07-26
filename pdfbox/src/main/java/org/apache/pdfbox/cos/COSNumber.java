@@ -74,27 +74,24 @@ public abstract class COSNumber extends COSBase
                 throw new IOException("Not a number: " + number);
             }
         } 
-        else if (isFloat(number))
+        if (isFloat(number))
         {
             return new COSFloat(number);
         }
-        else
+        try
         {
-            try
+            return COSInteger.get(Long.parseLong(number));
+        }
+        catch (NumberFormatException e)
+        {
+            // check if the given string could be a number at all
+            String numberString = number.startsWith("+") || number.startsWith("-")
+                    ? number.substring(1) : number;
+            if (!numberString.matches("[0-9]*"))
             {
-                return COSInteger.get(Long.parseLong(number));
+                throw new IOException("Not a number: " + number);
             }
-            catch( NumberFormatException e )
-            {
-                // check if the given string could be a number at all
-                String numberString = number.startsWith("+") || number.startsWith("-")
-                        ? number.substring(1) : number;
-                if (!numberString.matches("[0-9]*"))
-                {
-                    throw new IOException("Not a number: " + number);
-                }
-                return null;
-            }
+            return null;
         }
     }
 
