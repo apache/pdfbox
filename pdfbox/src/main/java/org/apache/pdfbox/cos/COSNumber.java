@@ -96,32 +96,29 @@ public abstract class COSNumber extends COSBase
                 throw new IOException("Not a number: " + number);
             }
         } 
-        else if (isFloat(number))
+        if (isFloat(number))
         {
             return new COSFloat(number);
         }
-        else
+        try
         {
-            try
+            if (number.charAt(0) == '+')
             {
-                if (number.charAt(0) == '+')
-                {
-                    // PDFBOX-2569: some numbers start with "+"
-                    return COSInteger.get(Long.parseLong(number.substring(1)));
-                }
-                return COSInteger.get(Long.parseLong(number));
+                // PDFBOX-2569: some numbers start with "+"
+                return COSInteger.get(Long.parseLong(number.substring(1)));
             }
-            catch( NumberFormatException e )
+            return COSInteger.get(Long.parseLong(number));
+        }
+        catch (NumberFormatException e)
+        {
+            // check if the given string could be a number at all
+            String numberString = number.startsWith("+") || number.startsWith("-")
+                    ? number.substring(1) : number;
+            if (!numberString.matches("[0-9]*"))
             {
-                // check if the given string could be a number at all
-                String numberString = number.startsWith("+") || number.startsWith("-")
-                        ? number.substring(1) : number;
-                if (!numberString.matches("[0-9]*"))
-                {
-                    throw new IOException("Not a number: " + number);
-                }
-                return null;
+                throw new IOException("Not a number: " + number);
             }
+            return null;
         }
     }
 
