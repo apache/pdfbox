@@ -251,7 +251,7 @@ public class PreflightParser extends PDFParser
             {
                 boolean secondLineFails = false;
                 byte[] secondLineAsBytes = secondLine.getBytes(ENCODING);
-                if (secondLineAsBytes[0] != '%')
+                if (secondLineAsBytes.length == 0 || secondLineAsBytes[0] != '%')
                 {
                     secondLineFails = true;
                 }
