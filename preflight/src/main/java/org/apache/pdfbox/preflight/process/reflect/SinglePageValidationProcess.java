@@ -153,6 +153,12 @@ public class SinglePageValidationProcess extends AbstractProcess
                 {
                     thumbBase = ((COSObject) thumbBase).getObject();
                 }
+                if (!(thumbBase instanceof COSStream))
+                {
+                    context.addValidationError(new ValidationError(ERROR_GRAPHIC_INVALID,
+                            "Thumb image must be a stream"));
+                    return;
+                }
                 PDXObject thumbImg = PDImageXObject.createThumbnail((COSStream)thumbBase);
                 ContextHelper.validateElement(context, thumbImg, GRAPHIC_PROCESS);
             }
