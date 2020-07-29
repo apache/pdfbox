@@ -39,6 +39,7 @@ import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -55,6 +56,7 @@ import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
 import org.apache.pdfbox.examples.signature.CreateEmbeddedTimeStamp;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
+import org.apache.pdfbox.examples.signature.CreateSignedTimeStamp;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
@@ -244,7 +246,56 @@ public class TestCreateSignature
         checkSignature(new File(inPath), new File(outPath), true);
         System.out.println("TSA test successful");
     }
-    
+
+    /**
+     * Test timestamp only signature (ETSI.RFC3161).
+     * 
+     * @throws IOException
+     * @throws CMSException
+     * @throws OperatorCreationException
+     * @throws GeneralSecurityException
+     * @throws TSPException
+     * @throws CertificateVerificationException 
+     */
+    @Test
+    public void testCreateSignedTimeStamp()
+            throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
+                   TSPException, CertificateVerificationException
+    {
+        if (tsa == null || tsa.isEmpty())
+        {
+            System.err.println("No TSA URL defined, test skipped");
+            return;
+        }
+        final String fileName = getOutputFileName("timestamped{0}.pdf");
+        CreateSignedTimeStamp signing = new CreateSignedTimeStamp(tsa);
+        signing.signDetached(new File(IN_DIR + "sign_me.pdf"), new File(OUT_DIR + fileName));
+
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR + fileName)))
+        {
+            PDSignature signature = doc.getLastSignatureDictionary();
+            COSString contents = (COSString) signature.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+            byte[] totalFileContent = Files.readAllBytes(new File(OUT_DIR, fileName).toPath());
+            byte[] signedFileContent = signature.getSignedContent(totalFileContent);
+            TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
+            Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+
+            String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
+            // compare the hash of the signed content with the hash in the timestamp
+            Assert.assertArrayEquals(MessageDigest.getInstance(hashAlgorithm).digest(signedFileContent),
+                    timeStampToken.getTimeStampInfo().getMessageImprintDigest());
+
+            X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
+            SigUtils.checkTimeStampCertificateUsage(certFromTimeStamp);
+            SigUtils.validateTimestampToken(timeStampToken);
+            SigUtils.verifyCertificateChain(timeStampToken.getCertificates(),
+                    certFromTimeStamp,
+                    timeStampToken.getTimeStampInfo().getGenTime());
+        }
+    }
+
     /**
      * Test creating visual signature.
      *
@@ -626,6 +677,7 @@ public class TestCreateSignature
         Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
         SignerInformation signerInformation = signers.iterator().next();
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
+        @SuppressWarnings("unchecked") // SignerInformation.getSID() is untyped
         Collection<X509CertificateHolder> matches = certificatesStore.getMatches(signerInformation.getSID());
         X509CertificateHolder certificateHolder = matches.iterator().next();
         X509Certificate certFromSignedData = new JcaX509CertificateConverter().getCertificate(certificateHolder);
