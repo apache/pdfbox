@@ -249,23 +249,20 @@ public class CertInformationCollector
 
         for (X509Certificate issuer : certificateSet)
         {
-            if (certificate.getIssuerX500Principal().equals(issuer.getSubjectX500Principal()))
+            try
             {
-                try
-                {
-                    certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider().getName());
-                }
-                catch (GeneralSecurityException ex)
-                {
-                    throw new CertificateProccessingException(ex);
-                }
+                certificate.verify(issuer.getPublicKey(), SecurityProvider.getProvider().getName());
                 LOG.info("Found the right Issuer Cert! for Cert: " + certificate.getSubjectX500Principal()
-                        + "\n" + issuer.getSubjectX500Principal());
+                    + "\n" + issuer.getSubjectX500Principal());
                 certInfo.issuerCertificate = issuer;
                 certInfo.certChain = new CertSignatureInformation();
                 traverseChain(issuer, certInfo.certChain, maxDepth - 1);
                 break;
             }
+            catch (GeneralSecurityException ex)
+            {
+                // not the issuer
+            }                
         }
         if (certInfo.issuerCertificate == null)
         {

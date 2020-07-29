@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -120,10 +121,15 @@ public final class CRLVerifier
                 X509Certificate crlIssuerCert = null;
                 for (X509Certificate possibleCert : mergedCertSet)
                 {
-                    if (crl.getIssuerX500Principal().equals(possibleCert.getSubjectX500Principal()))
+                    try
                     {
+                        cert.verify(possibleCert.getPublicKey(), SecurityProvider.getProvider().getName());
                         crlIssuerCert = possibleCert;
                         break;
+                    }
+                    catch (GeneralSecurityException ex)
+                    {
+                        // not the issuer
                     }
                 }
                 if (crlIssuerCert == null)

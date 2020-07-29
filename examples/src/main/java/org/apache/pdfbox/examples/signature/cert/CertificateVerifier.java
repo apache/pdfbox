@@ -211,10 +211,15 @@ public final class CertificateVerifier
         X509Certificate issuerCert = null;
         for (X509Certificate additionalCert : additionalCerts)
         {
-            if (cert.getIssuerX500Principal().equals(additionalCert.getSubjectX500Principal()))
+            try
             {
+                cert.verify(additionalCert.getPublicKey(), SecurityProvider.getProvider().getName());
                 issuerCert = additionalCert;
                 break;
+            }
+            catch (GeneralSecurityException ex)
+            {
+                // not the issuer
             }
         }
         // issuerCert is never null here. If it hadn't been found, then there wouldn't be a 
