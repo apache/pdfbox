@@ -210,10 +210,15 @@ public final class CertificateVerifier
         X509Certificate issuerCert = null;
         for (X509Certificate additionalCert : additionalCerts)
         {
-            if (cert.getIssuerX500Principal().equals(additionalCert.getSubjectX500Principal()))
+            try
             {
+                cert.verify(additionalCert.getPublicKey(), SecurityProvider.getProvider());
                 issuerCert = additionalCert;
                 break;
+            }
+            catch (GeneralSecurityException ex)
+            {
+                // not the issuer
             }
         }
         // issuerCert is never null here. If it hadn't been found, then there wouldn't be a 
@@ -262,7 +267,7 @@ public final class CertificateVerifier
         {
             // Try to verify certificate signature with its own public key
             PublicKey key = cert.getPublicKey();
-            cert.verify(key, SecurityProvider.getProvider().getName());
+            cert.verify(key, SecurityProvider.getProvider());
             return true;
         }
         catch (SignatureException | InvalidKeyException | IOException ex)

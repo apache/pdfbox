@@ -124,10 +124,15 @@ public final class CRLVerifier
                 X509Certificate crlIssuerCert = null;
                 for (X509Certificate possibleCert : mergedCertSet)
                 {
-                    if (crl.getIssuerX500Principal().equals(possibleCert.getSubjectX500Principal()))
+                    try
                     {
+                        cert.verify(possibleCert.getPublicKey(), SecurityProvider.getProvider());
                         crlIssuerCert = possibleCert;
                         break;
+                    }
+                    catch (GeneralSecurityException ex)
+                    {
+                        // not the issuer
                     }
                 }
                 if (crlIssuerCert == null)
@@ -137,7 +142,7 @@ public final class CRLVerifier
                             "not found in certificate chain, so the CRL at " +
                             crlDistributionPointsURL + " could not be verified");
                 }
-                crl.verify(crlIssuerCert.getPublicKey(), SecurityProvider.getProvider().getName());
+                crl.verify(crlIssuerCert.getPublicKey(), SecurityProvider.getProvider());
 
                 if (!crl.getIssuerX500Principal().equals(cert.getIssuerX500Principal()))
                 {
