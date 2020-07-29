@@ -391,7 +391,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
         {
             float totalWidth = 0.0f;
             float characterCount = 0.0f;
-            COSArray widths = (COSArray) dict.getDictionaryObject(COSName.WIDTHS);
+            COSArray widths = dict.getCOSArray(COSName.WIDTHS);
             if (widths != null)
             {
                 for (int i = 0; i < widths.size(); i++)
@@ -501,7 +501,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
     {
         if (widths == null)
         {
-            COSArray array = (COSArray) dict.getDictionaryObject(COSName.WIDTHS);
+            COSArray array = dict.getCOSArray(COSName.WIDTHS);
             if (array != null)
             {
                 widths = COSArrayList.convertFloatCOSArrayToList(array);              
