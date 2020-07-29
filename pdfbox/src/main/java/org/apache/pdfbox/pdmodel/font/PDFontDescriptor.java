@@ -429,7 +429,7 @@ public final class PDFontDescriptor implements COSObjectable
      */
     public PDRectangle getFontBoundingBox()
     {
-        COSArray rect = (COSArray)dic.getDictionaryObject( COSName.FONT_BBOX );
+        COSArray rect = dic.getCOSArray(COSName.FONT_BBOX);
         PDRectangle retval = null;
         if( rect != null )
         {
