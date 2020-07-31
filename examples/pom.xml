@@ -137,6 +137,25 @@
           </excludes>
         </configuration>
       </plugin>
+      <plugin>
+          <groupId>com.googlecode.maven-download-plugin</groupId>
+          <artifactId>download-maven-plugin</artifactId>
+          <executions>
+              <execution>
+                  <id>testAddValidationInformation</id>
+                  <phase>generate-test-resources</phase>
+                  <goals>
+                      <goal>wget</goal>
+                  </goals>
+                  <configuration>
+                      <url>https://www.quovadisglobal.com/wp-content/uploads/2020/01/QV_RCA1_RCA3_CPCPS_V4_11.pdf</url>
+                      <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
+                      <outputFileName>QV_RCA1_RCA3_CPCPS_V4_11.pdf</outputFileName>
+                      <sha512>940ab0cc5ad45c7b46fba4a079fd69803540bfd68f059326f62fe8d322fb0cc176cf303b9d1d679cb663edf279efe20c2452cc5eba69f5b8afadfca4c77cdb86</sha512>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
       <!-- JDK9 -->
       <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
