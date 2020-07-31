@@ -850,7 +850,7 @@ public class TestCreateSignature
             String hexCrlSignatureHash = Hex.getString(crlSignatureHash);
             System.out.println("hexCrlSignatureHash: " + hexCrlSignatureHash);
 
-            // Check that the issueing Cert is in the VRI array
+            // Check that the issueing certificate is in the VRI array
             COSDictionary crlSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexCrlSignatureHash));
             COSArray certArray2 = crlSigDict.getCOSArray(COSName.getPDFName("Cert"));
             COSStream certStream = (COSStream) certArray2.getObject(0);
@@ -858,8 +858,8 @@ public class TestCreateSignature
             X509CertificateHolder certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
             is2.close();
 
-            Assert.assertTrue("CRL issuer certificate missing in VRI " + hexCrlSignatureHash,
-                    certHolder2.equals(new X509CertificateHolder(crlIssuerCert.getEncoded())));
+            Assert.assertEquals("CRL issuer certificate missing in VRI " + hexCrlSignatureHash,
+                    certHolder2, new X509CertificateHolder(crlIssuerCert.getEncoded()));
         }
 
         Set<OCSPResp> oscpSet = new HashSet<>();
@@ -896,7 +896,7 @@ public class TestCreateSignature
             X509CertificateHolder certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
             is2.close();
 
-            Assert.assertTrue(certHolder2.equals(ocspCertHolder));
+            Assert.assertEquals("OCSP certificate is not in the VRI array", certHolder2, ocspCertHolder);
         }
 
         // TODO - split testCreateSignature (one with parameter, one without)
