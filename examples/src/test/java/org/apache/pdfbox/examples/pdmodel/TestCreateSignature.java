@@ -114,6 +114,7 @@ import org.junit.runners.Parameterized;
 @RunWith(Parameterized.class)
 public class TestCreateSignature
 {
+    private static CertificateFactory certificateFactory = null;
     private static final String inDir = "src/test/resources/org/apache/pdfbox/examples/signature/";
     private static final String outDir = "target/test-output/";
     private static final String keystorePath = inDir + "keystore.p12";
@@ -139,6 +140,7 @@ public class TestCreateSignature
     public static void init() throws Exception
     {
         Security.addProvider(SecurityProvider.getProvider());
+        certificateFactory = CertificateFactory.getInstance("X.509");
 
         new File("target/test-output").mkdirs();
 
@@ -291,9 +293,9 @@ public class TestCreateSignature
         byte[] signedFileContent =
                 signature.getSignedContent(new FileInputStream(new File(outDir, fileName)));
         TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
-        CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        certificateFactory.getInstance("X.509");
         ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
-        Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
+        Collection<? extends Certificate> certs = certificateFactory.generateCertificates(certStream);
 
         String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
         // compare the hash of the signed content with the hash in the timestamp
@@ -746,7 +748,7 @@ public class TestCreateSignature
         AddValidationInformation addValidationInformation = new AddValidationInformation();
         addValidationInformation.validateSignature(inFile, outFile);
 
-        CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        certificateFactory.getInstance("X.509");
         PDDocument doc = PDDocument.load(outFile);
 
         PDSignature signature = doc.getLastSignatureDictionary();
@@ -791,7 +793,7 @@ public class TestCreateSignature
         {
             COSStream certStream = (COSStream) dssCertArray.getObject(i);
             COSInputStream is = certStream.createInputStream();
-            X509Certificate cert = (X509Certificate) factory.generateCertificate(is);
+            X509Certificate cert = (X509Certificate) certificateFactory.generateCertificate(is);
             is.close();
             certSet.add(cert);
         }
@@ -821,7 +823,7 @@ public class TestCreateSignature
         {
             COSStream crlStream = (COSStream) crlArray.getObject(i);
             COSInputStream is = crlStream.createInputStream();
-            X509CRL cert = (X509CRL) factory.generateCRL(is);
+            X509CRL cert = (X509CRL) certificateFactory.generateCRL(is);
             is.close();
             crlSet.add(cert);
         }
