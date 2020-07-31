@@ -18,10 +18,10 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,14 +83,14 @@ public class PDFObjectStreamParser extends BaseParser
     {
         try
         {
-            Map<Long, Integer> offsets = readOffsets();
+            Map<Integer, Long> offsets = readOffsets();
             streamObjects = new ArrayList<COSObject>( numberOfObjects );
-            for (Entry<Long, Integer> offset : offsets.entrySet())
+            for (Entry<Integer, Long> offset : offsets.entrySet())
             {
-                COSBase cosObject = parseObject(offset.getValue());
+                COSBase cosObject = parseObject(offset.getKey());
                 COSObject object = new COSObject(cosObject);
                 object.setGenerationNumber(0);
-                object.setObjectNumber(offset.getKey());
+                object.setObjectNumber(offset.getValue());
                 streamObjects.add(object);
                 if (LOG.isDebugEnabled())
                 {
@@ -114,15 +114,17 @@ public class PDFObjectStreamParser extends BaseParser
         return streamObjects;
     }
 
-    private Map<Long, Integer> readOffsets() throws IOException
+    private Map<Integer, Long> readOffsets() throws IOException
     {
-        // use LinkesHashMap to preserve order for the sequential parsing
-        Map<Long, Integer> objectNumbers = new LinkedHashMap<Long, Integer>(numberOfObjects);
+        // according to the pdf spec the offsets shall be sorted ascending
+        // but we can't rely on that, so that we have to sort the offsets
+        // as the sequential parsers relies on it, see PDFBOX-4927
+        Map<Integer, Long> objectNumbers = new TreeMap<Integer, Long>();
         for (int i = 0; i < numberOfObjects; i++)
         {
             long objectNumber = readObjectNumber();
             int offset = (int) readLong();
-            objectNumbers.put(objectNumber, offset);
+            objectNumbers.put(offset, objectNumber);
         }
         return objectNumbers;
     }
