@@ -38,6 +38,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -46,9 +47,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
 import org.apache.pdfbox.examples.signature.CreateEmbeddedTimeStamp;
@@ -58,8 +63,10 @@ import org.apache.pdfbox.examples.signature.CreateSignedTimeStamp;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
+import org.apache.pdfbox.examples.signature.validation.AddValidationInformation;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.encryption.SecurityProvider;
@@ -68,16 +75,24 @@ import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.Hex;
+
 import org.apache.wink.client.MockHttpServer;
+
+import org.bouncycastle.asn1.ocsp.OCSPResponseStatus;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.ocsp.BasicOCSPResp;
+import org.bouncycastle.cert.ocsp.OCSPException;
+import org.bouncycastle.cert.ocsp.OCSPResp;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.crypto.prng.FixedSecureRandom;
+import org.bouncycastle.operator.ContentVerifierProvider;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentVerifierProviderBuilder;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TSPValidationException;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -85,6 +100,7 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -630,7 +646,6 @@ public class TestCreateSignature
     @Test
     public void testPDFBox4784() throws Exception
     {
-
         Date signingTime = new Date();
 
         byte[] defaultSignedOne = signEncrypted(null, signingTime);
@@ -642,10 +657,8 @@ public class TestCreateSignature
                 signingTime);
         byte[] fixedRandomSignedTwo = signEncrypted(new FixedSecureRandom(new byte[128]),
                 signingTime);
-        Assert.assertTrue(Arrays.equals(fixedRandomSignedOne, fixedRandomSignedTwo));
-
+        Assert.assertArrayEquals(fixedRandomSignedOne, fixedRandomSignedTwo);
     }
-
 
     /**
      * Test getting CRLs when OCSP (adobe-ocsp.geotrust.com) is unavailable.
@@ -705,6 +718,192 @@ public class TestCreateSignature
 
         certFromSignedData.checkValidity(timeStampToken.getTimeStampInfo().getGenTime());
         SigUtils.verifyCertificateChain(certificatesStore, certFromSignedData, timeStampToken.getTimeStampInfo().getGenTime());
+    }
+
+    /**
+     * Test adding LTV information. This tests the status quo. If we use a new file (or if the file
+     * gets updated) then the test may have to be adjusted. The test is not really perfect, but it
+     * tries to check a minimum of things that should match. If the test fails and you didn't change
+     * anything in signing, then find out whether some external servers involved are unresponsive.
+     * At the time of writing this, the OCSP server http://ocsp.quovadisglobal.com responds with 502
+     * "UNAUTHORIZED". That is not a problem as long as the CRL URL works.
+     *
+     * @throws java.io.IOException
+     * @throws java.security.GeneralSecurityException
+     * @throws org.bouncycastle.cert.ocsp.OCSPException
+     * @throws org.bouncycastle.operator.OperatorCreationException
+     * @throws org.bouncycastle.cms.CMSException
+     */
+    @Test
+    public void testAddValidationInformation()
+            throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException, CMSException
+    {
+        File inFile = new File("target/pdfs", "QV_RCA1_RCA3_CPCPS_V4_11.pdf");
+        String name = inFile.getName();
+        String substring = name.substring(0, name.lastIndexOf('.'));
+
+        File outFile = new File(outDir, substring + "_LTV.pdf");
+        AddValidationInformation addValidationInformation = new AddValidationInformation();
+        addValidationInformation.validateSignature(inFile, outFile);
+
+        CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        PDDocument doc = PDDocument.load(outFile);
+
+        PDSignature signature = doc.getLastSignatureDictionary();
+        COSString contents = (COSString) signature.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+
+        PDDocumentCatalog docCatalog = doc.getDocumentCatalog();
+        COSDictionary dssDict = docCatalog.getCOSObject().getCOSDictionary(COSName.getPDFName("DSS"));
+        COSArray dssCertArray = dssDict.getCOSArray(COSName.getPDFName("Certs"));
+        COSDictionary vriDict = dssDict.getCOSDictionary(COSName.getPDFName("VRI"));
+
+        // Check that all known signature certificates are in the VRI/signaturehash/Cert array
+        byte[] signatureHash = MessageDigest.getInstance("SHA-1").digest(contents.getBytes());
+        String hexSignatureHash = Hex.getString(signatureHash);
+        System.out.println("hexSignatureHash: " + hexSignatureHash);
+        CMSSignedData signedData = new CMSSignedData(contents.getBytes());
+        Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
+        HashSet<X509CertificateHolder> certificateHolderSet =
+                new HashSet<X509CertificateHolder>(certificatesStore.getMatches(null));
+        COSDictionary sigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexSignatureHash));
+        COSArray sigCertArray = sigDict.getCOSArray(COSName.getPDFName("Cert"));
+        Set<X509CertificateHolder> sigCertHolderSetFromVRIArray = new HashSet<X509CertificateHolder>();
+        for (int i = 0; i < sigCertArray.size(); ++i)
+        {
+            COSStream certStream = (COSStream) sigCertArray.getObject(i);
+            COSInputStream is = certStream.createInputStream();
+            sigCertHolderSetFromVRIArray.add(new X509CertificateHolder(IOUtils.toByteArray(is)));
+            is.close();
+        }
+        for (X509CertificateHolder holder : certificateHolderSet)
+        {
+            if (holder.getSubject().toString().contains("QuoVadis OCSP Authority Signature"))
+            {
+                continue; // not relevant here
+            }
+            Assert.assertTrue("VRI/signaturehash/Cert array doesn't contain " + holder.getSubject(),
+                    sigCertHolderSetFromVRIArray.contains(holder));
+        }
+
+        // Get all certificates. Each one should either be issued (= signed) by a certificate of the set
+        Set<X509Certificate> certSet = new HashSet<X509Certificate>();
+        for (int i = 0; i < dssCertArray.size(); ++i)
+        {
+            COSStream certStream = (COSStream) dssCertArray.getObject(i);
+            COSInputStream is = certStream.createInputStream();
+            X509Certificate cert = (X509Certificate) factory.generateCertificate(is);
+            is.close();
+            certSet.add(cert);
+        }
+        for (X509Certificate cert : certSet)
+        {
+            boolean verified = false;
+            for (X509Certificate cert2 : certSet)
+            {
+                try
+                {
+                    cert.verify(cert2.getPublicKey(), SecurityProvider.getProvider().getName());
+                    verified = true;
+                }
+                catch (GeneralSecurityException ex)
+                {
+                    // not the issuer
+                }
+            }
+            Assert.assertTrue("Certificate " + cert.getSubjectX500Principal() +
+                    " not issued by any certificate in the Certs array", verified);
+        }
+
+        // Each CRL should be signed by one of the certificates in Certs
+        Set<X509CRL> crlSet = new HashSet<X509CRL>();
+        COSArray crlArray = dssDict.getCOSArray(COSName.getPDFName("CRLs"));
+        for (int i = 0; i < crlArray.size(); ++i)
+        {
+            COSStream crlStream = (COSStream) crlArray.getObject(i);
+            COSInputStream is = crlStream.createInputStream();
+            X509CRL cert = (X509CRL) factory.generateCRL(is);
+            is.close();
+            crlSet.add(cert);
+        }
+        for (X509CRL crl : crlSet)
+        {
+            boolean crlVerified = false;
+            X509Certificate crlIssuerCert = null;
+            for (X509Certificate cert : certSet)
+            {
+                try
+                {
+                    crl.verify(cert.getPublicKey(), SecurityProvider.getProvider().getName());
+                    crlVerified = true;
+                    crlIssuerCert = cert;
+                }
+                catch (GeneralSecurityException ex)
+                {
+                    // not the issuer
+                }
+            }
+            Assert.assertTrue("issuer of CRL not found in Certs array", crlVerified);
+
+            byte[] crlSignatureHash = MessageDigest.getInstance("SHA-1").digest(crl.getSignature());
+            String hexCrlSignatureHash = Hex.getString(crlSignatureHash);
+            System.out.println("hexCrlSignatureHash: " + hexCrlSignatureHash);
+
+            // Check that the issueing certificate is in the VRI array
+            COSDictionary crlSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexCrlSignatureHash));
+            COSArray certArray2 = crlSigDict.getCOSArray(COSName.getPDFName("Cert"));
+            COSStream certStream = (COSStream) certArray2.getObject(0);
+            COSInputStream is2 = certStream.createInputStream();
+            X509CertificateHolder certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
+            is2.close();
+
+            Assert.assertEquals("CRL issuer certificate missing in VRI " + hexCrlSignatureHash,
+                    certHolder2, new X509CertificateHolder(crlIssuerCert.getEncoded()));
+        }
+
+        Set<OCSPResp> oscpSet = new HashSet<OCSPResp>();
+        COSArray ocspArray = dssDict.getCOSArray(COSName.getPDFName("OCSPs"));
+        for (int i = 0; i < ocspArray.size(); ++i)
+        {
+            COSStream ocspStream = (COSStream) ocspArray.getObject(i);
+            COSInputStream is = ocspStream.createInputStream();
+            OCSPResp ocspResp = new OCSPResp(is);
+            is.close();
+            oscpSet.add(ocspResp);
+        }
+        for (OCSPResp ocspResp : oscpSet)
+        {
+            BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
+            Assert.assertEquals(OCSPResponseStatus.SUCCESSFUL, ocspResp.getStatus());
+            Assert.assertTrue("OCSP should have at least 1 certificate", basicResponse.getCerts().length >= 1);
+            byte[] ocspSignatureHash = MessageDigest.getInstance("SHA-1").digest(basicResponse.getSignature());
+            String hexOcspSignatureHash = Hex.getString(ocspSignatureHash);
+            System.out.println("ocspSignatureHash: " + hexOcspSignatureHash);
+            long secondsOld = (System.currentTimeMillis() - basicResponse.getProducedAt().getTime()) / 1000;
+            Assert.assertTrue("OCSP answer is too old", secondsOld < 10);
+
+            X509CertificateHolder ocspCertHolder = basicResponse.getCerts()[0];
+            ContentVerifierProvider verifier = new JcaContentVerifierProviderBuilder().setProvider(SecurityProvider.getProvider()).build(ocspCertHolder);
+            Assert.assertTrue(basicResponse.isSignatureValid(verifier));
+
+            COSDictionary ocspSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexOcspSignatureHash));
+
+            // Check that the Cert is in the VRI array
+            COSArray certArray2 = ocspSigDict.getCOSArray(COSName.getPDFName("Cert"));
+            COSStream certStream = (COSStream) certArray2.getObject(0);
+            COSInputStream is2 = certStream.createInputStream();
+            X509CertificateHolder certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
+            is2.close();
+
+            Assert.assertEquals("OCSP certificate is not in the VRI array", certHolder2, ocspCertHolder);
+        }
+
+        // TODO - split testCreateSignature (one with parameter, one without)
+        //      - possibly DRY on certificate factory
+        //      - split into smaller methods?
+        //      - try-with-resources
+        //      - branches
+        
+        doc.close();
     }
 
     private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws Exception
