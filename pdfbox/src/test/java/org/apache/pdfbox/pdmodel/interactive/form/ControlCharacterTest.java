@@ -178,7 +178,7 @@ public class ControlCharacterTest {
     {
     	PDAnnotationWidget widget = field.getWidgets().get(0);
         PDFStreamParser parser = new PDFStreamParser(
-                widget.getNormalAppearanceStream().getContents());
+                widget.getNormalAppearanceStream());
     	
         List<Object> tokens = parser.parse();
     	

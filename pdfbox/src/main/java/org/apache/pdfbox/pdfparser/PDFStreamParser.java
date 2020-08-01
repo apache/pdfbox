@@ -18,11 +18,11 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.PDContentStream;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSBase;
@@ -53,14 +53,14 @@ public class PDFStreamParser extends BaseParser
     /**
      * Constructor.
      *
-     * @param stream The content stream to parse.
+     * @param pdContentstream The content stream to parse.
      * @throws IOException If there is an error initializing the stream.
      */
-    public PDFStreamParser(InputStream stream) throws IOException
+    public PDFStreamParser(PDContentStream pdContentstream) throws IOException
     {
-        super(new InputStreamRandomAccessRead(stream));
+        super(new InputStreamRandomAccessRead(pdContentstream.getContents()));
     }
-    
+
     /**
      * Constructor.
      *

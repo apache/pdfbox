@@ -482,27 +482,24 @@ public abstract class PDFStreamEngine
     private void processStreamOperators(PDContentStream contentStream) throws IOException
     {
         List<COSBase> arguments = new ArrayList<>();
-        try (InputStream is = contentStream.getContents())
+        PDFStreamParser parser = new PDFStreamParser(contentStream);
+        Object token = parser.parseNextToken();
+        while (token != null)
         {
-            PDFStreamParser parser = new PDFStreamParser(is);
-            Object token = parser.parseNextToken();
-            while (token != null)
+            if (token instanceof COSObject)
             {
-                if (token instanceof COSObject)
-                {
-                    arguments.add(((COSObject) token).getObject());
-                }
-                else if (token instanceof Operator)
-                {
-                    processOperator((Operator) token, arguments);
-                    arguments = new ArrayList<>();
-                }
-                else
-                {
-                    arguments.add((COSBase) token);
-                }
-                token = parser.parseNextToken();
+                arguments.add(((COSObject) token).getObject());
             }
+            else if (token instanceof Operator)
+            {
+                processOperator((Operator) token, arguments);
+                arguments = new ArrayList<>();
+            }
+            else
+            {
+                arguments.add((COSBase) token);
+            }
+            token = parser.parseNextToken();
         }
     }
 

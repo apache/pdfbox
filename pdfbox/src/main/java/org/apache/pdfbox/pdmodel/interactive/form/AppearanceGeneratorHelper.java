@@ -367,15 +367,6 @@ class AppearanceGeneratorHelper
     }
     
     /**
-     * Parses an appearance stream into tokens.
-     */
-    private List<Object> tokenize(PDAppearanceStream appearanceStream) throws IOException
-    {
-        PDFStreamParser parser = new PDFStreamParser(appearanceStream.getContents());
-        return parser.parse();
-    }
-
-    /**
      * Constructs and sets new contents for given appearance stream.
      */
     private void setAppearanceContent(PDAnnotationWidget widget,
@@ -391,7 +382,7 @@ class AppearanceGeneratorHelper
         {
             ContentStreamWriter writer = new ContentStreamWriter(output);
             
-            List<Object> tokens = tokenize(appearanceStream);
+            List<Object> tokens = new PDFStreamParser(appearanceStream).parse();
             int bmcIndex = tokens.indexOf(BMC);
             if (bmcIndex == -1)
             {

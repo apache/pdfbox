@@ -163,7 +163,7 @@ public class MultilineFieldsTest
     private float getFontSizeFromAppearanceStream(PDField field) throws IOException
     {
     	PDAnnotationWidget widget = field.getWidgets().get(0);
-    	PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream().getContents());
+        PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
     	
     	Object token = parser.parseNextToken();
     	    	
@@ -185,7 +185,7 @@ public class MultilineFieldsTest
     private List<String> getTextLinesFromAppearanceStream(PDField field) throws IOException
     {
     	PDAnnotationWidget widget = field.getWidgets().get(0);
-    	PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream().getContents());
+        PDFStreamParser parser = new PDFStreamParser(widget.getNormalAppearanceStream());
     	
         Object token = parser.parseNextToken();
         

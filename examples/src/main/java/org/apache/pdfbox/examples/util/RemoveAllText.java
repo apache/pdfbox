@@ -126,7 +126,7 @@ public final class RemoveAllText
 
     private static List<Object> createTokensWithoutText(PDContentStream contentStream) throws IOException
     {
-        PDFStreamParser parser = new PDFStreamParser(contentStream.getContents());
+        PDFStreamParser parser = new PDFStreamParser(contentStream);
         Object token = parser.parseNextToken();
         List<Object> newTokens = new ArrayList<>();
         while (token != null)

@@ -92,10 +92,9 @@ public class ContentStreamWriterTest
                 ImageIO.write(bim1, "png", new File(testDirIn, filename + "-" + (i + 1) + ".png"));
                 PDPage page = doc.getPage(i);
                 PDStream newContent = new PDStream(doc);
-                try (InputStream is = page.getContents();
-                     OutputStream os = newContent.createOutputStream(COSName.FLATE_DECODE))
+                try (OutputStream os = newContent.createOutputStream(COSName.FLATE_DECODE))
                 {
-                    PDFStreamParser parser = new PDFStreamParser(is);
+                    PDFStreamParser parser = new PDFStreamParser(page);
                     ContentStreamWriter tokenWriter = new ContentStreamWriter(os);
                     tokenWriter.writeTokens(parser.parse());
                 }
