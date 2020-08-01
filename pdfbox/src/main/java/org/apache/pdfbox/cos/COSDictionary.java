@@ -1491,7 +1491,7 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
             return true;
         }
 
-        if (o == null || !(o.getClass() == COSDictionary.class))
+        if (o == null || o.getClass() != COSDictionary.class)
         {
             return false;
         }
