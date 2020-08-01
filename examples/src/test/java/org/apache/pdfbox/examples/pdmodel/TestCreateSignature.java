@@ -278,6 +278,10 @@ public class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
+        if (externallySign)
+        {
+            return; // runs only once, independent of externallySign
+        }
         if (tsa == null || tsa.isEmpty())
         {
             System.err.println("No TSA URL defined, test skipped");
@@ -402,7 +406,7 @@ public class TestCreateSignature
             CreateVisibleSignature signing2 = new CreateVisibleSignature(keystore, PASSWORD.toCharArray());
             signing2.setVisibleSignDesigner(filenameSigned1, 0, 0, -50, fis, 1);
             signing2.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
-            signing2.setExternalSigning(externallySign);
+            signing2.setExternalSigning(true);
             signing2.signPDF(new File(filenameSigned1), new File(filenameSigned2), null, "Signature1");
         }
 
@@ -648,7 +652,10 @@ public class TestCreateSignature
     @Test
     public void testPDFBox4784() throws Exception
     {
-
+        if (!externallySign)
+        {
+            return;
+        }
         Date signingTime = new Date();
 
         byte[] defaultSignedOne = signEncrypted(null, signingTime);
@@ -680,6 +687,10 @@ public class TestCreateSignature
     public void testCRL() throws IOException, CMSException, CertificateException, TSPException,
             OperatorCreationException, CertificateVerificationException, NoSuchAlgorithmException
     {
+        if (externallySign)
+        {
+            return; // runs only once, independent of externallySign
+        }
         String hexSignature;
         try (BufferedReader bfr = 
             new BufferedReader(new InputStreamReader(new FileInputStream(IN_DIR + "hexsignature.txt"))))
@@ -741,6 +752,10 @@ public class TestCreateSignature
     public void testAddValidationInformation()
             throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException, CMSException
     {
+        if (externallySign)
+        {
+            return; // runs only once, independent of externallySign
+        }
         File inFile = new File("target/pdfs", "QV_RCA1_RCA3_CPCPS_V4_11.pdf");
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
@@ -897,12 +912,9 @@ public class TestCreateSignature
                 {
                     certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
                 }
-                
+
                 Assert.assertEquals("OCSP certificate is not in the VRI array", certHolder2, ocspCertHolder);
             }
-            // TODO - split testCreateSignature (one with parameter, one without)
-            //      - split into smaller methods?
-            //      - branches
         }
     }
 
