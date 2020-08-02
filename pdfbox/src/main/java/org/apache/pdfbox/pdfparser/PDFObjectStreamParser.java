@@ -24,7 +24,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.InputStreamRandomAccessRead;
 
 /**
  * This will parse a PDF 1.5 object stream and extract the object with given object number from the stream.
@@ -46,7 +45,7 @@ public class PDFObjectStreamParser extends BaseParser
      */
     public PDFObjectStreamParser(COSStream stream, COSDocument document) throws IOException
     {
-        super(new InputStreamRandomAccessRead(stream.createInputStream()));
+        super(stream.createView());
         this.document = document;
         // get mandatory number of objects
         numberOfObjects = stream.getInt(COSName.N);

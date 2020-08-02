@@ -32,7 +32,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.io.InputStreamRandomAccessRead;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 
 /**
@@ -58,7 +57,7 @@ public class PDFStreamParser extends BaseParser
      */
     public PDFStreamParser(PDContentStream pdContentstream) throws IOException
     {
-        super(new InputStreamRandomAccessRead(pdContentstream.getContents()));
+        super(pdContentstream.getContentsForRandomAccess());
     }
 
     /**

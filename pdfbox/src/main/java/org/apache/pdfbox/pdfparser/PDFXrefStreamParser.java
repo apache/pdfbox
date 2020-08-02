@@ -28,7 +28,6 @@ import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.io.InputStreamRandomAccessRead;
 import org.apache.pdfbox.cos.COSObjectKey;
 
 /**
@@ -53,7 +52,7 @@ public class PDFXrefStreamParser extends BaseParser
     public PDFXrefStreamParser(COSStream stream, COSDocument document)
             throws IOException
     {
-        super(new InputStreamRandomAccessRead(stream.createInputStream()));
+        super(stream.createView());
         this.document = document;
         try
         {
