@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.cos;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.FilterOutputStream;
@@ -23,9 +24,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
@@ -37,6 +40,8 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessOutputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadView;
 import org.apache.pdfbox.io.ScratchFile;
 
@@ -235,6 +240,51 @@ public class COSStream extends COSDictionary implements Closeable
     }
 
     /**
+     * Returns a new RandomAccessRead which reads the decoded stream data.
+     * 
+     * @return RandomAccessRead containing decoded stream data.
+     * @throws IOException If the stream could not be read.
+     */
+    public RandomAccessRead createView() throws IOException
+    {
+        List<Filter> filterList = getFilterList();
+        if (filterList.isEmpty())
+        {
+            if (randomAccess == null && randomAccessReadView != null)
+            {
+                return new RandomAccessReadView(randomAccessReadView, 0,
+                        randomAccessReadView.length());
+            }
+            else
+            {
+                return new RandomAccessReadBuffer(createRawInputStream());
+            }
+        }
+        else
+        {
+            Set<Filter> filterSet = new HashSet<>(filterList);
+            if (filterSet.size() != filterList.size())
+            {
+                throw new IOException("Duplicate");
+            }
+            InputStream input = createRawInputStream();
+            ByteArrayOutputStream output = null;
+            // apply filters
+            for (int i = 0; i < filterList.size(); i++)
+            {
+                // in-memory
+                if (output != null)
+                {
+                    input = new ByteArrayInputStream(output.toByteArray());
+                }
+                output = new ByteArrayOutputStream();
+                filterList.get(i).decode(input, output, this, i, DecodeOptions.DEFAULT);
+            }
+            return new RandomAccessReadBuffer(output.toByteArray());
+        }
+    }
+
+    /**
      * Returns a new OutputStream for writing stream data, using the current filters.
      *
      * @return OutputStream for un-encoded stream data.
@@ -419,10 +469,12 @@ public class COSStream extends COSDictionary implements Closeable
         if (randomAccess != null)
         {
             randomAccess.close();
+            randomAccess = null;
         }
         if (randomAccessReadView != null)
         {
             randomAccessReadView.close();
+            randomAccessReadView = null;
         }
     }
 }
