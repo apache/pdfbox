@@ -19,6 +19,7 @@ package org.apache.pdfbox.contentstream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
@@ -37,6 +38,14 @@ public interface PDContentStream
      * @throws IOException If the stream could not be read
      */
     InputStream getContents() throws IOException;
+
+    /**
+     * Returns this stream's content, if any.
+     * 
+     * @return A RandomAccessRead or null.
+     * @throws IOException If the content could not be read
+     */
+    RandomAccessRead getContentsForRandomAccess() throws IOException;
 
     /**
      * Returns this stream's resources, if any.

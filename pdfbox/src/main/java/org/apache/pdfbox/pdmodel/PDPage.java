@@ -35,6 +35,9 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.io.RandomAccessRead;
+import org.apache.pdfbox.io.RandomAccessReadBuffer;
+import org.apache.pdfbox.io.SequenceRandomAccessRead;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.common.PDMetadata;
@@ -175,6 +178,31 @@ public class PDPage implements COSObjectable, PDContentStream
             return new SequenceInputStream(Collections.enumeration(inputStreams));
         }
         return new ByteArrayInputStream(new byte[0]);
+    }
+
+    @Override
+    public RandomAccessRead getContentsForRandomAccess() throws IOException
+    {
+        COSBase base = page.getDictionaryObject(COSName.CONTENTS);
+        if (base instanceof COSStream)
+        {
+            return ((COSStream) base).createView();
+        }
+        else if (base instanceof COSArray && ((COSArray) base).size() > 0)
+        {
+            COSArray streams = (COSArray) base;
+            List<RandomAccessRead> inputStreams = new ArrayList<>();
+            for (int i = 0; i < streams.size(); i++)
+            {
+                COSBase strm = streams.getObject(i);
+                if (strm instanceof COSStream)
+                {
+                    inputStreams.add(((COSStream) strm).createView());
+                }
+            }
+            return new SequenceRandomAccessRead(inputStreams);
+        }
+        return new RandomAccessReadBuffer(new byte[0]);
     }
 
     /**
