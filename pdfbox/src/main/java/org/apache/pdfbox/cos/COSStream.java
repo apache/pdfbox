@@ -272,7 +272,6 @@ public class COSStream extends COSDictionary implements Closeable
             // apply filters
             for (int i = 0; i < filterList.size(); i++)
             {
-                // in-memory
                 if (output != null)
                 {
                     input = new ByteArrayInputStream(output.toByteArray());
@@ -280,7 +279,12 @@ public class COSStream extends COSDictionary implements Closeable
                 output = new ByteArrayOutputStream();
                 filterList.get(i).decode(input, output, this, i, DecodeOptions.DEFAULT);
             }
-            return new RandomAccessReadBuffer(output.toByteArray());
+            if (output != null)
+            {
+                return new RandomAccessReadBuffer(output.toByteArray());
+            }
+            // shouldn't be reached at all
+            return null;
         }
     }
 
