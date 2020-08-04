@@ -16,7 +16,10 @@
 
 package org.apache.pdfbox.io;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.junit.Assert;
@@ -119,6 +122,25 @@ public class RandomAccessReadBufferTest
         randomAccessSource.unread(readBytes, 2, 4);
         Assert.assertEquals(3, randomAccessSource.getPosition());
 
+        randomAccessSource.close();
+    }
+
+    @Test
+    public void testEmptyBuffer() throws IOException
+    {
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(
+                new ByteArrayOutputStream().toByteArray());
+
+        assertEquals(-1, randomAccessSource.read());
+        assertEquals(-1, randomAccessSource.peek());
+        byte[] readBytes = new byte[6];
+        assertEquals(0, randomAccessSource.read(readBytes));
+        randomAccessSource.seek(0);
+        assertEquals(0, randomAccessSource.getPosition());
+        randomAccessSource.seek(6);
+        assertEquals(6, randomAccessSource.getPosition());
+        randomAccessSource.rewind(3);
+        assertEquals(3, randomAccessSource.getPosition());
         randomAccessSource.close();
     }
 }

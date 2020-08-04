@@ -188,8 +188,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         if (pointer < size)
         {
             // calculate the chunk list index
-            bufferListIndex = (int) (pointer / chunkSize);
-            currentBufferPointer = (int) (pointer % chunkSize);
+            bufferListIndex = chunkSize > 0 ? (int) (pointer / chunkSize) : 0;
+            currentBufferPointer = chunkSize > 0 ? (int) (pointer % chunkSize) : 0;
             currentBuffer = bufferList.get(bufferListIndex);
         }
         else
@@ -198,7 +198,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
             // jump to the end of the buffer
             bufferListIndex = bufferListMaxIndex;
             currentBuffer = bufferList.get(bufferListIndex);
-            currentBufferPointer = (int) (size % chunkSize);
+            currentBufferPointer = chunkSize > 0 ? (int) (size % chunkSize) : 0;
         }
     }
 
