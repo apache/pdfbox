@@ -79,8 +79,7 @@ public class RandomAccessReadView implements RandomAccessRead
     @Override
     public int read() throws IOException
     {
-        checkClosed();
-        if (currentPosition >= streamLength)
+        if (isEOF())
         {
             return -1;
         }
@@ -108,8 +107,7 @@ public class RandomAccessReadView implements RandomAccessRead
     @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
-        checkClosed();
-        if (currentPosition >= streamLength)
+        if (isEOF())
         {
             return 0;
         }
@@ -164,7 +162,10 @@ public class RandomAccessReadView implements RandomAccessRead
     @Override
     public int peek() throws IOException
     {
-        checkClosed();
+        if (isEOF())
+        {
+            return -1;
+        }
         restorePosition();
         return randomAccessRead.peek();
     }
