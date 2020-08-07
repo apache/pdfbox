@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -117,6 +116,7 @@ import org.junit.runners.Parameterized;
 public class TestCreateSignature
 {
     private static CertificateFactory certificateFactory = null;
+    private static KeyStore keyStore = null;
     private static final String inDir = "src/test/resources/org/apache/pdfbox/examples/signature/";
     private static final String outDir = "target/test-output/";
     private static final String keystorePath = inDir + "keystore.p12";
@@ -144,11 +144,13 @@ public class TestCreateSignature
         Security.addProvider(SecurityProvider.getProvider());
         certificateFactory = CertificateFactory.getInstance("X.509");
 
+        // load the keystore
+        keyStore = KeyStore.getInstance("PKCS12");
+        keyStore.load(new FileInputStream(keystorePath), password.toCharArray());
+
         new File("target/test-output").mkdirs();
 
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-        certificate = keystore.getCertificateChain(keystore.aliases().nextElement())[0];
+        certificate = keyStore.getCertificateChain(keyStore.aliases().nextElement())[0];
         tsa = System.getProperty("org.apache.pdfbox.examples.pdmodel.tsa");
     }
 
@@ -167,12 +169,8 @@ public class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
-        // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
         // sign PDF
-        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing = new CreateSignature(keyStore, password.toCharArray());
         signing.setExternalSigning(externallySign);
 
         final String fileName = getOutputFileName("signed{0}.pdf");
@@ -229,15 +227,11 @@ public class TestCreateSignature
         response.setMockResponseCode(200);
         mockServer.setMockHttpServerResponses(response);
 
-        // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
         String inPath = inDir + "sign_me_tsa.pdf";
         String outPath = outDir + getOutputFileName("signed{0}_tsa.pdf");
 
         // sign PDF (will fail due to nonce and timestamp differing)
-        CreateSignature signing1 = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing1 = new CreateSignature(keyStore, password.toCharArray());
         signing1.setExternalSigning(externallySign);
         try
         {
@@ -258,7 +252,7 @@ public class TestCreateSignature
             return;
         }
 
-        CreateSignature signing2 = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing2 = new CreateSignature(keyStore, password.toCharArray());
         signing2.setExternalSigning(externallySign);
         signing2.signDetached(new File(inPath), new File(outPath), tsa);
         checkSignature(new File(inPath), new File(outPath), true);
@@ -333,14 +327,10 @@ public class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
-        // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
         // sign PDF
         String inPath = inDir + "sign_me_visible.pdf";
         FileInputStream fis = new FileInputStream(jpegPath);
-        CreateVisibleSignature signing = new CreateVisibleSignature(keystore, password.toCharArray());
+        CreateVisibleSignature signing = new CreateVisibleSignature(keyStore, password.toCharArray());
         signing.setVisibleSignDesigner(inPath, 0, 0, -50, fis, 1);
         signing.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
         signing.setExternalSigning(externallySign);
@@ -367,15 +357,11 @@ public class TestCreateSignature
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
-        // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
         // sign PDF
         String inPath = inDir + "sign_me_visible.pdf";
         File destFile;
 
-        CreateVisibleSignature2 signing = new CreateVisibleSignature2(keystore, password.toCharArray());
+        CreateVisibleSignature2 signing = new CreateVisibleSignature2(keyStore, password.toCharArray());
         Rectangle2D humanRect = new Rectangle2D.Float(100, 200, 150, 50);
         signing.setImageFile(new File(jpegPath));
         signing.setExternalSigning(externallySign);
@@ -391,7 +377,6 @@ public class TestCreateSignature
      * 
      * @throws IOException
      * @throws NoSuchAlgorithmException
-     * @throws KeyStoreException
      * @throws CertificateException
      * @throws UnrecoverableKeyException
      * @throws CMSException
@@ -401,7 +386,7 @@ public class TestCreateSignature
      * @throws CertificateVerificationException
      */
     @Test
-    public void testPDFBox3978() throws IOException, NoSuchAlgorithmException, KeyStoreException, 
+    public void testPDFBox3978() throws IOException, NoSuchAlgorithmException, 
                                         CertificateException, UnrecoverableKeyException, 
                                         CMSException, OperatorCreationException, GeneralSecurityException,
                                         TSPException, CertificateVerificationException
@@ -415,15 +400,11 @@ public class TestCreateSignature
             return;
         }
 
-        // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
         // create file with empty signature
         CreateEmptySignatureForm.main(new String[]{filename});
 
         // sign PDF
-        CreateSignature signing1 = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing1 = new CreateSignature(keyStore, password.toCharArray());
         signing1.setExternalSigning(false);
         signing1.signDetached(new File(filename), new File(filenameSigned1));
 
@@ -436,7 +417,7 @@ public class TestCreateSignature
 
         // do visual signing in the field
         FileInputStream fis = new FileInputStream(jpegPath);
-        CreateVisibleSignature signing2 = new CreateVisibleSignature(keystore, password.toCharArray());
+        CreateVisibleSignature signing2 = new CreateVisibleSignature(keyStore, password.toCharArray());
         signing2.setVisibleSignDesigner(filenameSigned1, 0, 0, -50, fis, 1);
         signing2.setVisibleSignatureProperties("name", "location", "Security", 0, 1, true);
         signing2.setExternalSigning(true);
@@ -619,12 +600,8 @@ public class TestCreateSignature
 
         CreateSimpleForm.main(new String[0]); // creates "target/SimpleForm.pdf"
 
-        // load the keystore
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
         // sign PDF
-        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing = new CreateSignature(keyStore, password.toCharArray());
         signing.setExternalSigning(externallySign);
 
         final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf");
@@ -954,10 +931,7 @@ public class TestCreateSignature
 
     private byte[] signEncrypted(SecureRandom secureRandom, Date signingTime) throws Exception
     {
-        KeyStore keystore = KeyStore.getInstance("PKCS12");
-        keystore.load(new FileInputStream(keystorePath), password.toCharArray());
-
-        CreateSignature signing = new CreateSignature(keystore, password.toCharArray());
+        CreateSignature signing = new CreateSignature(keyStore, password.toCharArray());
         signing.setExternalSigning(true);
 
         File inFile = new File(inDir + "sign_me_protected.pdf");
