@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.BufferedReader;
@@ -64,6 +65,7 @@ import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
 import org.apache.pdfbox.examples.signature.CreateSignature;
 import org.apache.pdfbox.examples.signature.CreateSignedTimeStamp;
 import org.apache.pdfbox.examples.signature.CreateVisibleSignature;
+import org.apache.pdfbox.examples.signature.CreateVisibleSignature2;
 import org.apache.pdfbox.examples.signature.SigUtils;
 import org.apache.pdfbox.examples.signature.cert.CertificateVerificationException;
 import org.apache.pdfbox.examples.signature.validation.AddValidationInformation;
@@ -346,6 +348,39 @@ public class TestCreateSignature
             destFile = new File(OUT_DIR + getOutputFileName("signed{0}_visible.pdf"));
             signing.signPDF(new File(inPath), destFile, null);
         }
+
+        checkSignature(new File(inPath), destFile, false);
+    }
+
+    /**
+     * Test creating visual signature with the modernized example.
+     *
+     * @throws IOException
+     * @throws CMSException
+     * @throws OperatorCreationException
+     * @throws GeneralSecurityException
+     * @throws TSPException
+     * @throws CertificateVerificationException
+     */
+    @Test
+    public void testCreateVisibleSignature2()
+            throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
+                   TSPException, CertificateVerificationException
+    {
+        // load the keystore
+        KeyStore keystore = KeyStore.getInstance("PKCS12");
+        keystore.load(new FileInputStream(KEYSTORE_PATH), PASSWORD.toCharArray());
+
+        // sign PDF
+        String inPath = IN_DIR + "sign_me_visible.pdf";
+        File destFile;
+
+        CreateVisibleSignature2 signing = new CreateVisibleSignature2(keystore, PASSWORD.toCharArray());
+        Rectangle2D humanRect = new Rectangle2D.Float(100, 200, 150, 50);
+        signing.setImageFile(new File(JPEG_PATH));
+        signing.setExternalSigning(externallySign);
+        destFile = new File(OUT_DIR + getOutputFileName("signed{0}_visible2.pdf"));
+        signing.signPDF(new File(inPath), destFile, humanRect, null);
 
         checkSignature(new File(inPath), destFile, false);
     }
