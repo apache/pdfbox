@@ -908,7 +908,8 @@ public class TestCreateSignature
             String hexOcspSignatureHash = Hex.getString(ocspSignatureHash);
             System.out.println("ocspSignatureHash: " + hexOcspSignatureHash);
             long secondsOld = (System.currentTimeMillis() - basicResponse.getProducedAt().getTime()) / 1000;
-            Assert.assertTrue("OCSP answer is too old", secondsOld < 10);
+            Assert.assertTrue("OCSP answer is too old, is from " + secondsOld + " seconds ago",
+                        secondsOld < 10);
 
             X509CertificateHolder ocspCertHolder = basicResponse.getCerts()[0];
             ContentVerifierProvider verifier = new JcaContentVerifierProviderBuilder().setProvider(SecurityProvider.getProvider()).build(ocspCertHolder);
