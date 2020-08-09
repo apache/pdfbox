@@ -127,7 +127,8 @@ public class Overlay implements Closeable
     }
 
     /**
-     * This will add overlays documents to a document.
+     * This will add overlays documents to a document. If you created the overlay documents with
+     * subsetted fonts, you need to save them first so that the subsetting gets done.
      *
      * @param specificPageOverlayDocuments Optional map of overlay documents for specific pages. The
      * page numbers are 1-based. The map must be empty (but not null) if no specific mappings are
@@ -632,7 +633,8 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the default overlay PDF.
+     * Sets the default overlay PDF. If you created the overlay document with
+     * subsetted fonts, you need to save it first so that the subsetting gets done.
      * 
      * @param defaultOverlayPDF the default overlay PDF
      */
@@ -662,7 +664,8 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the first page overlay PDF.
+     * Sets the first page overlay PDF. If you created the overlay document with
+     * subsetted fonts, you need to save it first so that the subsetting gets done.
      * 
      * @param firstPageOverlayPDF the first page overlay PDF
      */
@@ -682,7 +685,8 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the last page overlay PDF.
+     * Sets the last page overlay PDF. If you created the overlay document with
+     * subsetted fonts, you need to save it first so that the subsetting gets done.
      * 
      * @param lastPageOverlayPDF the last page overlay PDF
      */
@@ -702,7 +706,8 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the all pages overlay PDF.
+     * Sets the all pages overlay PDF. If you created the overlay document with
+     * subsetted fonts, you need to save it first so that the subsetting gets done.
      * 
      * @param allPagesOverlayPDF the all pages overlay PDF. This should not be a PDDocument that you
      * created on the fly, it should be saved first, if it contains any fonts that are subset.
@@ -723,7 +728,8 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the odd page overlay PDF.
+     * Sets the odd page overlay PDF. If you created the overlay document with
+     * subsetted fonts, you need to save it first so that the subsetting gets done.
      * 
      * @param oddPageOverlayPDF the odd page overlay PDF
      */
@@ -743,7 +749,8 @@ public class Overlay implements Closeable
     }
 
     /**
-     * Sets the even page overlay PDF.
+     * Sets the even page overlay PDF. If you created the overlay document with
+     * subsetted fonts, you need to save it first so that the subsetting gets done.
      * 
      * @param evenPageOverlayPDF the even page overlay PDF
      */
