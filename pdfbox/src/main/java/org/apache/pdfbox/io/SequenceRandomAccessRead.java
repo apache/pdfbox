@@ -111,12 +111,13 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     public int read(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();
+        int maxAvailBytes = Math.min(available(), length);
         RandomAccessRead randomAccessRead = getCurrentReader();
-        int bytesRead = randomAccessRead.read(b, offset, length);
-        while (bytesRead < length && available() > 0)
+        int bytesRead = randomAccessRead.read(b, offset, maxAvailBytes);
+        while (bytesRead < maxAvailBytes)
         {
             randomAccessRead = getCurrentReader();
-            bytesRead += randomAccessRead.read(b, offset + bytesRead, length - bytesRead);
+            bytesRead += randomAccessRead.read(b, offset + bytesRead, maxAvailBytes - bytesRead);
         }
         currentPosition += bytesRead;
         return bytesRead;
