@@ -21,7 +21,6 @@
 
 package org.apache.pdfbox.preflight.action.pdfa1b;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
@@ -39,7 +38,8 @@ public class TestGotoRemoteAction extends AbstractTestAction
         gotoAction.setD(COSName.getPDFName("ADest"));
         gotoAction.setFile(new PDFileSpecification()
         {
-            public COSBase getCOSObject()
+            @Override
+            public COSName getCOSObject()
             {
                 return COSName.getPDFName("ADest");
             }
@@ -65,7 +65,8 @@ public class TestGotoRemoteAction extends AbstractTestAction
         gotoAction.setD(new COSDictionary());
         gotoAction.setFile(new PDFileSpecification()
         {
-            public COSBase getCOSObject()
+            @Override
+            public COSName getCOSObject()
             {
                 return COSName.getPDFName("ADest");
             }
@@ -90,7 +91,8 @@ public class TestGotoRemoteAction extends AbstractTestAction
         PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setFile(new PDFileSpecification()
         {
-            public COSBase getCOSObject()
+            @Override
+            public COSName getCOSObject()
             {
                 return COSName.getPDFName("ADest");
             }
