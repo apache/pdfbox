@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import junit.framework.TestCase;
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSInteger;
 import org.junit.Assert;
 
@@ -56,7 +55,7 @@ public class TestPDNumberTreeNode extends TestCase
         }
 
         @Override
-        public COSBase getCOSObject()
+        public COSInteger getCOSObject()
         {
             return COSInteger.get( value );
         }

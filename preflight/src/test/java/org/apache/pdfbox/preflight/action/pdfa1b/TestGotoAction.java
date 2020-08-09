@@ -21,7 +21,6 @@
 
 package org.apache.pdfbox.preflight.action.pdfa1b;
 
-import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -39,7 +38,7 @@ public class TestGotoAction extends AbstractTestAction
         gotoAction.setDestination(new PDDestination()
         {
             @Override
-            public COSBase getCOSObject()
+            public COSName getCOSObject()
             {
                 return COSName.getPDFName("ADest");
             }
@@ -55,7 +54,7 @@ public class TestGotoAction extends AbstractTestAction
         gotoAction.setDestination(new PDDestination()
         {
             @Override
-            public COSBase getCOSObject()
+            public COSDictionary getCOSObject()
             {
                 return new COSDictionary();
             }
