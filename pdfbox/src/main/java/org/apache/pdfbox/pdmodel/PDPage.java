@@ -190,6 +190,7 @@ public class PDPage implements COSObjectable, PDContentStream
         }
         else if (base instanceof COSArray && ((COSArray) base).size() > 0)
         {
+            byte[] delimiter = new byte[] { '\n' };
             COSArray streams = (COSArray) base;
             List<RandomAccessRead> inputStreams = new ArrayList<>();
             for (int i = 0; i < streams.size(); i++)
@@ -198,6 +199,7 @@ public class PDPage implements COSObjectable, PDContentStream
                 if (strm instanceof COSStream)
                 {
                     inputStreams.add(((COSStream) strm).createView());
+                    inputStreams.add(new RandomAccessReadBuffer(delimiter));
                 }
             }
             return new SequenceRandomAccessRead(inputStreams);
