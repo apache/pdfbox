@@ -120,17 +120,17 @@ public class TestFilters extends TestCase
 
 
     /**
-     * This will test the LZW filter with the sequence that failed in PDFBOX-1777.
+     * This will test the LZW filter with the sequence that failed in PDFBOX-1977.
      * To check that the test itself is legit, revert LZWFilter.java to rev 1571801,
      * which should fail this test.
      * 
      * @throws IOException 
      */
-    public void testPDFBOX1777() throws IOException
+    public void testPDFBOX1977() throws IOException
     {
         LZWFilter lzwFilter = new LZWFilter();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        InputStream is = this.getClass().getResourceAsStream("PDFBOX-1777.bin");
+        InputStream is = this.getClass().getResourceAsStream("PDFBOX-1977.bin");
         int by;
         while ((by = is.read()) != -1)
         {
