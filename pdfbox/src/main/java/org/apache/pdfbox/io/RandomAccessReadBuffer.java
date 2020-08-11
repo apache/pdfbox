@@ -246,11 +246,11 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
     public int read(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();
-        if (pointer >= size)
-        {
-            return 0;
-        }
         int bytesRead = readRemainingBytes(b, offset, length);
+        if (bytesRead == -1)
+        {
+            return -1;
+        }
         while (bytesRead < length && available() > 0)
         {
             bytesRead += readRemainingBytes(b, offset + bytesRead, length - bytesRead);
@@ -266,14 +266,14 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
     {
         if (pointer >= size)
         {
-            return 0;
+            return -1;
         }
         int maxLength = (int) Math.min(length, size - pointer);
         int remainingBytes = chunkSize - currentBufferPointer;
         // no more bytes left
         if (remainingBytes == 0)
         {
-            return 0;
+            return -1;
         }
         if (maxLength >= remainingBytes)
         {

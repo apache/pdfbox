@@ -112,9 +112,13 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     {
         checkClosed();
         int maxAvailBytes = Math.min(available(), length);
+        if (maxAvailBytes == 0)
+        {
+            return -1;
+        }
         RandomAccessRead randomAccessRead = getCurrentReader();
         int bytesRead = randomAccessRead.read(b, offset, maxAvailBytes);
-        while (bytesRead < maxAvailBytes)
+        while (bytesRead > -1 && bytesRead < maxAvailBytes)
         {
             randomAccessRead = getCurrentReader();
             bytesRead += randomAccessRead.read(b, offset + bytesRead, maxAvailBytes - bytesRead);

@@ -134,7 +134,7 @@ public class RandomAccessReadBufferTest
         assertEquals(-1, randomAccessSource.read());
         assertEquals(-1, randomAccessSource.peek());
         byte[] readBytes = new byte[6];
-        assertEquals(0, randomAccessSource.read(readBytes));
+        assertEquals(-1, randomAccessSource.read(readBytes));
         randomAccessSource.seek(0);
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.seek(6);

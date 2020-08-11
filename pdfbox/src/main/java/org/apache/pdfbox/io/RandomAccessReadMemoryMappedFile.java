@@ -130,7 +130,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     {
         if (isEOF())
         {
-            return 0;
+            return -1;
         }
         int remainingBytes = (int)size - mappedByteBuffer.position();
         mappedByteBuffer.get(b, offset, Math.min(remainingBytes, length));

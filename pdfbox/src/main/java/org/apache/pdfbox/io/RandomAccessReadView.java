@@ -109,7 +109,7 @@ public class RandomAccessReadView implements RandomAccessRead
     {
         if (isEOF())
         {
-            return 0;
+            return -1;
         }
         restorePosition();
         int readBytes = randomAccessRead.read(b, off, Math.min(len, available()));
@@ -143,6 +143,7 @@ public class RandomAccessReadView implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
+        // System.out.println("Close RARV " + startPosition + ", " + streamLength);
         checkClosed();
         randomAccessRead = null;
     }
