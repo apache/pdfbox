@@ -17,21 +17,21 @@
 package org.apache.pdfbox.io;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Wrapper class to combine several RandomAccessRead instances so that they can be accessed as one big RandomAccessRead.
  */
 public class SequenceRandomAccessRead implements RandomAccessRead
 {
-    private final List<RandomAccessRead> randomAccessReadList;
+    private final List<RandomAccessRead> readerList;
     private final long[] startPositions;
     private final long[] endPositions;
     private final int numberOfReader;
     private int currentIndex = 0;
     private long currentPosition = 0;
-    private long length = 0;
+    private long totalLength = 0;
     private boolean isClosed = false;
     private RandomAccessRead currentRandomAccessRead = null;
     
@@ -45,18 +45,28 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         {
             throw new IllegalArgumentException("Empty list");
         }
-        this.randomAccessReadList = new ArrayList<>(randomAccessReadList);
-        numberOfReader = randomAccessReadList.size();
-        currentRandomAccessRead = randomAccessReadList.get(currentIndex);
+        readerList = randomAccessReadList.stream() //
+                .filter(r -> {
+                    try
+                    {
+                        return r.length() > 0;
+                    }
+                    catch (IOException e)
+                    {
+                        throw new IllegalArgumentException("Problematic list", e);
+                    }
+                }).collect(Collectors.toList());
+        currentRandomAccessRead = readerList.get(currentIndex);
+        numberOfReader = readerList.size();
         startPositions = new long[numberOfReader];
         endPositions = new long[numberOfReader];
         for(int i=0;i<numberOfReader;i++) 
         {
             try
             {
-                startPositions[i] = length;
-                length += randomAccessReadList.get(i).length();
-                endPositions[i] = length - 1;
+                startPositions[i] = totalLength;
+                totalLength += readerList.get(i).length();
+                endPositions[i] = totalLength - 1;
             }
             catch (IOException e)
             {
@@ -68,11 +78,11 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
-        for (RandomAccessRead randomAccessRead : randomAccessReadList)
+        for (RandomAccessRead randomAccessRead : readerList)
         {
             randomAccessRead.close();
         }
-        randomAccessReadList.clear();
+        readerList.clear();
         currentRandomAccessRead = null;
         isClosed = true;
     }
@@ -82,7 +92,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         if (currentRandomAccessRead.isEOF() && currentIndex < numberOfReader - 1)
         {
             currentIndex++;
-            currentRandomAccessRead = randomAccessReadList.get(currentIndex);
+            currentRandomAccessRead = readerList.get(currentIndex);
             currentRandomAccessRead.seek(0);
         }
         return currentRandomAccessRead;
@@ -144,7 +154,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         }
         // it is allowed to jump beyond the end of the file
         // jump to the end of the reader
-        if (position >= length)
+        if (position >= totalLength)
         {
             currentIndex = numberOfReader - 1;
         }
@@ -159,7 +169,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
                 }
             }
         }
-        currentRandomAccessRead = randomAccessReadList.get(currentIndex);
+        currentRandomAccessRead = readerList.get(currentIndex);
         currentRandomAccessRead.seek(position - startPositions[currentIndex]);
         currentPosition = position;
     }
@@ -168,7 +178,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     public long length() throws IOException
     {
         checkClosed();
-        return length;
+        return totalLength;
     }
 
     @Override
@@ -212,14 +222,14 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     public boolean isEOF() throws IOException
     {
         checkClosed();
-        return currentPosition >= length;
+        return currentPosition >= totalLength;
     }
 
     @Override
     public int available() throws IOException
     {
         checkClosed();
-        return (int) Math.min(length - currentPosition, Integer.MAX_VALUE);
+        return (int) Math.min(totalLength - currentPosition, Integer.MAX_VALUE);
     }
 
     @Override
