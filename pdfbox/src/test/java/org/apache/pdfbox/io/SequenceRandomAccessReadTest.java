@@ -213,4 +213,47 @@ public class SequenceRandomAccessReadTest
         {
         }
     }
+
+    @Test
+    public void TestEmptyStream() throws IOException
+    {
+        String input1 = "01234567890123456789";
+        RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
+                input1.getBytes());
+        String input2 = "abcdefghijklmnopqrst";
+        RandomAccessReadBuffer randomAccessReadBuffer2 = new RandomAccessReadBuffer(
+                input2.getBytes());
+        RandomAccessReadBuffer emptyBuffer = new RandomAccessReadBuffer("".getBytes());
+
+        List<RandomAccessRead> inputList = Arrays.asList(randomAccessReadBuffer1, emptyBuffer,
+                randomAccessReadBuffer2);
+        SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
+
+        // check length
+        assertEquals(sequenceRandomAccessRead.length(), input1.length() + input2.length());
+
+        // read from both parts of the sequence
+        byte[] bytesRead = new byte[10];
+        sequenceRandomAccessRead.seek(15);
+        assertEquals(10, sequenceRandomAccessRead.read(bytesRead));
+        assertEquals("56789abcde", new String(bytesRead));
+
+        // rewind and read again
+        sequenceRandomAccessRead.rewind(15);
+        bytesRead = new byte[5];
+        assertEquals(5, sequenceRandomAccessRead.read(bytesRead));
+        assertEquals("01234", new String(bytesRead));
+
+        // check EOF when reading
+        bytesRead = new byte[5];
+        sequenceRandomAccessRead.seek(38);
+        assertEquals(2, sequenceRandomAccessRead.read(bytesRead));
+        assertEquals("st", new String(bytesRead, 0, 2));
+
+        // check EOF after seek
+        sequenceRandomAccessRead.seek(40);
+        assertTrue(sequenceRandomAccessRead.isEOF());
+
+        sequenceRandomAccessRead.close();
+    }
 }
