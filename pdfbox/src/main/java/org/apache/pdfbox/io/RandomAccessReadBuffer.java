@@ -253,11 +253,11 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         }
         while (bytesRead < length && available() > 0)
         {
-            bytesRead += readRemainingBytes(b, offset + bytesRead, length - bytesRead);
             if (currentBufferPointer == chunkSize)
             {
                 nextBuffer();
             }
+            bytesRead += readRemainingBytes(b, offset + bytesRead, length - bytesRead);
         }
         return bytesRead;
     }
