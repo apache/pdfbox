@@ -85,7 +85,6 @@ public class PDFStreamParser extends BaseParser
         {
             streamObjects.add( token );
         }
-        source.close();
         return streamObjects;
     }
 
