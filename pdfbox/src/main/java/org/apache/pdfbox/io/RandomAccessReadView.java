@@ -143,8 +143,6 @@ public class RandomAccessReadView implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
-        // System.out.println("Close RARV " + startPosition + ", " + streamLength);
-        checkClosed();
         randomAccessRead = null;
     }
 
