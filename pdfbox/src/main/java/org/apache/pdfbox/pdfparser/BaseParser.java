@@ -485,7 +485,6 @@ public abstract class BaseParser
                     case '5':
                     case '6':
                     case '7':
-                    {
                         StringBuilder octal = new StringBuilder();
                         octal.append( next );
                         c = seqSource.read();
@@ -520,13 +519,10 @@ public abstract class BaseParser
                         }
                         out.write(character);
                         break;
-                    }
                     default:
-                    {
                         // dropping the backslash
                         // see 7.3.4.2 Literal Strings for further information
                         out.write(next);
-                    }
                 }
             }
             else
@@ -847,15 +843,11 @@ public abstract class BaseParser
      */
     protected COSBase parseDirObject() throws IOException
     {
-        COSBase retval = null;
-
         skipSpaces();
-        int nextByte = seqSource.peek();
-        char c = (char)nextByte;
+        char c = (char)seqSource.peek();
         switch(c)
         {
         case '<':
-        {
             // pull off first left bracket
             int leftBracket = seqSource.read();
             // check for second left bracket
@@ -864,92 +856,57 @@ public abstract class BaseParser
             if(c == '<')
             {
 
-                retval = parseCOSDictionary();
+                COSDictionary retval = parseCOSDictionary();
                 skipSpaces();
+                return retval;
             }
             else
             {
-                retval = parseCOSString();
+                return parseCOSString();
             }
-            break;
-        }
         case '[':
-        {
             // array
-            retval = parseCOSArray();
-            break;
-        }
+            return parseCOSArray();
         case '(':
-            retval = parseCOSString();
-            break;
+            return parseCOSString();
         case '/':   
             // name
-            retval = parseCOSName();
-            break;
+            return parseCOSName();
         case 'n':   
-        {
             // null
             readExpectedString(NULL);
-            retval = COSNull.NULL;
-            break;
-        }
+            return COSNull.NULL;
         case 't':
-        {
             String trueString = new String( seqSource.readFully(4), ISO_8859_1 );
             if( trueString.equals( TRUE ) )
             {
-                retval = COSBoolean.TRUE;
+                return COSBoolean.TRUE;
             }
             else
             {
                 throw new IOException( "expected true actual='" + trueString + "' " + seqSource + 
                         "' at offset " + seqSource.getPosition());
             }
-            break;
-        }
         case 'f':
-        {
             String falseString = new String( seqSource.readFully(5), ISO_8859_1 );
             if( falseString.equals( FALSE ) )
             {
-                retval = COSBoolean.FALSE;
+                return COSBoolean.FALSE;
             }
             else
             {
                 throw new IOException( "expected false actual='" + falseString + "' " + seqSource + 
                         "' at offset " + seqSource.getPosition());
             }
-            break;
-        }
         case 'R':
             seqSource.read();
-            retval = new COSObject(null);
-            break;
+            return new COSObject(null);
         case (char)-1:
             return null;
         default:
-        {
             if( Character.isDigit(c) || c == '-' || c == '+' || c == '.')
             {
-                StringBuilder buf = new StringBuilder();
-                int ic = seqSource.read();
-                c = (char)ic;
-                while( Character.isDigit( c )||
-                        c == '-' ||
-                        c == '+' ||
-                        c == '.' ||
-                        c == 'E' ||
-                        c == 'e' )
-                {
-                    buf.append( c );
-                    ic = seqSource.read();
-                    c = (char)ic;
-                }
-                if( ic != -1 )
-                {
-                    seqSource.unread(ic);
-                }
-                retval = COSNumber.get( buf.toString() );
+                return parseCOSNumber();
             }
             else
             {
@@ -973,8 +930,25 @@ public abstract class BaseParser
                 }
             }
         }
+        return null;
+    }
+
+    private COSNumber parseCOSNumber() throws IOException
+    {
+        StringBuilder buf = new StringBuilder();
+        int ic = seqSource.read();
+        char c = (char) ic;
+        while (Character.isDigit(c) || c == '-' || c == '+' || c == '.' || c == 'E' || c == 'e')
+        {
+            buf.append(c);
+            ic = seqSource.read();
+            c = (char) ic;
         }
-        return retval;
+        if (ic != -1)
+        {
+            seqSource.unread(ic);
+        }
+        return COSNumber.get(buf.toString());
     }
 
     /**
