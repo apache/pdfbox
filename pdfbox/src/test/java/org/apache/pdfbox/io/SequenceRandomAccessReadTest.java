@@ -203,6 +203,8 @@ public class SequenceRandomAccessReadTest
         assertEquals(overallLength + 10, sequenceRandomAccessRead.getPosition());
 
         sequenceRandomAccessRead.close();
+        // closing a SequenceRandomAccessRead twice shouldn't be a problem
+        sequenceRandomAccessRead.close();
 
         try
         {

@@ -22,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -33,14 +32,15 @@ public class RandomAccessReadBufferTest
     @Test
     public void testPositionSkip() throws IOException
     {
-        byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
-        Assert.assertEquals(0, randomAccessSource.getPosition());
+        assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(5);
-        Assert.assertEquals(5, randomAccessSource.getPosition());
+        assertEquals(5, randomAccessSource.read());
+        assertEquals(6, randomAccessSource.getPosition());
 
         randomAccessSource.close();
     }
@@ -48,16 +48,16 @@ public class RandomAccessReadBufferTest
     @Test
     public void testPositionRead() throws IOException
     {
-        byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
-        Assert.assertEquals(0, randomAccessSource.getPosition());
-        randomAccessSource.read();
-        randomAccessSource.read();
-        randomAccessSource.read();
-        Assert.assertEquals(3, randomAccessSource.getPosition());
+        assertEquals(0, randomAccessSource.getPosition());
+        assertEquals(0, randomAccessSource.read());
+        assertEquals(1, randomAccessSource.read());
+        assertEquals(2, randomAccessSource.read());
+        assertEquals(3, randomAccessSource.getPosition());
 
         randomAccessSource.close();
     }
@@ -65,18 +65,24 @@ public class RandomAccessReadBufferTest
     @Test
     public void testPositionReadBytes() throws IOException
     {
-        byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
-        Assert.assertEquals(0, randomAccessSource.getPosition());
+        assertEquals(0, randomAccessSource.getPosition());
         byte[] buffer = new byte[4];
         randomAccessSource.read(buffer);
-        Assert.assertEquals(4, randomAccessSource.getPosition());
+        assertEquals(0, buffer[0]);
+        assertEquals(3, buffer[3]);
+        assertEquals(4, randomAccessSource.getPosition());
 
         randomAccessSource.read(buffer, 1, 2);
-        Assert.assertEquals(6, randomAccessSource.getPosition());
+        assertEquals(0, buffer[0]);
+        assertEquals(4, buffer[1]);
+        assertEquals(5, buffer[2]);
+        assertEquals(3, buffer[3]);
+        assertEquals(6, randomAccessSource.getPosition());
 
         randomAccessSource.close();
     }
@@ -84,17 +90,17 @@ public class RandomAccessReadBufferTest
     @Test
     public void testPositionPeek() throws IOException
     {
-        byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
-        Assert.assertEquals(0, randomAccessSource.getPosition());
+        assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(6);
-        Assert.assertEquals(6, randomAccessSource.getPosition());
+        assertEquals(6, randomAccessSource.getPosition());
 
-        randomAccessSource.peek();
-        Assert.assertEquals(6, randomAccessSource.getPosition());
+        assertEquals(6, randomAccessSource.peek());
+        assertEquals(6, randomAccessSource.getPosition());
 
         randomAccessSource.close();
     }
@@ -102,25 +108,25 @@ public class RandomAccessReadBufferTest
     @Test
     public void testPositionUnreadBytes() throws IOException
     {
-        byte[] inputValues = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
 
         RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
 
-        Assert.assertEquals(0, randomAccessSource.getPosition());
+        assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
         randomAccessSource.read();
         byte[] readBytes = new byte[6];
         randomAccessSource.read(readBytes);
-        Assert.assertEquals(8, randomAccessSource.getPosition());
+        assertEquals(8, randomAccessSource.getPosition());
         randomAccessSource.unread(readBytes);
-        Assert.assertEquals(2, randomAccessSource.getPosition());
-        randomAccessSource.read();
-        Assert.assertEquals(3, randomAccessSource.getPosition());
+        assertEquals(2, randomAccessSource.getPosition());
+        assertEquals(2, randomAccessSource.read());
+        assertEquals(3, randomAccessSource.getPosition());
         randomAccessSource.read(readBytes, 2, 4);
-        Assert.assertEquals(7, randomAccessSource.getPosition());
+        assertEquals(7, randomAccessSource.getPosition());
         randomAccessSource.unread(readBytes, 2, 4);
-        Assert.assertEquals(3, randomAccessSource.getPosition());
+        assertEquals(3, randomAccessSource.getPosition());
 
         randomAccessSource.close();
     }
