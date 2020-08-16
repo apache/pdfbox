@@ -132,9 +132,9 @@ public class RandomAccessReadViewTest
         randomAccessReadView.read();
         randomAccessReadView.read();
         byte[] readBytes = new byte[6];
-        randomAccessReadView.read(readBytes);
+        assertEquals(readBytes.length, randomAccessReadView.read(readBytes));
         assertEquals(8, randomAccessReadView.getPosition());
-        randomAccessReadView.unread(readBytes);
+        randomAccessReadView.rewind(readBytes.length);
         assertEquals(2, randomAccessReadView.getPosition());
         assertEquals(12, randomAccessReadView.read());
         assertEquals(3, randomAccessReadView.getPosition());
@@ -143,7 +143,7 @@ public class RandomAccessReadViewTest
         assertEquals(13, readBytes[2]);
         assertEquals(16, readBytes[5]);
         assertEquals(7, randomAccessReadView.getPosition());
-        randomAccessReadView.unread(readBytes, 2, 4);
+        randomAccessReadView.rewind(4);
         assertEquals(3, randomAccessReadView.getPosition());
 
         randomAccessReadView.close();

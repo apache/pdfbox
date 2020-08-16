@@ -117,15 +117,15 @@ public class RandomAccessReadBufferTest
         randomAccessSource.read();
         randomAccessSource.read();
         byte[] readBytes = new byte[6];
-        randomAccessSource.read(readBytes);
+        assertEquals(readBytes.length, randomAccessSource.read(readBytes));
         assertEquals(8, randomAccessSource.getPosition());
-        randomAccessSource.unread(readBytes);
+        randomAccessSource.rewind(readBytes.length);
         assertEquals(2, randomAccessSource.getPosition());
         assertEquals(2, randomAccessSource.read());
         assertEquals(3, randomAccessSource.getPosition());
         randomAccessSource.read(readBytes, 2, 4);
         assertEquals(7, randomAccessSource.getPosition());
-        randomAccessSource.unread(readBytes, 2, 4);
+        randomAccessSource.rewind(4);
         assertEquals(3, randomAccessSource.getPosition());
 
         randomAccessSource.close();

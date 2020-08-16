@@ -275,7 +275,7 @@ public abstract class BaseParser
         {
             return true;
         }
-        source.unread(c);
+        source.rewind(1);
         return false;
     }
 
@@ -291,7 +291,7 @@ public abstract class BaseParser
             String potentialDEF = readString();
             if (!potentialDEF.equals(DEF))
             {
-                source.unread(potentialDEF.getBytes(StandardCharsets.ISO_8859_1));
+                source.rewind(potentialDEF.getBytes(StandardCharsets.ISO_8859_1).length);
             }
             else
             {
@@ -331,7 +331,7 @@ public abstract class BaseParser
             whitespace = source.read();
             if (ASCII_LF != whitespace)
             {
-                source.unread(whitespace);
+                source.rewind(1);
                 //The spec says this is invalid but it happens in the real
                 //world so we must support it.
             }
@@ -341,7 +341,7 @@ public abstract class BaseParser
             //we are in an error.
             //but again we will do a lenient parsing and just assume that everything
             //is fine
-            source.unread(whitespace);
+            source.rewind(1);
         }
     }
 
@@ -382,7 +382,7 @@ public abstract class BaseParser
         }
         if (amountRead > 0)
         {
-            source.unread(nextThreeBytes, 0, amountRead);
+            source.rewind(amountRead);
         }
         return braces;
     }
@@ -542,7 +542,7 @@ public abstract class BaseParser
         }
         if (c != -1)
         {
-            source.unread(c);
+            source.rewind(1);
         }
         return new COSString(out.toByteArray());
     }
@@ -668,7 +668,7 @@ public abstract class BaseParser
                 // This could also be an "endobj" or "endstream" which means we can assume that
                 // the array has ended.
                 String isThisTheEnd = readString();
-                source.unread(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1));
+                source.rewind(isThisTheEnd.getBytes(StandardCharsets.ISO_8859_1).length);
                 if(ENDOBJ_STRING.equals(isThisTheEnd) || ENDSTREAM_STRING.equals(isThisTheEnd))
                 {
                     return po;
@@ -741,7 +741,7 @@ public abstract class BaseParser
                         c = -1;
                         break;
                     }
-                    source.unread(ch2);
+                    source.rewind(1);
                     c = ch1;
                     buffer.write(ch);
                 }
@@ -758,7 +758,7 @@ public abstract class BaseParser
         }
         if (c != -1)
         {
-            source.unread(c);
+            source.rewind(1);
         }
         
         byte[] bytes = buffer.toByteArray();
@@ -807,10 +807,10 @@ public abstract class BaseParser
         {
         case '<':
             // pull off first left bracket
-            int leftBracket = source.read();
+            source.read();
             // check for second left bracket
             c = (char) source.peek();
-            source.unread(leftBracket);
+            source.rewind(1);
             if(c == '<')
             {
 
@@ -868,7 +868,7 @@ public abstract class BaseParser
                 // if it's an endstream/endobj, we want to put it back so the caller will see it
                 if(ENDOBJ_STRING.equals(badString) || ENDSTREAM_STRING.equals(badString))
                 {
-                    source.unread(badString.getBytes(StandardCharsets.ISO_8859_1));
+                    source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
                 }
             }
         }
@@ -888,7 +888,7 @@ public abstract class BaseParser
         }
         if (ic != -1)
         {
-            source.unread(ic);
+            source.rewind(1);
         }
         return COSNumber.get(buf.toString());
     }
@@ -912,7 +912,7 @@ public abstract class BaseParser
         }
         if (c != -1)
         {
-            source.unread(c);
+            source.rewind(1);
         }
         return buffer.toString();
     }
@@ -985,7 +985,7 @@ public abstract class BaseParser
         }
         if (c != -1)
         {
-            source.unread(c);
+            source.rewind(1);
         }
         return buffer.toString();
     }
@@ -1190,7 +1190,7 @@ public abstract class BaseParser
         }
         if (c != -1)
         {
-            source.unread(c);
+            source.rewind(1);
         }
     }
 
@@ -1248,7 +1248,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            source.unread(intBuffer.toString().getBytes(StandardCharsets.ISO_8859_1));
+            source.rewind(intBuffer.toString().getBytes(StandardCharsets.ISO_8859_1).length);
             throw new IOException("Error: Expected an integer type at offset " +
                     source.getPosition() +
                                   ", instead got '" + intBuffer + "'", e);
@@ -1277,7 +1277,7 @@ public abstract class BaseParser
         }
         catch( NumberFormatException e )
         {
-            source.unread(longBuffer.toString().getBytes(StandardCharsets.ISO_8859_1));
+            source.rewind(longBuffer.toString().getBytes(StandardCharsets.ISO_8859_1).length);
             throw new IOException( "Error: Expected a long type at offset "
                     + source.getPosition() + ", instead got '" + longBuffer + "'", e);
         }
@@ -1306,7 +1306,7 @@ public abstract class BaseParser
         }
         if( lastByte != -1 )
         {
-            source.unread(lastByte);
+            source.rewind(1);
         }
         return buffer;
     }

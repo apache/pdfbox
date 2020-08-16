@@ -108,13 +108,13 @@ public class PDFStreamParser extends BaseParser
         {
             case '<':
                 // pull off first left bracket
-                int leftBracket = source.read();
+                source.read();
 
                 // check for second left bracket
                 c = (char) source.peek();
 
                 // put back first bracket
-                source.unread(leftBracket);
+                source.rewind(1);
 
                 if (c == '<')
                 {
@@ -353,7 +353,7 @@ public class PDFStreamParser extends BaseParser
                     noBinData = false;
                 }
             }
-            source.unread(binCharTestArr, 0, readBytes);
+            source.rewind(readBytes);
         }
         if (!noBinData)
         {

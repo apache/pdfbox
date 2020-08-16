@@ -69,32 +69,14 @@ public interface RandomAccessRead extends Closeable
     /**
      * Seek to a position in the data.
      * 
-     * Only supported if {@link #seekSupported()} returns true.
-     *
      * @param position The position to seek to.
      * @throws IOException If there is an error while seeking.
      */
     void seek(long position) throws IOException;
 
     /**
-     * Indicates if seek operations are supported.
-     * 
-     * @return true if seek operations are supported
-     * 
-     * @see org.apache.pdfbox.io.RandomAccessRead#seek(long)
-     * @see org.apache.pdfbox.io.RandomAccessRead#length()
-     * @see org.apache.pdfbox.io.RandomAccessRead#rewind(int)
-     */
-    default boolean seekSupported()
-    {
-        // default implementation for all non input stream based sources
-        return true;
-    }
-    /**
      * The total number of bytes that are available.
      * 
-     * Only supported if {@link #seekSupported()} returns true.
-     *
      * @return The number of bytes available.
      *
      * @throws IOException If there is an IO error while determining the length of the data stream.
@@ -125,8 +107,6 @@ public interface RandomAccessRead extends Closeable
 
     /**
      * Seek backwards the given number of bytes.
-     * 
-     * Only supported if {@link #seekSupported()} returns true.
      * 
      * @param bytes the number of bytes to be seeked backwards
      * @throws IOException If there is an error while seeking
@@ -171,44 +151,6 @@ public interface RandomAccessRead extends Closeable
             if (value == -1)
                 break;
         }
-    }
-
-    /**
-     * Pushes back a byte.
-     * 
-     * @param b the int to push back.
-     * @throws IOException if an I/O error occurs while reading data
-     */
-    default void unread(int b) throws IOException
-    {
-        // default implementation for all non input stream based sources
-        rewind(1);
-    }
-
-    /**
-     * Pushes back an array of bytes.
-     * 
-     * @param bytes the byte array to push back.
-     * @throws IOException if an I/O error occurs while reading data
-     */
-    default void unread(byte[] bytes) throws IOException
-    {
-        // default implementation for all non input stream based sources
-        rewind(bytes.length);
-    }
-
-    /**
-     * Pushes back a portion of an array of bytes.
-     * 
-     * @param bytes the byte array to push back.
-     * @param start the start offset of the data.
-     * @param len the number of bytes to push back.
-     * @throws IOException if an I/O error occurs while reading data
-     */
-    default void unread(byte[] bytes, int start, int len) throws IOException
-    {
-        // default implementation for all non input stream based sources
-        rewind(len);
     }
 
     /**
