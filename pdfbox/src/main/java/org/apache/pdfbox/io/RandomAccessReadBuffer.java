@@ -26,7 +26,7 @@ import java.util.List;
  * An implementation of the RandomAccessRead interface to store data in memory. The data will be stored in chunks
  * organized in an ArrayList.
  */
-public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
+public class RandomAccessReadBuffer implements RandomAccessRead
 {
     // default chunk size is 4kb
     private static final int DEFAULT_CHUNK_SIZE_4KB = 1 << 12;
@@ -129,38 +129,6 @@ public class RandomAccessReadBuffer implements RandomAccessRead, Cloneable
         }
         currentBuffer = bufferList.get(0);
         
-    }
-
-    @Override
-    public RandomAccessReadBuffer clone()
-    {
-        RandomAccessReadBuffer copy = new RandomAccessReadBuffer(chunkSize);
-
-        copy.bufferList = new ArrayList<>(bufferList.size());
-        for (ByteBuffer buffer : bufferList)
-        {
-            ByteBuffer newBuffer = ByteBuffer.allocate(buffer.limit());
-            int originPosition = buffer.position();
-            buffer.rewind();
-            newBuffer.put(buffer);
-            copy.bufferList.add(newBuffer);
-            buffer.position(originPosition);
-        }
-        if (currentBuffer != null)
-        {
-            copy.currentBuffer = copy.bufferList.get(copy.bufferList.size() - 1);
-        }
-        else
-        {
-            copy.currentBuffer = null;
-        }
-        copy.pointer = pointer;
-        copy.currentBufferPointer = currentBufferPointer;
-        copy.size = size;
-        copy.bufferListIndex = bufferListIndex;
-        copy.bufferListMaxIndex = bufferListMaxIndex;
-
-        return copy;
     }
 
     /**
