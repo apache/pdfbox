@@ -177,12 +177,6 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     }
     
     @Override
-    public int read(byte[] b) throws IOException
-    {
-        return read(b, 0, b.length);
-    }
-    
-    @Override
     public int read( byte[] b, int off, int len ) throws IOException
     {
         if ( fileOffset >= fileLength )
@@ -210,12 +204,6 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     }
     
     @Override
-    public int available() throws IOException
-    {
-        return (int) Math.min( fileLength - fileOffset, Integer.MAX_VALUE );
-    }
-    
-    @Override
     public long length() throws IOException
     {
         return fileLength;
@@ -233,23 +221,6 @@ public class RandomAccessBufferedFile implements RandomAccessRead
     public boolean isClosed()
     {
         return isClosed;
-    }
-
-    @Override
-    public int peek() throws IOException
-    {
-        int result = read();
-        if (result != -1)
-        {
-            rewind(1);
-        }
-        return result;
-    }
-
-    @Override
-    public void rewind(int bytes) throws IOException
-    {
-        seek(getPosition() - bytes);
     }
 
     @Override

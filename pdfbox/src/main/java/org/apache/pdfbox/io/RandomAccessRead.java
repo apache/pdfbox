@@ -40,7 +40,10 @@ public interface RandomAccessRead extends Closeable
      * @return The number of bytes that were actually read.
      * @throws IOException If there was an error while reading the data.
      */
-    int read(byte[] b) throws IOException;
+    default int read(byte[] b) throws IOException
+    {
+        return read(b, 0, b.length);
+    }
 
     /**
      * Read a buffer of data.
@@ -110,7 +113,15 @@ public interface RandomAccessRead extends Closeable
      *
      * @throws IOException If there is an error reading the next byte.
      */
-    int peek() throws IOException;
+    default int peek() throws IOException
+    {
+        int result = read();
+        if (result != -1)
+        {
+            rewind(1);
+        }
+        return result;
+    }
 
     /**
      * Seek backwards the given number of bytes.
@@ -120,7 +131,10 @@ public interface RandomAccessRead extends Closeable
      * @param bytes the number of bytes to be seeked backwards
      * @throws IOException If there is an error while seeking
      */
-    void rewind(int bytes) throws IOException;
+    default void rewind(int bytes) throws IOException
+    {
+        seek(getPosition() - bytes);
+    }
 
     /**
      * A simple test to see if we are at the end of the data.
@@ -137,7 +151,10 @@ public interface RandomAccessRead extends Closeable
      * @return the number of bytes that can be read
      * @throws IOException if this random access has been closed
      */
-    int available() throws IOException;
+    default int available() throws IOException
+    {
+        return (int) Math.min(length() - getPosition(), Integer.MAX_VALUE);
+    }
 
     /**
      * Skips a given number of bytes.

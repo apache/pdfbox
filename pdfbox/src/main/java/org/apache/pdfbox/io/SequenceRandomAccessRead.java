@@ -112,12 +112,6 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     }
 
     @Override
-    public int read(byte[] b) throws IOException
-    {
-        return read(b, 0, b.length);
-    }
-
-    @Override
     public int read(byte[] b, int offset, int length) throws IOException
     {
         checkClosed();
@@ -182,12 +176,6 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     }
 
     @Override
-    public void rewind(int bytes) throws IOException
-    {
-        seek(getPosition() - bytes);
-    }
-
-    @Override
     public boolean isClosed()
     {
         return isClosed;
@@ -208,28 +196,10 @@ public class SequenceRandomAccessRead implements RandomAccessRead
     }
 
     @Override
-    public int peek() throws IOException
-    {
-        int result = read();
-        if (result != -1)
-        {
-            rewind(1);
-        }
-        return result;
-    }
-
-    @Override
     public boolean isEOF() throws IOException
     {
         checkClosed();
         return currentPosition >= totalLength;
-    }
-
-    @Override
-    public int available() throws IOException
-    {
-        checkClosed();
-        return (int) Math.min(totalLength - currentPosition, Integer.MAX_VALUE);
     }
 
     @Override

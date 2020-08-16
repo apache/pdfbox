@@ -349,43 +349,10 @@ class ScratchFileBuffer implements RandomAccess
      * {@inheritDoc}
      */
     @Override
-    public int peek() throws IOException
-    {
-        int result = read();
-        if (result != -1)
-        {
-            rewind(1);
-        }
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void rewind(int bytes) throws IOException
-    {
-        seek(currentPageOffset + positionInPage - bytes);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isEOF() throws IOException
     {
         checkClosed();
         return currentPageOffset + positionInPage >= size;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int available() throws IOException
-    {
-        checkClosed();
-        return (int) Math.min(size - (currentPageOffset + positionInPage), Integer.MAX_VALUE);
     }
 
     /**
@@ -408,15 +375,6 @@ class ScratchFileBuffer implements RandomAccess
         }
         
         return currentPage[positionInPage++] & 0xff;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int read(byte[] b) throws IOException
-    {
-        return read(b, 0, b.length);
     }
 
     /**

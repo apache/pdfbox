@@ -96,15 +96,6 @@ public class RandomAccessReadView implements RandomAccessRead
      * {@inheritDoc}
      */
     @Override
-    public int read(byte[] b) throws IOException
-    {
-        return read(b, 0, b.length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public int read(byte[] b, int off, int len) throws IOException
     {
         if (isEOF())
@@ -115,16 +106,6 @@ public class RandomAccessReadView implements RandomAccessRead
         int readBytes = randomAccessRead.read(b, off, Math.min(len, available()));
         currentPosition += readBytes;
         return readBytes;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int available() throws IOException
-    {
-        checkClosed();
-        return (int) (streamLength - currentPosition);
     }
 
     /**
@@ -153,20 +134,6 @@ public class RandomAccessReadView implements RandomAccessRead
     public boolean isClosed()
     {
         return randomAccessRead == null || randomAccessRead.isClosed();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int peek() throws IOException
-    {
-        if (isEOF())
-        {
-            return -1;
-        }
-        restorePosition();
-        return randomAccessRead.peek();
     }
 
     /**
