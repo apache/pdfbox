@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.20
+Release Notes -- Apache PDFBox -- Version 2.0.21
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.19 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.20 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,44 +14,56 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-756] - Some characters from TeX-created files are mapped into ASCII range 1-31
-[PDFBOX-4516] - PDFBox text and images are blurry even after rendering with high DPI
-[PDFBOX-4783] - empty annotation appearance BBox brings "Multiplying two matrices produces illegal values"
-[PDFBOX-4788] - Flattening fields results in non-widget annotations being removed
-[PDFBOX-4793] - Questionable fallback font for some embedded chinese fonts
-[PDFBOX-4794] - NPE in ExtractImages.ImageGraphicsEngine().run() (2)
-[PDFBOX-4799] - isartor-6-2-2-t02-fail-a.pdf fails on jdk15 with ArrayIndexOutOfBoundsException
-[PDFBOX-4800] - Parsing of numbers does not always terminate at actual end of number
-[PDFBOX-4801] - ArrayIndexOutOfBoundsException in PDICCBased.toRGB()
-[PDFBOX-4805] - Regression in 2.0.19
-[PDFBOX-4807] - COSString cannot be cast to COSDictionary
-[PDFBOX-4811] - Glyphs getting lost when rendering
-[PDFBOX-4814] - Wrong COSType for OCProperties after merge
-[PDFBOX-4817] - Generated XMP Metadata with other XSLT processor are XML invalid
-[PDFBOX-4819] - Optional Content Membership Dictionaries (OCMD) incorrect
-[PDFBOX-4821] - My PDF document is not printed correctly. Rendering it works.
-[PDFBOX-4822] - Off-by-one error in PDSignature.getConvertedContents()
-[PDFBOX-4824] - NullpointerException with PDFDebugger
-[PDFBOX-4825] - PDPushButton.getOnValues() throws IllegalStateException
-[PDFBOX-4828] - Encode a text using the vertical type of the font in the attachment, which succeeded in version 2.0.12 but failed in version 2.0.19
-[PDFBOX-4833] - PDColorSpace#create IOException, expected a name or array but got COSDictionary
-[PDFBOX-4849] - FlateFilter Inflater leaks
-[PDFBOX-4851] - Image rendering issue 2
+[PDFBOX-3835] - Wrap long words for multiline text fields
+[PDFBOX-4568] - Field text poorly vertically aligned
+[PDFBOX-4729] - Wrong position of text in PDTextField with multiline
+[PDFBOX-4850] - Image rendering issue
+[PDFBOX-4860] - Preflight doesn't catch repetition of elements in XMP
+[PDFBOX-4863] - Bitmapped fonts are rendered very blurry
+[PDFBOX-4866] - java.lang.IndexOutOfBoundsException
+[PDFBOX-4871] - java.lang.ArrayIndexOutOfBoundsException: 3
+[PDFBOX-4872] - java.lang.ClassCastException: org.apache.fontbox.cmap.CMapParser$Operator cannot be cast to java.lang.Number
+[PDFBOX-4878] - Call to DictionaryEncoding.getEncoding () throws NullPointerException for some PDF's
+[PDFBOX-4879] - Binary compatibility is broken in 2.0.20
+[PDFBOX-4880] - NullPointerException in TrueTypeEmbedder.createFontDescriptor() with OCR-B font
+[PDFBOX-4882] - Two conditions are always false in TrueTypeEmbedder.isEmbeddingPermitted
+[PDFBOX-4887] - Using the same font fully embedded in plain text and PDTextField, it throws an exception in PDTextField.setValue
+[PDFBOX-4889] - Cannot flatten this file.
+[PDFBOX-4890] - Stack overflow in BufferedRandomAccessFile.read() while creating font cache
+[PDFBOX-4891] - nbspace missing in WinAnsiEncoding and MacRomanEncoding
+[PDFBOX-4894] - Invalid file offsets for PDF files larger than 2G
+[PDFBOX-4897] - PDFObjectStreamParser doesnt use offset
+[PDFBOX-4900] - PDFBox Rendering of PDF Page incorrect when using the special None Named Separation
+[PDFBOX-4902] - PDF/A validation fails when system time zone has minutes
+[PDFBOX-4904] - Bold text leads to wrong order - Text extraction
+[PDFBOX-4906] - PDOptionalContentProperties hasGroup can null pointer if OCGs data is missing
+[PDFBOX-4907] - Signature not detected by Acrobat Reader
+[PDFBOX-4913] - ArrayIndexOutOfBoundsException in ShadingContext.convertToRGB()
+[PDFBOX-4915] - "Page tree root must be a dictionary" on PDDocument.load
+[PDFBOX-4920] - OCSP validation takes very long in ci build
+[PDFBOX-4923] - IllegalArgumentException: The start and the end values must not have different lengths
+[PDFBOX-4927] - IllegalStateException: Expected 'Page' but found COSName{Annot} in PDPageTree.sanitizeType
+[PDFBOX-4930] - Font thickness issue when we use PDFBox for generating images from PDF
 
 Improvement
 
-[PDFBOX-4784] - Possibility to provide the SecureRandom to SecurityHandler
-[PDFBOX-4804] - Remove no longer needed parameter from PDFStreamEngine#show*Glyph
-[PDFBOX-4810] - Improve CodespaceRange to be in line with the spec
-[PDFBOX-4844] - Pass resourceCache to patterns
-
-Test
-
-[PDFBOX-4854] - Add test that font can be deleted after usage
+[PDFBOX-3812] - Support auto size font for multiline PDTextField
+[PDFBOX-4594] - Multiline field text with auto font sizing should be size adjusted
+[PDFBOX-4869] - Reading standard 14 fonts is slow
+[PDFBOX-4875] - Lazy load standard 14 fonts, only if needed
+[PDFBOX-4877] - Matrix class performance improvements
+[PDFBOX-4895] - Faster COSNumber
+[PDFBOX-4896] - Don't save and restore graphic states around showGlyph in LegacyPDFStreamEngine
+[PDFBOX-4909] - Don't calculate font height for every glyph
 
 Task
 
-[PDFBOX-4813] - Remove catching NullPointerException
+[PDFBOX-4071] - Improve code quality (3)
+[PDFBOX-4933] - Correct PDFBOX-1777 to PDFBOX-1977 in tests
+
+Sub-task
+
+[PDFBOX-3910] - Support auto font sizing in multiline text fields
 
 Release Contents
 ----------------
