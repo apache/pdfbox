@@ -17,6 +17,9 @@
 package org.apache.pdfbox.io;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,7 +62,48 @@ public class RandomAccessReadBufferTest
         assertEquals(2, randomAccessSource.read());
         assertEquals(3, randomAccessSource.getPosition());
 
+        assertFalse(randomAccessSource.isClosed());
         randomAccessSource.close();
+        assertTrue(randomAccessSource.isClosed());
+    }
+
+    @Test
+    public void testSeekEOF() throws IOException
+    {
+        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+
+        randomAccessSource.seek(3);
+        assertEquals(3, randomAccessSource.getPosition());
+        
+        try
+        {
+            randomAccessSource.seek(-1);
+            fail("seek should have thrown an IOException");
+        }
+        catch (IOException e)
+        {
+            
+        }
+        
+        assertFalse(randomAccessSource.isEOF());
+        randomAccessSource.seek(20);
+        assertTrue(randomAccessSource.isEOF());
+        assertEquals(-1, randomAccessSource.read());
+        assertEquals(-1, randomAccessSource.read(new byte[1], 0, 1));
+
+        randomAccessSource.close();
+        try
+        {
+            randomAccessSource.read();
+            fail("checkClosed should have thrown an IOException");
+        }
+        catch (IOException e)
+        {
+
+        }
     }
 
     @Test

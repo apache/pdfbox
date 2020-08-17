@@ -49,6 +49,15 @@ public class SequenceRandomAccessReadTest
                 randomAccessReadBuffer2);
         SequenceRandomAccessRead sequenceRandomAccessRead = new SequenceRandomAccessRead(inputList);
 
+        try
+        {
+            sequenceRandomAccessRead.createView(0, 10);
+            fail("createView should have thrown an IOException");
+        }
+        catch(IOException e)
+        {
+        }
+        
         int overallLength = input1.length() + input2.length();
         assertEquals(overallLength, sequenceRandomAccessRead.length());
         
@@ -121,6 +130,15 @@ public class SequenceRandomAccessReadTest
         assertEquals('f', sequenceRandomAccessRead.peek());
         assertEquals('f', sequenceRandomAccessRead.read());
 
+        try 
+        {
+            sequenceRandomAccessRead.seek(-1);
+            fail("seek should have thrown an IOException");
+        }
+        catch (IOException e)
+        {
+        }
+        
         sequenceRandomAccessRead.close();
     }
 
@@ -189,6 +207,8 @@ public class SequenceRandomAccessReadTest
         assertFalse(sequenceRandomAccessRead.isEOF());
         assertEquals('t', sequenceRandomAccessRead.read());
         assertTrue(sequenceRandomAccessRead.isEOF());
+        assertEquals(-1, sequenceRandomAccessRead.read());
+        assertEquals(-1, sequenceRandomAccessRead.read(new byte[1], 0, 1));
         // rewind
         sequenceRandomAccessRead.rewind(5);
         assertFalse(sequenceRandomAccessRead.isEOF());
@@ -202,7 +222,9 @@ public class SequenceRandomAccessReadTest
         assertTrue(sequenceRandomAccessRead.isEOF());
         assertEquals(overallLength + 10, sequenceRandomAccessRead.getPosition());
 
+        assertFalse(sequenceRandomAccessRead.isClosed());
         sequenceRandomAccessRead.close();
+        assertTrue(sequenceRandomAccessRead.isClosed());
         // closing a SequenceRandomAccessRead twice shouldn't be a problem
         sequenceRandomAccessRead.close();
 
