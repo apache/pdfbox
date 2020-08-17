@@ -66,11 +66,12 @@ public class RandomAccessReadView implements RandomAccessRead
     public void seek(final long newOffset) throws IOException
     {
         checkClosed();
-        if (newOffset < streamLength)
+        if (newOffset < 0)
         {
-            randomAccessRead.seek(startPosition + newOffset);
-            currentPosition = newOffset;
+            throw new IOException("Invalid position " + newOffset);
         }
+        randomAccessRead.seek(startPosition + Math.min(newOffset, streamLength));
+        currentPosition = newOffset;
     }
 
     /**
