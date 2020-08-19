@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
-import org.apache.pdfbox.io.RandomAccessBufferedFile;
+import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessReadMemoryMappedFile;
 import org.apache.pdfbox.io.RandomAccessRead;
@@ -297,7 +297,7 @@ public class Loader
             MemoryUsageSetting memUsageSetting) throws IOException
     {
         @SuppressWarnings({ "squid:S2095" }) // raFile not closed here, may be needed for signing
-        RandomAccessBufferedFile raFile = new RandomAccessBufferedFile(file);
+        RandomAccessReadBufferedFile raFile = new RandomAccessReadBufferedFile(file);
         try
         {
             return Loader.loadPDF(raFile, password, keyStore, alias, memUsageSetting);

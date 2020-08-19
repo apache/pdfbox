@@ -30,7 +30,7 @@ import java.util.Map;
  * 
  * @author Timo Boehme
  */
-public class RandomAccessBufferedFile implements RandomAccessRead
+public class RandomAccessReadBufferedFile implements RandomAccessRead
 {
     private int pageSizeShift = 12;
     private int pageSize = 1 << pageSizeShift;
@@ -72,7 +72,7 @@ public class RandomAccessBufferedFile implements RandomAccessRead
      * @param filename the filename of the file to be read.
      * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessBufferedFile( String filename ) throws IOException 
+    public RandomAccessReadBufferedFile( String filename ) throws IOException 
     {
         this(new File(filename));
     }
@@ -83,7 +83,7 @@ public class RandomAccessBufferedFile implements RandomAccessRead
      * @param file the file to be read.
      * @throws IOException if something went wrong while accessing the given file.
      */
-    public RandomAccessBufferedFile( File file ) throws IOException 
+    public RandomAccessReadBufferedFile( File file ) throws IOException 
     {
         raFile = new RandomAccessFile(file, "r");
         fileLength = file.length();
