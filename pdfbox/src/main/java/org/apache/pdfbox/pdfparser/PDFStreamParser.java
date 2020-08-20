@@ -251,7 +251,7 @@ public class PDFStreamParser extends BaseParser
             case 'B':
                 String nextOperator = readString();
                 Operator beginImageOP = Operator.getOperator(nextOperator);
-                if (nextOperator.equals(OperatorName.BEGIN_INLINE_IMAGE))
+                if (nextOperator.equals("BI"))
                 {
                     COSDictionary imageParams = new COSDictionary();
                     beginImageOP.setImageParameters(imageParams);
@@ -306,8 +306,7 @@ public class PDFStreamParser extends BaseParser
                     currentByte = seqSource.read();
                 }
                 // the EI operator isn't unread, as it won't be processed anyway
-                Operator beginImageDataOP = Operator
-                        .getOperator(OperatorName.BEGIN_INLINE_IMAGE_DATA);
+                Operator beginImageDataOP = Operator.getOperator("ID");
                 // save the image data to the operator, so that it can be accessed later
                 beginImageDataOP.setImageData(imageData.toByteArray());
                 return beginImageDataOP;
