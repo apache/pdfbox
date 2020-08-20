@@ -140,7 +140,7 @@ public final class CreateMultiWidgetsForm
             // set the field value
             textBox.setValue("Sample field");
             
-            document.save("MultiWidgetsForm.pdf");
+            document.save("target/MultiWidgetsForm.pdf");
         }
     }
 }
