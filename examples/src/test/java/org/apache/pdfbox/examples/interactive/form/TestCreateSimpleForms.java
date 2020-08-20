@@ -90,8 +90,8 @@ public class TestCreateSimpleForms
         PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
         PDColor borderColour = appearanceCharacteristics.getBorderColour();
         PDColor backgroundColour = appearanceCharacteristics.getBackground();
-        Assert.assertEquals(borderColour.getColorSpace(), PDDeviceRGB.INSTANCE);
-        Assert.assertEquals(backgroundColour.getColorSpace(), PDDeviceRGB.INSTANCE);
+        Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour.getColorSpace());
+        Assert.assertEquals(PDDeviceRGB.INSTANCE, backgroundColour.getColorSpace());
         Assert.assertArrayEquals(new float[]{0,1,0}, borderColour.getComponents(), 0);
         Assert.assertArrayEquals(new float[]{1,1,0}, backgroundColour.getComponents(), 0);
         doc.close();
@@ -105,7 +105,7 @@ public class TestCreateSimpleForms
         PDAnnotationWidget widget2 = textBox2.getWidgets().get(0);
         PDAppearanceCharacteristicsDictionary appearanceCharacteristics2 = widget2.getAppearanceCharacteristics();
         PDColor borderColour2 = appearanceCharacteristics2.getBorderColour();
-        Assert.assertEquals(borderColour2.getColorSpace(), PDDeviceRGB.INSTANCE);
+        Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour2.getColorSpace());
         Assert.assertArrayEquals(new float[]{1,0,0}, borderColour2.getComponents(), 0);
 
         doc2.close();
@@ -154,22 +154,22 @@ public class TestCreateSimpleForms
         PDAnnotationWidget w2 = widgets.get(1);
         PDPage page1 = w1.getPage();
         PDPage page2 = w2.getPage();
-        Assert.assertFalse(page1.getCOSObject().equals(page2.getCOSObject()));
+        Assert.assertNotEquals(page1.getCOSObject(), page2.getCOSObject());
         Assert.assertEquals(page1, doc.getPage(0));
         Assert.assertEquals(page2, doc.getPage(1));
         Assert.assertEquals(page1.getAnnotations().get(0), w1);
         Assert.assertEquals(page2.getAnnotations().get(0), w2);
-        Assert.assertFalse(w1.equals(w2));
+        Assert.assertNotEquals(w1, w2);
         PDAppearanceCharacteristicsDictionary appearanceCharacteristics1 = w1.getAppearanceCharacteristics();
         PDAppearanceCharacteristicsDictionary appearanceCharacteristics2 = w2.getAppearanceCharacteristics();
         PDColor backgroundColor1 = appearanceCharacteristics1.getBackground();
         PDColor backgroundColor2 = appearanceCharacteristics2.getBackground();
         PDColor borderColour1 = appearanceCharacteristics1.getBorderColour();
         PDColor borderColour2 = appearanceCharacteristics2.getBorderColour();
-        Assert.assertEquals(backgroundColor1.getColorSpace(), PDDeviceRGB.INSTANCE);
-        Assert.assertEquals(backgroundColor2.getColorSpace(), PDDeviceRGB.INSTANCE);
-        Assert.assertEquals(borderColour1.getColorSpace(), PDDeviceRGB.INSTANCE);
-        Assert.assertEquals(borderColour2.getColorSpace(), PDDeviceRGB.INSTANCE);
+        Assert.assertEquals(PDDeviceRGB.INSTANCE, backgroundColor1.getColorSpace());
+        Assert.assertEquals(PDDeviceRGB.INSTANCE, backgroundColor2.getColorSpace());
+        Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour1.getColorSpace());
+        Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour2.getColorSpace());
         Assert.assertArrayEquals(new float[]{1,1,0}, backgroundColor1.getComponents(), 0);
         Assert.assertArrayEquals(new float[]{0,1,0}, backgroundColor2.getComponents(), 0);
         Assert.assertArrayEquals(new float[]{0,1,0}, borderColour1.getComponents(), 0);
