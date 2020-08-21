@@ -17,14 +17,19 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Color;
+import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Hashtable;
 import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.cos.COSName;
@@ -38,7 +43,9 @@ import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -87,7 +94,7 @@ public class PNGConverterTest
         checkImageConvert("png_rgb_gamma.png");
     }
 
-    // @Test
+    @Test
     public void testImageConversionRGB16BitICC() throws IOException
     {
         checkImageConvert("png_rgb_romm_16bit.png");
@@ -166,11 +173,14 @@ public class PNGConverterTest
         PDDocument doc = new PDDocument();
         byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
         PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
+        assertNotNull(pdImageXObject);
+
+        ICC_Profile imageProfile = null;
         if (pdImageXObject.getColorSpace() instanceof PDICCBased)
         {
             // Make sure that ICC profile is a valid one
             PDICCBased iccColorSpace = (PDICCBased) pdImageXObject.getColorSpace();
-            ICC_Profile.getInstance(iccColorSpace.getPDStream().toByteArray());
+            imageProfile = ICC_Profile.getInstance(iccColorSpace.getPDStream().toByteArray());
         }
         PDPage page = new PDPage();
         doc.addPage(page);
@@ -184,8 +194,43 @@ public class PNGConverterTest
         contentStream.close();
         doc.save(new File(parentDir, name + ".pdf"));
         BufferedImage image = pdImageXObject.getImage();
-        checkIdent(ImageIO.read(new ByteArrayInputStream(imageBytes)), image);
+
+        BufferedImage expectedImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
+        if (imageProfile != null && expectedImage.getColorModel().getColorSpace().isCS_sRGB())
+        {
+            // The image has an embedded ICC Profile, but the default java PNG
+            // reader does not correctly read that.
+            expectedImage = getImageWithProfileData(expectedImage, imageProfile);
+        }
+
+        checkIdent(expectedImage, image);
+
         doc.close();
+    }
+
+    public static BufferedImage getImageWithProfileData(BufferedImage sourceImage,
+             ICC_Profile realProfile)
+    {
+        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        String[] propertyNames = sourceImage.getPropertyNames();
+        if (propertyNames != null)
+        {
+            for (String propertyName : propertyNames)
+            {
+                properties.put(propertyName, sourceImage.getProperty(propertyName));
+            }
+        }
+        ComponentColorModel oldColorModel = (ComponentColorModel) sourceImage.getColorModel();
+        boolean hasAlpha = oldColorModel.hasAlpha();
+        int transparency = oldColorModel.getTransparency();
+        boolean alphaPremultiplied = oldColorModel.isAlphaPremultiplied();
+        WritableRaster raster = sourceImage.getRaster();
+        int dataType = raster.getDataBuffer().getDataType();
+        int[] componentSize = oldColorModel.getComponentSize();
+        final ColorModel colorModel = new ComponentColorModel(new ICC_ColorSpace(realProfile),
+                componentSize, hasAlpha, alphaPremultiplied, transparency, dataType);
+        return new BufferedImage(colorModel, raster, sourceImage.isAlphaPremultiplied(),
+                properties);
     }
 
     @Test
