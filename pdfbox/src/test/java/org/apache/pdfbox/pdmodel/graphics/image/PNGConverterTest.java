@@ -170,48 +170,49 @@ public class PNGConverterTest
 
     private void checkImageConvert(String name) throws IOException
     {
-        PDDocument doc = new PDDocument();
-        byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
-        PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
-        assertNotNull(pdImageXObject);
-
-        ICC_Profile imageProfile = null;
-        if (pdImageXObject.getColorSpace() instanceof PDICCBased)
+        try (PDDocument doc = new PDDocument())
         {
-            // Make sure that ICC profile is a valid one
-            PDICCBased iccColorSpace = (PDICCBased) pdImageXObject.getColorSpace();
-            imageProfile = ICC_Profile.getInstance(iccColorSpace.getPDStream().toByteArray());
+            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream(name));
+            PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
+            assertNotNull(pdImageXObject);
+            
+            ICC_Profile imageProfile = null;
+            if (pdImageXObject.getColorSpace() instanceof PDICCBased)
+            {
+                // Make sure that ICC profile is a valid one
+                PDICCBased iccColorSpace = (PDICCBased) pdImageXObject.getColorSpace();
+                imageProfile = ICC_Profile.getInstance(iccColorSpace.getPDStream().toByteArray());
+            }
+            PDPage page = new PDPage();
+            doc.addPage(page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(doc, page))
+            {
+                contentStream.setNonStrokingColor(Color.PINK);
+                contentStream.addRect(0, 0, page.getCropBox().getWidth(), page.getCropBox().getHeight());
+                contentStream.fill();
+                
+                contentStream.drawImage(pdImageXObject, 0, 0, pdImageXObject.getWidth(),
+                        pdImageXObject.getHeight());
+            }
+            doc.save(new File(parentDir, name + ".pdf"));
+            BufferedImage image = pdImageXObject.getImage();
+            
+            BufferedImage expectedImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
+            if (imageProfile != null && expectedImage.getColorModel().getColorSpace().isCS_sRGB())
+            {
+                // The image has an embedded ICC Profile, but the default java PNG
+                // reader does not correctly read that.
+                expectedImage = getImageWithProfileData(expectedImage, imageProfile);
+            }
+            
+            checkIdent(expectedImage, image);
         }
-        PDPage page = new PDPage();
-        doc.addPage(page);
-        PDPageContentStream contentStream = new PDPageContentStream(doc, page);
-        contentStream.setNonStrokingColor(Color.PINK);
-        contentStream.addRect(0, 0, page.getCropBox().getWidth(), page.getCropBox().getHeight());
-        contentStream.fill();
-
-        contentStream.drawImage(pdImageXObject, 0, 0, pdImageXObject.getWidth(),
-                pdImageXObject.getHeight());
-        contentStream.close();
-        doc.save(new File(parentDir, name + ".pdf"));
-        BufferedImage image = pdImageXObject.getImage();
-
-        BufferedImage expectedImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
-        if (imageProfile != null && expectedImage.getColorModel().getColorSpace().isCS_sRGB())
-        {
-            // The image has an embedded ICC Profile, but the default java PNG
-            // reader does not correctly read that.
-            expectedImage = getImageWithProfileData(expectedImage, imageProfile);
-        }
-
-        checkIdent(expectedImage, image);
-
-        doc.close();
     }
 
     public static BufferedImage getImageWithProfileData(BufferedImage sourceImage,
              ICC_Profile realProfile)
     {
-        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        Hashtable<String, Object> properties = new Hashtable<>();
         String[] propertyNames = sourceImage.getPropertyNames();
         if (propertyNames != null)
         {
