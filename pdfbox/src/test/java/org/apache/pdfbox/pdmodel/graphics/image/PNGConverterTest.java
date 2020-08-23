@@ -38,6 +38,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
+import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import static org.junit.Assert.assertEquals;
@@ -338,5 +339,31 @@ public class PNGConverterTest
         assertEquals(COSName.ABSOLUTE_COLORIMETRIC, PNGConverter.mapPNGRenderIntent(3));
         assertNull(PNGConverter.mapPNGRenderIntent(-1));
         assertNull(PNGConverter.mapPNGRenderIntent(4));
+    }
+
+    /**
+     * Test code coverage for /Intent /Perceptual and for sRGB icc profile in indexed colorspace.
+     *
+     * @throws IOException 
+     */
+    @Test
+    public void testImageConversionIntentIndexed() throws IOException
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream("929316.png"));
+            PDImageXObject pdImageXObject = PNGConverter.convertPNGImage(doc, imageBytes);
+            assertEquals(COSName.PERCEPTUAL, pdImageXObject.getCOSObject().getItem(COSName.INTENT));
+
+            // Check that this image gets an indexed colorspace with sRGB ICC based colorspace
+            PDIndexed indexedColorspace = (PDIndexed) pdImageXObject.getColorSpace();
+
+            PDICCBased iccColorspace = (PDICCBased) indexedColorspace.getBaseColorSpace();
+            // validity of ICC CS is tested in checkImageConvert
+
+            assertTrue(iccColorspace.isIsRGB());
+        }
+
+        checkImageConvert("929316.png");
     }
 }
