@@ -349,6 +349,8 @@ public class PNGConverterTest
     @Test
     public void testImageConversionIntentIndexed() throws IOException
     {
+        checkImageConvert("929316.png");
+
         try (PDDocument doc = new PDDocument())
         {
             byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream("929316.png"));
@@ -363,7 +365,5 @@ public class PNGConverterTest
 
             assertTrue(iccColorspace.issRGB());
         }
-
-        checkImageConvert("929316.png");
     }
 }
