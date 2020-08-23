@@ -24,11 +24,7 @@ import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -46,9 +42,11 @@ public class PDImageXObjectTest
     
     /**
      * Test of createFromFileByExtension method, of class PDImageXObject.
+     * @throws java.io.IOException
+     * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromFileByExtension() throws Exception
+    public void testCreateFromFileByExtension() throws IOException, URISyntaxException
     {
         testCompareCreatedFileByExtensionWithCreatedByCCITTFactory("ccittg4.tif");
 
@@ -63,9 +61,11 @@ public class PDImageXObjectTest
 
     /**
      * Test of createFromFile method, of class PDImageXObject.
+     * @throws java.io.IOException
+     * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromFile() throws Exception
+    public void testCreateFromFile() throws IOException, URISyntaxException
     {
         testCompareCreatedFileWithCreatedByCCITTFactory("ccittg4.tif");
 
@@ -81,9 +81,11 @@ public class PDImageXObjectTest
 
     /**
      * Test of createFromFileByContent method, of class PDImageXObject.
+     * @throws java.io.IOException
+     * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromFileByContent() throws Exception
+    public void testCreateFromFileByContent() throws IOException, URISyntaxException
     {
         testCompareCreateByContentWithCreatedByCCITTFactory("ccittg4.tif");
 
@@ -99,9 +101,11 @@ public class PDImageXObjectTest
 
     /**
      * Test of createFromByteArray method, of class PDImageXObject.
+     * @throws java.io.IOException
+     * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromByteArray() throws Exception
+    public void testCreateFromByteArray() throws IOException, URISyntaxException
     {
         testCompareCreatedFromByteArrayWithCreatedByCCITTFactory("ccittg4.tif");
 
@@ -117,139 +121,139 @@ public class PDImageXObjectTest
     private void testCompareCreatedFileByExtensionWithCreatedByLosslessFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFileByExtension(file, doc);
-
-        BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
-        PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFileByExtension(file, doc);
+            
+            BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
+            PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedFileByExtensionWithCreatedByCCITTFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFileByExtension(file, doc);
-
-        PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFileByExtension(file, doc);
+            
+            PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedFileByExtensionWithCreatedByJPEGFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFileByExtension(file, doc);
-
-        PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFileByExtension(file, doc);
+            
+            PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedFileWithCreatedByLosslessFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFile(file.getAbsolutePath(), doc);
-
-        BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
-        PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFile(file.getAbsolutePath(), doc);
+            
+            BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
+            PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedFileWithCreatedByCCITTFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFile(file.getAbsolutePath(), doc);
-
-        PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFile(file.getAbsolutePath(), doc);
+            
+            PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedFileWithCreatedByJPEGFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFile(file.getAbsolutePath(), doc);
-
-        PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFile(file.getAbsolutePath(), doc);
+            
+            PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedByContentWithCreatedByLosslessFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFileByContent(file, doc);
-
-        BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
-        PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFileByContent(file, doc);
+            
+            BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
+            PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreateByContentWithCreatedByCCITTFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFileByContent(file, doc);
-
-        PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFileByContent(file, doc);
+            
+            PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedByContentWithCreatedByJPEGFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        PDImageXObject image = PDImageXObject.createFromFileByContent(file, doc);
-
-        PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            PDImageXObject image = PDImageXObject.createFromFileByContent(file, doc);
+            
+            PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
     
     
@@ -258,50 +262,50 @@ public class PDImageXObjectTest
     private void testCompareCreatedFromByteArrayWithCreatedByLosslessFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
-        PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
-
-        BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
-        PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
+            PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
+            
+            BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
+            PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedFromByteArrayWithCreatedByCCITTFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
-        PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
-
-        PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
+            PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
+            
+            PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void testCompareCreatedFromByteArrayWithCreatedByJPEGFactory(String filename)
             throws IOException, URISyntaxException
     {
-        PDDocument doc = new PDDocument();
-        File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
-        byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
-        PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
-
-        PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
-
-        Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
-        checkIdentARGB(image.getImage(), expectedImage.getImage());
-
-        doc.close();
+        try (PDDocument doc = new PDDocument())
+        {
+            File file = new File(PDImageXObjectTest.class.getResource(filename).toURI());
+            byte[] byteArray = IOUtils.toByteArray(new FileInputStream(file));
+            PDImageXObject image = PDImageXObject.createFromByteArray(doc, byteArray, null);
+            
+            PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
+            
+            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            checkIdentARGB(image.getImage(), expectedImage.getImage());
+        }
     }
 
     private void checkIdentARGB(BufferedImage expectedImage, BufferedImage actualImage)
