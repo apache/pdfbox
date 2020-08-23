@@ -361,7 +361,7 @@ public class PNGConverterTest
             PDICCBased iccColorspace = (PDICCBased) indexedColorspace.getBaseColorSpace();
             // validity of ICC CS is tested in checkImageConvert
 
-            assertTrue(iccColorspace.isIsRGB());
+            assertTrue(iccColorspace.issRGB());
         }
 
         checkImageConvert("929316.png");
