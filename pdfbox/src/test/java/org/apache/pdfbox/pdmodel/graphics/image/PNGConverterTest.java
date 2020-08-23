@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.image;
 
 import java.awt.Color;
+import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
@@ -41,6 +42,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -346,6 +348,8 @@ public class PNGConverterTest
     @Test
     public void testImageConversionIntentIndexed() throws IOException
     {
+        checkImageConvert("929316.png");
+
         PDDocument doc = new PDDocument();
 
         byte[] imageBytes = IOUtils.toByteArray(PNGConverterTest.class.getResourceAsStream("929316.png"));
@@ -358,9 +362,13 @@ public class PNGConverterTest
         PDICCBased iccColorspace = (PDICCBased) indexedColorspace.getBaseColorSpace();
         // validity of ICC CS is tested in checkImageConvert
 
-        assertTrue(iccColorspace.issRGB());
-        doc.close();
+        // should be an sRGB profile. Or at least, the data that is in ColorSpace.CS_sRGB and
+        // that was assigned in PNGConvert.
+        // (PDICCBased.is_sRGB() fails in openjdk on that data, maybe it is not a "real" sRGB)
+        ICC_Profile rgbProfile = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
+        byte[] sRGB_bytes = rgbProfile.getData();
+        Assert.assertArrayEquals(sRGB_bytes, iccColorspace.getPDStream().toByteArray());
 
-        checkImageConvert("929316.png");
+        doc.close();
     }
 }
