@@ -183,6 +183,16 @@ public final class PDICCBased extends PDCIEBasedColorSpace
     }
 
     /**
+     * Tell whether this is an sRGB colorspace
+     *
+     * @return
+     */
+    public boolean issRGB()
+    {
+        return isRGB;
+    }
+
+    /**
      * Get the underlying ICC profile stream.
      * @return the underlying ICC profile stream
      */
