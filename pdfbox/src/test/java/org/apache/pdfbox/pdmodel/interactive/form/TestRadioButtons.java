@@ -25,8 +25,13 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 /**
  * This will test the functionality of Radio Buttons in PDFBox.
@@ -90,6 +95,44 @@ public class TestRadioButtons extends TestCase
             options.add("Value02");
             radioButton.setExportValues(options);
 
+            // Test getSelectedExportValues()
+            List<PDAnnotationWidget> widgets = new ArrayList<>();
+            for (int i = 0; i < options.size(); i++)
+            {
+                PDAnnotationWidget widget = new PDAnnotationWidget();
+                COSDictionary apNDict = new COSDictionary();
+                apNDict.setItem(COSName.Off, new PDAppearanceStream(doc));
+                apNDict.setItem(options.get(i), new PDAppearanceStream(doc));
+
+                PDAppearanceDictionary appearance = new PDAppearanceDictionary();
+                PDAppearanceEntry appearanceNEntry = new PDAppearanceEntry(apNDict);
+                appearance.setNormalAppearance(appearanceNEntry);
+                widget.setAppearance(appearance);
+                widget.setAppearanceState("Off");
+                widgets.add(widget);
+            }
+            radioButton.setWidgets(widgets);
+
+            radioButton.setValue("Value01");
+            assertEquals("Value01", radioButton.getValue());
+            assertEquals(1, radioButton.getSelectedExportValues().size());
+            assertEquals("Value01", radioButton.getSelectedExportValues().get(0));
+            assertEquals("Value01", widgets.get(0).getAppearanceState().getName());
+            assertEquals("Off", widgets.get(1).getAppearanceState().getName());
+
+            radioButton.setValue("Value02");
+            assertEquals("Value02", radioButton.getValue());
+            assertEquals(1, radioButton.getSelectedExportValues().size());
+            assertEquals("Value02", radioButton.getSelectedExportValues().get(0));
+            assertEquals("Off", widgets.get(0).getAppearanceState().getName());
+            assertEquals("Value02", widgets.get(1).getAppearanceState().getName());
+
+            radioButton.setValue("Off");
+            assertEquals("Off", radioButton.getValue());
+            assertEquals(0, radioButton.getSelectedExportValues().size());
+            assertEquals("Off", widgets.get(0).getAppearanceState().getName());
+            assertEquals("Off", widgets.get(1).getAppearanceState().getName());
+
             COSArray optItem = (COSArray) radioButton.getCOSObject().getItem(COSName.OPT);
 
             // assert that the values have been correctly set
@@ -106,7 +149,7 @@ public class TestRadioButtons extends TestCase
             radioButton.setExportValues(null);
             assertNull(radioButton.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
-            assertEquals(radioButton.getExportValues(), new ArrayList<String>());
+            assertEquals(radioButton.getExportValues(), new ArrayList<>());
         }
     }
 }

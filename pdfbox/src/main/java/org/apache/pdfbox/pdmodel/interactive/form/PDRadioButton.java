@@ -114,6 +114,7 @@ public final class PDRadioButton extends PDButton
                 {
                     selectedExportValues.add(exportValues.get(idx));
                 }
+                ++idx;
             }
             return selectedExportValues;
         }
