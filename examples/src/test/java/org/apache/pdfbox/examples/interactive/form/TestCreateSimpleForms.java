@@ -32,6 +32,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
+import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.junit.Assert;
@@ -175,6 +177,60 @@ public class TestCreateSimpleForms
         Assert.assertArrayEquals(new float[]{0,1,0}, borderColour1.getComponents(), 0);
         Assert.assertArrayEquals(new float[]{1,0,0}, borderColour2.getComponents(), 0);
         doc.close();
+    }
+
+    @Test
+    public void testCreateCheckBox() throws IOException
+    {
+        CreateCheckBox.main(null);
+        PDDocument doc1 = PDDocument.load(new File("target/CheckBoxSample.pdf"));
+        new PDFRenderer(doc1).renderImage(0);
+        PDAcroForm acroForm1 = doc1.getDocumentCatalog().getAcroForm();
+        PDCheckBox checkbox1 = (PDCheckBox) acroForm1.getField("MyCheckBox");
+        Assert.assertEquals("Yes", checkbox1.getOnValue());
+        Assert.assertEquals("Off", checkbox1.getValue());
+        checkbox1.check();
+        Assert.assertEquals("Yes", checkbox1.getValue());
+        doc1.save("target/CheckBoxSample-modified.pdf");
+        doc1.close();
+
+        PDDocument doc2 = PDDocument.load(new File("target/CheckBoxSample-modified.pdf"));
+        new PDFRenderer(doc2).renderImage(0);
+        PDAcroForm acroForm2 = doc2.getDocumentCatalog().getAcroForm();
+        PDCheckBox checkbox2 = (PDCheckBox) acroForm2.getField("MyCheckBox");
+        Assert.assertEquals("Yes", checkbox2.getValue());
+        doc2.close();
+    }
+
+    @Test
+    public void testRadioButtons() throws IOException
+    {
+        CreateRadioButtons.main(null);
+        PDDocument doc1 = PDDocument.load(new File("target/RadioButtonsSample.pdf"));
+        new PDFRenderer(doc1).renderImage(0);
+        PDAcroForm acroForm1 = doc1.getDocumentCatalog().getAcroForm();
+        PDRadioButton radioButton1 = (PDRadioButton) acroForm1.getField("MyRadioButton");
+        Assert.assertEquals(3, radioButton1.getWidgets().size());
+        Assert.assertEquals("c", radioButton1.getValue());
+        Assert.assertEquals(1, radioButton1.getSelectedExportValues().size());
+        Assert.assertEquals("c", radioButton1.getSelectedExportValues().get(0));
+        Assert.assertEquals(3, radioButton1.getExportValues().size());
+        Assert.assertEquals("a", radioButton1.getExportValues().get(0));
+        Assert.assertEquals("b", radioButton1.getExportValues().get(1));
+        Assert.assertEquals("c", radioButton1.getExportValues().get(2));
+        radioButton1.setValue("b");
+        doc1.save("target/RadioButtonsSample-modified.pdf");
+        doc1.close();
+
+        PDDocument doc2 = PDDocument.load(new File("target/RadioButtonsSample-modified.pdf"));
+        new PDFRenderer(doc2).renderImage(0);
+        PDAcroForm acroForm2 = doc2.getDocumentCatalog().getAcroForm();
+        PDRadioButton radioButton2 = (PDRadioButton) acroForm2.getField("MyRadioButton");
+        Assert.assertEquals("b", radioButton2.getValue());
+        Assert.assertEquals(1, radioButton2.getSelectedExportValues().size());
+        Assert.assertEquals("b", radioButton2.getSelectedExportValues().get(0));
+        Assert.assertEquals(3, radioButton2.getExportValues().size());
+        doc2.close();
     }
 
     private PDFont getFontFromWidgetResources(PDTextField textBox, String fontResourceName) throws IOException

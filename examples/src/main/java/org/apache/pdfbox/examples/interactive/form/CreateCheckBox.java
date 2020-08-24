@@ -101,7 +101,7 @@ public class CreateCheckBox
         // always call check() or unCheck(), or the box will remain invisible.
         checkbox.unCheck();
 
-        document.save("CheckBoxSample.pdf");
+        document.save("target/CheckBoxSample.pdf");
         document.close();
     }
 
