@@ -118,7 +118,7 @@ public class CreateRadioButtons
             
             radioButton.setValue("c");
 
-            document.save("RadioButtonsSample.pdf");
+            document.save("target/RadioButtonsSample.pdf");
         }
     }
 
