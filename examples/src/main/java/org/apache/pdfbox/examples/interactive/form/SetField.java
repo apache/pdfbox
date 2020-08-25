@@ -54,7 +54,15 @@ public class SetField
         {
             if (field instanceof PDCheckBox)
             {
-                field.setValue("Yes");
+                PDCheckBox checkbox = (PDCheckBox) field;
+                if (value.isEmpty())
+                {
+                    checkbox.unCheck();
+                }
+                else
+                {
+                    checkbox.check();
+                }
             }
             else if (field instanceof PDComboBox)
             {
