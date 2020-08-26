@@ -394,14 +394,17 @@ final class PNGConverter
         if (state.iCCP != null || state.sRGB != null)
         {
             // We have got a color profile, which we must attach
-            PDICCBased profile = new PDICCBased(document);
-            COSStream cosStream = profile.getPDStream().getCOSObject();
+            COSArray array = new COSArray();
+            array.add(COSName.ICCBASED);
+            PDStream pdStream = new PDStream(document);
+            array.add(pdStream);
+            COSStream cosStream = pdStream.getCOSObject();
             cosStream.setInt(COSName.N, colorSpace.getNumberOfComponents());
             cosStream.setItem(COSName.ALTERNATE, colorSpace.getNumberOfComponents()
                     == 1 ? COSName.DEVICEGRAY : COSName.DEVICERGB);
+            cosStream.setItem(COSName.FILTER, COSName.FLATE_DECODE);
             if (state.iCCP != null)
             {
-                cosStream.setItem(COSName.FILTER, COSName.FLATE_DECODE);
                 // We need to skip over the name
                 int iccProfileDataStart = 0;
                 while (iccProfileDataStart < 80 && iccProfileDataStart < state.iCCP.length)
@@ -436,12 +439,13 @@ final class PNGConverter
             {
                 // We tag the image with the sRGB profile
                 ICC_Profile rgbProfile = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
-                try (OutputStream outputStream = cosStream.createRawOutputStream())
+                try (OutputStream outputStream = cosStream.createOutputStream())
                 {
                     outputStream.write(rgbProfile.getData());
                 }
             }
 
+            PDICCBased profile = PDICCBased.create(array, null);
             imageXObject.setColorSpace(profile);
         }
         return imageXObject;
