@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -351,6 +352,12 @@ public final class PDInlineImage implements PDImage
     public BufferedImage getImage(Rectangle region, int subsampling) throws IOException
     {
         return SampledImageReader.getRGBImage(this, region, subsampling, null);
+    }
+
+    @Override
+    public WritableRaster getRawRaster() throws IOException
+    {
+        return SampledImageReader.getRawRaster(this);
     }
 
     @Override

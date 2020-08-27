@@ -19,6 +19,7 @@ package org.apache.pdfbox.pdmodel.graphics.image;
 import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -42,6 +43,18 @@ public interface PDImage extends COSObjectable
      * @throws IOException
      */
     BufferedImage getImage() throws IOException;
+
+    /**
+     * Return the image data as WritableRaster. You should consult the PDColorSpace returned
+     * by {@link #getColorSpace()} to know how to interpret the data in this WritableRaster.
+     *
+     * Use this if e.g. want access to the raw color information of a
+     * {@link org.apache.pdfbox.pdmodel.graphics.color.PDDeviceN} image.
+     *
+     * @return the raw writable raster for this image
+     * @throws IOException
+     */
+    WritableRaster getRawRaster() throws IOException;
 
     /**
      * Returns the content of this image as an AWT buffered image with an (A)RGB colored space.
