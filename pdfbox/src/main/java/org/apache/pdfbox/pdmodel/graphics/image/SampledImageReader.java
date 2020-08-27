@@ -251,12 +251,12 @@ final class SampledImageReader
 
         try
         {
-            int dataBuffeType = DataBuffer.TYPE_BYTE;
+            int dataBufferType = DataBuffer.TYPE_BYTE;
             if (bitsPerComponent > 8)
             {
-                dataBuffeType = DataBuffer.TYPE_USHORT;
+                dataBufferType = DataBuffer.TYPE_USHORT;
             }
-            WritableRaster raster = Raster.createInterleavedRaster(dataBuffeType, width, height, numComponents,
+            WritableRaster raster = Raster.createInterleavedRaster(dataBufferType, width, height, numComponents,
                     new Point(0, 0));
             readRasterFromAny(pdImage, raster);
             return raster;
