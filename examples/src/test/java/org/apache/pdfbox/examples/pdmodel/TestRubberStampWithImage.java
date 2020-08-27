@@ -57,7 +57,7 @@ public class TestRubberStampWithImage
         RubberStampWithImage rubberStamp = new RubberStampWithImage();
         rubberStamp.doIt(args);
 
-        PDDocument doc2 = PDDocument.load(new File(documentFile));
+        PDDocument doc2 = PDDocument.load(new File(outFile));
         BufferedImage bim2 = new PDFRenderer(doc2).renderImage(0);
         Assert.assertFalse(compareImages(bim1, bim2));
         PDAnnotationRubberStamp rubberStampAnnotation = (PDAnnotationRubberStamp) doc2.getPage(0).getAnnotations().get(0);
