@@ -374,6 +374,58 @@ public class LosslessFactoryTest extends TestCase
         }
     }
 
+    /**
+     * Check whether the raw data of images are identical.
+     *
+     * @param expectedImage
+     * @param actualImage
+     */
+    static void checkIdentRaw(BufferedImage expectedImage, PDImageXObject actualImage)
+            throws IOException
+    {
+        WritableRaster expectedRaster = expectedImage.getRaster();
+        WritableRaster actualRaster = actualImage.getRawRaster();
+        int w = expectedRaster.getWidth();
+        int h = expectedRaster.getHeight();
+        assertEquals(w, actualRaster.getWidth());
+        assertEquals(h, actualRaster.getHeight());
+        assertEquals(expectedRaster.getDataBuffer().getDataType(), actualRaster.getDataBuffer().getDataType());
+        int numDataElements = expectedRaster.getNumDataElements();
+        int numDataElementsToCompare;
+        if (expectedImage.getAlphaRaster() != null)
+        {
+            // We do not compare the alpha channel, as this is stored extra
+            numDataElementsToCompare = numDataElements - 1;
+            assertEquals(numDataElementsToCompare, actualRaster.getNumDataElements());
+        }
+        else
+        {
+            numDataElementsToCompare = numDataElements;
+            assertEquals(numDataElements, actualRaster.getNumDataElements());
+        }
+        int[] expectedData = new int[numDataElements];
+        int[] actualData = new int[numDataElements];
+        for (int y = 0; y < h; ++y)
+        {
+            for (int x = 0; x < w; ++x)
+            {
+                expectedRaster.getPixel(x, y, expectedData);
+                actualRaster.getPixel(x, y, actualData);
+                for (int i = 0; i < numDataElementsToCompare; i++)
+                {
+                    int expectedValue = expectedData[i];
+                    int actualValue = actualData[i];
+                    if (expectedValue != actualValue)
+                    {
+                        String errMsg = String.format("(%d,%d) Channel %d %04X != %04X", x, y, i, expectedValue,
+                                actualValue);
+                        assertEquals(errMsg, expectedValue, actualValue);
+                    }
+                }
+            }
+        }
+    }
+
     private void doBitmaskTransparencyTest(int imageType, String pdfFilename) throws IOException
     {
         PDDocument document = new PDDocument();
@@ -586,6 +638,7 @@ public class LosslessFactoryTest extends TestCase
         validate(ximage, 16, w, h, "png", PDDeviceRGB.INSTANCE.getName());
         checkIdent(image, ximage.getImage());
         checkIdentRGB(image, ximage.getOpaqueImage());
+        checkIdentRaw(image, ximage);
 
         assertNotNull(ximage.getSoftMask());
         validate(ximage.getSoftMask(), 16, w, h, "png", PDDeviceGray.INSTANCE.getName());

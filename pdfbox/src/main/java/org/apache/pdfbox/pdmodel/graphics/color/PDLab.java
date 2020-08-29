@@ -20,6 +20,7 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRange;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
@@ -104,6 +105,13 @@ public final class PDLab extends PDCIEDictionaryBasedColorSpace
         }
 
         return rgbImage;
+    }
+
+    @Override
+    public BufferedImage toRawImage(WritableRaster raster)
+    {
+        // Not handled at the moment.
+       return null;
     }
 
     @Override

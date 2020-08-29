@@ -70,6 +70,14 @@ public final class PDDeviceGray extends PDDeviceColorSpace
     }
 
     @Override
+    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    {
+        // DeviceGray is whatever the output device chooses. We have no Java colorspace
+        // for this.
+        return null;
+    }
+
+    @Override
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
         int width = raster.getWidth();

@@ -86,6 +86,12 @@ public final class PDJPXColorSpace extends PDColorSpace
     }
 
     @Override
+    public BufferedImage toRawImage(WritableRaster raster)
+    {
+        return toRawImage(raster, this.awtColorSpace);
+    }
+
+    @Override
     public COSBase getCOSObject()
     {
         throw new UnsupportedOperationException("JPX color spaces don't have COS objects");

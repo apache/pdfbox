@@ -101,6 +101,12 @@ public final class PDPattern extends PDSpecialColorSpace
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns the pattern for the given color.
      * 

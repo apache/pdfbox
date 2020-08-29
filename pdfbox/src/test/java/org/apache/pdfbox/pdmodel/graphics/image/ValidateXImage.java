@@ -72,6 +72,17 @@ public class ValidateXImage
         assertNotNull(ximage.getImage());
         assertEquals(ximage.getWidth(), ximage.getImage().getWidth());
         assertEquals(ximage.getHeight(), ximage.getImage().getHeight());
+        WritableRaster rawRaster = ximage.getRawRaster();
+        assertNotNull(rawRaster);
+        assertEquals(rawRaster.getWidth(), ximage.getWidth());
+        assertEquals(rawRaster.getHeight(), ximage.getHeight());
+        if (colorSpaceName.equals("ICCBased"))
+        {
+            BufferedImage rawImage = ximage.getRawImage();
+            assertNotNull(rawImage);
+            assertEquals(rawImage.getWidth(), ximage.getWidth());
+            assertEquals(rawImage.getHeight(), ximage.getHeight());
+        }
 
         boolean canEncode = true;
         boolean writeOk;

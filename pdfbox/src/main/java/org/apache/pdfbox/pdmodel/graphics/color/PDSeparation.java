@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.awt.Point;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
@@ -220,6 +221,12 @@ public class PDSeparation extends PDSpecialColorSpace
             // scale to 0..255
             alt[s] = (int) (result[s] * 255);
         }
+    }
+
+    @Override
+    public BufferedImage toRawImage(WritableRaster raster)
+    {
+        return toRawImage(raster, ColorSpace.getInstance(ColorSpace.CS_GRAY));
     }
 
     /**

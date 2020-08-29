@@ -361,6 +361,12 @@ public final class PDInlineImage implements PDImage
     }
 
     @Override
+    public BufferedImage getRawImage() throws IOException
+    {
+        return getColorSpace().toRawImage(getRawRaster());
+    }
+
+    @Override
     public BufferedImage getStencilImage(Paint paint) throws IOException
     {
         if (!isStencil())

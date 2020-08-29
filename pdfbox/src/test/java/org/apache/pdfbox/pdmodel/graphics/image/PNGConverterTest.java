@@ -41,6 +41,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDICCBased;
 import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
+import static org.apache.pdfbox.pdmodel.graphics.image.LosslessFactoryTest.checkIdentRaw;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -199,6 +200,8 @@ public class PNGConverterTest
             }
             doc.save(new File(parentDir, name + ".pdf"));
             BufferedImage image = pdImageXObject.getImage();
+
+            assertNotNull(pdImageXObject.getRawRaster());
             
             BufferedImage expectedImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
             if (imageProfile != null && expectedImage.getColorModel().getColorSpace().isCS_sRGB())
@@ -209,6 +212,15 @@ public class PNGConverterTest
             }
             
             checkIdent(expectedImage, image);
+
+            BufferedImage rawImage = pdImageXObject.getRawImage();
+            if (rawImage != null)
+            {
+                assertEquals(rawImage.getWidth(), pdImageXObject.getWidth());
+                assertEquals(rawImage.getHeight(), pdImageXObject.getHeight());
+                // We compare the raw data
+                checkIdentRaw(expectedImage, pdImageXObject);
+            }
         }
     }
 
