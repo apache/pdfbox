@@ -117,4 +117,12 @@ public final class PDDeviceRGB extends PDDeviceColorSpace
         image.setData(raster);
         return image;
     }
+
+    @Override
+    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    {
+        // Device RGB is not specified, as its the colors of whatever device you use. The user
+        // should use the toRGBImage().
+        return null;
+    }
 }

@@ -298,6 +298,34 @@ public abstract class PDColorSpace implements COSObjectable
     public abstract BufferedImage toRGBImage(WritableRaster raster) throws IOException;
 
     /**
+     * Returns the image in this colorspace or null. No conversion is performed.
+     *
+     * For special colorspaces like PDSeparation the image is returned in the gray colorspace.
+     * For undefined colorspaces like DeviceCMYK/DeviceRGB and DeviceGray null is returned.
+     *
+     * You can always fallback to {@link #toRGBImage(WritableRaster)} if this returns null.
+     *
+     * @param raster the source raster
+     * @return an buffered image in this colorspace. Or null if it is not possible to extract
+     * that image with the original colorspace without conversion.
+     */
+    public abstract BufferedImage toRawImage(WritableRaster raster) throws IOException;
+
+    /**
+     * Returns the given raster as BufferedImage with the given awtColorSpace using a
+     * ComponentColorModel.
+     * @param raster the source raster
+     * @param awtColorSpace the AWT colorspace
+     * @return a BufferedImage in this colorspace
+     */
+    protected final BufferedImage toRawImage(WritableRaster raster, ColorSpace awtColorSpace)
+    {
+        ColorModel colorModel = new ComponentColorModel(awtColorSpace,
+                false, false, Transparency.OPAQUE, raster.getDataBuffer().getDataType());
+        return new BufferedImage(colorModel, raster, false, null);
+    }
+
+    /**
      * Returns the (A)RGB equivalent of the given raster, using the given AWT color space
      * to perform the conversion.
      * @param raster the source raster

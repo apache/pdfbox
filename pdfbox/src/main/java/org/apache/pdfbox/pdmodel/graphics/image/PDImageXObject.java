@@ -507,6 +507,12 @@ public final class PDImageXObject extends PDXObject implements PDImage
     }
 
     @Override
+    public BufferedImage getRawImage() throws IOException
+    {
+        return getColorSpace().toRawImage(getRawRaster());
+    }
+
+    @Override
     public WritableRaster getRawRaster() throws IOException
     {
         return SampledImageReader.getRawRaster(this);
