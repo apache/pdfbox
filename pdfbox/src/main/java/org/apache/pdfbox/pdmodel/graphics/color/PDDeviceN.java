@@ -414,6 +414,13 @@ public class PDDeviceN extends PDSpecialColorSpace
         return alternateColorSpace.toRGB(altValue);
     }
 
+    @Override
+    public BufferedImage toRawImage(WritableRaster raster)
+    {
+        // We don't know how to convert that.
+        return null;
+    }
+
     /**
      * Returns true if this color space has the NChannel subtype.
      * @return true if subtype is NChannel

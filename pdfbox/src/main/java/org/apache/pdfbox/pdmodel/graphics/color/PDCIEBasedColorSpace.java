@@ -73,6 +73,14 @@ public abstract class PDCIEBasedColorSpace extends PDColorSpace
     }
 
     @Override
+    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    {
+        // There is no direct equivalent of a CIE colorspace in Java. So we can
+        // not do anything here.
+        return null;
+    }
+
+    @Override
     public String toString()
     {
         return getName();   // TODO return more info

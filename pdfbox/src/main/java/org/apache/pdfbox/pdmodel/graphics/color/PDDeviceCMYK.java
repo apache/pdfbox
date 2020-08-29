@@ -136,6 +136,14 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     }
 
     @Override
+    public BufferedImage toRawImage(WritableRaster raster) throws IOException
+    {
+        // Device CMYK is not specified, as its the colors of whatever device you use.
+        // The user should fallback to the RGB image
+        return null;
+    }
+
+    @Override
     public BufferedImage toRGBImage(WritableRaster raster) throws IOException
     {
         init();
