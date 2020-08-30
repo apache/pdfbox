@@ -16,13 +16,20 @@
  */
 package org.apache.pdfbox.tools.imageio;
 
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
+import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
+
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.zip.DeflaterOutputStream;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -33,8 +40,11 @@ import javax.imageio.metadata.IIOInvalidTreeException;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageOutputStream;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -321,6 +331,20 @@ public final class ImageIOUtil
                 }
             }
 
+            if (metadata != null && formatName.equalsIgnoreCase("png") && hasICCProfile(image))
+            {
+                // add ICC profile
+                IIOMetadataNode iccp = new IIOMetadataNode("iCCP");
+                ICC_Profile profile = ((ICC_ColorSpace) image.getColorModel().getColorSpace())
+                        .getProfile();
+                iccp.setUserObject(getAsDeflatedBytes(profile));
+                iccp.setAttribute("profileName", "unknown");
+                iccp.setAttribute("compressionMethod", "deflate");
+                Node nativeTree = metadata.getAsTree(metadata.getNativeMetadataFormatName());
+                nativeTree.appendChild(iccp);
+                metadata.mergeTree(metadata.getNativeMetadataFormatName(), nativeTree);
+            }
+
             // write
             imageOutput = ImageIO.createImageOutputStream(output);
             writer.setOutput(imageOutput);
@@ -338,6 +362,36 @@ public final class ImageIOUtil
             }
         }
         return true;
+    }
+
+    /**
+     * Determine if the given image has a ICC profile that should be embedded.
+     * @param image the image to analyse
+     * @return true if this image has an ICC profile, that is different from sRGB.
+     */
+    private static boolean hasICCProfile(BufferedImage image)
+    {
+        ColorSpace colorSpace = image.getColorModel().getColorSpace();
+        // We can only export ICC color spaces
+        if (!(colorSpace instanceof ICC_ColorSpace))
+        {
+            return false;
+        }
+
+        // The colorspace should not be sRGB and not be the builtin gray colorspace
+        return !colorSpace.isCS_sRGB() && colorSpace != ColorSpace.getInstance(ColorSpace.CS_GRAY);
+    }
+
+    private static byte[] getAsDeflatedBytes(ICC_Profile profile) throws IOException
+    {
+        byte[] data = profile.getData();
+
+        ByteArrayOutputStream deflated = new ByteArrayOutputStream();
+        DeflaterOutputStream deflater = new DeflaterOutputStream(deflated);
+        deflater.write(data);
+        deflater.close();
+
+        return deflated.toByteArray();
     }
 
     /**
