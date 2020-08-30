@@ -363,148 +363,152 @@ public final class ExtractImages
                 }
             }
         }
-    }
 
-    /**
-     * Writes the image to a file with the filename prefix + an appropriate suffix, like "Image.jpg".
-     * The suffix is automatically set depending on the image compression in the PDF.
-     * @param pdImage the image.
-     * @param prefix the filename prefix.
-     * @param directJPEG if true, force saving JPEG/JPX streams as they are in the PDF file. 
-     * @param noColorConvert if true, images are extracted with their original colorspace if possible.
-     * @throws IOException When something is wrong with the corresponding file.
-     */
-    private void write2file(PDImage pdImage, String prefix, boolean directJPEG,
-            boolean noColorConvert) throws IOException
-    {
-        String suffix = pdImage.getSuffix();
-        if (suffix == null || "jb2".equals(suffix))
+        /**
+         * Writes the image to a file with the filename prefix + an appropriate suffix, like
+         * "Image.jpg". The suffix is automatically set depending on the image compression in the
+         * PDF.
+         *
+         * @param pdImage the image.
+         * @param prefix the filename prefix.
+         * @param directJPEG if true, force saving JPEG/JPX streams as they are in the PDF file.
+         * @param noColorConvert if true, images are extracted with their original colorspace if
+         * possible.
+         * @throws IOException When something is wrong with the corresponding file.
+         */
+        private void write2file(PDImage pdImage, String prefix, boolean directJPEG,
+                boolean noColorConvert) throws IOException
         {
-            suffix = "png";
-        }
-        else if ("jpx".equals(suffix))
-        {
-            // use jp2 suffix for file because jpx not known by windows
-            suffix = "jp2";
-        }
-
-        if (hasMasks(pdImage))
-        {
-            // TIKA-3040, PDFBOX-4771: can't save ARGB as JPEG
-            suffix = "png";
-        }
-
-        if (noColorConvert)
-        {
-            // We write the raw image if in any way possible.
-            // But we have no alpha information here.
-            BufferedImage image = pdImage.getRawImage();
-            if (image != null)
+            String suffix = pdImage.getSuffix();
+            if (suffix == null || "jb2".equals(suffix))
             {
-                int elements = image.getRaster().getNumDataElements();
                 suffix = "png";
-                if (elements > 3)
-                {
-                    // More then 3 channels: Thats likely CMYK. We use tiff here,
-                    // but a TIFF codec must be in the class path for this to work.
-                    suffix = "tiff";
-                }
-                try (FileOutputStream out = new FileOutputStream(prefix + "." + suffix))
-                {
-                    ImageIOUtil.writeImage(image, suffix, out);
-                }
-                return;
             }
-        }
-        try (FileOutputStream out = new FileOutputStream(prefix + "." + suffix))
-        {
-            if ("jpg".equals(suffix))
+            else if ("jpx".equals(suffix))
             {
-                String colorSpaceName = pdImage.getColorSpace().getName();
-                if (directJPEG || 
+                // use jp2 suffix for file because jpx not known by windows
+                suffix = "jp2";
+            }
+
+            if (hasMasks(pdImage))
+            {
+                // TIKA-3040, PDFBOX-4771: can't save ARGB as JPEG
+                suffix = "png";
+            }
+
+            if (noColorConvert)
+            {
+                // We write the raw image if in any way possible.
+                // But we have no alpha information here.
+                BufferedImage image = pdImage.getRawImage();
+                if (image != null)
+                {
+                    int elements = image.getRaster().getNumDataElements();
+                    suffix = "png";
+                    if (elements > 3)
+                    {
+                        // More then 3 channels: Thats likely CMYK. We use tiff here,
+                        // but a TIFF codec must be in the class path for this to work.
+                        suffix = "tiff";
+                    }
+                    try (FileOutputStream out = new FileOutputStream(prefix + "." + suffix))
+                    {
+                        ImageIOUtil.writeImage(image, suffix, out);
+                        out.flush();
+                    }
+                    return;
+                }
+            }
+            try (FileOutputStream out = new FileOutputStream(prefix + "." + suffix))
+            {
+                if ("jpg".equals(suffix))
+                {
+                    String colorSpaceName = pdImage.getColorSpace().getName();
+                    if (directJPEG || 
                         (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
                          PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
+                    {
+                        // RGB or Gray colorspace: get and write the unmodified JPEG stream
+                        InputStream data = pdImage.createInputStream(JPEG);
+                        IOUtils.copy(data, out);
+                        IOUtils.closeQuietly(data);
+                    }
+                    else
+                    {
+                        // for CMYK and other "unusual" colorspaces, the JPEG will be converted
+                        BufferedImage image = pdImage.getImage();
+                        if (image != null)
+                        {
+                            ImageIOUtil.writeImage(image, suffix, out);
+                        }
+                    }
+                }
+                else if ("jp2".equals(suffix))
                 {
-                    // RGB or Gray colorspace: get and write the unmodified JPEG stream
-                    InputStream data = pdImage.createInputStream(JPEG);
-                    IOUtils.copy(data, out);
-                    IOUtils.closeQuietly(data);
+                    String colorSpaceName = pdImage.getColorSpace().getName();
+                    if (directJPEG
+                            || (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName)
+                            || PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
+                    {
+                        // RGB or Gray colorspace: get and write the unmodified JPEG2000 stream
+                        InputStream data = pdImage.createInputStream(
+                                Arrays.asList(COSName.JPX_DECODE.getName()));
+                        IOUtils.copy(data, out);
+                        IOUtils.closeQuietly(data);
+                    }
+                    else
+                    {
+                        // for CMYK and other "unusual" colorspaces, the image will be converted
+                        BufferedImage image = pdImage.getImage();
+                        if (image != null)
+                        {
+                            ImageIOUtil.writeImage(image, "jpeg2000", out);
+                        }
+                    }
+                }
+                else if ("tiff".equals(suffix) && pdImage.getColorSpace().equals(PDDeviceGray.INSTANCE))
+                {
+                    BufferedImage image = pdImage.getImage();
+                    if (image == null)
+                    {
+                        return;
+                    }
+                    // CCITT compressed images can have a different colorspace, but this one is B/W
+                    // This is a bitonal image, so copy to TYPE_BYTE_BINARY
+                    // so that a G4 compressed TIFF image is created by ImageIOUtil.writeImage()
+                    int w = image.getWidth();
+                    int h = image.getHeight();
+                    BufferedImage bitonalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
+                    // copy image the old fashioned way - ColorConvertOp is slower!
+                    for (int y = 0; y < h; y++)
+                    {
+                        for (int x = 0; x < w; x++)
+                        {
+                            bitonalImage.setRGB(x, y, image.getRGB(x, y));
+                        }
+                    }
+                    ImageIOUtil.writeImage(bitonalImage, suffix, out);
                 }
                 else
                 {
-                    // for CMYK and other "unusual" colorspaces, the JPEG will be converted
                     BufferedImage image = pdImage.getImage();
                     if (image != null)
                     {
                         ImageIOUtil.writeImage(image, suffix, out);
                     }
                 }
+                out.flush();
             }
-            else if ("jp2".equals(suffix))
-            {
-                String colorSpaceName = pdImage.getColorSpace().getName();
-                if (directJPEG || 
-                    (PDDeviceGray.INSTANCE.getName().equals(colorSpaceName) ||
-                     PDDeviceRGB.INSTANCE.getName().equals(colorSpaceName)))
-                {
-                    // RGB or Gray colorspace: get and write the unmodified JPEG2000 stream
-                    InputStream data = pdImage.createInputStream(
-                            Arrays.asList(COSName.JPX_DECODE.getName()));
-                    IOUtils.copy(data, out);
-                    IOUtils.closeQuietly(data);
-                }
-                else
-                {                        
-                    // for CMYK and other "unusual" colorspaces, the image will be converted
-                    BufferedImage image = pdImage.getImage();
-                    if (image != null)
-                    {
-                        ImageIOUtil.writeImage(image, "jpeg2000", out);
-                    }
-                }
-            }
-            else if ("tiff".equals(suffix) && pdImage.getColorSpace().equals(PDDeviceGray.INSTANCE))
-            {
-                BufferedImage image = pdImage.getImage();
-                if (image == null)
-                {
-                    return;
-                }
-                // CCITT compressed images can have a different colorspace, but this one is B/W
-                // This is a bitonal image, so copy to TYPE_BYTE_BINARY
-                // so that a G4 compressed TIFF image is created by ImageIOUtil.writeImage()
-                int w = image.getWidth();
-                int h = image.getHeight();
-                BufferedImage bitonalImage = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_BINARY);
-                // copy image the old fashioned way - ColorConvertOp is slower!
-                for (int y = 0; y < h; y++)
-                {
-                    for (int x = 0; x < w; x++)
-                    {
-                        bitonalImage.setRGB(x, y, image.getRGB(x, y));
-                    }
-                }
-                ImageIOUtil.writeImage(bitonalImage, suffix, out);
-            }
-            else
-            {
-                BufferedImage image = pdImage.getImage();
-                if (image != null)
-                {
-                    ImageIOUtil.writeImage(image, suffix, out);
-                }
-            }
-            out.flush();
         }
-    }
 
-    private boolean hasMasks(PDImage pdImage) throws IOException
-    {
-        if (pdImage instanceof PDImageXObject)
+        private boolean hasMasks(PDImage pdImage) throws IOException
         {
-            PDImageXObject ximg = (PDImageXObject) pdImage;
-            return ximg.getMask() != null || ximg.getSoftMask() != null;
+            if (pdImage instanceof PDImageXObject)
+            {
+                PDImageXObject ximg = (PDImageXObject) pdImage;
+                return ximg.getMask() != null || ximg.getSoftMask() != null;
+            }
+            return false;
         }
-        return false;
     }
 }
