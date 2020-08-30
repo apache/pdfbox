@@ -21,7 +21,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.junit.Test;
 
@@ -31,10 +33,10 @@ import org.junit.Test;
 public class RandomAccessReadBufferedFileTest
 {
     @Test
-    public void testPositionSkip() throws IOException
+    public void testPositionSkip() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                this.getClass().getResource("RandomAccessReadBufferedFile1.txt").getFile());
+                new File(getClass().getResource("RandomAccessReadBufferedFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(5);
@@ -45,10 +47,10 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionRead() throws IOException
+    public void testPositionRead() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                this.getClass().getResource("RandomAccessReadBufferedFile1.txt").getFile());
+                new File(getClass().getResource("RandomAccessReadBufferedFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
         assertEquals('0', randomAccessSource.read());
@@ -62,10 +64,10 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testSeekEOF() throws IOException
+    public void testSeekEOF() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                this.getClass().getResource("RandomAccessReadBufferedFile1.txt").getFile());
+                new File(getClass().getResource("RandomAccessReadBufferedFile1.txt").toURI()));
 
         randomAccessSource.seek(3);
         assertEquals(3, randomAccessSource.getPosition());
@@ -99,10 +101,10 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionReadBytes() throws IOException
+    public void testPositionReadBytes() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                this.getClass().getResource("RandomAccessReadBufferedFile1.txt").getFile());
+                new File(getClass().getResource("RandomAccessReadBufferedFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
         byte[] buffer = new byte[4];
@@ -122,10 +124,10 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionPeek() throws IOException
+    public void testPositionPeek() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                this.getClass().getResource("RandomAccessReadBufferedFile1.txt").getFile());
+                new File(getClass().getResource("RandomAccessReadBufferedFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.skip(6);
@@ -138,10 +140,10 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionUnreadBytes() throws IOException
+    public void testPositionUnreadBytes() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                this.getClass().getResource("RandomAccessReadBufferedFile1.txt").getFile());
+                new File(getClass().getResource("RandomAccessReadBufferedFile1.txt").toURI()));
 
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.read();
@@ -162,10 +164,10 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testEmptyBuffer() throws IOException
+    public void testEmptyBuffer() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
-                this.getClass().getResource("RandomAccessReadBufferedEmptyFile.txt").getFile());
+                new File(getClass().getResource("RandomAccessReadBufferedEmptyFile.txt").toURI()));
 
         assertEquals(-1, randomAccessSource.read());
         assertEquals(-1, randomAccessSource.peek());
