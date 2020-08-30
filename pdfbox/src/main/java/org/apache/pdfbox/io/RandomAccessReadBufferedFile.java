@@ -54,6 +54,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
             if (doRemove)
             {
                 lastRemovedCachePage = eldest.getValue();
+                lastRemovedCachePage.clear();
             }
             return doRemove;
         }
@@ -241,8 +242,7 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
     {
         if (isClosed)
         {
-            // consider that the rab is closed if there is no current buffer
-            throw new IOException("RandomAccessBuffer already closed");
+            throw new IOException(getClass().getName() + " already closed");
         }
     }
 
