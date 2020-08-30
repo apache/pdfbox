@@ -63,12 +63,14 @@ public final class ExtractImages
     private static final String PASSWORD = "-password";
     private static final String PREFIX = "-prefix";
     private static final String DIRECTJPEG = "-directJPEG";
+    private static final String NOCOLORCONVERT = "-noColorConvert";
 
     private static final List<String> JPEG = Arrays.asList(
             COSName.DCT_DECODE.getName(),
             COSName.DCT_DECODE_ABBREVIATION.getName());
 
     private boolean useDirectJPEG;
+    private boolean noColorConvert;
     private String filePrefix;
 
     private final Set<COSStream> seen = new HashSet<COSStream>();
@@ -128,6 +130,10 @@ public final class ExtractImages
                 {
                     useDirectJPEG = true;
                 }
+                else if (args[i].equals(NOCOLORCONVERT))
+                {
+                    noColorConvert = true;
+                }
                 else
                 {
                     if (pdfFile == null)
@@ -161,8 +167,10 @@ public final class ExtractImages
                 + "\nOptions:\n"
                 + "  -password <password>   : Password to decrypt document\n"
                 + "  -prefix <image-prefix> : Image prefix (default to pdf name)\n"
-                + "  -directJPEG            : Forces the direct extraction of JPEG/JPX images "
+                + "  -directJPEG            : Forces the direct extraction of JPEG/JPX images \n"
                 + "                           regardless of colorspace or masking\n"
+                + "  -noColorConvert        : Images are extracted with their \n"
+                + "                           original colorspace if possible.\n"
                 + "  <inputfile>            : The PDF document to use\n";
         
         System.err.println(message);
@@ -258,7 +266,7 @@ public final class ExtractImages
             imageCounter++;
 
             System.out.println("Writing image: " + name);
-            write2file(pdImage, name, useDirectJPEG);
+            write2file(pdImage, name, useDirectJPEG, noColorConvert);
         }
 
         @Override
@@ -373,9 +381,11 @@ public final class ExtractImages
      * @param pdImage the image.
      * @param prefix the filename prefix.
      * @param directJPEG if true, force saving JPEG/JPX streams as they are in the PDF file. 
+     * @param noColorConvert if true, images are extracted with their original colorspace if possible.
      * @throws IOException When something is wrong with the corresponding file.
      */
-    private void write2file(PDImage pdImage, String prefix, boolean directJPEG) throws IOException
+    private void write2file(PDImage pdImage, String prefix, boolean directJPEG,
+            boolean noColorConvert) throws IOException
     {
         String suffix = pdImage.getSuffix();
         if (suffix == null || "jb2".equals(suffix))
@@ -397,6 +407,28 @@ public final class ExtractImages
         FileOutputStream out = null;
         try
         {
+            if (noColorConvert)
+            {
+                // We write the raw image if in any way possible.
+                // But we have no alpha information here.
+                BufferedImage image = pdImage.getRawImage();
+                if (image != null)
+                {
+                    int elements = image.getRaster().getNumDataElements();
+                    suffix = "png";
+                    if (elements > 3)
+                    {
+                        // More then 3 channels: Thats likely CMYK. We use tiff here,
+                        // but a TIFF codec must be in the class path for this to work.
+                        suffix = "tiff";
+                    }
+                    out = new FileOutputStream(prefix + "." + suffix);
+                    ImageIOUtil.writeImage(image, suffix, out);
+                    out.close();
+                    return;
+                }
+            }
+
             out = new FileOutputStream(prefix + "." + suffix);
             if ("jpg".equals(suffix))
             {
