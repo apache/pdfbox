@@ -419,17 +419,16 @@ public class PDFDebugger extends JFrame
                     List<File> files = (List<File>) transferable.getTransferData(
                             DataFlavor.javaFileListFlavor);
                     readPDFFile(files.get(0), "");
-                    return true;
                 }
                 catch (IOException e)
                 {
                     new ErrorDialog(e).setVisible(true);
-                    return true;
                 }
                 catch (UnsupportedFlavorException e)
                 {
                     throw new RuntimeException(e);
                 }
+                return true;
             }
         });
 
