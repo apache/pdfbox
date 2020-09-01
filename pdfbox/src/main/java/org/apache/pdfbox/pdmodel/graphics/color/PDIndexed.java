@@ -251,7 +251,7 @@ public final class PDIndexed extends PDSpecialColorSpace
     }
 
     // reads the lookup table data from the array
-    private byte[] getLookupData() throws IOException
+    private void readLookupData() throws IOException
     {
         if (lookupData == null)
         {
@@ -273,7 +273,6 @@ public final class PDIndexed extends PDSpecialColorSpace
                 throw new IOException("Error: Unknown type for lookup table " + lookupTable);
             }
         }
-        return lookupData;
     }
 
     //
@@ -281,7 +280,8 @@ public final class PDIndexed extends PDSpecialColorSpace
     //
     private void readColorTable() throws IOException
     {
-        byte[] lookupData = getLookupData();
+        readLookupData();
+
         int maxIndex = Math.min(getHival(), 255);
         int numComponents = baseColorSpace.getNumberOfComponents();
 
