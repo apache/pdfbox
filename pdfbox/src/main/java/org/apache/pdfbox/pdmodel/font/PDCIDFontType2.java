@@ -237,7 +237,14 @@ public class PDCIDFontType2 extends PDCIDFont
                 // Acrobat allows non-embedded GIDs - todo: can we find a test PDF for this?
                 LOG.warn("Using non-embedded GIDs in font " + getName());
                 int cid = codeToCID(code);
-                return cid2gid[cid];
+                if (cid < cid2gid.length)
+                {
+                    return cid2gid[cid];
+                }
+                else
+                {
+                    return 0;
+                }
             }
             else
             {
