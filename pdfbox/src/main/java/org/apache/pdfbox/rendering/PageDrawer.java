@@ -1011,7 +1011,12 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         if (clipWindingRule != -1)
         {
             linePath.setWindingRule(clipWindingRule);
-            getGraphicsState().intersectClippingPath(linePath);
+
+            if (!linePath.getPathIterator(null).isDone())
+            {
+                // PDFBOX-4949 / PDF.js 12306: don't clip if "W n" only
+                getGraphicsState().intersectClippingPath(linePath);
+            }
 
             // PDFBOX-3836: lastClip needs to be reset, because after intersection it is still the same 
             // object, thus setClip() would believe that it is cached.
