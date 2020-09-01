@@ -58,45 +58,46 @@ final class FontMapperImpl implements FontMapper
     {
         // substitutes for standard 14 fonts
         substitutes.put("Courier",
-                Arrays.asList("CourierNew", "CourierNewPSMT", "LiberationMono", "NimbusMonL-Regu"));
+                new ArrayList<>(Arrays.asList("CourierNew", "CourierNewPSMT", "LiberationMono",
+                        "NimbusMonL-Regu")));
         substitutes.put("Courier-Bold",
-                Arrays.asList("CourierNewPS-BoldMT", "CourierNew-Bold", "LiberationMono-Bold",
-                        "NimbusMonL-Bold"));
+                new ArrayList<>(Arrays.asList("CourierNewPS-BoldMT", "CourierNew-Bold",
+                        "LiberationMono-Bold", "NimbusMonL-Bold")));
         substitutes.put("Courier-Oblique",
-                Arrays.asList("CourierNewPS-ItalicMT","CourierNew-Italic",
-                        "LiberationMono-Italic", "NimbusMonL-ReguObli"));
+                new ArrayList<>(Arrays.asList("CourierNewPS-ItalicMT","CourierNew-Italic",
+                        "LiberationMono-Italic", "NimbusMonL-ReguObli")));
         substitutes.put("Courier-BoldOblique",
-                Arrays.asList("CourierNewPS-BoldItalicMT","CourierNew-BoldItalic",
-                        "LiberationMono-BoldItalic", "NimbusMonL-BoldObli"));
+                new ArrayList<>(Arrays.asList("CourierNewPS-BoldItalicMT","CourierNew-BoldItalic",
+                        "LiberationMono-BoldItalic", "NimbusMonL-BoldObli")));
         substitutes.put("Helvetica",
-                Arrays.asList("ArialMT", "Arial", "LiberationSans", "NimbusSanL-Regu"));
+                new ArrayList<>(Arrays.asList("ArialMT", "Arial", "LiberationSans", "NimbusSanL-Regu")));
         substitutes.put("Helvetica-Bold",
-                Arrays.asList("Arial-BoldMT", "Arial-Bold", "LiberationSans-Bold",
-                        "NimbusSanL-Bold"));
+                new ArrayList<>(Arrays.asList("Arial-BoldMT", "Arial-Bold", "LiberationSans-Bold",
+                        "NimbusSanL-Bold")));
         substitutes.put("Helvetica-Oblique",
-                Arrays.asList("Arial-ItalicMT", "Arial-Italic", "Helvetica-Italic",
-                        "LiberationSans-Italic", "NimbusSanL-ReguItal"));
+                new ArrayList<>(Arrays.asList("Arial-ItalicMT", "Arial-Italic", "Helvetica-Italic",
+                        "LiberationSans-Italic", "NimbusSanL-ReguItal")));
         substitutes.put("Helvetica-BoldOblique",
-                Arrays.asList("Arial-BoldItalicMT", "Helvetica-BoldItalic",
-                        "LiberationSans-BoldItalic", "NimbusSanL-BoldItal"));
+                new ArrayList<>(Arrays.asList("Arial-BoldItalicMT", "Helvetica-BoldItalic",
+                        "LiberationSans-BoldItalic", "NimbusSanL-BoldItal")));
         substitutes.put("Times-Roman",
-                Arrays.asList("TimesNewRomanPSMT", "TimesNewRoman", "TimesNewRomanPS",
-                        "LiberationSerif", "NimbusRomNo9L-Regu"));
+                new ArrayList<>(Arrays.asList("TimesNewRomanPSMT", "TimesNewRoman", "TimesNewRomanPS",
+                        "LiberationSerif", "NimbusRomNo9L-Regu")));
         substitutes.put("Times-Bold",
-                Arrays.asList("TimesNewRomanPS-BoldMT", "TimesNewRomanPS-Bold",
+                new ArrayList<>(Arrays.asList("TimesNewRomanPS-BoldMT", "TimesNewRomanPS-Bold",
                         "TimesNewRoman-Bold", "LiberationSerif-Bold",
-                        "NimbusRomNo9L-Medi"));
+                        "NimbusRomNo9L-Medi")));
         substitutes.put("Times-Italic",
-                Arrays.asList("TimesNewRomanPS-ItalicMT", "TimesNewRomanPS-Italic",
+                new ArrayList<>(Arrays.asList("TimesNewRomanPS-ItalicMT", "TimesNewRomanPS-Italic",
                         "TimesNewRoman-Italic", "LiberationSerif-Italic",
-                        "NimbusRomNo9L-ReguItal"));
+                        "NimbusRomNo9L-ReguItal")));
         substitutes.put("Times-BoldItalic",
-                Arrays.asList("TimesNewRomanPS-BoldItalicMT", "TimesNewRomanPS-BoldItalic",
+                new ArrayList<>(Arrays.asList("TimesNewRomanPS-BoldItalicMT", "TimesNewRomanPS-BoldItalic",
                         "TimesNewRoman-BoldItalic", "LiberationSerif-BoldItalic",
-                        "NimbusRomNo9L-MediItal"));
-        substitutes.put("Symbol", Arrays.asList("Symbol", "SymbolMT", "StandardSymL"));
-        substitutes.put("ZapfDingbats", Arrays.asList("ZapfDingbatsITCbyBT-Regular", 
-                        "ZapfDingbatsITC", "Dingbats", "MS-Gothic"));
+                        "NimbusRomNo9L-MediItal")));
+        substitutes.put("Symbol", new ArrayList<>(Arrays.asList("Symbol", "SymbolMT", "StandardSymL")));
+        substitutes.put("ZapfDingbats", new ArrayList<>(Arrays.asList("ZapfDingbatsITCbyBT-Regular", 
+                        "ZapfDingbatsITC", "Dingbats", "MS-Gothic")));
 
         // Acrobat also uses alternative names for Standard 14 fonts, which we map to those above
         // these include names such as "Arial" and "TimesNewRoman"
