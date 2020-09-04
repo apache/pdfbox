@@ -53,6 +53,7 @@ import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -1326,6 +1327,54 @@ public class PDDocument implements Closeable
     public void save(File file) throws IOException
     {
         save(new BufferedOutputStream(new FileOutputStream(file)));
+    }
+
+	/**
+	 * Compress the document and save it to a file.
+	 *
+	 * @param file The file to save as.
+	 * @param parameters The parameters for the document's compression.
+	 * @throws IOException if the output could not be written
+	 */
+	public void saveCompressed(File file, CompressParameters parameters) throws IOException
+	{
+		saveCompressed(new BufferedOutputStream(new FileOutputStream(file)), parameters);
+	}
+
+    /**
+     * This will compress the document and save it to an output stream.
+     *
+     * @param output The stream to write to. It will be closed when done. It is recommended to wrap
+     * it in a {@link java.io.BufferedOutputStream}, unless it is already buffered.
+     * @param parameters The parameters for the document's compression.
+     * @throws IOException if the output could not be written
+     */
+    public void saveCompressed(OutputStream output, CompressParameters parameters) throws IOException
+    {
+        if (document.isClosed())
+        {
+            throw new IOException("Cannot save a document which has been closed");
+        }
+
+        // object stream compression requires a cross reference stream.
+        document.setIsXRefStream(true);
+        // subset designated fonts
+        for (PDFont font : fontsToSubset)
+        {
+            font.subset();
+        }
+        fontsToSubset.clear();
+
+        // save PDF
+        COSWriter writer = new COSWriter(output, parameters);
+        try
+        {
+            writer.write(this);
+        }
+        finally
+        {
+            writer.close();
+        }
     }
 
     /**
