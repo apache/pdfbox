@@ -27,6 +27,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.junit.Assert;
 
 /**
  * Tests {@link COSFloat}.
@@ -370,41 +371,10 @@ public class TestCOSFloat extends TestCOSNumber
 
     public void testDuplicateMisplacedNegative()
     {
-        try
-        {
-            new COSFloat("0.-26-2");
-            fail("Was expecting an IOException");
-        }
-        catch (IOException expected)
-        {
-        }
-
-        try
-        {
-            new COSFloat("-0.-262");
-            fail("Was expecting an IOException");
-        }
-        catch (IOException expected)
-        {
-        }
-
-        try
-        {
-            new COSFloat("---0.262");
-            fail("Was expecting an IOException");
-        }
-        catch (IOException expected)
-        {
-        }
-
-        try
-        {
-            new COSFloat("--0.2-62");
-            fail("Was expecting an IOException");
-        }
-        catch (IOException expected)
-        {
-        }
+        Assert.assertThrows(IOException.class, () -> new COSFloat("0.-26-2"));
+        Assert.assertThrows(IOException.class, () -> new COSFloat("-0.-262"));
+        Assert.assertThrows(IOException.class, () -> new COSFloat("---0.262"));
+        Assert.assertThrows(IOException.class, () -> new COSFloat("--0.2-62"));
     }
 
     public void testStubOperatorMinMaxValues()
