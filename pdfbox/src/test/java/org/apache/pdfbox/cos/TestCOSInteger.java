@@ -67,10 +67,6 @@ public class TestCOSInteger extends TestCOSNumber
             assertTrue(test1.equals(test2));
             assertTrue(test2.equals(test3));
             assertTrue(test1.equals(test3));
-            // Non-nullity
-            assertFalse(test1 == null);
-            assertFalse(test2 == null);
-            assertFalse(test3 == null);
             
             COSInteger test4 = COSInteger.get(i + 1);
             assertFalse(test4.equals(test1));
