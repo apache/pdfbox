@@ -115,12 +115,12 @@ public class COSArrayListTest {
 
         for (int i = 0; i < cosArrayList.size(); i++) {
             PDAnnotation annot = cosArrayList.get(i);
-            assertTrue("PDAnnotations cosObject at " + i + " shall be equal to index " + i + " of COSArray",
-                annotationsArray.get(i).equals(annot.getCOSObject()));
+            assertEquals("PDAnnotations cosObject at " + i + " shall be equal to index " + i + " of COSArray",
+                annotationsArray.get(i), annot.getCOSObject());
 
             // compare with Java List/Array
-            assertTrue("PDAnnotations at " + i + " shall be at index " + i + " of List",
-                tbcAnnotationsList.get(i).equals((annot)));
+            assertEquals("PDAnnotations at " + i + " shall be at index " + i + " of List",
+                tbcAnnotationsList.get(i), annot);
             assertEquals("PDAnnotations cosObject at " + i + " shall be at position " + i + " of Array",
                 tbcAnnotationsArray[i], annot.getCOSObject());
         }

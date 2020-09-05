@@ -210,7 +210,7 @@ public class TestCOSString extends TestCOSBase
     {
         String theString = "\u4e16";
         COSString string = new COSString(theString);
-        assertTrue(string.getString().equals(theString));
+        Assert.assertEquals(string.getString(), theString);
         
         String textAscii = "This is some regular text. It should all be expressible in ASCII";
         /** En français où les choses sont accentués. En español, así */
