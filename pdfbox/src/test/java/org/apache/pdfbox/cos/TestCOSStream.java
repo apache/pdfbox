@@ -150,6 +150,29 @@ public class TestCOSStream extends TestCase
         validateEncoded(stream, testStringEncoded);
     }
 
+    public void testHasStreamData() throws IOException
+    {
+        COSStream stream = new COSStream();
+        assertFalse(stream.hasData());
+
+        try
+        {
+            stream.createInputStream();
+            fail("createInputStream should have thrown an IOException");
+        }
+        catch (IOException e)
+        {
+        }
+
+        byte[] testString = "This is a test string to be used as input for TestCOSStream"
+                .getBytes("ASCII");
+        OutputStream output = stream.createOutputStream();
+        output.write(testString);
+        output.close();
+        assertTrue(stream.hasData());
+        stream.close();
+    }
+
     private byte[] encodeData(byte[] original, COSName filter) throws IOException
     {
         Filter encodingFilter = FilterFactory.INSTANCE.getFilter(filter);

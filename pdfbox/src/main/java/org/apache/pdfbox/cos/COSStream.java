@@ -176,28 +176,6 @@ public class COSStream extends COSDictionary implements Closeable
     }
 
     /**
-     * Ensures {@link #randomAccess} is not <code>null</code> by creating a
-     * buffer from {@link #scratchFile} if needed.
-     * 
-     * @param forInputStream  if <code>true</code> and {@link #randomAccess} is <code>null</code>
-     *                        a debug message is logged - input stream should be retrieved after
-     *                        data being written to stream
-     * @throws IOException
-     */
-    private void ensureRandomAccessExists(boolean forInputStream) throws IOException
-    {
-        if (randomAccess == null)
-        {
-            if (forInputStream && LOG.isDebugEnabled())
-            {
-                // no data written to stream - maybe this should be an exception
-                LOG.debug("Create InputStream called without data being written before to stream.");
-            }
-            randomAccess = scratchFile.createBuffer();
-        }
-    }
-    
-    /**
      * Returns a new InputStream which reads the encoded PDF stream data. Experts only!
      * 
      * @return InputStream containing raw, encoded PDF stream data.
@@ -210,14 +188,21 @@ public class COSStream extends COSDictionary implements Closeable
         {
             throw new IllegalStateException("Cannot read while there is an open stream writer");
         }
-        if (randomAccess == null && randomAccessReadView != null)
+        if (randomAccess == null)
         {
-            randomAccessReadView.seek(0);
-            return new RandomAccessInputStream(randomAccessReadView);
+            if (randomAccessReadView != null)
+            {
+                randomAccessReadView.seek(0);
+                return new RandomAccessInputStream(randomAccessReadView);
+            }
+            else
+            {
+                throw new IOException(
+                        "Create InputStream called without data being written before to stream.");
+            }
         }
         else
         {
-            ensureRandomAccessExists(true);
             return new RandomAccessInputStream(randomAccess);
         }
     }
@@ -480,5 +465,15 @@ public class COSStream extends COSDictionary implements Closeable
             randomAccessReadView.close();
             randomAccessReadView = null;
         }
+    }
+
+    /**
+     * Indicates wether the stream contains any data or not.
+     * 
+     * @return true if the stream contains any data
+     */
+    public boolean hasData()
+    {
+        return randomAccess != null || randomAccessReadView != null;
     }
 }

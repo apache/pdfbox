@@ -1210,10 +1210,11 @@ public class COSWriter implements ICOSVisitor, Closeable
             visitFromDictionary(obj);
             getStandardOutput().write(STREAM);
             getStandardOutput().writeCRLF();
-
-            input = obj.createRawInputStream();
-            IOUtils.copy(input, getStandardOutput());
-         
+            if (obj.hasData())
+            {
+                input = obj.createRawInputStream();
+                IOUtils.copy(input, getStandardOutput());
+            }
             getStandardOutput().writeCRLF();
             getStandardOutput().write(ENDSTREAM);
             getStandardOutput().writeEOL();

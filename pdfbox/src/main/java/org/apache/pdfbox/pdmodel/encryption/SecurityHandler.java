@@ -520,6 +520,11 @@ public abstract class SecurityHandler
      */
     public void encryptStream(COSStream stream, long objNum, int genNum) throws IOException
     {
+        // empty streams don't need to be encrypted
+        if (!stream.hasData())
+        {
+            return;
+        }
         byte[] rawData = IOUtils.toByteArray(stream.createRawInputStream());
         ByteArrayInputStream encryptedStream = new ByteArrayInputStream(rawData);
         try (OutputStream output = stream.createRawOutputStream())
