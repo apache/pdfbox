@@ -24,14 +24,12 @@ import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.cos.COSNumber;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import org.apache.pdfbox.cos.COSObject;
 
 /**
  * This is an implementation of a List that will sync its contents to a COSArray.
@@ -291,151 +289,6 @@ public class COSArrayList<E> implements List<E>
 
         array.addAll( index, toCOSObjectList( c ) );
         return actual.addAll( index, c );
-    }
-
-    /**
-     * This will take an array of COSNumbers and return a COSArrayList of
-     * java.lang.Integer values.
-     *
-     * @param intArray The existing integer Array.
-     *
-     * @return A list that is part of the core Java collections.
-     */
-    public static List<Integer> convertIntegerCOSArrayToList(COSArray intArray)
-    {
-        List<Integer> retval = null;
-        if (intArray != null)
-        {
-            List<Integer> numbers = new ArrayList<>();
-            for (int i = 0; i < intArray.size(); i++)
-            {
-                COSNumber num;
-                if (intArray.get(i) instanceof COSObject)
-                {
-                    num = (COSNumber) ((COSObject) intArray.get(i)).getObject();
-                }
-                else
-                {
-                    num = (COSNumber) intArray.get(i);
-                }
-                numbers.add(num.intValue());
-            }
-            retval = new COSArrayList<>(numbers, intArray);
-        }
-        return retval;
-    }
-
-    /**
-     * This will take an array of COSNumbers and return a COSArrayList of
-     * java.lang.Float values.
-     *
-     * @param floatArray The existing float Array.
-     *
-     * @return The list of Float objects.
-     */
-    public static List<Float> convertFloatCOSArrayToList( COSArray floatArray )
-    {
-        List<Float> retval = null;
-        if( floatArray != null )
-        {
-            List<Float> numbers = new ArrayList<>(floatArray.size());
-            for( int i=0; i<floatArray.size(); i++ )
-            {
-                COSBase base = floatArray.getObject(i);
-                if (base instanceof COSNumber)
-                {
-                    numbers.add(((COSNumber) base).floatValue());
-                }
-                else
-                {
-                    numbers.add(null);
-                }
-            }
-            retval = new COSArrayList<>( numbers, floatArray );
-        }
-        return retval;
-    }
-
-    /**
-     * This will take an array of COSName and return a COSArrayList of
-     * java.lang.String values.
-     *
-     * @param nameArray The existing name Array.
-     *
-     * @return The list of String objects.
-     */
-    public static List<String> convertCOSNameCOSArrayToList( COSArray nameArray )
-    {
-        List<String> retval = null;
-        if( nameArray != null )
-        {
-            List<String>names = new ArrayList<>();
-            for( int i=0; i<nameArray.size(); i++ )
-            {
-                names.add( ((COSName)nameArray.getObject( i )).getName() );
-            }
-            retval = new COSArrayList<>( names, nameArray );
-        }
-        return retval;
-    }
-
-    /**
-     * This will take an array of COSString and return a COSArrayList of
-     * java.lang.String values.
-     *
-     * @param stringArray The existing name Array.
-     *
-     * @return The list of String objects.
-     */
-    public static List<String> convertCOSStringCOSArrayToList( COSArray stringArray )
-    {
-        List<String> retval = null;
-        if( stringArray != null )
-        {
-            List<String> string = new ArrayList<>();
-            for( int i=0; i<stringArray.size(); i++ )
-            {
-                string.add( ((COSString)stringArray.getObject( i )).getString() );
-            }
-            retval = new COSArrayList<>( string, stringArray );
-        }
-        return retval;
-    }
-
-    /**
-     * This will take an list of string objects and return a COSArray of COSName
-     * objects.
-     *
-     * @param strings A list of strings
-     *
-     * @return An array of COSName objects
-     */
-    public static COSArray convertStringListToCOSNameCOSArray( List<String> strings )
-    {
-        COSArray retval = new COSArray();
-        for (String string : strings)
-        {
-            retval.add(COSName.getPDFName(string));
-        }
-        return retval;
-    }
-
-    /**
-     * This will take an list of string objects and return a COSArray of COSName
-     * objects.
-     *
-     * @param strings A list of strings
-     *
-     * @return An array of COSName objects
-     */
-    public static COSArray convertStringListToCOSStringCOSArray( List<String> strings )
-    {
-        COSArray retval = new COSArray();
-        for (String string : strings)
-        {
-            retval.add(new COSString(string));
-        }
-        return retval;
     }
 
     /**
