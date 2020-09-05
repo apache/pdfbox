@@ -23,6 +23,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.junit.Assert;
 
 /**
  * A test case for COSInteger
@@ -57,17 +58,17 @@ public class TestCOSInteger extends TestCOSNumber
             COSInteger test2 = COSInteger.get(i);
             COSInteger test3 = COSInteger.get(i);
             // Reflexive (x == x)
-            assertTrue(test1.equals(test1));
+            Assert.assertEquals(test1, test1);
             // Symmetric is preserved ( x==y then y===x)
-            assertTrue(test2.equals(test1));
-            assertTrue(test1.equals(test2));
+            Assert.assertEquals(test2, test1);
+            Assert.assertEquals(test1, test2);
             // Transitive (if x==y && y==z then x===z)
-            assertTrue(test1.equals(test2));
-            assertTrue(test2.equals(test3));
-            assertTrue(test1.equals(test3));
-            
+            Assert.assertEquals(test1, test2);
+            Assert.assertEquals(test2, test3);
+            Assert.assertEquals(test1, test3);
+
             COSInteger test4 = COSInteger.get(i + 1);
-            assertFalse(test4.equals(test1));
+            Assert.assertNotEquals(test4, test1);
         }
     }
 
@@ -81,10 +82,10 @@ public class TestCOSInteger extends TestCOSNumber
         {
             COSInteger test1 = COSInteger.get(i);
             COSInteger test2 = COSInteger.get(i);
-            assertEquals(test1.hashCode(), test2.hashCode());
+            Assert.assertEquals(test1.hashCode(), test2.hashCode());
             
             COSInteger test3 = COSInteger.get(i + 1);
-            assertFalse(test3.hashCode() == test1.hashCode());
+            assertNotSame(test3.hashCode(), test1.hashCode());
         }
     }
 
@@ -111,7 +112,7 @@ public class TestCOSInteger extends TestCOSNumber
     {
         for (int i = -1000; i < 3000; i += 200)
         {
-            assertEquals(i, COSInteger.get(i).intValue());
+            Assert.assertEquals(i, COSInteger.get(i).intValue());
         }
     }
 
@@ -120,7 +121,7 @@ public class TestCOSInteger extends TestCOSNumber
     {
         for (int i = -1000; i < 3000; i += 200)
         {
-            assertEquals((long) i, COSInteger.get(i).longValue());
+            Assert.assertEquals((long) i, COSInteger.get(i).longValue());
         }
     }
 
