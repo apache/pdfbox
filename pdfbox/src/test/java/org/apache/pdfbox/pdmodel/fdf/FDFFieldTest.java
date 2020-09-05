@@ -29,7 +29,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.junit.Test;
 
 /*
@@ -84,7 +83,7 @@ public class FDFFieldTest
         testList.add("A");
         testList.add("B");
         
-        COSArray testCOSArray = COSArrayList.convertStringListToCOSStringCOSArray(testList);
+        COSArray testCOSArray = COSArray.convertStringListToCOSStringCOSArray(testList);
         
         FDFField field = new FDFField();
         field.setValue(testCOSArray);

@@ -356,13 +356,11 @@ public class PDStream implements COSObjectable
         if (filters instanceof COSName)
         {
             COSName name = (COSName) filters;
-            retval = new COSArrayList<>(name.getName(), name, stream,
-                    COSName.F_FILTER);
-        } 
+            return Collections.singletonList(name.getName());
+        }
         else if (filters instanceof COSArray)
         {
-            retval = COSArrayList
-                    .convertCOSNameCOSArrayToList((COSArray) filters);
+            retval = ((COSArray) filters).toCOSNameStringList();
         }
         return retval;
     }
@@ -374,7 +372,7 @@ public class PDStream implements COSObjectable
      */
     public void setFileFilters(List<String> filters)
     {
-        COSBase obj = COSArrayList.convertStringListToCOSNameCOSArray(filters);
+        COSBase obj = COSArray.convertStringListToCOSNameCOSArray(filters);
         stream.setItem(COSName.F_FILTER, obj);
     }
 

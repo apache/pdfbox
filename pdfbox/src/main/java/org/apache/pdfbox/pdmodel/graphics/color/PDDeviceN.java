@@ -33,7 +33,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.function.PDFunction;
 
 /**
@@ -467,8 +466,7 @@ public class PDDeviceN extends PDSpecialColorSpace
      */
     public List<String> getColorantNames()
     {
-        COSArray names = (COSArray)array.getObject(COLORANT_NAMES);
-        return COSArrayList.convertCOSNameCOSArrayToList(names);
+        return ((COSArray) array.getObject(COLORANT_NAMES)).toCOSNameStringList();
     }
 
     /**
@@ -486,7 +484,7 @@ public class PDDeviceN extends PDSpecialColorSpace
      */
     public void setColorantNames(List<String> names)
     {
-        COSArray namesArray = COSArrayList.convertStringListToCOSNameCOSArray(names);
+        COSArray namesArray = COSArray.convertStringListToCOSNameCOSArray(names);
         array.set(COLORANT_NAMES, namesArray);
     }
 

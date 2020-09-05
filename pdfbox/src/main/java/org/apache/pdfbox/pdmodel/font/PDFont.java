@@ -519,7 +519,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
             COSArray array = dict.getCOSArray(COSName.WIDTHS);
             if (array != null)
             {
-                widths = COSArrayList.convertFloatCOSArrayToList(array);              
+                widths = array.toCOSNumberFloatList();
             }
             else
             {

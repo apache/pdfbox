@@ -35,7 +35,6 @@ import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorSpace;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
@@ -244,18 +243,17 @@ public final class PDInlineImage implements PDImage
      */
     public List<String> getFilters()
     {
-        List<String> names = Collections.emptyList();
         COSBase filters = parameters.getDictionaryObject(COSName.F, COSName.FILTER);
         if (filters instanceof COSName)
         {
             COSName name = (COSName) filters;
-            names = new COSArrayList<>(name.getName(), name, parameters, COSName.FILTER);
+            return Collections.singletonList(name.getName());
         }
         else if (filters instanceof COSArray)
         {
-            names = COSArrayList.convertCOSNameCOSArrayToList((COSArray) filters);
+            return ((COSArray) filters).toCOSNameStringList();
         }
-        return names;
+        return Collections.emptyList();
     }
 
     /**
@@ -265,7 +263,7 @@ public final class PDInlineImage implements PDImage
      */
     public void setFilters(List<String> filters)
     {
-        COSBase obj = COSArrayList.convertStringListToCOSNameCOSArray(filters);
+        COSBase obj = COSArray.convertStringListToCOSNameCOSArray(filters);
         parameters.setItem(COSName.F, obj);
     }
 

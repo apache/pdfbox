@@ -231,7 +231,7 @@ public class FDFField implements COSObjectable
         }
         else if (value instanceof COSArray)
         {
-            return COSArrayList.convertCOSStringCOSArrayToList((COSArray) value);
+            return ((COSArray) value).toCOSStringStringList();
         }
         else if (value instanceof COSString)
         {
@@ -295,7 +295,7 @@ public class FDFField implements COSObjectable
         COSBase cos = null;
         if (value instanceof List)
         {
-            cos = COSArrayList.convertStringListToCOSStringCOSArray((List<String>) value);
+            cos = COSArray.convertStringListToCOSStringCOSArray((List<String>) value);
         }
         else if (value instanceof String)
         {

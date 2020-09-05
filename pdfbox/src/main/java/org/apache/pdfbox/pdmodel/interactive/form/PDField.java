@@ -260,7 +260,7 @@ public abstract class PDField implements COSObjectable
             }
             else if (fieldValue instanceof COSArray && this instanceof PDChoice)
             {
-                ((PDChoice) this).setValue(COSArrayList.convertCOSStringCOSArrayToList((COSArray) fieldValue));
+                ((PDChoice) this).setValue(((COSArray) fieldValue).toCOSStringStringList());
             }
             else
             {

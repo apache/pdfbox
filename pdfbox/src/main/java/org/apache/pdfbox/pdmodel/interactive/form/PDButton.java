@@ -21,10 +21,8 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -234,13 +232,11 @@ public abstract class PDButton extends PDTerminalField
         
         if (value instanceof COSString)
         {
-            List<String> array = new ArrayList<>();
-            array.add(((COSString) value).getString());
-            return array;
+            return Collections.singletonList(((COSString) value).getString());
         }
         else if (value instanceof COSArray)
         {
-            return COSArrayList.convertCOSStringCOSArrayToList((COSArray)value);
+            return ((COSArray) value).toCOSStringStringList();
         }
         return Collections.emptyList();
     }
@@ -256,7 +252,7 @@ public abstract class PDButton extends PDTerminalField
         COSArray cosValues;
         if (values != null && !values.isEmpty())
         {
-            cosValues = COSArrayList.convertStringListToCOSStringCOSArray(values);
+            cosValues = COSArray.convertStringListToCOSStringCOSArray(values);
             getCOSObject().setItem(COSName.OPT, cosValues);
         }
         else
