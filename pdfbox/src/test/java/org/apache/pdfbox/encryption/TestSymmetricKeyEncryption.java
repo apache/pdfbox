@@ -372,9 +372,9 @@ public class TestSymmetricKeyEncryption extends TestCase
         doc.save(pdfFile);
         doc.close();
         long sizeEncrypted = pdfFile.length();
-        Assert.assertTrue(keyLength
+        Assert.assertNotEquals(keyLength
                 + "-bit " + (preferAES ? "AES" : "RC4") + " encrypted pdf should not have same size as plain one",
-                sizeEncrypted != sizePriorToEncr);
+                sizeEncrypted, sizePriorToEncr);
 
         // test with owner password => full permissions
         PDDocument encryptedDoc = PDDocument.load(pdfFile, ownerpassword);
