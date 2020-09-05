@@ -362,17 +362,12 @@ public class Type3FontValidator extends FontValidator<Type3Container>
 
     public List<Float> getWidths(PDFont font)
     {
-        List<Float> widths;
         COSArray array = (COSArray) font.getCOSObject().getDictionaryObject(COSName.WIDTHS);
         if (array != null)
         {
-            widths = COSArrayList.convertFloatCOSArrayToList(array);
+            return array.toCOSNumberFloatList();
         }
-        else
-        {
-            widths = Collections.emptyList();
-        }
-        return widths;
+        return Collections.emptyList();
     }
 
     private PDType3CharProc getCharProc(int code)
