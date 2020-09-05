@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -619,4 +621,105 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         }
         return retList;
     }
+
+    /**
+     * This will return a list of names if the COSArray consists of COSNames only.
+     * 
+     * @return the list of names of the COSArray of COSNames
+     */
+    public List<String> toCOSNameStringList()
+    {
+        return StreamSupport.stream(objects.spliterator(), false) //
+                .map(o -> ((COSName) o).getName()) //
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * This will return a list of names if the COSArray consists of COSStrings only.
+     * 
+     * @return the list of names of the COSArray of COSStrings
+     */
+    public List<String> toCOSStringStringList()
+    {
+        return StreamSupport.stream(objects.spliterator(), false) //
+                .map(o -> ((COSString) o).getString()) //
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * This will return a list of float values if the COSArray consists of COSNumbers only.
+     * 
+     * @return the list of float values of the COSArray of COSNumbers
+     */
+    public List<Float> toCOSNumberFloatList()
+    {
+        List<Float> numbers = new ArrayList<>();
+        for (int i = 0; i < size(); i++)
+        {
+            COSNumber num;
+            if (get(i) instanceof COSObject)
+            {
+                num = (COSNumber) ((COSObject) get(i)).getObject();
+            }
+            else
+            {
+                num = (COSNumber) get(i);
+            }
+            numbers.add(num.floatValue());
+        }
+        return numbers;
+    }
+
+    /**
+     * This will return a list of int values if the COSArray consists of COSNumbers only.
+     * 
+     * @return the list of int values of the COSArray of COSNumbers
+     */
+    public List<Integer> toCOSNumberIntegerList()
+    {
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 0; i < size(); i++)
+        {
+            COSNumber num;
+            if (get(i) instanceof COSObject)
+            {
+                num = (COSNumber) ((COSObject) get(i)).getObject();
+            }
+            else
+            {
+                num = (COSNumber) get(i);
+            }
+            numbers.add(num.intValue());
+        }
+        return numbers;
+    }
+
+    /**
+     * This will take an list of string objects and return a COSArray of COSName objects.
+     *
+     * @param strings A list of strings
+     *
+     * @return An array of COSName objects
+     */
+    public static COSArray convertStringListToCOSNameCOSArray(List<String> strings)
+    {
+        COSArray retval = new COSArray();
+        strings.forEach(s -> retval.add(COSName.getPDFName(s)));
+        return retval;
+    }
+
+    /**
+     * This will take an list of string objects and return a COSArray of COSName objects.
+     *
+     * @param strings A list of strings
+     *
+     * @return An array of COSName objects
+     */
+    public static COSArray convertStringListToCOSStringCOSArray(List<String> strings)
+    {
+        COSArray retval = new COSArray();
+        strings.forEach(s -> retval.add(new COSString(s)));
+        return retval;
+    }
+
 }
