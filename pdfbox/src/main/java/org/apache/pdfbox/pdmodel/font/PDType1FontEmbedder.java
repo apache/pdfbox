@@ -23,11 +23,11 @@ import java.util.List;
 import org.apache.fontbox.afm.FontMetrics;
 import org.apache.fontbox.pfb.PfbParser;
 import org.apache.fontbox.type1.Type1Font;
+import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
@@ -97,7 +97,7 @@ class PDType1FontEmbedder
         
         dict.setInt(COSName.FIRST_CHAR, 0);
         dict.setInt(COSName.LAST_CHAR, 255);
-        dict.setItem(COSName.WIDTHS, COSArrayList.converterToCOSArray(widths));
+        dict.setItem(COSName.WIDTHS, COSArray.convertIntegerListToCOSNameCOSArray(widths));
         dict.setItem(COSName.ENCODING, encoding);
     }
 

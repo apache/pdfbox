@@ -690,6 +690,20 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
+     * This will take an list of integer objects and return a COSArray of COSInteger objects.
+     *
+     * @param strings A list of integers
+     *
+     * @return An array of COSInteger objects
+     */
+    public static COSArray convertIntegerListToCOSNameCOSArray(List<Integer> integer)
+    {
+        COSArray retval = new COSArray();
+        integer.forEach(s -> retval.add(COSInteger.get(s.longValue())));
+        return retval;
+    }
+
+    /**
      * This will take an list of string objects and return a COSArray of COSName objects.
      *
      * @param strings A list of strings

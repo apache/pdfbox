@@ -428,7 +428,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setReasons(List<String> reasons)
     {
-        dictionary.setItem(COSName.REASONS, COSArrayList.converterToCOSArray(reasons));
+        dictionary.setItem(COSName.REASONS, COSArray.convertStringListToCOSStringCOSArray(reasons));
     }
 
     /**
@@ -574,6 +574,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setLegalAttestation(List<String> legalAttestation)
     {
-        dictionary.setItem(COSName.LEGAL_ATTESTATION, COSArrayList.converterToCOSArray(legalAttestation));
+        dictionary.setItem(COSName.LEGAL_ATTESTATION,
+                COSArray.convertStringListToCOSStringCOSArray(legalAttestation));
     }
 }
