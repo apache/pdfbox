@@ -46,6 +46,16 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     }
 
     /**
+     * Use the given list to initialize the COSArray.
+     * 
+     * @param cosObjects the initial list of COSObjects
+     */
+    public COSArray(List<? extends COSBase> cosObjects)
+    {
+        objects.addAll(cosObjects);
+    }
+
+    /**
      * This will add an object to the array.
      *
      * @param object The object to add to the array.

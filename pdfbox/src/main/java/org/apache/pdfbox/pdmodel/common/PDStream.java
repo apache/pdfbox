@@ -245,18 +245,16 @@ public class PDStream implements COSObjectable
      */
     public List<COSName> getFilters()
     {
-        List<COSName> retval = Collections.emptyList();
         COSBase filters = stream.getFilters();
         if (filters instanceof COSName)
         {
-            COSName name = (COSName) filters;
-            retval = new COSArrayList<>(name, name, stream, COSName.FILTER);
+            return Collections.singletonList((COSName) filters);
         } 
         else if (filters instanceof COSArray)
         {
-            retval = (List<COSName>) ((COSArray) filters).toList();
+            return (List<COSName>)((COSArray) filters).toList();
         }
-        return retval;
+        return Collections.emptyList();
     }
 
     /**
@@ -266,8 +264,7 @@ public class PDStream implements COSObjectable
      */
     public void setFilters(List<COSName> filters)
     {
-        COSBase obj = COSArrayList.converterToCOSArray(filters);
-        stream.setItem(COSName.FILTER, obj);
+        stream.setItem(COSName.FILTER, new COSArray(filters));
     }
 
     /**
@@ -344,14 +341,12 @@ public class PDStream implements COSObjectable
     }
 
     /**
-     * This will get the list of filters that are associated with this stream.
-     * Or null if there are none.
+     * This will get the list of filters that are associated with this stream. The list is empty if there are none.
      * 
      * @return A list of all encoding filters to apply to this stream.
      */
     public List<String> getFileFilters()
     {
-        List<String> retval = null;
         COSBase filters = stream.getDictionaryObject(COSName.F_FILTER);
         if (filters instanceof COSName)
         {
@@ -360,9 +355,9 @@ public class PDStream implements COSObjectable
         }
         else if (filters instanceof COSArray)
         {
-            retval = ((COSArray) filters).toCOSNameStringList();
+            return ((COSArray) filters).toCOSNameStringList();
         }
-        return retval;
+        return Collections.emptyList();
     }
 
     /**
