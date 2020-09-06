@@ -615,10 +615,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     public List<? extends COSBase> toList()
     {
         List<COSBase> retList = new ArrayList<>(size());
-        for (int i = 0; i < size(); i++)
-        {
-            retList.add(get(i));
-        }
+        objects.forEach(retList::add);
         return retList;
     }
 
@@ -656,16 +653,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         List<Float> numbers = new ArrayList<>();
         for (int i = 0; i < size(); i++)
         {
-            COSNumber num;
-            if (get(i) instanceof COSObject)
+            COSBase num = getObject(i);
+            if (num instanceof COSNumber)
             {
-                num = (COSNumber) ((COSObject) get(i)).getObject();
+                numbers.add(((COSNumber) num).floatValue());
             }
             else
             {
-                num = (COSNumber) get(i);
+                numbers.add(null);
             }
-            numbers.add(num.floatValue());
         }
         return numbers;
     }
@@ -680,16 +676,15 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
         List<Integer> numbers = new ArrayList<>();
         for (int i = 0; i < size(); i++)
         {
-            COSNumber num;
-            if (get(i) instanceof COSObject)
+            COSBase num = getObject(i);
+            if (num instanceof COSNumber)
             {
-                num = (COSNumber) ((COSObject) get(i)).getObject();
+                numbers.add(((COSNumber) num).intValue());
             }
             else
             {
-                num = (COSNumber) get(i);
+                numbers.add(null);
             }
-            numbers.add(num.intValue());
         }
         return numbers;
     }
