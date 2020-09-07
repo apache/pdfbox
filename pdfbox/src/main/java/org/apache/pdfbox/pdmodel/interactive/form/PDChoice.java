@@ -253,7 +253,7 @@ public abstract class PDChoice extends PDVariableText
                 throw new IllegalArgumentException(
                         "Setting the indices is not allowed for choice fields not allowing multiple selections.");
             }
-            getCOSObject().setItem(COSName.I, COSArray.convertIntegerListToCOSNameCOSArray(values));
+            getCOSObject().setItem(COSName.I, COSArray.convertIntegerListToCOSIntegerCOSArray(values));
         }
         else
         {

@@ -52,6 +52,10 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      */
     public COSArray(List<? extends COSBase> cosObjects)
     {
+        if (cosObjects == null)
+        {
+            throw new IllegalArgumentException("List of COS objects cannot be null");
+        }
         objects.addAll(cosObjects);
     }
 
@@ -706,7 +710,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      * @return An array of COSInteger objects
      */
-    public static COSArray convertIntegerListToCOSNameCOSArray(List<Integer> integer)
+    public static COSArray convertIntegerListToCOSIntegerCOSArray(List<Integer> integer)
     {
         COSArray retval = new COSArray();
         integer.forEach(s -> retval.add(COSInteger.get(s.longValue())));
