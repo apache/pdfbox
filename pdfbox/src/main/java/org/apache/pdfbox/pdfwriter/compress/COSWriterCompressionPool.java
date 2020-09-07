@@ -2,7 +2,6 @@ package org.apache.pdfbox.pdfwriter.compress;
 
 import org.apache.pdfbox.cos.*;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
-import org.apache.pdfbox.pdfwriter.compress.content.ContentCompressor;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import java.io.IOException;
@@ -36,7 +35,6 @@ public class COSWriterCompressionPool {
 	 * means to:
 	 * </p>
 	 * <ul>
-	 * <li>Compress contents (such as streams and images), by applying {@link ContentCompressor}s</li>
 	 * <li>Compress the COSStructure of the document, by streaming {@link COSBase}s to compressed
 	 * {@link COSWriterObjectStream}s</li>
 	 * </ul>
@@ -72,14 +70,13 @@ public class COSWriterCompressionPool {
 	/**
 	 * Adds the given {@link COSBase} to this pool, using the given {@link COSObjectKey} as it's referencable ID.
 	 * This method shall determine an appropriate key, for yet unregistered objects, to register them.
-	 * Depending on the type of object, it shall either be appended as-is, shall be compressed by applying
-	 * appropriate {@link ContentCompressor}s, or shall be appended to a compressed {@link COSWriterObjectStream}.
+	 * Depending on the type of object, it shall either be appended as-is or shall be appended to a compressed
+	 * {@link COSWriterObjectStream}.
 	 *
 	 * @param key     The {@link COSObjectKey} that shall be used as the {@link COSBase}s ID, if possible.
 	 * @param element The {@link COSBase}, that shall be registered in this pool.
-	 * @throws IOException Shall be thrown, if compressing the object failed.
 	 */
-	private COSBase addObjectToPool(COSObjectKey key, TraversedCOSElement element) throws IOException {
+	private COSBase addObjectToPool(COSObjectKey key, TraversedCOSElement element) {
 		// Drop hollow objects.
 		COSBase base = element.getCurrentObject();
 		base = base instanceof COSObject ? ((COSObject) base).getObject() : base;
@@ -97,7 +94,6 @@ public class COSWriterCompressionPool {
 				base == this.document.getDocument().getTrailer().getCOSDictionary(COSName.ROOT) ||
 				base instanceof COSStream) {
 			originalPool.put(key, base);
-			base = compressObject(base, element);
 			COSObjectKey actualKey = objectPool.put(key, base);
 			if (actualKey == null) {
 				return base;
@@ -169,20 +165,6 @@ public class COSWriterCompressionPool {
 		}
 
 		return retVal;
-	}
-
-	/**
-	 * Compresses the given {@link COSBase} using the configured {@link ContentCompressor}s.
-	 *
-	 * @param object The {@link COSBase}, that shall be compressed.
-	 * @return The compressed {@link COSBase}.
-	 */
-	public COSBase compressObject(COSBase currentState, TraversedCOSElement object) throws IOException {
-		COSBase base = currentState;
-		for (ContentCompressor compressor : parameters.getContentCompressors()) {
-			base = compressor.compress(document, base, object);
-		}
-		return base;
 	}
 
 	/**

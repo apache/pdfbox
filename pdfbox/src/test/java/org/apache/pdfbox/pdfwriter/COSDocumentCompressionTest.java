@@ -46,11 +46,7 @@ public class COSDocumentCompressionTest extends TestCase {
 
 		PDDocument document = PDDocument.load(source);
 		try {
-			document.saveCompressed(target, new CompressParameters()
-					.setCompressImages(true)
-					.setImageQuality(20)
-					.setCompressUncompressedStreams(true)
-			);
+			document.saveCompressed(target, new CompressParameters());
 		} finally {
 			document.close();
 		}
@@ -65,16 +61,16 @@ public class COSDocumentCompressionTest extends TestCase {
 			}
 			PDPage page = document.getPage(0);
 			assertEquals("The expected byte length of the image on page 1 differs.",
-					40303, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
+					515932, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
 			page = document.getPage(1);
 			assertEquals("The expected byte length of the image on page 2 differs.",
-					41611, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
+					530937, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
 			page = document.getPage(2);
 			assertEquals("The expected byte length of the image on page 3 differs.",
-					41774, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
+					533093, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
 			page = document.getPage(3);
 			assertEquals("The expected byte length of the image on page 4 differs.",
-					42116, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
+					530604, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
 		} finally {
 			document.close();
 		}
@@ -91,11 +87,7 @@ public class COSDocumentCompressionTest extends TestCase {
 
 		PDDocument document = PDDocument.load(source);
 		try {
-			document.saveCompressed(target, new CompressParameters()
-					.setCompressImages(true)
-					.setImageQuality(20)
-					.setCompressUncompressedStreams(true)
-			);
+			document.saveCompressed(target, new CompressParameters());
 		} finally {
 			document.close();
 		}
@@ -153,11 +145,7 @@ public class COSDocumentCompressionTest extends TestCase {
 
 		PDDocument document = PDDocument.load(source);
 		try {
-			document.saveCompressed(target, new CompressParameters()
-					.setCompressImages(true)
-					.setImageQuality(20)
-					.setCompressUncompressedStreams(true)
-			);
+			document.saveCompressed(target, new CompressParameters());
 		} finally {
 			document.close();
 		}
@@ -194,11 +182,7 @@ public class COSDocumentCompressionTest extends TestCase {
 			document.protect(new StandardProtectionPolicy(
 					"owner", "user", new AccessPermission(0)
 			));
-			document.saveCompressed(target, new CompressParameters()
-					.setCompressImages(true)
-					.setImageQuality(20)
-					.setCompressUncompressedStreams(true)
-			);
+			document.saveCompressed(target, new CompressParameters());
 		} finally {
 			document.close();
 		}
@@ -233,11 +217,7 @@ public class COSDocumentCompressionTest extends TestCase {
 				contentStream.close();
 			}
 
-			document.saveCompressed(target, new CompressParameters()
-					.setCompressImages(true)
-					.setImageQuality(20)
-					.setCompressUncompressedStreams(true)
-			);
+			document.saveCompressed(target, new CompressParameters());
 		} finally {
 			document.close();
 		}
