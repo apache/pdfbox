@@ -36,47 +36,6 @@ public class COSDocumentCompressionTest extends TestCase {
 	}
 
 	/**
-	 * Compress a document, that does contain images and touch the expected images.
-	 *
-	 * @throws Exception Shall be thrown, when compressing the document failed.
-	 */
-	public void testCompressImageDoc() throws Exception {
-		File source = new File(inDir, "image.pdf");
-		File target = new File(outDir, "image.pdf");
-
-		PDDocument document = PDDocument.load(source);
-		try {
-			document.saveCompressed(target, new CompressParameters());
-		} finally {
-			document.close();
-		}
-
-		document = PDDocument.load(target);
-		try {
-			assertEquals("The number of pages should not have changed, during compression.",
-					4, document.getNumberOfPages());
-			for (PDPage page : document.getPages()) {
-				assertNotNull("All pages should contain atleast one image named Im1",
-						page.getResources().getXObject(COSName.getPDFName("Im1")));
-			}
-			PDPage page = document.getPage(0);
-			assertEquals("The expected byte length of the image on page 1 differs.",
-					515932, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
-			page = document.getPage(1);
-			assertEquals("The expected byte length of the image on page 2 differs.",
-					530937, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
-			page = document.getPage(2);
-			assertEquals("The expected byte length of the image on page 3 differs.",
-					533093, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
-			page = document.getPage(3);
-			assertEquals("The expected byte length of the image on page 4 differs.",
-					530604, page.getResources().getXObject(COSName.getPDFName("Im1")).getCOSObject().getLength());
-		} finally {
-			document.close();
-		}
-	}
-
-	/**
 	 * Compress a document, that contains acroform fields and touch the expected fields.
 	 *
 	 * @throws Exception Shall be thrown, when compressing the document failed.
