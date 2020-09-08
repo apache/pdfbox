@@ -54,6 +54,7 @@ import org.apache.pdfbox.pdmodel.font.PDType3Font;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
+import org.junit.Assert;
 
 
 /**
@@ -483,7 +484,7 @@ public class TestTextStripper extends TestCase
         stripper.setEndBookmark(oi3);
         String textoi23 = stripper.getText(doc);
         assertFalse(textoi23.isEmpty());
-        assertFalse(textoi23.equals(textFull));
+        Assert.assertNotEquals(textoi23, textFull);
         
         String expectedTextoi23 = 
                 "Second at level 1\n"
@@ -503,18 +504,17 @@ public class TestTextStripper extends TestCase
         stripper.setEndPage(4);
         String textp34 = stripper.getText(doc);
         assertFalse(textp34.isEmpty());
-        assertFalse(textoi23.equals(textFull));
-        assertTrue(textoi23.equals(textp34));
-        
-        
+        Assert.assertNotEquals(textoi23, textFull);
+        Assert.assertEquals(textoi23, textp34);        
+
         // this should grab 0-based page 2, i.e. 1-based page 3
         // by the bookmark
         stripper.setStartBookmark(oi2);
         stripper.setEndBookmark(oi2);
         String textoi2 = stripper.getText(doc);
         assertFalse(textoi2.isEmpty());
-        assertFalse(textoi2.equals(textoi23));
-        assertFalse(textoi23.equals(textFull));
+        Assert.assertNotEquals(textoi2, textoi23);
+        Assert.assertNotEquals(textoi23, textFull);
         
         String expectedTextoi2 = 
                 "Second at level 1\n"
@@ -531,10 +531,10 @@ public class TestTextStripper extends TestCase
         stripper.setEndPage(3);
         String textp3 = stripper.getText(doc);
         assertFalse(textp3.isEmpty());
-        assertFalse(textp3.equals(textp34));
-        assertFalse(textoi23.equals(textFull));
-        assertTrue(textoi2.equals(textp3));
-        
+        Assert.assertNotEquals(textp3, textp34);
+        Assert.assertNotEquals(textoi23, textFull);
+        Assert.assertEquals(textoi2, textp3);
+
         // Test with orphan bookmark
         PDOutlineItem oiOrphan = new PDOutlineItem();
         stripper.setStartBookmark(oiOrphan);

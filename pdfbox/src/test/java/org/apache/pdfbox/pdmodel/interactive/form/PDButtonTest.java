@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 import org.junit.After;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -152,12 +153,12 @@ public class PDButtonTest
             radioButton.setValue("c");
 
             // test that the old behavior is now invalid
-            assertFalse("This shall no longer be 2", "2".equals(radioButton.getValueAsString()));
-            assertFalse("This shall no longer be 2", "2".equals(radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS)));
+            assertNotEquals("This shall no longer be 2", "2", radioButton.getValueAsString());
+            assertNotEquals("This shall no longer be 2", "2", radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS));
             
             // test for the correct behavior
-            assertTrue("This shall be c", "c".equals(radioButton.getValueAsString()));
-            assertTrue("This shall be c", "c".equals(radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS)));
+            assertEquals("This shall be c", "c", radioButton.getValueAsString());
+            assertEquals("This shall be c", "c", radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS));
         }
         catch (IOException e)
         {
