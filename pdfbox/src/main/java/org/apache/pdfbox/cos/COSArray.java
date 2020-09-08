@@ -706,7 +706,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
     /**
      * This will take an list of integer objects and return a COSArray of COSInteger objects.
      *
-     * @param strings A list of integers
+     * @param integer A list of integers
      *
      * @return An array of COSInteger objects
      */
