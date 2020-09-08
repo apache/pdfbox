@@ -16,14 +16,26 @@
  */
 package org.apache.pdfbox.pdfparser;
 
-import org.apache.pdfbox.cos.*;
-import org.apache.pdfbox.pdfparser.xref.FreeXReference;
-import org.apache.pdfbox.pdfparser.xref.XReferenceEntry;
-
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.pdfbox.cos.COSArray;
+import org.apache.pdfbox.cos.COSBase;
+import org.apache.pdfbox.cos.COSDictionary;
+import org.apache.pdfbox.cos.COSDocument;
+import org.apache.pdfbox.cos.COSInteger;
+import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSObject;
+import org.apache.pdfbox.cos.COSStream;
+import org.apache.pdfbox.pdfparser.xref.FreeXReference;
+import org.apache.pdfbox.pdfparser.xref.XReferenceEntry;
 
 /**
  * @author Alexander Funk
@@ -41,8 +53,8 @@ public class PDFXRefStream implements PDFXRef
 
     /**
      * Create a fresh XRef stream like for a fresh file or an incremental update.
-     * 
-     * @deprecated use {@link #PDFXRefStream(COSDocument)}
+     *
+     * @deprecated use {@link #PDFXRefStream(org.apache.pdfbox.cos.COSDocument)}
      */
     @Deprecated
     public PDFXRefStream()
