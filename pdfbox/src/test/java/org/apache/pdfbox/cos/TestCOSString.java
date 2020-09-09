@@ -329,9 +329,13 @@ public class TestCOSString extends TestCOSBase
     /**
      * Test testCompareFromHexString() - tests that Strings created from hex
      * compare correctly (PDFBOX-2401)
+     * 
+     * @throws java.io.IOException
      */
     public void testCompareFromHexString() throws IOException
     {
+        @SuppressWarnings({"java:S5863"}) // don't flag tests for reflexivity
+
         COSString test1 = COSString.parseHex("000000FF000000");
         COSString test2 = COSString.parseHex("000000FF00FFFF");
         Assert.assertEquals(test1, test1);
