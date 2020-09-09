@@ -36,6 +36,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
+import org.junit.Assert;
 
 /**
  * Unit tests for CCITTFactory
@@ -171,7 +172,7 @@ public class CCITTFactoryTest extends TestCase
     {
         PDDocument document = new PDDocument();
         BufferedImage bim = new BufferedImage(343, 287, BufferedImage.TYPE_BYTE_BINARY);
-        assertTrue((bim.getWidth() / 8) * 8 != bim.getWidth()); // not mult of 8
+        Assert.assertNotEquals((bim.getWidth() / 8) * 8, bim.getWidth()); // not mult of 8
         int col = 0;
         for (int x = 0; x < bim.getWidth(); ++x)
         {

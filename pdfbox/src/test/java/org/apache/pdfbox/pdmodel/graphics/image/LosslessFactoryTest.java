@@ -50,6 +50,7 @@ import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.junit.Assert;
 
 /**
  * Unit tests for LosslessFactory
@@ -95,7 +96,7 @@ public class LosslessFactoryTest extends TestCase
         BufferedImage bitonalImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 
         // avoid multiple of 8 to test padding
-        assertFalse(bitonalImage.getWidth() % 8 == 0);
+        Assert.assertNotEquals(0, bitonalImage.getWidth() % 8);
         
         g = bitonalImage.getGraphics();
         g.drawImage(image, 0, 0, null);
@@ -492,8 +493,8 @@ public class LosslessFactoryTest extends TestCase
         BufferedImage maskImage = ximage.getSoftMask().getImage();
         
         // avoid multiple of 8 to test padding
-        assertFalse(maskImage.getWidth() % 8 == 0);
-        
+        Assert.assertNotEquals(0, maskImage.getWidth() % 8);
+
         assertEquals(Transparency.OPAQUE, maskImage.getTransparency());
         for (int x = 0; x < width; ++x)
         {

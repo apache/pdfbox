@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.junit.Assert;
 
 /**
  *
@@ -140,7 +141,7 @@ public class TestNumberFormatUtil extends TestCase
             {
                 //format with the formatFloatFast method and parse back
                 int byteCount = NumberFormatUtil.formatFloatFast(value.floatValue(), maxFractionDigits, formatBuffer);
-                assertFalse(byteCount == -1);
+                Assert.assertNotEquals(-1, byteCount);
                 String newStringResult = new String(formatBuffer, 0, byteCount, StandardCharsets.US_ASCII);
                 BigDecimal formattedDecimal = new BigDecimal(newStringResult);
                 
