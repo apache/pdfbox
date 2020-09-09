@@ -51,6 +51,7 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.filetypedetector.FileType;
 import org.apache.pdfbox.util.filetypedetector.FileTypeDetector;
+import org.junit.Assert;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -317,9 +318,9 @@ public class TestImageIOUtils extends TestCase
     private void checkResolution(String filename, int expectedResolution)
             throws IOException
     {
-        assertFalse("Empty file " + filename, new File(filename).length() == 0);
+        Assert.assertNotEquals("Empty file " + filename, 0, new File(filename).length());
         String suffix = filename.substring(filename.lastIndexOf('.') + 1);
-        if ("BMP".equals(suffix.toUpperCase()))
+        if ("BMP".equalsIgnoreCase(suffix))
         {
             // BMP reader doesn't work
             checkBmpResolution(filename, expectedResolution);

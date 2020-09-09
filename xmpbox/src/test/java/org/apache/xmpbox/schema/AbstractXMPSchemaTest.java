@@ -496,13 +496,12 @@ public abstract class AbstractXMPSchemaTest
         String img = "/9j/4AAQSkZJRgABAgEASABIAAD";
         setMethod.invoke(schema, height, width, format, img);
         List<ThumbnailType> found = ((List<ThumbnailType>) getMethod.invoke(schema));
-        Assert.assertTrue(found.size() == 1);
+        Assert.assertEquals(1, found.size());
         ThumbnailType t1 = found.get(0);
         Assert.assertEquals(height, t1.getHeight());
         Assert.assertEquals(width, t1.getWidth());
         Assert.assertEquals(format, t1.getFormat());
         Assert.assertEquals(img, t1.getImage());
-
     }
 
     protected void testGetSetLangAltValue() throws Exception
