@@ -26,6 +26,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.junit.Assert;
 
 /**
  * Tests {@link COSFloat}.
@@ -113,18 +114,18 @@ public class TestCOSFloat extends TestCOSNumber
                 COSFloat test2 = new COSFloat(num);
                 COSFloat test3 = new COSFloat(num);
                 // Reflexive (x == x)
-                assertTrue(test1.equals(test1));
+                Assert.assertEquals(test1, test1);
                 // Symmetric is preserved ( x==y then y==x)
-                assertTrue(test2.equals(test3));
-                assertTrue(test1.equals(test2));
+                Assert.assertEquals(test2, test3);
+                Assert.assertEquals(test1, test2);
                 // Transitive (if x==y && y==z then x==z)
-                assertTrue(test1.equals(test2));
-                assertTrue(test2.equals(test3));
-                assertTrue(test1.equals(test3));
+                Assert.assertEquals(test1, test2);
+                Assert.assertEquals(test2, test3);
+                Assert.assertEquals(test1, test3);
 
                 float nf = Float.intBitsToFloat(Float.floatToIntBits(num) + 1);
                 COSFloat test4 = new COSFloat(nf);
-                assertFalse(test4.equals(test1));
+                Assert.assertNotEquals(test4, test1);
             }
         }.runTests();
     }
@@ -137,11 +138,11 @@ public class TestCOSFloat extends TestCOSNumber
         {
             COSFloat test1 = new COSFloat(num);
             COSFloat test2 = new COSFloat(num);
-            assertEquals(test1.hashCode(), test2.hashCode());
+            Assert.assertEquals(test1.hashCode(), test2.hashCode());
 
             float nf = Float.intBitsToFloat(Float.floatToIntBits(num) + 1);
             COSFloat test3 = new COSFloat(nf);
-            assertFalse(test3.hashCode() == test1.hashCode());
+            assertNotSame(test3.hashCode(), test1.hashCode());
         }
     }
 
@@ -181,7 +182,7 @@ public class TestCOSFloat extends TestCOSNumber
             COSFloat testFloat = new COSFloat(num);
             // compare the string representation instead of the numeric values 
             // as the cast from float to double adds some more fraction digits
-            assertEquals(Float.toString(num), Double.toString(testFloat.doubleValue()));
+            Assert.assertEquals(Float.toString(num), Double.toString(testFloat.doubleValue()));
         }
 
     }
@@ -199,7 +200,7 @@ public class TestCOSFloat extends TestCOSNumber
         void runTest(float num)
         {
             COSFloat testFloat = new COSFloat(num);
-            assertEquals((int) num, testFloat.intValue());
+            Assert.assertEquals((int) num, testFloat.intValue());
         }
 
     }
@@ -277,7 +278,7 @@ public class TestCOSFloat extends TestCOSNumber
         void runTest(float num)
         {
             COSFloat testFloat = new COSFloat(num);
-            assertEquals((long) num, testFloat.longValue());
+            Assert.assertEquals((long) num, testFloat.longValue());
         }
         
     }
@@ -300,7 +301,7 @@ public class TestCOSFloat extends TestCOSNumber
             {
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.accept(visitor);
-                assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
+                Assert.assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
                 testByteArrays(floatToString(num).getBytes("ISO-8859-1"), outStream.toByteArray());
                 outStream.reset();
             }
@@ -334,8 +335,8 @@ public class TestCOSFloat extends TestCOSNumber
             {
                 COSFloat cosFloat = new COSFloat(num);
                 cosFloat.writePDF(outStream);
-                assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
-                assertEquals(floatToString(num), outStream.toString("ISO-8859-1"));
+                Assert.assertEquals(floatToString(cosFloat.floatValue()), outStream.toString("ISO-8859-1"));
+                Assert.assertEquals(floatToString(num), outStream.toString("ISO-8859-1"));
                 testByteArrays(floatToString(num).getBytes("ISO-8859-1"), outStream.toByteArray());
                 outStream.reset();
             }

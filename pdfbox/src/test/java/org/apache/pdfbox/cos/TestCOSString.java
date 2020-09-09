@@ -24,6 +24,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.junit.Assert;
 
 /**
  * This will test all of the filters in the PDFBox system.
@@ -100,7 +101,7 @@ public class TestCOSString extends TestCOSBase
         {
             fail("IOException: " + e.getMessage());
         }
-        assertEquals(expected, outStream.toString());
+        Assert.assertEquals(expected, outStream.toString());
     }
 
     /**
@@ -150,11 +151,11 @@ public class TestCOSString extends TestCOSBase
         String expected = "Test subject for testing getHex";
         COSString test1 = new COSString(expected);
         String hexForm = createHex(expected);
-        assertEquals(hexForm, test1.toHexString());
+        Assert.assertEquals(hexForm, test1.toHexString());
         COSString escCS = new COSString(ESC_CHAR_STRING);
         // Not sure whether the escaped characters should be escaped or not, presumably since 
         // writePDF() gives you the proper formatted text, getHex() should ONLY convert to hex. 
-        assertEquals(createHex(ESC_CHAR_STRING), escCS.toHexString());
+        Assert.assertEquals(createHex(ESC_CHAR_STRING), escCS.toHexString());
     }
 
     /**
@@ -166,17 +167,17 @@ public class TestCOSString extends TestCOSBase
         {
             String testStr = "Test subject for getString()";
             COSString test1 = new COSString(testStr);
-            assertEquals(testStr, test1.getString());
+            Assert.assertEquals(testStr, test1.getString());
 
             COSString hexStr = COSString.parseHex(createHex(testStr));
-            assertEquals(testStr, hexStr.getString());
+            Assert.assertEquals(testStr, hexStr.getString());
 
             COSString escapedString = new COSString(ESC_CHAR_STRING);
-            assertEquals(ESC_CHAR_STRING, escapedString.getString());
+            Assert.assertEquals(ESC_CHAR_STRING, escapedString.getString());
 
             testStr = "Line1\nLine2\nLine3\n";
             COSString lineFeedString = new COSString(testStr);
-            assertEquals(testStr, lineFeedString.getString());
+            Assert.assertEquals(testStr, lineFeedString.getString());
         }
         catch (IOException e)
         {
@@ -215,7 +216,7 @@ public class TestCOSString extends TestCOSBase
     {
         String theString = "\u4e16";
         COSString string = new COSString(theString);
-        assertTrue(string.getString().equals(theString));
+        Assert.assertEquals(string.getString(), theString);
         
         String textAscii = "This is some regular text. It should all be expressible in ASCII";
         /** En français où les choses sont accentués. En español, así */
@@ -225,29 +226,29 @@ public class TestCOSString extends TestCOSBase
 
         // Testing the getString method
         COSString stringAscii = new COSString( textAscii );
-        assertEquals( stringAscii.getString(), textAscii );
+        Assert.assertEquals( stringAscii.getString(), textAscii );
         
         COSString string8Bit = new COSString( text8Bit );
-        assertEquals( string8Bit.getString(), text8Bit );
+        Assert.assertEquals( string8Bit.getString(), text8Bit );
 
         COSString stringHighBits = new COSString( textHighBits );
-        assertEquals( stringHighBits.getString(), textHighBits );
+        Assert.assertEquals( stringHighBits.getString(), textHighBits );
         
 
         // Testing the getBytes method
         // The first two strings should be stored as ISO-8859-1 because they only contain chars in the range 0..255
-        assertEquals(textAscii, new String(stringAscii.getBytes(), "ISO-8859-1"));
+        Assert.assertEquals(textAscii, new String(stringAscii.getBytes(), "ISO-8859-1"));
         // likewise for the 8bit characters.
-        assertEquals(text8Bit, new String(string8Bit.getBytes(), "ISO-8859-1"));
+        Assert.assertEquals(text8Bit, new String(string8Bit.getBytes(), "ISO-8859-1"));
         
         // The japanese text contains high bits so must be stored as big endian UTF-16
-        assertEquals(textHighBits, new String(stringHighBits.getBytes(), "UnicodeBig"));
+        Assert.assertEquals(textHighBits, new String(stringHighBits.getBytes(), "UnicodeBig"));
         
         
         // Test the writePDF method to ensure that the Strings are correct when written into PDF.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         COSWriter.writeString(stringAscii, out);
-        assertEquals("(" + textAscii + ")", new String(out.toByteArray(), "ASCII"));
+        Assert.assertEquals("(" + textAscii + ")", new String(out.toByteArray(), "ASCII"));
         
         out.reset();
         COSWriter.writeString(string8Bit, out);
@@ -256,7 +257,7 @@ public class TestCOSString extends TestCOSBase
         {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
-        assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII"));
+        Assert.assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII"));
         
         out.reset();
         COSWriter.writeString(stringHighBits, out);
@@ -266,7 +267,7 @@ public class TestCOSString extends TestCOSBase
         {
            hex.append( Integer.toHexString(c).toUpperCase() );
         }
-        assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII")); 
+        Assert.assertEquals("<"+hex.toString()+">", new String(out.toByteArray(), "ASCII")); 
     }
 
     @Override
@@ -276,11 +277,11 @@ public class TestCOSString extends TestCOSBase
         ICOSVisitor visitor = new COSWriter(outStream);
         COSString testSubj = new COSString(ESC_CHAR_STRING);
         testSubj.accept(visitor);
-        assertEquals("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", outStream.toString());
+        Assert.assertEquals("(" + ESC_CHAR_STRING_PDF_FORMAT + ")", outStream.toString());
         outStream.reset();
         testSubj.setForceHexForm(true);
         testSubj.accept(visitor);
-        assertEquals("<" + createHex(ESC_CHAR_STRING) + ">", outStream.toString());
+        Assert.assertEquals("<" + createHex(ESC_CHAR_STRING) + ">", outStream.toString());
     }
 
     /**
@@ -293,33 +294,27 @@ public class TestCOSString extends TestCOSBase
         {
             // Reflexive
             COSString x1 = new COSString("Test");
-            assertTrue(x1.equals(x1));
+            Assert.assertEquals(x1, x1);
 
             // Symmetry i.e. if x == y then y == x
             COSString y1 = new COSString("Test");
-            assertTrue(x1.equals(y1));
-            assertTrue(y1.equals(x1));
+            Assert.assertEquals(x1, y1);
+            Assert.assertEquals(y1, x1);
             COSString x2 = new COSString("Test");
             x2.setForceHexForm(true);
             // also if x != y then y != x
-            assertFalse(x1.equals(x2));
-            assertFalse(x2.equals(x1));
+            Assert.assertNotEquals(x1, x2);
+            Assert.assertNotEquals(x2, x1);
 
             // Transitive if x == y && y == z then x == z
             COSString z1 = new COSString("Test");
-            assertTrue(x1.equals(y1));
-            assertTrue(y1.equals(z1));
-            assertTrue(x1.equals(z1));
+            Assert.assertEquals(x1, y1);
+            Assert.assertEquals(y1, z1);
+            Assert.assertEquals(x1, z1);
             // Test the negative as well if x1 == y1 && y1 != x2 then x1 != x2
-            assertTrue(x1.equals(y1));
-            assertFalse(y1.equals(x2));
-            assertFalse(x1.equals(x2));
-
-            // Non-nullity
-            assertFalse(x1 == null);
-            assertFalse(y1 == null);
-            assertFalse(z1 == null);
-            assertFalse(x2 == null);
+            Assert.assertEquals(x1, y1);
+            Assert.assertNotEquals(y1, x2);
+            Assert.assertNotEquals(x1, x2);
         }
     }
 
@@ -330,11 +325,11 @@ public class TestCOSString extends TestCOSBase
     {
         COSString str1 = new COSString("Test1");
         COSString str2 = new COSString("Test2");
-        assertFalse(str1.hashCode() == str2.hashCode());
+        Assert.assertNotEquals(str1.hashCode(), str2.hashCode());
         COSString str3 = new COSString("Test1");
-        assertTrue(str1.hashCode() == str3.hashCode());
+        Assert.assertEquals(str1.hashCode(), str3.hashCode());
         str3.setForceHexForm(true);
-        assertFalse(str1.hashCode() == str3.hashCode());
+        Assert.assertNotEquals(str1.hashCode(), str3.hashCode());
     }
 
     /**
@@ -345,13 +340,13 @@ public class TestCOSString extends TestCOSBase
     {
         COSString test1 = COSString.parseHex("000000FF000000");
         COSString test2 = COSString.parseHex("000000FF00FFFF");
-        assertEquals(test1, test1);
-        assertEquals(test2, test2);
-        assertFalse(test1.toHexString().equals(test2.toHexString()));
+        Assert.assertEquals(test1, test1);
+        Assert.assertEquals(test2, test2);
+        Assert.assertNotEquals(test1.toHexString(), test2.toHexString());
         assertFalse(Arrays.equals(test1.getBytes(), test2.getBytes()));
-        assertFalse(test1.equals(test2));
-        assertFalse(test2.equals(test1));
-        assertFalse(test1.getString().equals(test2.getString()));
+        Assert.assertNotEquals(test1, test2);
+        Assert.assertNotEquals(test2, test1);
+        Assert.assertNotEquals(test1.getString(), test2.getString());
     }
 
     /**

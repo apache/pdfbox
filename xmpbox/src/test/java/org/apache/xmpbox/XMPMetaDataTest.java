@@ -183,7 +183,7 @@ public class XMPMetaDataTest
         Calendar createDate1 = basicSchema.getCreateDate();
         basicSchema.setCreateDate(new GregorianCalendar());
         Calendar createDate2 = basicSchema.getCreateDate();
-        Assert.assertFalse("CreateDate has not been set", createDate1.equals(createDate2));
+        Assert.assertNotEquals("CreateDate has not been set", createDate1, createDate2);
         
         // check that bugfix does not interfere with lists of properties with same name
         DublinCoreSchema dublinCoreSchema = xmp.getDublinCoreSchema();

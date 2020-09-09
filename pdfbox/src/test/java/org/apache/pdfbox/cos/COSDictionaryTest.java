@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.cos;
 
-import static org.junit.Assert.assertFalse;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class COSDictionaryTest
@@ -29,7 +29,7 @@ public class COSDictionaryTest
         cosDictionary.setItem(COSName.BE, COSName.BE);
         cosDictionary.setInt(COSName.LENGTH, 0);
         cosStream.setItem(COSName.BE, COSName.BE);
-        assertFalse("a COSDictionary shall not be equal to a COSStream with the same dictionary entries", cosDictionary.equals(cosStream));
-        assertFalse("a COSStream shall not be equal to a COSDictionary with the same dictionary entries", cosStream.equals(cosDictionary));
+        Assert.assertNotEquals("a COSDictionary shall not be equal to a COSStream with the same dictionary entries", cosDictionary, cosStream);
+        Assert.assertNotEquals("a COSStream shall not be equal to a COSDictionary with the same dictionary entries", cosStream, cosDictionary);
     }
 }
