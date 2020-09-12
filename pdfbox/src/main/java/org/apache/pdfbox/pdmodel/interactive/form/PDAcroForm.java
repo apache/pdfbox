@@ -762,8 +762,6 @@ public final class PDAcroForm implements COSObjectable
      */
     private boolean resolveNeedsTranslation(PDAppearanceStream appearanceStream)
     {
-        boolean needsTranslation = true;
-
         PDResources resources = appearanceStream.getResources();
         if (resources != null && resources.getXObjectNames().iterator().hasNext())
         {
@@ -783,7 +781,7 @@ public final class PDAcroForm implements COSObjectable
                         float llY = bbox.getLowerLeftY();
                         if (Float.compare(llX, 0) != 0 && Float.compare(llY, 0) != 0)
                         {
-                            needsTranslation = false;
+                            return false;
                         }
                     }
                 }
@@ -793,9 +791,10 @@ public final class PDAcroForm implements COSObjectable
                     // as this might only cause a misplacement
                 }
             }
-            return needsTranslation;
         }
-        
+
+        // a field without specific settings typically needs to be translated
+        // to the correct position
         return true;
     }
     
