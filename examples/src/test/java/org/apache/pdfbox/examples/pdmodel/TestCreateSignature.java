@@ -597,7 +597,7 @@ public class TestCreateSignature
     @Test
     public void testSaveIncrementalAfterSign() throws Exception
     {
-        BufferedImage oldImage, expectedImage1, actualImage1;
+        BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
 
         CreateSimpleForm.main(new String[0]); // creates "target/SimpleForm.pdf"
 
@@ -607,6 +607,7 @@ public class TestCreateSignature
 
         final String fileNameSigned = getOutputFileName("SimpleForm_signed{0}.pdf");
         final String fileNameResaved1 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved1.pdf");
+        final String fileNameResaved2 = getOutputFileName("SimpleForm_signed{0}_incrementallyresaved2.pdf");
         signing.signDetached(new File("target/SimpleForm.pdf"), new File(OUT_DIR + fileNameSigned));
 
         checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameSigned), false);
@@ -657,6 +658,44 @@ public class TestCreateSignature
             Assert.assertEquals(expectedImage1.getType(), actualImage1.getType());
             DataBufferInt expectedData = (DataBufferInt) expectedImage1.getRaster().getDataBuffer();
             DataBufferInt actualData = (DataBufferInt) actualImage1.getRaster().getDataBuffer();
+            Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+        }
+
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
+        {
+            FileOutputStream fileOutputStream = new FileOutputStream(new File(OUT_DIR, fileNameResaved2));
+            PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+            field.setValue("New Value 2");
+            expectedImage2 = new PDFRenderer(doc).renderImage(0);
+
+            // compare images, image must has changed
+            Assert.assertEquals(oldImage.getWidth(), expectedImage2.getWidth());
+            Assert.assertEquals(oldImage.getHeight(), expectedImage2.getHeight());
+            Assert.assertEquals(oldImage.getType(), expectedImage2.getType());
+            DataBufferInt expectedData = (DataBufferInt) oldImage.getRaster().getDataBuffer();
+            DataBufferInt actualData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
+            Assert.assertEquals(expectedData.getData().length, actualData.getData().length);
+            Assert.assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
+
+            // new style incremental save: add only the objects that have changed
+            Set<COSDictionary> objectsToWrite = new HashSet<>();
+            objectsToWrite.add(field.getCOSObject());
+            objectsToWrite.add(field.getWidgets().get(0).getAppearance().getCOSObject());
+            objectsToWrite.add(field.getWidgets().get(0).getAppearance().getNormalAppearance().getCOSObject());
+            doc.saveIncremental(fileOutputStream, objectsToWrite);
+        }
+        checkSignature(new File("target/SimpleForm.pdf"), new File(OUT_DIR, fileNameResaved2), false);
+        try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameResaved2)))
+        {
+            PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+            Assert.assertEquals("New Value 2", field.getValueAsString());
+            actualImage2 = new PDFRenderer(doc).renderImage(0);
+            // compare images, equality proves that the appearance has been updated too
+            Assert.assertEquals(expectedImage2.getWidth(), actualImage2.getWidth());
+            Assert.assertEquals(expectedImage2.getHeight(), actualImage2.getHeight());
+            Assert.assertEquals(expectedImage2.getType(), actualImage2.getType());
+            DataBufferInt expectedData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
+            DataBufferInt actualData = (DataBufferInt) actualImage2.getRaster().getDataBuffer();
             Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
         }
     }

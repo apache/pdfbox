@@ -955,6 +955,40 @@ public class PDDocument implements Closeable
     }
 
     /**
+     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
+     * file or a stream, not if the document was created in PDFBox itself. This allows to include
+     * objects even if there is no path of objects that have
+     * {@link COSUpdateInfo#isNeedToBeUpdated()} set so the incremental update gets smaller. Only
+     * dictionaries are supported; if you need to update other objects classes, then add their
+     * parent dictionary.
+     * <p>
+     * This method is for experienced users only. You will usually never need it. It is useful only
+     * if you are required to keep the current revision and append the changes. A typical use case
+     * is changing a signed file without invalidating the signature. To know which objects are
+     * getting changed, you need to have some understanding of the PDF specification, and look at
+     * the saved file with an editor to verify that you are updating the correct objects. You should
+     * also inspect the page and document structures of the file with PDFDebugger.
+     *
+     * @param output stream to write to. It will be closed when done. It
+     * <i><b>must never</b></i> point to the source file or that one will be harmed!
+     * @param objectsToWrite objects that <b>must</b> be part of the incremental saving.
+     * @throws IOException if the output could not be written
+     * @throws IllegalStateException if the document was not loaded from a file or a stream.
+     */
+    public void saveIncremental(OutputStream output, Set<COSDictionary> objectsToWrite) throws IOException
+    {
+        if (pdfSource == null)
+        {
+            throw new IllegalStateException("document was not loaded from a file or a stream");
+        }
+        
+        try (COSWriter writer = new COSWriter(output, pdfSource, objectsToWrite))
+        {
+            writer.write(this, signInterface);
+        }
+    }
+
+    /**
      * Save PDF incrementally without closing for external signature creation scenario. The general
      * sequence is:
      * <pre>
