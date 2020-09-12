@@ -763,33 +763,34 @@ public final class PDAcroForm implements COSObjectable
     private boolean resolveNeedsTranslation(PDAppearanceStream appearanceStream)
     {
         PDResources resources = appearanceStream.getResources();
-        if (resources != null && resources.getXObjectNames().iterator().hasNext())
+        if (resources == null || !resources.getXObjectNames().iterator().hasNext())
         {
-            Iterator<COSName> xObjectNames = resources.getXObjectNames().iterator();
-
-            while (xObjectNames.hasNext())
+            return true;
+        }
+        Iterator<COSName> xObjectNames = resources.getXObjectNames().iterator();
+        while (xObjectNames.hasNext())
+        {
+            try
             {
-                try
+                // if the BBox of the PDFormXObject does not start at 0,0
+                // there is no need do translate as this is done by the BBox definition.
+                COSName name = xObjectNames.next();
+                PDXObject xObject = resources.getXObject(name);
+                if (xObject instanceof PDFormXObject)
                 {
-                    // if the BBox of the PDFormXObject does not start at 0,0
-                    // there is no need do translate as this is done by the BBox definition.
-                    PDXObject xObject = resources.getXObject(xObjectNames.next());
-                    if (xObject instanceof PDFormXObject)
+                    PDRectangle bbox = ((PDFormXObject) xObject).getBBox();
+                    float llX = bbox.getLowerLeftX();
+                    float llY = bbox.getLowerLeftY();
+                    if (Float.compare(llX, 0) != 0 && Float.compare(llY, 0) != 0)
                     {
-                        PDRectangle bbox = ((PDFormXObject)xObject).getBBox();
-                        float llX = bbox.getLowerLeftX();
-                        float llY = bbox.getLowerLeftY();
-                        if (Float.compare(llX, 0) != 0 && Float.compare(llY, 0) != 0)
-                        {
-                            return false;
-                        }
+                        return false;
                     }
                 }
-                catch (IOException e)
-                {
-                    // we can safely ignore the exception here
-                    // as this might only cause a misplacement
-                }
+            }
+            catch (IOException e)
+            {
+                // we can safely ignore the exception here
+                // as this might only cause a misplacement
             }
         }
 
