@@ -659,6 +659,45 @@ public class TestCreateSignature
         actualData = (DataBufferInt) actualImage1.getRaster().getDataBuffer();
         Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
         doc.close();
+
+        doc = PDDocument.load(new File(outDir, fileNameSigned));
+
+        fileOutputStream = new FileOutputStream(new File(outDir, fileNameResaved2));
+        field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+        field.setValue("New Value 2");
+        expectedImage2 = new PDFRenderer(doc).renderImage(0);
+
+        // compare images, image must has changed
+        Assert.assertEquals(oldImage.getWidth(), expectedImage2.getWidth());
+        Assert.assertEquals(oldImage.getHeight(), expectedImage2.getHeight());
+        Assert.assertEquals(oldImage.getType(), expectedImage2.getType());
+        expectedData = (DataBufferInt) oldImage.getRaster().getDataBuffer();
+        actualData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
+        Assert.assertEquals(expectedData.getData().length, actualData.getData().length);
+        Assert.assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
+
+        // new style incremental save: add only the objects that have changed
+        Set<COSDictionary> objectsToWrite = new HashSet<COSDictionary>();
+        objectsToWrite.add(field.getCOSObject());
+        objectsToWrite.add(field.getWidgets().get(0).getAppearance().getCOSObject());
+        objectsToWrite.add((COSDictionary) field.getWidgets().get(0).getAppearance().getNormalAppearance().getCOSObject());
+        doc.saveIncremental(fileOutputStream, objectsToWrite);
+        doc.close();
+
+        checkSignature(new File("target/SimpleForm.pdf"), new File(outDir, fileNameResaved2), false);
+        doc = PDDocument.load(new File(outDir, fileNameResaved2));
+
+        field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
+        Assert.assertEquals("New Value 2", field.getValueAsString());
+        actualImage2 = new PDFRenderer(doc).renderImage(0);
+        // compare images, equality proves that the appearance has been updated too
+        Assert.assertEquals(expectedImage2.getWidth(), actualImage2.getWidth());
+        Assert.assertEquals(expectedImage2.getHeight(), actualImage2.getHeight());
+        Assert.assertEquals(expectedImage2.getType(), actualImage2.getType());
+        expectedData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
+        actualData = (DataBufferInt) actualImage2.getRaster().getDataBuffer();
+        Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+        doc.close();
     }
 
     @Test
