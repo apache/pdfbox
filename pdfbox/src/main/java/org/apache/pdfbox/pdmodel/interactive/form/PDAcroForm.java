@@ -28,11 +28,14 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
+import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -769,6 +772,18 @@ public final class PDAcroForm implements COSObjectable
             return true;
         }
         Iterator<COSName> xObjectNames = resources.getXObjectNames().iterator();
+        List<Object> tokens;
+        try
+        {
+            PDFStreamParser pdfStreamParser = new PDFStreamParser(appearanceStream);
+            pdfStreamParser.parse();
+            tokens = pdfStreamParser.getTokens();
+        }
+        catch (IOException ex)
+        {
+            LOG.debug("Couldn't not parse appearance content stream - content might be misplaced", ex);
+            return true;
+        }
         while (xObjectNames.hasNext())
         {
             try
@@ -784,7 +799,15 @@ public final class PDAcroForm implements COSObjectable
                     float llY = bbox.getLowerLeftY();
                     if (Float.compare(llX, 0) != 0 && Float.compare(llY, 0) != 0)
                     {
-                        return false;
+                        // PDFBOX-4955: only if used
+                        for (int i = 0; i < tokens.size(); ++i)
+                        {
+                            if (tokens.get(i).equals(name) && i < tokens.size() - 1 &&
+                                tokens.get(i + 1).equals(Operator.getOperator(OperatorName.DRAW_OBJECT)))
+                            {
+                                return false;
+                            }
+                        }
                     }
                 }
             }
