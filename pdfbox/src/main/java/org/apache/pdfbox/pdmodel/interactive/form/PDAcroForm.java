@@ -329,7 +329,9 @@ public final class PDAcroForm implements COSObjectable
                     PDFormXObject fieldObject = new PDFormXObject(appearanceStream.getCOSObject());
                     
                     contentStream.saveGraphicsState();
-                    
+
+                    //TODO read this: https://stackoverflow.com/a/54091766/535646
+
                     // translate the appearance stream to the widget location if there is 
                     // not already a transformation in place
                     boolean needsTranslation = resolveNeedsTranslation(appearanceStream);
