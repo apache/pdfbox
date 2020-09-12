@@ -287,6 +287,20 @@ public class PDAcroFormFlattenTest
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
+    /**
+     * PDFBOX-4955: appearance streams with forms that are not used.
+     * 
+     * @throws IOException 
+     */
+    @Test
+    public void testFlattenPDFBox4955() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13011410/PDFBOX-4955.pdf";
+        String targetFileName = "PDFBOX-4955.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
     /*
      * Flatten and compare with generated image samples.
      */
