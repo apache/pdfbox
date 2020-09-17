@@ -44,12 +44,12 @@ import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.bouncycastle.asn1.ASN1Encoding;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Set;
 import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DEROutputStream;
 import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.asn1.cms.ContentInfo;
 import org.bouncycastle.asn1.cms.EncryptedContentInfo;
@@ -477,17 +477,13 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             pkcs7input[21] = three;
             pkcs7input[22] = two;
             pkcs7input[23] = one;
-            
+
             ASN1Primitive obj = createDERForRecipient(pkcs7input, certificate);
-            
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            
-            DEROutputStream k = new DEROutputStream(baos);
-            
-            k.writeObject(obj);
-            
+            obj.encodeTo(baos, ASN1Encoding.DER);
+
             recipientsField[i] = baos.toByteArray();
-            
+
             i++;
         }
         return recipientsField;
