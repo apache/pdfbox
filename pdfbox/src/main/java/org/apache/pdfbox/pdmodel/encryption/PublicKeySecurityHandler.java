@@ -372,23 +372,23 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             }
 
             byte[] mdResult;
-            if (version == 4)
+            switch (version)
             {
-                dictionary.setSubFilter(SUBFILTER5);
-                mdResult = MessageDigests.getSHA1().digest(shaInput);
-                prepareEncryptionDictAES(dictionary, COSName.AESV2, recipientsFields);
-            }
-            else if (version == 5)
-            {
-                dictionary.setSubFilter(SUBFILTER5);
-                mdResult = MessageDigests.getSHA256().digest(shaInput);
-                prepareEncryptionDictAES(dictionary, COSName.AESV3, recipientsFields);
-            }
-            else
-            {
-                dictionary.setSubFilter(SUBFILTER4);
-                mdResult = MessageDigests.getSHA1().digest(shaInput);
-                dictionary.setRecipients(recipientsFields);
+                case 4:
+                    dictionary.setSubFilter(SUBFILTER5);
+                    mdResult = MessageDigests.getSHA1().digest(shaInput);
+                    prepareEncryptionDictAES(dictionary, COSName.AESV2, recipientsFields);
+                    break;
+                case 5:
+                    dictionary.setSubFilter(SUBFILTER5);
+                    mdResult = MessageDigests.getSHA256().digest(shaInput);
+                    prepareEncryptionDictAES(dictionary, COSName.AESV3, recipientsFields);
+                    break;
+                default:
+                    dictionary.setSubFilter(SUBFILTER4);
+                    mdResult = MessageDigests.getSHA1().digest(shaInput);
+                    dictionary.setRecipients(recipientsFields);
+                    break;
             }
 
             this.encryptionKey = new byte[this.keyLength/8];
