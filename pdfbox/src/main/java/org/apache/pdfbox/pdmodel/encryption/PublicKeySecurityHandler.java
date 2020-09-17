@@ -129,9 +129,14 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         }
 
         setDecryptMetadata(encryption.isEncryptMetaData());
-        if (encryption.getLength() != 0)
+        PDCryptFilterDictionary defaultCryptFilterDictionary = encryption.getDefaultCryptFilterDictionary();
+        if (defaultCryptFilterDictionary != null && defaultCryptFilterDictionary.getLength() != 0)
         {
-            this.keyLength = encryption.getLength();
+            setKeyLength(defaultCryptFilterDictionary.getLength());
+        }
+        else if (encryption.getLength() != 0)
+        {
+            setKeyLength(encryption.getLength());
         }
 
         PublicKeyDecryptionMaterial material = (PublicKeyDecryptionMaterial) decryptionMaterial;
@@ -155,7 +160,6 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             COSArray array = (COSArray) encryption.getCOSObject().getItem(COSName.RECIPIENTS);
             if (array == null)
             {
-                PDCryptFilterDictionary defaultCryptFilterDictionary = encryption.getDefaultCryptFilterDictionary();
                 array = (COSArray) defaultCryptFilterDictionary.getCOSObject().getItem(COSName.RECIPIENTS);
             }
             byte[][] recipientFieldsBytes = new byte[array.size()][];
@@ -238,12 +242,18 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             byte[] mdResult;
             if (encryption.getVersion() == 4 || encryption.getVersion() == 5)
             {
-                mdResult = MessageDigests.getSHA256().digest(sha1Input);
+                if (encryption.getVersion() == 4)
+                {
+                    mdResult = MessageDigests.getSHA1().digest(sha1Input);
+                }
+                else
+                {
+                    mdResult = MessageDigests.getSHA256().digest(sha1Input);
+                }
 
                 // detect whether AES encryption is used. This assumes that the encryption algo is 
                 // stored in the PDCryptFilterDictionary
                 // However, crypt filters are used only when V is 4 or 5.
-                PDCryptFilterDictionary defaultCryptFilterDictionary = encryption.getDefaultCryptFilterDictionary();
                 if (defaultCryptFilterDictionary != null)
                 {
                     COSName cryptFilterMethod = defaultCryptFilterDictionary.getCryptFilterMethod();
@@ -366,12 +376,17 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             }
 
             byte[] mdResult;
-            if (version == 4 || version == 5)
+            if (version == 4)
+            {
+                dictionary.setSubFilter(SUBFILTER5);
+                mdResult = MessageDigests.getSHA1().digest(shaInput);
+                prepareEncryptionDictAES(dictionary, COSName.AESV2, recipientsFields);
+            }
+            else if (version == 5)
             {
                 dictionary.setSubFilter(SUBFILTER5);
                 mdResult = MessageDigests.getSHA256().digest(shaInput);
-                COSName aesVName = version == 5 ? COSName.AESV3 : COSName.AESV2;
-                prepareEncryptionDictAES(dictionary, aesVName, recipientsFields);
+                prepareEncryptionDictAES(dictionary, COSName.AESV3, recipientsFields);
             }
             else
             {
@@ -407,8 +422,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             case 40:
                 return 1;
             case 128:
-                return 2; // prefer RC4 (AES 128 doesn't work yet)
-                //return 4; // prefer AES
+                return 4; // prefer AES
             case 256:
                 return 5;
             default:
