@@ -40,7 +40,6 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
     private String ownerPassword = "";
     @SuppressWarnings({"squid:S2068"})
     private String userPassword = "";
-    private boolean preferAES = false;
 
     /**
      * Creates an new instance of the standard protection policy
@@ -110,29 +109,5 @@ public final class StandardProtectionPolicy extends ProtectionPolicy
     public void setUserPassword(String userPassword)
     {
         this.userPassword = userPassword;
-    }
-
-    /**
-     * Tell whether AES encryption is preferred when several encryption methods are available for
-     * the chosen key length. The default is false. This setting is only relevant if the key length
-     * is 128 bits.
-     *
-     * @return true if AES encryption is preferred
-     */
-    public boolean isPreferAES()
-    {
-        return this.preferAES;
-    }
-
-    /**
-     * Set whether AES encryption is preferred when several encryption methods are available for the
-     * chosen key length. The default is false. This setting is only relevant if the key length is
-     * 128 bits.
-     *
-     * @param preferAES
-     */
-    public void setPreferAES(boolean preferAES)
-    {
-        this.preferAES = preferAES;
     }
 }
