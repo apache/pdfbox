@@ -83,8 +83,6 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     private static final String SUBFILTER4 = "adbe.pkcs7.s4";
     private static final String SUBFILTER5 = "adbe.pkcs7.s5";
 
-    private PublicKeyProtectionPolicy policy = null;
-    
     /**
      * Constructor.
      */
@@ -95,12 +93,12 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     /**
      * Constructor used for encryption.
      *
-     * @param p The protection policy.
+     * @param publicKeyProtectionPolicy The protection policy.
      */
-    public PublicKeySecurityHandler(PublicKeyProtectionPolicy p)
+    public PublicKeySecurityHandler(PublicKeyProtectionPolicy publicKeyProtectionPolicy)
     {
-        policy = p;
-        this.keyLength = policy.getEncryptionKeyLength();
+        setProtectionPolicy(publicKeyProtectionPolicy);
+        this.keyLength = publicKeyProtectionPolicy.getEncryptionKeyLength();
     }
 
     /**
@@ -411,29 +409,6 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         }
     }
 
-    /**
-     * Computes the version number of the StandardSecurityHandler based on the encryption key
-     * length. See PDF Spec 1.6 p 93 and
-     * <a href="https://www.adobe.com/content/dam/acom/en/devnet/pdf/adobe_supplement_iso32000.pdf">PDF
-     * 1.7 Supplement ExtensionLevel: 3</a>
-     *
-     * @return The computed version number.
-     */
-    private int computeVersionNumber()
-    {
-        switch (keyLength)
-        {
-            case 40:
-                return 1;
-            case 128:
-                return 4; // prefer AES
-            case 256:
-                return 5;
-            default:
-                throw new IllegalArgumentException("key length must be 40, 128 or 256");
-        }
-    }
-
     private void prepareEncryptionDictAES(PDEncryption encryptionDictionary, COSName aesVName, byte[][] recipients)
     {
         PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
@@ -455,8 +430,9 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 
     private byte[][] computeRecipientsField(byte[] seed) throws GeneralSecurityException, IOException
     {
-        byte[][] recipientsField = new byte[policy.getNumberOfRecipients()][];
-        Iterator<PublicKeyRecipient> it = policy.getRecipientsIterator();
+        PublicKeyProtectionPolicy protectionPolicy = (PublicKeyProtectionPolicy) getProtectionPolicy();
+        byte[][] recipientsField = new byte[protectionPolicy.getNumberOfRecipients()][];
+        Iterator<PublicKeyRecipient> it = protectionPolicy.getRecipientsIterator();
         int i = 0;
         
         while(it.hasNext())
@@ -574,14 +550,5 @@ public final class PublicKeySecurityHandler extends SecurityHandler
         DEROctetString octets = new DEROctetString(cipher.doFinal(abyte0));
         RecipientIdentifier recipientId = new RecipientIdentifier(serial);
         return new KeyTransRecipientInfo(recipientId, algorithmId, octets);
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasProtectionPolicy()
-    {
-        return policy != null;
     }
 }

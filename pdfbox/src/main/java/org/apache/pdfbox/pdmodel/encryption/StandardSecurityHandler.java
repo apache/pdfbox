@@ -74,10 +74,6 @@ public final class StandardSecurityHandler extends SecurityHandler
     // hashes used for Algorithm 2.B, depending on remainder from E modulo 3
     private static final String[] HASHES_2B = new String[] {"SHA-256", "SHA-384", "SHA-512"};
 
-    private static final int DEFAULT_VERSION = 1;
-
-    private StandardProtectionPolicy policy;
-
     /**
      * Constructor.
      */
@@ -88,37 +84,12 @@ public final class StandardSecurityHandler extends SecurityHandler
     /**
      * Constructor used for encryption.
      *
-     * @param p The protection policy.
+     * @param standardProtectionPolicy The protection policy.
      */
-    public StandardSecurityHandler(StandardProtectionPolicy p)
+    public StandardSecurityHandler(StandardProtectionPolicy standardProtectionPolicy)
     {
-        policy = p;
-        keyLength = policy.getEncryptionKeyLength();
-    }
-
-    /**
-     * Computes the version number of the StandardSecurityHandler
-     * based on the encryption key length.
-     * See PDF Spec 1.6 p 93 and PDF 1.7 AEL3
-     *
-     * @return The computed version number.
-     */
-    private int computeVersionNumber()
-    {
-        if(keyLength == 40)
-        {
-            return DEFAULT_VERSION;
-        }
-        else if (keyLength == 128 && policy.isPreferAES())
-        {
-            return 4;
-        }
-        else if (keyLength == 256)
-        {
-            return 5;
-        }
-
-        return 2;
+        setProtectionPolicy(standardProtectionPolicy);
+        keyLength = standardProtectionPolicy.getEncryptionKeyLength();
     }
 
     /**
@@ -132,7 +103,9 @@ public final class StandardSecurityHandler extends SecurityHandler
      */
     private int computeRevisionNumber(int version)
     {
-        if(version < 2 && !policy.getPermissions().hasAnyRevision3PermissionSet())
+        StandardProtectionPolicy protectionPolicy = (StandardProtectionPolicy) getProtectionPolicy();
+        AccessPermission permissions = protectionPolicy.getPermissions();
+        if (version < 2 && !permissions.hasAnyRevision3PermissionSet())
         {
             return 2;
         }
@@ -145,7 +118,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         {
             return 4;
         }
-        if ( version == 2 || version == 3 || policy.getPermissions().hasAnyRevision3PermissionSet())
+        if (version == 2 || version == 3 || permissions.hasAnyRevision3PermissionSet())
         {
             return 3;
         }
@@ -373,8 +346,9 @@ public final class StandardSecurityHandler extends SecurityHandler
         encryptionDictionary.setRevision(revision);
         encryptionDictionary.setLength(keyLength);
 
-        String ownerPassword = policy.getOwnerPassword();
-        String userPassword = policy.getUserPassword();
+        StandardProtectionPolicy protectionPolicy = (StandardProtectionPolicy) getProtectionPolicy();
+        String ownerPassword = protectionPolicy.getOwnerPassword();
+        String userPassword = protectionPolicy.getUserPassword();
         if( ownerPassword == null )
         {
             ownerPassword = "";
@@ -390,7 +364,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             ownerPassword = userPassword;
         }
 
-        int permissionInt = policy.getPermissions().getPermissionBytes();
+        int permissionInt = protectionPolicy.getPermissions().getPermissionBytes();
 
         encryptionDictionary.setPermissions(permissionInt);
 
@@ -1201,14 +1175,5 @@ public final class StandardSecurityHandler extends SecurityHandler
         catch (NoSuchAlgorithmException ex)
         {
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasProtectionPolicy()
-    {
-        return policy != null;
     }
 }
