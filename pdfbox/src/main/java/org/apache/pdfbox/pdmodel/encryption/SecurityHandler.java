@@ -90,6 +90,8 @@ public abstract class SecurityHandler
 
     private boolean useAES;
 
+    private ProtectionPolicy protectionPolicy = null;
+    
     /**
      * The access permission granted to the current user for the document. These
      * permissions are computed during decryption and are in read only mode.
@@ -702,5 +704,54 @@ public abstract class SecurityHandler
      *
      * @return true if a protection policy has been set.
      */
-    public abstract boolean hasProtectionPolicy();
+    public boolean hasProtectionPolicy()
+    {
+        return protectionPolicy != null;
+    }
+
+    /**
+     * Returns the set {@link ProtectionPolicy} or null.
+     *
+     * @return The set {@link ProtectionPolicy}.
+     */
+    protected ProtectionPolicy getProtectionPolicy()
+    {
+        return protectionPolicy;
+    }
+
+    /**
+     * Sets the {@link ProtectionPolicy} to the given value.
+     * @param protectionPolicy The {@link ProtectionPolicy}, that shall be set.
+     */
+    protected void setProtectionPolicy(ProtectionPolicy protectionPolicy)
+    {
+        this.protectionPolicy = protectionPolicy;
+    }
+
+    /**
+     * Computes the version number of the {@link SecurityHandler} based on the encryption key
+     * length. See PDF Spec 1.6 p 93 and
+     * <a href="https://www.adobe.com/content/dam/acom/en/devnet/pdf/adobe_supplement_iso32000.pdf">PDF
+     * 1.7 Supplement ExtensionLevel: 3</a> and
+     * <a href="http://intranet.pdfa.org/wp-content/uploads/2016/08/ISO_DIS_32000-2-DIS4.pdf">PDF
+     * Spec 2.0</a>.
+     *
+     * @return The computed version number.
+     */
+    protected int computeVersionNumber()
+    {
+        if (keyLength == 40)
+        {
+            return 1;
+        }
+        else if (keyLength == 128 && protectionPolicy.isPreferAES())
+        {
+            return 4;
+        }
+        else if (keyLength == 256)
+        {
+            return 5;
+        }
+        return 2;
+    }
 }
