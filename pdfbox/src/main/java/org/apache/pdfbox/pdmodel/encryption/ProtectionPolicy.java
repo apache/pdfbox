@@ -33,6 +33,7 @@ public abstract class ProtectionPolicy
     private static final int DEFAULT_KEY_LENGTH = 40;
 
     private int encryptionKeyLength = DEFAULT_KEY_LENGTH;
+    private boolean preferAES = false;
 
     /**
      * set the length in (bits) of the secret key that will be
@@ -60,5 +61,29 @@ public abstract class ProtectionPolicy
     public int getEncryptionKeyLength()
     {
         return encryptionKeyLength;
+    }
+
+    /**
+     * Tell whether AES encryption is preferred when several encryption methods are available for
+     * the chosen key length. The default is false. This setting is only relevant if the key length
+     * is 128 bits.
+     *
+     * @return true if AES encryption is preferred
+     */
+    public boolean isPreferAES()
+    {
+        return this.preferAES;
+    }
+
+    /**
+     * Set whether AES encryption is preferred when several encryption methods are available for the
+     * chosen key length. The default is false. This setting is only relevant if the key length is
+     * 128 bits.
+     *
+     * @param preferAES
+     */
+    public void setPreferAES(boolean preferAES)
+    {
+        this.preferAES = preferAES;
     }
 }
