@@ -269,8 +269,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             }
 
             // we have the encryption key ...
-            encryptionKey = new byte[getKeyLength() / 8];
-            System.arraycopy(mdResult, 0, encryptionKey, 0, getKeyLength() / 8);
+            setEncryptionKey(new byte[getKeyLength() / 8]);
+            System.arraycopy(mdResult, 0, getEncryptionKey(), 0, getKeyLength() / 8);
         }
         catch (CMSException | KeyStoreException | CertificateEncodingException e)
         {
@@ -389,8 +389,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                     break;
             }
 
-            this.encryptionKey = new byte[getKeyLength() / 8];
-            System.arraycopy(mdResult, 0, this.encryptionKey, 0, getKeyLength() / 8);
+            setEncryptionKey(new byte[getKeyLength() / 8]);
+            System.arraycopy(mdResult, 0, getEncryptionKey(), 0, getKeyLength() / 8);
 
             doc.setEncryptionDictionary(dictionary);
             doc.getDocument().setEncryptionDictionary(dictionary.getCOSObject());

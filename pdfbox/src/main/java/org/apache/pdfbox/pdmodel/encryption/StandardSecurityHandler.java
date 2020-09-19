@@ -207,7 +207,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                         ownerKey, dicRevision, dicLength );
             }
             
-            encryptionKey =
+            setEncryptionKey(
                 computeEncryptedKey(
                     computedPassword,
                     ownerKey, userKey, oe, ue,
@@ -215,7 +215,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                     documentIDBytes,
                     dicRevision,
                     dicLength,
-                    encryptMetadata, true );
+                    encryptMetadata, true));
         }
         else if( isUserPassword(password.getBytes(passwordCharset), userKey, ownerKey,
                            dicPermissions, documentIDBytes, dicRevision,
@@ -225,7 +225,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             currentAccessPermission.setReadOnly();
             setCurrentAccessPermission(currentAccessPermission);
             
-            encryptionKey =
+            setEncryptionKey(
                 computeEncryptedKey(
                     password.getBytes(passwordCharset),
                     ownerKey, userKey, oe, ue,
@@ -233,7 +233,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                     documentIDBytes,
                     dicRevision,
                     dicLength,
-                    encryptMetadata, false );
+                    encryptMetadata, false));
         }
         else
         {
@@ -288,7 +288,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             // initialization vector of zero and the file encryption key as the key."
             @SuppressWarnings({"squid:S4432"})
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(encryptionKey, "AES"));
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"));
             byte[] perms = cipher.doFinal(encryption.getPerms());
             
             // "Verify that bytes 9-11 of the result are the characters ‘a’, ‘d’, ‘b’."
@@ -398,8 +398,8 @@ public final class StandardSecurityHandler extends SecurityHandler
             Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 
             // make a random 256-bit file encryption key
-            encryptionKey = new byte[32];
-            rnd.nextBytes(encryptionKey);
+            setEncryptionKey(new byte[32]);
+            rnd.nextBytes(getEncryptionKey());
 
             // Algorithm 8a: Compute U
             byte[] userPasswordBytes = truncate127(userPassword.getBytes(StandardCharsets.UTF_8));
@@ -417,7 +417,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashUE, "AES"),
                     // "an initialization vector of zero"
                     new IvParameterSpec(new byte[16]));
-            byte[] ue = cipher.doFinal(encryptionKey);
+            byte[] ue = cipher.doFinal(getEncryptionKey());
 
             // Algorithm 9a: Compute O
             byte[] ownerPasswordBytes = truncate127(ownerPassword.getBytes(StandardCharsets.UTF_8));
@@ -435,7 +435,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(hashOE, "AES"),
                     // "an initialization vector of zero"
                     new IvParameterSpec(new byte[16]));
-            byte[] oe = cipher.doFinal(encryptionKey);
+            byte[] oe = cipher.doFinal(getEncryptionKey());
 
             // Set keys and other required constants in encryption dictionary
             encryptionDictionary.setUserKey(u);
@@ -464,7 +464,7 @@ public final class StandardSecurityHandler extends SecurityHandler
                 perms[i] = (byte) rnd.nextInt();
             }
 
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(encryptionKey, "AES"),
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"),
                     // "an initialization vector of zero"
                     new IvParameterSpec(new byte[16]));
 
@@ -515,8 +515,8 @@ public final class StandardSecurityHandler extends SecurityHandler
                 userPassword.getBytes(StandardCharsets.ISO_8859_1),
                 ownerBytes, permissionInt, id.getBytes(), revision, length, true);
 
-        encryptionKey = computeEncryptedKey(userPassword.getBytes(StandardCharsets.ISO_8859_1), ownerBytes,
-                null, null, null, permissionInt, id.getBytes(), revision, length, true, false);
+        setEncryptionKey(computeEncryptedKey(userPassword.getBytes(StandardCharsets.ISO_8859_1), ownerBytes,
+                null, null, null, permissionInt, id.getBytes(), revision, length, true, false));
 
         encryptionDictionary.setOwnerKey(ownerBytes);
         encryptionDictionary.setUserKey(userBytes);

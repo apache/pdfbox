@@ -70,7 +70,7 @@ public abstract class SecurityHandler
     private int keyLength = DEFAULT_KEY_LENGTH;
 
     /** The encryption key that will used to encrypt / decrypt.*/
-    protected byte[] encryptionKey;
+    private byte[] encryptionKey;
 
     /** The RC4 implementation used for cryptographic functions. */
     private final RC4Cipher rc4 = new RC4Cipher();
@@ -726,6 +726,26 @@ public abstract class SecurityHandler
     protected void setProtectionPolicy(ProtectionPolicy protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
+    }
+
+    /**
+     * Returns the current encryption key data.
+     *
+     * @return The current encryption key data.
+     */
+    public byte[] getEncryptionKey()
+    {
+        return encryptionKey;
+    }
+
+    /**
+     * Sets the current encryption key data.
+     *
+     * @param encryptionKey The encryption key data to set.
+     */
+    public void setEncryptionKey(byte[] encryptionKey)
+    {
+        this.encryptionKey = encryptionKey;
     }
 
     /**
