@@ -66,7 +66,9 @@ public abstract class SecurityHandler
     // see 7.6.2, page 58, PDF 32000-1:2008
     private static final byte[] AES_SALT = { (byte) 0x73, (byte) 0x41, (byte) 0x6c, (byte) 0x54 };
 
-    /** The length in bits of the secret key used to encrypt the document. */
+    /**
+     * The length in bits of the secret key used to encrypt the document. Will become private in 3.0.
+     */
     protected int keyLength = DEFAULT_KEY_LENGTH;
 
     /** The encryption key that will used to encrypt / decrypt.*/

@@ -98,7 +98,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     public PublicKeySecurityHandler(PublicKeyProtectionPolicy publicKeyProtectionPolicy)
     {
         setProtectionPolicy(publicKeyProtectionPolicy);
-        this.keyLength = publicKeyProtectionPolicy.getEncryptionKeyLength();
+        setKeyLength(publicKeyProtectionPolicy.getEncryptionKeyLength());
     }
 
     /**
@@ -269,8 +269,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             }
 
             // we have the encryption key ...
-            encryptionKey = new byte[this.keyLength / 8];
-            System.arraycopy(mdResult, 0, encryptionKey, 0, this.keyLength / 8);
+            encryptionKey = new byte[getKeyLength() / 8];
+            System.arraycopy(mdResult, 0, encryptionKey, 0, getKeyLength() / 8);
         }
         catch (CMSException e)
         {
@@ -329,7 +329,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
             }
 
             dictionary.setFilter(FILTER);
-            dictionary.setLength(this.keyLength);
+            dictionary.setLength(getKeyLength());
             int version = computeVersionNumber();
             dictionary.setVersion(version);
 
@@ -397,8 +397,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler
                     break;
             }
 
-            this.encryptionKey = new byte[this.keyLength/8];
-            System.arraycopy(mdResult, 0, this.encryptionKey, 0, this.keyLength/8);
+            this.encryptionKey = new byte[getKeyLength() / 8];
+            System.arraycopy(mdResult, 0, this.encryptionKey, 0, getKeyLength() / 8);
 
             doc.setEncryptionDictionary(dictionary);
             doc.getDocument().setEncryptionDictionary(dictionary.getCOSObject());
@@ -413,7 +413,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
     {
         PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
         cryptFilterDictionary.setCryptFilterMethod(aesVName);
-        cryptFilterDictionary.setLength(keyLength);
+        cryptFilterDictionary.setLength(getKeyLength());
         COSArray array = new COSArray();
         for (byte[] recipient : recipients)
         {
