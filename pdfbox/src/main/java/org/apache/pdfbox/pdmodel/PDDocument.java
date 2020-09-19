@@ -1166,7 +1166,7 @@ public class PDDocument implements Closeable
             encryption = new PDEncryption();
         }
 
-        SecurityHandler<? extends ProtectionPolicy> securityHandler =
+        SecurityHandler<ProtectionPolicy> securityHandler =
                 SecurityHandlerFactory.INSTANCE.newSecurityHandlerForPolicy(policy);
         if (securityHandler == null)
         {

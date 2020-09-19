@@ -339,7 +339,8 @@ public class TestPublicKeyEncryption
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
         {
-            Assert.assertTrue(doc.getEncryption().getSecurityHandler() instanceof PublicKeySecurityHandler);
+            Assert.assertEquals("PublicKeySecurityHandler",
+                    doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
             Assert.assertEquals(128, doc.getEncryption().getSecurityHandler().getKeyLength());
             PDFTextStripper stripper = new PDFTextStripper();
             //Assert.assertEquals("Key length: 128", stripper.getText(doc).trim())
@@ -363,7 +364,8 @@ public class TestPublicKeyEncryption
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
         {
-            Assert.assertTrue(doc.getEncryption().getSecurityHandler() instanceof PublicKeySecurityHandler);
+            Assert.assertEquals("PublicKeySecurityHandler",
+                    doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
             Assert.assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
             PDFTextStripper stripper = new PDFTextStripper();
             //Assert.assertEquals("Key length: 256", stripper.getText(doc).trim())
