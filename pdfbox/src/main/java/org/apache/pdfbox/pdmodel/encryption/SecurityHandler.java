@@ -71,7 +71,7 @@ public abstract class SecurityHandler
      */
     protected int keyLength = DEFAULT_KEY_LENGTH;
 
-    /** The encryption key that will used to encrypt / decrypt.*/
+    /** The encryption key that will used to encrypt / decrypt. Will become private in 3.0. */
     protected byte[] encryptionKey;
 
     /** The RC4 implementation used for cryptographic functions. */
@@ -732,6 +732,26 @@ public abstract class SecurityHandler
     protected void setProtectionPolicy(ProtectionPolicy protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
+    }
+
+    /**
+     * Returns the current encryption key data.
+     *
+     * @return The current encryption key data.
+     */
+    public byte[] getEncryptionKey()
+    {
+        return encryptionKey;
+    }
+
+    /**
+     * Sets the current encryption key data.
+     *
+     * @param encryptionKey The encryption key data to set.
+     */
+    public void setEncryptionKey(byte[] encryptionKey)
+    {
+        this.encryptionKey = encryptionKey;
     }
 
     /**
