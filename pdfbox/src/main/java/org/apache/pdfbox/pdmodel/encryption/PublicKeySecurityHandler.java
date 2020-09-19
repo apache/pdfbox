@@ -75,7 +75,7 @@ import org.bouncycastle.cms.jcajce.JceKeyTransEnvelopedRecipient;
  * @see PublicKeyProtectionPolicy to see how to protect document with this security handler.
  * @author Benoit Guillon
  */
-public final class PublicKeySecurityHandler extends SecurityHandler
+public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyProtectionPolicy>
 {
     /** The filter name. */
     public static final String FILTER = "Adobe.PubSec";
@@ -97,8 +97,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
      */
     public PublicKeySecurityHandler(PublicKeyProtectionPolicy publicKeyProtectionPolicy)
     {
-        setProtectionPolicy(publicKeyProtectionPolicy);
-        setKeyLength(publicKeyProtectionPolicy.getEncryptionKeyLength());
+        super(publicKeyProtectionPolicy);
     }
 
     /**
@@ -422,7 +421,7 @@ public final class PublicKeySecurityHandler extends SecurityHandler
 
     private byte[][] computeRecipientsField(byte[] seed) throws GeneralSecurityException, IOException
     {
-        PublicKeyProtectionPolicy protectionPolicy = (PublicKeyProtectionPolicy) getProtectionPolicy();
+        PublicKeyProtectionPolicy protectionPolicy = getProtectionPolicy();
         byte[][] recipientsField = new byte[protectionPolicy.getNumberOfRecipients()][];
         Iterator<PublicKeyRecipient> it = protectionPolicy.getRecipientsIterator();
         int i = 0;

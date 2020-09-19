@@ -46,7 +46,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * @author Benoit Guillon
  * @author Manuel Kasper
  */
-public final class StandardSecurityHandler extends SecurityHandler
+public final class StandardSecurityHandler extends SecurityHandler<StandardProtectionPolicy>
 {
     /**
      * Log instance.
@@ -88,8 +88,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      */
     public StandardSecurityHandler(StandardProtectionPolicy standardProtectionPolicy)
     {
-        setProtectionPolicy(standardProtectionPolicy);
-        setKeyLength(standardProtectionPolicy.getEncryptionKeyLength());
+        super(standardProtectionPolicy);
     }
 
     /**
@@ -103,7 +102,7 @@ public final class StandardSecurityHandler extends SecurityHandler
      */
     private int computeRevisionNumber(int version)
     {
-        StandardProtectionPolicy protectionPolicy = (StandardProtectionPolicy) getProtectionPolicy();
+        StandardProtectionPolicy protectionPolicy = getProtectionPolicy();
         AccessPermission permissions = protectionPolicy.getPermissions();
         if (version < 2 && !permissions.hasAnyRevision3PermissionSet())
         {
@@ -347,7 +346,7 @@ public final class StandardSecurityHandler extends SecurityHandler
         encryptionDictionary.setRevision(revision);
         encryptionDictionary.setLength(getKeyLength());
 
-        StandardProtectionPolicy protectionPolicy = (StandardProtectionPolicy) getProtectionPolicy();
+        StandardProtectionPolicy protectionPolicy = getProtectionPolicy();
         String ownerPassword = protectionPolicy.getOwnerPassword();
         String userPassword = protectionPolicy.getUserPassword();
         if( ownerPassword == null )
