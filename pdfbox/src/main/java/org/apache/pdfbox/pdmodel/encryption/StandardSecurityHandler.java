@@ -89,7 +89,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     public StandardSecurityHandler(StandardProtectionPolicy standardProtectionPolicy)
     {
         setProtectionPolicy(standardProtectionPolicy);
-        keyLength = standardProtectionPolicy.getEncryptionKeyLength();
+        setKeyLength(standardProtectionPolicy.getEncryptionKeyLength());
     }
 
     /**
@@ -345,7 +345,7 @@ public final class StandardSecurityHandler extends SecurityHandler
             encryptionDictionary.removeV45filters();
         }
         encryptionDictionary.setRevision(revision);
-        encryptionDictionary.setLength(keyLength);
+        encryptionDictionary.setLength(getKeyLength());
 
         StandardProtectionPolicy protectionPolicy = (StandardProtectionPolicy) getProtectionPolicy();
         String ownerPassword = protectionPolicy.getOwnerPassword();
@@ -369,7 +369,7 @@ public final class StandardSecurityHandler extends SecurityHandler
 
         encryptionDictionary.setPermissions(permissionInt);
 
-        int length = keyLength/8;
+        int length = getKeyLength()/8;
 
         if (revision == 6)
         {
@@ -531,7 +531,7 @@ public final class StandardSecurityHandler extends SecurityHandler
     {
         PDCryptFilterDictionary cryptFilterDictionary = new PDCryptFilterDictionary();
         cryptFilterDictionary.setCryptFilterMethod(aesVName);
-        cryptFilterDictionary.setLength(keyLength);
+        cryptFilterDictionary.setLength(getKeyLength());
         encryptionDictionary.setStdCryptFilterDictionary(cryptFilterDictionary);
         encryptionDictionary.setStreamFilterName(COSName.STD_CF);
         encryptionDictionary.setStringFilterName(COSName.STD_CF);
