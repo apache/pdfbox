@@ -19,6 +19,7 @@ package org.apache.pdfbox.encryption;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -28,11 +29,13 @@ import java.util.Collection;
 import javax.crypto.Cipher;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
+import org.apache.pdfbox.pdmodel.encryption.PublicKeySecurityHandler;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import org.junit.After;
@@ -318,5 +321,53 @@ public class TestPublicKeyEncryption
         File file = new File(testResultsDir, name + "-" + keyLength + "bit.pdf");
         document.save(file);
         return file;
+    }
+
+    /**
+     * PDFBOX-4421: Read a file encrypted with AES128 but not with PDFBox, and with missing /Length
+     * entry. Test to be changed so it's done locally with small file.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testReadPubkeyEncryptedAES128() throws IOException
+    {
+        URL url = new URL("https://issues.apache.org/jira/secure/attachment/13011682/B2-Adobe-128-aes-sec.pdf");
+        byte[] ba = IOUtils.toByteArray(url.openStream()); // because of bug in PDFBOX-4836
+        try (PDDocument doc = Loader.loadPDF(ba,
+                "w!z%C*F-JaNdRgUk",
+                TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
+                "testnutzer"))
+        {
+            Assert.assertTrue(doc.getEncryption().getSecurityHandler() instanceof PublicKeySecurityHandler);
+            Assert.assertEquals(128, doc.getEncryption().getSecurityHandler().getKeyLength());
+            PDFTextStripper stripper = new PDFTextStripper();
+            //Assert.assertEquals("Key length: 128", stripper.getText(doc).trim())
+            Assert.assertTrue(stripper.getText(doc).contains("ad0000002bf"));
+        }
+    }
+
+    /**
+     * PDFBOX-4421: Read a file encrypted with AES128 but not with PDFBox, and with missing /Length
+     * entry. Test to be changed so it's done locally with small file.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testReadPubkeyEncryptedAES256() throws IOException
+    {
+        URL url = new URL("https://issues.apache.org/jira/secure/attachment/13011752/B2-AES-256-secured.pdf");
+        byte[] ba = IOUtils.toByteArray(url.openStream()); // because of bug in PDFBOX-4836
+        try (PDDocument doc = Loader.loadPDF(ba, 
+                "w!z%C*F-JaNdRgUk",
+                TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
+                "testnutzer"))
+        {
+            Assert.assertTrue(doc.getEncryption().getSecurityHandler() instanceof PublicKeySecurityHandler);
+            Assert.assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
+            PDFTextStripper stripper = new PDFTextStripper();
+            //Assert.assertEquals("Key length: 256", stripper.getText(doc).trim())
+            Assert.assertTrue(stripper.getText(doc).contains("ad0000002bf"));
+        }
     }
 }
