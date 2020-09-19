@@ -81,7 +81,7 @@ public final class SecurityHandlerFactory
      * @param policy the protection policy for which to create a security handler
      * @return a new SecurityHandler instance, or null if none is available
      */
-    public SecurityHandler newSecurityHandlerForPolicy(ProtectionPolicy policy)
+    public SecurityHandler<? extends ProtectionPolicy> newSecurityHandlerForPolicy(ProtectionPolicy policy)
     {
         Class<? extends SecurityHandler> handlerClass = policyToHandler.get(policy.getClass());
         if (handlerClass == null)
@@ -99,7 +99,7 @@ public final class SecurityHandlerFactory
      * @param name the Filter name from the PDF encryption dictionary
      * @return a new SecurityHandler instance, or null if none is available
      */
-    public SecurityHandler newSecurityHandlerForFilter(String name)
+    public SecurityHandler<? extends ProtectionPolicy> newSecurityHandlerForFilter(String name)
     {
         Class<? extends SecurityHandler> handlerClass = nameToHandler.get(name);
         if (handlerClass == null)
@@ -119,7 +119,7 @@ public final class SecurityHandlerFactory
      * @param args array of objects to be passed as arguments to the constructor call.
      * @return a new SecurityHandler instance, or null if none is available.
      */
-    private SecurityHandler newSecurityHandler(Class<? extends SecurityHandler> handlerClass, 
+    private SecurityHandler<? extends ProtectionPolicy> newSecurityHandler(Class<? extends SecurityHandler> handlerClass, 
             Class<?>[] argsClasses, Object[] args)
     {
         try

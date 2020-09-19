@@ -50,6 +50,7 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.DecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.pdmodel.encryption.PDEncryption;
+import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyDecryptionMaterial;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.encryption.StandardDecryptionMaterial;
@@ -142,7 +143,7 @@ public class COSParser extends BaseParser implements ICOSParser
     /**
      * The security handler.
      */
-    protected SecurityHandler securityHandler = null;
+    protected SecurityHandler<? extends ProtectionPolicy> securityHandler = null;
 
     /**
      *  how many trailing bytes to read for EOF marker.

@@ -62,6 +62,7 @@ import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.COSFilterInputStream;
@@ -1342,7 +1343,8 @@ public class COSWriter implements ICOSVisitor, Closeable
             {
                 if (!incrementalUpdate)
                 {
-                    SecurityHandler securityHandler = pdDocument.getEncryption().getSecurityHandler();
+                    SecurityHandler<? extends ProtectionPolicy> securityHandler =
+                            pdDocument.getEncryption().getSecurityHandler();
                     if (!securityHandler.hasProtectionPolicy())
                     {
                         throw new IllegalStateException("PDF contains an encryption dictionary, please remove it with "

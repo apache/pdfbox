@@ -77,7 +77,7 @@ public class PDEncryption implements COSObjectable
     public static final int DEFAULT_VERSION = VERSION0_UNDOCUMENTED_UNSUPPORTED;
 
     private final COSDictionary dictionary;
-    private SecurityHandler securityHandler;
+    private SecurityHandler<? extends ProtectionPolicy> securityHandler;
 
     /**
      * creates a new empty encryption dictionary.
@@ -102,7 +102,7 @@ public class PDEncryption implements COSObjectable
      * @return a security handler instance
      * @throws IOException if there is no security handler available which matches the Filter
      */
-    public SecurityHandler getSecurityHandler() throws IOException
+    public SecurityHandler<? extends ProtectionPolicy> getSecurityHandler() throws IOException
     {
         if (securityHandler == null)
         {
@@ -115,7 +115,7 @@ public class PDEncryption implements COSObjectable
      * Sets the security handler used in this encryption dictionary
      * @param securityHandler new security handler
      */
-    public void setSecurityHandler(SecurityHandler securityHandler)
+    public void setSecurityHandler(SecurityHandler<? extends ProtectionPolicy> securityHandler)
     {
         this.securityHandler = securityHandler;
         // TODO set Filter (currently this is done by the security handlers)
