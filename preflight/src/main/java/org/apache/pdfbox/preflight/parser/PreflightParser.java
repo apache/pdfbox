@@ -41,7 +41,6 @@ import org.apache.pdfbox.cos.COSObjectKey;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
-import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfparser.XrefTrailerResolver.XRefType;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -106,36 +105,12 @@ public class PreflightParser extends PDFParser
     /**
      * Constructor.
      *
-     * @param file
-     * @param scratch
-     * @throws IOException if there is a reading error.
-     */
-    public PreflightParser(File file, ScratchFile scratch) throws IOException
-    {
-        super(new RandomAccessReadBufferedFile(file), scratch);
-    }
-
-    /**
-     * Constructor.
-     *
      * @param filename
      * @throws IOException if there is a reading error.
      */
     public PreflightParser(String filename) throws IOException
     {
         this(new File(filename));
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param filename
-     * @param scratch
-     * @throws IOException if there is a reading error.
-     */
-    public PreflightParser(String filename, ScratchFile scratch) throws IOException
-    {
-        this(new File(filename), scratch);
     }
 
     /**
