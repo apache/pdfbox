@@ -221,7 +221,7 @@ public class COSStream extends COSDictionary implements Closeable
     public COSInputStream createInputStream(DecodeOptions options) throws IOException
     {
         InputStream input = createRawInputStream();
-        return COSInputStream.create(getFilterList(), this, input, scratchFile, options);
+        return COSInputStream.create(getFilterList(), this, input, options);
     }
 
     /**
@@ -253,23 +253,18 @@ public class COSStream extends COSDictionary implements Closeable
                 throw new IOException("Duplicate");
             }
             InputStream input = createRawInputStream();
-            ByteArrayOutputStream output = null;
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
             // apply filters
             for (int i = 0; i < filterList.size(); i++)
             {
-                if (output != null)
+                if (i > 0)
                 {
                     input = new ByteArrayInputStream(output.toByteArray());
+                    output.reset();
                 }
-                output = new ByteArrayOutputStream();
                 filterList.get(i).decode(input, output, this, i, DecodeOptions.DEFAULT);
             }
-            if (output != null)
-            {
-                return new RandomAccessReadBuffer(output.toByteArray());
-            }
-            // shouldn't be reached at all
-            return null;
+            return new RandomAccessReadBuffer(output.toByteArray());
         }
     }
 

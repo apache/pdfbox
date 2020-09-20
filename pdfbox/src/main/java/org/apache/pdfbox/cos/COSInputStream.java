@@ -30,10 +30,6 @@ import java.util.Set;
 import org.apache.pdfbox.filter.DecodeOptions;
 import org.apache.pdfbox.filter.DecodeResult;
 import org.apache.pdfbox.filter.Filter;
-import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessInputStream;
-import org.apache.pdfbox.io.RandomAccessOutputStream;
-import org.apache.pdfbox.io.ScratchFile;
 
 /**
  * An InputStream which reads from an encoded COS stream.
@@ -48,18 +44,27 @@ public final class COSInputStream extends FilterInputStream
      * @param filters Filters to be applied.
      * @param parameters Filter parameters.
      * @param in Encoded input stream.
-     * @param scratchFile Scratch file to use, or null.
+     * @return Decoded stream.
+     * @throws IOException If the stream could not be read.
+     */
+    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in)
+            throws IOException
+    {
+        return create(filters, parameters, in, DecodeOptions.DEFAULT);
+    }
+
+    /**
+     * Creates a new COSInputStream from an encoded input stream.
+     *
+     * @param filters Filters to be applied.
+     * @param parameters Filter parameters.
+     * @param in Encoded input stream.
+     * @param options decode options for the encoded stream
      * @return Decoded stream.
      * @throws IOException If the stream could not be read.
      */
     static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
-                                 ScratchFile scratchFile) throws IOException
-    {
-        return create(filters, parameters, in, scratchFile, DecodeOptions.DEFAULT);
-    }
-
-    static COSInputStream create(List<Filter> filters, COSDictionary parameters, InputStream in,
-                                 ScratchFile scratchFile, DecodeOptions options) throws IOException
+            DecodeOptions options) throws IOException
     {
         List<DecodeResult> results = new ArrayList<>();
         InputStream input = in;
@@ -70,32 +75,13 @@ public final class COSInputStream extends FilterInputStream
             {
                 throw new IOException("Duplicate");
             }
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
             // apply filters
             for (int i = 0; i < filters.size(); i++)
             {
-                if (scratchFile != null)
-                {
-                    // scratch file
-                    final RandomAccess buffer = scratchFile.createBuffer();
-                    DecodeResult result = filters.get(i).decode(input, new RandomAccessOutputStream(buffer), parameters, i, options);
-                    results.add(result);
-                    input = new RandomAccessInputStream(buffer)
-                    {
-                        @Override
-                        public void close() throws IOException
-                        {
-                            buffer.close();
-                        }
-                    };
-                }
-                else
-                {
-                    // in-memory
-                    ByteArrayOutputStream output = new ByteArrayOutputStream();
-                    DecodeResult result = filters.get(i).decode(input, output, parameters, i, options);
-                    results.add(result);
-                    input = new ByteArrayInputStream(output.toByteArray());
-                }
+                output.reset();
+                results.add(filters.get(i).decode(input, output, parameters, i, options));
+                input = new ByteArrayInputStream(output.toByteArray());
             }
         }
         return new COSInputStream(input, results);
