@@ -61,9 +61,9 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     private RandomAccessReadBuffer(int definedChunkSize)
     {
         // starting with one chunk
-        bufferList = new ArrayList<>();
         chunkSize = definedChunkSize;
         currentBuffer = ByteBuffer.allocate(chunkSize);
+        bufferList = new ArrayList<>();
         bufferList.add(currentBuffer);
     }
 
@@ -75,10 +75,10 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     public RandomAccessReadBuffer(byte[] input)
     {
         // this is a special case. Wrap the given byte array to one ByteBuffer.
-        bufferList = new ArrayList<>(1);
         chunkSize = input.length;
         size = chunkSize;
         currentBuffer = ByteBuffer.wrap(input);
+        bufferList = new ArrayList<>(1);
         bufferList.add(currentBuffer);
     }
 
@@ -92,7 +92,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
     {
         this();
         int bytesRead = 0;
-        while (input.available() > 0)
+        while (true)
         {
             int remainingBytes = chunkSize;
             int offset = 0;
@@ -110,6 +110,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
             else
             {
                 currentBuffer.limit(offset);
+                break;
             }
         }
         seek(0);

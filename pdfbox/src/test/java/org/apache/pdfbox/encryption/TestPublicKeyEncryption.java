@@ -29,13 +29,11 @@ import java.util.Collection;
 import javax.crypto.Cipher;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
-import org.apache.pdfbox.pdmodel.encryption.PublicKeySecurityHandler;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 import org.junit.After;
@@ -333,8 +331,7 @@ public class TestPublicKeyEncryption
     public void testReadPubkeyEncryptedAES128() throws IOException
     {
         URL url = new URL("https://issues.apache.org/jira/secure/attachment/13011682/B2-Adobe-128-aes-sec.pdf");
-        byte[] ba = IOUtils.toByteArray(url.openStream()); // because of bug in PDFBOX-4836
-        try (PDDocument doc = Loader.loadPDF(ba,
+        try (PDDocument doc = Loader.loadPDF(url.openStream(),
                 "w!z%C*F-JaNdRgUk",
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
@@ -358,8 +355,7 @@ public class TestPublicKeyEncryption
     public void testReadPubkeyEncryptedAES256() throws IOException
     {
         URL url = new URL("https://issues.apache.org/jira/secure/attachment/13011752/B2-AES-256-secured.pdf");
-        byte[] ba = IOUtils.toByteArray(url.openStream()); // because of bug in PDFBOX-4836
-        try (PDDocument doc = Loader.loadPDF(ba, 
+        try (PDDocument doc = Loader.loadPDF(url.openStream(),
                 "w!z%C*F-JaNdRgUk",
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
