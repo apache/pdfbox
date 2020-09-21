@@ -107,7 +107,8 @@ public class PDFAIdentificationValidation
     {
         if (value == null || !(value.equals("A") || value.equals("B")))
         {
-            ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_CONFORMANCE));
+            ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_CONFORMANCE,
+                    "conformance level must be A or B"));
         }
     }
 
@@ -115,7 +116,7 @@ public class PDFAIdentificationValidation
     {
         if (value != 1)
         {
-            ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_VERSION_ID));
+            ve.add(new ValidationError(ERROR_METADATA_INVALID_PDFA_VERSION_ID, "part must be 1"));
         }
     }
 }
