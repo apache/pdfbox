@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -41,6 +43,8 @@ import org.apache.pdfbox.util.Vector;
  */
 public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFont
 {
+    private static final Log LOG = LogFactory.getLog(PDCIDFont.class);
+
     protected final PDType0Font parent;
 
     private Map<Integer, Float> widths;
@@ -78,7 +82,13 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
             int counter = 0;
             while (counter < size)
             {
-                COSNumber firstCode = (COSNumber) wArray.getObject(counter++);
+                COSBase firstCodeBase = wArray.getObject(counter++);
+                if (!(firstCodeBase instanceof COSNumber))
+                {
+                    LOG.warn("Expected a number array member, got " + firstCodeBase);
+                    continue;
+                }
+                COSNumber firstCode = (COSNumber) firstCodeBase;
                 COSBase next = wArray.getObject(counter++);
                 if (next instanceof COSArray)
                 {
@@ -87,14 +97,29 @@ public abstract class PDCIDFont implements COSObjectable, PDFontLike, PDVectorFo
                     int arraySize = array.size();
                     for (int i = 0; i < arraySize; i++)
                     {
-                        COSNumber width = (COSNumber) array.getObject(i);
-                        widths.put(startRange + i, width.floatValue());
+                        COSBase widthBase = array.getObject(i);
+                        if (widthBase instanceof COSNumber)
+                        {
+                            COSNumber width = (COSNumber) widthBase;
+                            widths.put(startRange + i, width.floatValue());
+                        }
+                        else
+                        {
+                            LOG.warn("Expected a number array member, got " + widthBase);
+                        }
                     }
                 }
                 else
                 {
-                    COSNumber secondCode = (COSNumber) next;
-                    COSNumber rangeWidth = (COSNumber) wArray.getObject(counter++);
+                    COSBase secondCodeBase = next;
+                    COSBase rangeWidthBase = wArray.getObject(counter++);
+                    if (!(secondCodeBase instanceof COSNumber) || !(rangeWidthBase instanceof COSNumber))
+                    {
+                        LOG.warn("Expected two numbers, got " + secondCodeBase + " and " + rangeWidthBase);
+                        continue;
+                    }
+                    COSNumber secondCode = (COSNumber) secondCodeBase;
+                    COSNumber rangeWidth = (COSNumber) rangeWidthBase;
                     int startRange = firstCode.intValue();
                     int endRange = secondCode.intValue();
                     float width = rangeWidth.floatValue();
