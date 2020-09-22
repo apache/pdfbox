@@ -27,8 +27,8 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
@@ -45,20 +45,7 @@ public class PDFParser extends COSParser
      */
     public PDFParser(RandomAccessRead source) throws IOException
     {
-        this(source, "", null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param source input representing the pdf.
-     * @param scratchFile use a {@link ScratchFile} for temporary storage.
-     * 
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(RandomAccessRead source, ScratchFile scratchFile) throws IOException
-    {
-        this(source, "", scratchFile);
+        this(source, "");
     }
 
     /**
@@ -71,22 +58,7 @@ public class PDFParser extends COSParser
      */
     public PDFParser(RandomAccessRead source, String decryptionPassword) throws IOException
     {
-        this(source, decryptionPassword, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param source input representing the pdf.
-     * @param decryptionPassword password to be used for decryption.
-     * @param scratchFile use a {@link ScratchFile} for temporary storage.
-     *
-     * @throws IOException If something went wrong.
-     */
-    public PDFParser(RandomAccessRead source, String decryptionPassword, ScratchFile scratchFile)
-            throws IOException
-    {
-        this(source, decryptionPassword, null, null, scratchFile);
+        this(source, decryptionPassword, null, null);
     }
 
     /**
@@ -111,21 +83,20 @@ public class PDFParser extends COSParser
      * 
      * @param source input representing the pdf.
      * @param decryptionPassword password to be used for decryption.
-     * @param keyStore key store to be used for decryption when using public key security 
+     * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param scratchFile buffer handler for temporary storage; it will be closed on
-     *        {@link COSDocument#close()}
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
      *
      * @throws IOException If something went wrong.
      */
     public PDFParser(RandomAccessRead source, String decryptionPassword, InputStream keyStore,
-                     String alias, ScratchFile scratchFile) throws IOException
+            String alias, MemoryUsageSetting memUsageSetting) throws IOException
     {
         super(source, decryptionPassword, keyStore, alias);
-        init(scratchFile);
+        init(memUsageSetting);
     }
-    
-    private void init(ScratchFile scratchFile)
+
+    private void init(MemoryUsageSetting memUsageSetting)
     {
         String eofLookupRangeStr = System.getProperty(SYSPROP_EOFLOOKUPRANGE);
         if (eofLookupRangeStr != null)
@@ -140,7 +111,7 @@ public class PDFParser extends COSParser
                         + " does not contain an integer value, but: '" + eofLookupRangeStr + "'");
             }
         }
-        document = new COSDocument(scratchFile, this);
+        document = new COSDocument(memUsageSetting, this);
     }
     
     /**

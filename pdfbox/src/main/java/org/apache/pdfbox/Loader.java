@@ -28,7 +28,6 @@ import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessReadBufferedFile;
 import org.apache.pdfbox.io.RandomAccessReadBuffer;
 import org.apache.pdfbox.io.RandomAccessRead;
-import org.apache.pdfbox.io.ScratchFile;
 import org.apache.pdfbox.pdfparser.FDFParser;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -196,10 +195,19 @@ public class Loader
     public static PDDocument loadPDF(byte[] input, String password, InputStream keyStore, String alias,
             MemoryUsageSetting memUsageSetting) throws IOException
     {
-        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
-        RandomAccessRead source = new RandomAccessReadBuffer(input);
-        PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
-        return parser.parse();
+        RandomAccessRead source = null;
+        try
+        {
+            // RandomAccessRead is not closed here, may be needed for signing
+            source = new RandomAccessReadBuffer(input);
+            PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
+            return parser.parse();
+        }
+        catch (IOException ioe)
+        {
+            IOUtils.closeQuietly(source);
+            throw ioe;
+        }
     }
     /**
      * Parses a PDF. Unrestricted main memory will be used for buffering PDF streams.
@@ -295,10 +303,11 @@ public class Loader
     public static PDDocument loadPDF(File file, String password, InputStream keyStore, String alias,
             MemoryUsageSetting memUsageSetting) throws IOException
     {
-        @SuppressWarnings({ "squid:S2095" }) // raFile not closed here, may be needed for signing
-        RandomAccessReadBufferedFile raFile = new RandomAccessReadBufferedFile(file);
+        RandomAccessRead raFile = null;
         try
         {
+            // RandomAccessRead is not closed here, may be needed for signing
+            raFile = new RandomAccessReadBufferedFile(file);
             return Loader.loadPDF(raFile, password, keyStore, alias, memUsageSetting);
         }
         catch (IOException ioe)
@@ -315,7 +324,7 @@ public class Loader
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param memUsageSetting defines how memory is used PDF streams
      * 
      * @return loaded document
      * 
@@ -325,17 +334,8 @@ public class Loader
             InputStream keyStore, String alias, MemoryUsageSetting memUsageSetting)
             throws IOException
     {
-        ScratchFile scratchFile = new ScratchFile(memUsageSetting);
-        try
-        {
-            PDFParser parser = new PDFParser(raFile, password, keyStore, alias, scratchFile);
-            return parser.parse();
-        }
-        catch (IOException ioe)
-        {
-            IOUtils.closeQuietly(scratchFile);
-            throw ioe;
-        }
+        PDFParser parser = new PDFParser(raFile, password, keyStore, alias, memUsageSetting);
+        return parser.parse();
     }
     /**
      * Parses a PDF. The given input stream is copied to the memory to enable random access to the pdf. Unrestricted
@@ -352,12 +352,13 @@ public class Loader
     {
         return Loader.loadPDF(input, "", null, null, MemoryUsageSetting.setupMainMemoryOnly());
     }
+    
     /**
      * Parses a PDF. Depending on the memory settings parameter the given input stream is either copied to main memory
      * or to a temporary file to enable random access to the pdf.
      * 
      * @param input stream that contains the document. Don't forget to close it after loading.
-     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
      * 
      * @return loaded document
      * 
@@ -403,13 +404,14 @@ public class Loader
     {
         return Loader.loadPDF(input, password, keyStore, alias, MemoryUsageSetting.setupMainMemoryOnly());
     }
+    
     /**
      * Parses a PDF. Depending on the memory settings parameter the given input stream is either copied to main memory
      * or to a temporary file to enable random access to the pdf.
      *
      * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
-     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
      * 
      * @return loaded document
      * 
@@ -421,15 +423,15 @@ public class Loader
     {
         return Loader.loadPDF(input, password, null, null, memUsageSetting);
     }
+    
     /**
-     * Parses a PDF. Depending on the memory settings parameter the given input stream is either copied to memory or to
-     * a temporary file to enable random access to the pdf.
+     * Parses a PDF. The given input stream is copied to memory to enable random access to the pdf.
      *
      * @param input stream that contains the document. Don't forget to close it after loading.
      * @param password password to be used for decryption
      * @param keyStore key store to be used for decryption when using public key security
      * @param alias alias to be used for decryption when using public key security
-     * @param memUsageSetting defines how memory is used for buffering input stream and PDF streams
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
      * 
      * @return loaded document
      * 
@@ -439,26 +441,17 @@ public class Loader
     public static PDDocument loadPDF(InputStream input, String password, InputStream keyStore,
             String alias, MemoryUsageSetting memUsageSetting) throws IOException
     {
-        ScratchFile scratchFile = null;
+        RandomAccessRead source = null;
         try
         {
-            RandomAccessRead source;
-            if (memUsageSetting.useMainMemory() && !memUsageSetting.isMainMemoryRestricted())
-            {
-                // use RandomAccessReadBuffer instead of a ScratchFile for the input if MainMemoryOnly is configured
-                source = new RandomAccessReadBuffer(input);
-            }
-            else
-            {
-                scratchFile = new ScratchFile(memUsageSetting);
-                source = scratchFile.createBuffer(input);
-            }
-            PDFParser parser = new PDFParser(source, password, keyStore, alias, scratchFile);
+            // RandomAccessRead is not closed here, may be needed for signing
+            source = new RandomAccessReadBuffer(input);
+            PDFParser parser = new PDFParser(source, password, keyStore, alias, memUsageSetting);
             return parser.parse();
         }
         catch (IOException ioe)
         {
-            IOUtils.closeQuietly(scratchFile);
+            IOUtils.closeQuietly(source);
             throw ioe;
         }
     }

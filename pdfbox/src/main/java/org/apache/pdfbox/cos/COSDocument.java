@@ -109,20 +109,39 @@ public class COSDocument extends COSBase implements Closeable
      */
     public COSDocument(ICOSParser parser)
     {
-        this(ScratchFile.getMainMemoryOnlyInstance(), parser);
+        this(MemoryUsageSetting.setupMainMemoryOnly(), parser);
     }
 
     /**
-     * Constructor that will use the provide memory settings for storage of the PDF streams.
+     * Constructor that will use the provided memory settings for storage of the PDF streams.
      *
      * @param memUsageSetting defines how memory is used for buffering PDF streams
      * 
      */
     public COSDocument(MemoryUsageSetting memUsageSetting)
     {
+        this(memUsageSetting, null);
+    }
+
+    /**
+     * Constructor that will use the provided memory settings for storage of the PDF streams.
+     *
+     * @param memUsageSetting defines how memory is used for buffering PDF streams
+     * @param parser Parser to be used to parse the document on demand
+     * 
+     */
+    public COSDocument(MemoryUsageSetting memUsageSetting, ICOSParser parser)
+    {
         try
         {
-            scratchFile = new ScratchFile(memUsageSetting);
+            if (memUsageSetting != null)
+            {
+                scratchFile = new ScratchFile(memUsageSetting);
+            }
+            else
+            {
+                scratchFile = ScratchFile.getMainMemoryOnlyInstance();
+            }
         }
         catch (IOException ioe)
         {
@@ -131,19 +150,6 @@ public class COSDocument extends COSBase implements Closeable
 
             scratchFile = ScratchFile.getMainMemoryOnlyInstance();
         }
-    }
-
-    /**
-     * Constructor that will use the provide memory handler for storage of the PDF streams.
-     *
-     * @param scratchFile memory handler for buffering of PDF streams
-     * @param parser Parser to be used to parse the document on demand
-     * 
-     */
-    public COSDocument(ScratchFile scratchFile, ICOSParser parser)
-    {
-        this.scratchFile = scratchFile != null ? scratchFile
-                : ScratchFile.getMainMemoryOnlyInstance();
         this.parser = parser;
     }
 
