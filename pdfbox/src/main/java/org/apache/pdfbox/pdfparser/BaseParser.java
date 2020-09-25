@@ -928,6 +928,11 @@ public abstract class BaseParser
                 {
                     seqSource.unread(badString.getBytes(ISO_8859_1));
                 }
+                else
+                {
+                    LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
+                            + seqSource.getPosition());
+                }
             }
         }
         return null;
