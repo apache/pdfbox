@@ -94,7 +94,8 @@ public class StreamPane implements ActionListener
     private final JPanel panel;
     private final HexView hexView;
     private final JTabbedPane tabbedPane;
-    private final StreamPaneView view;
+    private final StreamPaneView rawView;
+    private final StreamPaneView niceView;
     private final Stream stream;
     private ToolTipController tTController;
     private PDResources resources;
@@ -125,8 +126,16 @@ public class StreamPane implements ActionListener
         panel.setPreferredSize(new Dimension(300, 500));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        view = new StreamPaneView();
+        rawView = new StreamPaneView();
         hexView = new HexView();
+        if (isContentStream)
+        {
+            niceView = new StreamPaneView();
+        }
+        else
+        {
+            niceView = null;
+        }
 
         if (stream.isImage())
         {
@@ -142,11 +151,17 @@ public class StreamPane implements ActionListener
         tabbedPane = new JTabbedPane();
         if (stream.isImage())
         {
-            tabbedPane.add("Image view", view.getStreamPanel());
+            tabbedPane.add("Image view", rawView.getStreamPanel());
+        }
+        else if (isContentStream)
+        {
+            tabbedPane.add("Nice view", niceView.getStreamPanel());
+            tabbedPane.add("Raw view", rawView.getStreamPanel());
+            tabbedPane.add("Hex view", hexView.getPane());
         }
         else
         {
-            tabbedPane.add("Text view", view.getStreamPanel());
+            tabbedPane.add("Text view", rawView.getStreamPanel());
             tabbedPane.add("Hex view", hexView.getPane());
         }
 
@@ -184,12 +199,21 @@ public class StreamPane implements ActionListener
                 {
                     requestImageShowing();
                     tabbedPane.removeAll();
-                    tabbedPane.add("Image view", view.getStreamPanel());
+                    tabbedPane.add("Image view", rawView.getStreamPanel());
                     return;
                 }
                 tabbedPane.removeAll();
-                tabbedPane.add("Text view", view.getStreamPanel());
-                tabbedPane.add("Hex view", hexView.getPane());
+                if (isContentStream)
+                {
+                    tabbedPane.add("Nice view", rawView.getStreamPanel());
+                    tabbedPane.add("Raw view", niceView.getStreamPanel());
+                    tabbedPane.add("Hex view", hexView.getPane());
+                }
+                else
+                {
+                    tabbedPane.add("Text view", rawView.getStreamPanel());
+                    tabbedPane.add("Hex view", hexView.getPane());
+                }
                 requestStreamText(currentFilter);
             }
             catch (IOException e)
@@ -213,13 +237,17 @@ public class StreamPane implements ActionListener
                 JOptionPane.showMessageDialog(panel, "image not available (filter missing?)");
                 return;
             }
-            view.showStreamImage(image);
+            rawView.showStreamImage(image);
         }
     }
 
     private void requestStreamText(String command) throws IOException
     {
-        new DocumentCreator(command).execute();
+        new DocumentCreator(rawView, command, false).execute();
+        if (niceView != null)
+        {
+            new DocumentCreator(niceView, command, true).execute();
+        }
         synchronized (stream)
         {
             InputStream is = stream.getStream(command);
@@ -237,13 +265,17 @@ public class StreamPane implements ActionListener
      */
     private final class DocumentCreator extends SwingWorker<StyledDocument, Integer>
     {
+        private final StreamPaneView targetView;
         private final String filterKey;
+        private final boolean nice;
         private int indent;
         private boolean needIndent;
 
-        private DocumentCreator(String filterKey)
+        private DocumentCreator(StreamPaneView targetView, String filterKey, boolean nice)
         {
+            this.targetView = targetView;
             this.filterKey = filterKey;
+            this.nice = nice;
         }
 
         @Override
@@ -258,7 +290,7 @@ public class StreamPane implements ActionListener
                     encoding = "UTF-8";
                 }
                 InputStream inputStream = stream.getStream(filterKey);
-                if (isContentStream && Stream.DECODED.equals(filterKey))
+                if (nice && Stream.DECODED.equals(filterKey))
                 {
                     StyledDocument document = getContentStreamDocument(inputStream);
                     if (document != null)
@@ -276,7 +308,7 @@ public class StreamPane implements ActionListener
         {
             try
             {
-                view.showStreamText(get(), tTController);
+                targetView.showStreamText(get(), tTController);
             }
             catch (InterruptedException | ExecutionException e)
             {
