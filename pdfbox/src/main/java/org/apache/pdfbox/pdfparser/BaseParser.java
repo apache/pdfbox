@@ -870,6 +870,11 @@ public abstract class BaseParser
                 {
                     source.rewind(badString.getBytes(StandardCharsets.ISO_8859_1).length);
                 }
+                else
+                {
+                    LOG.warn("Skipped unexpected dir object = '" + badString + "' at offset "
+                            + source.getPosition());
+                }
             }
         }
         return null;
