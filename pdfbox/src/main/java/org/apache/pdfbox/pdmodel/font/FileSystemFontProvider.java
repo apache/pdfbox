@@ -116,8 +116,10 @@ final class FileSystemFontProvider extends FontProvider
          * 
          */
         @Override
-        public FontBoxFont getFont()
+        public synchronized FontBoxFont getFont()
         {
+            // synchronized to avoid race condition on cache access,
+            // which could result in an unreferenced but open font
             FontBoxFont cached = parent.cache.getFont(this);
             if (cached != null)
             {
