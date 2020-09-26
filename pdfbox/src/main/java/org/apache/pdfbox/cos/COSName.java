@@ -33,11 +33,11 @@ import org.apache.pdfbox.util.Hex;
 public final class COSName extends COSBase implements Comparable<COSName>
 {
     // using ConcurrentHashMap because this can be accessed by multiple threads
-    private static Map<String, COSName> nameMap = new ConcurrentHashMap<>(8192);
+    private static final Map<String, COSName> nameMap = new ConcurrentHashMap<>(8192);
 
     // all common COSName values are stored in this HashMap
     // they are already defined as static constants and don't need to be synchronized
-    private static Map<String, COSName> commonNameMap = new HashMap<>(768);
+    private static final Map<String, COSName> commonNameMap = new HashMap<>(768);
 
     //
     // IMPORTANT: this list is *alphabetized* and does not need any JavaDoc
@@ -650,6 +650,7 @@ public final class COSName extends COSBase implements Comparable<COSName>
     private COSName(String aName, boolean staticValue)
     {
         name = aName;
+        hashCode = name.hashCode();
         if (staticValue)
         {
             commonNameMap.put(aName, this);
@@ -658,7 +659,6 @@ public final class COSName extends COSBase implements Comparable<COSName>
         {
             nameMap.put(aName, this);
         }
-        hashCode = name.hashCode();
     }
 
     /**
