@@ -297,7 +297,7 @@ public class StreamPane implements ActionListener
                     {
                         return document;
                     }
-                    return getDocument(stream.getStream(filterKey), encoding);
+                    return getDocument(inputStream, encoding);
                 }
                 return getDocument(inputStream, encoding);
             }
@@ -341,7 +341,10 @@ public class StreamPane implements ActionListener
                 // CR is not displayed in the raw view (see file from PDFBOX-4964),
                 // but LF is displayed, so lets first replace CR LF with LF and then
                 // replace the remaining CRs with LF
-                data = data.replace("\r\n", "\n").replace('\r', '\n');
+                if (data != null)
+                {
+                    data = data.replace("\r\n", "\n").replace('\r', '\n');
+                }
 
                 try
                 {
