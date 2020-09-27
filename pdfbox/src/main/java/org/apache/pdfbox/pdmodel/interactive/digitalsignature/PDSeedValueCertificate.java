@@ -24,7 +24,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 /**
@@ -313,8 +312,7 @@ public class PDSeedValueCertificate implements COSObjectable
             subjectDNItem.forEach((key, value) -> dict.setItem(key, new COSString(value)));
             subjectDNDict.add(dict);
         }
-        dictionary.setItem(COSName.SUBJECT_DN,
-                COSArrayList.converterToCOSArray(subjectDNDict));
+        dictionary.setItem(COSName.SUBJECT_DN, new COSArray(subjectDNDict));
     }
 
     /**
