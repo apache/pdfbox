@@ -175,7 +175,6 @@ public class PDNumberTreeNode implements COSObjectable
         return retval;
     }
 
-
     /**
      * This will return a map of numbers.  The key will be a java.lang.Integer, the value will
      * depend on where this class is being used.
@@ -191,7 +190,11 @@ public class PDNumberTreeNode implements COSObjectable
         if( namesArray != null )
         {
             indices = new HashMap<Integer,COSObjectable>();
-            for( int i=0; i<namesArray.size(); i+=2 )
+            if (namesArray.size() % 2 != 0)
+            {
+                LOG.warn("Numbers array has odd size: " + namesArray.size());
+            }
+            for (int i = 0; i + 1 < namesArray.size(); i += 2)
             {
                 COSInteger key = (COSInteger)namesArray.getObject(i);
                 COSBase cosValue = namesArray.getObject( i+1 );
