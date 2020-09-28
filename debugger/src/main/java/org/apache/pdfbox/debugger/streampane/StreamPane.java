@@ -26,6 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,16 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -62,6 +73,9 @@ import org.apache.pdfbox.debugger.streampane.tooltip.ToolTipController;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * @author Khyrul Bashar
@@ -127,7 +141,7 @@ public class StreamPane implements ActionListener
 
         rawView = new StreamPaneView();
         hexView = new HexView();
-        if (isContentStream)
+        if (isContentStream || stream.isXmlMetadata())
         {
             niceView = new StreamPaneView();
         }
@@ -152,7 +166,7 @@ public class StreamPane implements ActionListener
         {
             tabbedPane.add("Image view", rawView.getStreamPanel());
         }
-        else if (isContentStream)
+        else if (isContentStream || stream.isXmlMetadata())
         {
             tabbedPane.add("Nice view", niceView.getStreamPanel());
             tabbedPane.add("Raw view", rawView.getStreamPanel());
@@ -202,7 +216,7 @@ public class StreamPane implements ActionListener
                     return;
                 }
                 tabbedPane.removeAll();
-                if (Stream.DECODED.equals(currentFilter) && isContentStream)
+                if (Stream.DECODED.equals(currentFilter) && (isContentStream || stream.isXmlMetadata()))
                 {
                     tabbedPane.add("Nice view", niceView.getStreamPanel());
                     tabbedPane.add("Raw view", rawView.getStreamPanel());
@@ -291,6 +305,10 @@ public class StreamPane implements ActionListener
                 InputStream inputStream = stream.getStream(filterKey);
                 if (nice && Stream.DECODED.equals(filterKey))
                 {
+                    if (stream.isXmlMetadata())
+                    {
+                        return getXMLDocument(inputStream, encoding);
+                    }
                     StyledDocument document = getContentStreamDocument(inputStream);
                     if (document != null)
                     {
@@ -352,6 +370,47 @@ public class StreamPane implements ActionListener
                 catch (BadLocationException e)
                 {
                     LOG.error(e.getMessage(), e);
+                }
+            }
+            return docu;
+        }
+
+        private StyledDocument getXMLDocument(InputStream inputStream, String encoding)
+        {
+            StyledDocument docu = new DefaultStyledDocument();
+            if (inputStream != null)
+            {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                
+                try
+                {
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, encoding);
+                    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+                    builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",
+                            true);
+                    builderFactory.setFeature("http://xml.org/sax/features/external-general-entities",
+                            false);
+                    builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities",
+                            false);
+                    builderFactory.setFeature(
+                            "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    builderFactory.setXIncludeAware(false);
+                    builderFactory.setExpandEntityReferences(false);
+                    DocumentBuilder builder = builderFactory.newDocumentBuilder();
+                    Document doc = builder.parse(new InputSource(inputStreamReader));
+                    Transformer transformer = TransformerFactory.newInstance().newTransformer();
+                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", Integer.toString(1));
+                    StreamResult result = new StreamResult(baos);
+                    DOMSource source = new DOMSource(doc);
+                    transformer.transform(source, result);
+                    docu.insertString(0, new String(baos.toByteArray(), StandardCharsets.UTF_8), null);
+                }
+                catch (ParserConfigurationException | SAXException | IOException |
+                       TransformerFactoryConfigurationError | IllegalArgumentException |
+                       TransformerException | BadLocationException ex)
+                {
+                    LOG.error(ex.getMessage(), ex);
                 }
             }
             return docu;
