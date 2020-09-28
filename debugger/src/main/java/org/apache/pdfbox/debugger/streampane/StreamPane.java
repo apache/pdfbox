@@ -189,7 +189,7 @@ public class StreamPane implements ActionListener
         {
             tabbedPane.add("Image view", rawView.getStreamPanel());
         }
-        else if (isContentStream || stream.isXmlMetadata())
+        else if (niceView != null)
         {
             tabbedPane.add("Nice view", niceView.getStreamPanel());
             tabbedPane.add("Raw view", rawView.getStreamPanel());
@@ -239,7 +239,7 @@ public class StreamPane implements ActionListener
                     return;
                 }
                 tabbedPane.removeAll();
-                if (Stream.UNFILTERED.equals(currentFilter) && (isContentStream || stream.isXmlMetadata()))
+                if (Stream.UNFILTERED.equals(currentFilter) && niceView != null)
                 {
                     tabbedPane.add("Nice view", niceView.getStreamPanel());
                     tabbedPane.add("Raw view", rawView.getStreamPanel());
