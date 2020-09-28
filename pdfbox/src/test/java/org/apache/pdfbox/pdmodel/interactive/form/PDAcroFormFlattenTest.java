@@ -230,7 +230,7 @@ public class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    // @Test
+    @Test
     public void testFlattenOpenOfficeFormFilled() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12840280/OpenOfficeForm_filled.pdf";
@@ -245,7 +245,7 @@ public class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    // @Test
+    @Test
     public void testFlattenPDFBox4157() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976553/PDFBOX-4157-filled.pdf";
@@ -259,7 +259,7 @@ public class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    // @Test
+    @Test
     public void testFlattenPDFBox4172() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976552/PDFBOX-4172-filled.pdf";
@@ -273,7 +273,7 @@ public class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    // @Test
+    @Test
     public void testFlattenPDFBox4615() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976452/resetboundingbox-filled.pdf";
@@ -339,6 +339,20 @@ public class PDAcroFormFlattenTest
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
+    /**
+     * PDFBOX-4958 text and button with image.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testFlattenPDFBox4958() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13012242/PDFBOX-4958.pdf";
+        String targetFileName = "PDFBOX-4958-flattened.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
     /*
      * Flatten and compare with generated image samples.
      *
@@ -370,7 +384,7 @@ public class PDAcroFormFlattenTest
             // cleanup input and output directory for matching files.
             removeAllRenditions(inputFile);
             inputFile.delete();
-            outputFile.delete();
+            //outputFile.delete();
         }
     }
 
