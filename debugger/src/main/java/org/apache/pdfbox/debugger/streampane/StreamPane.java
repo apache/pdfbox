@@ -203,10 +203,10 @@ public class StreamPane implements ActionListener
                     return;
                 }
                 tabbedPane.removeAll();
-                if (isContentStream)
+                if (Stream.DECODED.equals(currentFilter) && isContentStream)
                 {
-                    tabbedPane.add("Nice view", rawView.getStreamPanel());
-                    tabbedPane.add("Raw view", niceView.getStreamPanel());
+                    tabbedPane.add("Nice view", niceView.getStreamPanel());
+                    tabbedPane.add("Raw view", rawView.getStreamPanel());
                     tabbedPane.add("Hex view", hexView.getPane());
                 }
                 else
