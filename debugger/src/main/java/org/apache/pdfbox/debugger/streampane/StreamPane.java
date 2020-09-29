@@ -26,7 +26,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +46,6 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -76,9 +73,8 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.util.Charsets;
+import org.apache.pdfbox.util.XMLUtil;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * @author Khyrul Bashar
@@ -136,7 +132,6 @@ public class StreamPane implements ActionListener
     private final Stream stream;
     private ToolTipController tTController;
     private PDResources resources;
-    private final boolean isContentStream;
 
     /**
      * Constructor.
@@ -150,8 +145,6 @@ public class StreamPane implements ActionListener
     public StreamPane(COSStream cosStream, boolean isContentStream, boolean isThumb,
                       COSDictionary resourcesDic) throws IOException
     {
-        this.isContentStream = isContentStream;
-
         this.stream = new Stream(cosStream, isThumb);
         if (resourcesDic != null)
         {
@@ -408,45 +401,23 @@ public class StreamPane implements ActionListener
             StyledDocument docu = new DefaultStyledDocument();
             if (inputStream != null)
             {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                
                 try
                 {
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream, encoding);
-                    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-                    builderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",
-                            true);
-                    builderFactory.setFeature("http://xml.org/sax/features/external-general-entities",
-                            false);
-                    builderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities",
-                            false);
-                    builderFactory.setFeature(
-                            "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                    builderFactory.setXIncludeAware(false);
-                    builderFactory.setExpandEntityReferences(false);
-                    DocumentBuilder builder = builderFactory.newDocumentBuilder();
-                    Document doc = builder.parse(new InputSource(inputStreamReader));
+                    Document doc = XMLUtil.parse(inputStream);
                     TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                    transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                    transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
                     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
                     Transformer transformer = transformerFactory.newTransformer();
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", Integer.toString(1));
-                    StreamResult result = new StreamResult(baos);
+                    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
+                    StringWriter sw = new StringWriter();
+                    StreamResult result = new StreamResult(sw);
                     DOMSource source = new DOMSource(doc);
                     transformer.transform(source, result);
-                    docu.insertString(0, new String(baos.toByteArray(), Charsets.UTF_8), null);
-                }
-                catch (ParserConfigurationException ex)
-                {
-                    LOG.error(ex.getMessage(), ex);
+                    docu.insertString(0, sw.toString(), null);
                 }
                 catch (UnsupportedEncodingException ex)
-                {
-                    LOG.error(ex.getMessage(), ex);
-                }
-                catch (SAXException ex)
                 {
                     LOG.error(ex.getMessage(), ex);
                 }
