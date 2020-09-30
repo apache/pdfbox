@@ -334,10 +334,8 @@ public final class PDAcroForm implements COSObjectable
                     // this will transform the appearance stream form object into the rectangle of the
                     // annotation bbox and map the coordinate systems
                     Matrix transformationMatrix = resolveTransformationMatrix(annotation, appearanceStream);
-                    Matrix appearanceStreamMatrix = appearanceStream.getMatrix();
-                    appearanceStreamMatrix.concatenate(transformationMatrix);
 
-                    contentStream.transform(appearanceStreamMatrix);
+                    contentStream.transform(transformationMatrix);
                     contentStream.drawForm(fieldObject);
                     contentStream.restoreGraphicsState();
                     contentStream.close();
@@ -716,8 +714,11 @@ public final class PDAcroForm implements COSObjectable
 
     private Matrix resolveTransformationMatrix(PDAnnotation annotation, PDAppearanceStream appearanceStream)
     {
+        // 1st step transform appearance stream bbox with appearance stream matrix
         Rectangle2D transformedAppearanceBox = getTransformedAppearanceBBox(appearanceStream);
         PDRectangle annotationRect = annotation.getRectangle();
+
+        // 2nd step caclulate matrix to transform calculated rectangle into the annotation Rect boundaries
         Matrix transformationMatrix = new Matrix();
         transformationMatrix.translate((float) (annotationRect.getLowerLeftX()-transformedAppearanceBox.getX()), (float) (annotationRect.getLowerLeftY()-transformedAppearanceBox.getY()));
         transformationMatrix.scale((float) (annotationRect.getWidth()/transformedAppearanceBox.getWidth()), (float) (annotationRect.getHeight()/transformedAppearanceBox.getHeight()));
