@@ -237,7 +237,8 @@ public class COSStream extends COSDictionary implements Closeable
         {
             if (randomAccess == null && randomAccessReadView != null)
             {
-                return randomAccessReadView;
+                return new RandomAccessReadView(randomAccessReadView, 0,
+                        randomAccessReadView.length());
             }
             else
             {
