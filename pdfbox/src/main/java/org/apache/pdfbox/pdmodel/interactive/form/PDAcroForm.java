@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,14 +31,11 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.pdfbox.contentstream.operator.Operator;
-import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNumber;
-import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -49,7 +49,6 @@ import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
@@ -332,56 +331,12 @@ public final class PDAcroForm implements COSObjectable
                     
                     contentStream.saveGraphicsState();
                     
-                    // translate the appearance stream to the widget location if there is 
-                    // not already a transformation in place
-                    boolean needsTranslation = resolveNeedsTranslation(appearanceStream);
-
-                    // scale the appearance stream - mainly needed for images
-                    // in buttons and signatures
-                    boolean needsScaling = resolveNeedsScaling(annotation, page.getRotation());
-
-                    Matrix transformationMatrix = new Matrix();
-                    boolean transformed = false;
-                    
-                    if (needsTranslation)
-                    {
-                        transformationMatrix.translate(annotation.getRectangle().getLowerLeftX(),
-                                annotation.getRectangle().getLowerLeftY());
-                        transformed = true;
-                    }
-
-                    // PDFBOX-4693: field could have a rotation matrix
-                    Matrix m = appearanceStream.getMatrix();
-                    int angle = (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
-                    int rotation = (angle + 360) % 360;
-
-                    if (needsScaling)
-                    {
-                        PDRectangle bbox = appearanceStream.getBBox();
-                        PDRectangle fieldRect = annotation.getRectangle();
-
-                        float xScale;
-                        float yScale;
-                        if (rotation == 90 || rotation == 270)
-                        {
-                            xScale = fieldRect.getWidth() / bbox.getHeight();
-                            yScale = fieldRect.getHeight() / bbox.getWidth();
-                        }
-                        else
-                        {
-                            xScale = fieldRect.getWidth() / bbox.getWidth();
-                            yScale = fieldRect.getHeight() / bbox.getHeight();
-                        }
-                        Matrix scalingMatrix = Matrix.getScaleInstance(xScale, yScale);
-                        transformationMatrix.concatenate(scalingMatrix);
-                        transformed = true;
-                    }
-
-                    if (transformed)
-                    {
-                        contentStream.transform(transformationMatrix);
-                    }
-                    
+                    // see https://stackoverflow.com/a/54091766/1729265 for an explanation
+                    // of the steps required
+                    // this will transform the appearance stream form object into the rectangle of the
+                    // annotation bbox and map the coordinate systems
+                    Matrix transformationMatrix = resolveTransformationMatrix(annotation, appearanceStream);
+                    contentStream.transform(transformationMatrix);                    
                     contentStream.drawForm(fieldObject);
                     contentStream.restoreGraphicsState();
                     contentStream.close();
@@ -758,99 +713,34 @@ public final class PDAcroForm implements COSObjectable
         dictionary.setFlag(COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly);
     }
     
+    private Matrix resolveTransformationMatrix(PDAnnotation annotation, PDAppearanceStream appearanceStream)
+    {
+        // 1st step transform appearance stream bbox with appearance stream matrix
+        Rectangle2D transformedAppearanceBox = getTransformedAppearanceBBox(appearanceStream);
+        PDRectangle annotationRect = annotation.getRectangle();
+
+        // 2nd step caclulate matrix to transform calculated rectangle into the annotation Rect boundaries
+        Matrix transformationMatrix = new Matrix();
+        transformationMatrix.translate((float) (annotationRect.getLowerLeftX()-transformedAppearanceBox.getX()), (float) (annotationRect.getLowerLeftY()-transformedAppearanceBox.getY()));
+        transformationMatrix.scale((float) (annotationRect.getWidth()/transformedAppearanceBox.getWidth()), (float) (annotationRect.getHeight()/transformedAppearanceBox.getHeight()));
+        return transformationMatrix;
+    }
+
     /**
-     * Check if there is a translation needed to place the annotations content.
+     * Calculate the transformed appearance box.
+     * 
+     * Apply the Matrix (or an identity transform) to the BBox of
+     * the appearance stream
      * 
      * @param appearanceStream
-     * @return the need for a translation transformation.
+     * @return the transformed rectangle
      */
-    private boolean resolveNeedsTranslation(PDAppearanceStream appearanceStream)
+    private Rectangle2D getTransformedAppearanceBBox(PDAppearanceStream appearanceStream)
     {
-        PDResources resources = appearanceStream.getResources();
-        if (resources == null || !resources.getXObjectNames().iterator().hasNext())
-        {
-            return true;
-        }
-        Iterator<COSName> xObjectNames = resources.getXObjectNames().iterator();
-        List<Object> tokens;
-        try
-        {
-            PDFStreamParser pdfStreamParser = new PDFStreamParser(appearanceStream);
-            pdfStreamParser.parse();
-            tokens = pdfStreamParser.getTokens();
-        }
-        catch (IOException ex)
-        {
-            LOG.debug("Couldn't not parse appearance content stream - content might be misplaced", ex);
-            return true;
-        }
-        while (xObjectNames.hasNext())
-        {
-            try
-            {
-                // if the BBox of the PDFormXObject does not start at 0,0
-                // there is no need do translate as this is done by the BBox definition.
-                COSName name = xObjectNames.next();
-                PDXObject xObject = resources.getXObject(name);
-                if (xObject instanceof PDFormXObject)
-                {
-                    PDRectangle bbox = ((PDFormXObject) xObject).getBBox();
-                    float llX = bbox.getLowerLeftX();
-                    float llY = bbox.getLowerLeftY();
-                    if (Float.compare(llX, 0) != 0 && Float.compare(llY, 0) != 0)
-                    {
-                        // PDFBOX-4955: only if used
-                        for (int i = 0; i < tokens.size(); ++i)
-                        {
-                            if (tokens.get(i).equals(name) && i < tokens.size() - 1 &&
-                                tokens.get(i + 1).equals(Operator.getOperator(OperatorName.DRAW_OBJECT)))
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-            catch (IOException e)
-            {
-                // we can safely ignore the exception here
-                // as this might only cause a misplacement
-            }
-        }
-
-        // a field without specific settings typically needs to be translated
-        // to the correct position
-        return true;
-    }
-    
-    /**
-     * Check if there needs to be a scaling transformation applied.
-     * 
-     * @param annotation
-     * @param rotation 
-     * @return the need for a scaling transformation.
-     */    
-    private boolean resolveNeedsScaling(PDAnnotation annotation, int rotation)
-    {
-        PDAppearanceStream appearanceStream = annotation.getNormalAppearanceStream();
-        // Check if there is a transformation within the XObjects content
-        PDResources resources = appearanceStream.getResources();
-        if (resources != null && resources.getXObjectNames().iterator().hasNext())
-        {
-            return true;
-        }
-        PDRectangle bbox = appearanceStream.getBBox();
-        PDRectangle fieldRect = annotation.getRectangle();
-        if (rotation == 90 || rotation == 270)
-        {
-            return Float.compare(bbox.getWidth(),  fieldRect.getHeight()) != 0 ||
-                   Float.compare(bbox.getHeight(), fieldRect.getWidth()) != 0;
-        }
-        else
-        {
-            return Float.compare(bbox.getWidth(),  fieldRect.getWidth()) != 0 ||
-                   Float.compare(bbox.getHeight(), fieldRect.getHeight()) != 0;
-        }
+        Matrix appearanceStreamMatrix = appearanceStream.getMatrix();
+        PDRectangle appearanceStreamBBox = appearanceStream.getBBox();        
+        GeneralPath transformedAppearanceBox = appearanceStreamBBox.transform(appearanceStreamMatrix);
+        return transformedAppearanceBox.getBounds2D();
     }
 
     private Map<COSDictionary,Set<COSDictionary>> buildPagesWidgetsMap(List<PDField> fields) throws IOException

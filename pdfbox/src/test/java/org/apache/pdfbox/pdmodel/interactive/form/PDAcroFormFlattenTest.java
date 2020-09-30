@@ -71,7 +71,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-563 Filled template.
      */
-    // @Test
+    @Test
     public void testFlattenPDFBOX563() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12425859/TestFax_56972.pdf";
@@ -95,7 +95,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-2469 Filled template.
      */
-    // @Test
+    @Test
     public void testFlattenPDFBOX2469Filled() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12678455/testPDF_acroForm.pdf";
@@ -191,7 +191,7 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3587 Empty template.
      */
-    // @Test
+    @Test
     public void testFlattenOpenOfficeForm() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12839977/OpenOfficeForm.pdf";
@@ -239,7 +239,7 @@ public class PDAcroFormFlattenTest
     /**
      * PDFBOX-4615 Filled template.
      */
-    // @Test
+    @Test
     public void testFlattenPDFBox4615() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976452/resetboundingbox-filled.pdf";
@@ -297,6 +297,15 @@ public class PDAcroFormFlattenTest
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13011410/PDFBOX-4955.pdf";
         String targetFileName = "PDFBOX-4955.pdf";
+
+        flattenAndCompare(sourceUrl, targetFileName);
+    }
+
+    @Test
+    public void testFlattenPDFBox4958() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13012242/PDFBOX-4958.pdf";
+        String targetFileName = "PDFBOX-4958-flattened.pdf";
 
         flattenAndCompare(sourceUrl, targetFileName);
     }
