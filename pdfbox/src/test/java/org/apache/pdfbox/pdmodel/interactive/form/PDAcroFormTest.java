@@ -204,8 +204,6 @@ public class PDAcroFormTest
                 // ensure that the missing information has not been generated
                 assertNull(acroFormDictionary.getDictionaryObject(COSName.DA));
                 assertNull(acroFormDictionary.getDictionaryObject(COSName.RESOURCES));
-                
-                pdfDocument.close();
             }
         }
         catch (IOException e)
@@ -383,7 +381,6 @@ public class PDAcroFormTest
             // acroForm.getField("SampleField").getCOSObject().setString(COSName.V, "content");
 
             tmpDocument.save(baos); // this is a working PDF
-            tmpDocument.close();
             return baos.toByteArray();
         }
     }
