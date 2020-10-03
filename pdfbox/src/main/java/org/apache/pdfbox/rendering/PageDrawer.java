@@ -213,7 +213,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
     public void setAnnotationFilter(AnnotationFilter annotationFilter)
     {
         this.annotationFilter = annotationFilter;
-    }    
+    }
     
     /**
      * Returns the parent renderer.
@@ -376,7 +376,6 @@ public class PageDrawer extends PDFGraphicsStreamEngine
                 }
                 return shading.toPaint(Matrix.concatenate(getInitialMatrix(),
                                                           shadingPattern.getMatrix()));
-
             }
         }
     }
@@ -390,7 +389,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         {
             if (clippingPath.getPathIterator(null).isDone())
             {
-                // PDFBOX-4822: avoid bug with java printing that empty clipping path is ignored by
+                // PDFBOX-4821: avoid bug with java printing that empty clipping path is ignored by
                 // replacing with empty rectangle, works because this is not an empty path
                 graphics.setClip(new Rectangle());
             }
