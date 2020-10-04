@@ -72,6 +72,8 @@ public final class PDAcroForm implements COSObjectable
     
     private Map<String, PDField> fieldCache;
 
+    private ScriptingHandler scriptingHandler;
+
     /**
      * Constructor.
      *
@@ -712,6 +714,27 @@ public final class PDAcroForm implements COSObjectable
     {
         dictionary.setFlag(COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly);
     }
+
+    /**
+     * Set a handler to support JavaScript actions in the form.
+     * 
+     * @return scriptingHandler
+     */
+    public ScriptingHandler getScriptingHandler()
+    {
+        return scriptingHandler;
+    }
+
+    /**
+     * Set a handler to support JavaScript actions in the form.
+     * 
+     * @param scriptingHandler
+     */
+    public void setScriptingHandler(ScriptingHandler scriptingHandler)
+    {
+        this.scriptingHandler = scriptingHandler;
+    }
+
     
     private Matrix resolveTransformationMatrix(PDAnnotation annotation, PDAppearanceStream appearanceStream)
     {

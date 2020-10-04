@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
@@ -163,7 +164,7 @@ class AppearanceGeneratorHelper
      */
     public void setAppearanceValue(String apValue) throws IOException
     {
-        value = apValue;
+        value = getFormattedValue(apValue);
         
         // Treat multiline field values in single lines as single lime values.
         // This is in line with how Adobe Reader behaves when enetring text
@@ -195,53 +196,66 @@ class AppearanceGeneratorHelper
                 continue;
             }
 
-            PDFormFieldAdditionalActions actions = field.getActions();
-
-            // in case all tests fail the field will be formatted by acrobat
-            // when it is opened. See FreedomExpressions.pdf for an example of this.  
-            if (actions == null || actions.getF() == null ||
-                widget.getCOSObject().getDictionaryObject(COSName.AP) != null)
+            PDAppearanceDictionary appearanceDict = widget.getAppearance();
+            if (appearanceDict == null)
             {
-                PDAppearanceDictionary appearanceDict = widget.getAppearance();
-                if (appearanceDict == null)
-                {
-                    appearanceDict = new PDAppearanceDictionary();
-                    widget.setAppearance(appearanceDict);
-                }
-
-                PDAppearanceEntry appearance = appearanceDict.getNormalAppearance();
-                // TODO support appearances other than "normal"
-                
-                PDAppearanceStream appearanceStream;
-                if (isValidAppearanceStream(appearance))
-                {
-                    appearanceStream = appearance.getAppearanceStream();
-                }
-                else
-                {
-                    appearanceStream = prepareNormalAppearanceStream(widget);
-
-                    appearanceDict.setNormalAppearance(appearanceStream);
-                    // TODO support appearances other than "normal"
-                }
-                
-                /*
-                 * Adobe Acrobat always recreates the complete appearance stream if there is an appearance characteristics
-                 * entry (the widget dictionaries MK entry). In addition if there is no content yet also create the appearance
-                 * stream from the entries.
-                 * 
-                 */
-                if (widget.getAppearanceCharacteristics() != null || appearanceStream.getContentStream().getLength() == 0)
-                {
-                    initializeAppearanceContent(widget, appearanceStream);
-                }
-                
-                setAppearanceContent(widget, appearanceStream);
+                appearanceDict = new PDAppearanceDictionary();
+                widget.setAppearance(appearanceDict);
             }
+
+            PDAppearanceEntry appearance = appearanceDict.getNormalAppearance();
+            // TODO support appearances other than "normal"
+                
+            PDAppearanceStream appearanceStream;
+            if (isValidAppearanceStream(appearance))
+            {
+                appearanceStream = appearance.getAppearanceStream();
+            }
+            else
+            {
+                appearanceStream = prepareNormalAppearanceStream(widget);
+                appearanceDict.setNormalAppearance(appearanceStream);
+                // TODO support appearances other than "normal"
+            }
+                
+            /*
+             * Adobe Acrobat always recreates the complete appearance stream if there is an appearance characteristics
+             * entry (the widget dictionaries MK entry). In addition if there is no content yet also create the appearance
+             * stream from the entries.
+             * 
+             */
+            if (widget.getAppearanceCharacteristics() != null || appearanceStream.getContentStream().getLength() == 0)
+            {
+                initializeAppearanceContent(widget, appearanceStream);
+            }
+                
+            setAppearanceContent(widget, appearanceStream);
             
             // restore the field level appearance
             defaultAppearance =  acroFormAppearance;
         }
+    }
+
+    private String getFormattedValue(String apValue)
+    {
+        // format the field value for the appearance if there is scripting support and the field
+        // has a format event
+        PDFormFieldAdditionalActions actions = field.getActions();
+
+        if (actions != null && actions.getF() != null)
+        {
+            if (field.getAcroForm().getScriptingHandler() != null)
+            {
+                ScriptingHandler scriptingHandler = field.getAcroForm().getScriptingHandler();
+                return scriptingHandler.format((PDActionJavaScript) field.getActions().getF(), apValue);
+            }
+            else
+            {
+                LOG.info("Field contains a formatting action but no SriptingHandler has been supplied - formatted value might be incorrect");
+                return apValue;
+            }
+        }
+        return apValue;
     }
 
     private static boolean isValidAppearanceStream(PDAppearanceEntry appearance)
