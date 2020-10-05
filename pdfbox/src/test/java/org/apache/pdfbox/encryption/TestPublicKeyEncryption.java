@@ -19,7 +19,6 @@ package org.apache.pdfbox.encryption;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -330,8 +329,8 @@ public class TestPublicKeyEncryption
     @Test
     public void testReadPubkeyEncryptedAES128() throws IOException
     {
-        URL url = new URL("https://issues.apache.org/jira/secure/attachment/13011682/B2-Adobe-128-aes-sec.pdf");
-        try (PDDocument doc = Loader.loadPDF(url.openStream(),
+        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength128.pdf");
+             PDDocument doc = Loader.loadPDF(is,
                 "w!z%C*F-JaNdRgUk",
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
@@ -340,8 +339,7 @@ public class TestPublicKeyEncryption
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
             Assert.assertEquals(128, doc.getEncryption().getSecurityHandler().getKeyLength());
             PDFTextStripper stripper = new PDFTextStripper();
-            //Assert.assertEquals("Key length: 128", stripper.getText(doc).trim())
-            Assert.assertTrue(stripper.getText(doc).contains("ad0000002bf"));
+            Assert.assertEquals("Key length: 128", stripper.getText(doc).trim());
         }
     }
 
@@ -354,8 +352,8 @@ public class TestPublicKeyEncryption
     @Test
     public void testReadPubkeyEncryptedAES256() throws IOException
     {
-        URL url = new URL("https://issues.apache.org/jira/secure/attachment/13011752/B2-AES-256-secured.pdf");
-        try (PDDocument doc = Loader.loadPDF(url.openStream(),
+        try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength256.pdf");
+             PDDocument doc = Loader.loadPDF(is,
                 "w!z%C*F-JaNdRgUk",
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
@@ -364,8 +362,7 @@ public class TestPublicKeyEncryption
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
             Assert.assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
             PDFTextStripper stripper = new PDFTextStripper();
-            //Assert.assertEquals("Key length: 256", stripper.getText(doc).trim())
-            Assert.assertTrue(stripper.getText(doc).contains("ad0000002bf"));
+            Assert.assertEquals("Key length: 256", stripper.getText(doc).trim());
         }
     }
 }
