@@ -122,7 +122,8 @@ public final class PublicKeySecurityHandler extends SecurityHandler<PublicKeyPro
         if (!(decryptionMaterial instanceof PublicKeyDecryptionMaterial))
         {
             throw new IOException(
-                    "Provided decryption material is not compatible with the document");
+                    "Provided decryption material is not compatible with the document - "
+                            + "did you pass a null keyStore?");
         }
 
         setDecryptMetadata(encryption.isEncryptMetaData());
