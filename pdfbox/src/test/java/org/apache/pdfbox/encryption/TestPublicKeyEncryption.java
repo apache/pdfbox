@@ -338,4 +338,32 @@ public class TestPublicKeyEncryption
         document.save(file);
         return file;
     }
+
+    @Test
+    public void testReadPubkeyEncryptedAES128() throws IOException
+    {
+        InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength128.pdf");
+        PDDocument doc = PDDocument.load(is,
+                "w!z%C*F-JaNdRgUk",
+                TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
+                "testnutzer");
+        PDFTextStripper stripper = new PDFTextStripper();
+        Assert.assertEquals("Key length: 128", stripper.getText(doc).trim());
+        is.close();
+        doc.close();
+    }
+
+    @Test
+    public void testReadPubkeyEncryptedAES256() throws IOException
+    {
+        InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength256.pdf");
+        PDDocument doc = PDDocument.load(is,
+                "w!z%C*F-JaNdRgUk",
+                TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
+                "testnutzer");
+        PDFTextStripper stripper = new PDFTextStripper();
+        Assert.assertEquals("Key length: 256", stripper.getText(doc).trim());
+        is.close();
+        doc.close();
+    }
 }
