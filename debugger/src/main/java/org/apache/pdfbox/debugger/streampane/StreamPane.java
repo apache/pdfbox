@@ -406,8 +406,10 @@ public class StreamPane implements ActionListener
                     Document doc = XMLUtil.parse(inputStream);
                     TransformerFactory transformerFactory = TransformerFactory.newInstance();
                     transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-                    transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-                    transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+                    // XMLConstants.ACCESS_EXTERNAL_DTD in jdk 1.7
+                    transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalDTD", ""); 
+                    // XMLConstants.ACCESS_EXTERNAL_STYLESHEET in jdk 1.7
+                    transformerFactory.setAttribute("http://javax.xml.XMLConstants/property/accessExternalStylesheet", "");
                     Transformer transformer = transformerFactory.newTransformer();
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
