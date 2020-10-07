@@ -313,7 +313,8 @@
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.6.0</version>
+                    <!-- PDFBOX-4980: don't update, or it won't work with jdk6 -->
+                    <version>1.5.1</version>
                     <configuration>
                         <skip>${skipTests}</skip>
                     </configuration>
