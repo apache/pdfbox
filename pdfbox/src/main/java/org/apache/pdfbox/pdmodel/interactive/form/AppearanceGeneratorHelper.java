@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.Operator;
+import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
@@ -565,28 +566,33 @@ class AppearanceGeneratorHelper
             
             // Adobe Acrobat uses the font's bounding box for the leading between the lines
             appearanceStyle.setLeading(font.getBoundingBox().getHeight() * fontScaleY);
-            
+
             PlainTextFormatter formatter = new PlainTextFormatter
-                                                .Builder(contents)
-                                                    .style(appearanceStyle)
-                                                    .text(textContent)
-                                                    .width(contentRect.getWidth())
-                                                    .wrapLines(isMultiLine())
-                                                    .initialOffset(x, y)
-                                                    .textAlign(field.getQ())
-                                                    .build();
+                    .Builder(contents)
+                    .style(appearanceStyle)
+                    .text(textContent)
+                    .width(contentRect.getWidth())
+                    .wrapLines(isMultiLine())
+                    .initialOffset(x, y)
+                    .textAlign(getTextAlign(widget))
+                    .build();
             formatter.format();
         }
-    
+
         contents.endText();
         contents.restoreGraphicsState();
         contents.close();
     }
 
-    private AffineTransform calculateMatrix(PDRectangle bbox, int rotation)
-    {
-        if (rotation == 0)
-        {
+    private int getTextAlign(PDAnnotationWidget widget) {
+        // Use quadding value from widget if set, else use from field.
+        COSInteger quadding = (COSInteger) widget.getCOSObject()
+                                                 .getDictionaryObject(COSName.Q);
+        return quadding != null ? quadding.intValue() : field.getQ();
+    }
+
+    private AffineTransform calculateMatrix(PDRectangle bbox, int rotation) {
+        if (rotation == 0) {
             return new AffineTransform();
         }
         float tx = 0, ty = 0;
