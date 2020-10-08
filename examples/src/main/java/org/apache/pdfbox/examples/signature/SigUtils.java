@@ -122,16 +122,29 @@ public class SigUtils
     }
 
     /**
-     * Set the access permissions granted for this document in the DocMDP transform parameters
-     * dictionary. Details are described in the table "Entries in the DocMDP transform parameters
-     * dictionary" in the PDF specification.
+     * Set the "modification detection and prevention" permissions granted for this document in the
+     * DocMDP transform parameters dictionary. Details are described in the table "Entries in the
+     * DocMDP transform parameters dictionary" in the PDF specification.
      *
      * @param doc The document.
      * @param signature The signature object.
      * @param accessPermissions The permission value (1, 2 or 3).
+     *
+     * @throws IOException if a signature exists.
      */
     public static void setMDPPermission(PDDocument doc, PDSignature signature, int accessPermissions)
+            throws IOException
     {
+        for (PDSignature sig : doc.getSignatureDictionaries())
+        {
+            if (sig.getCOSObject().containsKey(COSName.CONTENTS))
+            {
+                // "A document can contain only one signature field that contains
+                // a DocMDP transform method; it shall be the first signed field in the document."            
+                throw new IOException("DocMDP transform method not allowed if a signature exists");
+            }
+        }
+
         COSDictionary sigDict = signature.getCOSObject();
 
         // DocMDP specific stuff
