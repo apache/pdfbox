@@ -54,7 +54,6 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInputStream;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.examples.interactive.form.CreateSimpleForm;
 import org.apache.pdfbox.examples.signature.CreateEmbeddedTimeStamp;
 import org.apache.pdfbox.examples.signature.CreateEmptySignatureForm;
