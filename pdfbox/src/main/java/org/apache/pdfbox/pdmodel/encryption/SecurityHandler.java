@@ -116,7 +116,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
     /**
      * Constructor.
      */
-    public SecurityHandler()
+    protected SecurityHandler()
     {
     }
 
@@ -125,7 +125,7 @@ public abstract class SecurityHandler<T_POLICY extends ProtectionPolicy>
      *
      * @param protectionPolicy The protection policy.
      */
-    public SecurityHandler(T_POLICY protectionPolicy)
+    protected SecurityHandler(T_POLICY protectionPolicy)
     {
         this.protectionPolicy = protectionPolicy;
         keyLength = protectionPolicy.getEncryptionKeyLength();
