@@ -145,7 +145,7 @@ public final class ShowSignature
                 for (PDSignature sig : document.getSignatureDictionaries())
                 {
                     COSDictionary sigDict = sig.getCOSObject();
-                    COSString contents = (COSString) sigDict.getDictionaryObject(COSName.CONTENTS);
+                    byte[] contents = sig.getContents();
 
                     // download the signed content
                     byte[] buf;
@@ -176,9 +176,8 @@ public final class ShowSignature
                             case "adbe.pkcs7.sha1":
                             {
                                 // example: PDFBOX-1452.pdf
-                                byte[] certData = contents.getBytes();
                                 CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                                ByteArrayInputStream certStream = new ByteArrayInputStream(certData);
+                                ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
                                 Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
                                 System.out.println("certs=" + certs);
                                 byte[] hash = MessageDigest.getInstance("SHA1").digest(buf);
@@ -270,7 +269,7 @@ public final class ShowSignature
                         long fileLen = infile.length();
                         long rangeMax = byteRange[2] + (long) byteRange[3];
                         // multiply content length with 2 (because it is in hex in the PDF) and add 2 for < and >
-                        int contentLen = contents.getString().length() * 2 + 2;
+                        int contentLen = contents.length * 2 + 2;
                         if (fileLen != rangeMax || byteRange[0] != 0 || byteRange[1] + contentLen != byteRange[2])
                         {
                             // a false result doesn't necessarily mean that the PDF is a fake
@@ -295,7 +294,7 @@ public final class ShowSignature
         }
     }
 
-    private void checkContentValueWithFile(File file, int[] byteRange, COSString contents) throws IOException
+    private void checkContentValueWithFile(File file, int[] byteRange, byte[] contents) throws IOException
     {
         // https://stackoverflow.com/questions/55049270
         // comment by mkl: check whether gap contains a hex value equal
@@ -318,7 +317,7 @@ public final class ShowSignature
                         contentBytesRead,
                         contentLength - contentBytesRead);
             }
-            byte[] contentAsHex = Hex.getString(contents.getBytes()).getBytes(StandardCharsets.US_ASCII);
+            byte[] contentAsHex = Hex.getString(contents).getBytes(StandardCharsets.US_ASCII);
             if (contentBytesRead != contentAsHex.length)
             {
                 System.err.println("Raw content length from file is " +
@@ -369,16 +368,16 @@ public final class ShowSignature
      * @throws CertificateVerificationException
      * @throws CertificateException 
      */
-    private void verifyETSIdotRFC3161(byte[] buf, COSString contents)
+    private void verifyETSIdotRFC3161(byte[] buf, byte[] contents)
             throws CMSException, NoSuchAlgorithmException, IOException, TSPException,
             OperatorCreationException, CertificateVerificationException, CertificateException
     {
-        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
+        TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
         System.out.println("Time stamp gen time: " + timeStampToken.getTimeStampInfo().getGenTime());
         System.out.println("Time stamp tsa name: " + timeStampToken.getTimeStampInfo().getTsa().getName());
         
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
+        ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
         Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
         System.out.println("certs=" + certs);
         
@@ -413,7 +412,7 @@ public final class ShowSignature
      * @throws GeneralSecurityException
      * @throws CertificateVerificationException
      */
-    private void verifyPKCS7(byte[] byteArray, COSString contents, PDSignature sig)
+    private void verifyPKCS7(byte[] byteArray, byte[] contents, PDSignature sig)
             throws CMSException, OperatorCreationException,
                    CertificateVerificationException, GeneralSecurityException,
                    TSPException, IOException
@@ -422,7 +421,7 @@ public final class ShowSignature
         // http://stackoverflow.com/a/26702631/535646
         // http://stackoverflow.com/a/9261365/535646
         CMSProcessable signedContent = new CMSProcessableByteArray(byteArray);
-        CMSSignedData signedData = new CMSSignedData(signedContent, contents.getBytes());
+        CMSSignedData signedData = new CMSSignedData(signedContent, contents);
         Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
         if (certificatesStore.getMatches(null).isEmpty())
         {
