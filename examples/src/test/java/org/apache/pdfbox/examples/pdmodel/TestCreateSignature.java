@@ -290,11 +290,11 @@ public class TestCreateSignature
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR + fileName)))
         {
             PDSignature signature = doc.getLastSignatureDictionary();
-            COSString contents = (COSString) signature.getCOSObject().getDictionaryObject(COSName.CONTENTS);
             byte[] totalFileContent = Files.readAllBytes(new File(OUT_DIR, fileName).toPath());
             byte[] signedFileContent = signature.getSignedContent(totalFileContent);
-            TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents.getBytes()));
-            ByteArrayInputStream certStream = new ByteArrayInputStream(contents.getBytes());
+            byte[] contents = signature.getContents();
+            TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
+            ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
             Collection<? extends Certificate> certs = certificateFactory.generateCertificates(certStream);
 
             String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
@@ -463,7 +463,7 @@ public class TestCreateSignature
             }
             for (PDSignature sig : document.getSignatureDictionaries())
             {
-                COSString contents = (COSString) sig.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+                byte[] contents = sig.getContents();
 
                 // verify that getSignedContent() brings the same content
                 // regardless whether from an InputStream or from a byte array
@@ -476,15 +476,15 @@ public class TestCreateSignature
                 try (FileInputStream fis = new FileInputStream(signedFile))
                 {
                     byte[] contents2 = sig.getContents(IOUtils.toByteArray(fis));
-                    Assert.assertArrayEquals(contents.getBytes(), contents2);
+                    Assert.assertArrayEquals(contents, contents2);
                 }
                 byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
-                Assert.assertArrayEquals(contents.getBytes(), contents3);
+                Assert.assertArrayEquals(contents, contents3);
 
                 // inspiration:
                 // http://stackoverflow.com/a/26702631/535646
                 // http://stackoverflow.com/a/9261365/535646
-                CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(signedFileContent1), contents.getBytes());
+                CMSSignedData signedData = new CMSSignedData(new CMSProcessableByteArray(signedFileContent1), contents);
                 Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
                 Collection<SignerInformation> signers = signedData.getSignerInfos().getSigners();
                 SignerInformation signerInformation = signers.iterator().next();
@@ -818,16 +818,16 @@ public class TestCreateSignature
         try (PDDocument doc = Loader.loadPDF(outFile))
         {
             PDSignature signature = doc.getLastSignatureDictionary();
-            COSString contents = (COSString) signature.getCOSObject().getDictionaryObject(COSName.CONTENTS);
+            byte[] contents = signature.getContents();
             PDDocumentCatalog docCatalog = doc.getDocumentCatalog();
             COSDictionary dssDict = docCatalog.getCOSObject().getCOSDictionary(COSName.getPDFName("DSS"));
             COSArray dssCertArray = dssDict.getCOSArray(COSName.getPDFName("Certs"));
             COSDictionary vriDict = dssDict.getCOSDictionary(COSName.getPDFName("VRI"));
             // Check that all known signature certificates are in the VRI/signaturehash/Cert array
-            byte[] signatureHash = MessageDigest.getInstance("SHA-1").digest(contents.getBytes());
+            byte[] signatureHash = MessageDigest.getInstance("SHA-1").digest(contents);
             String hexSignatureHash = Hex.getString(signatureHash);
             System.out.println("hexSignatureHash: " + hexSignatureHash);
-            CMSSignedData signedData = new CMSSignedData(contents.getBytes());
+            CMSSignedData signedData = new CMSSignedData(contents);
             Store<X509CertificateHolder> certificatesStore = signedData.getCertificates();
             HashSet<X509CertificateHolder> certificateHolderSet =
                     new HashSet<>(certificatesStore.getMatches(null));
