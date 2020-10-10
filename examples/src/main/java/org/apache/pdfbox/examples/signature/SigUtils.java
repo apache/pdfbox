@@ -137,11 +137,15 @@ public class SigUtils
     {
         for (PDSignature sig : doc.getSignatureDictionaries())
         {
+            // "Approval signatures shall follow the certification signature if one is present"
+            // thus we don't care about timestamp signatures
+            if (COSName.DOC_TIME_STAMP.equals(sig.getCOSObject().getItem(COSName.TYPE)))
+            {
+                continue;
+            }
             if (sig.getCOSObject().containsKey(COSName.CONTENTS))
             {
-                // "A document can contain only one signature field that contains
-                // a DocMDP transform method; it shall be the first signed field in the document."            
-                throw new IOException("DocMDP transform method not allowed if a signature exists");
+                throw new IOException("DocMDP transform method not allowed if an approval signature exists");
             }
         }
 
