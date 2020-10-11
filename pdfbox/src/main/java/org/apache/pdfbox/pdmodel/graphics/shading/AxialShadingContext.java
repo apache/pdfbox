@@ -203,7 +203,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     // the shading has to be extended if extend[0] == true
                     if (extend[0])
                     {
-                        inputValue = 0;
+                        inputValue = domain[0];
                     }
                     else
                     {
@@ -220,7 +220,7 @@ public class AxialShadingContext extends ShadingContext implements PaintContext
                     // the shading has to be extended if extend[1] == true
                     if (extend[1])
                     {
-                        inputValue = 1;
+                        inputValue = domain[1];
                     }
                     else
                     {
