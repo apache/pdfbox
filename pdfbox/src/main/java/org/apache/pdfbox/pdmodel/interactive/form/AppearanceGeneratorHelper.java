@@ -112,7 +112,7 @@ class AppearanceGeneratorHelper
         {
             throw new IOException("Could not process default appearance string '" +
                                    field.getDefaultAppearance() + "' for field '" +
-                                   field.getFullyQualifiedName() + "'", ex);
+                                   field.getFullyQualifiedName() + "': " + ex.getMessage(), ex);
         }
     }
     
