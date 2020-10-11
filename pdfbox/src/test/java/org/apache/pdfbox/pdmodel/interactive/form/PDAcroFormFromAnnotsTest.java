@@ -71,7 +71,7 @@ public class PDAcroFormFromAnnotsTest
             // need to do a low level cos access as the PDModel access will build the AcroForm 
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
-            assertEquals("Initially there shall be 0 fields", cosFields.size(), 0);
+            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
             PDAcroForm acroForm = catalog.getAcroForm();
             assertTrue("After rebuild there shall be > 0 fields", acroForm.getFields().size() > 0);
         }

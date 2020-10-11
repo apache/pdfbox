@@ -49,7 +49,6 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPa
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.apache.pdfbox.pdmodel.interactive.form.PDTerminalField;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThread;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 
@@ -655,7 +654,7 @@ public class PDDocumentCatalog implements COSObjectable
             }
             catch (IOException ioe)
             {
-                LOG.debug("coukdn't read annotations for page " + ioe.getMessage());
+                LOG.debug("couldn't read annotations for page " + ioe.getMessage());
             }
         }
     }
