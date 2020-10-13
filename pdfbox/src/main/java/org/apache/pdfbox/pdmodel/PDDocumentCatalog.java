@@ -41,14 +41,11 @@ import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentPrope
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionFactory;
 import org.apache.pdfbox.pdmodel.interactive.action.PDDocumentCatalogAdditionalActions;
 import org.apache.pdfbox.pdmodel.interactive.action.PDURIDictionary;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDNamedDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageDestination;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
-import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThread;
 import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferences;
 
@@ -114,20 +111,6 @@ public class PDDocumentCatalog implements COSObjectable
         {
             COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.ACRO_FORM);
             cachedAcroForm = dict == null ? null : new PDAcroForm(document, dict);
-
-            // PDFBOX-4985 AcroForm with NeedAppearances true and empty fields array
-            // but Widgets in page annotations
-            if (cachedAcroForm != null && cachedAcroForm.getNeedAppearances() && cachedAcroForm.getFields().isEmpty())
-            {
-                resolveFieldsFromWidgets(cachedAcroForm);
-            }
-
-            // PDFBOX-4985
-            // build the visual appearance as there is none for the widgets
-            if (cachedAcroForm != null && cachedAcroForm.getNeedAppearances())
-            {
-                rebuildAppearances(cachedAcroForm);
-            }
         }
         return cachedAcroForm;
     }
@@ -632,49 +615,6 @@ public class PDDocumentCatalog implements COSObjectable
         if (ocProperties != null && document.getVersion() < 1.5)
         {
             document.setVersion(1.5f);
-        }
-    }
-
-    private void resolveFieldsFromWidgets(PDAcroForm acroForm)
-    {
-        LOG.debug("rebuilding fields from widgets");
-        COSArray fields = acroForm.getCOSObject().getCOSArray(COSName.FIELDS);
-        for (PDPage page : document.getPages())
-        {
-            try
-            {
-                List<PDAnnotation> annots = page.getAnnotations();
-                for (PDAnnotation annot : annots)
-                {
-                    if (annot instanceof PDAnnotationWidget)
-                    {
-                        fields.add(annot.getCOSObject());
-                    }
-                }
-            }
-            catch (IOException ioe)
-            {
-                LOG.debug("couldn't read annotations for page " + ioe.getMessage());
-            }
-        }
-    }
-
-    private void rebuildAppearances(PDAcroForm acroForm)
-    {
-        for (PDField field : acroForm.getFieldTree())
-        {
-            if (!field.getValueAsString().isEmpty())
-            {
-                try
-                {
-                    field.setValue(field.getValueAsString());
-                }
-                catch (IOException ioe)
-                {
-                    LOG.debug("couldn't generate appearance stream for field " + field.getFullyQualifiedName());
-                    LOG.debug(ioe.getMessage());
-                }
-            }
         }
     }
 }

@@ -97,6 +97,20 @@ public final class PDAcroForm implements COSObjectable
         document = doc;
         dictionary = form;
         verifyOrCreateDefaults();
+
+        // PDFBOX-4985 AcroForm with NeedAppearances true and empty fields array
+        // but Widgets in page annotations
+        if (getNeedAppearances() && getFields().isEmpty())
+        {
+            resolveFieldsFromWidgets(this);
+        }
+
+        // PDFBOX-4985
+        // build the visual appearance as there is none for the widgets
+        if (getNeedAppearances())
+        {
+            rebuildAppearances(this);
+        }
     }
     
     /*
@@ -732,6 +746,49 @@ public final class PDAcroForm implements COSObjectable
     public void setAppendOnly(boolean appendOnly)
     {
         dictionary.setFlag(COSName.SIG_FLAGS, FLAG_APPEND_ONLY, appendOnly);
+    }
+
+    private void resolveFieldsFromWidgets(PDAcroForm acroForm)
+    {
+        LOG.debug("rebuilding fields from widgets");
+        COSArray fields = acroForm.getCOSObject().getCOSArray(COSName.FIELDS);
+        for (PDPage page : document.getPages())
+        {
+            try
+            {
+                List<PDAnnotation> annots = page.getAnnotations();
+                for (PDAnnotation annot : annots)
+                {
+                    if (annot instanceof PDAnnotationWidget)
+                    {
+                        fields.add(annot.getCOSObject());
+                    }
+                }
+            }
+            catch (IOException ioe)
+            {
+                LOG.debug("couldn't read annotations for page " + ioe.getMessage());
+            }
+        }
+    }
+
+    private void rebuildAppearances(PDAcroForm acroForm)
+    {
+        for (PDField field : acroForm.getFieldTree())
+        {
+            if (!field.getValueAsString().isEmpty())
+            {
+                try
+                {
+                    field.setValue(field.getValueAsString());
+                }
+                catch (IOException ioe)
+                {
+                    LOG.debug("couldn't generate appearance stream for field " + field.getFullyQualifiedName());
+                    LOG.debug(ioe.getMessage());
+                }
+            }
+        }
     }
 
     private Matrix resolveTransformationMatrix(PDAnnotation annotation, PDAppearanceStream appearanceStream)
