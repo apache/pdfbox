@@ -74,10 +74,20 @@ public class RandomAccessReadBuffer implements RandomAccessRead
      */
     public RandomAccessReadBuffer(byte[] input)
     {
-        // this is a special case. Wrap the given byte array to one ByteBuffer.
-        chunkSize = input.length;
+        // this is a special case. Wrap the given byte array to a single ByteBuffer.
+        this(ByteBuffer.wrap(input));
+    }
+
+    /**
+     * Create a random access buffer using the given ByteBuffer.
+     * 
+     * @param input the ByteBuffer to be read
+     */
+    public RandomAccessReadBuffer(ByteBuffer input)
+    {
+        chunkSize = input.capacity();
         size = chunkSize;
-        currentBuffer = ByteBuffer.wrap(input);
+        currentBuffer = input;
         bufferList = new ArrayList<>(1);
         bufferList.add(currentBuffer);
     }
@@ -247,8 +257,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         if (maxLength >= remainingBytes)
         {
             // copy the remaining bytes from the current buffer
-            System.arraycopy(currentBuffer.array(), currentBufferPointer, b, offset,
-                    remainingBytes);
+            currentBuffer.position(currentBufferPointer);
+            currentBuffer.get(b, offset, remainingBytes);
             // end of file reached
             currentBufferPointer += remainingBytes;
             pointer += remainingBytes;
@@ -257,7 +267,8 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         else
         {
             // copy the remaining bytes from the whole buffer
-            System.arraycopy(currentBuffer.array(), currentBufferPointer, b, offset, maxLength);
+            currentBuffer.position(currentBufferPointer);
+            currentBuffer.get(b, offset, maxLength);
             // end of file reached
             currentBufferPointer += maxLength;
             pointer += maxLength;
