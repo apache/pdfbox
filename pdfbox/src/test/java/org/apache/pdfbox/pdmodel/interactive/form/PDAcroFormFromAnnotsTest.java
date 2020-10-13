@@ -17,12 +17,9 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 
 import java.io.IOException;
 import java.net.URL;
-
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -36,7 +33,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Test for the PDButton class.
+ * Tests for building AcroForm entries form Widget annotations.
  *
  */
 public class PDAcroFormFromAnnotsTest
@@ -64,6 +61,16 @@ public class PDAcroFormFromAnnotsTest
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
+        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
+
+        int numFormFieldsByAcrobat = 0;
+
+        try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            PDAcroForm acroForm = catalog.getAcroForm();
+            numFormFieldsByAcrobat = acroForm.getFields().size();
+        }
                 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
@@ -73,7 +80,7 @@ public class PDAcroFormFromAnnotsTest
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
             PDAcroForm acroForm = catalog.getAcroForm();
-            assertTrue("After rebuild there shall be > 0 fields", acroForm.getFields().size() > 0);
+            assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
         }
     }    
 
