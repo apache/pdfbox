@@ -144,13 +144,7 @@ public interface RandomAccessRead extends Closeable
      */
     default void skip(int length) throws IOException
     {
-        int i = 0;
-        while (i++ < length)
-        {
-            int value = read();
-            if (value == -1)
-                break;
-        }
+        seek(getPosition() + length);
     }
 
     /**
