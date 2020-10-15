@@ -113,6 +113,7 @@ public final class PDAcroForm implements COSObjectable
             {
                 LOG.debug("trying to generate appearance streams for fields as NeedAppearances is true()");
                 refreshAppearances();
+                setNeedAppearances(false);
             }
             catch (IOException ioe)
             {
