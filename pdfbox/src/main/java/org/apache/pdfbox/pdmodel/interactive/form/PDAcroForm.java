@@ -109,7 +109,16 @@ public final class PDAcroForm implements COSObjectable
         // build the visual appearance as there is none for the widgets
         if (getNeedAppearances())
         {
-            rebuildAppearances(this);
+            try
+            {
+                LOG.debug("trying to generate appearance streams for fields as NeedAppearances is true()");
+                refreshAppearances();
+            }
+            catch (IOException ioe)
+            {
+                LOG.debug("couldn't generate appearance stream for some fields - check output");
+                LOG.debug(ioe.getMessage());
+            }
         }
     }
     
@@ -768,25 +777,6 @@ public final class PDAcroForm implements COSObjectable
             catch (IOException ioe)
             {
                 LOG.debug("couldn't read annotations for page " + ioe.getMessage());
-            }
-        }
-    }
-
-    private void rebuildAppearances(PDAcroForm acroForm)
-    {
-        for (PDField field : acroForm.getFieldTree())
-        {
-            if (!field.getValueAsString().isEmpty())
-            {
-                try
-                {
-                    field.setValue(field.getValueAsString());
-                }
-                catch (IOException ioe)
-                {
-                    LOG.debug("couldn't generate appearance stream for field " + field.getFullyQualifiedName());
-                    LOG.debug(ioe.getMessage());
-                }
             }
         }
     }

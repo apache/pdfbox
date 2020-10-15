@@ -120,8 +120,7 @@ public class PDAcroFormFlattenTest
      *
      * @throws IOException
      */
-    // disabled as there is a small difference which can not be seen visually
-    // @Test
+    @Test
     public void testFlattenPDFBOX2586() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12689788/test.pdf";
