@@ -562,7 +562,7 @@ class AppearanceGeneratorHelper
                         .width(contentRect.getWidth())
                         .wrapLines(isMultiLine())
                         .initialOffset(x, y)
-                        .textAlign(field.getQ())
+                        .textAlign(getTextAlign(widget))
                         .build();
                 formatter.format();
             }
@@ -572,6 +572,13 @@ class AppearanceGeneratorHelper
         }
     }
     
+    private int getTextAlign(PDAnnotationWidget widget)
+    {
+        // Use quadding value from joined field/widget if set, else use from field.
+        return widget.getCOSObject().getInt(COSName.Q, field.getQ());
+    }
+
+
     private AffineTransform calculateMatrix(PDRectangle bbox, int rotation)
     {
         if (rotation == 0)
