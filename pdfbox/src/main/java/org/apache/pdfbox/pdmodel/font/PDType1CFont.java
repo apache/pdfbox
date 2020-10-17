@@ -163,10 +163,7 @@ public class PDType1CFont extends PDSimpleFont
         {
             return new GeneralPath();
         }
-        else
-        {
-            return genericFont.getPath(name);
-        }
+        return "nbspace".equals(name) ? genericFont.getPath("space") : genericFont.getPath(name);
     }
 
     @Override
