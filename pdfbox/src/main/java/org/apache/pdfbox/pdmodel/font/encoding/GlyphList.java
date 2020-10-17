@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * PostScript glyph list, maps glyph names to sequences of Unicode characters.
@@ -47,10 +48,14 @@ public final class GlyphList
      */
     private static GlyphList load(String filename, int numberOfEntries)
     {
-        String path = "/org/apache/pdfbox/resources/glyphlist/";
+        String path = "/org/apache/pdfbox/resources/glyphlist/" + filename;
         //no need to use a BufferedInputSteam here, as GlyphList uses a BufferedReader
-        try (InputStream resourceAsStream = GlyphList.class.getResourceAsStream(path + filename))
+        try (InputStream resourceAsStream = GlyphList.class.getResourceAsStream(path))
         {
+            if (resourceAsStream == null)
+            {
+                throw new IOException("GlyphList '" + path + "' not found");
+            }
             return new GlyphList(resourceAsStream, numberOfEntries);
         }
         catch (IOException e)
