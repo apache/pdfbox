@@ -19,13 +19,14 @@ package org.apache.pdfbox.pdmodel.font.encoding;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.io.IOUtils;
 
 /**
  * PostScript glyph list, maps glyph names to sequences of Unicode characters.
@@ -46,14 +47,24 @@ public final class GlyphList
      */
     private static GlyphList load(String filename, int numberOfEntries)
     {
-        String path = "/org/apache/pdfbox/resources/glyphlist/";
+        String path = "/org/apache/pdfbox/resources/glyphlist/" + filename;
+        InputStream resourceAsStream = null;
         try
         {
-            return new GlyphList(GlyphList.class.getResourceAsStream(path + filename), numberOfEntries);
+            resourceAsStream = GlyphList.class.getResourceAsStream(path);
+            if (resourceAsStream == null)
+            {
+                throw new IOException("GlyphList '" + path + "' not found");
+            }
+            return new GlyphList(resourceAsStream, numberOfEntries);
         }
         catch (IOException e)
         {
             throw new RuntimeException(e);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(resourceAsStream);
         }
     }
 
