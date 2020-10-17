@@ -153,10 +153,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         {
             return new GeneralPath();
         }
-        else
-        {
-            return genericFont.getPath(name);
-        }
+        return "nbspace".equals(name) ? genericFont.getPath("space") : genericFont.getPath(name);
     }
 
     @Override
@@ -164,7 +161,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     {
         String name = getEncoding().getName(code);
         name = getNameInFont(name);
-        return hasGlyph(name);
+        return "nbspace".equals(name) ? hasGlyph("space") : hasGlyph(name);
     }
 
     @Override
@@ -172,7 +169,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     {
         String name = getEncoding().getName(code);
         name = getNameInFont(name);
-        return getPath(name);
+        return "nbspace".equals(name) ? getPath("space") : getPath(name);
     }
 
     @Override
@@ -180,6 +177,10 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     {
         String name = getEncoding().getName(code);
         name = getNameInFont(name);
+        if ("nbspace".equals(name))
+        {
+            name = "space";
+        }
         GeneralPath path = getPath(name);
         if (path == null)
         {
@@ -187,7 +188,7 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         }
         return path;
     }
-    
+
     @Override
     public boolean hasGlyph(String name) throws IOException
     {
