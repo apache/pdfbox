@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.pdfbox.io.IOUtils;
 
 /**
  * PostScript glyph list, maps glyph names to sequences of Unicode characters.
