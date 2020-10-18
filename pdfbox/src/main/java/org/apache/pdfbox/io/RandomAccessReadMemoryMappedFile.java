@@ -22,6 +22,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
 import java.util.EnumSet;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * An implementation of the RandomAccess interface backed by a memory mapped file channel. The whole file is mapped to
@@ -38,6 +40,9 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
 
     // file channel of the file to be read
     private FileChannel fileChannel;
+
+    // function to unmap the byte buffer
+    private Consumer<? super ByteBuffer> unmapper = IOUtils::unmap;
 
     /**
      * Default constructor.
@@ -70,6 +75,8 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         mappedByteBuffer = parent.mappedByteBuffer.duplicate();
         size = parent.size;
         mappedByteBuffer.rewind();
+        // unmap doesn't work on duplicate, see Unsafe#invokeCleaner
+        unmapper = null;
     }
 
     /**
@@ -82,6 +89,7 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         {
             fileChannel.close();
         }
+        Optional.ofNullable(unmapper).ifPresent(u -> u.accept(mappedByteBuffer));
         mappedByteBuffer = null;
     }
 
