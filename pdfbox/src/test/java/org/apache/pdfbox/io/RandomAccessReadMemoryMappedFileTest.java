@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 The Apache Software Foundation.
+ * Copyright 2020 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import org.junit.Test;
 
@@ -161,6 +165,24 @@ public class RandomAccessReadMemoryMappedFileTest
         assertEquals(3, randomAccessSource.getPosition());
 
         randomAccessSource.close();
+    }
+
+    @Test
+    public void testUnmapping() throws IOException
+    {
+        // This is a special test case for some unmapping issues limited to windows enviroments
+        // see https://bugs.openjdk.java.net/browse/JDK-4724038
+        Path tempFile = Files.createTempFile("PDFBOX", "txt");
+        BufferedWriter bufferedWriter = Files.newBufferedWriter(tempFile, StandardOpenOption.WRITE);
+        bufferedWriter.write("Apache PDFBox test");
+        bufferedWriter.close();
+
+        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+                tempFile.toFile());
+        assertEquals(65, randomAccessSource.read());
+        randomAccessSource.close();
+
+        Files.delete(tempFile);
     }
 
 }
