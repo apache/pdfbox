@@ -336,6 +336,9 @@
 	                      <artifactId>java18</artifactId>
 	                      <version>1.0</version>
 	                    </signature>
+	                    <ignores>
+				            <ignore>java.lang.invoke.MethodHandle</ignore>
+				        </ignores>
 	                  </configuration>
 	               </execution>
 	            </executions>
