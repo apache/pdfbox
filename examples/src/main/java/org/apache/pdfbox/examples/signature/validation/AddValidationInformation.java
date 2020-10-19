@@ -99,7 +99,16 @@ public class AddValidationInformation
     {
         if (inFile == null || !inFile.exists())
         {
-            throw new FileNotFoundException("Document for signing does not exist");
+            String err = "Document for signing ";
+            if (null == inFile)
+            {
+                err += "is null";
+            }
+            else
+            {
+                err += "does not exist: " + inFile.getAbsolutePath();
+            }
+            throw new FileNotFoundException(err);
         }
 
         PDDocument doc = PDDocument.load(inFile);
