@@ -117,6 +117,10 @@ final class Standard14Fonts
         try (InputStream resourceAsStream = PDType1Font.class.getResourceAsStream(resourceName);
              InputStream afmStream = new BufferedInputStream(resourceAsStream))
         {
+            if (resourceAsStream == null)
+            {
+                throw new IOException("resource '" + resourceName + "' not found");
+            }
             AFMParser parser = new AFMParser(afmStream);
             FontMetrics metric = parser.parse(true);
             FONTS.put(fontName, metric);
