@@ -270,7 +270,7 @@ public class SigUtils
         {
             PDSignature lastSignature = sortedMap.get(sortedMap.lastKey());
             COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
-            if (type.equals(COSName.SIG) || type.equals(COSName.DOC_TIME_STAMP))
+            if (type == null || COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type))
             {
                 return lastSignature;
             }
