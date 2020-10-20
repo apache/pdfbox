@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 The Apache Software Foundation.
+ * Copyright 2020 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -193,4 +193,24 @@ public class RandomAccessReadBufferTest
         assertEquals(3, randomAccessSource.getPosition());
         randomAccessSource.close();
     }
+
+    @Test
+    public void testView() throws IOException
+    {
+        byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
+
+        RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(bais);
+
+        RandomAccessReadView view = randomAccessSource.createView(3, 5);
+        assertEquals(0, view.getPosition());
+        assertEquals(3, view.read());
+        assertEquals(4, view.read());
+        assertEquals(5, view.read());
+        assertEquals(3, view.getPosition());
+
+        view.close();
+        randomAccessSource.close();
+    }
+
 }

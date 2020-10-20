@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 The Apache Software Foundation.
+ * Copyright 2020 The Apache Software Foundation.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,4 +181,22 @@ public class RandomAccessReadBufferedFileTest
         assertEquals(3, randomAccessSource.getPosition());
         randomAccessSource.close();
     }
+
+    @Test
+    public void testView() throws IOException, URISyntaxException
+    {
+        RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
+                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
+
+        RandomAccessReadView view = randomAccessSource.createView(3, 10);
+        assertEquals(0, view.getPosition());
+        assertEquals('3', view.read());
+        assertEquals('4', view.read());
+        assertEquals('5', view.read());
+        assertEquals(3, view.getPosition());
+
+        view.close();
+        randomAccessSource.close();
+    }
+
 }

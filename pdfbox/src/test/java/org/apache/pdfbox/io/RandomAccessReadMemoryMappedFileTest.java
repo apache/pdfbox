@@ -185,4 +185,20 @@ public class RandomAccessReadMemoryMappedFileTest
         Files.delete(tempFile);
     }
 
+    @Test
+    public void testView() throws IOException, URISyntaxException
+    {
+        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+                new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
+
+        RandomAccessReadView view = randomAccessSource.createView(3, 10);
+        assertEquals(0, view.getPosition());
+        assertEquals('3', view.read());
+        assertEquals('4', view.read());
+        assertEquals('5', view.read());
+        assertEquals(3, view.getPosition());
+
+        view.close();
+        randomAccessSource.close();
+    }
 }
