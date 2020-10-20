@@ -309,11 +309,11 @@ public final class CRLVerifier
         {
             return new ArrayList<String>();
         }
-        ASN1InputStream oAsnInStream = new ASN1InputStream(new ByteArrayInputStream(crldpExt));
+        ASN1InputStream oAsnInStream = new ASN1InputStream(crldpExt);
         ASN1Primitive derObjCrlDP = oAsnInStream.readObject();
         ASN1OctetString dosCrlDP = (ASN1OctetString) derObjCrlDP;
         byte[] crldpExtOctets = dosCrlDP.getOctets();
-        ASN1InputStream oAsnInStream2 = new ASN1InputStream(new ByteArrayInputStream(crldpExtOctets));
+        ASN1InputStream oAsnInStream2 = new ASN1InputStream(crldpExtOctets);
         ASN1Primitive derObj2 = oAsnInStream2.readObject();
         CRLDistPoint distPoint = CRLDistPoint.getInstance(derObj2);
         List<String> crlUrls = new ArrayList<String>();
