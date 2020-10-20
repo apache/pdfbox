@@ -521,8 +521,7 @@ public class COSWriter implements ICOSVisitor, Closeable
                 cosBase = keyObject.get(cosObjectKey);
             }
             if (actual != null && objectKeys.containsKey(actual) 
-                    && object instanceof COSUpdateInfo && !((COSUpdateInfo)object).isNeedToBeUpdated() 
-                    && cosBase instanceof COSUpdateInfo && !((COSUpdateInfo)cosBase).isNeedToBeUpdated() )
+                    && !isNeedToBeUpdated(object) && !isNeedToBeUpdated(cosBase))
             {
                 return;
             }
@@ -533,6 +532,20 @@ public class COSWriter implements ICOSVisitor, Closeable
                 actualsAdded.add( actual );
             }
         }
+    }
+
+    /**
+     * Convenience method, so that we get false for types that can't be updated.
+     * @param base
+     * @return 
+     */
+    private boolean isNeedToBeUpdated(COSBase base)
+    {
+        if (base instanceof COSUpdateInfo)
+        {
+            return ((COSUpdateInfo) base).isNeedToBeUpdated();
+        }
+        return false;
     }
 
     /**
