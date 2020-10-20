@@ -273,7 +273,7 @@ public class SigUtils
         {
             PDSignature lastSignature = optLastSignature.get();
             COSBase type = lastSignature.getCOSObject().getItem(COSName.TYPE);
-            if (COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type))
+            if (type == null || COSName.SIG.equals(type) || COSName.DOC_TIME_STAMP.equals(type))
             {
                 return lastSignature;
             }
