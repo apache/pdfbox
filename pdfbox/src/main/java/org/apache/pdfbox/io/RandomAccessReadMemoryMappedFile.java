@@ -191,6 +191,6 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
     public RandomAccessReadView createView(long startPosition, long streamLength)
     {
         return new RandomAccessReadView(new RandomAccessReadMemoryMappedFile(this), startPosition,
-                streamLength);
+                streamLength, true);
     }
 }

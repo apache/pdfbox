@@ -31,6 +31,8 @@ public class RandomAccessReadView implements RandomAccessRead
     private final long startPosition;
     // stream length
     private final long streamLength;
+    // close input
+    private final boolean closeInput;
     // current position within the view
     private long currentPosition = 0;
 
@@ -44,9 +46,24 @@ public class RandomAccessReadView implements RandomAccessRead
     public RandomAccessReadView(RandomAccessRead randomAccessRead, long startPosition,
             long streamLength)
     {
+        this(randomAccessRead, startPosition, streamLength, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param randomAccessRead the underlying random access read
+     * @param startPosition start position within the underlying random access read
+     * @param streamLength stream length
+     * @param closeInput close the underlying random access read when closing the view if set to true
+     */
+    public RandomAccessReadView(RandomAccessRead randomAccessRead, long startPosition,
+            long streamLength, boolean closeInput)
+    {
         this.randomAccessRead = randomAccessRead;
         this.startPosition = startPosition;
         this.streamLength = streamLength;
+        this.closeInput = closeInput;
     }
 
     /**
@@ -125,6 +142,10 @@ public class RandomAccessReadView implements RandomAccessRead
     @Override
     public void close() throws IOException
     {
+        if (closeInput && randomAccessRead != null)
+        {
+            randomAccessRead.close();
+        }
         randomAccessRead = null;
     }
 
