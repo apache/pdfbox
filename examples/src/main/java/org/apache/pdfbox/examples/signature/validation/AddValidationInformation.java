@@ -113,6 +113,12 @@ public class AddValidationInformation
 
         PDDocument doc = PDDocument.load(inFile);
         FileOutputStream fos = new FileOutputStream(outFile);
+        int accessPermissions = SigUtils.getMDPPermission(doc);
+        if (accessPermissions == 1)
+        {
+            throw new IllegalStateException(
+                    "No changes to the document are permitted due to DocMDP transform parameters dictionary");
+        }
         document = doc;
         doValidation(inFile.getAbsolutePath(), fos);
         fos.close();
