@@ -68,6 +68,7 @@ import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
@@ -352,18 +353,22 @@ public final class ShowSignature
             TSPException, NoSuchAlgorithmException, CertificateVerificationException
     {
         TimeStampToken timeStampToken = new TimeStampToken(new CMSSignedData(contents));
-        System.out.println("Time stamp gen time: " + timeStampToken.getTimeStampInfo().getGenTime());
-        System.out.println("Time stamp tsa name: " + timeStampToken.getTimeStampInfo().getTsa().getName());
+        TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
+        System.out.println("Time stamp gen time: " + timeStampInfo.getGenTime());
+        if (timeStampInfo.getTsa() != null)
+        {
+            System.out.println("Time stamp tsa name: " + timeStampInfo.getTsa().getName());
+        }
         
         CertificateFactory factory = CertificateFactory.getInstance("X.509");
         ByteArrayInputStream certStream = new ByteArrayInputStream(contents);
         Collection<? extends Certificate> certs = factory.generateCertificates(certStream);
         System.out.println("certs=" + certs);
         
-        String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
+        String hashAlgorithm = timeStampInfo.getMessageImprintAlgOID().getId();
         // compare the hash of the signed content with the hash in the timestamp
         if (Arrays.equals(MessageDigest.getInstance(hashAlgorithm).digest(buf),
-                timeStampToken.getTimeStampInfo().getMessageImprintDigest()))
+                timeStampInfo.getMessageImprintDigest()))
         {
             System.out.println("ETSI.RFC3161 timestamp signature verified");
         }
@@ -377,7 +382,7 @@ public final class ShowSignature
         SigUtils.validateTimestampToken(timeStampToken);
                 SigUtils.verifyCertificateChain(timeStampToken.getCertificates(),
                 certFromTimeStamp,
-                timeStampToken.getTimeStampInfo().getGenTime());
+                timeStampInfo.getGenTime());
     }
 
     /**
