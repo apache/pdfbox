@@ -98,4 +98,18 @@ public class RenderingIntentTest
         // Assert result
         Assert.assertEquals("AbsoluteColorimetric", retval);
     }
+
+    @Test
+    // isFill should return true for RenderingMode.FILL
+    public void testIsFill()
+    {
+        // Arrange
+        final RenderingMode objectUnderTest = RenderingMode.FILL;
+
+        // Act
+        final boolean retval = objectUnderTest.isFill();
+
+        // Assert result
+        Assert.assertEquals(true, retval);
+    }
 }
