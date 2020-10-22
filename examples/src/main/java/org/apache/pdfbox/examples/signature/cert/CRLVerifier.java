@@ -317,7 +317,7 @@ public final class CRLVerifier
             LOG.warn("CRL distribution points for certificate subject " +
                     cert.getSubjectX500Principal().getName() +
                     " should be an octet string, but is " + derObjCrlDP);
-            return new ArrayList<>();
+            return new ArrayList<String>();
         }
         ASN1OctetString dosCrlDP = (ASN1OctetString) derObjCrlDP;
         byte[] crldpExtOctets = dosCrlDP.getOctets();
