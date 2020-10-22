@@ -311,10 +311,19 @@ public final class CRLVerifier
         }
         ASN1InputStream oAsnInStream = new ASN1InputStream(crldpExt);
         ASN1Primitive derObjCrlDP = oAsnInStream.readObject();
+        oAsnInStream.close();
+        if (!(derObjCrlDP instanceof ASN1OctetString))
+        {
+            LOG.warn("CRL distribution points for certificate subject " +
+                    cert.getSubjectX500Principal().getName() +
+                    " should be an octet string, but is " + derObjCrlDP);
+            return new ArrayList<>();
+        }
         ASN1OctetString dosCrlDP = (ASN1OctetString) derObjCrlDP;
         byte[] crldpExtOctets = dosCrlDP.getOctets();
         ASN1InputStream oAsnInStream2 = new ASN1InputStream(crldpExtOctets);
         ASN1Primitive derObj2 = oAsnInStream2.readObject();
+        oAsnInStream2.close();
         CRLDistPoint distPoint = CRLDistPoint.getInstance(derObj2);
         List<String> crlUrls = new ArrayList<String>();
         for (DistributionPoint dp : distPoint.getDistributionPoints())
