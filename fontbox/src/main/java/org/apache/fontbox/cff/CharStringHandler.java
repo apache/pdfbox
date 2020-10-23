@@ -16,9 +16,8 @@
  */
 package org.apache.fontbox.cff;
 
-
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * A Handler for CharStringCommands.
@@ -36,23 +35,22 @@ public interface CharStringHandler
      * @param sequence of CharStringCommands
      *
      */
-    default List<Number> handleSequence(List<Object> sequence)
+    default void handleSequence(List<Object> sequence)
     {
-        Stack<Number> stack = new Stack<>();
+        List<Number> numbers = new ArrayList<>();
         sequence.forEach(obj ->
         {
             if (obj instanceof CharStringCommand)
             {
-                List<Number> results = handleCommand(stack, (CharStringCommand) obj);
-                stack.clear();  // this is basically returning the new stack
-                stack.addAll(results);
+                List<Number> results = handleCommand(numbers, (CharStringCommand) obj);
+                numbers.clear();
+                numbers.addAll(results);
             }
             else
             {
-                stack.push((Number) obj);
+                numbers.add((Number) obj);
             }
         });
-        return stack;
     }
 
     /**
