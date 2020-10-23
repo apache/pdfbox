@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
 import org.apache.fontbox.encoding.StandardEncoding;
 import org.apache.fontbox.type1.Type1CharStringReader;
 
@@ -160,10 +161,17 @@ public class Type1CharString
     private List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
-        String name = CharStringCommand.TYPE1_VOCABULARY.get(command.getKey());
-
-        if ("rmoveto".equals(name))
+        Type1KeyWord type1KeyWord = CharStringCommand.TYPE1_VOCABULARY.get(command.getKey());
+        if (type1KeyWord == null)
         {
+            // indicates an invalid charstring
+            LOG.warn("Unknown charstring command: " + command.getKey() + " in glyph " + glyphName
+                    + " of font " + fontName);
+            return Collections.emptyList();
+        }
+        switch(type1KeyWord)
+        {
+        case RMOVETO:
             if (numbers.size() >= 2)
             {
                 if (isFlex)
@@ -175,9 +183,8 @@ public class Type1CharString
                     rmoveTo(numbers.get(0), numbers.get(1));
                 }
             }
-        }
-        else if ("vmoveto".equals(name))
-        {
+            break;
+        case VMOVETO:
             if (!numbers.isEmpty())
             {
                 if (isFlex)
@@ -190,9 +197,8 @@ public class Type1CharString
                     rmoveTo(0, numbers.get(0));
                 }
             }
-        }
-        else if ("hmoveto".equals(name))
-        {
+            break;
+        case HMOVETO:
             if (!numbers.isEmpty())
             {
                 if (isFlex)
@@ -205,97 +211,84 @@ public class Type1CharString
                     rmoveTo(numbers.get(0), 0);
                 }
             }
-        }
-        else if ("rlineto".equals(name))
-        {
+            break;
+        case RLINETO:
             if (numbers.size() >= 2)
             {
                 rlineTo(numbers.get(0), numbers.get(1));
             }
-        }
-        else if ("hlineto".equals(name))
-        {
+            break;
+        case HLINETO:
             if (!numbers.isEmpty())
             {
                 rlineTo(numbers.get(0), 0);
             }
-        }
-        else if ("vlineto".equals(name))
-        {
+            break;
+        case VLINETO:
             if (!numbers.isEmpty())
             {
                 rlineTo(0, numbers.get(0));
             }
-        }
-        else if ("rrcurveto".equals(name))
-        {
+            break;
+        case RRCURVETO:
             if (numbers.size() >= 6)
             {
                 rrcurveTo(numbers.get(0), numbers.get(1), numbers.get(2),
                         numbers.get(3), numbers.get(4), numbers.get(5));
             }
-        }
-        else if ("closepath".equals(name))
-        {
+            break;
+        case CLOSEPATH:
             closepath();
-        }
-        else if ("sbw".equals(name))
-        {
+            break;
+        case SBW:
             if (numbers.size() >= 3)
             {
                 leftSideBearing = new Point2D.Float(numbers.get(0).floatValue(), numbers.get(1).floatValue());
                 width = numbers.get(2).intValue();
                 current.setLocation(leftSideBearing);
             }
-        }
-        else if ("hsbw".equals(name))
-        {
+            break;
+        case HSBW:
             if (numbers.size() >= 2)
             {
                 leftSideBearing = new Point2D.Float(numbers.get(0).floatValue(), 0);
                 width = numbers.get(1).intValue();
                 current.setLocation(leftSideBearing);
             }
-        }
-        else if ("vhcurveto".equals(name))
-        {
+            break;
+        case VHCURVETO:
             if (numbers.size() >= 4)
             {
                 rrcurveTo(0, numbers.get(0), numbers.get(1),
                         numbers.get(2), numbers.get(3), 0);
             }
-        }
-        else if ("hvcurveto".equals(name))
-        {
+            break;
+        case HVCURVETO:
             if (numbers.size() >= 4)
             {
                 rrcurveTo(numbers.get(0), 0, numbers.get(1),
                         numbers.get(2), 0, numbers.get(3));
             }
-        }
-        else if ("seac".equals(name))
-        {
+            break;
+        case SEAC:
             if (numbers.size() >= 5)
             {
                 seac(numbers.get(0), numbers.get(1), numbers.get(2), numbers.get(3), numbers.get(4));
             }
-        }
-        else if ("setcurrentpoint".equals(name))
-        {
+            break;
+        case SETCURRENTPOINT:
             if (numbers.size() >= 2)
             {
                 setcurrentpoint(numbers.get(0), numbers.get(1));
             }
-        }
-        else if ("callothersubr".equals(name))
-        {
+            break;
+        case CALLOTHERSUBR:
             if (!numbers.isEmpty())
             {
                 callothersubr(numbers.get(0).intValue());
             }
-        }
-        else if ("div".equals(name))
-        {
+            break;
+        case DIV:
             float b = numbers.get(numbers.size() -1).floatValue();
             float a = numbers.get(numbers.size() -2).floatValue();
 
@@ -306,32 +299,24 @@ public class Type1CharString
             list.remove(list.size() - 1);
             list.add(result);
             return list;
-        }
-        else if ("hstem".equals(name) || "vstem".equals(name) ||
-                 "hstem3".equals(name) || "vstem3".equals(name) || "dotsection".equals(name))
-        {
+        case HSTEM:
+        case VSTEM:
+        case HSTEM3:
+        case VSTEM3:
+        case DOTSECTION:
             // ignore hints
-        }
-        else if ("endchar".equals(name))
-        {
+            break;
+        case ENDCHAR:
             // end
-        }
-        else if ("return".equals(name))
-        {
+            break;
+        case RET:
             // indicates an invalid charstring
             LOG.warn("Unexpected charstring command: " + command.getKey() + " in glyph " +
                     glyphName + " of font " + fontName);
-        }
-        else if (name != null)
-        {
+            break;
+        default:
             // indicates a PDFBox bug
-            throw new IllegalArgumentException("Unhandled command: " + name);
-        }
-        else
-        {
-            // indicates an invalid charstring
-            LOG.warn("Unknown charstring command: " + command.getKey() + " in glyph " + glyphName +
-                     " of font " + fontName);
+            throw new IllegalArgumentException("Unhandled command: " + type1KeyWord);
         }
         return Collections.emptyList();
     }

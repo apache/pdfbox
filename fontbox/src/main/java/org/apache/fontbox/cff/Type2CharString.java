@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 import org.apache.fontbox.type1.Type1CharStringReader;
 
 /**
@@ -86,149 +87,146 @@ public class Type2CharString extends Type1CharString
         handler.handleSequence(sequence);
     }
 
-    @SuppressWarnings(value = { "unchecked" })
     private List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
-        String name = CharStringCommand.TYPE2_VOCABULARY.get(command.getKey());
-
-        if (name == null)
+        Type2KeyWord type2KeyWord = CharStringCommand.TYPE2_VOCABULARY.get(command.getKey());
+        if (type2KeyWord == null)
         {
             addCommand(numbers, command);
             return Collections.emptyList();
         }
-        switch (name)
+        switch (type2KeyWord)
         {
-            case "hstem":
-            case "hstemhm":
-                numbers = clearStack(numbers, numbers.size() % 2 != 0);
-                expandStemHints(numbers, true);
-                break;
-            case "vstem":
-            case "vstemhm":
-                numbers = clearStack(numbers, numbers.size() % 2 != 0);
+        case HSTEM:
+        case HSTEMHM:
+            numbers = clearStack(numbers, numbers.size() % 2 != 0);
+            expandStemHints(numbers, true);
+            break;
+        case VSTEM:
+        case VSTEMHM:
+            numbers = clearStack(numbers, numbers.size() % 2 != 0);
+            expandStemHints(numbers, false);
+            break;
+        case VMOVETO:
+        case HMOVETO:
+            numbers = clearStack(numbers, numbers.size() > 1);
+            markPath();
+            addCommand(numbers, command);
+            break;
+        case RLINETO:
+            addCommandList(split(numbers, 2), command);
+            break;
+        case HLINETO:
+            drawAlternatingLine(numbers, true);
+            break;
+        case VLINETO:
+            drawAlternatingLine(numbers, false);
+            break;
+        case RRCURVETO:
+            addCommandList(split(numbers, 6), command);
+            break;
+        case ENDCHAR:
+            numbers = clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
+            closePath();
+            if (numbers.size() == 4)
+            {
+                // deprecated "seac" operator
+                numbers.add(0, 0);
+                addCommand(numbers, new CharStringCommand(12, 6));
+            }
+            else
+            {
+                addCommand(numbers, command);
+            }
+            break;
+        case RMOVETO:
+            numbers = clearStack(numbers, numbers.size() > 2);
+            markPath();
+            addCommand(numbers, command);
+            break;
+        case VHCURVETO:
+            drawAlternatingCurve(numbers, false);
+            break;
+        case HVCURVETO:
+            drawAlternatingCurve(numbers, true);
+            break;
+        case HFLEX:
+        {
+            List<Number> first = Arrays.asList(numbers.get(0), 0, numbers.get(1), numbers.get(2),
+                    numbers.get(3), 0);
+            List<Number> second = Arrays.asList(numbers.get(4), 0, numbers.get(5),
+                    -(numbers.get(2).floatValue()), numbers.get(6), 0);
+            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            break;
+        }
+        case FLEX:
+        {
+            List<Number> first = numbers.subList(0, 6);
+            List<Number> second = numbers.subList(6, 12);
+            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            break;
+        }
+        case HFLEX1:
+        {
+            List<Number> first = Arrays.asList(numbers.get(0), numbers.get(1), numbers.get(2),
+                    numbers.get(3), numbers.get(4), 0);
+            List<Number> second = Arrays.asList(numbers.get(5), 0, numbers.get(6), numbers.get(7),
+                    numbers.get(8), 0);
+            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            break;
+        }
+        case FLEX1:
+        {
+            int dx = 0;
+            int dy = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                dx += numbers.get(i * 2).intValue();
+                dy += numbers.get(i * 2 + 1).intValue();
+            }
+            List<Number> first = numbers.subList(0, 6);
+            List<Number> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8),
+                    numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx),
+                    (Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)));
+            addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
+            break;
+        }
+        case HINTMASK:
+        case CNTRMASK:
+            numbers = clearStack(numbers, numbers.size() % 2 != 0);
+            if (!numbers.isEmpty())
+            {
                 expandStemHints(numbers, false);
-                break;
-            case "vmoveto":
-            case "hmoveto":
-                numbers = clearStack(numbers, numbers.size() > 1);
-                markPath();
-                addCommand(numbers, command);
-                break;
-            case "rlineto":
-                addCommandList(split(numbers, 2), command);
-                break;
-            case "hlineto":
-                drawAlternatingLine(numbers, true);
-                break;
-            case "vlineto":
-                drawAlternatingLine(numbers, false);
-                break;
-            case "rrcurveto":
-                addCommandList(split(numbers, 6), command);
-                break;
-            case "endchar":
-                numbers = clearStack(numbers, numbers.size() == 5 || numbers.size() == 1);
-                closePath();
-                if (numbers.size() == 4)
-                {
-                    // deprecated "seac" operator
-                    numbers.add(0, 0);
-                    addCommand(numbers, new CharStringCommand(12, 6));
-                }
-                else
-                {
-                    addCommand(numbers, command);
-                }
-                break;
-            case "rmoveto":
-                numbers = clearStack(numbers, numbers.size() > 2);
-                markPath();
-                addCommand(numbers, command);
-                break;
-           case "vhcurveto":
-                drawAlternatingCurve(numbers, false);
-                break;
-            case "hvcurveto":
-                drawAlternatingCurve(numbers, true);
-                break;
-            case "hflex":
-            {
-                List<Number> first = Arrays.asList(numbers.get(0), 0,
-                        numbers.get(1), numbers.get(2), numbers.get(3), 0);
-                List<Number> second = Arrays.asList(numbers.get(4), 0,
-                        numbers.get(5), -(numbers.get(2).floatValue()),
-                        numbers.get(6), 0);
-                addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
-                break;
             }
-            case "flex":
+            break;
+        case RCURVELINE:
+            if (numbers.size() >= 2)
             {
-                List<Number> first = numbers.subList(0, 6);
-                List<Number> second = numbers.subList(6, 12);
-                addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
-                break;
+                addCommandList(split(numbers.subList(0, numbers.size() - 2), 6),
+                        new CharStringCommand(8));
+                addCommand(numbers.subList(numbers.size() - 2, numbers.size()),
+                        new CharStringCommand(5));
             }
-            case "hflex1":
+            break;
+        case RLINECURVE:
+            if (numbers.size() >= 6)
             {
-                List<Number> first = Arrays.asList(numbers.get(0), numbers.get(1),
-                        numbers.get(2), numbers.get(3), numbers.get(4), 0);
-                List<Number> second = Arrays.asList(numbers.get(5), 0,
-                        numbers.get(6), numbers.get(7), numbers.get(8), 0);
-                addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
-                break;
+                addCommandList(split(numbers.subList(0, numbers.size() - 6), 2),
+                        new CharStringCommand(5));
+                addCommand(numbers.subList(numbers.size() - 6, numbers.size()),
+                        new CharStringCommand(8));
             }
-            case "flex1":
-            {
-                int dx = 0;
-                int dy = 0;
-                for (int i = 0; i < 5; i++)
-                {
-                    dx += numbers.get(i * 2).intValue();
-                    dy += numbers.get(i * 2 + 1).intValue();
-                }
-                List<Number> first = numbers.subList(0, 6);
-                List<Number> second = Arrays.asList(numbers.get(6), numbers.get(7), numbers.get(8),
-                        numbers.get(9), (Math.abs(dx) > Math.abs(dy) ? numbers.get(10) : -dx),
-                        (Math.abs(dx) > Math.abs(dy) ? -dy : numbers.get(10)));
-                addCommandList(Arrays.asList(first, second), new CharStringCommand(8));
-                break;
-            }
-            case "hintmask":
-            case "cntrmask":
-                numbers = clearStack(numbers, numbers.size() % 2 != 0);
-                if (!numbers.isEmpty())
-                {
-                    expandStemHints(numbers, false);
-                }
-                break;
-            case "rcurveline":
-                if (numbers.size() >= 2)
-                {
-                    addCommandList(split(numbers.subList(0, numbers.size() - 2), 6),
-                            new CharStringCommand(8));
-                    addCommand(numbers.subList(numbers.size() - 2, numbers.size()),
-                            new CharStringCommand(5));
-                }
-                break;
-            case "rlinecurve":
-                if (numbers.size() >= 6)
-                {
-                    addCommandList(split(numbers.subList(0, numbers.size() - 6), 2),
-                            new CharStringCommand(5));
-                    addCommand(numbers.subList(numbers.size() - 6, numbers.size()),
-                            new CharStringCommand(8));
-                }
-                break;
-            case "vvcurveto":
-                drawCurve(numbers, false);
-                break;
-            case "hhcurveto":
-                drawCurve(numbers, true);
-                break;
-            default:
-                addCommand(numbers, command);
-                break;
+            break;
+        case VVCURVETO:
+            drawCurve(numbers, false);
+            break;
+        case HHCURVETO:
+            drawCurve(numbers, true);
+            break;
+        default:
+            addCommand(numbers, command);
+            break;
         }
         return Collections.emptyList();
     }
