@@ -129,8 +129,8 @@ public class RandomAccessReadBufferedFile implements RandomAccessRead
             curPage = newPage;
         }
 
-        offsetWithinPage = (int) ( position - curPageOffset );
-        fileOffset = position;
+        fileOffset = Math.min(position, fileLength);
+        offsetWithinPage = (int) (fileOffset - curPageOffset);
     }
     
     /**

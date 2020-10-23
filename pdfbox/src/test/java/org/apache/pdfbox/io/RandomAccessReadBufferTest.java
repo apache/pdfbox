@@ -188,9 +188,19 @@ public class RandomAccessReadBufferTest
         randomAccessSource.seek(0);
         assertEquals(0, randomAccessSource.getPosition());
         randomAccessSource.seek(6);
-        assertEquals(6, randomAccessSource.getPosition());
-        randomAccessSource.rewind(3);
-        assertEquals(3, randomAccessSource.getPosition());
+        assertEquals(0, randomAccessSource.getPosition());
+        assertTrue(randomAccessSource.isEOF());
+
+        try
+        {
+            randomAccessSource.rewind(3);
+            fail("seek should have thrown an IOException");
+        }
+        catch (IOException e)
+        {
+
+        }
+
         randomAccessSource.close();
     }
 

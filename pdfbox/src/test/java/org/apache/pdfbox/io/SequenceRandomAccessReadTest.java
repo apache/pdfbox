@@ -220,7 +220,7 @@ public class SequenceRandomAccessReadTest
         // seek to a position beyond the end of the input
         sequenceRandomAccessRead.seek(overallLength + 10);
         assertTrue(sequenceRandomAccessRead.isEOF());
-        assertEquals(overallLength + 10, sequenceRandomAccessRead.getPosition());
+        assertEquals(overallLength, sequenceRandomAccessRead.getPosition());
 
         assertFalse(sequenceRandomAccessRead.isClosed());
         sequenceRandomAccessRead.close();

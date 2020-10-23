@@ -163,9 +163,9 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         {
             throw new IOException("Invalid position " + position);
         }
-        pointer = position;
-        if (pointer < size)
+        if (position < size)
         {
+            pointer = position;
             // calculate the chunk list index
             bufferListIndex = chunkSize > 0 ? (int) (pointer / chunkSize) : 0;
             currentBufferPointer = chunkSize > 0 ? (int) (pointer % chunkSize) : 0;
@@ -175,6 +175,7 @@ public class RandomAccessReadBuffer implements RandomAccessRead
         {
             // it is allowed to jump beyond the end of the file
             // jump to the end of the buffer
+            pointer = size;
             bufferListIndex = bufferListMaxIndex;
             currentBuffer = bufferList.get(bufferListIndex);
             currentBufferPointer = chunkSize > 0 ? (int) (size % chunkSize) : 0;

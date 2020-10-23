@@ -151,6 +151,7 @@ public class SequenceRandomAccessRead implements RandomAccessRead
         if (position >= totalLength)
         {
             currentIndex = numberOfReader - 1;
+            currentPosition = totalLength;
         }
         else
         {
@@ -162,10 +163,10 @@ public class SequenceRandomAccessRead implements RandomAccessRead
                     break;
                 }
             }
+            currentPosition = position;
         }
         currentRandomAccessRead = readerList.get(currentIndex);
-        currentRandomAccessRead.seek(position - startPositions[currentIndex]);
-        currentPosition = position;
+        currentRandomAccessRead.seek(currentPosition - startPositions[currentIndex]);
     }
 
     @Override

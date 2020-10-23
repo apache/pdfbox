@@ -104,7 +104,9 @@ public class RandomAccessReadMemoryMappedFile implements RandomAccessRead
         {
             throw new IOException("Invalid position "+position);
         }
-        mappedByteBuffer.position((int) position);
+        // it is allowed to jump beyond the end of the file
+        // jump to the end of the reader
+        mappedByteBuffer.position((int) Math.min(position, size));
     }
 
     /**

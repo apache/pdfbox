@@ -168,6 +168,35 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
+    public void testEmptyBuffer() throws IOException, URISyntaxException
+    {
+        RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
+                new File(getClass().getResource("RandomAccessReadEmptyFile.txt").toURI()));
+
+        assertEquals(-1, randomAccessSource.read());
+        assertEquals(-1, randomAccessSource.peek());
+        byte[] readBytes = new byte[6];
+        assertEquals(-1, randomAccessSource.read(readBytes));
+        randomAccessSource.seek(0);
+        assertEquals(0, randomAccessSource.getPosition());
+        randomAccessSource.seek(6);
+        assertEquals(0, randomAccessSource.getPosition());
+        assertTrue(randomAccessSource.isEOF());
+
+        try
+        {
+            randomAccessSource.rewind(3);
+            fail("seek should have thrown an IOException");
+        }
+        catch (IOException e)
+        {
+
+        }
+
+        randomAccessSource.close();
+    }
+
+    @Test
     public void testUnmapping() throws IOException
     {
         // This is a special test case for some unmapping issues limited to windows enviroments
