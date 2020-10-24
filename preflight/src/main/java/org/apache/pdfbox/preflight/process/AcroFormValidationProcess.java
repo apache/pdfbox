@@ -55,17 +55,10 @@ public class AcroFormValidationProcess extends AbstractProcess
         PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
         if (catalog != null)
         {
-            // PDFBOX-4985 regenerates appearnce streams for fields when doing a PD model
-            // access to the AcroForm and in turn sets a NeedAppearances flag to false
-            // do a low level check for the NeedAppearances flag
-            COSDictionary cosAcroForm = catalog.getCOSObject().getCOSDictionary(COSName.ACRO_FORM);
-            if (cosAcroForm != null) {
-                checkNeedAppearences(ctx, cosAcroForm);
-            } 
-
-            PDAcroForm acroForm = catalog.getAcroForm();
+            PDAcroForm acroForm = catalog.getAcroForm(false);
             if (acroForm != null)
             {
+                checkNeedAppearences(ctx, acroForm);
                 try
                 {
                     exploreFields(ctx, acroForm.getFields());
@@ -90,9 +83,9 @@ public class AcroFormValidationProcess extends AbstractProcess
      * @param ctx the preflight context.
      * @param acroForm the AcroForm.
      */
-    protected void checkNeedAppearences(PreflightContext ctx, COSDictionary cosAcroForm)
+    protected void checkNeedAppearences(PreflightContext ctx, PDAcroForm acroForm)
     {
-        if (cosAcroForm.getBoolean(COSName.NEED_APPEARANCES, false))
+        if (acroForm.getNeedAppearances())
         {
             addValidationError(ctx, new ValidationError(ERROR_SYNTAX_DICT_INVALID,
                     "NeedAppearance is present with the value \"true\""));
