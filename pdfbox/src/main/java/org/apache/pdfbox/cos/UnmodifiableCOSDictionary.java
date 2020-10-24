@@ -17,6 +17,7 @@
 package org.apache.pdfbox.cos;
 
 import java.util.Calendar;
+import java.util.function.BiConsumer;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
@@ -275,6 +276,33 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      */
     @Override
     public void addAll(COSDictionary dic)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void forEach(BiConsumer<String, ? super COSBase> action)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setFlag(COSName field, int bitFlag, boolean value)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setNeedToBeUpdated(boolean flag)
     {
         throw new UnsupportedOperationException();
     }
