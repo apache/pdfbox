@@ -55,7 +55,7 @@ public class AcroFormValidationProcess extends AbstractProcess
         PDDocumentCatalog catalog = ctx.getDocument().getDocumentCatalog();
         if (catalog != null)
         {
-            PDAcroForm acroForm = catalog.getAcroForm();
+            PDAcroForm acroForm = catalog.getAcroForm(false);
             if (acroForm != null)
             {
                 checkNeedAppearences(ctx, acroForm);
