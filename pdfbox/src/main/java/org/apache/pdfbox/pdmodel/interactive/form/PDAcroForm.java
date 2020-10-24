@@ -94,35 +94,63 @@ public final class PDAcroForm implements COSObjectable
      */
     public PDAcroForm(PDDocument doc, COSDictionary form)
     {
+        this(doc, form, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * If <code>applyFixes</code> is set the AcroForm entries might be corrected/changed
+     * so that 
+     * <ul>
+     *   <li>a default appearance string is defined</li>
+     *   <li>default resources are defined</li>
+     *   <li>Helvetica as <code>/Helv</code> and Zapf Dingbats as <code>ZaDb</code> are included.
+     *       ZaDb is required for most check boxes and radio buttons</li>
+     *   <li>Field entries might be generated from page level widget annotations</li>
+     * </ul> 
+     *  
+     * @param doc The document that this form is part of.
+     * @param form The existing acroForm.
+     * @param applyFixes if set fix form entries
+     */
+    public PDAcroForm(PDDocument doc, COSDictionary form, boolean applyFixes)
+    {
         document = doc;
         dictionary = form;
-        verifyOrCreateDefaults();
 
-        // PDFBOX-4985 AcroForm with NeedAppearances true and empty fields array
-        // but Widgets in page annotations
-        if (getNeedAppearances() && getFields().isEmpty())
-        {
-            resolveFieldsFromWidgets(this);
-        }
+        if (applyFixes) {
+            verifyOrCreateDefaults();
 
-        // PDFBOX-4985
-        // build the visual appearance as there is none for the widgets
-        if (getNeedAppearances())
-        {
-            try
+            // PDFBOX-4985 AcroForm with NeedAppearances true and empty fields array
+            // but Widgets in page annotations
+            if (getNeedAppearances() && getFields().isEmpty())
             {
-                LOG.debug("trying to generate appearance streams for fields as NeedAppearances is true()");
-                refreshAppearances();
-                setNeedAppearances(false);
+                resolveFieldsFromWidgets(this);
             }
-            catch (IOException ioe)
+
+            // PDFBOX-4985
+            // build the visual appearance as there is none for the widgets
+            if (getNeedAppearances())
             {
-                LOG.debug("couldn't generate appearance stream for some fields - check output");
-                LOG.debug(ioe.getMessage());
+                try
+                {
+                    LOG.debug("trying to generate appearance streams for fields as NeedAppearances is true()");
+                    refreshAppearances();
+                    setNeedAppearances(false);
+                }
+                catch (IOException ioe)
+                {
+                    LOG.debug("couldn't generate appearance stream for some fields - check output");
+                    LOG.debug(ioe.getMessage());
+                }
             }
         }
     }
-    
+
+
+
+
     /*
      * Verify that there are default entries for required 
      * properties.

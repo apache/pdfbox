@@ -51,13 +51,14 @@ public class PDAcroFormFromAnnotsTest
     }
 
     /**
-     * PDFBOX-4985 AcroForms entry but empty Fields array
-     *
+     * PDFBOX-4985 AcroForms entry but empty Fields array 
+     * 
+     * Using the default get acroform call with error correction
+     * 
      * @throws IOException
      */
-
     @Test
-    public void testFromAnnots4985() throws IOException
+    public void testFromAnnots4985DefaultMode() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
@@ -68,7 +69,7 @@ public class PDAcroFormFromAnnotsTest
         try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm();
+            PDAcroForm acroForm = catalog.getAcroForm(false);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
                 
@@ -82,7 +83,70 @@ public class PDAcroFormFromAnnotsTest
             PDAcroForm acroForm = catalog.getAcroForm();
             assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
         }
-    }    
+    }
+
+    /**
+     * PDFBOX-4985 AcroForms entry but empty Fields array 
+     * 
+     * Using the acroform call with error correction
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testFromAnnots4985CorrectionMode() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
+        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13013384/POPPLER-806-acrobat.pdf";
+
+        int numFormFieldsByAcrobat = 0;
+
+        try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            PDAcroForm acroForm = catalog.getAcroForm(false);
+            numFormFieldsByAcrobat = acroForm.getFields().size();
+        }
+                
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            // need to do a low level cos access as the PDModel access will build the AcroForm 
+            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            PDAcroForm acroForm = catalog.getAcroForm(true);
+            assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
+        }
+    } 
+
+    /**
+     * PDFBOX-4985 AcroForms entry but empty Fields array 
+     * 
+     * Using the acroform call without error correction
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testFromAnnots4985WithoutCorrectionMode() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
+
+        int numCosFormFields = 0;
+                
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            // need to do a low level cos access as the PDModel access will build the AcroForm 
+            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            numCosFormFields = cosFields.size();
+            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            PDAcroForm acroForm = catalog.getAcroForm(false);
+            assertEquals("After call without correction there shall be " + numCosFormFields + " fields", numCosFormFields, acroForm.getFields().size());
+        }
+    } 
 
 
     @After
