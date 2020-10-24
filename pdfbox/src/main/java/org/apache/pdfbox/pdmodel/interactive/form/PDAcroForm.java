@@ -94,10 +94,35 @@ public final class PDAcroForm implements COSObjectable
      */
     public PDAcroForm(PDDocument doc, COSDictionary form)
     {
+        this(doc, form, true);
+    }
+
+        /**
+     * Constructor.
+     * 
+     * If <code>applyFixes</code> is set the AcroForm entries might be corrected/changed
+     * so that 
+     * <ul>
+     *   <li>a default appearance string is defined</li>
+     *   <li>default resources are defined</li>
+     *   <li>Helvetica as <code>/Helv</code> and Zapf Dingbats as <code>ZaDb</code> are included.
+     *       ZaDb is required for most check boxes and radio buttons</li>
+     * </ul> 
+     *  
+     * @param doc The document that this form is part of.
+     * @param form The existing acroForm.
+     * @param applyFixes if set fix form entries
+     */
+    public PDAcroForm(PDDocument doc, COSDictionary form, boolean applyFixes)
+    {
         document = doc;
         dictionary = form;
-        verifyOrCreateDefaults();
+
+        if (applyFixes) {
+            verifyOrCreateDefaults();
+        }
     }
+
     
     /*
      * Verify that there are default entries for required 

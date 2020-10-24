@@ -252,6 +252,40 @@ public class PDAcroFormTest
         }
     }
 
+    /*
+     * Test that we don't add missing ressouce information to an AcroForm 
+     * when accessing the AcroForm on the PD level with fix ups being set to
+     * false
+     * (PDFBOX-5000)
+     */
+    @Test
+    public void testDontAddMissingInformationOnAcroFormAccess()
+    {
+        try
+        {
+            byte[] pdfBytes =  createAcroFormWithMissingResourceInformation();
+            PDDocument pdfDocument = PDDocument.load(pdfBytes);
+            PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
+            
+            // this call shall skip triggering the generation of missing information
+            PDAcroForm theAcroForm = documentCatalog.getAcroForm(false);
+            
+            // ensure that the missing information has not been generated
+            // DA entry
+            assertEquals("", theAcroForm.getDefaultAppearance());
+            // Resources
+            assertNull(theAcroForm.getDefaultResources());
+            pdfDocument.close();
+        }
+        catch (IOException e)
+        {
+            System.err.println("Couldn't create test document, test skipped");
+            return;
+        }
+    }
+
+
+
     /**
      * PDFBOX-4235: a bad /DA string should not result in an NPE.
      * 
