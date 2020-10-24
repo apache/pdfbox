@@ -172,7 +172,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void collectFieldLocations() throws IOException
     {
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+        // get Acroform without applying fixups to enure that we get the original conten
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(false);
         if (acroForm == null)
         {
             return;
