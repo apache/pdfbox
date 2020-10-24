@@ -287,4 +287,23 @@ final class UnmodifiableCOSDictionary extends COSDictionary
     {
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setFlag(COSName field, int bitFlag, boolean value)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setNeedToBeUpdated(boolean flag)
+    {
+        throw new UnsupportedOperationException();
+    }
+
 }
