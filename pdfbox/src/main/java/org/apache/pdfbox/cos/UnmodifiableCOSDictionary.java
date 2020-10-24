@@ -284,7 +284,7 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void forEach(BiConsumer<String, ? super COSBase> action)
+    public void forEach(BiConsumer<COSName, ? super COSBase> action)
     {
         throw new UnsupportedOperationException();
     }
