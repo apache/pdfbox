@@ -23,24 +23,23 @@ package org.apache.fontbox.afm;
  */
 public class CompositePart
 {
-    private String name;
-    private int xDisplacement;
-    private int yDisplacement;
+    private final String name;
+    private final int xDisplacement;
+    private final int yDisplacement;
+
+    public CompositePart(String name, int xDisplacement, int yDisplacement)
+    {
+        this.name = name;
+        this.xDisplacement = xDisplacement;
+        this.yDisplacement = yDisplacement;
+    }
 
     /** Getter for property name.
      * @return Value of property name.
      */
-    public java.lang.String getName()
+    public String getName()
     {
         return name;
-    }
-
-    /** Setter for property name.
-     * @param nameValue New value of property name.
-     */
-    public void setName(String nameValue)
-    {
-        name = nameValue;
     }
 
     /** Getter for property xDisplacement.
@@ -51,14 +50,6 @@ public class CompositePart
         return xDisplacement;
     }
 
-    /** Setter for property xDisplacement.
-     * @param xDisp New value of property xDisplacement.
-     */
-    public void setXDisplacement(int xDisp)
-    {
-        xDisplacement = xDisp;
-    }
-
     /** Getter for property yDisplacement.
      * @return Value of property yDisplacement.
      */
@@ -66,13 +57,4 @@ public class CompositePart
     {
         return yDisplacement;
     }
-
-    /** Setter for property yDisplacement.
-     * @param yDisp New value of property yDisplacement.
-     */
-    public void setYDisplacement(int yDisp)
-    {
-        yDisplacement = yDisp;
-    }
-
 }

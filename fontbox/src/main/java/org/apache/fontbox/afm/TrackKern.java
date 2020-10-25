@@ -23,11 +23,21 @@ package org.apache.fontbox.afm;
  */
 public class TrackKern
 {
-    private int degree;
-    private float minPointSize;
-    private float minKern;
-    private float maxPointSize;
-    private float maxKern;
+    private final int degree;
+    private final float minPointSize;
+    private final float minKern;
+    private final float maxPointSize;
+    private final float maxKern;
+
+    public TrackKern(int degree, float minPointSize, float minKern, float maxPointSize,
+            float maxKern)
+    {
+        this.degree = degree;
+        this.minPointSize = minPointSize;
+        this.minKern = minKern;
+        this.maxPointSize = maxPointSize;
+        this.maxKern = maxKern;
+    }
 
     /** Getter for property degree.
      * @return Value of property degree.
@@ -35,14 +45,6 @@ public class TrackKern
     public int getDegree()
     {
         return degree;
-    }
-
-    /** Setter for property degree.
-     * @param degreeValue New value of property degree.
-     */
-    public void setDegree(int degreeValue)
-    {
-        degree = degreeValue;
     }
 
     /** Getter for property maxKern.
@@ -53,28 +55,12 @@ public class TrackKern
         return maxKern;
     }
 
-    /** Setter for property maxKern.
-     * @param maxKernValue New value of property maxKern.
-     */
-    public void setMaxKern(float maxKernValue)
-    {
-        maxKern = maxKernValue;
-    }
-
     /** Getter for property maxPointSize.
      * @return Value of property maxPointSize.
      */
     public float getMaxPointSize()
     {
         return maxPointSize;
-    }
-
-    /** Setter for property maxPointSize.
-     * @param maxPointSizeValue New value of property maxPointSize.
-     */
-    public void setMaxPointSize(float maxPointSizeValue)
-    {
-        maxPointSize = maxPointSizeValue;
     }
 
     /** Getter for property minKern.
@@ -85,14 +71,6 @@ public class TrackKern
         return minKern;
     }
 
-    /** Setter for property minKern.
-     * @param minKernValue New value of property minKern.
-     */
-    public void setMinKern(float minKernValue)
-    {
-        minKern = minKernValue;
-    }
-
     /** Getter for property minPointSize.
      * @return Value of property minPointSize.
      */
@@ -100,13 +78,4 @@ public class TrackKern
     {
         return minPointSize;
     }
-
-    /** Setter for property minPointSize.
-     * @param minPointSizeValue New value of property minPointSize.
-     */
-    public void setMinPointSize(float minPointSizeValue)
-    {
-        minPointSize = minPointSizeValue;
-    }
-
 }

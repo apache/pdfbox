@@ -335,13 +335,13 @@ public class AFMParser
      */
     private FontMetrics parseFontMetric(boolean reducedDataset) throws IOException
     {
-        FontMetrics fontMetrics = new FontMetrics();
         String startFontMetrics = readString();
         if( !START_FONT_METRICS.equals( startFontMetrics ) )
         {
             throw new IOException( "Error: The AFM file should start with " + START_FONT_METRICS +
                                    " and not '" + startFontMetrics + "'" );
         }
+        FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setAFMVersion( readFloat() );
         String nextCommand;
         boolean charMetricsRead = false;
@@ -442,37 +442,12 @@ public class AFMParser
                 fontMetrics.setFixedPitch( readBoolean() );
                 break;
             case START_CHAR_METRICS:
-                int countMetrics = readInt();
-                List<CharMetric> charMetrics = new ArrayList<>(countMetrics);
-                for (int i = 0; i < countMetrics; i++)
-                {
-                    CharMetric charMetric = parseCharMetric();
-                    charMetrics.add( charMetric );
-                }
-                String endCharMetrics = readString();
-                if (!endCharMetrics.equals(END_CHAR_METRICS))
-                {
-                    throw new IOException( "Error: Expected '" + END_CHAR_METRICS + "' actual '" +
-                            endCharMetrics + "'");
-                }
-                charMetricsRead = true;
-                fontMetrics.setCharMetrics(charMetrics);
+                charMetricsRead = parseCharMetrics(fontMetrics);
                 break;
             case START_COMPOSITES:
                 if( !reducedDataset)
                 {
-                    int countComposites = readInt();
-                    for (int i = 0; i < countComposites; i++)
-                    {
-                        Composite part = parseComposite();
-                        fontMetrics.addComposite( part );
-                    }
-                    String endComposites = readString();
-                    if (!endComposites.equals(END_COMPOSITES))
-                    {
-                        throw new IOException( "Error: Expected '" + END_COMPOSITES + "' actual '" +
-                                endComposites + "'");
-                    }
+                    parseComposites(fontMetrics);
                 }
                 break;
             case START_KERN_DATA:
@@ -482,11 +457,8 @@ public class AFMParser
                 }
                 break;
             default:
-                if (reducedDataset && charMetricsRead)
-                {
-                    break;
-                }
-                throw new IOException( "Unknown AFM key '" + nextCommand + "'" );
+                if (!reducedDataset || !charMetricsRead)
+                    throw new IOException("Unknown AFM key '" + nextCommand + "'");
             }
         }
         return fontMetrics;
@@ -510,13 +482,8 @@ public class AFMParser
                 int countTrackKern = readInt();
                 for (int i = 0; i < countTrackKern; i++)
                 {
-                    TrackKern kern = new TrackKern();
-                    kern.setDegree( readInt() );
-                    kern.setMinPointSize( readFloat() );
-                    kern.setMinKern( readFloat() );
-                    kern.setMaxPointSize( readFloat() );
-                    kern.setMaxKern( readFloat() );
-                    fontMetrics.addTrackKern( kern );
+                    fontMetrics.addTrackKern(new TrackKern(readInt(), readFloat(), readFloat(),
+                            readFloat(), readFloat()));
                 }
                 String endTrackKern = readString();
                 if (!endTrackKern.equals(END_TRACK_KERN))
@@ -526,50 +493,62 @@ public class AFMParser
                 }
                 break;
             case START_KERN_PAIRS:
-                int countKernPairs = readInt();
-                for (int i = 0; i < countKernPairs; i++)
-                {
-                    KernPair pair = parseKernPair();
-                    fontMetrics.addKernPair( pair );
-                }
-                String endKernPairs = readString();
-                if (!endKernPairs.equals(END_KERN_PAIRS))
-                {
-                    throw new IOException( "Error: Expected '" + END_KERN_PAIRS + "' actual '" +
-                            endKernPairs + "'");
-                }
+                parseKernPairs(fontMetrics);
                 break;
             case START_KERN_PAIRS0:
-                int countKernPairs0 = readInt();
-                for (int i = 0; i < countKernPairs0; i++)
-                {
-                    KernPair pair = parseKernPair();
-                    fontMetrics.addKernPair0( pair );
-                }
-                String endKernPairs0 = readString();
-                if (!endKernPairs0.equals(END_KERN_PAIRS))
-                {
-                    throw new IOException( "Error: Expected '" + END_KERN_PAIRS + "' actual '" +
-                            endKernPairs0 + "'");
-                }
+                parseKernPairs0(fontMetrics);
                 break;
             case START_KERN_PAIRS1:
-                int countKernPairs1 = readInt();
-                for (int i = 0; i < countKernPairs1; i++)
-                {
-                    KernPair pair = parseKernPair();
-                    fontMetrics.addKernPair1( pair );
-                }
-                String endKernPairs1 = readString();
-                if (!endKernPairs1.equals(END_KERN_PAIRS))
-                {
-                    throw new IOException( "Error: Expected '" + END_KERN_PAIRS + "' actual '" +
-                            endKernPairs1 + "'");
-                }
+                parseKernPairs1(fontMetrics);
                 break;
             default:
                 throw new IOException( "Unknown kerning data type '" + nextCommand + "'" );
             }
+        }
+    }
+
+    private void parseKernPairs(FontMetrics fontMetrics) throws IOException
+    {
+        int countKernPairs = readInt();
+        for (int i = 0; i < countKernPairs; i++)
+        {
+            fontMetrics.addKernPair(parseKernPair());
+        }
+        String endKernPairs = readString();
+        if (!endKernPairs.equals(END_KERN_PAIRS))
+        {
+            throw new IOException(
+                    "Error: Expected '" + END_KERN_PAIRS + "' actual '" + endKernPairs + "'");
+        }
+    }
+
+    private void parseKernPairs0(FontMetrics fontMetrics) throws IOException
+    {
+        int countKernPairs = readInt();
+        for (int i = 0; i < countKernPairs; i++)
+        {
+            fontMetrics.addKernPair0(parseKernPair());
+        }
+        String endKernPairs = readString();
+        if (!endKernPairs.equals(END_KERN_PAIRS))
+        {
+            throw new IOException(
+                    "Error: Expected '" + END_KERN_PAIRS + "' actual '" + endKernPairs + "'");
+        }
+    }
+
+    private void parseKernPairs1(FontMetrics fontMetrics) throws IOException
+    {
+        int countKernPairs = readInt();
+        for (int i = 0; i < countKernPairs; i++)
+        {
+            fontMetrics.addKernPair1(parseKernPair());
+        }
+        String endKernPairs = readString();
+        if (!endKernPairs.equals(END_KERN_PAIRS))
+        {
+            throw new IOException(
+                    "Error: Expected '" + END_KERN_PAIRS + "' actual '" + endKernPairs + "'");
         }
     }
 
@@ -582,38 +561,24 @@ public class AFMParser
      */
     private KernPair parseKernPair() throws IOException
     {
-        KernPair kernPair = new KernPair();
         String cmd = readString();
-        switch(cmd)
+        switch (cmd)
         {
         case KERN_PAIR_KP:
-            kernPair.setFirstKernCharacter(readString());
-            kernPair.setSecondKernCharacter(readString());
-            kernPair.setX(readFloat());
-            kernPair.setY(readFloat());
-            break;
+            return new KernPair(readString(), readString(), //
+                    readFloat(), readFloat());
         case KERN_PAIR_KPH:
-            kernPair.setFirstKernCharacter(hexToString(readString()));
-            kernPair.setSecondKernCharacter(hexToString(readString()));
-            kernPair.setX(readFloat());
-            kernPair.setY(readFloat());
-            break;
+            return new KernPair(hexToString(readString()), hexToString(readString()), //
+                    readFloat(), readFloat());
         case KERN_PAIR_KPX:
-            kernPair.setFirstKernCharacter(readString());
-            kernPair.setSecondKernCharacter(readString());
-            kernPair.setX(readFloat());
-            kernPair.setY( 0 );
-            break;
+            return new KernPair(readString(), readString(), //
+                    readFloat(), 0);
         case KERN_PAIR_KPY:
-            kernPair.setFirstKernCharacter(readString());
-            kernPair.setSecondKernCharacter(readString());
-            kernPair.setX( 0 );
-            kernPair.setY(readFloat());
-            break;
+            return new KernPair(readString(), readString(), //
+                    0, readFloat());
         default:
             throw new IOException( "Error expected kern pair command actual='" + cmd + "'" );
         }
-        return kernPair;
     }
 
     /**
@@ -625,18 +590,18 @@ public class AFMParser
      *
      * @throws IOException If the string is in an invalid format.
      */
-    private String hexToString( String hexString ) throws IOException
+    private String hexToString(String hexToString) throws IOException
     {
-        if( hexString.length() < 2 )
+        if (hexToString.length() < 2)
         {
-            throw new IOException( "Error: Expected hex string of length >= 2 not='" + hexString );
+            throw new IOException("Error: Expected hex string of length >= 2 not='" + hexToString);
         }
-        if( hexString.charAt( 0 ) != '<' ||
-            hexString.charAt( hexString.length() -1 ) != '>' )
+        if (hexToString.charAt(0) != '<' || hexToString.charAt(hexToString.length() - 1) != '>')
         {
-            throw new IOException( "String should be enclosed by angle brackets '" + hexString+ "'" );
+            throw new IOException(
+                    "String should be enclosed by angle brackets '" + hexToString + "'");
         }
-        hexString = hexString.substring( 1, hexString.length() -1 );
+        String hexString = hexToString.substring(1, hexToString.length() - 1);
         byte[] data = new byte[hexString.length() / 2];
         for( int i=0; i<hexString.length(); i+=2 )
         {
@@ -653,6 +618,21 @@ public class AFMParser
         return new String( data, StandardCharsets.ISO_8859_1 );
     }
 
+    private void parseComposites(FontMetrics fontMetrics) throws IOException
+    {
+        int countComposites = readInt();
+        for (int i = 0; i < countComposites; i++)
+        {
+            fontMetrics.addComposite(parseComposite());
+        }
+        String endComposites = readString();
+        if (!endComposites.equals(END_COMPOSITES))
+        {
+            throw new IOException(
+                    "Error: Expected '" + END_COMPOSITES + "' actual '" + endComposites + "'");
+        }
+    }
+
     /**
      * This will parse a composite part from the stream.
      *
@@ -662,7 +642,6 @@ public class AFMParser
      */
     private Composite parseComposite() throws IOException
     {
-        Composite composite = new Composite();
         String partData = readLine();
         StringTokenizer tokenizer = new StringTokenizer( partData, " ;" );
 
@@ -673,7 +652,7 @@ public class AFMParser
             throw new IOException( "Expected '" + CC + "' actual='" + cc + "'" );
         }
         String name = tokenizer.nextToken();
-        composite.setName( name );
+        Composite composite = new Composite(name);
 
         int partCount;
         try
@@ -686,7 +665,6 @@ public class AFMParser
         }
         for( int i=0; i<partCount; i++ )
         {
-            CompositePart part = new CompositePart();
             String pcc = tokenizer.nextToken();
             if( !pcc.equals( PCC ) )
             {
@@ -697,11 +675,7 @@ public class AFMParser
             {
                 int x = Integer.parseInt( tokenizer.nextToken() );
                 int y = Integer.parseInt( tokenizer.nextToken() );
-
-                part.setName( partName );
-                part.setXDisplacement( x );
-                part.setYDisplacement( y );
-                composite.addPart( part );
+                composite.addPart(new CompositePart(partName, x, y));
             }
             catch( NumberFormatException e )
             {
@@ -709,6 +683,25 @@ public class AFMParser
             }
         }
         return composite;
+    }
+
+    private boolean parseCharMetrics(FontMetrics fontMetrics) throws IOException
+    {
+        int countMetrics = readInt();
+        List<CharMetric> charMetrics = new ArrayList<>(countMetrics);
+        for (int i = 0; i < countMetrics; i++)
+        {
+            CharMetric charMetric = parseCharMetric();
+            charMetrics.add(charMetric);
+        }
+        String endCharMetrics = readString();
+        if (!endCharMetrics.equals(END_CHAR_METRICS))
+        {
+            throw new IOException(
+                    "Error: Expected '" + END_CHAR_METRICS + "' actual '" + endCharMetrics + "'");
+        }
+        fontMetrics.setCharMetrics(charMetrics);
+        return true;
     }
 
     /**
@@ -808,9 +801,8 @@ public class AFMParser
                     verifySemicolon( metricsTokenizer );
                     break;
                 case CHARMETRICS_L:
-                    Ligature lig = new Ligature();
-                    lig.setSuccessor(metricsTokenizer.nextToken());
-                    lig.setLigature(metricsTokenizer.nextToken());
+                    Ligature lig = new Ligature(metricsTokenizer.nextToken(),
+                            metricsTokenizer.nextToken());
                     charMetric.addLigature( lig );
                     verifySemicolon( metricsTokenizer );
                     break;
@@ -857,8 +849,7 @@ public class AFMParser
      */
     private boolean readBoolean() throws IOException
     {
-        String theBoolean = readString();
-        return Boolean.valueOf( theBoolean );
+        return Boolean.valueOf(readString());
     }
 
     /**
@@ -868,10 +859,9 @@ public class AFMParser
      */
     private int readInt() throws IOException
     {
-        String theInt = readString();
         try
         {
-            return Integer.parseInt( theInt );
+            return Integer.parseInt(readString());
         }
         catch( NumberFormatException e )
         {
@@ -886,8 +876,7 @@ public class AFMParser
      */
     private float readFloat() throws IOException
     {
-        String theFloat = readString();
-        return Float.parseFloat( theFloat );
+        return Float.parseFloat(readString());
     }
 
     /**

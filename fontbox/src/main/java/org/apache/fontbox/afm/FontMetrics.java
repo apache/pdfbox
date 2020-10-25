@@ -67,11 +67,11 @@ public class FontMetrics
 
     private List<CharMetric> charMetrics = new ArrayList<>();
     private Map<String,CharMetric> charMetricsMap = new HashMap<>();
-    private List<TrackKern> trackKern = new ArrayList<>();
-    private List<Composite> composites = new ArrayList<>();
-    private List<KernPair> kernPairs = new ArrayList<>();
-    private List<KernPair> kernPairs0 = new ArrayList<>();
-    private List<KernPair> kernPairs1 = new ArrayList<>();
+    private final List<TrackKern> trackKern = new ArrayList<>();
+    private final List<Composite> composites = new ArrayList<>();
+    private final List<KernPair> kernPairs = new ArrayList<>();
+    private final List<KernPair> kernPairs0 = new ArrayList<>();
+    private final List<KernPair> kernPairs1 = new ArrayList<>();
 
     /**
      * Constructor.
@@ -730,14 +730,6 @@ public class FontMetrics
         return Collections.unmodifiableList(trackKern);
     }
 
-    /** Setter for property trackKern.
-     * @param trackKernValue New value of property trackKern.
-     */
-    public void setTrackKern(List<TrackKern> trackKernValue)
-    {
-        trackKern = trackKernValue;
-    }
-
     /**
      * This will add another track kern.
      *
@@ -754,14 +746,6 @@ public class FontMetrics
     public List<Composite> getComposites()
     {
         return Collections.unmodifiableList(composites);
-    }
-
-    /** Setter for property composites.
-     * @param compositesList New value of property composites.
-     */
-    public void setComposites(List<Composite> compositesList)
-    {
-        composites = compositesList;
     }
 
     /**
@@ -792,14 +776,6 @@ public class FontMetrics
         kernPairs.add( kernPair );
     }
 
-    /** Setter for property kernPairs.
-     * @param kernPairsList New value of property kernPairs.
-     */
-    public void setKernPairs(List<KernPair> kernPairsList)
-    {
-        kernPairs = kernPairsList;
-    }
-
     /** Getter for property kernPairs0.
      * @return Value of property kernPairs0.
      */
@@ -818,14 +794,6 @@ public class FontMetrics
         kernPairs0.add( kernPair );
     }
 
-    /** Setter for property kernPairs0.
-     * @param kernPairs0List New value of property kernPairs0.
-     */
-    public void setKernPairs0(List<KernPair> kernPairs0List)
-    {
-        kernPairs0 = kernPairs0List;
-    }
-
     /** Getter for property kernPairs1.
      * @return Value of property kernPairs1.
      */
@@ -842,14 +810,6 @@ public class FontMetrics
     public void addKernPair1( KernPair kernPair )
     {
         kernPairs1.add( kernPair );
-    }
-
-    /** Setter for property kernPairs1.
-     * @param kernPairs1List New value of property kernPairs1.
-     */
-    public void setKernPairs1(List<KernPair> kernPairs1List)
-    {
-        kernPairs1 = kernPairs1List;
     }
 
     /** Getter for property standardHorizontalWidth.

@@ -14,38 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.fontbox.afm;
 
-/**
- * This class represents a ligature, which is an entry of the CharMetrics.
- *
- * @author Ben Litchfield
- */
-public class Ligature
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+public class KernPairTest
 {
-    private final String successor;
-    private final String liga;
-
-    public Ligature(String successor, String ligature)
+    @Test
+    public void testKernPair()
     {
-        this.successor = successor;
-        this.liga = ligature;
+        KernPair kernPair = new KernPair("firstKernCharacter", "secondKernCharacter", 10f, 20f);
+        assertEquals("firstKernCharacter", kernPair.getFirstKernCharacter());
+        assertEquals("secondKernCharacter", kernPair.getSecondKernCharacter());
+        assertEquals(10f, kernPair.getX(), 0.0f);
+        assertEquals(20f, kernPair.getY(), 0.0f);
     }
-
-    /** Getter for property ligature.
-     * @return Value of property ligature.
-     */
-    public String getLigature()
-    {
-        return liga;
-    }
-
-    /** Getter for property successor.
-     * @return Value of property successor.
-     */
-    public String getSuccessor()
-    {
-        return successor;
-    }
-
 }
