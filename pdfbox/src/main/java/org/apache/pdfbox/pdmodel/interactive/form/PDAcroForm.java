@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -48,6 +49,10 @@ import org.apache.pdfbox.pdmodel.fdf.FDFCatalog;
 import org.apache.pdfbox.pdmodel.fdf.FDFDictionary;
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
+import org.apache.pdfbox.pdmodel.font.FontMapper;
+import org.apache.pdfbox.pdmodel.font.FontMappers;
+import org.apache.pdfbox.pdmodel.font.FontMapping;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
@@ -788,6 +793,7 @@ public final class PDAcroForm implements COSObjectable
 
     private void resolveFieldsFromWidgets(PDAcroForm acroForm)
     {
+
         LOG.debug("rebuilding fields from widgets");
         List<PDField> fields = acroForm.getFields();
         for (PDPage page : document.getPages())
@@ -800,6 +806,10 @@ public final class PDAcroForm implements COSObjectable
                     if (annot instanceof PDAnnotationWidget)
                     {
                         PDField field = PDFieldFactory.createField(acroForm, annot.getCOSObject(), null);
+                        if (field instanceof PDVariableText)
+                        {
+                            ensureFontResources((PDVariableText) field);
+                        }
                         fields.add(field);
                     }
                 }
@@ -810,6 +820,46 @@ public final class PDAcroForm implements COSObjectable
             }
         }
         acroForm.setFields(fields);
+    }
+
+    /*
+     *  Lookup the font used in the default appearance and if this is 
+     *  not available try to find a suitable font and use that.
+     *  This may not be the original font but a similar font replacement
+     * 
+     *  TODO: implement a font lookup similar as discussed in PDFBOX-2661 so that already existing
+     *        font resources might be accepatble.
+     *        In such case this must be implemented in PDDefaultAppearanceString too!
+     */
+    private void ensureFontResources(PDVariableText field)
+    {
+        String daString = field.getDefaultAppearance();
+        if (daString.startsWith("/") && daString.length() > 1)
+        {
+            COSName fontName = COSName.getPDFName(daString.substring(1, daString.indexOf(" ")));
+            try{
+                if (getDefaultResources() != null && getDefaultResources().getFont(fontName) == null)
+                {
+                    LOG.debug("trying to add missing font resource for field " + field.getFullyQualifiedName());
+                    FontMapper mapper = FontMappers.instance();
+                    FontMapping<TrueTypeFont> fontMapping = mapper.getTrueTypeFont(fontName.getName() , null);
+                    if (fontMapping != null)
+                    {
+                        PDType0Font pdFont = PDType0Font.load(getDocument(), fontMapping.getFont(), false);
+                        LOG.debug("looked up font for " + fontName.getName() + " - found " + fontMapping.getFont().getName());
+                        getDefaultResources().put(fontName, pdFont);
+                    }
+                    else
+                    {
+                        LOG.debug("no suitable font found for field " + field.getFullyQualifiedName() + " for font name " + fontName.getName());
+                    }
+                }
+            }
+            catch (IOException ioe)
+            {
+                LOG.debug("Unable to handle font resources for field " + field.getFullyQualifiedName() + ": " + ioe.getMessage());
+            }
+        }
     }
 
     private Matrix resolveTransformationMatrix(PDAnnotation annotation, PDAppearanceStream appearanceStream)
