@@ -284,15 +284,6 @@ final class UnmodifiableCOSDictionary extends COSDictionary
      * {@inheritDoc}
      */
     @Override
-    public void forEach(BiConsumer<? super COSName, ? super COSBase> action)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void setFlag(COSName field, int bitFlag, boolean value)
     {
         throw new UnsupportedOperationException();
