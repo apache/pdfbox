@@ -789,7 +789,7 @@ public final class PDAcroForm implements COSObjectable
     private void resolveFieldsFromWidgets(PDAcroForm acroForm)
     {
         LOG.debug("rebuilding fields from widgets");
-        COSArray fields = acroForm.getCOSObject().getCOSArray(COSName.FIELDS);
+        List<PDField> fields = acroForm.getFields();
         for (PDPage page : document.getPages())
         {
             try
@@ -799,7 +799,8 @@ public final class PDAcroForm implements COSObjectable
                 {
                     if (annot instanceof PDAnnotationWidget)
                     {
-                        fields.add(annot.getCOSObject());
+                        PDField field = PDFieldFactory.createField(acroForm, annot.getCOSObject(), null);
+                        fields.add(field);
                     }
                 }
             }
@@ -808,6 +809,7 @@ public final class PDAcroForm implements COSObjectable
                 LOG.debug("couldn't read annotations for page " + ioe.getMessage());
             }
         }
+        acroForm.setFields(fields);
     }
 
     private Matrix resolveTransformationMatrix(PDAnnotation annotation, PDAppearanceStream appearanceStream)
