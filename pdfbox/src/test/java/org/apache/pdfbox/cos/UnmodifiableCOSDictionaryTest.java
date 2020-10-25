@@ -19,9 +19,7 @@ package org.apache.pdfbox.cos;
 import static org.junit.Assert.fail;
 
 import java.util.Calendar;
-import java.util.function.BiConsumer;
 
-import org.apache.pdfbox.pdmodel.common.COSObjectable;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.junit.Test;
 
