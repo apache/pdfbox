@@ -78,16 +78,6 @@ public class UnmodifiableCOSDictionaryTest
         {
             // nothing to do
         }
-
-        try
-        {
-            unmodifiableCOSDictionary.setNeedToBeUpdated(true);
-            fail("An UnsupportedOperationException should have been thrown");
-        }
-        catch (UnsupportedOperationException exception)
-        {
-            // nothing to do
-        }
     }
 
     @Test
