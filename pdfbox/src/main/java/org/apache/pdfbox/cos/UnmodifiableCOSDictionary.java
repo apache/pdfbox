@@ -17,7 +17,6 @@
 package org.apache.pdfbox.cos;
 
 import java.util.Calendar;
-import java.util.function.BiConsumer;
 
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
