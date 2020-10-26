@@ -116,8 +116,9 @@ public class AddValidationInformation
         int accessPermissions = SigUtils.getMDPPermission(doc);
         if (accessPermissions == 1)
         {
-            throw new IllegalStateException(
-                    "No changes to the document are permitted due to DocMDP transform parameters dictionary");
+            System.out.println("PDF is certified to forbid changes, "
+                        + "some readers may report the document as invalid despite that "
+                        + "the PDF specification allows DSS additions");
         }
         document = doc;
         doValidation(inFile.getAbsolutePath(), fos);
