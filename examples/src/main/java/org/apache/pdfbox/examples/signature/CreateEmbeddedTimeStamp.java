@@ -98,13 +98,6 @@ public class CreateEmbeddedTimeStamp
      */
     private void processTimeStamping(File outFile, String fileName) throws IOException
     {
-        int accessPermissions = SigUtils.getMDPPermission(document);
-        if (accessPermissions == 1)
-        {
-            throw new IllegalStateException(
-                    "No changes to the document are permitted due to DocMDP transform parameters dictionary");
-        }
-
         try
         {
             byte[] documentBytes;
