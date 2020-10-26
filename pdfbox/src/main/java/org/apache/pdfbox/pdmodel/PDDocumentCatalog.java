@@ -60,6 +60,7 @@ public class PDDocumentCatalog implements COSObjectable
     
     private final COSDictionary root;
     private final PDDocument document;
+    private boolean hasAcroFormFixesApplied;
     private PDAcroForm cachedAcroForm;
 
     /**
@@ -114,14 +115,23 @@ public class PDDocumentCatalog implements COSObjectable
      * Get the documents AcroForm. This will return null if no AcroForm is part of the document.
      *
      * Depent on setting <code>applyFixes</code> some fixing/changes will be done to the AcroForm
-     * as documented in {@link org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm#PDAcroForm(PDDocument, COSDictionary, boolean)}. If you need 
-     * to ensure that there are no fixes applied call <code>applyFixes</code> with <code>false</code> 
+     * as documented in {@link org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm#PDAcroForm(PDDocument, COSDictionary, boolean)}.
+     * If you need to ensure that there are no fixes applied call <code>applyFixes</code> with <code>false</code> 
      * 
      * @param applyFixes applies fixes
      * @return The document's AcroForm.
      */
     public PDAcroForm getAcroForm(boolean applyFixes)
     {
+        if (!hasAcroFormFixesApplied && applyFixes)
+        {
+            cachedAcroForm = null;
+            hasAcroFormFixesApplied = true;
+        }
+        else if (hasAcroFormFixesApplied && !applyFixes)
+        {
+            LOG.warn("AcroForm content has already been retrieved with applyFixes set to true - original content changed because of that");
+        }
         if (cachedAcroForm == null)
         {
             COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.ACRO_FORM);
