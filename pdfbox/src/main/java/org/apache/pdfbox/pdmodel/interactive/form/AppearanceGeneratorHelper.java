@@ -572,6 +572,12 @@ class AppearanceGeneratorHelper
         }
     }
     
+    /*
+     * PDFBox handles a widget with a joined in field dictionary and without
+     * an individual name as a widget only. As a result - as a widget can't have a
+     * quadding /Q entry we need to do a low level access to the dictionary and
+     * otherwise get the quadding from the field.
+     */
     private int getTextAlign(PDAnnotationWidget widget)
     {
         // Use quadding value from joined field/widget if set, else use from field.
