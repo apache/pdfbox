@@ -547,7 +547,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
         CreateVisibleSignature2 signing = new CreateVisibleSignature2(keystore, pin.clone());
 
-        if (args.length >= 4)
+        if (args.length >= 4 && !"-tsa".equals(args[3]))
         {
             signing.setImageFile(new File(args[3]));
         }
