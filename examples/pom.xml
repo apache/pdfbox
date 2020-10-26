@@ -142,10 +142,10 @@
                       <goal>wget</goal>
                   </goals>
                   <configuration>
-                      <url>https://www.quovadisglobal.com/wp-content/uploads/2020/01/QV_RCA1_RCA3_CPCPS_V4_11.pdf</url>
+                      <url>https://issues.apache.org/jira/secure/attachment/13014110/notCertified_368835_Sig_en_201026090509.pdf</url>
                       <outputDirectory>${project.build.directory}/pdfs</outputDirectory>
-                      <outputFileName>QV_RCA1_RCA3_CPCPS_V4_11.pdf</outputFileName>
-                      <sha512>940ab0cc5ad45c7b46fba4a079fd69803540bfd68f059326f62fe8d322fb0cc176cf303b9d1d679cb663edf279efe20c2452cc5eba69f5b8afadfca4c77cdb86</sha512>
+                      <outputFileName>notCertified_368835_Sig_en_201026090509.pdf</outputFileName>
+                      <sha512>eec730efc741d52ec2de5a26bb74e34fda3d01f8f547a92c4730478d4e35cd383c9c9f3c397e388ee0882166a18c1396d9576c6f9ab0a70c9551fb49c0ee3e6f</sha512>
                   </configuration>
               </execution>
           </executions>
