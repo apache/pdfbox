@@ -140,13 +140,15 @@ public final class CRLVerifier
                             crlDistributionPointsURL + " could not be verified");
                 }
                 crl.verify(crlIssuerCert.getPublicKey(), SecurityProvider.getProvider().getName());
+                //TODO these should be exceptions, but for that we need a test case where
+                // a PDF has a broken OCSP and a working CRL
                 if (crl.getThisUpdate().after(now))
                 {
-                    throw new CertificateVerificationException("CRL not yet valid, thisUpdate is " + crl.getThisUpdate());
+                    LOG.error("CRL not yet valid, thisUpdate is " + crl.getThisUpdate());
                 }
                 if (crl.getNextUpdate().before(now))
                 {
-                    throw new CertificateVerificationException("CRL no longer valid, nextUpdate is " + crl.getNextUpdate());
+                    LOG.error("CRL no longer valid, nextUpdate is " + crl.getNextUpdate());
                 }
 
                 if (!crl.getIssuerX500Principal().equals(cert.getIssuerX500Principal()))
