@@ -806,7 +806,7 @@ public class TestCreateSignature
         {
             return; // runs only once, independent of externallySign
         }
-        File inFile = new File("target/pdfs", "QV_RCA1_RCA3_CPCPS_V4_11.pdf");
+        File inFile = new File("target/pdfs", "notCertified_368835_Sig_en_201026090509.pdf");
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
 
