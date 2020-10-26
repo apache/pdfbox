@@ -80,7 +80,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 {
     private SignatureOptions signatureOptions;
     private boolean lateExternalSigning = false;
-    private File imageFile;
+    private File imageFile = null;
 
     /**
      * Initialize the signature creator with a keystore (pkcs12) and pin that
@@ -412,13 +412,16 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
         cs.addRect(-5000, -5000, 10000, 10000);
         cs.fill();
 
-        // show background image
-        // save and restore graphics if the image is too large and needs to be scaled
-        cs.saveGraphicsState();
-        cs.transform(Matrix.getScaleInstance(0.25f, 0.25f));
-        PDImageXObject img = PDImageXObject.createFromFileByExtension(imageFile, doc);
-        cs.drawImage(img, 0, 0);
-        cs.restoreGraphicsState();
+        if (imageFile != null)
+        {
+            // show background image
+            // save and restore graphics if the image is too large and needs to be scaled
+            cs.saveGraphicsState();
+            cs.transform(Matrix.getScaleInstance(0.25f, 0.25f));
+            PDImageXObject img = PDImageXObject.createFromFileByExtension(imageFile, doc);
+            cs.drawImage(img, 0, 0);
+            cs.restoreGraphicsState();
+        }
 
         // show text
         float fontSize = 10;
@@ -504,9 +507,7 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
     public static void main(String[] args) throws KeyStoreException, CertificateException,
             IOException, NoSuchAlgorithmException, UnrecoverableKeyException
     {
-        // generate with
-        // keytool -storepass 123456 -storetype PKCS12 -keystore file.p12 -genkey -alias client -keyalg RSA
-        if (args.length < 4)
+        if (args.length < 3)
         {
             usage();
             System.exit(1);
@@ -543,7 +544,10 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
 
         CreateVisibleSignature2 signing = new CreateVisibleSignature2(keystore, pin.clone());
 
-        signing.setImageFile(new File(args[3]));
+        if (args.length >= 4)
+        {
+            signing.setImageFile(new File(args[3]));
+        }
 
         File signedDocumentFile;
         String name = documentFile.getName();
@@ -572,6 +576,9 @@ public class CreateVisibleSignature2 extends CreateSignatureBase
                            "options:\n" +
                            "  -tsa <url>    sign timestamp using the given TSA server\n"+
                            "  -e            sign using external signature creation scenario");
+
+        // generate pkcs12-keystore-file with
+        // keytool -storepass 123456 -storetype PKCS12 -keystore file.p12 -genkey -alias client -keyalg RSA
     }
 
 }
