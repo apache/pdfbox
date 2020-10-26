@@ -686,6 +686,17 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     {
                         line.add(LineItem.getWordSeparator());
                     }
+                    // if there are too many spaces between last character and current, reset the max line height as the
+                    // font size may have completely changed
+                    if (Math.abs(position.getX()
+                            - lastPosition.getTextPosition().getX()) > (wordSpacing + deltaSpace)
+                                    * 5)
+                    {
+                        maxYForLine = MAX_Y_FOR_LINE_RESET_VALUE;
+                        maxHeightForLine = MAX_HEIGHT_FOR_LINE_RESET_VALUE;
+                        minYTopForLine = MIN_Y_TOP_FOR_LINE_RESET_VALUE;
+                    }
+
                 }
                 if (positionY >= maxYForLine)
                 {
