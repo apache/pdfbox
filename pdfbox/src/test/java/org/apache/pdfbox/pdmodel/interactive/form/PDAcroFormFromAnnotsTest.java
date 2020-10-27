@@ -28,8 +28,6 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -38,18 +36,6 @@ import org.junit.Test;
  */
 public class PDAcroFormFromAnnotsTest
 {
-    
-    private PDDocument document;
-    private PDAcroForm acroForm;
-        
-    @Before
-    public void setUp()
-    {
-        document = new PDDocument();
-        acroForm = new PDAcroForm(document);
-        document.getDocumentCatalog().setAcroForm(acroForm);
-    }
-
     /**
      * PDFBOX-4985 AcroForms entry but empty Fields array 
      * 
@@ -146,12 +132,5 @@ public class PDAcroFormFromAnnotsTest
             PDAcroForm acroForm = catalog.getAcroForm(false);
             assertEquals("After call without correction there shall be " + numCosFormFields + " fields", numCosFormFields, acroForm.getFields().size());
         }
-    } 
-
-
-    @After
-    public void tearDown() throws IOException
-    {
-        document.close();
     }
 }
