@@ -62,6 +62,7 @@ public class FontMetricsTest
     public void testFontMetricsSimpleValues()
     {
         FontMetrics fontMetrics = new FontMetrics();
+        fontMetrics.setAFMVersion(4.3f);
         fontMetrics.setWeight("weight");
         fontMetrics.setEncodingScheme("encodingScheme");
         fontMetrics.setMappingScheme(0);
@@ -81,6 +82,7 @@ public class FontMetricsTest
         fontMetrics.setItalicAngle(90f);
         fontMetrics.setFixedPitch(true);
 
+        assertEquals(4.3f, fontMetrics.getAFMVersion(), 0f);
         assertEquals("weight", fontMetrics.getWeight());
         assertEquals("encodingScheme", fontMetrics.getEncodingScheme());
         assertEquals(0, fontMetrics.getMappingScheme());
@@ -116,6 +118,35 @@ public class FontMetricsTest
         assertEquals(20, fontMetrics.getVVector()[1], 0);
         assertEquals(30, fontMetrics.getCharWidth()[0], 0);
         assertEquals(40, fontMetrics.getCharWidth()[1], 0);
+    }
+
+    @Test
+    public void testMetricSets()
+    {
+        FontMetrics fontMetrics = new FontMetrics();
+        fontMetrics.setMetricSets(1);
+        assertEquals(1, fontMetrics.getMetricSets());
+        try
+        {
+            // any value < 0 should thrown an IllegalArgumentException
+            fontMetrics.setMetricSets(-1);
+            fail("An IllegalArgumentException should have been thrown");
+        }
+        catch (IllegalArgumentException excpetion)
+        {
+            // do nothing
+        }
+
+        try
+        {
+            // any value > 2 should thrown an IllegalArgumentException
+            fontMetrics.setMetricSets(3);
+            fail("An IllegalArgumentException should have been thrown");
+        }
+        catch (IllegalArgumentException excpetion)
+        {
+            // do nothing
+        }
     }
 
     @Test
