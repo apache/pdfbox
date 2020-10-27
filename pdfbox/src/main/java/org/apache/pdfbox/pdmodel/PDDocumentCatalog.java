@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -53,8 +56,11 @@ import org.apache.pdfbox.pdmodel.interactive.viewerpreferences.PDViewerPreferenc
  */
 public class PDDocumentCatalog implements COSObjectable
 {
+    private static final Log LOG = LogFactory.getLog(PDDocumentCatalog.class);
+
     private final COSDictionary root;
     private final PDDocument document;
+    private boolean hasAcroFormFixesApplied;
     private PDAcroForm cachedAcroForm;
 
     /**
@@ -105,18 +111,31 @@ public class PDDocumentCatalog implements COSObjectable
         return getAcroForm(true);
     }
 
-        /**
+    /**
      * Get the documents AcroForm. This will return null if no AcroForm is part of the document.
      *
      * Depent on setting <code>applyFixes</code> some fixing/changes will be done to the AcroForm
-     * as documented in {@link org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm#PDAcroForm(PDDocument, COSDictionary, boolean)}. If you need 
-     * to ensure that there are no fixes applied call <code>applyFixes</code> with <code>false</code> 
+     * as documented in {@link org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm#PDAcroForm(PDDocument, COSDictionary, boolean)}.
+     * If you need to ensure that there are no fixes applied call <code>applyFixes</code> with <code>false</code>.
+     * 
+     * Using <code>getAcroForm(true)</code> might change the original content and subsequent calls with
+     * <code>getAcroForm(false)</code> will return the changed content.
      * 
      * @param applyFixes applies fixes
      * @return The document's AcroForm.
      */
     public PDAcroForm getAcroForm(boolean applyFixes)
     {
+        if (!hasAcroFormFixesApplied && applyFixes)
+        {
+            cachedAcroForm = null;
+            hasAcroFormFixesApplied = true;
+        }
+        else if (hasAcroFormFixesApplied && !applyFixes)
+        {
+            LOG.warn("AcroForm content has already been retrieved with applyFixes set to true - original content changed because of that");
+        }
+
         if (cachedAcroForm == null)
         {
             COSDictionary dict = (COSDictionary)root.getDictionaryObject(COSName.ACRO_FORM);

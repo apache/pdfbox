@@ -192,7 +192,8 @@ public class PDAcroFormFlattenTest
     /*
      * PDFBOX-3587 Empty template.
      */
-    @Test
+    // disabled as there is a missing character with the available fonts on the test server
+    // @Test
     public void testFlattenOpenOfficeForm() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12839977/OpenOfficeForm.pdf";
