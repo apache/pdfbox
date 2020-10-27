@@ -20,6 +20,8 @@ package org.apache.fontbox.afm;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+
 import org.junit.Test;
 
 public class CompositeTest
@@ -30,12 +32,14 @@ public class CompositeTest
         Composite composite = new Composite("name");
         assertEquals("name", composite.getName());
         assertEquals(0, composite.getParts().size());
-        composite.addPart(new CompositePart("name", 10, 20));
-        assertEquals(1, composite.getParts().size());
-        assertEquals("name", composite.getParts().get(0).getName());
+        CompositePart compositePart = new CompositePart("name", 10, 20);
+        composite.addPart(compositePart);
+        List<CompositePart> parts = composite.getParts();
+        assertEquals(1, parts.size());
+        assertEquals("name", parts.get(0).getName());
         try
         {
-            composite.getParts().add(new CompositePart("name", 10, 20));
+            parts.add(compositePart);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)

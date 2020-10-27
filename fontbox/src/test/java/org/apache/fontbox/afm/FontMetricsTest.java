@@ -21,6 +21,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+
 import org.apache.fontbox.util.BoundingBox;
 import org.junit.Test;
 
@@ -43,10 +45,11 @@ public class FontMetricsTest
 
         assertEquals(0, fontMetrics.getComments().size());
         fontMetrics.addComment("comment");
-        assertEquals(1, fontMetrics.getComments().size());
+        List<String> comments = fontMetrics.getComments();
+        assertEquals(1, comments.size());
         try
         {
-            fontMetrics.getComments().add("comment");
+            comments.add("comment");
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -120,11 +123,13 @@ public class FontMetricsTest
     {
         FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getCharMetrics().size());
-        fontMetrics.addCharMetric(new CharMetric());
-        assertEquals(1, fontMetrics.getCharMetrics().size());
+        CharMetric charMetric = new CharMetric();
+        fontMetrics.addCharMetric(charMetric);
+        List<CharMetric> charMetrics = fontMetrics.getCharMetrics();
+        assertEquals(1, charMetrics.size());
         try
         {
-            fontMetrics.getCharMetrics().add(new CharMetric());
+            charMetrics.add(charMetric);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -138,11 +143,13 @@ public class FontMetricsTest
     {
         FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getComposites().size());
-        fontMetrics.addComposite(new Composite("name"));
-        assertEquals(1, fontMetrics.getComposites().size());
+        Composite composite = new Composite("name");
+        fontMetrics.addComposite(composite);
+        List<Composite> composites = fontMetrics.getComposites();
+        assertEquals(1, composites.size());
         try
         {
-            fontMetrics.getComposites().add(new Composite("name"));
+            composites.add(composite);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -157,11 +164,13 @@ public class FontMetricsTest
         FontMetrics fontMetrics = new FontMetrics();
         // KernPairs
         assertEquals(0, fontMetrics.getKernPairs().size());
-        fontMetrics.addKernPair(new KernPair("first", "second", 10, 20));
-        assertEquals(1, fontMetrics.getKernPairs().size());
+        KernPair kernPair = new KernPair("first", "second", 10, 20);
+        fontMetrics.addKernPair(kernPair);
+        List<KernPair> kernPairs = fontMetrics.getKernPairs();
+        assertEquals(1, kernPairs.size());
         try
         {
-            fontMetrics.getKernPairs().add(new KernPair("first", "second", 10, 20));
+            kernPairs.add(kernPair);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -170,11 +179,12 @@ public class FontMetricsTest
         }
         // KernPairs0
         assertEquals(0, fontMetrics.getKernPairs0().size());
-        fontMetrics.addKernPair0(new KernPair("first", "second", 10, 20));
-        assertEquals(1, fontMetrics.getKernPairs0().size());
+        fontMetrics.addKernPair0(kernPair);
+        List<KernPair> kernPairs0 = fontMetrics.getKernPairs0();
+        assertEquals(1, kernPairs0.size());
         try
         {
-            fontMetrics.getKernPairs0().add(new KernPair("first", "second", 10, 20));
+            kernPairs0.add(kernPair);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -183,11 +193,12 @@ public class FontMetricsTest
         }
         // KernPairs1
         assertEquals(0, fontMetrics.getKernPairs1().size());
-        fontMetrics.addKernPair1(new KernPair("first", "second", 10, 20));
-        assertEquals(1, fontMetrics.getKernPairs1().size());
+        fontMetrics.addKernPair1(kernPair);
+        List<KernPair> kernPairs1 = fontMetrics.getKernPairs1();
+        assertEquals(1, kernPairs1.size());
         try
         {
-            fontMetrics.getKernPairs1().add(new KernPair("first", "second", 10, 20));
+            kernPairs1.add(kernPair);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
@@ -196,11 +207,13 @@ public class FontMetricsTest
         }
         // TrackKern
         assertEquals(0, fontMetrics.getTrackKern().size());
-        fontMetrics.addTrackKern(new TrackKern(0, 1, 1, 10, 10));
-        assertEquals(1, fontMetrics.getTrackKern().size());
+        TrackKern trackKern = new TrackKern(0, 1, 1, 10, 10);
+        fontMetrics.addTrackKern(trackKern);
+        List<TrackKern> trackKerns = fontMetrics.getTrackKern();
+        assertEquals(1, trackKerns.size());
         try
         {
-            fontMetrics.getTrackKern().add(new TrackKern(0, 1, 1, 10, 10));
+            trackKerns.add(trackKern);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
