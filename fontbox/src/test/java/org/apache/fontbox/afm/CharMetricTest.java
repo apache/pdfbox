@@ -20,6 +20,8 @@ package org.apache.fontbox.afm;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+
 import org.apache.fontbox.util.BoundingBox;
 import org.junit.Test;
 
@@ -77,12 +79,14 @@ public class CharMetricTest
         assertEquals(40, charMetric.getBoundingBox().getUpperRightY(), 0);
 
         assertEquals(0, charMetric.getLigatures().size());
-        charMetric.addLigature(new Ligature("successor", "ligature"));
-        assertEquals(1, charMetric.getLigatures().size());
-        assertEquals("successor", charMetric.getLigatures().get(0).getSuccessor());
+        Ligature ligature = new Ligature("successor", "ligature");
+        charMetric.addLigature(ligature);
+        List<Ligature> ligatures = charMetric.getLigatures();
+        assertEquals(1, ligatures.size());
+        assertEquals("successor", ligatures.get(0).getSuccessor());
         try
         {
-            charMetric.getLigatures().add(new Ligature("successor", "ligature"));
+            ligatures.add(ligature);
             fail("An UnsupportedOperationException should have been thrown");
         }
         catch (UnsupportedOperationException exception)
