@@ -160,7 +160,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void collectFieldLocations() throws IOException
     {
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(false);
+        // get Acroform without applying fixups to enure that we get the original content
+        boolean repairSelected = PDFDebugger.repairAcroFormMenuItem.isSelected();
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(repairSelected);
         if (acroForm == null)
         {
             return;
@@ -231,7 +233,13 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (ZoomMenu.isZoomMenu(actionCommand) ||
+        if (actionEvent.getSource() == PDFDebugger.repairAcroFormMenuItem)
+        {
+            boolean repairSelected = PDFDebugger.repairAcroFormMenuItem.isSelected();
+            document.getDocumentCatalog().getAcroForm(repairSelected);
+            startRendering();
+        }
+        else if (ZoomMenu.isZoomMenu(actionCommand) ||
             RotationMenu.isRotationMenu(actionCommand) ||
             ImageTypeMenu.isImageTypeMenu(actionCommand) ||
             RenderDestinationMenu.isRenderDestinationMenu(actionCommand) ||
@@ -270,6 +278,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         
         PDFDebugger.allowSubsampling.setEnabled(true);
         PDFDebugger.allowSubsampling.addActionListener(this);
+
+        PDFDebugger.repairAcroFormMenuItem.setEnabled(true);
+        PDFDebugger.repairAcroFormMenuItem.addActionListener(this);
     }
 
     @Override

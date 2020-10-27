@@ -181,7 +181,8 @@ public class PDFDebugger extends JFrame
     private JMenuItem viewModeItem;
     
     public static JCheckBoxMenuItem allowSubsampling;
-    
+    public static JCheckBoxMenuItem repairAcroFormMenuItem;
+
     /**
      * Constructor.
      */
@@ -538,7 +539,13 @@ public class PDFDebugger extends JFrame
         allowSubsampling = new JCheckBoxMenuItem("Allow subsampling");
         allowSubsampling.setEnabled(false);
         viewMenu.add(allowSubsampling);
-        
+
+        viewMenu.addSeparator();
+
+        repairAcroFormMenuItem = new JCheckBoxMenuItem("Repair AcroForm");
+        repairAcroFormMenuItem.setEnabled(false);
+        viewMenu.add(repairAcroFormMenuItem);
+
         return viewMenu;
     }
     
