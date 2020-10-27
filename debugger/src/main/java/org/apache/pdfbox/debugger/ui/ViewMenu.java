@@ -34,6 +34,7 @@ public class ViewMenu extends MenuBase
     private static final String SHOW_GLYPH_BOUNDS = "Show Glyph Bounds";
     private static final String ALLOW_SUBSAMPLING = "Allow subsampling";            
     private static final String EXTRACT_TEXT = "Extract Text";            
+    private static final String REPAIR_ACROFORM = "Repair AcroForm";
 
     private JMenuItem viewModeItem;
     private JCheckBoxMenuItem showTextStripper;
@@ -42,7 +43,8 @@ public class ViewMenu extends MenuBase
     private JCheckBoxMenuItem showGlyphBounds;
     private JCheckBoxMenuItem allowSubsampling;
     private JMenuItem extractTextMenuItem;
-    
+    private JCheckBoxMenuItem repairAcroFormMenuItem;
+
     private final PDFDebugger pdfDebugger;
 
     /**
@@ -76,7 +78,7 @@ public class ViewMenu extends MenuBase
      * @param actionCommand the actioCommand of the menu event 
      * @return true if the actionCommand matches one of the rendering options
      */
-    public static boolean isRenderingOptions(String actionCommand)
+    public static boolean isRenderingOption(String actionCommand)
     {
         return SHOW_TEXT_STRIPPER.equals(actionCommand) ||
                 SHOW_TEXT_STRIPPER_BEADS.equals(actionCommand) ||
@@ -131,7 +133,7 @@ public class ViewMenu extends MenuBase
      * @param actionEvent
      * @return true if the "Extract Text" menu entry was hit.
      */
-    public static boolean isExtractText(ActionEvent actionEvent)
+    public static boolean isExtractTextEvent(ActionEvent actionEvent)
     {
         return EXTRACT_TEXT.equals(actionEvent.getActionCommand());
     }
@@ -145,7 +147,28 @@ public class ViewMenu extends MenuBase
     {
         return instance.allowSubsampling.isSelected();
     }
-    
+
+    /**
+     * Tell whether the "Repair AcroForm" menu entry was hit.
+     *
+     * @param actionEvent
+     * @return true if the "Repair AcroForm" menu entry was hit.
+     */
+    public static boolean isRepairAcroformEvent(ActionEvent actionEvent)
+    {
+        return REPAIR_ACROFORM.equals(actionEvent.getActionCommand());
+    }
+
+    /**
+     * State if acroForm shall be repaired.
+     *
+     * @return the repair state
+     */
+    public static boolean isRepairAcroformSelected()
+    {
+        return instance.repairAcroFormMenuItem.isSelected();
+    }
+
     private JMenu createViewMenu()
     {
         JMenu viewMenu = new JMenu("View");
@@ -223,6 +246,12 @@ public class ViewMenu extends MenuBase
         extractTextMenuItem = new JMenuItem(EXTRACT_TEXT);
         extractTextMenuItem.setEnabled(false);
         viewMenu.add(extractTextMenuItem);
+
+        viewMenu.addSeparator();
+
+        repairAcroFormMenuItem = new JCheckBoxMenuItem(REPAIR_ACROFORM);
+        repairAcroFormMenuItem.setEnabled(false);
+        viewMenu.add(repairAcroFormMenuItem);
 
         return viewMenu;
     }

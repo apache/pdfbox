@@ -172,8 +172,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void collectFieldLocations() throws IOException
     {
-        // get Acroform without applying fixups to enure that we get the original conten
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(false);
+        // get Acroform without applying fixups to enure that we get the original content
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(ViewMenu.isRepairAcroformSelected());
         if (acroForm == null)
         {
             return;
@@ -243,15 +243,20 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     public void actionPerformed(ActionEvent actionEvent)
     {
         String actionCommand = actionEvent.getActionCommand();
-        if (ZoomMenu.isZoomMenu(actionCommand) ||
+        if (ViewMenu.isRepairAcroformEvent(actionEvent))
+        {
+            document.getDocumentCatalog().getAcroForm(ViewMenu.isRepairAcroformSelected());
+            startRendering();
+        }
+        else if (ZoomMenu.isZoomMenu(actionCommand) ||
             RotationMenu.isRotationMenu(actionCommand) ||
             ImageTypeMenu.isImageTypeMenu(actionCommand) ||
             RenderDestinationMenu.isRenderDestinationMenu(actionCommand) ||
-            ViewMenu.isRenderingOptions(actionCommand))
+            ViewMenu.isRenderingOption(actionCommand))
         {
             startRendering();
         }
-        else if (ViewMenu.isExtractText(actionEvent))
+        else if (ViewMenu.isExtractTextEvent(actionEvent))
         {
             startExtracting();
         }
