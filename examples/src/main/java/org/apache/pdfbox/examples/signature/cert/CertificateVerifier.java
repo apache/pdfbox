@@ -118,8 +118,10 @@ public final class CertificateVerifier
             // Download extra certificates. However, each downloaded certificate can lead to
             // more extra certificates, e.g. with the file from PDFBOX-4091, which has
             // an incomplete chain.
+            // You can skip this block if you know that the certificate chain is complete
             Set<X509Certificate> certsToTrySet = new HashSet<>();
             certsToTrySet.add(cert);
+            certsToTrySet.addAll(additionalCerts);
             int downloadSize = 0;
             while (!certsToTrySet.isEmpty())
             {
@@ -140,7 +142,6 @@ public final class CertificateVerifier
                 }
                 certsToTrySet = nextCertsToTrySet;
             }
-
             if (downloadSize > 0)
             {
                 LOG.info("CA issuers: " + downloadSize + " downloaded certificate(s) are new");
