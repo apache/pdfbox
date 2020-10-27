@@ -65,7 +65,7 @@ public class FontMetrics
     private float standardHorizontalWidth;
     private float standardVerticalWidth;
 
-    private List<CharMetric> charMetrics = new ArrayList<>();
+    private final List<CharMetric> charMetrics = new ArrayList<>();
     private Map<String,CharMetric> charMetricsMap = new HashMap<>();
     private final List<TrackKern> trackKern = new ArrayList<>();
     private final List<Composite> composites = new ArrayList<>();
@@ -78,6 +78,7 @@ public class FontMetrics
      */
     public FontMetrics()
     {
+        // Default constructor
     }
 
     /**
@@ -697,18 +698,6 @@ public class FontMetrics
     public List<CharMetric> getCharMetrics()
     {
         return Collections.unmodifiableList(charMetrics);
-    }
-
-    /**
-     * Setter for property charMetrics.
-     *
-     * @param charMetricsValue New value of property charMetrics.
-     */
-    public void setCharMetrics(List<CharMetric> charMetricsValue)
-    {
-        charMetrics = charMetricsValue;
-        charMetricsMap = new HashMap<>(charMetrics.size());
-        charMetricsValue.forEach(metric -> charMetricsMap.put(metric.getName(), metric));
     }
 
     /**

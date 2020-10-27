@@ -19,8 +19,6 @@ package org.apache.fontbox.afm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.fontbox.util.BoundingBox;
@@ -688,11 +686,9 @@ public class AFMParser
     private boolean parseCharMetrics(FontMetrics fontMetrics) throws IOException
     {
         int countMetrics = readInt();
-        List<CharMetric> charMetrics = new ArrayList<>(countMetrics);
         for (int i = 0; i < countMetrics; i++)
         {
-            CharMetric charMetric = parseCharMetric();
-            charMetrics.add(charMetric);
+            fontMetrics.addCharMetric(parseCharMetric());
         }
         String endCharMetrics = readString();
         if (!endCharMetrics.equals(END_CHAR_METRICS))
@@ -700,7 +696,6 @@ public class AFMParser
             throw new IOException(
                     "Error: Expected '" + END_CHAR_METRICS + "' actual '" + endCharMetrics + "'");
         }
-        fontMetrics.setCharMetrics(charMetrics);
         return true;
     }
 
