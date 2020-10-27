@@ -456,7 +456,9 @@ public class AFMParser
                 break;
             default:
                 if (!reducedDataset || !charMetricsRead)
+                {
                     throw new IOException("Unknown AFM key '" + nextCommand + "'");
+                }
             }
         }
         return fontMetrics;
