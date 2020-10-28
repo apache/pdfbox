@@ -66,7 +66,7 @@ public class FontMetrics
     private float standardVerticalWidth;
 
     private final List<CharMetric> charMetrics = new ArrayList<>();
-    private Map<String,CharMetric> charMetricsMap = new HashMap<>();
+    private final Map<String, CharMetric> charMetricsMap = new HashMap<>();
     private final List<TrackKern> trackKern = new ArrayList<>();
     private final List<Composite> composites = new ArrayList<>();
     private final List<KernPair> kernPairs = new ArrayList<>();
