@@ -122,7 +122,7 @@ public class PDDocumentCatalog implements COSObjectable
      * Using <code>getAcroForm(PDDocumentFixup documentFixup)</code> might change the original content and
      * subsequent calls with <code>getAcroForm(null)</code> will return the changed content.
      * 
-     * @param applyFixes applies fixes
+     * @param acroFormFixup the fix up action or null
      * @return The document's AcroForm.
      */
     public PDAcroForm getAcroForm(PDDocumentFixup acroFormFixup)
