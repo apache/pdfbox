@@ -252,4 +252,43 @@ public class FontMetricsTest
             // do nothing
         }
     }
+
+    @Test
+    public void testCharMetricDimensions()
+    {
+        FontMetrics fontMetrics = new FontMetrics();
+        assertEquals(0, fontMetrics.getAverageCharacterWidth(), 0f);
+
+        CharMetric charMetric10 = new CharMetric();
+        charMetric10.setName("ten");
+        charMetric10.setWx(10f);
+        charMetric10.setWy(20f);
+        fontMetrics.addCharMetric(charMetric10);
+        CharMetric charMetric20 = new CharMetric();
+        charMetric20.setName("twenty");
+        charMetric20.setWx(20f);
+        charMetric20.setWy(40f);
+        fontMetrics.addCharMetric(charMetric20);
+        CharMetric charMetric30 = new CharMetric();
+        charMetric30.setName("thirty");
+        charMetric30.setWx(30f);
+        charMetric30.setWy(60f);
+        fontMetrics.addCharMetric(charMetric30);
+        CharMetric charMetric40 = new CharMetric();
+        charMetric40.setName("forty");
+        charMetric40.setWx(40f);
+        charMetric40.setWy(80f);
+        fontMetrics.addCharMetric(charMetric40);
+
+        assertEquals(10f, fontMetrics.getCharacterWidth("ten"), 0f);
+        assertEquals(30f, fontMetrics.getCharacterWidth("thirty"), 0f);
+        assertEquals(0f, fontMetrics.getCharacterWidth("unknown"), 0f);
+
+        assertEquals(40f, fontMetrics.getCharacterHeight("twenty"), 0f);
+        assertEquals(80f, fontMetrics.getCharacterHeight("forty"), 0f);
+        assertEquals(0f, fontMetrics.getCharacterHeight("unknown"), 0f);
+
+        assertEquals(25, fontMetrics.getAverageCharacterWidth(), 0f);
+    }
+
 }
