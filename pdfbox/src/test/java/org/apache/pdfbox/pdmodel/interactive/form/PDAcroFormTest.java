@@ -328,6 +328,7 @@ public class PDAcroFormTest
             doc.getDocumentCatalog().setAcroForm(new PDAcroForm(doc));
             acroForm2 = doc.getDocumentCatalog().getAcroForm();
             defaultResources = acroForm2.getDefaultResources();
+            
             PDFont helv = defaultResources.getFont(COSName.HELV);
             PDFont zadb = defaultResources.getFont(COSName.ZA_DB);
             assertNotNull(helv);
