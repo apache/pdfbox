@@ -35,7 +35,13 @@ public class AcroFormGenerateAppearancesProcessor extends AbstractProcessor
 
     @Override
     public void process() {
-        // Get the AcroForm without in it's current state
+        /*
+         * Get the AcroForm in it's current state.
+         *
+         * Also note: getAcroForm() applies a default fixup which this processor
+         * is part of. So keep the null parameter otherwise this will end
+         * in an endless recursive call
+         */
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
         // PDFBOX-4985
