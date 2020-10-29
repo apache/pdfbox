@@ -1297,6 +1297,7 @@ public class PDFDebugger extends JFrame
         }
         currentFilePath = file.getPath();
         recentFiles.removeFile(file.getPath());
+        LogDialog.instance().clear();
         DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override
@@ -1334,6 +1335,7 @@ public class PDFDebugger extends JFrame
             }
         }
         currentFilePath = urlString;
+        LogDialog.instance().clear();
         DocumentOpener documentOpener = new DocumentOpener(password)
         {
             @Override
