@@ -268,7 +268,7 @@ public class PDAcroFormTest
             PDDocumentCatalog documentCatalog = pdfDocument.getDocumentCatalog();
             
             // this call shall skip triggering the generation of missing information
-            PDAcroForm theAcroForm = documentCatalog.getAcroForm(false);
+            PDAcroForm theAcroForm = documentCatalog.getAcroForm(null);
             
             // ensure that the missing information has not been generated
             // DA entry

@@ -53,6 +53,8 @@ import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.fixup.AcroFormFixup;
+import org.apache.pdfbox.pdmodel.fixup.PDDocumentFixup;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
@@ -162,7 +164,9 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     {
         // get Acroform without applying fixups to enure that we get the original content
         boolean repairSelected = PDFDebugger.repairAcroFormMenuItem.isSelected();
-        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(repairSelected);
+        PDDocumentFixup fixup = repairSelected ? new AcroFormFixup(document) : null;
+        PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(fixup);
+
         if (acroForm == null)
         {
             return;
@@ -236,7 +240,8 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         if (actionEvent.getSource() == PDFDebugger.repairAcroFormMenuItem)
         {
             boolean repairSelected = PDFDebugger.repairAcroFormMenuItem.isSelected();
-            document.getDocumentCatalog().getAcroForm(repairSelected);
+            PDDocumentFixup fixup = repairSelected ? new AcroFormFixup(document) : null;
+            document.getDocumentCatalog().getAcroForm(fixup);
             startRendering();
         }
         else if (ZoomMenu.isZoomMenu(actionCommand) ||

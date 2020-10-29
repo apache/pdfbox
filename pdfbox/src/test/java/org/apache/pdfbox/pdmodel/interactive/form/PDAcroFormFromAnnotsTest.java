@@ -27,7 +27,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-
+import org.apache.pdfbox.pdmodel.fixup.AcroFormFixup;
 import org.junit.Test;
 
 /**
@@ -57,7 +57,7 @@ public class PDAcroFormFromAnnotsTest
         {
             testPdf = PDDocument.load(new URL(acrobatSourceUrl).openStream());
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm(false);
+            PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
         finally
@@ -103,7 +103,7 @@ public class PDAcroFormFromAnnotsTest
         {
             testPdf = PDDocument.load(new URL(acrobatSourceUrl).openStream());
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-            PDAcroForm acroForm = catalog.getAcroForm(false);
+            PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
         }
         finally
@@ -119,7 +119,7 @@ public class PDAcroFormFromAnnotsTest
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
-            PDAcroForm acroForm = catalog.getAcroForm(true);
+            PDAcroForm acroForm = catalog.getAcroForm(new AcroFormFixup(testPdf));
             assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
         }
         finally
@@ -153,7 +153,7 @@ public class PDAcroFormFromAnnotsTest
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             numCosFormFields = cosFields.size();
             assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
-            PDAcroForm acroForm = catalog.getAcroForm(false);
+            PDAcroForm acroForm = catalog.getAcroForm(null);
             assertEquals("After call without correction there shall be " + numCosFormFields + " fields", numCosFormFields, acroForm.getFields().size());
         }
         finally
