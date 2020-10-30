@@ -39,7 +39,6 @@ import org.apache.pdfbox.preflight.utils.ContextHelper;
 
 
 import static org.apache.pdfbox.preflight.PreflightConfiguration.ANNOTATIONS_PROCESS;
-import static org.apache.pdfbox.preflight.PreflightConstants.ACROFORM_DICTIONARY_KEY_NEED_APPEARANCES;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_ADDITIONAL_ACTIONS_FIELD;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_ACTION_FORBIDDEN_WIDGET_ACTION_FIELD;
 import static org.apache.pdfbox.preflight.PreflightConstants.ERROR_SYNTAX_BODY;
