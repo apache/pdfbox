@@ -133,4 +133,33 @@ public class PDAcroFormFromAnnotsTest
             assertEquals("After call without correction there shall be " + numCosFormFields + " fields", numCosFormFields, acroForm.getFields().size());
         }
     }
+
+    /**
+     * PDFBOX-3891 AcroForm with empty fields entry
+     * 
+     * With the default correction nothing shall be added
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testFromAnnots3891DontCreateFields() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            // need to do a low level cos access as the PDModel access will build the AcroForm
+            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            PDAcroForm acroForm = catalog.getAcroForm();
+            assertEquals("After call with default correction there shall be 0 fields", 0, acroForm.getFields().size());
+        }
+    }
+
+
+
+
 }

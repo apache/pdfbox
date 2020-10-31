@@ -44,15 +44,13 @@ public class AcroFormGenerateAppearancesProcessor extends AbstractProcessor
          */
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
-        // PDFBOX-4985
-        // build the visual appearance as there is none for the widgets
-        if (acroForm != null && acroForm.getNeedAppearances())
+        if (acroForm != null)
         {            
             try
             {
                 LOG.debug("trying to generate appearance streams for fields as NeedAppearances is true()");
                 acroForm.refreshAppearances();
-                 acroForm.setNeedAppearances(false);
+                acroForm.setNeedAppearances(false);
             }
             catch (IOException ioe)
             {

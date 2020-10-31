@@ -63,9 +63,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
          */
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
-        // PDFBOX-4985 AcroForm with NeedAppearances true and empty fields array
-        // but Widgets in page annotations
-        if (acroForm != null && acroForm.getNeedAppearances() && acroForm.getFields().isEmpty())
+        if (acroForm != null)
         {            
             resolveFieldsFromWidgets(acroForm);
         } 
