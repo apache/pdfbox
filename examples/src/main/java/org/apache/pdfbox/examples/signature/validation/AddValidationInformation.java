@@ -600,7 +600,7 @@ public class AddValidationInformation
         String name = inFile.getName();
         String substring = name.substring(0, name.lastIndexOf('.'));
 
-        File outFile = new File(inFile.getParent(), substring + "_ocsp.pdf");
+        File outFile = new File(inFile.getParent(), substring + "_LTV.pdf");
         addOcspInformation.validateSignature(inFile, outFile);
     }
 
