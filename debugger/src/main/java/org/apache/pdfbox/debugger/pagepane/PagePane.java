@@ -61,7 +61,7 @@ import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
 import org.apache.pdfbox.debugger.ui.TextDialog;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.fixup.AcroFormFixup;
+import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
 import org.apache.pdfbox.pdmodel.fixup.PDDocumentFixup;
 import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionGoTo;
@@ -175,7 +175,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private void collectFieldLocations() throws IOException
     {
         // get Acroform without applying fixups to enure that we get the original content
-        PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormFixup(document) : null;
+        PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormDefaultFixup(document) : null;
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(fixup);
         if (acroForm == null)
         {
@@ -248,7 +248,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         String actionCommand = actionEvent.getActionCommand();
         if (ViewMenu.isRepairAcroformEvent(actionEvent))
         {
-            PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormFixup(document) : null;
+            PDDocumentFixup fixup = ViewMenu.isRepairAcroformSelected() ? new AcroFormDefaultFixup(document) : null;
             document.getDocumentCatalog().getAcroForm(fixup);
             startRendering();
         }

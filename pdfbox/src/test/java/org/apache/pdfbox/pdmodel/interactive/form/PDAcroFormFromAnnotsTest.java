@@ -27,7 +27,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.apache.pdfbox.pdmodel.fixup.AcroFormFixup;
+import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
 import org.junit.Test;
 
 /**
@@ -101,7 +101,7 @@ public class PDAcroFormFromAnnotsTest
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
-            PDAcroForm acroForm = catalog.getAcroForm(new AcroFormFixup(testPdf));
+            PDAcroForm acroForm = catalog.getAcroForm(new AcroFormDefaultFixup(testPdf));
             assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
         }
     } 
