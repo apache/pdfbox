@@ -74,6 +74,27 @@ public class AddWatermarkText
             float fontHeight = 100; // arbitrary for short text
             float width = page.getMediaBox().getWidth();
             float height = page.getMediaBox().getHeight();
+            
+            int rotation = page.getRotation();
+            switch (rotation)
+            {
+                case 90:
+                    width = page.getMediaBox().getHeight();
+                    height = page.getMediaBox().getWidth();
+                    cs.transform(Matrix.getRotateInstance(Math.toRadians(90), height, 0));
+                    break;
+                case 180:
+                    cs.transform(Matrix.getRotateInstance(Math.toRadians(180), width, height));
+                    break;
+                case 270:
+                    width = page.getMediaBox().getHeight();
+                    height = page.getMediaBox().getWidth();
+                    cs.transform(Matrix.getRotateInstance(Math.toRadians(270), 0, width));
+                    break;
+                default:
+                    break;
+            }
+
             float stringWidth = font.getStringWidth(text) / 1000 * fontHeight;
             float diagonalLength = (float) Math.sqrt(width * width + height * height);
             float angle = (float) Math.atan2(height, width);
