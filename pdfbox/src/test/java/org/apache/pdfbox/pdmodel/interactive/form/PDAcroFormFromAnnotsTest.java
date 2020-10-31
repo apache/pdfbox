@@ -27,7 +27,9 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.fixup.AbstractFixup;
 import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
+import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormOrphanWidgetsProcessor;
 import org.junit.Test;
 
 /**
@@ -159,7 +161,55 @@ public class PDAcroFormFromAnnotsTest
         }
     }
 
+    /**
+     * PDFBOX-3891 AcroForm with empty fields entry
+     * 
+     * Special fixup to create fields
+     * 
+     * @throws IOException
+     */
+    // @Test
+    public void testFromAnnots3891CreateFields() throws IOException
+    {
 
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
 
+        int numFormFieldsByAcrobat = 0;
 
+        try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            PDAcroForm acroForm = catalog.getAcroForm(null);
+            numFormFieldsByAcrobat = acroForm.getFields().size();
+        }
+
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            // need to do a low level cos access as the PDModel access will build the AcroForm
+            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
+            assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
+        }
+    }
+
+    /*
+     * Create fields from widget annotations
+     */
+    class CreateFieldsFixup extends AbstractFixup
+    {
+        CreateFieldsFixup(PDDocument document)
+        { 
+            super(document); 
+        }
+
+        @Override
+        public void apply() {
+            new AcroFormOrphanWidgetsProcessor(document).process();
+
+        }        
+    }
 }
