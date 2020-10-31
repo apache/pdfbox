@@ -17,9 +17,12 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -168,7 +171,7 @@ public class PDAcroFormFromAnnotsTest
      * 
      * @throws IOException
      */
-    // @Test
+    @Test
     public void testFromAnnots3891CreateFields() throws IOException
     {
 
@@ -177,11 +180,18 @@ public class PDAcroFormFromAnnotsTest
 
         int numFormFieldsByAcrobat = 0;
 
+        // will build the expected fields using the acrobat source document
+        Map<String, PDField> fieldsByName = new HashMap<>();
+
         try (PDDocument testPdf = Loader.loadPDF(new URL(acrobatSourceUrl).openStream()))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
             PDAcroForm acroForm = catalog.getAcroForm(null);
             numFormFieldsByAcrobat = acroForm.getFields().size();
+            for (PDField field : acroForm.getFieldTree())
+            {
+                fieldsByName.put(field.getFullyQualifiedName(), field);
+            }
         }
 
         try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
@@ -193,6 +203,19 @@ public class PDAcroFormFromAnnotsTest
             assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
             PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
             assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
+            testPdf.save("/home/msahyoun/Dokumente/Projekte/pdfbox-tests/PDFBOX-3891/merge-tests-fields-pdfbox.pdf");
+
+            // the the fields found are contained in the map
+            for (PDField field : acroForm.getFieldTree())
+            {
+                assertNotNull(fieldsByName.get(field.getFullyQualifiedName()));
+            }
+
+            // test all fields in the map are also found in the AcroForm
+            for (String fieldName : fieldsByName.keySet())
+            {
+                assertNotNull(acroForm.getField(fieldName));
+            }
         }
     }
 
