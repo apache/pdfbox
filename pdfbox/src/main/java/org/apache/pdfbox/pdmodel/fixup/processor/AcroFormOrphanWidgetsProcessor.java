@@ -17,11 +17,14 @@
 package org.apache.pdfbox.pdmodel.fixup.processor;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.fontbox.ttf.TrueTypeFont;
+import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -63,9 +66,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
          */
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm(null);
 
-        // PDFBOX-4985 AcroForm with NeedAppearances true and empty fields array
-        // but Widgets in page annotations
-        if (acroForm != null && acroForm.getNeedAppearances() && acroForm.getFields().isEmpty())
+        if (acroForm != null)
         {            
             resolveFieldsFromWidgets(acroForm);
         } 
@@ -73,32 +74,78 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
     private void resolveFieldsFromWidgets(PDAcroForm acroForm)
     {
+        Map<String, PDField> nonTerminalFieldsMap = new HashMap<String, PDField>();
+
         LOG.debug("rebuilding fields from widgets");
         List<PDField> fields = acroForm.getFields();
         for (PDPage page : document.getPages())
         {
             try
             {
-                List<PDAnnotation> annots = page.getAnnotations();
-                for (PDAnnotation annot : annots)
-                {
-                    if (annot instanceof PDAnnotationWidget)
-                    {
-                        PDField field = PDFieldFactory.createField(acroForm, annot.getCOSObject(), null);
-                        if (field instanceof PDVariableText)
-                        {
-                            ensureFontResources(acroForm.getDefaultResources(), (PDVariableText) field);
-                        }
-                        fields.add(field);
-                    }
-                }
+                handleAnnotations(acroForm, fields, page.getAnnotations(), nonTerminalFieldsMap);
             }
             catch (IOException ioe)
             {
                 LOG.debug("couldn't read annotations for page " + ioe.getMessage());
             }
         }
+
         acroForm.setFields(fields);
+
+        // ensure that PDVariableText fields have the neccesary resources
+        for (PDField field : acroForm.getFieldTree())
+        {
+            if (field instanceof PDVariableText)
+            {
+                ensureFontResources(acroForm.getDefaultResources(), (PDVariableText) field);
+            }
+        }        
+    }
+
+    private void handleAnnotations(PDAcroForm acroForm, List<PDField> fields, List<PDAnnotation> annotations, Map<String, PDField> nonTerminalFieldsMap)
+    {
+        for (PDAnnotation annot : annotations)
+        {
+            if (annot instanceof PDAnnotationWidget)
+            {
+                if (annot.getCOSObject().containsKey(COSName.PARENT))
+                {
+                    PDField resolvedField = resolveNonRootField(acroForm, (PDAnnotationWidget) annot, nonTerminalFieldsMap);
+                    if (resolvedField != null)
+                    {
+                        fields.add(resolvedField);
+                    }
+                }
+                else
+                {
+                    fields.add(PDFieldFactory.createField(acroForm, annot.getCOSObject(), null));
+                }
+            }
+        }
+    }
+
+    /*
+     *  Widgets having a /Parent entry are non root fields. Go up until the root node is found
+     *  and handle from there.
+     */
+    private PDField resolveNonRootField(PDAcroForm acroForm, PDAnnotationWidget widget, Map<String, PDField> nonTerminalFieldsMap)
+    {
+        COSDictionary parent = widget.getCOSObject().getCOSDictionary(COSName.PARENT);
+        while (parent.containsKey(COSName.PARENT))
+        {
+            parent = parent.getCOSDictionary(COSName.PARENT);
+        }
+        
+        if (nonTerminalFieldsMap.get(parent.getString(COSName.T)) == null)
+        {
+            PDField field = PDFieldFactory.createField(acroForm, parent, null);
+            nonTerminalFieldsMap.put(field.getFullyQualifiedName(),field);
+
+            return field;
+        }
+
+        // this should not happen
+        return null;
     }
 
     /*

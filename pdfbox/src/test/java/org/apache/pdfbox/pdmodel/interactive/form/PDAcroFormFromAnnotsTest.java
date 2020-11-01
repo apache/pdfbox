@@ -17,9 +17,12 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -27,7 +30,9 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.fixup.AbstractFixup;
 import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
+import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormOrphanWidgetsProcessor;
 import org.junit.Test;
 
 /**
@@ -160,5 +165,118 @@ public class PDAcroFormFromAnnotsTest
         {
             IOUtils.closeQuietly(testPdf);
         }
+    }
+
+    /**
+     * PDFBOX-3891 AcroForm with empty fields entry
+     * 
+     * With the default correction nothing shall be added
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testFromAnnots3891DontCreateFields() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            // need to do a low level cos access as the PDModel access will build the AcroForm
+            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            PDAcroForm acroForm = catalog.getAcroForm();
+            assertEquals("After call with default correction there shall be 0 fields", 0, acroForm.getFields().size());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-3891 AcroForm with empty fields entry
+     * 
+     * Special fixup to create fields
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testFromAnnots3891CreateFields() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
+
+        int numFormFieldsByAcrobat = 0;
+
+        // will build the expected fields using the acrobat source document
+        Map<String, PDField> fieldsByName = new HashMap<String, PDField>();
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(acrobatSourceUrl).openStream());
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            PDAcroForm acroForm = catalog.getAcroForm(null);
+            numFormFieldsByAcrobat = acroForm.getFields().size();
+            for (PDField field : acroForm.getFieldTree())
+            {
+                fieldsByName.put(field.getFullyQualifiedName(), field);
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            // need to do a low level cos access as the PDModel access will build the AcroForm
+            COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
+            COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
+            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
+            assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
+
+            // the the fields found are contained in the map
+            for (PDField field : acroForm.getFieldTree())
+            {
+                assertNotNull(fieldsByName.get(field.getFullyQualifiedName()));
+            }
+
+            // test all fields in the map are also found in the AcroForm
+            for (String fieldName : fieldsByName.keySet())
+            {
+                assertNotNull(acroForm.getField(fieldName));
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /*
+     * Create fields from widget annotations
+     */
+    class CreateFieldsFixup extends AbstractFixup
+    {
+        CreateFieldsFixup(PDDocument document)
+        { 
+            super(document); 
+        }
+
+        @Override
+        public void apply() {
+            new AcroFormOrphanWidgetsProcessor(document).process();
+
+        }        
     }
 }
