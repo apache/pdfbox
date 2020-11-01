@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.font.FontMapping;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
 import org.apache.pdfbox.pdmodel.interactive.form.PDFieldFactory;
@@ -106,8 +107,12 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
     private void handleAnnotations(PDAcroForm acroForm, List<PDField> fields, List<PDAnnotation> annotations, Map<String, PDField> nonTerminalFieldsMap)
     {
+        PDResources acroFormResources = acroForm.getDefaultResources();
+
         for (PDAnnotation annot : annotations)
         {
+            addFontFromWidget(acroFormResources, annot);
+
             if (annot instanceof PDAnnotationWidget)
             {
                 if (annot.getCOSObject().containsKey(COSName.PARENT))
@@ -123,6 +128,40 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
                     fields.add(PDFieldFactory.createField(acroForm, annot.getCOSObject(), null));
                 }
             }
+        }
+    }
+
+    /*
+     *  Add font resources from the widget to the AcroForm to make sure embedded fonts are being
+     *  used and not added by ensureFontResources potentially using a fallback font
+     */
+    private void addFontFromWidget(PDResources acroFormResources, PDAnnotation annotation)
+    {
+        PDAppearanceStream normalAppearanceStream = annotation.getNormalAppearanceStream();
+        if (normalAppearanceStream != null && normalAppearanceStream.getResources() != null)    
+        {
+            PDResources widgetResources = normalAppearanceStream.getResources();
+            widgetResources.getFontNames().forEach(fontName -> {
+                if (!fontName.getName().startsWith("+"))
+                {
+                    try
+                    {
+                        if (acroFormResources.getFont(fontName) == null)
+                        {
+                            acroFormResources.put(fontName, widgetResources.getFont(fontName));
+                            LOG.debug("qdded font resource to AcroForm from widget for font name " + fontName.getName());
+                        }
+                    }
+                    catch (IOException ioe)
+                    {
+                        LOG.debug("unable to add font to AcroForm for font name " + fontName.getName());
+                    }
+                }
+                else
+                {
+                    LOG.debug("font resource for widget was a subsetted font - ignored: " + fontName.getName());
+                }
+            });
         }
     }
 
@@ -186,7 +225,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             }
             catch (IOException ioe)
             {
-                LOG.debug("Unable to handle font resources for field " + field.getFullyQualifiedName() + ": " + ioe.getMessage());
+                LOG.debug("unable to handle font resources for field " + field.getFullyQualifiedName() + ": " + ioe.getMessage());
             }
         }
     }
