@@ -203,7 +203,6 @@ public class PDAcroFormFromAnnotsTest
             assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
             PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
             assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
-            testPdf.save("/home/msahyoun/Dokumente/Projekte/pdfbox-tests/PDFBOX-3891/merge-tests-fields-pdfbox.pdf");
 
             // the the fields found are contained in the map
             for (PDField field : acroForm.getFieldTree())
