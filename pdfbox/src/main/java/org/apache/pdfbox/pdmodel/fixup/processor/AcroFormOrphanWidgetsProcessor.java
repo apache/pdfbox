@@ -111,10 +111,10 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
 
         for (PDAnnotation annot : annotations)
         {
-            addFontFromWidget(acroFormResources, annot);
-
             if (annot instanceof PDAnnotationWidget)
             {
+                addFontFromWidget(acroFormResources, annot);
+
                 if (annot.getCOSObject().containsKey(COSName.PARENT))
                 {
                     PDField resolvedField = resolveNonRootField(acroForm, (PDAnnotationWidget) annot, nonTerminalFieldsMap);

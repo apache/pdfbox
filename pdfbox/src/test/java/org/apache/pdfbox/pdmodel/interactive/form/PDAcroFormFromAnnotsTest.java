@@ -283,8 +283,6 @@ public class PDAcroFormFromAnnotsTest
         }
     }
 
-
-
     /*
      * Create fields from widget annotations
      */
