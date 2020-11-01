@@ -90,7 +90,7 @@ public class Type2CharString extends Type1CharString
     private List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
-        Type2KeyWord type2KeyWord = CharStringCommand.Type2KeyWord.valueOfKey(command.getKey());
+        Type2KeyWord type2KeyWord = command.getType2KeyWord();
         if (type2KeyWord == null)
         {
             addCommand(numbers, command);

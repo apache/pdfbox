@@ -21,12 +21,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
+
 /**
  * This class represents a converter for a mapping into a Type2-sequence.
  * @author Villu Ruusmann
  */
 public class Type2CharStringParser
 {
+
+    // 1-byte commands
+    private static final int CALLSUBR = 10;
+    private static final int CALLGSUBR = 29;
+
     private int hstemCount = 0;
     private int vstemCount = 0;
     private List<Object> sequence = null;
@@ -88,93 +95,97 @@ public class Type2CharStringParser
         while (input.hasRemaining())
         {
             int b0 = input.readUnsignedByte();
-            if (b0 == 10 && localSubroutineIndexProvided) 
-            { // process subr command
-                Integer operand=(Integer)sequence.remove(sequence.size()-1);
-                //get subrbias
-                int bias = 0;
-                int nSubrs = localSubrIndex.length;
-                
-                if (nSubrs < 1240)
-                {
-                    bias = 107;
-                }
-                else if (nSubrs < 33900) 
-                {
-                    bias = 1131;
-                }
-                else 
-                {
-                    bias = 32768;
-                }
-                int subrNumber = bias+operand;
-                if (subrNumber < localSubrIndex.length)
-                {
-                    byte[] subrBytes = localSubrIndex[subrNumber];
-                    parse(subrBytes, globalSubrIndex, localSubrIndex, false);
-                    Object lastItem=sequence.get(sequence.size()-1);
-                    if (lastItem instanceof CharStringCommand && ((CharStringCommand)lastItem).getKey().getValue()[0] == 11)
-                    {
-                        sequence.remove(sequence.size()-1); // remove "return" command
-                    }
-                }
-
+            if (b0 == CALLSUBR && localSubroutineIndexProvided)
+            {
+                processCallSubr(globalSubrIndex, localSubrIndex);
             } 
-            else if (b0 == 29 && globalSubroutineIndexProvided) 
-            { // process globalsubr command
-                Integer operand=(Integer)sequence.remove(sequence.size()-1);
-                //get subrbias
-                int bias;
-                int nSubrs = globalSubrIndex.length;
-                
-                if (nSubrs < 1240)
-                {
-                    bias = 107;
-                }
-                else if (nSubrs < 33900) 
-                {
-                    bias = 1131;
-                }
-                else 
-                {
-                    bias = 32768;
-                }
-                
-                int subrNumber = bias+operand;
-                if (subrNumber < globalSubrIndex.length)
-                {
-                    byte[] subrBytes = globalSubrIndex[subrNumber];
-                    parse(subrBytes, globalSubrIndex, localSubrIndex, false);
-                    Object lastItem=sequence.get(sequence.size()-1);
-                    if (lastItem instanceof CharStringCommand && ((CharStringCommand)lastItem).getKey().getValue()[0]==11) 
-                    {
-                        sequence.remove(sequence.size()-1); // remove "return" command
-                    }
-                }
-
+            else if (b0 == CALLGSUBR && globalSubroutineIndexProvided)
+            {
+                processCallGSubr(globalSubrIndex, localSubrIndex);
             } 
-            else if (b0 >= 0 && b0 <= 27)
+            else if ( (b0 >= 0 && b0 <= 27) || (b0 >= 29 && b0 <= 31))
             {
                 sequence.add(readCommand(b0, input));
             } 
-            else if (b0 == 28)
+            else if (b0 == 28 || (b0 >= 32 && b0 <= 255))
             {
                 sequence.add(readNumber(b0, input));
             } 
-            else if (b0 >= 29 && b0 <= 31)
-            {
-                sequence.add(readCommand(b0, input));
-            } 
-            else if (b0 >= 32 && b0 <= 255)
-            {
-                sequence.add(readNumber(b0, input));
-            }
             else
             {
                 throw new IllegalArgumentException();
             }
         }
         return sequence;
+    }
+
+    private void processCallSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex)
+            throws IOException
+    {
+        Integer operand = (Integer) sequence.remove(sequence.size() - 1);
+        // get subrbias
+        int bias = 0;
+        int nSubrs = localSubrIndex.length;
+
+        if (nSubrs < 1240)
+        {
+            bias = 107;
+        }
+        else if (nSubrs < 33900)
+        {
+            bias = 1131;
+        }
+        else
+        {
+            bias = 32768;
+        }
+        int subrNumber = bias + operand;
+        if (subrNumber < localSubrIndex.length)
+        {
+            byte[] subrBytes = localSubrIndex[subrNumber];
+            parse(subrBytes, globalSubrIndex, localSubrIndex, false);
+            Object lastItem = sequence.get(sequence.size() - 1);
+            if (lastItem instanceof CharStringCommand
+                    && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
+            {
+                sequence.remove(sequence.size() - 1); // remove "return" command
+            }
+        }
+    }
+
+    private void processCallGSubr(byte[][] globalSubrIndex, byte[][] localSubrIndex)
+            throws IOException
+    {
+        Integer operand = (Integer) sequence.remove(sequence.size() - 1);
+        // get subrbias
+        int bias;
+        int nSubrs = globalSubrIndex.length;
+
+        if (nSubrs < 1240)
+        {
+            bias = 107;
+        }
+        else if (nSubrs < 33900)
+        {
+            bias = 1131;
+        }
+        else
+        {
+            bias = 32768;
+        }
+
+        int subrNumber = bias + operand;
+        if (subrNumber < globalSubrIndex.length)
+        {
+            byte[] subrBytes = globalSubrIndex[subrNumber];
+            parse(subrBytes, globalSubrIndex, localSubrIndex, false);
+            Object lastItem = sequence.get(sequence.size() - 1);
+            if (lastItem instanceof CharStringCommand
+                    && Type2KeyWord.RET == ((CharStringCommand) lastItem).getType2KeyWord())
+            {
+                sequence.remove(sequence.size() - 1); // remove "return" command
+            }
+        }
     }
 
     private CharStringCommand readCommand(int b0, DataInput input) throws IOException
@@ -213,7 +224,6 @@ public class Type2CharStringParser
 
     private Number readNumber(int b0, DataInput input) throws IOException
     {
-
         if (b0 == 28)
         {
             return (int) input.readShort();

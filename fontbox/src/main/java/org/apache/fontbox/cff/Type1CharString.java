@@ -161,7 +161,7 @@ public class Type1CharString
     private List<Number> handleCommand(List<Number> numbers, CharStringCommand command)
     {
         commandCount++;
-        Type1KeyWord type1KeyWord = CharStringCommand.Type1KeyWord.valueOfKey(command.getKey());
+        Type1KeyWord type1KeyWord = command.getType1KeyWord();
         if (type1KeyWord == null)
         {
             // indicates an invalid charstring

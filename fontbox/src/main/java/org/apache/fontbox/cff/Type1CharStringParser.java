@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
 
 /**
  * This class represents a converter for a mapping into a Type 1 sequence.
@@ -38,13 +39,12 @@ public class Type1CharStringParser
     private static final Log LOG = LogFactory.getLog(Type1CharStringParser.class);
 
     // 1-byte commands
-    static final int RETURN = 11;
-    static final int CALLSUBR = 10;
+    private static final int CALLSUBR = 10;
 
     // 2-byte commands
-    static final int TWO_BYTE = 12;
-    static final int CALLOTHERSUBR = 16;
-    static final int POP = 17;
+    private static final int TWO_BYTE = 12;
+    private static final int CALLOTHERSUBR = 16;
+    private static final int POP = 17;
 
     private final String fontName;
     private final String glyphName;
@@ -82,89 +82,11 @@ public class Type1CharStringParser
             int b0 = input.readUnsignedByte();
             if (b0 == CALLSUBR)
             {
-                // callsubr command
-                Object obj = sequence.remove(sequence.size() - 1);
-                if (!(obj instanceof Integer))
-                {
-                    LOG.warn("Parameter " + obj + " for CALLSUBR is ignored, integer expected in glyph '"
-                            + glyphName + "' of font " + fontName);
-                    continue;
-                }
-                Integer operand = (Integer) obj;
-
-                if (operand >= 0 && operand < subrs.size())
-                {
-                    byte[] subrBytes = subrs.get(operand);
-                    parse(subrBytes, subrs, sequence);
-                    Object lastItem = sequence.get(sequence.size()-1);
-                    if (lastItem instanceof CharStringCommand &&
-                          ((CharStringCommand)lastItem).getKey().getValue()[0] == RETURN)
-                    {
-                        sequence.remove(sequence.size()-1); // remove "return" command
-                    }
-                }
-                else
-                {
-                    LOG.warn("CALLSUBR is ignored, operand: " + operand
-                            + ", subrs.size(): " + subrs.size() + " in glyph '"
-                            + glyphName + "' of font " + fontName);
-                    // remove all parameters (there can be more than one)
-                    while (sequence.get(sequence.size() - 1) instanceof Integer)
-                    {
-                        sequence.remove(sequence.size() - 1);
-                    }
-                }
+                processCallSubr(subrs, sequence);
             }
             else if (b0 == TWO_BYTE && input.peekUnsignedByte(0) == CALLOTHERSUBR)
             {
-                // callothersubr command (needed in order to expand Subrs)
-                input.readByte();
-
-                Integer othersubrNum = (Integer)sequence.remove(sequence.size()-1);
-                Integer numArgs = (Integer)sequence.remove(sequence.size()-1);
-
-                // othersubrs 0-3 have their own semantics
-                Deque<Integer> results = new ArrayDeque<>();
-                switch (othersubrNum)
-                {
-                    case 0:
-                        results.push(removeInteger(sequence));
-                        results.push(removeInteger(sequence));
-                        sequence.remove(sequence.size() - 1);
-                        // end flex
-                        sequence.add(0);
-                        sequence.add(new CharStringCommand(TWO_BYTE, CALLOTHERSUBR));
-                        break;
-                    case 1:
-                        // begin flex
-                        sequence.add(1);
-                        sequence.add(new CharStringCommand(TWO_BYTE, CALLOTHERSUBR));
-                        break;
-                    case 3:
-                        // allows hint replacement
-                        results.push(removeInteger(sequence));
-                        break;
-                    default:
-                        // all remaining othersubrs use this fallback mechanism
-                        for (int i = 0; i < numArgs; i++)
-                        {
-                            results.push(removeInteger(sequence));
-                        }
-                        break;
-                }
-
-                // pop must follow immediately
-                while (input.peekUnsignedByte(0) == TWO_BYTE && input.peekUnsignedByte(1) == POP)
-                {
-                    input.readByte(); // B0_POP
-                    input.readByte(); // B1_POP
-                    sequence.add(results.pop());
-                }
-
-                if (results.size() > 0)
-                {
-                    LOG.warn("Value left on the PostScript stack in glyph " + glyphName + " of font " + fontName);
-                }
+                processCallOtherSubr(input, sequence);
             }
             else if (b0 >= 0 && b0 <= 31)
             {
@@ -182,6 +104,94 @@ public class Type1CharStringParser
         return sequence;
     }
 
+    private void processCallSubr(List<byte[]> subrs, List<Object> sequence) throws IOException
+    {
+        // callsubr command
+        Object obj = sequence.remove(sequence.size() - 1);
+        if (!(obj instanceof Integer))
+        {
+            LOG.warn("Parameter " + obj + " for CALLSUBR is ignored, integer expected in glyph '"
+                    + glyphName + "' of font " + fontName);
+            return;
+        }
+        Integer operand = (Integer) obj;
+
+        if (operand >= 0 && operand < subrs.size())
+        {
+            byte[] subrBytes = subrs.get(operand);
+            parse(subrBytes, subrs, sequence);
+            Object lastItem = sequence.get(sequence.size() - 1);
+            if (lastItem instanceof CharStringCommand
+                    && Type1KeyWord.RET == ((CharStringCommand) lastItem).getType1KeyWord())
+            {
+                sequence.remove(sequence.size() - 1); // remove "return" command
+            }
+        }
+        else
+        {
+            LOG.warn("CALLSUBR is ignored, operand: " + operand + ", subrs.size(): " + subrs.size()
+                    + " in glyph '" + glyphName + "' of font " + fontName);
+            // remove all parameters (there can be more than one)
+            while (sequence.get(sequence.size() - 1) instanceof Integer)
+            {
+                sequence.remove(sequence.size() - 1);
+            }
+        }
+    }
+
+    private void processCallOtherSubr(DataInput input, List<Object> sequence) throws IOException
+    {
+        // callothersubr command (needed in order to expand Subrs)
+        input.readByte();
+
+        Integer othersubrNum = (Integer) sequence.remove(sequence.size() - 1);
+        Integer numArgs = (Integer) sequence.remove(sequence.size() - 1);
+
+        // othersubrs 0-3 have their own semantics
+        Deque<Integer> results = new ArrayDeque<>();
+        switch (othersubrNum)
+        {
+        case 0:
+            results.push(removeInteger(sequence));
+            results.push(removeInteger(sequence));
+            sequence.remove(sequence.size() - 1);
+            // end flex
+            sequence.add(0);
+            sequence.add(new CharStringCommand(TWO_BYTE, CALLOTHERSUBR));
+            break;
+        case 1:
+            // begin flex
+            sequence.add(1);
+            sequence.add(new CharStringCommand(TWO_BYTE, CALLOTHERSUBR));
+            break;
+        case 3:
+            // allows hint replacement
+            results.push(removeInteger(sequence));
+            break;
+        default:
+            // all remaining othersubrs use this fallback mechanism
+            for (int i = 0; i < numArgs; i++)
+            {
+                results.push(removeInteger(sequence));
+            }
+            break;
+        }
+
+        // pop must follow immediately
+        while (input.peekUnsignedByte(0) == TWO_BYTE && input.peekUnsignedByte(1) == POP)
+        {
+            input.readByte(); // B0_POP
+            input.readByte(); // B1_POP
+            sequence.add(results.pop());
+        }
+
+        if (!results.isEmpty())
+        {
+            LOG.warn("Value left on the PostScript stack in glyph " + glyphName + " of font "
+                    + fontName);
+        }
+    }
+
     // this method is a workaround for the fact that Type1CharStringParser assumes that subrs and
     // othersubrs can be unrolled without executing the 'div' operator, which isn't true
     private static Integer removeInteger(List<Object> sequence) throws IOException
@@ -194,7 +204,7 @@ public class Type1CharStringParser
         CharStringCommand command = (CharStringCommand) item;
 
         // div
-        if (command.getKey().getValue()[0] == 12 && command.getKey().getValue()[1] == 12)
+        if (Type1KeyWord.DIV == command.getType1KeyWord())
         {
             int a = (Integer) sequence.remove(sequence.size() - 1);
             int b = (Integer) sequence.remove(sequence.size() - 1);

@@ -28,7 +28,7 @@ import java.util.Map;
 public class CharStringCommand
 {
 
-    private Key commandKey = null;
+    private final Key commandKey;
 
     /**
      * Constructor with one value.
@@ -37,7 +37,7 @@ public class CharStringCommand
      */
     public CharStringCommand(int b0)
     {
-        setKey(new Key(b0));
+        commandKey = new Key(b0);
     }
 
     /**
@@ -48,7 +48,7 @@ public class CharStringCommand
      */
     public CharStringCommand(int b0, int b1)
     {
-        setKey(new Key(b0, b1));
+        commandKey = new Key(b0, b1);
     }
 
     /**
@@ -58,7 +58,7 @@ public class CharStringCommand
      */
     public CharStringCommand(int[] values)
     {
-        setKey(new Key(values));
+        commandKey = new Key(values);
     }
 
     /**
@@ -70,9 +70,14 @@ public class CharStringCommand
         return commandKey;
     }
 
-    private void setKey(Key key)
+    public Type1KeyWord getType1KeyWord()
     {
-        commandKey = key;
+        return Type1KeyWord.valueOfKey(commandKey);
+    }
+
+    public Type2KeyWord getType2KeyWord()
+    {
+        return Type2KeyWord.valueOfKey(commandKey);
     }
 
     /**
@@ -82,14 +87,14 @@ public class CharStringCommand
     public String toString()
     {
         String str = null;
-        Type2KeyWord type2KeyWord = Type2KeyWord.valueOfKey(getKey());
+        Type2KeyWord type2KeyWord = getType2KeyWord();
         if (type2KeyWord != null)
         {
             str = type2KeyWord.toString();
         }
         else
         {
-            Type1KeyWord type1KeyWord = Type1KeyWord.valueOfKey(getKey());
+            Type1KeyWord type1KeyWord = getType1KeyWord();
             if (type1KeyWord != null)
             {
                 str = type1KeyWord.toString();
@@ -131,7 +136,7 @@ public class CharStringCommand
     public static class Key
     {
 
-        private int[] keyValues = null;
+        private final int[] keyValues;
 
         /**
          * Constructor with one value.
@@ -140,7 +145,7 @@ public class CharStringCommand
          */
         public Key(int b0)
         {
-            setValue(new int[] { b0 });
+            keyValues = new int[] { b0 };
         }
 
         /**
@@ -151,7 +156,7 @@ public class CharStringCommand
          */
         public Key(int b0, int b1)
         {
-            setValue(new int[] { b0, b1 });
+            keyValues = new int[] { b0, b1 };
         }
 
         /**
@@ -161,7 +166,7 @@ public class CharStringCommand
          */
         public Key(int[] values)
         {
-            setValue(values);
+            keyValues = values;
         }
 
         /**
@@ -172,11 +177,6 @@ public class CharStringCommand
         public int[] getValue()
         {
             return keyValues;
-        }
-
-        private void setValue(int[] value)
-        {
-            keyValues = value;
         }
 
         /**
