@@ -21,9 +21,9 @@ import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormDefaultsProcessor;
 import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormGenerateAppearancesProcessor;
 import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormOrphanWidgetsProcessor;
 
-public class AcroFormFixup extends AbstractFixup
+public class AcroFormDefaultFixup extends AbstractFixup
 { 
-    public AcroFormFixup(PDDocument document)
+    public AcroFormDefaultFixup(PDDocument document)
     { 
         super(document); 
     }
