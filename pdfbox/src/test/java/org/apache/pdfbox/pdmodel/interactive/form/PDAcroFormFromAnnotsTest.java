@@ -30,9 +30,11 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
+import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.fixup.AbstractFixup;
 import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
 import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormOrphanWidgetsProcessor;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.junit.Test;
 
 /**
@@ -255,6 +257,82 @@ public class PDAcroFormFromAnnotsTest
             for (String fieldName : fieldsByName.keySet())
             {
                 assertNotNull(acroForm.getField(fieldName));
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-3891 AcroForm with empty fields entry
+     * 
+     * Check if the font resources added by PDFBox matches these by Acrobat
+     * which are taken from the widget normal appearance resources
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testFromAnnots3891ValidateFont() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
+        String acrobatSourceUrl = "https://issues.apache.org/jira/secure/attachment/13014447/merge-test-na-acrobat.pdf";
+
+        // will build the expected font respurce names and font decriptor names using the acrobat source document
+        Map<String, String> fontNames = new HashMap<String, String>();
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(acrobatSourceUrl).openStream());
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            PDAcroForm acroForm = catalog.getAcroForm(null);
+            PDResources acroFormResources = acroForm.getDefaultResources();
+            if (acroFormResources != null)
+            {
+                for (COSName fontName : acroFormResources.getFontNames())
+                {
+                    try
+                    {
+                        PDFont font = acroFormResources.getFont(fontName);
+                        font.getFontDescriptor().getFontName();
+                        fontNames.put(fontName.getName(), font.getName());
+                    }
+                    catch (IOException ioe)
+                    {
+                        //ignoring
+                    }
+                }
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
+            PDResources acroFormResources = acroForm.getDefaultResources();
+            if (acroFormResources != null)
+            {
+                for (COSName fontName : acroFormResources.getFontNames())
+                {
+                    try
+                    {
+                        PDFont font = acroFormResources.getFont(fontName);
+                        String pdfBoxFontName = font.getFontDescriptor().getFontName();
+                        assertEquals("font resource added by Acrobat shall match font resource added by PDFBox", fontNames.get(fontName.getName()), pdfBoxFontName);
+                    }
+                    catch (IOException ioe)
+                    {
+                        //ignoring
+                    }
+                }
             }
         }
         finally
