@@ -56,10 +56,12 @@ public class CharStringCommandTest
         assertEquals(12, value12_3[0]);
         assertEquals(3, value12_3[1]);
         assertEquals(12 ^ 3, key12_3.hashCode());
-        
+
         assertEquals(Type1KeyWord.HSTEM.key, key1);
         assertNotEquals(key1, key12_0);
+        assertNotEquals(key12_0, key1);
         assertNotEquals(key12_0, key12_3);
+        assertNotEquals(key12_0, new Key(new int[] { 12, 3, 0 }));
     }
 
     @Test
@@ -91,6 +93,14 @@ public class CharStringCommandTest
 
         assertNotEquals(charStringCommand1, charStringCommand12_0);
         assertNotEquals(charStringCommand12_0, charStringCommand12_3);
+    }
+
+    @Test
+    public void testUnknownCharStringCommand()
+    {
+        CharStringCommand charStringCommandUnknown = new CharStringCommand(99);
+        assertEquals(99, charStringCommandUnknown.getKey().getValue()[0]);
+        assertEquals("[99]|", charStringCommandUnknown.toString());
     }
 
 }
