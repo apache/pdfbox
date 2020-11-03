@@ -126,6 +126,25 @@ public final class COSBoolean extends COSBase
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        //taken from java.lang.Boolean
+        return value ? 1231 : 1237;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public boolean equals(Object obj) {
+        if (obj instanceof COSBoolean) {
+            return value == ((COSBoolean)obj).getValue();
+        }
+        return false;
+    }
+
+    /**
      * This will write this object out to a PDF stream.
      *
      * @param output The stream to write this object out to.
