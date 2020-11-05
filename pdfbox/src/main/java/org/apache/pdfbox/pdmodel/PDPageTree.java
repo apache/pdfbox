@@ -28,8 +28,10 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.COSObjectable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -170,10 +172,12 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
     private final class PageIterator implements Iterator<PDPage>
     {
         private final Queue<COSDictionary> queue = new ArrayDeque<COSDictionary>();
+        private Set<COSDictionary> set = new HashSet<COSDictionary>();
 
         private PageIterator(COSDictionary node)
         {
             enqueueKids(node);
+            set = null; // release memory, we don't use this anymore
         }
 
         private void enqueueKids(COSDictionary node)
@@ -183,6 +187,16 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
                 List<COSDictionary> kids = getKids(node);
                 for (COSDictionary kid : kids)
                 {
+                    if (set.contains(kid))
+                    {
+                        // PDFBOX-5009, PDFBOX-3953: prevent stack overflow with malformed PDFs
+                        LOG.error("This page tree node has already been visited");
+                        continue;
+                    }
+                    else if (kid.containsKey(COSName.KIDS))
+                    {
+                        set.add(kid);
+                    }
                     enqueueKids(kid);
                 }
             }
