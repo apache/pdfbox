@@ -116,14 +116,13 @@ public class PDDocumentCatalog implements COSObjectable
     /**
      * Get the documents AcroForm. This will return null if no AcroForm is part of the document.
      *
-     * Depent on setting <code>applyFixes</code> some fixing/changes will be done to the AcroForm
-     * as documented in {@link org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm#PDAcroForm(PDDocument, COSDictionary, boolean)}.
-     * If you need to ensure that there are no fixes applied call <code>applyFixes</code> with <code>false</code>.
+     * Dependent on setting <code>documentFixup</code> some fixing/changes will be done to the AcroForm.
+     * If you need to ensure that there are no fixes applied call <code>documentFixup</code> with <code>null</code>.
      * 
-     * Using <code>getAcroForm(true)</code> might change the original content and subsequent calls with
-     * <code>getAcroForm(false)</code> will return the changed content.
+     * Using <code>getAcroForm(PDDocumentFixup documentFixup)</code> might change the original content and
+     * subsequent calls with <code>getAcroForm(null)</code> will return the changed content.
      * 
-     * @param applyFixes applies fixes
+     * @param acroFormFixup the fix up action or null
      * @return The document's AcroForm.
      */
     public PDAcroForm getAcroForm(PDDocumentFixup acroFormFixup)
