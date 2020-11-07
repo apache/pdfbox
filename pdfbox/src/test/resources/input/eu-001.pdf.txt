@@ -148,12 +148,14 @@ kg/year
 to land 
 kg/year 
 Anthracene 50 1 1 
-Benzene 1 000 200 (as BTEX) 
+Benzene 1 000 200 (as 
+BTEX) 
 200 (as 
 BTEX) 
 Benzo(g,h,i)perylene - 1 - 
 Di-(2-ethyl hexyl) phthalate (DEHP) 10 1 1 
-Ethyl benzene - 200 (as BTEX) 
+Ethyl benzene - 200 (as 
+BTEX) 
 200 (as 
 BTEX) 
 Ethylene oxide 1 000 10 10 
@@ -165,12 +167,14 @@ Octylphenols and octylphenol ethoxylates - 1 -
 Organotin compounds (as total Sn) - 50 50 
 Phenols (as total C) - 20 20 
 Polycyclic Aromatic hydrocarbons (PAHs) 50 5 5 
-Toluene - 200 (as BTEX) 
+Toluene - 200 (as 
+BTEX) 
 200 (as 
 BTEX) 
 Total Organic Carbon (TOC) (as total C or 
 COD/3) - 50 000 - 
-Xylenes - 200 (as BTEX) 
+Xylenes - 200 (as 
+BTEX) 
 200 (as 
 BTEX) 
  
