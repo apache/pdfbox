@@ -650,7 +650,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
                     }
                     // if there is at least the equivalent of one space
                     // between the last character and the current one,
-                    // reset the max line height as the font size may have completely changed
+                    // reset the max line height as the font size may have completely changed.
                     if (Math.abs(position.getX()
                             - lastPosition.getTextPosition().getX()) > (wordSpacing + deltaSpace))
                     {
