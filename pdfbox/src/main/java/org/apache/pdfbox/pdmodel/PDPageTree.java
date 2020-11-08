@@ -239,7 +239,9 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      *
      * @param index zero-based index
      * 
-     * @return the page at the given index.
+     * @throws IllegalStateException if the requested index isn't found or doesn't point to a valid
+     * page dictionary
+     * @throws IndexOutOfBoundsException if the requested index is higher than the page count
      */
     public PDPage get(int index)
     {
@@ -272,6 +274,8 @@ public class PDPageTree implements COSObjectable, Iterable<PDPage>
      * @param node page tree node to search
      * @param encountered number of pages encountered so far
      * @return COS dictionary of the Page object
+     * @throws IllegalStateException if the requested page number isn't found
+     * @throws IndexOutOfBoundsException if the requested page number is higher than the page count
      */
     private COSDictionary get(int pageNum, COSDictionary node, int encountered)
     {
