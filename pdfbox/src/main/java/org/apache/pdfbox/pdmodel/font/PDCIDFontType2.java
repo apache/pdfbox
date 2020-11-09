@@ -209,7 +209,11 @@ public class PDCIDFontType2 extends PDCIDFont
         // Acrobat allows bad PDFs to use Unicode CMaps here instead of CID CMaps, see PDFBOX-1283
         if (!cMap.hasCIDMappings() && cMap.hasUnicodeMappings())
         {
-            return cMap.toUnicode(code).codePointAt(0); // actually: code -> CID
+            String unicode = cMap.toUnicode(code);
+            if (unicode != null)
+            {
+                return unicode.codePointAt(0); // actually: code -> CID
+            }
         }
 
         return cMap.toCID(code);
