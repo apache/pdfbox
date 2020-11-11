@@ -44,13 +44,13 @@ public class FontMetrics
     private String fontVersion;
     private String notice;
     private String encodingScheme;
-    private int mappingScheme;
-    private int escChar;
+    private int mappingScheme = 0;
+    private int escChar = 0;
     private String characterSet;
-    private int characters;
-    private boolean isBaseFont;
+    private int characters = 0;
+    private boolean isBaseFont = true;
     private float[] vVector;
-    private boolean isFixedV;
+    private Boolean isFixedV = null;
     private float capHeight;
     private float xHeight;
     private float ascender;
@@ -437,7 +437,7 @@ public class FontMetrics
      *
      * @return Value of property isBaseFont.
      */
-    public boolean isBaseFont()
+    public boolean getIsBaseFont()
     {
         return isBaseFont;
     }
@@ -477,9 +477,10 @@ public class FontMetrics
      *
      * @return Value of property isFixedV.
      */
-    public boolean isFixedV()
+    public boolean getIsFixedV()
     {
-        return isFixedV;
+        // if not set the default value depends on the existence of vVector
+        return isFixedV == null ? vVector != null : isFixedV;
     }
 
     /**
@@ -677,7 +678,7 @@ public class FontMetrics
      *
      * @return Value of property isFixedPitch.
      */
-    public boolean isFixedPitch()
+    public boolean getIsFixedPitch()
     {
         return isFixedPitch;
     }

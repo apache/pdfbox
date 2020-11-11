@@ -89,8 +89,8 @@ public class FontMetricsTest
         assertEquals(0, fontMetrics.getEscChar());
         assertEquals("characterSet", fontMetrics.getCharacterSet());
         assertEquals(10, fontMetrics.getCharacters());
-        assertTrue(fontMetrics.isBaseFont());
-        assertTrue(fontMetrics.isFixedV());
+        assertTrue(fontMetrics.getIsBaseFont());
+        assertTrue(fontMetrics.getIsFixedV());
         assertEquals(10f, fontMetrics.getCapHeight(), 0f);
         assertEquals(20f, fontMetrics.getXHeight(), 0f);
         assertEquals(30f, fontMetrics.getAscender(), 0f);
@@ -100,7 +100,7 @@ public class FontMetricsTest
         assertEquals(70f, fontMetrics.getUnderlinePosition(), 0f);
         assertEquals(80f, fontMetrics.getUnderlineThickness(), 0f);
         assertEquals(90f, fontMetrics.getItalicAngle(), 0f);
-        assertTrue(fontMetrics.isFixedPitch());
+        assertTrue(fontMetrics.getIsFixedPitch());
     }
 
     @Test
