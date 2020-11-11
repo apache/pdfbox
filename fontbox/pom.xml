@@ -62,6 +62,7 @@
             <excludes>
                 <exclude>src/main/resources/org/apache/fontbox/cmap/*</exclude>
                 <exclude>src/main/resources/org/apache/fontbox/unicode/*</exclude>
+                <exclude>src/test/resources/afm/*</exclude>
             </excludes>
         </configuration>
       </plugin>
