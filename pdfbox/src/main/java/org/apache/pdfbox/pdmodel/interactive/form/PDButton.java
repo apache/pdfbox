@@ -94,8 +94,10 @@ public abstract class PDButton extends PDTerminalField
     /**
      * Set the push button bit.
      *
+     * @deprecated use {@link org.apache.pdfbox.pdmodel.interactive.form.PDPushButton} instead
      * @param pushbutton if true the button field is treated as a push button field.
      */
+    @Deprecated
     public void setPushButton(boolean pushbutton)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_PUSHBUTTON, pushbutton);
@@ -118,8 +120,10 @@ public abstract class PDButton extends PDTerminalField
     /**
      * Set the radio button bit.
      *
+     * @deprecated use {@link org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton} instead
      * @param radiobutton if true the button field is treated as a radio button field.
      */
+    @Deprecated
     public void setRadioButton(boolean radiobutton)
     {
         getCOSObject().setFlag(COSName.FF, FLAG_RADIO, radiobutton);
