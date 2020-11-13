@@ -43,7 +43,7 @@ public final class PDRadioButton extends PDButton
     public PDRadioButton(PDAcroForm acroForm)
     {
         super(acroForm);
-        setRadioButton(true);
+        getCOSObject().setFlag(COSName.FF, FLAG_RADIO, true);
     }
     
     /**

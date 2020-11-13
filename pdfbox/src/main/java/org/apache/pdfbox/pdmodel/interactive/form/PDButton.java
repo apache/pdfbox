@@ -90,16 +90,6 @@ public abstract class PDButton extends PDTerminalField
     }
 
     /**
-     * Set the push button bit.
-     *
-     * @param pushbutton if true the button field is treated as a push button field.
-     */
-    public void setPushButton(boolean pushbutton)
-    {
-        getCOSObject().setFlag(COSName.FF, FLAG_PUSHBUTTON, pushbutton);
-    }
-
-    /**
      * Determines if radio button bit is set.
      * 
      * @return true if type of button field is a radio button.
@@ -107,16 +97,6 @@ public abstract class PDButton extends PDTerminalField
     public boolean isRadioButton()
     {
         return getCOSObject().getFlag(COSName.FF, FLAG_RADIO);
-    }
-
-    /**
-     * Set the radio button bit.
-     *
-     * @param radiobutton if true the button field is treated as a radio button field.
-     */
-    public void setRadioButton(boolean radiobutton)
-    {
-        getCOSObject().setFlag(COSName.FF, FLAG_RADIO, radiobutton);
     }
     
     /**
