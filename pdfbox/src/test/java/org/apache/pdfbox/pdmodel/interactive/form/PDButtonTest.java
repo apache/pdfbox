@@ -94,6 +94,38 @@ public class PDButtonTest
         assertTrue(buttonField.isRadioButton());
         assertFalse(buttonField.isPushButton());
     }
+
+    @Test
+    public void changeRadioButtonToPushButton()
+    {
+        PDButton buttonField = new PDRadioButton(acroForm);
+        
+        assertEquals(buttonField.getFieldType(), buttonField.getCOSObject().getNameAsString(COSName.FT));
+        assertEquals("Btn", buttonField.getFieldType());
+        assertTrue(buttonField.isRadioButton());
+        assertFalse(buttonField.isPushButton());
+
+        // change to push button
+        buttonField.setPushButton(true);
+        assertFalse(buttonField.isRadioButton());
+        assertTrue(buttonField.isPushButton());        
+    }
+
+    @Test
+    public void changePushButtonToRadioButton()
+    {
+        PDButton buttonField = new PDPushButton(acroForm);
+        
+        assertEquals(buttonField.getFieldType(), buttonField.getCOSObject().getNameAsString(COSName.FT));
+        assertEquals("Btn", buttonField.getFieldType());
+        assertTrue(buttonField.isPushButton());
+        assertFalse(buttonField.isRadioButton());
+
+        // change to push button
+        buttonField.setRadioButton(true);
+        assertFalse(buttonField.isPushButton());  
+        assertTrue(buttonField.isRadioButton());
+    }
     
     @Test
     /**
