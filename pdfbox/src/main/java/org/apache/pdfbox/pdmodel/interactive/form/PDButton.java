@@ -61,7 +61,7 @@ public abstract class PDButton extends PDTerminalField
      *
      * @param acroForm The acroform.
      */
-    public PDButton(PDAcroForm acroForm)
+    PDButton(PDAcroForm acroForm)
     {
         super(acroForm);
         getCOSObject().setItem(COSName.FT, COSName.BTN);
@@ -114,7 +114,7 @@ public abstract class PDButton extends PDTerminalField
         {
             String stringValue = ((COSName)value).getName();
             List<String> exportValues = getExportValues();
-            if (exportValues.size() > 0)
+            if (!exportValues.isEmpty())
             {
                 try
                 {
@@ -153,9 +153,7 @@ public abstract class PDButton extends PDTerminalField
         
         // if there are export values/an Opt entry there is a different 
         // approach to setting the value
-        boolean hasExportValues = getExportValues().size() > 0;
-
-        if (hasExportValues) {
+        if (!getExportValues().isEmpty()) {
             updateByOption(value);
         }
         else
@@ -286,7 +284,7 @@ public abstract class PDButton extends PDTerminalField
     void constructAppearances() throws IOException
     {
         List<String> exportValues = getExportValues();
-        if (exportValues.size() > 0)
+        if (!exportValues.isEmpty())
         {
             // the value is the index value of the option. So we need to get that
             // and use it to set the value
@@ -324,7 +322,7 @@ public abstract class PDButton extends PDTerminalField
         // we need a set as the field can appear multiple times
         Set<String> onValues = new LinkedHashSet<>();
         
-        if (getExportValues().size() > 0)
+        if (!getExportValues().isEmpty())
         {
             onValues.addAll(getExportValues());
             return onValues;
