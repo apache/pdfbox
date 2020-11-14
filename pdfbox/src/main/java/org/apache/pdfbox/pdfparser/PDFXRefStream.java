@@ -31,14 +31,13 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdfwriter.COSWriterXRefEntry;
 
 /**
  * @author Alexander Funk
  */
-public class PDFXRefStream implements PDFXRef
+public class PDFXRefStream
 {
 
     private static final int ENTRY_OBJSTREAM = 2;
@@ -344,12 +343,4 @@ public class PDFXRefStream implements PDFXRef
         long nextFree;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public COSObject getObject(int objectNumber)
-    {
-        return null;
-    }
 }
