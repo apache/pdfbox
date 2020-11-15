@@ -17,7 +17,7 @@
 
 package org.apache.pdfbox.pdmodel.fdf;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,7 +29,7 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  * Test some characteristics of FDFFields

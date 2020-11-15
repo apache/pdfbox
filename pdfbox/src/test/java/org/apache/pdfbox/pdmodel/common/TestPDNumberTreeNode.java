@@ -16,14 +16,17 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSInteger;
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test case for PDNumberTreeNode.
@@ -31,7 +34,7 @@ import org.junit.Assert;
  * 
  * @author Dominic Tubach
  */
-public class TestPDNumberTreeNode extends TestCase
+public class TestPDNumberTreeNode
 {
 
     private PDNumberTreeNode node1;
@@ -89,8 +92,8 @@ public class TestPDNumberTreeNode extends TestCase
         }
     }
 
-    @Override
-    protected void setUp() throws Exception
+    @BeforeEach
+    protected void setUp()
     {
         this.node5 = new PDNumberTreeNode(PDTest.class);
         Map<Integer,PDTest> Numbers = new TreeMap<>();
@@ -141,54 +144,57 @@ public class TestPDNumberTreeNode extends TestCase
         this.node1.setKids( kids );
     }
     
+    @Test
     public void testGetValue() throws IOException
     {
-        Assert.assertEquals(new PDTest( 51 ), this.node5.getValue( 4 ));
-        Assert.assertEquals(new PDTest(70), this.node1.getValue( 9 ));
+        assertEquals(new PDTest( 51 ), this.node5.getValue( 4 ));
+        assertEquals(new PDTest(70), this.node1.getValue( 9 ));
         
         this.node1.setKids( null );
         this.node1.setNumbers( null );
-        Assert.assertNull( this.node1.getValue( 0 ) );
+        assertNull( this.node1.getValue( 0 ) );
     }
 
+    @Test
     public void testUpperLimit() throws IOException
     {
-        Assert.assertEquals(7, (int) this.node5.getUpperLimit());
-        Assert.assertEquals(7, (int) this.node2.getUpperLimit());
+        assertEquals(7, (int) this.node5.getUpperLimit());
+        assertEquals(7, (int) this.node2.getUpperLimit());
 
-        Assert.assertEquals(12, (int) this.node24.getUpperLimit());
-        Assert.assertEquals(12, (int) this.node4.getUpperLimit());
+        assertEquals(12, (int) this.node24.getUpperLimit());
+        assertEquals(12, (int) this.node4.getUpperLimit());
 
-        Assert.assertEquals(12, (int) this.node1.getUpperLimit());
+        assertEquals(12, (int) this.node1.getUpperLimit());
 
         this.node24.setNumbers(new HashMap<>());
-        Assert.assertNull( this.node24.getUpperLimit() );
+        assertNull( this.node24.getUpperLimit() );
         
         this.node5.setNumbers( null );
-        Assert.assertNull( this.node5.getUpperLimit() );
+        assertNull( this.node5.getUpperLimit() );
         
         this.node1.setKids( null );
-        Assert.assertNull( this.node1.getUpperLimit() );
+        assertNull( this.node1.getUpperLimit() );
     }
 
+    @Test
     public void testLowerLimit() throws IOException
     {
-        Assert.assertEquals(1, (int) this.node5.getLowerLimit());
-        Assert.assertEquals(1, (int) this.node2.getLowerLimit());
+        assertEquals(1, (int) this.node5.getLowerLimit());
+        assertEquals(1, (int) this.node2.getLowerLimit());
 
-        Assert.assertEquals(8, (int) this.node24.getLowerLimit());
-        Assert.assertEquals(8, (int) this.node4.getLowerLimit());
+        assertEquals(8, (int) this.node24.getLowerLimit());
+        assertEquals(8, (int) this.node4.getLowerLimit());
 
-        Assert.assertEquals(1, (int) this.node1.getLowerLimit());
+        assertEquals(1, (int) this.node1.getLowerLimit());
         
         this.node24.setNumbers(new HashMap<>());
-        Assert.assertNull( this.node24.getLowerLimit() );
+        assertNull( this.node24.getLowerLimit() );
         
         this.node5.setNumbers( null );
-        Assert.assertNull( this.node5.getLowerLimit() );
+        assertNull( this.node5.getLowerLimit() );
         
         this.node1.setKids( null );
-        Assert.assertNull( this.node1.getLowerLimit() );
+        assertNull( this.node1.getLowerLimit() );
     }
 
 }

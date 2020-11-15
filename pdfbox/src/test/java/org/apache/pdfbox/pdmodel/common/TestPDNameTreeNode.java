@@ -16,20 +16,22 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSInteger;
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test case for PDNameTreeNode.
  * 
  * @author Koch
  */
-public class TestPDNameTreeNode extends TestCase
+public class TestPDNameTreeNode
 {
     private PDNameTreeNode<COSInteger> node1;
     private PDNameTreeNode<COSInteger> node2;
@@ -37,7 +39,7 @@ public class TestPDNameTreeNode extends TestCase
     private PDNameTreeNode<COSInteger> node5;
     private PDNameTreeNode<COSInteger> node24;
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception
     {
         this.node5 = new PDIntegerNameTreeNode();
@@ -89,25 +91,27 @@ public class TestPDNameTreeNode extends TestCase
         this.node1.setKids(kids);
     }
 
+    @Test
     public void testUpperLimit() throws IOException
     {
-        Assert.assertEquals("Astatine", this.node5.getUpperLimit());
-        Assert.assertEquals("Astatine", this.node2.getUpperLimit());
+        assertEquals("Astatine", this.node5.getUpperLimit());
+        assertEquals("Astatine", this.node2.getUpperLimit());
 
-        Assert.assertEquals("Zirconium", this.node24.getUpperLimit());
-        Assert.assertEquals("Zirconium", this.node4.getUpperLimit());
+        assertEquals("Zirconium", this.node24.getUpperLimit());
+        assertEquals("Zirconium", this.node4.getUpperLimit());
 
-        Assert.assertEquals(null, this.node1.getUpperLimit());
+        assertEquals(null, this.node1.getUpperLimit());
     }
 
+    @Test
     public void testLowerLimit() throws IOException
     {
-        Assert.assertEquals("Actinium", this.node5.getLowerLimit());
-        Assert.assertEquals("Actinium", this.node2.getLowerLimit());
+        assertEquals("Actinium", this.node5.getLowerLimit());
+        assertEquals("Actinium", this.node2.getLowerLimit());
 
-        Assert.assertEquals("Xenon", this.node24.getLowerLimit());
-        Assert.assertEquals("Xenon", this.node4.getLowerLimit());
+        assertEquals("Xenon", this.node24.getLowerLimit());
+        assertEquals("Xenon", this.node4.getLowerLimit());
 
-        Assert.assertEquals(null, this.node1.getLowerLimit());
+        assertEquals(null, this.node1.getLowerLimit());
     }
 }

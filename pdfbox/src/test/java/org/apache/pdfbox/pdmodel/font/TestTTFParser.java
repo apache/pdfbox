@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import org.apache.fontbox.ttf.CmapSubtable;
@@ -24,8 +27,7 @@ import org.apache.fontbox.ttf.NameRecord;
 import org.apache.fontbox.ttf.PostScriptTable;
 import org.apache.fontbox.ttf.TTFParser;
 import org.apache.fontbox.ttf.TrueTypeFont;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test for correctly parsing TTF files.
@@ -43,16 +45,16 @@ public class TestTTFParser
     {
         InputStream input = PDFont.class.getResourceAsStream(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
-        Assert.assertNotNull(input);
+        assertNotNull(input);
 
         TTFParser parser = new TTFParser();
         TrueTypeFont font = parser.parse(input);
 
         CmapTable cmapTable = font.getCmap();
-        Assert.assertNotNull(cmapTable);
+        assertNotNull(cmapTable);
 
         CmapSubtable[] cmaps = cmapTable.getCmaps();
-        Assert.assertNotNull(cmaps);
+        assertNotNull(cmaps);
 
         CmapSubtable cmap = null;
 
@@ -66,20 +68,20 @@ public class TestTTFParser
             }
         }
 
-        Assert.assertNotNull(cmap);
+        assertNotNull(cmap);
 
         PostScriptTable post = font.getPostScript();
-        Assert.assertNotNull(post);
+        assertNotNull(post);
 
         String[] glyphNames = font.getPostScript().getGlyphNames();
-        Assert.assertNotNull(glyphNames);
+        assertNotNull(glyphNames);
 
         // test a WGL4 (Macintosh standard) name
         int gid = cmap.getGlyphId(0x2122); // TRADE MARK SIGN
-        Assert.assertEquals("trademark", glyphNames[gid]);
+        assertEquals("trademark", glyphNames[gid]);
 
         // test an additional name
         gid = cmap.getGlyphId(0x20AC); // EURO SIGN
-        Assert.assertEquals("Euro", glyphNames[gid]);
+        assertEquals("Euro", glyphNames[gid]);
     }
 }

@@ -17,16 +17,16 @@
 package org.apache.pdfbox.pdmodel.fdf;
 
 import java.io.File;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
 import org.apache.pdfbox.Loader;
-import org.junit.Assert;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for the FDFAnnotation class.
@@ -58,7 +58,7 @@ public class FDFAnnotationTest
                     if ("P&1 P&2 P&3".equals(annotationFreeText.getContents()))
                     {
                         testedPDFBox4345andPDFBox3646 = true;
-                        Assert.assertEquals("<body style=\"font:12pt Helvetica; "
+                        assertEquals("<body style=\"font:12pt Helvetica; "
                                 + "color:#D66C00;\" xfa:APIVersion=\"Acrobat:7.0.8\" "
                                 + "xfa:spec=\"2.0.2\" xmlns=\"http://www.w3.org/1999/xhtml\" "
                                 + "xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\">\n" 
@@ -69,7 +69,7 @@ public class FDFAnnotationTest
                     }
                 }
             }
-            Assert.assertTrue(testedPDFBox4345andPDFBox3646);
+            assertTrue(testedPDFBox4345andPDFBox3646);
         }
     }
 }

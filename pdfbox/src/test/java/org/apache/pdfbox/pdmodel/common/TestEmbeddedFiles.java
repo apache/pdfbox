@@ -16,6 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -28,11 +34,9 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.TestCase;
-
-public class TestEmbeddedFiles extends TestCase
+public class TestEmbeddedFiles
 {
     @Test
     public void testNullEmbeddedFile() throws IOException
@@ -47,7 +51,7 @@ public class TestEmbeddedFiles extends TestCase
 
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
             PDDocumentNameDictionary names = catalog.getNames();
-            assertEquals("expected two files", 2, names.getEmbeddedFiles().getNames().size());
+            assertEquals(2, names.getEmbeddedFiles().getNames().size(), "expected two files");
             PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
 
             PDComplexFileSpecification spec = embeddedFiles.getNames().get("non-existent-file.docx");
@@ -59,16 +63,16 @@ public class TestEmbeddedFiles extends TestCase
             }
             //now test for actual attachment
             spec = embeddedFiles.getNames().get("My first attachment");
-            assertNotNull("one attachment actually exists", spec);
-            assertEquals("existing file length", 17660, spec.getEmbeddedFile().getLength());
+            assertNotNull(spec, "one attachment actually exists");
+            assertEquals(17660, spec.getEmbeddedFile().getLength(), "existing file length");
             spec = embeddedFiles.getNames().get("non-existent-file.docx");
         }
         catch (NullPointerException e)
         {
-            assertNotNull("null pointer exception", null);
+            fail("null pointer exception");
         }
-        assertTrue("Was able to get file without exception", ok);
-        assertNull("EmbeddedFile was correctly null", embeddedFile);
+        assertTrue(ok, "Was able to get file without exception");
+        assertNull(embeddedFile, "EmbeddedFile was correctly null");
     }
 
     @Test
@@ -99,15 +103,14 @@ public class TestEmbeddedFiles extends TestCase
             unixFile = spec.getEmbeddedFileUnix();
         }
 
-        assertTrue("non os specific",
-                byteArrayContainsLC("non os specific", nonOSFile.toByteArray(), "ISO-8859-1"));
+        assertTrue(byteArrayContainsLC("non os specific", nonOSFile.toByteArray(), "ISO-8859-1"),
+                "non os specific");
+        assertTrue(byteArrayContainsLC("mac embedded", macFile.toByteArray(), "ISO-8859-1"), "mac");
 
-        assertTrue("mac", byteArrayContainsLC("mac embedded", macFile.toByteArray(), "ISO-8859-1"));
+        assertTrue(byteArrayContainsLC("dos embedded", dosFile.toByteArray(), "ISO-8859-1"), "dos");
 
-        assertTrue("dos", byteArrayContainsLC("dos embedded", dosFile.toByteArray(), "ISO-8859-1"));
-
-        assertTrue("unix",
-                byteArrayContainsLC("unix embedded", unixFile.toByteArray(), "ISO-8859-1"));
+        assertTrue(byteArrayContainsLC("unix embedded", unixFile.toByteArray(), "ISO-8859-1"),
+                "unix");
 
     }
 

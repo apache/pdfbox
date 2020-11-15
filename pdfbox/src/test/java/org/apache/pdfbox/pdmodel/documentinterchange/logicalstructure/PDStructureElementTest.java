@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.documentinterchange.logicalstructure;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -28,8 +30,7 @@ import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -55,13 +56,13 @@ public class PDStructureElementTest
         }
 
         // collect attributes and check their count.
-        Assert.assertEquals(117, attributeSet.size());
+        assertEquals(117, attributeSet.size());
         int cnt = 0;
         for (Revisions<PDAttributeObject> attributes : attributeSet)
         {
             cnt += attributes.size();
         }
-        Assert.assertEquals(111, cnt); // this one was 105 before PDFBOX-4197 was fixed
+        assertEquals(111, cnt); // this one was 105 before PDFBOX-4197 was fixed
     }
 
     // Each element can be an array, a dictionary or a number.

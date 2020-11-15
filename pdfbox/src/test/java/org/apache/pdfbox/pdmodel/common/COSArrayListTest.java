@@ -15,10 +15,10 @@
  */
 package org.apache.pdfbox.pdmodel.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +37,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationCircle;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationHighlight;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class COSArrayListTest {
     // next two entries are to be used for comparison with
@@ -64,7 +64,7 @@ public class COSArrayListTest {
      * Create three new different annotations and add them to the Java List/Array as
      * well as PDFBox List/Array implementations.
      */
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         annotationsList = new ArrayList<>();
         PDAnnotationHighlight txtMark = new PDAnnotationHighlight();
@@ -115,14 +115,15 @@ public class COSArrayListTest {
 
         for (int i = 0; i < cosArrayList.size(); i++) {
             PDAnnotation annot = cosArrayList.get(i);
-            assertEquals("PDAnnotations cosObject at " + i + " shall be equal to index " + i + " of COSArray",
-                annotationsArray.get(i), annot.getCOSObject());
+            assertEquals(annotationsArray.get(i), annot.getCOSObject(),
+                    "PDAnnotations cosObject at " + i + " shall be equal to index " + i
+                            + " of COSArray");
 
             // compare with Java List/Array
-            assertEquals("PDAnnotations at " + i + " shall be at index " + i + " of List",
-                tbcAnnotationsList.get(i), annot);
-            assertEquals("PDAnnotations cosObject at " + i + " shall be at position " + i + " of Array",
-                tbcAnnotationsArray[i], annot.getCOSObject());
+            assertEquals(tbcAnnotationsList.get(i), annot,
+                    "PDAnnotations at " + i + " shall be at index " + i + " of List");
+            assertEquals(tbcAnnotationsArray[i], annot.getCOSObject(),
+                    "PDAnnotations cosObject at " + i + " shall be at position " + i + " of Array");
         }
     }
 
@@ -137,14 +138,14 @@ public class COSArrayListTest {
         PDAnnotationSquare aSquare = new PDAnnotationSquare();
         cosArrayList.add(aSquare);
 
-        assertEquals("List size shall be 5", 5, annotationsList.size());
-        assertEquals("COSArray size shall be 5", 5, annotationsArray.size());
+        assertEquals(5, annotationsList.size(), "List size shall be 5");
+        assertEquals(5, annotationsArray.size(), "COSArray size shall be 5");
 
         PDAnnotation annot = annotationsList.get(4);
-        assertEquals("Added annotation shall be 4th entry in COSArray",
-                4, annotationsArray.indexOf(annot.getCOSObject()));
-        assertEquals("Provided COSArray and underlying COSArray shall be equal", annotationsArray,
-                cosArrayList.toList());
+        assertEquals(4, annotationsArray.indexOf(annot.getCOSObject()),
+                "Added annotation shall be 4th entry in COSArray");
+        assertEquals(annotationsArray, cosArrayList.toList(),
+                "Provided COSArray and underlying COSArray shall be equal");
     }
 
     /**
@@ -157,15 +158,15 @@ public class COSArrayListTest {
         int positionToRemove = 2;
         PDAnnotation toBeRemoved = cosArrayList.get(positionToRemove);
 
-        assertEquals("Remove operation shall return the removed object", toBeRemoved,
-                cosArrayList.remove(positionToRemove));
-        assertEquals("List size shall be 3", 3, cosArrayList.size());
-        assertEquals("COSArray size shall be 3", 3, annotationsArray.size());
+        assertEquals(toBeRemoved, cosArrayList.remove(positionToRemove),
+                "Remove operation shall return the removed object");
+        assertEquals(3, cosArrayList.size(), "List size shall be 3");
+        assertEquals(3, annotationsArray.size(), "COSArray size shall be 3");
 
-        assertEquals("PDAnnotation shall no longer exist in List",
-                -1, cosArrayList.indexOf(tbcAnnotationsList.get(positionToRemove)));
-        assertEquals("COSObject shall no longer exist in COSArray",
-                -1, annotationsArray.indexOf(tbcAnnotationsArray[positionToRemove]));
+        assertEquals(-1, cosArrayList.indexOf(tbcAnnotationsList.get(positionToRemove)),
+                "PDAnnotation shall no longer exist in List");
+        assertEquals(-1, annotationsArray.indexOf(tbcAnnotationsArray[positionToRemove]),
+                "COSObject shall no longer exist in COSArray");
     }
 
     /**
@@ -179,24 +180,24 @@ public class COSArrayListTest {
         int positionToRemove = 2;
         PDAnnotation toBeRemoved = annotationsList.get(positionToRemove);
 
-        assertTrue("Remove operation shall return true", cosArrayList.remove(toBeRemoved));
-        assertEquals("List size shall be 3", 3, cosArrayList.size());
-        assertEquals("COSArray size shall be 3", 3, annotationsArray.size());
+        assertTrue(cosArrayList.remove(toBeRemoved), "Remove operation shall return true");
+        assertEquals(3, cosArrayList.size(), "List size shall be 3");
+        assertEquals(3, annotationsArray.size(), "COSArray size shall be 3");
 
         // compare with Java List/Array to ensure correct object at position
-        assertEquals("List object at 3 is at position 2 in COSArrayList now",
-                cosArrayList.get(2), tbcAnnotationsList.get(3));
-        assertEquals("COSObject of List object at 3 is at position 2 in COSArray now",
-                annotationsArray.get(2), tbcAnnotationsList.get(3).getCOSObject());
-        assertEquals("Array object at 3 is at position 2 in underlying COSArray now",
-                annotationsArray.get(2), tbcAnnotationsArray[3]);
+        assertEquals(cosArrayList.get(2), tbcAnnotationsList.get(3),
+                "List object at 3 is at position 2 in COSArrayList now");
+        assertEquals(annotationsArray.get(2), tbcAnnotationsList.get(3).getCOSObject(),
+                "COSObject of List object at 3 is at position 2 in COSArray now");
+        assertEquals(annotationsArray.get(2), tbcAnnotationsArray[3],
+                "Array object at 3 is at position 2 in underlying COSArray now");
 
-        assertEquals("PDAnnotation shall no longer exist in List",
-                -1, cosArrayList.indexOf(tbcAnnotationsList.get(positionToRemove)));
-        assertEquals("COSObject shall no longer exist in COSArray",
-                -1, annotationsArray.indexOf(tbcAnnotationsArray[positionToRemove]));
+        assertEquals(-1, cosArrayList.indexOf(tbcAnnotationsList.get(positionToRemove)),
+                "PDAnnotation shall no longer exist in List");
+        assertEquals(-1, annotationsArray.indexOf(tbcAnnotationsArray[positionToRemove]),
+                "COSObject shall no longer exist in COSArray");
 
-        assertFalse("Remove shall not remove any object", cosArrayList.remove(toBeRemoved));
+        assertFalse(cosArrayList.remove(toBeRemoved), "Remove shall not remove any object");
 
     }
 
@@ -213,11 +214,13 @@ public class COSArrayListTest {
 
         List<PDAnnotation> toBeRemovedInstances = Collections.singletonList(toBeRemoved);
 
-        assertTrue("Remove operation shall return true", cosArrayList.removeAll(toBeRemovedInstances));
-        assertEquals("List size shall be 3", 3, cosArrayList.size());
-        assertEquals("COSArray size shall be 3", 3, annotationsArray.size());
+        assertTrue(cosArrayList.removeAll(toBeRemovedInstances),
+                "Remove operation shall return true");
+        assertEquals(3, cosArrayList.size(), "List size shall be 3");
+        assertEquals(3, annotationsArray.size(), "COSArray size shall be 3");
 
-        assertFalse("Remove shall not remove any object", cosArrayList.removeAll(toBeRemovedInstances));
+        assertFalse(cosArrayList.removeAll(toBeRemovedInstances),
+                "Remove shall not remove any object");
     }
 
     /**
@@ -231,13 +234,13 @@ public class COSArrayListTest {
         int positionToRemove = 1;
         PDAnnotation toBeRemoved = tbcAnnotationsList.get(positionToRemove);
 
-        assertTrue("Remove operation shall return true", cosArrayList.remove(toBeRemoved));
-        assertEquals("List size shall be 3", 3, cosArrayList.size());
-        assertEquals("COSArray size shall be 3", 3, annotationsArray.size());
+        assertTrue(cosArrayList.remove(toBeRemoved), "Remove operation shall return true");
+        assertEquals(3, cosArrayList.size(), "List size shall be 3");
+        assertEquals(3, annotationsArray.size(), "COSArray size shall be 3");
 
-        assertTrue("Remove operation shall return true", cosArrayList.remove(toBeRemoved));
-        assertEquals("List size shall be 2", 2, cosArrayList.size());
-        assertEquals("COSArray size shall be 2", 2, annotationsArray.size());
+        assertTrue(cosArrayList.remove(toBeRemoved), "Remove operation shall return true");
+        assertEquals(2, cosArrayList.size(), "List size shall be 2");
+        assertEquals(2, annotationsArray.size(), "COSArray size shall be 2");
     }
 
     /**
@@ -253,11 +256,13 @@ public class COSArrayListTest {
 
         List<PDAnnotation> toBeRemovedInstances = Collections.singletonList(toBeRemoved);
 
-        assertTrue("Remove operation shall return true", cosArrayList.removeAll(toBeRemovedInstances));
-        assertEquals("List size shall be 2", 2, cosArrayList.size());
-        assertEquals("COSArray size shall be 2", 2, annotationsArray.size());
+        assertTrue(cosArrayList.removeAll(toBeRemovedInstances),
+                "Remove operation shall return true");
+        assertEquals(2, cosArrayList.size(), "List size shall be 2");
+        assertEquals(2, annotationsArray.size(), "COSArray size shall be 2");
 
-        assertFalse("Remove shall not remove any object", cosArrayList.removeAll(toBeRemovedInstances));
+        assertFalse(cosArrayList.removeAll(toBeRemovedInstances),
+                "Remove shall not remove any object");
     }
 
     @Test
@@ -308,7 +313,7 @@ public class COSArrayListTest {
             pageAnnots.add(txtMark);
             pageAnnots.add(txtMark);
             pageAnnots.add(txtLink);
-            assertEquals("There shall be 4 annotations generated", 4, pageAnnots.size());
+            assertEquals(4, pageAnnots.size(), "There shall be 4 annotations generated");
 
             page.setAnnotations(pageAnnots);
 
@@ -320,14 +325,16 @@ public class COSArrayListTest {
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
 
-            assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
-            assertEquals("The size of the internal COSArray shall be 4", 4, annotations.toList().size());
+            assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
+            assertEquals(4, annotations.toList().size(),
+                    "The size of the internal COSArray shall be 4");
 
             PDAnnotation toBeRemoved = annotations.get(0);
             annotations.remove(toBeRemoved);
 
-            assertEquals("There shall be 3 annotations left", 3, annotations.size());
-            assertEquals("The size of the internal COSArray shall be 3", 3, annotations.toList().size());
+            assertEquals(3, annotations.size(), "There shall be 3 annotations left");
+            assertEquals(3, annotations.toList().size(),
+                    "The size of the internal COSArray shall be 3");
         }
     }
 
@@ -347,7 +354,7 @@ public class COSArrayListTest {
             pageAnnots.add(txtMark);
             pageAnnots.add(txtMark);
             pageAnnots.add(txtLink);
-            assertEquals("There shall be 4 annotations generated", 4, pageAnnots.size());
+            assertEquals(4, pageAnnots.size(), "There shall be 4 annotations generated");
 
             page.setAnnotations(pageAnnots);
 
@@ -359,15 +366,17 @@ public class COSArrayListTest {
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
 
-            assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
-            assertEquals("The size of the internal COSArray shall be 4", 4, annotations.toList().size());
+            assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
+            assertEquals(4, annotations.toList().size(),
+                    "The size of the internal COSArray shall be 4");
 
             PDAnnotation toBeRemoved = annotations.get(0);
 
             annotations.remove(toBeRemoved);
 
-            assertEquals("There shall be 3 annotations left", 3, annotations.size());
-            assertEquals("The size of the internal COSArray shall be 2", 3, annotations.toList().size());
+            assertEquals(3, annotations.size(), "There shall be 3 annotations left");
+            assertEquals(3, annotations.toList().size(),
+                    "The size of the internal COSArray shall be 2");
         }
     }
 
@@ -387,7 +396,7 @@ public class COSArrayListTest {
             pageAnnots.add(txtMark);
             pageAnnots.add(txtMark);
             pageAnnots.add(txtLink);
-            assertEquals("There shall be 4 annotations generated", 4, pageAnnots.size());
+            assertEquals(4, pageAnnots.size(), "There shall be 4 annotations generated");
 
             page.setAnnotations(pageAnnots);
 
@@ -399,16 +408,18 @@ public class COSArrayListTest {
         
             COSArrayList<PDAnnotation> annotations = (COSArrayList) page.getAnnotations();
 
-            assertEquals("There shall be 4 annotations retrieved", 4, annotations.size());
-            assertEquals("The size of the internal COSArray shall be 4", 4, annotations.toList().size());
+            assertEquals(4, annotations.size(), "There shall be 4 annotations retrieved");
+            assertEquals(4, annotations.toList().size(),
+                    "The size of the internal COSArray shall be 4");
 
             ArrayList<PDAnnotation> toBeRetained = new ArrayList<>();
             toBeRetained.add(annotations.get(0));
 
             annotations.retainAll(toBeRetained);
 
-            assertEquals("There shall be 3 annotations left", 3, annotations.size());
-            assertEquals("The size of the internal COSArray shall be 3", 3, annotations.toList().size());
+            assertEquals(3, annotations.size(), "There shall be 3 annotations left");
+            assertEquals(3, annotations.toList().size(),
+                    "The size of the internal COSArray shall be 3");
         }
     }
 }

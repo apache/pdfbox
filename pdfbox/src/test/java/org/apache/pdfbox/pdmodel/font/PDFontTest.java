@@ -17,6 +17,11 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,9 +45,8 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * 
@@ -53,7 +57,7 @@ public class PDFontTest
 {
     private static final File OUT_DIR = new File("target/test-output");
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception
     {
         OUT_DIR.mkdirs();
@@ -113,7 +117,7 @@ public class PDFontTest
         {
             PDFTextStripper stripper = new PDFTextStripper();
             String text = stripper.getText(doc);
-            Assert.assertEquals("PDFBOX-3747", text.trim());
+            assertEquals("PDFBOX-3747", text.trim());
         }
     }
 
@@ -177,17 +181,17 @@ public class PDFontTest
         try (PDDocument doc = Loader.loadPDF(outputFile))
         {
             PDType1Font font = (PDType1Font) doc.getPage(0).getResources().getFont(COSName.getPDFName("F1"));
-            Assert.assertEquals(WinAnsiEncoding.INSTANCE, font.getEncoding());
+            assertEquals(WinAnsiEncoding.INSTANCE, font.getEncoding());
             
             for (char c : text.toCharArray())
             {
                 String name = font.getEncoding().getName(c);
-                Assert.assertEquals("dieresis", name.substring(1));
-                Assert.assertFalse(font.getPath(name).getBounds2D().isEmpty());
+                assertEquals("dieresis", name.substring(1));
+                assertFalse(font.getPath(name).getBounds2D().isEmpty());
             }
 
             PDFTextStripper stripper = new PDFTextStripper();
-            Assert.assertEquals(text, stripper.getText(doc).trim());
+            assertEquals(text, stripper.getText(doc).trim());
         }
     }
 
@@ -198,13 +202,13 @@ public class PDFontTest
     @Test
     public void testPDFox4318() throws IOException
     {
-        Assert.assertThrows("should have thrown IllegalArgumentException",
-                            IllegalArgumentException.class,
-                            () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"));
+        assertThrows(IllegalArgumentException.class,
+                () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"),
+                "should have thrown IllegalArgumentException");
         PDType1Font.HELVETICA_BOLD.encode("€");
-        Assert.assertThrows("should have thrown IllegalArgumentException",
-                            IllegalArgumentException.class,
-                            () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"));
+        assertThrows(IllegalArgumentException.class,
+                () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"),
+                "should have thrown IllegalArgumentException");
     }
 
     @Test
@@ -238,10 +242,10 @@ public class PDFontTest
         TrueTypeFont ttf = ttc.getFontByName(names.get(0)); // take the first one
         System.out.println("TrueType font used for test: " + ttf.getName());
 
-        IOException ex = Assert.assertThrows("should have thrown IOException",
-                IOException.class,
-                () -> PDType0Font.load(new PDDocument(), ttf, false));
-        Assert.assertEquals("Full embedding of TrueType font collections not supported", ex.getMessage());
+        IOException ex = assertThrows(IOException.class,
+                () -> PDType0Font.load(new PDDocument(), ttf, false),
+                "should have thrown IOException");
+        assertEquals("Full embedding of TrueType font collections not supported", ex.getMessage());
     }
 
     private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
@@ -252,25 +256,25 @@ public class PDFontTest
             
             // F1 = type0 subset
             PDType0Font fontF1 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F1"));
-            Assert.assertTrue(fontF1.getName().contains("+"));
-            Assert.assertTrue(fontFile.length() > fontF1.getFontDescriptor().getFontFile2().toByteArray().length);
+            assertTrue(fontF1.getName().contains("+"));
+            assertTrue(fontFile.length() > fontF1.getFontDescriptor().getFontFile2().toByteArray().length);
             
             // F2 = type0 full embed
             PDType0Font fontF2 = (PDType0Font) page2.getResources().getFont(COSName.getPDFName("F2"));
-            Assert.assertFalse(fontF2.getName().contains("+"));
-            Assert.assertEquals(fontFile.length(), fontF2.getFontDescriptor().getFontFile2().toByteArray().length);
+            assertFalse(fontF2.getName().contains("+"));
+            assertEquals(fontFile.length(), fontF2.getFontDescriptor().getFontFile2().toByteArray().length);
             
             // F3 = tt full embed
             PDTrueTypeFont fontF3 = (PDTrueTypeFont) page2.getResources().getFont(COSName.getPDFName("F3"));
-            Assert.assertFalse(fontF2.getName().contains("+"));
-            Assert.assertEquals(fontFile.length(), fontF3.getFontDescriptor().getFontFile2().toByteArray().length);
+            assertFalse(fontF2.getName().contains("+"));
+            assertEquals(fontFile.length(), fontF3.getFontDescriptor().getFontFile2().toByteArray().length);
             
             new PDFRenderer(doc).renderImage(0);
             
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setLineSeparator("\n");
             String text = stripper.getText(doc);
-            Assert.assertEquals("testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3", text.trim());
+            assertEquals("testMultipleFontFileReuse1\ntestMultipleFontFileReuse2\ntestMultipleFontFileReuse3", text.trim());
         }
     }
 
@@ -351,7 +355,7 @@ public class PDFontTest
         {
             PDFTextStripper stripper = new PDFTextStripper();
             String extractedText = stripper.getText(doc);
-            Assert.assertEquals(text, extractedText.trim());
+            assertEquals(text, extractedText.trim());
         }
 
         Files.delete(tempPdfFile.toPath());    

@@ -17,10 +17,11 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -34,16 +35,18 @@ import org.apache.pdfbox.pdmodel.font.encoding.DictionaryEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.MacRomanEncoding;
 import org.apache.pdfbox.pdmodel.font.encoding.WinAnsiEncoding;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests font encoding.
  *
  */
-public class TestFontEncoding extends TestCase
+public class TestFontEncoding
 {
     /**
      * Test the add method of a font encoding.
      */
+    @Test
     public void testAdd() throws Exception
     {
         // see PDFDBOX-3332
@@ -54,6 +57,7 @@ public class TestFontEncoding extends TestCase
         assertEquals(32, codeForSpace);
     }
 
+    @Test
     public void testOverwrite() throws Exception
     {
         // see PDFDBOX-3332
@@ -75,6 +79,7 @@ public class TestFontEncoding extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testPDFBox3884() throws IOException
     {
         PDDocument doc = new PDDocument();

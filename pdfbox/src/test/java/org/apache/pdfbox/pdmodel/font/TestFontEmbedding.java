@@ -17,12 +17,14 @@
 
 package org.apache.pdfbox.pdmodel.font;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -34,6 +36,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests font embedding.
@@ -41,11 +45,11 @@ import org.apache.pdfbox.text.PDFTextStripper;
  * @author John Hewson
  * @author Tilman Hausherr
  */
-public class TestFontEmbedding extends TestCase
+public class TestFontEmbedding
 {
     private static final File OUT_DIR = new File("target/test-output");
 
-    @Override
+    @BeforeEach
     protected void setUp()
     {
         OUT_DIR.mkdirs();
@@ -56,6 +60,7 @@ public class TestFontEmbedding extends TestCase
      * 
      * @throws IOException
      */
+    @Test
     public void testCIDFontType2() throws IOException
     {
         validateCIDFontType2(false);
@@ -66,6 +71,7 @@ public class TestFontEmbedding extends TestCase
      * 
      * @throws IOException
      */
+    @Test
     public void testCIDFontType2Subset() throws IOException
     {
         validateCIDFontType2(true);
@@ -76,6 +82,7 @@ public class TestFontEmbedding extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testCIDFontType2VerticalSubsetMonospace() throws IOException
     {
         String text = "「ABC」";
@@ -124,6 +131,7 @@ public class TestFontEmbedding extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testCIDFontType2VerticalSubsetProportional() throws IOException
     {
         String text = "「ABC」";
@@ -175,6 +183,7 @@ public class TestFontEmbedding extends TestCase
         assertEquals(expectedExtractedtext, extracted.replaceAll("\r", "").trim());
     }
 
+    @Test
     public void testBengali() throws IOException
     {
         String BANGLA_TEXT_1 = "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
@@ -227,6 +236,7 @@ public class TestFontEmbedding extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testMaxEntries() throws IOException
     {
         File file;
