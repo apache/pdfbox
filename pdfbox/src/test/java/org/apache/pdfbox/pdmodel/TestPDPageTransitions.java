@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,7 +28,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransition;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransitionDirection;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDTransitionStyle;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Andrea Vacondio

@@ -16,9 +16,9 @@
  */
 package org.apache.pdfbox.multipdf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 import java.io.File;
@@ -34,8 +34,8 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility.AcroFormMergeMode;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test merging different PDFs with AcroForms.
@@ -48,7 +48,7 @@ public class MergeAcroFormsTest
     private static final File OUT_DIR = new File("target/test-output/merge/");
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         OUT_DIR.mkdirs();
@@ -77,20 +77,22 @@ public class MergeAcroFormsTest
             PDAcroForm compliantAcroForm = compliantDocument.getDocumentCatalog().getAcroForm();
             PDAcroForm toBeComparedAcroForm = toBeCompared.getDocumentCatalog().getAcroForm();
             
-            assertEquals("There shall be the same number of root fields",
-                    compliantAcroForm.getFields().size(),
-                    toBeComparedAcroForm.getFields().size());
+            assertEquals(compliantAcroForm.getFields().size(),
+                    toBeComparedAcroForm.getFields().size(),
+                    "There shall be the same number of root fields");
             
             for (PDField compliantField : compliantAcroForm.getFieldTree())
             {
-                assertNotNull("There shall be a field with the same FQN", toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName()));
+                assertNotNull(toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName()),
+                        "There shall be a field with the same FQN");
                 PDField toBeComparedField = toBeComparedAcroForm.getField(compliantField.getFullyQualifiedName());
                 compareFieldProperties(compliantField, toBeComparedField);
             }
 
             for (PDField toBeComparedField : toBeComparedAcroForm.getFieldTree())
             {
-                assertNotNull("There shall be a field with the same FQN", compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName()));
+                assertNotNull(compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName()),
+                        "There shall be a field with the same FQN");
                 PDField compliantField = compliantAcroForm.getField(toBeComparedField.getFullyQualifiedName());
                 compareFieldProperties(toBeComparedField, compliantField);
             }       
@@ -114,11 +116,13 @@ public class MergeAcroFormsTest
             
             if (sourceBase != null)
             {
-                assertEquals("The content of the field properties shall be the same",sourceBase.toString(), toBeComparedBase.toString());    
+                assertEquals(sourceBase.toString(), toBeComparedBase.toString(),
+                        "The content of the field properties shall be the same");
             }
             else
             {
-                assertNull("If the source property is null the compared property shall be null too", toBeComparedBase);
+                assertNull(toBeComparedBase,
+                        "If the source property is null the compared property shall be null too");
             }
         }
     }
@@ -150,13 +154,16 @@ public class MergeAcroFormsTest
         // Test merge result
         try (PDDocument mergedPDF = Loader.loadPDF(pdfOutput))
         {
-            assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
+            assertEquals(2, mergedPDF.getNumberOfPages(), "There shall be 2 pages");
+            assertNotNull(mergedPDF.getPage(0).getCOSObject().getDictionaryObject(COSName.ANNOTS),
+                    "There shall be an /Annots entry for the first page");
+            assertEquals(1, mergedPDF.getPage(0).getAnnotations().size(),
+                    "There shall be 1 annotation for the first page");
             
-            assertNotNull("There shall be an /Annots entry for the first page", mergedPDF.getPage(0).getCOSObject().getDictionaryObject(COSName.ANNOTS));
-            assertEquals("There shall be 1 annotation for the first page", 1, mergedPDF.getPage(0).getAnnotations().size());
-            
-            assertNotNull("There shall be an /Annots entry for the second page", mergedPDF.getPage(1).getCOSObject().getDictionaryObject(COSName.ANNOTS));
-            assertEquals("There shall be 1 annotation for the second page", 1, mergedPDF.getPage(0).getAnnotations().size());
+            assertNotNull(mergedPDF.getPage(1).getCOSObject().getDictionaryObject(COSName.ANNOTS),
+                    "There shall be an /Annots entry for the second page");
+            assertEquals(1, mergedPDF.getPage(0).getAnnotations().size(),
+                    "There shall be 1 annotation for the second page");
         }
     }    
     
@@ -185,17 +192,21 @@ public class MergeAcroFormsTest
         // Test merge result
         try (PDDocument mergedPDF = Loader.loadPDF(pdfOutput))
         {
-            assertEquals("There shall be 2 pages", 2, mergedPDF.getNumberOfPages());
+            assertEquals(2, mergedPDF.getNumberOfPages(), "There shall be 2 pages");
             
             PDAcroForm acroForm = mergedPDF.getDocumentCatalog().getAcroForm();
             
             PDField formField = acroForm.getField("Testfeld");
-            assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
-            assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+            assertNotNull(formField.getCOSObject().getDictionaryObject(COSName.AP),
+                    "There shall be an /AP entry for the field");
+            assertNotNull(formField.getCOSObject().getDictionaryObject(COSName.V),
+                    "There shall be a /V entry for the field");
     
             formField = acroForm.getField("Testfeld2");
-            assertNotNull("There shall be an /AP entry for the field", formField.getCOSObject().getDictionaryObject(COSName.AP));
-            assertNotNull("There shall be a /V entry for the field", formField.getCOSObject().getDictionaryObject(COSName.V));
+            assertNotNull(formField.getCOSObject().getDictionaryObject(COSName.AP),
+                    "There shall be an /AP entry for the field");
+            assertNotNull(formField.getCOSObject().getDictionaryObject(COSName.V),
+                    "There shall be a /V entry for the field");
         }
     }
     

@@ -15,11 +15,13 @@
  */
 package org.apache.pdfbox.multipdf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
@@ -30,6 +32,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test suite for PDFCloneUtility, see PDFBOX-2052.
@@ -37,13 +40,14 @@ import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentPrope
  * @author Cornelis Hoeflake
  * @author Tilman Hausherr
  */
-public class PDFCloneUtilityTest extends TestCase
+public class PDFCloneUtilityTest
 {
     /**
      * original (minimal) test from PDFBOX-2052.
      * 
      * @throws IOException 
      */
+    @Test
     public void testClonePDFWithCosArrayStream() throws IOException
     {
         try (PDDocument srcDoc = new PDDocument();
@@ -63,6 +67,7 @@ public class PDFCloneUtilityTest extends TestCase
      * 
      * @throws IOException 
      */
+    @Test
     public void testClonePDFWithCosArrayStream2() throws IOException
     {
         final String TESTDIR = "target/test-output/clone/";
@@ -115,6 +120,7 @@ public class PDFCloneUtilityTest extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testDirectIndirect() throws IOException
     {
         try (PDDocument doc1 = new PDDocument())

@@ -16,12 +16,13 @@
  */
 package org.apache.pdfbox.multipdf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
-
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -38,21 +39,20 @@ import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentGroup;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties;
 import org.apache.pdfbox.util.Matrix;
+import org.junit.jupiter.api.BeforeAll;
 
 /**
  * Tests the {@link org.apache.pdfbox.multipdf.LayerUtility} class.
  *
  */
-public class TestLayerUtility extends TestCase
+public class TestLayerUtility
 {
 
     private final File testResultsDir = new File("target/test-output");
 
-    /** {@inheritDoc} */
-    @Override
+    @BeforeAll
     protected void setUp() throws Exception
     {
-        super.setUp();
         testResultsDir.mkdirs();
     }
 

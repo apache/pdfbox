@@ -16,20 +16,23 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 import java.util.List;
-import junit.framework.TestCase;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
 import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Yegor Kozlov
  */
-public class TestPDPageContentStream extends TestCase
+public class TestPDPageContentStream
 {
+    @Test
     public void testSetCmykColors() throws IOException
     {
         try (PDDocument doc = new PDDocument())
@@ -85,6 +88,7 @@ public class TestPDPageContentStream extends TestCase
         }
     }
 
+    @Test
     public void testSetRGBandGColors() throws IOException
     {
         try (PDDocument doc = new PDDocument())
@@ -137,6 +141,7 @@ public class TestPDPageContentStream extends TestCase
      * 
      * @throws IOException 
      */
+    @Test
     public void testMissingContentStream() throws IOException
     {
         PDPage page = new PDPage();
@@ -150,6 +155,7 @@ public class TestPDPageContentStream extends TestCase
      *
      * @throws IOException 
      */
+    @Test
     public void testCloseContract() throws IOException
     {
         try (PDDocument doc = new PDDocument())

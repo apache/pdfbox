@@ -17,6 +17,9 @@
 
 package org.apache.pdfbox.multipdf;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
@@ -29,12 +32,9 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -49,23 +49,13 @@ public class OverlayTest
     {
     }
     
-    @BeforeClass
-    public static void setUpClass()
-    {
-    }
-    
-    @AfterClass
-    public static void tearDownClass()
-    {
-    }
-    
-    @Before
+    @BeforeEach
     public void setUp()
     {
         OUT_DIR.mkdirs();
     }
     
-    @After
+    @AfterEach
     public void tearDown()
     {
     }
@@ -106,14 +96,14 @@ public class OverlayTest
         resultDocument.close();
 
         // compare images
-        Assert.assertEquals(modelImage.getWidth(), resultImage.getWidth());
-        Assert.assertEquals(modelImage.getHeight(), resultImage.getHeight());
-        Assert.assertEquals(modelImage.getType(), resultImage.getType());
+        assertEquals(modelImage.getWidth(), resultImage.getWidth());
+        assertEquals(modelImage.getHeight(), resultImage.getHeight());
+        assertEquals(modelImage.getType(), resultImage.getType());
 
         DataBufferInt modelDataBuffer = (DataBufferInt) modelImage.getRaster().getDataBuffer();
         DataBufferInt resultDataBuffer = (DataBufferInt) resultImage.getRaster().getDataBuffer();
 
-        Assert.assertArrayEquals(modelDataBuffer.getData(), resultDataBuffer.getData());
+        assertArrayEquals(modelDataBuffer.getData(), resultDataBuffer.getData());
     }
     
     // code used to create the base file

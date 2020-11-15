@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
@@ -24,8 +24,8 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocumentOutline;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Andrea Vacondio
@@ -35,7 +35,7 @@ public class TestPDPageTree
 {
     private PDDocument doc;
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException
     {
         if (doc != null)
@@ -97,9 +97,10 @@ public class TestPDPageTree
             document.addPage(pageTwo);
             document.getPages().insertBefore(pageThree, pageTwo);
 
-            assertEquals("Page one should be placed at index 0.", 0,(document.getPages().indexOf(pageOne)));
-            assertEquals("Page two should be placed at index 2.", 2,(document.getPages().indexOf(pageTwo)));
-            assertEquals("Page three should be placed at index 1.", 1,(document.getPages().indexOf(pageThree)));
+            assertEquals(0, (document.getPages().indexOf(pageOne)),
+                    "Page one should be placed at index 0.");
+            assertEquals(2,(document.getPages().indexOf(pageTwo)),"Page two should be placed at index 2.");
+            assertEquals(1,(document.getPages().indexOf(pageThree)),"Page three should be placed at index 1.");
         }
     }
 
@@ -114,9 +115,12 @@ public class TestPDPageTree
             document.addPage(pageTwo);
             document.getPages().insertAfter(pageThree, pageTwo);
 
-            assertEquals("Page one should be placed at index 0.", 0,(document.getPages().indexOf(pageOne)));
-            assertEquals("Page two should be placed at index 1.", 1,(document.getPages().indexOf(pageTwo)));
-            assertEquals("Page three should be placed at index 2.", 2,(document.getPages().indexOf(pageThree)));
+            assertEquals(0, (document.getPages().indexOf(pageOne)),
+                    "Page one should be placed at index 0.");
+            assertEquals(1, (document.getPages().indexOf(pageTwo)),
+                    "Page two should be placed at index 1.");
+            assertEquals(2, (document.getPages().indexOf(pageThree)),
+                    "Page three should be placed at index 2.");
         }
     }
 }

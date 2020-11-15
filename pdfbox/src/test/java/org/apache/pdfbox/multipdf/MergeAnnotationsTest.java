@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.multipdf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,8 +32,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDestinationDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test merging different PDFs with Annotations.
@@ -43,7 +43,7 @@ public class MergeAnnotationsTest
     private static final File OUT_DIR = new File("target/test-output/merge/");
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         OUT_DIR.mkdirs();
@@ -72,13 +72,14 @@ public class MergeAnnotationsTest
 
             // Test merge result
             PDDocument mergedPDF = Loader.loadPDF(pdfOutput);
-            assertEquals("There shall be 6 pages", 6, mergedPDF.getNumberOfPages());
+            assertEquals(6, mergedPDF.getNumberOfPages(), "There shall be 6 pages");
 
             PDDocumentNameDestinationDictionary destinations = mergedPDF.getDocumentCatalog().getDests();
 
             // Each document has 3 annotations with 2 entries in the /Dests dictionary per annotation. One for the
             // source and one for the target.
-            assertEquals("There shall be 12 entries", 12, destinations.getCOSObject().entrySet().size());
+            assertEquals(12, destinations.getCOSObject().entrySet().size(),
+                    "There shall be 12 entries");
 
             List<PDAnnotation> sourceAnnotations01 = mergedPDF.getPage(0).getAnnotations();
             List<PDAnnotation> sourceAnnotations02 = mergedPDF.getPage(3).getAnnotations();
@@ -87,14 +88,20 @@ public class MergeAnnotationsTest
             List<PDAnnotation> targetAnnotations02 = mergedPDF.getPage(5).getAnnotations();
 
             // Test for the first set of annotations to be merged an linked correctly
-            assertEquals("There shall be 3 source annotations at the first page", 3, sourceAnnotations01.size());
-            assertEquals("There shall be 3 source annotations at the third page", 3, targetAnnotations01.size());
-            assertTrue("The annotations shall match to each other", testAnnotationsMatch(sourceAnnotations01, targetAnnotations01));
+            assertEquals(3, sourceAnnotations01.size(),
+                    "There shall be 3 source annotations at the first page");
+            assertEquals(3, targetAnnotations01.size(),
+                    "There shall be 3 source annotations at the third page");
+            assertTrue(testAnnotationsMatch(sourceAnnotations01, targetAnnotations01),
+                    "The annotations shall match to each other");
 
             // Test for the second set of annotations to be merged an linked correctly
-            assertEquals("There shall be 3 source annotations at the first page", 3, sourceAnnotations02.size());
-            assertEquals("There shall be 3 source annotations at the third page", 3, targetAnnotations02.size());
-            assertTrue("The annotations shall match to each other", testAnnotationsMatch(sourceAnnotations02, targetAnnotations02));
+            assertEquals(3, sourceAnnotations02.size(),
+                    "There shall be 3 source annotations at the first page");
+            assertEquals(3, targetAnnotations02.size(),
+                    "There shall be 3 source annotations at the third page");
+            assertTrue(testAnnotationsMatch(sourceAnnotations02, targetAnnotations02),
+                    "The annotations shall match to each other");
 
             mergedPDF.close();
         }

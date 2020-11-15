@@ -29,13 +29,13 @@ import java.util.Locale;
 
 import org.apache.pdfbox.Loader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test case introduced with PDFBOX-1581.
@@ -45,7 +45,7 @@ public class TestPDDocument
 {
     static private final File TESTRESULTSDIR = new File("target/test-output");
 
-    @BeforeClass
+    @BeforeAll
     static public void setUp() throws Exception
     {
         TESTRESULTSDIR.mkdirs();
@@ -170,7 +170,7 @@ public class TestPDDocument
         {
             pw.write("<script language='JavaScript'>");
         }
-        assertThrows("parsing should fail", IOException.class, () -> Loader.loadPDF(f));
+        assertThrows(IOException.class, () -> Loader.loadPDF(f), "parsing should fail");
         try
         {
             Files.delete(f.toPath());

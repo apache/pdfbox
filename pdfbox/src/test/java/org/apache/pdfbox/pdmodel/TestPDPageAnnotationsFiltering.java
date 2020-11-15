@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -26,9 +29,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotation;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationRubberStamp;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This unit test validates the correct working behavior of PDPage annotations
@@ -42,7 +44,7 @@ public class TestPDPageAnnotationsFiltering
     // test mock page for annotations filtering
     private PDPage page;
 
-    @Before
+    @BeforeEach
     public void initMock()
     {
         COSDictionary mockedPageWithAnnotations = new COSDictionary();
@@ -58,17 +60,17 @@ public class TestPDPageAnnotationsFiltering
     public void validateNoFiltering() throws IOException
     {
         List<PDAnnotation> annotations = page.getAnnotations();
-        Assert.assertEquals(3, annotations.size());
-        Assert.assertTrue(annotations.get(0) instanceof PDAnnotationRubberStamp);
-        Assert.assertTrue(annotations.get(1) instanceof PDAnnotationSquare);
-        Assert.assertTrue(annotations.get(2) instanceof PDAnnotationLink);
+        assertEquals(3, annotations.size());
+        assertTrue(annotations.get(0) instanceof PDAnnotationRubberStamp);
+        assertTrue(annotations.get(1) instanceof PDAnnotationSquare);
+        assertTrue(annotations.get(2) instanceof PDAnnotationLink);
     }
 
     @Test
     public void validateAllFiltered() throws IOException
     {
         List<PDAnnotation> annotations = page.getAnnotations(annotation -> false);
-        Assert.assertEquals(0, annotations.size());
+        assertEquals(0, annotations.size());
     }
 
     @Test
@@ -76,8 +78,8 @@ public class TestPDPageAnnotationsFiltering
     {
         List<PDAnnotation> annotations = page.getAnnotations(annotation -> 
             (annotation instanceof PDAnnotationLink || annotation instanceof PDAnnotationSquare));
-        Assert.assertEquals(2, annotations.size());
-        Assert.assertTrue(annotations.get(0) instanceof PDAnnotationSquare);
-        Assert.assertTrue(annotations.get(1) instanceof PDAnnotationLink);
+        assertEquals(2, annotations.size());
+        assertTrue(annotations.get(0) instanceof PDAnnotationSquare);
+        assertTrue(annotations.get(1) instanceof PDAnnotationLink);
     }
 }

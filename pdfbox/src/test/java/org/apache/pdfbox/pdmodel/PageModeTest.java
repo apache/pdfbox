@@ -16,8 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 public class PageModeTest
 {
@@ -31,7 +33,7 @@ public class PageModeTest
         final PageMode retval = PageMode.fromString(value);
 
         // Assert result
-        Assert.assertEquals(PageMode.FULL_SCREEN, retval);
+        assertEquals(PageMode.FULL_SCREEN, retval);
     }
 
     @Test
@@ -44,7 +46,7 @@ public class PageModeTest
         final PageMode retval = PageMode.fromString(value);
 
         // Assert result
-        Assert.assertEquals(PageMode.USE_THUMBS, retval);
+        assertEquals(PageMode.USE_THUMBS, retval);
     }
 
     @Test
@@ -57,7 +59,7 @@ public class PageModeTest
         final PageMode retval = PageMode.fromString(value);
 
         // Assert result
-        Assert.assertEquals(PageMode.USE_OPTIONAL_CONTENT, retval);
+        assertEquals(PageMode.USE_OPTIONAL_CONTENT, retval);
     }
 
     @Test
@@ -70,7 +72,7 @@ public class PageModeTest
         final PageMode retval = PageMode.fromString(value);
 
         // Assert result
-        Assert.assertEquals(PageMode.USE_NONE, retval);
+        assertEquals(PageMode.USE_NONE, retval);
     }
 
     @Test
@@ -83,7 +85,7 @@ public class PageModeTest
         final PageMode retval = PageMode.fromString(value);
 
         // Assert result
-        Assert.assertEquals(PageMode.USE_ATTACHMENTS, retval);
+        assertEquals(PageMode.USE_ATTACHMENTS, retval);
     }
 
     @Test
@@ -96,19 +98,19 @@ public class PageModeTest
         final PageMode retval = PageMode.fromString(value);
 
         // Assert result
-        Assert.assertEquals(PageMode.USE_OUTLINES, retval);
+        assertEquals(PageMode.USE_OUTLINES, retval);
     }
 
     @Test
     public void fromStringInputNotNullOutputIllegalArgumentException()
     {
-        Assert.assertThrows(IllegalArgumentException.class, () -> PageMode.fromString(""));
+        assertThrows(IllegalArgumentException.class, () -> PageMode.fromString(""));
     }
 
     @Test
     public void fromStringInputNotNullOutputIllegalArgumentException2()
     {
-        Assert.assertThrows(IllegalArgumentException.class, () -> PageMode.fromString("Dulacb`ecj"));
+        assertThrows(IllegalArgumentException.class, () -> PageMode.fromString("Dulacb`ecj"));
     }
 
     @Test
@@ -121,6 +123,6 @@ public class PageModeTest
         final String retval = objectUnderTest.stringValue();
 
         // Assert result
-        Assert.assertEquals("UseOC", retval);
+        assertEquals("UseOC", retval);
     }
 }

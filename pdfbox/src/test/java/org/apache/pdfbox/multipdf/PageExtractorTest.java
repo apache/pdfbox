@@ -16,11 +16,13 @@
  */
 package org.apache.pdfbox.multipdf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test suite for PageExtractor.
@@ -31,24 +33,9 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  * @author Adam Nichols
  */
-public class PageExtractorTest extends TestCase
+public class PageExtractorTest
 {
     
-    public PageExtractorTest(String testName)
-    {
-        super(testName);
-    }
-
-    @Override
-    protected void setUp() throws Exception
-    {
-    }
-
-    @Override
-    protected void tearDown() throws Exception
-    {
-    }
-
     private void closeDoc(PDDocument doc)
     {
         if(doc != null)
@@ -67,6 +54,7 @@ public class PageExtractorTest extends TestCase
     /**
      * Test of extract method, of class org.apache.pdfbox.util.PageExtractor.
      */
+    @Test
     public void testExtract() throws Exception
     {
         PDDocument sourcePdf = null;
