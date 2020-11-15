@@ -24,7 +24,6 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
@@ -33,24 +32,27 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for CCITTFactory
  *
  * @author Tilman Hausherr
  */
-public class CCITTFactoryTest extends TestCase
+public class CCITTFactoryTest
 {
     private final File testResultsDir = new File("target/test-output/graphics");
 
-    @Override
-    protected void setUp() throws Exception
+    @BeforeEach
+    protected void setUp()
     {
-        super.setUp();
         testResultsDir.mkdirs();
     }
 
@@ -58,6 +60,7 @@ public class CCITTFactoryTest extends TestCase
      * Tests CCITTFactory#createFromRandomAccess(PDDocument document,
      * RandomAccess reader) with a single page TIFF
      */
+    @Test
     public void testCreateFromRandomAccessSingle() throws IOException
     {
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
@@ -97,6 +100,7 @@ public class CCITTFactoryTest extends TestCase
      * Tests CCITTFactory#createFromRandomAccess(PDDocument document,
      * RandomAccess reader) with a multi page TIFF
      */
+    @Test
     public void testCreateFromRandomAccessMulti() throws IOException
     {
         String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4multi.tif";
@@ -143,6 +147,7 @@ public class CCITTFactoryTest extends TestCase
         imageReader.dispose();
     }
 
+    @Test
     public void testCreateFromBufferedImage() throws IOException
     {
         String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
@@ -168,11 +173,12 @@ public class CCITTFactoryTest extends TestCase
         document.close();  
     }    
     
+    @Test
     public void testCreateFromBufferedChessImage() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage bim = new BufferedImage(343, 287, BufferedImage.TYPE_BYTE_BINARY);
-        Assert.assertNotEquals((bim.getWidth() / 8) * 8, bim.getWidth()); // not mult of 8
+        assertNotEquals((bim.getWidth() / 8) * 8, bim.getWidth()); // not mult of 8
         int col = 0;
         for (int x = 0; x < bim.getWidth(); ++x)
         {
@@ -206,6 +212,7 @@ public class CCITTFactoryTest extends TestCase
      * Tests that CCITTFactory#createFromFile(PDDocument document, File file) doesn't lock the
      * source file
      */
+    @Test
     public void testCreateFromFileLock() throws IOException
     {
         // copy the source file to a temp directory, as we will be deleting it
@@ -221,6 +228,7 @@ public class CCITTFactoryTest extends TestCase
      * Tests that CCITTFactory#createFromFile(PDDocument document, File file, int number) doesn't
      * lock the source file
      */
+    @Test
     public void testCreateFromFileNumberLock() throws IOException
     {
         // copy the source file to a temp directory, as we will be deleting it
@@ -236,6 +244,7 @@ public class CCITTFactoryTest extends TestCase
      * Tests that byte/short tag values are read correctly (ignoring possible garbage in remaining
      * bytes).
      */
+    @Test
     public void testByteShortPaddedWithGarbage() throws IOException
     {
         try (PDDocument document = new PDDocument())

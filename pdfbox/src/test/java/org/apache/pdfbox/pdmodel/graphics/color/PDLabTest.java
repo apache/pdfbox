@@ -15,23 +15,28 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.color;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
-import junit.framework.TestCase;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.pdmodel.common.PDRange;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Tilman Hausherr
  */
-public class PDLabTest extends TestCase
+public class PDLabTest
 {
 
     /**
      * This test checks that getting default values do not alter the object, 
      * and checks getters and setters.
      */
+    @Test
     public void testLAB()
     {
         PDLab pdLab = new PDLab();
@@ -43,17 +48,17 @@ public class PDLabTest extends TestCase
         assertEquals(3, pdLab.getNumberOfComponents());
         assertNotNull(pdLab.getInitialColor());
         assertTrue(Arrays.equals(new float[]{0,0,0}, pdLab.getInitialColor().getComponents()));
-        assertEquals(0f, pdLab.getBlackPoint().getX());
-        assertEquals(0f, pdLab.getBlackPoint().getY());
-        assertEquals(0f, pdLab.getBlackPoint().getZ());
-        assertEquals(1f, pdLab.getWhitepoint().getX());
-        assertEquals(1f, pdLab.getWhitepoint().getY());
-        assertEquals(1f, pdLab.getWhitepoint().getZ());
-        assertEquals(-100f, pdLab.getARange().getMin());
-        assertEquals(100f, pdLab.getARange().getMax());
-        assertEquals(-100f, pdLab.getBRange().getMin());
-        assertEquals(100f, pdLab.getBRange().getMax());
-        assertEquals("read operations should not change the size of /Lab objects", 0, dict.size());
+        assertEquals(0f, pdLab.getBlackPoint().getX(), 0f);
+        assertEquals(0f, pdLab.getBlackPoint().getY(), 0f);
+        assertEquals(0f, pdLab.getBlackPoint().getZ(), 0f);
+        assertEquals(1f, pdLab.getWhitepoint().getX(), 0f);
+        assertEquals(1f, pdLab.getWhitepoint().getY(), 0f);
+        assertEquals(1f, pdLab.getWhitepoint().getZ(), 0f);
+        assertEquals(-100f, pdLab.getARange().getMin(), 0f);
+        assertEquals(100f, pdLab.getARange().getMax(), 0f);
+        assertEquals(-100f, pdLab.getBRange().getMin(), 0f);
+        assertEquals(100f, pdLab.getBRange().getMax(), 0f);
+        assertEquals(0, dict.size(), "read operations should not change the size of /Lab objects");
         dict.toString(); // rev 1571125 did a stack overflow here
 
         // test setting specific values
@@ -65,10 +70,10 @@ public class PDLabTest extends TestCase
         pdRange.setMin(3);
         pdRange.setMax(4);
         pdLab.setBRange(pdRange);
-        assertEquals(-1f, pdLab.getARange().getMin());
-        assertEquals(2f, pdLab.getARange().getMax());
-        assertEquals(3f, pdLab.getBRange().getMin());
-        assertEquals(4f, pdLab.getBRange().getMax());
+        assertEquals(-1f, pdLab.getARange().getMin(), 0f);
+        assertEquals(2f, pdLab.getARange().getMax(), 0f);
+        assertEquals(3f, pdLab.getBRange().getMin(), 0f);
+        assertEquals(4f, pdLab.getBRange().getMax(), 0f);
         PDTristimulus pdTristimulus = new PDTristimulus();
         pdTristimulus.setX(5);
         pdTristimulus.setY(6);
@@ -79,12 +84,12 @@ public class PDLabTest extends TestCase
         pdTristimulus.setY(9);
         pdTristimulus.setZ(10);
         pdLab.setBlackPoint(pdTristimulus);
-        assertEquals(5f, pdLab.getWhitepoint().getX());
-        assertEquals(6f, pdLab.getWhitepoint().getY());
-        assertEquals(7f, pdLab.getWhitepoint().getZ());
-        assertEquals(8f, pdLab.getBlackPoint().getX());
-        assertEquals(9f, pdLab.getBlackPoint().getY());
-        assertEquals(10f, pdLab.getBlackPoint().getZ());
+        assertEquals(5f, pdLab.getWhitepoint().getX(), 0f);
+        assertEquals(6f, pdLab.getWhitepoint().getY(), 0f);
+        assertEquals(7f, pdLab.getWhitepoint().getZ(), 0f);
+        assertEquals(8f, pdLab.getBlackPoint().getX(), 0f);
+        assertEquals(9f, pdLab.getBlackPoint().getY(), 0f);
+        assertEquals(10f, pdLab.getBlackPoint().getZ(), 0f);
         assertTrue(Arrays.equals(new float[]{0,0,3}, pdLab.getInitialColor().getComponents()));
     }
 

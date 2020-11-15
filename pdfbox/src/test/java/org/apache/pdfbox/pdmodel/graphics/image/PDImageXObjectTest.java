@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,8 +27,7 @@ import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test that the convenience methods are really doing what's expected, and having the same as
@@ -129,7 +131,7 @@ public class PDImageXObjectTest
             BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
             PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -144,7 +146,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -159,7 +161,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -175,7 +177,7 @@ public class PDImageXObjectTest
             BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
             PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -190,7 +192,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -205,7 +207,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -221,7 +223,7 @@ public class PDImageXObjectTest
             BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
             PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -236,7 +238,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -251,7 +253,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -271,7 +273,7 @@ public class PDImageXObjectTest
             BufferedImage bim = ImageIO.read(PDImageXObjectTest.class.getResourceAsStream(filename));
             PDImageXObject expectedImage = LosslessFactory.createFromImage(doc, bim);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -287,7 +289,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = CCITTFactory.createFromFile(doc, file);
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -303,7 +305,7 @@ public class PDImageXObjectTest
             
             PDImageXObject expectedImage = JPEGFactory.createFromStream(doc, new FileInputStream(file));
             
-            Assert.assertEquals(expectedImage.getSuffix(), image.getSuffix());
+            assertEquals(expectedImage.getSuffix(), image.getSuffix());
             checkIdentARGB(image.getImage(), expectedImage.getImage());
         }
     }
@@ -314,8 +316,8 @@ public class PDImageXObjectTest
 
         int w = expectedImage.getWidth();
         int h = expectedImage.getHeight();
-        Assert.assertEquals(w, actualImage.getWidth());
-        Assert.assertEquals(h, actualImage.getHeight());
+        assertEquals(w, actualImage.getWidth());
+        assertEquals(h, actualImage.getHeight());
         for (int y = 0; y < h; ++y)
         {
             for (int x = 0; x < w; ++x)
@@ -324,7 +326,7 @@ public class PDImageXObjectTest
                 {
                     errMsg = String.format("(%d,%d) %06X != %06X", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
                 }
-                Assert.assertEquals(errMsg, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+                assertEquals(expectedImage.getRGB(x, y), actualImage.getRGB(x, y), errMsg);
             }
         }
     }    

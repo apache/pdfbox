@@ -16,9 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.blend;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.pdfbox.cos.COSName;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

@@ -15,6 +15,10 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.Point;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -41,10 +45,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
 
 /**
  * Helper class to do some validations for PDImageXObject.
@@ -192,7 +192,7 @@ public class ValidateXImage
                 {
                     errMsg = String.format("(%d,%d) expected: <%08X> but was: <%08X>; ", x, y, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
                 }
-                assertEquals(errMsg, expectedImage.getRGB(x, y), actualImage.getRGB(x, y));
+                assertEquals(expectedImage.getRGB(x, y), actualImage.getRGB(x, y), errMsg);
             }
         }
     }

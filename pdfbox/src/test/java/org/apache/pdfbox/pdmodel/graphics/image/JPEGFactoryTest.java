@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import javax.imageio.ImageIO;
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -32,25 +31,30 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceCMYK;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceGray;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for JPEGFactory
  *
  * @author Tilman Hausherr
  */
-public class JPEGFactoryTest extends TestCase
+public class JPEGFactoryTest
 {
     private final File testResultsDir = new File("target/test-output/graphics");
 
-    @Override
-    protected void setUp() throws Exception
+    @BeforeEach
+    protected void setUp()
     {
-        super.setUp();
         testResultsDir.mkdirs();
     }
 
@@ -58,6 +62,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with color JPEG file
      */
+    @Test
     public void testCreateFromStream() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -73,6 +78,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with CMYK color JPEG file
      */
+    @Test
     public void testCreateFromStreamCMYK() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -88,6 +94,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests JPEGFactory#createFromStream(PDDocument document, InputStream
      * stream) with gray JPEG file
      */
+    @Test
     public void testCreateFromStream256() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -103,6 +110,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image) with color JPEG image
      */
+    @Test
     public void testCreateFromImageRGB() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -118,6 +126,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests RGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image) with gray JPEG image
      */
+    @Test
     public void testCreateFromImage256() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -133,6 +142,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests ARGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image)
      */
+    @Test
     public void testCreateFromImageINT_ARGB() throws IOException
     {
         // workaround Open JDK bug
@@ -177,6 +187,7 @@ public class JPEGFactoryTest extends TestCase
      * Tests ARGB JPEGFactory#createFromImage(PDDocument document, BufferedImage
      * image)
      */
+    @Test
     public void testCreateFromImage4BYTE_ABGR() throws IOException
     {
         // workaround Open JDK bug
@@ -222,6 +233,7 @@ public class JPEGFactoryTest extends TestCase
      * image), see also PDFBOX-4674.
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateFromImageUSHORT_555_RGB() throws IOException
     {
         // workaround Open JDK bug

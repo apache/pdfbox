@@ -20,11 +20,12 @@
 
 package org.apache.pdfbox.pdmodel.graphics;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSInteger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *

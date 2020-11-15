@@ -43,21 +43,22 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDIndexed;
 
 import static org.apache.pdfbox.pdmodel.graphics.image.LosslessFactoryTest.checkIdentRaw;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent;
-import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class PNGConverterTest
 {
+    private static final File parentDir = new File("target/test-output/graphics/graphics");
 
-    @Before
-    public void setup()
+    @BeforeAll
+    static void setup()
     {
         //noinspection ResultOfMethodCallIgnored
         parentDir.mkdirs();
@@ -159,8 +160,6 @@ public class PNGConverterTest
     {
         checkImageConvertFail("png_gray_with_gama.png");
     }
-
-    private final File parentDir = new File("target/test-output/graphics/graphics");
 
     private void checkImageConvertFail(String name) throws IOException
     {
@@ -382,7 +381,7 @@ public class PNGConverterTest
             // (PDICCBased.is_sRGB() fails in openjdk on that data, maybe it is not a "real" sRGB)
             ICC_Profile rgbProfile = ICC_Profile.getInstance(ColorSpace.CS_sRGB);
             byte[] sRGB_bytes = rgbProfile.getData();
-            Assert.assertArrayEquals(sRGB_bytes, iccColorspace.getPDStream().toByteArray());
+            assertArrayEquals(sRGB_bytes, iccColorspace.getPDStream().toByteArray());
         }
     }
 }

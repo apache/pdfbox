@@ -15,6 +15,10 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.image;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
@@ -22,7 +26,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
@@ -34,20 +37,21 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode;
 import org.apache.pdfbox.rendering.PDFRenderer;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for PDInlineImage
  *
  * @author Tilman Hausherr
  */
-public class PDInlineImageTest extends TestCase
+public class PDInlineImageTest
 {
-    private final File testResultsDir = new File("target/test-output/graphics");
+    private static final File testResultsDir = new File("target/test-output/graphics");
 
-    @Override
-    protected void setUp() throws Exception
+    @BeforeAll
+    static void setUp()
     {
-        super.setUp();
         testResultsDir.mkdirs();
     }
 
@@ -55,6 +59,7 @@ public class PDInlineImageTest extends TestCase
      * Tests PDInlineImage#PDInlineImage(COSDictionary parameters, byte[] data,
      * Map<String, PDColorSpace> colorSpaces)
      */
+    @Test
     public void testInlineImage() throws IOException
     {
         COSDictionary dict = new COSDictionary();

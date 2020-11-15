@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Random;
 import javax.imageio.ImageIO;
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -49,22 +48,28 @@ import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.checkIdent
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.colorCount;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.doWritePDF;
 import static org.apache.pdfbox.pdmodel.graphics.image.ValidateXImage.validate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for LosslessFactory
  *
  * @author Tilman Hausherr
  */
-public class LosslessFactoryTest extends TestCase
+public class LosslessFactoryTest
 {
-    private final File testResultsDir = new File("target/test-output/graphics");
+    private static final File testResultsDir = new File("target/test-output/graphics");
 
-    @Override
-    protected void setUp() throws Exception
+    @BeforeAll
+    static void setUp()
     {
-        super.setUp();
         testResultsDir.mkdirs();
     }
 
@@ -74,6 +79,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromImageRGB() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -96,7 +102,7 @@ public class LosslessFactoryTest extends TestCase
         BufferedImage bitonalImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
 
         // avoid multiple of 8 to test padding
-        Assert.assertNotEquals(0, bitonalImage.getWidth() % 8);
+        assertNotEquals(0, bitonalImage.getWidth() % 8);
         
         g = bitonalImage.getGraphics();
         g.drawImage(image, 0, 0, null);
@@ -131,6 +137,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromImageINT_ARGB() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -170,6 +177,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromImageBITMASK_INT_ARGB() throws IOException
     {
         doBitmaskTransparencyTest(BufferedImage.TYPE_INT_ARGB, "bitmaskintargb.pdf");
@@ -181,6 +189,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromImageBITMASK4BYTE_ABGR() throws IOException
     {
         doBitmaskTransparencyTest(BufferedImage.TYPE_4BYTE_ABGR, "bitmask4babgr.pdf");
@@ -192,6 +201,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromImage4BYTE_ABGR() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -242,6 +252,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromImageUSHORT_555_RGB() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -280,6 +291,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromTransparentGIF() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -309,6 +321,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromTransparent1BitGIF() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -337,6 +350,7 @@ public class LosslessFactoryTest extends TestCase
      *
      * @throws java.io.IOException
      */
+    @Test
     public void testCreateLosslessFromGovdocs032163() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -370,7 +384,8 @@ public class LosslessFactoryTest extends TestCase
                 {
                     errMsg = String.format("(%d,%d) %06X != %06X", x, y, expectedImage.getRGB(x, y) & 0xFFFFFF, actualImage.getRGB(x, y) & 0xFFFFFF);
                 }
-                assertEquals(errMsg, expectedImage.getRGB(x, y) & 0xFFFFFF, actualImage.getRGB(x, y) & 0xFFFFFF);
+                assertEquals(expectedImage.getRGB(x, y) & 0xFFFFFF,
+                        actualImage.getRGB(x, y) & 0xFFFFFF, errMsg);
             }
         }
     }
@@ -420,7 +435,7 @@ public class LosslessFactoryTest extends TestCase
                     {
                         String errMsg = String.format("(%d,%d) Channel %d %04X != %04X", x, y, i, expectedValue,
                                 actualValue);
-                        assertEquals(errMsg, expectedValue, actualValue);
+                        assertEquals(expectedValue, actualValue, errMsg);
                     }
                 }
             }
@@ -493,7 +508,7 @@ public class LosslessFactoryTest extends TestCase
         BufferedImage maskImage = ximage.getSoftMask().getImage();
         
         // avoid multiple of 8 to test padding
-        Assert.assertNotEquals(0, maskImage.getWidth() % 8);
+        assertNotEquals(0, maskImage.getWidth() % 8);
 
         assertEquals(Transparency.OPAQUE, maskImage.getTransparency());
         for (int x = 0; x < width; ++x)
@@ -539,6 +554,7 @@ public class LosslessFactoryTest extends TestCase
     /**
      * Test lossless encoding of CMYK images
      */
+    @Test
     public void testCreateLosslessFromImageCMYK() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -558,6 +574,7 @@ public class LosslessFactoryTest extends TestCase
         //checkIdent(imageCMYK, ximage.getImage());
     }
 
+    @Test
     public void testCreateLosslessFrom16Bit() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -580,6 +597,7 @@ public class LosslessFactoryTest extends TestCase
         doWritePDF(document, ximage, testResultsDir, "misc-16bit.pdf");
     }
 
+    @Test
     public void testCreateLosslessFromImageINT_BGR() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -594,6 +612,7 @@ public class LosslessFactoryTest extends TestCase
         checkIdent(image, ximage.getImage());
     }
 
+    @Test
     public void testCreateLosslessFromImageINT_RGB() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -608,6 +627,7 @@ public class LosslessFactoryTest extends TestCase
         checkIdent(image, ximage.getImage());
     }
 
+    @Test
     public void testCreateLosslessFromImageBYTE_3BGR() throws IOException
     {
         PDDocument document = new PDDocument();
@@ -622,6 +642,7 @@ public class LosslessFactoryTest extends TestCase
         checkIdent(image, ximage.getImage());
     }
 
+    @Test
     public void testCreateLosslessFrom16BitPNG() throws IOException
     {
         PDDocument document = new PDDocument();
