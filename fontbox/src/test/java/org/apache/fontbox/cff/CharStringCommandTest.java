@@ -17,16 +17,16 @@
 
 package org.apache.fontbox.cff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 
 import org.apache.fontbox.cff.CharStringCommand.Key;
 import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
 import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CharStringCommandTest
 {

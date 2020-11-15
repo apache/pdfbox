@@ -16,9 +16,9 @@
  */
 package org.apache.fontbox.ttf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import org.apache.fontbox.ttf.model.GsubData;
 import org.apache.fontbox.ttf.model.Language;
 import org.apache.fontbox.ttf.model.MapBackedScriptFeature;
 import org.apache.fontbox.ttf.model.ScriptFeature;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class GlyphSubstitutionTableTest
 {

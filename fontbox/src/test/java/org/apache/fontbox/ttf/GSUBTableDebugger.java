@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import org.apache.fontbox.ttf.gsub.GSUBTablePrintUtil;
 import org.apache.fontbox.ttf.model.GsubData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class is to be used mainly for debugging purposes. Prints the GSUB Feature table for debugging.

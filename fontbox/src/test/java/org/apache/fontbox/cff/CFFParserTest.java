@@ -15,13 +15,14 @@
  */
 package org.apache.fontbox.cff;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import static junit.framework.TestCase.assertEquals;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -83,10 +84,10 @@ public class CFFParserTest
 
     private void assertNumberList(String message, int[] expected, List<Number> found)
     {
-        assertEquals(message, expected.length, found.size());
+        assertEquals(expected.length, found.size(), message);
         for (int i = 0; i < expected.length; i++)
         {
-            assertEquals(message, expected[i], found.get(i).intValue());
+            assertEquals(expected[i], found.get(i).intValue(), message);
         }
     }
 }

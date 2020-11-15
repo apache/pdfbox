@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import org.apache.fontbox.util.autodetect.FontFileFinder;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -256,8 +256,10 @@ public class TTFSubsetterTest
             assertEquals("uni200A", pst.getName(3));
             assertEquals("dieresis.uc", pst.getName(4));
             
-            assertTrue("Hair space path should be empty", subset.getPath("uni200A").getBounds2D().isEmpty());
-            assertFalse("UC dieresis path should not be empty", subset.getPath("dieresis.uc").getBounds2D().isEmpty());
+            assertTrue(subset.getPath("uni200A").getBounds2D().isEmpty(),
+                    "Hair space path should be empty");
+            assertFalse(subset.getPath("dieresis.uc").getBounds2D().isEmpty(),
+                    "UC dieresis path should not be empty");
         }
     }
 }

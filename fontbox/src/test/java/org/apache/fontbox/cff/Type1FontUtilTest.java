@@ -17,16 +17,15 @@
 package org.apache.fontbox.cff;
 
 import java.util.Random;
-import junit.framework.TestCase;
-import static org.junit.Assert.assertArrayEquals;
-import org.junit.internal.ArrayComparisonFailure;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class includes some tests for the Type1FontUtil class.
  *
  * @author Villu Ruusmann
  */
-public class Type1FontUtilTest extends TestCase
+public class Type1FontUtilTest
 {
     static final long DEFAULTSEED = 12345;
     static final long LOOPS = 1000;
@@ -34,6 +33,7 @@ public class Type1FontUtilTest extends TestCase
     /**
      * Tests the hex encoding/decoding.
      */
+    @Test
     public void testHexEncoding()
     {
         long seed = DEFAULTSEED;
@@ -44,19 +44,20 @@ public class Type1FontUtilTest extends TestCase
         }
     }
 
-    private void tryHexEncoding(long seed) throws ArrayComparisonFailure
+    private void tryHexEncoding(long seed)
     {
         byte[] bytes = createRandomByteArray(128, seed);
 
         String encodedBytes = Type1FontUtil.hexEncode(bytes);
         byte[] decodedBytes = Type1FontUtil.hexDecode(encodedBytes);
         
-        assertArrayEquals("Seed: " + seed, bytes, decodedBytes);
+        assertArrayEquals(bytes, decodedBytes, "Seed: " + seed);
     }
 
     /**
      * Tests the eexec encryption/decryption.
      */
+    @Test
     public void testEexecEncryption()
     {
         long seed = DEFAULTSEED;
@@ -67,19 +68,20 @@ public class Type1FontUtilTest extends TestCase
         }
     }
 
-    private void tryEexecEncryption(long seed) throws ArrayComparisonFailure
+    private void tryEexecEncryption(long seed)
     {
         byte[] bytes = createRandomByteArray(128, seed);
 
         byte[] encryptedBytes = Type1FontUtil.eexecEncrypt(bytes);
         byte[] decryptedBytes = Type1FontUtil.eexecDecrypt(encryptedBytes);
 
-        assertArrayEquals("Seed: " + seed, bytes, decryptedBytes);
+        assertArrayEquals(bytes, decryptedBytes, "Seed: " + seed);
     }
 
     /**
      * Tests the charstring encryption/decryption.
      */
+    @Test
     public void testCharstringEncryption()
     {
         long seed = DEFAULTSEED;
@@ -90,14 +92,14 @@ public class Type1FontUtilTest extends TestCase
         }
     }
 
-    private void tryCharstringEncryption(long seed) throws ArrayComparisonFailure
+    private void tryCharstringEncryption(long seed)
     {
         byte[] bytes = createRandomByteArray(128, seed);
 
         byte[] encryptedBytes = Type1FontUtil.charstringEncrypt(bytes, 4);
         byte[] decryptedBytes = Type1FontUtil.charstringDecrypt(encryptedBytes, 4);
 
-        assertArrayEquals("Seed: " + seed, bytes, decryptedBytes);
+        assertArrayEquals(bytes, decryptedBytes, "Seed: " + seed);
     }
 
     private static byte[] createRandomByteArray(int arrayLength, long seed)

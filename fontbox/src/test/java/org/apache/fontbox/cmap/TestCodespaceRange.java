@@ -16,13 +16,16 @@
  */
 package org.apache.fontbox.cmap;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * This will test the CodeSpaceRange implementation.
  *
  */
-public class TestCodespaceRange extends TestCase
+public class TestCodespaceRange
 {
 
     /**

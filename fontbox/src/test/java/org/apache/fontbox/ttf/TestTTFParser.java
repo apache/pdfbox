@@ -15,19 +15,19 @@
  */
 package org.apache.fontbox.ttf;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
-
-import junit.framework.TestCase;
 
 /**
  * This will test the TTFParser implementation.
  *
  * @author Tim Allison
  */
-public class TestTTFParser extends TestCase
+public class TestTTFParser
 {
 
     /**
