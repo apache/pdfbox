@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
 /**
  * Radio button fields contain a set of related buttons that can each be on or off.
@@ -79,6 +80,31 @@ public final class PDRadioButton extends PDButton
     public boolean isRadiosInUnison()
     {
         return getCOSObject().getFlag(COSName.FF, FLAG_RADIOS_IN_UNISON);
+    }
+
+    /**
+     * This will get the selected index.
+     * <p>
+     * A RadioButton might have multiple same value options which are not selected jointly if
+     * they are not set in unison {@link #isRadiosInUnison()}.</p>
+     * 
+     * <p>
+     * The method will return the first selected index or -1 if no option is selected.</p>
+     * 
+     * @return the first selected index or -1.
+     */
+    public int getSelectedIndex()
+    {
+        int idx = 0;
+        for (PDAnnotationWidget widget : getWidgets())
+        {
+            if (!COSName.Off.equals(widget.getAppearanceState()))
+            {
+                return idx;
+            }
+            idx ++;
+        }
+        return -1;
     }
 
     /**

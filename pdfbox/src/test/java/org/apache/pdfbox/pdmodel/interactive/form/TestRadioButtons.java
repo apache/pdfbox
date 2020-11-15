@@ -40,7 +40,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
 import org.junit.Test;
 
-
 /**
  * This will test the functionality of Radio Buttons in PDFBox.
  */
@@ -308,5 +307,80 @@ public class TestRadioButtons
         {
             IOUtils.closeQuietly(testPdf);
         }
-   }
+    }
+
+        /**
+     * PDFBOX-4617 Enable getting selected index
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox4617IndexNoneSelected() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            assertEquals("if there is no value set the index shall be -1", -1, field.getSelectedIndex());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-4617 Enable getting selected index for value being set by option
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox4617IndexForSetByOption() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            field.setValue( "Checking");
+            assertEquals("the index shall be equal with the first entry of Checking which is 0", 0, field.getSelectedIndex());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-4617 Enable getting selected index for value being set by index
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox4617IndexForSetByIndex() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            field.setValue(4);
+            assertEquals("setting by the index value should return the corresponding export", "Checking", field.getValue());
+            assertEquals("the index shall be equals with the set value of 4", 4, field.getSelectedIndex());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
 }
