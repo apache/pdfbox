@@ -113,12 +113,12 @@ public class TestRadioButtons
 
             // assert that the values have been correctly set
             assertNotNull(radioButton.getCOSObject().getItem(COSName.OPT));
-            assertEquals(optItem.size(),2);
+            assertEquals(2, optItem.size());
             assertEquals(options.get(0), optItem.getString(0));
             
             // assert that the values can be retrieved correctly
             List<String> retrievedOptions = radioButton.getExportValues();
-            assertEquals(retrievedOptions.size(),2);
+            assertEquals(2, retrievedOptions.size());
             assertEquals(retrievedOptions, options);
 
             // assert that the Opt entry is removed
