@@ -29,11 +29,11 @@ import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.util.Matrix;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,8 +55,8 @@ public class PDSquareAnnotationTest
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/annotation");
     private static final String NAME_OF_PDF = "PDSquareAnnotationTest.pdf";
 
-    @Before
-    public void setUp() throws IOException
+    @BeforeAll
+    static void setUp() throws IOException
     {
         rectangle = new PDRectangle();
         rectangle.setLowerLeftX(91.5958f);
@@ -119,17 +119,18 @@ public class PDSquareAnnotationTest
             PDAnnotationSquareCircle annotation = (PDAnnotationSquareCircle) annotations.get(0);
             
             // test the correct setting of the appearance stream
-            assertNotNull("Appearance dictionary shall not be null", annotation.getAppearance());
-            assertNotNull("Normal appearance shall not be null", annotation.getAppearance().getNormalAppearance());
+            assertNotNull(annotation.getAppearance(), "Appearance dictionary shall not be null");
+            assertNotNull(annotation.getAppearance().getNormalAppearance(),
+                    "Normal appearance shall not be null");
             PDAppearanceStream appearanceStream = annotation.getAppearance().getNormalAppearance().getAppearanceStream();
-            assertNotNull("Appearance stream shall not be null", appearanceStream);
+            assertNotNull(appearanceStream, "Appearance stream shall not be null");
             assertEquals(rectangle.getLowerLeftX(), appearanceStream.getBBox().getLowerLeftX(), DELTA);
             assertEquals(rectangle.getLowerLeftY(), appearanceStream.getBBox().getLowerLeftY(), DELTA);
             assertEquals(rectangle.getWidth(), appearanceStream.getBBox().getWidth(), DELTA);
             assertEquals(rectangle.getHeight(), appearanceStream.getBBox().getHeight(), DELTA);
             
             Matrix matrix = appearanceStream.getMatrix();
-            assertNotNull("Matrix shall not be null", matrix);
+            assertNotNull(matrix, "Matrix shall not be null");
             
             // should have been translated to a 0 origin
             assertEquals(-rectangle.getLowerLeftX(), matrix.getTranslateX(), DELTA);
@@ -137,7 +138,7 @@ public class PDSquareAnnotationTest
             
             // test the content of the appearance stream
             PDStream contentStream = appearanceStream.getContentStream();
-            assertNotNull("Content stream shall not be null", contentStream);
+            assertNotNull(contentStream, "Content stream shall not be null");
             PDFStreamParser parser = new PDFStreamParser(appearanceStream);
             List<Object> tokens = parser.parse();
             

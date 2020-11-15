@@ -16,8 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.state;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class RenderingIntentTest
 {
@@ -31,7 +32,7 @@ public class RenderingIntentTest
         final RenderingIntent retval = RenderingIntent.fromString(value);
 
         // Assert result
-        Assert.assertEquals(RenderingIntent.ABSOLUTE_COLORIMETRIC, retval);
+        assertEquals(RenderingIntent.ABSOLUTE_COLORIMETRIC, retval);
     }
 
     @Test
@@ -44,7 +45,7 @@ public class RenderingIntentTest
         final RenderingIntent retval = RenderingIntent.fromString(value);
 
         // Assert result
-        Assert.assertEquals(RenderingIntent.RELATIVE_COLORIMETRIC, retval);
+        assertEquals(RenderingIntent.RELATIVE_COLORIMETRIC, retval);
     }
 
     @Test
@@ -57,7 +58,7 @@ public class RenderingIntentTest
         final RenderingIntent retval = RenderingIntent.fromString(value);
 
         // Assert result
-        Assert.assertEquals(RenderingIntent.PERCEPTUAL, retval);
+        assertEquals(RenderingIntent.PERCEPTUAL, retval);
     }
 
     @Test
@@ -70,7 +71,7 @@ public class RenderingIntentTest
         final RenderingIntent retval = RenderingIntent.fromString(value);
 
         // Assert result
-        Assert.assertEquals(RenderingIntent.SATURATION, retval);
+        assertEquals(RenderingIntent.SATURATION, retval);
     }
 
     @Test
@@ -83,7 +84,7 @@ public class RenderingIntentTest
         final RenderingIntent retval = RenderingIntent.fromString(value);
 
         // Assert result
-        Assert.assertEquals(RenderingIntent.RELATIVE_COLORIMETRIC, retval);
+        assertEquals(RenderingIntent.RELATIVE_COLORIMETRIC, retval);
     }
 
     @Test
@@ -96,7 +97,7 @@ public class RenderingIntentTest
         final String retval = objectUnderTest.stringValue();
 
         // Assert result
-        Assert.assertEquals("AbsoluteColorimetric", retval);
+        assertEquals("AbsoluteColorimetric", retval);
     }
 
     @Test
@@ -109,6 +110,6 @@ public class RenderingIntentTest
         final boolean retval = objectUnderTest.isFill();
 
         // Assert result
-        Assert.assertEquals(true, retval);
+        assertEquals(true, retval);
     }
 }

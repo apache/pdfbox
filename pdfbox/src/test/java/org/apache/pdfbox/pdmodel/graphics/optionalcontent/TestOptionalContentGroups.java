@@ -16,6 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.graphics.optionalcontent;
 
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -26,8 +34,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import javax.imageio.ImageIO;
-
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
@@ -42,19 +48,19 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.optionalcontent.PDOptionalContentProperties.BaseState;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests optional content group functionality (also called layers).
  */
-public class TestOptionalContentGroups extends TestCase
+public class TestOptionalContentGroups
 {
-    private final File testResultsDir = new File("target/test-output");
+    private static final File testResultsDir = new File("target/test-output");
 
-    @Override
-    protected void setUp() throws Exception
+    @BeforeAll
+    static void setUp()
     {
-        super.setUp();
         testResultsDir.mkdirs();
     }
 
@@ -62,6 +68,7 @@ public class TestOptionalContentGroups extends TestCase
      * Tests OCG generation.
      * @throws Exception if an error occurs
      */
+    @Test
     public void testOCGGeneration() throws Exception
     {
         PDDocument doc = new PDDocument();
@@ -155,6 +162,7 @@ public class TestOptionalContentGroups extends TestCase
      * Tests OCG functions on a loaded PDF.
      * @throws Exception if an error occurs
      */
+    @Test
     public void testOCGConsumption() throws Exception
     {
         File pdfFile = new File(testResultsDir, "ocg-generation.pdf");
@@ -213,6 +221,7 @@ public class TestOptionalContentGroups extends TestCase
         }
     }
 
+    @Test
     public void testOCGsWithSameNameCanHaveDifferentVisibility() throws Exception
     {
         try (PDDocument doc = new PDDocument())
@@ -287,6 +296,7 @@ public class TestOptionalContentGroups extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testOCGGenerationSameNameCanHaveSameVisibilityOff() throws IOException
     {
         BufferedImage expectedImage;
@@ -431,6 +441,6 @@ public class TestOptionalContentGroups extends TestCase
         // compare images
         DataBufferInt expectedData = (DataBufferInt) expectedImage.getRaster().getDataBuffer();
         DataBufferInt actualData = (DataBufferInt) actualImage.getRaster().getDataBuffer();
-        Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+        assertArrayEquals(expectedData.getData(), actualData.getData());
     }
 }
