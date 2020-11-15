@@ -16,10 +16,11 @@
  */
 package org.apache.pdfbox.io;
 
-import java.io.IOException;
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Regression test to check the known bugs in {@link ScratchFileBuffer}.
@@ -50,10 +51,10 @@ public class ScratchFileBufferTest
                 long p0 = scratchFileBuffer.getPosition();
                 scratchFileBuffer.write(bytes);
                 long p1 = scratchFileBuffer.getPosition();
-                Assert.assertEquals(PAGE_SIZE, p1 - p0);
+                assertEquals(PAGE_SIZE, p1 - p0);
                 scratchFileBuffer.write(bytes);
                 long p2 = scratchFileBuffer.getPosition();
-                Assert.assertEquals(PAGE_SIZE, p2 - p1);
+                assertEquals(PAGE_SIZE, p2 - p1);
                 scratchFileBuffer.seek(0);
                 scratchFileBuffer.seek(i * 2 * PAGE_SIZE);
             }

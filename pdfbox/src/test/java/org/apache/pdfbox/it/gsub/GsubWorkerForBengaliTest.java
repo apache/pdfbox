@@ -17,8 +17,8 @@
 
 package org.apache.pdfbox.it.gsub;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ import org.apache.fontbox.ttf.gsub.GsubWorkerFactory;
 import org.apache.fontbox.ttf.gsub.GsubWorkerForBengali;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Integration test for {@link GsubWorkerForBengali}. Has various combinations of glyphs to test
@@ -50,7 +50,7 @@ public class GsubWorkerForBengaliTest
     private CmapLookup cmapLookup;
     private GsubWorker gsubWorkerForBengali;
 
-    @Before
+    @BeforeEach
     public void init() throws IOException
     {
         try (PDDocument doc = new PDDocument())
@@ -115,7 +115,7 @@ public class GsubWorkerForBengaliTest
         assertEquals(glyphsAfterGsub, result);
     }
 
-    @Ignore
+    @Disabled
     public void testApplyTransforms_o_kar_repeated_1_not_working_yet()
     {
         // given
@@ -128,7 +128,7 @@ public class GsubWorkerForBengaliTest
         assertEquals(glyphsAfterGsub, result);
     }
 
-    @Ignore
+    @Disabled
     public void testApplyTransforms_o_kar_repeated_2_not_working_yet()
     {
         // given

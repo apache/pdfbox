@@ -16,6 +16,8 @@
  */
 package org.apache.pdfbox.filter;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -23,19 +25,16 @@ import java.io.IOException;
 
 import java.util.Random;
 
-import junit.framework.TestCase;
-
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
-
-import org.junit.Assert;
+import org.junit.jupiter.api.Test;
 
 /**
  * This will test all of the filters in the PDFBox system.
  */
-public class TestFilters extends TestCase
+public class TestFilters
 {
     /**
      * This will test all of the filters in the system. There will be COUNT
@@ -44,6 +43,7 @@ public class TestFilters extends TestCase
      *
      * @throws IOException If there is an exception while encoding.
      */
+    @Test
     public void testFilters() throws IOException
     {
         final int COUNT = 10;
@@ -124,6 +124,7 @@ public class TestFilters extends TestCase
      * 
      * @throws IOException
      */
+    @Test
     public void testPDFBOX4517() throws IOException
     {
         Loader.loadPDF(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
@@ -137,6 +138,7 @@ public class TestFilters extends TestCase
      * 
      * @throws IOException 
      */
+    @Test
     public void testPDFBOX1977() throws IOException
     {
         Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
@@ -150,6 +152,7 @@ public class TestFilters extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testRLE() throws IOException
     {
         Filter rleFilter = FilterFactory.INSTANCE.getFilter(COSName.RUN_LENGTH_DECODE);
@@ -181,8 +184,8 @@ public class TestFilters extends TestCase
         filter.decode(new ByteArrayInputStream(encoded.toByteArray()),
                 decoded, new COSDictionary(), 0);
 
-        Assert.assertArrayEquals("Data that is encoded and then decoded through " +
-                filter.getClass() + " does not match the original data", 
-                original, decoded.toByteArray());
+        assertArrayEquals(original, decoded.toByteArray(),
+                "Data that is encoded and then decoded through " + filter.getClass()
+                        + " does not match the original data");
     }
 }
