@@ -21,13 +21,17 @@
 
 package org.apache.xmpbox.type;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Calendar;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test MetaData Objects for simple properties
@@ -40,7 +44,7 @@ public class TestSimpleMetadataProperties
 
     protected XMPMetadata parent;
 
-    @Before
+    @BeforeEach
     public void resetDocument() throws Exception
     {
         parent = XMPMetadata.createXMPMetadata();
@@ -51,10 +55,12 @@ public class TestSimpleMetadataProperties
      * 
      * @throws IllegalArgumentException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testBooleanBadTypeDetection()
     {
-        new BooleanType(parent, null, "test", "boolean", "Not a Boolean");
+        assertThrows(IllegalArgumentException.class, () -> {
+	        new BooleanType(parent, null, "test", "boolean", "Not a Boolean");
+	    });
     }
 
     /**
@@ -62,10 +68,12 @@ public class TestSimpleMetadataProperties
      * 
      * @throws IllegalArgumentException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDateBadTypeDetection()
     {
-        new DateType(parent, null, "test", "date", "Bad Date");
+        assertThrows(IllegalArgumentException.class, () -> {
+	        new DateType(parent, null, "test", "date", "Bad Date");
+	    });
     }
 
     /**
@@ -73,10 +81,12 @@ public class TestSimpleMetadataProperties
      * 
      * @throws IllegalArgumentException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIntegerBadTypeDetection()
     {
-        new IntegerType(parent, null, "test", "integer", "Not an int");
+        assertThrows(IllegalArgumentException.class, () -> {
+	        new IntegerType(parent, null, "test", "integer", "Not an int");
+	    });
     }
 
     /**
@@ -84,10 +94,12 @@ public class TestSimpleMetadataProperties
      * 
      * @throws IllegalArgumentException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRealBadTypeDetection() throws Exception
     {
-        new RealType(parent, null, "test", "real", "Not a real");
+        assertThrows(IllegalArgumentException.class, () -> {
+	        new RealType(parent, null, "test", "real", "Not a real");
+	    });
     }
 
     /**
@@ -95,10 +107,12 @@ public class TestSimpleMetadataProperties
      * 
      * @throws IllegalArgumentException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testTextBadTypeDetection() throws Exception
     {
-        new TextType(parent, null, "test", "text", Calendar.getInstance());
+        assertThrows(IllegalArgumentException.class, () -> {
+	        new TextType(parent, null, "test", "text", Calendar.getInstance());
+	    });   
     }
 
     /**
@@ -120,11 +134,11 @@ public class TestSimpleMetadataProperties
         RealType real = parent.getTypeMapping().createReal(null, "test", "real", realv);
         TextType text = parent.getTypeMapping().createText(null, "test", "text", textv);
 
-        Assert.assertEquals(boolv, bool.getValue());
-        Assert.assertEquals(datev, date.getValue());
-        Assert.assertEquals(Integer.valueOf(integerv), integer.getValue());
-        Assert.assertEquals(realv, real.getValue(), 0);
-        Assert.assertEquals(textv, text.getStringValue());
+        assertEquals(boolv, bool.getValue());
+        assertEquals(datev, date.getValue());
+        assertEquals(Integer.valueOf(integerv), integer.getValue());
+        assertEquals(realv, real.getValue(), 0);
+        assertEquals(textv, text.getStringValue());
 
     }
 
@@ -148,11 +162,11 @@ public class TestSimpleMetadataProperties
         RealType real = new RealType(parent, null, "test", "real", realv);
         TextType text = new TextType(parent, null, "test", "text", textv);
 
-        Assert.assertEquals(boolv, bool.getStringValue());
-        Assert.assertEquals(datev, date.getStringValue());
-        Assert.assertEquals(integerv, integer.getStringValue());
-        Assert.assertEquals(realv, real.getStringValue());
-        Assert.assertEquals(textv, text.getStringValue());
+        assertEquals(boolv, bool.getStringValue());
+        assertEquals(datev, date.getStringValue());
+        assertEquals(integerv, integer.getStringValue());
+        assertEquals(realv, real.getStringValue());
+        assertEquals(textv, text.getStringValue());
     }
 
     /**
@@ -170,11 +184,11 @@ public class TestSimpleMetadataProperties
         RealType real = parent.getTypeMapping().createReal(ns, "test", "real", (float) 1.6);
         TextType text = parent.getTypeMapping().createText(ns, "test", "text", "TEST");
 
-        Assert.assertEquals(ns, bool.getNamespace());
-        Assert.assertEquals(ns, date.getNamespace());
-        Assert.assertEquals(ns, integer.getNamespace());
-        Assert.assertEquals(ns, real.getNamespace());
-        Assert.assertEquals(ns, text.getNamespace());
+        assertEquals(ns, bool.getNamespace());
+        assertEquals(ns, date.getNamespace());
+        assertEquals(ns, integer.getNamespace());
+        assertEquals(ns, real.getNamespace());
+        assertEquals(ns, text.getNamespace());
 
     }
 
@@ -183,10 +197,12 @@ public class TestSimpleMetadataProperties
      * 
      * @throws IllegalArgumentException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testExceptionWithCause() throws Exception
     {
-        throw new IllegalArgumentException("TEST", new Throwable());
+        assertThrows(IllegalArgumentException.class, () -> {
+	        throw new IllegalArgumentException("TEST", new Throwable());
+	    });
     }
 
     /**
@@ -206,16 +222,16 @@ public class TestSimpleMetadataProperties
 
         // System.out.println(value.getQualifiedName());
 
-        Assert.assertEquals(value, integer.getAttribute(value.getName()));
-        Assert.assertTrue(integer.containsAttribute(value.getName()));
+        assertEquals(value, integer.getAttribute(value.getName()));
+        assertTrue(integer.containsAttribute(value.getName()));
 
         // Replacement check
 
         integer.setAttribute(value2);
-        Assert.assertEquals(value2, integer.getAttribute(value2.getName()));
+        assertEquals(value2, integer.getAttribute(value2.getName()));
 
         integer.removeAttribute(value2.getName());
-        Assert.assertFalse(integer.containsAttribute(value2.getName()));
+        assertFalse(integer.containsAttribute(value2.getName()));
 
         // Attribute with namespace Creation checking
         Attribute valueNS = new Attribute("http://www.tefst2.org/test/", "value2", "StringValue.2");
@@ -227,8 +243,8 @@ public class TestSimpleMetadataProperties
         /*
          * for (Attribute attribute : atts) { System.out.println(attribute.getLocalName ()+" :"+attribute.getValue()); }
          */
-        Assert.assertFalse(atts.contains(valueNS));
-        Assert.assertTrue(atts.contains(valueNS2));
+        assertFalse(atts.contains(valueNS));
+        assertTrue(atts.contains(valueNS2));
 
     }
 

@@ -21,6 +21,11 @@
 
 package org.apache.xmpbox.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -40,8 +45,7 @@ import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.Types;
 import org.apache.xmpbox.type.URIType;
 import org.apache.xmpbox.type.URLType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractXMPSchemaTest
 {
@@ -73,15 +77,15 @@ public abstract class AbstractXMPSchemaTest
     public static Object[] wrapProperty(String name, Types type, Cardinality card, Object value)
     {
         // if (type==Types.Boolean) {
-        // Assert.assertTrue(value instanceof Boolean);
+        // assertTrue(value instanceof Boolean);
         // } else if (type==Types.Text) {
-        // Assert.assertTrue(value instanceof String);
+        // assertTrue(value instanceof String);
         // } else if (type==Types.Integer) {
-        // Assert.assertTrue(value instanceof Integer);
+        // assertTrue(value instanceof Integer);
         // } else if (type==Types.Date) {
-        // Assert.assertTrue(value instanceof Calendar);
+        // assertTrue(value instanceof Calendar);
         // } else if (type==Types.URL) {
-        // Assert.assertTrue(value instanceof String);
+        // assertTrue(value instanceof String);
         // }
         return new Object[] { name, TypeMapping.createPropertyType(type, card), value };
     }
@@ -232,14 +236,12 @@ public abstract class AbstractXMPSchemaTest
                         PropertyType spt = retrievePropertyType(field.get(schema).toString());
                         String getNameProperty = "get" + prepareName(field.get(schema).toString(), spt) + "Property";
                         Method getMethod = schemaClass.getMethod(getNameProperty);
-                        Assert.assertNull(getNameProperty + " should return null when testing " + property,
-                                getMethod.invoke(schema));
+                        assertNull(getMethod.invoke(schema), getNameProperty + " should return null when testing " + property);
                         // value test
                         String getNameValue = "get" + prepareName(field.get(schema).toString(), spt);
                         getMethod = schemaClass.getMethod(getNameValue);
-                        Assert.assertNotNull(getNameValue + " method should exist", getMethod);
-                        Assert.assertNull(getNameValue + " should return null when testing " + property,
-                                getMethod.invoke(schema));
+                        assertNotNull(getMethod, getNameValue + " method should exist");
+                        assertNull(getMethod.invoke(schema), getNameValue + " should return null when testing " + property);
                     }
                 }
             }
@@ -349,7 +351,7 @@ public abstract class AbstractXMPSchemaTest
 
         setMethod.invoke(schema, bt);
         Boolean found = ((BooleanType) getMethod.invoke(schema)).getValue();
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
 
     }
 
@@ -364,7 +366,7 @@ public abstract class AbstractXMPSchemaTest
 
         setMethod.invoke(schema, dt);
         Calendar found = ((DateType) getMethod.invoke(schema)).getValue();
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
     }
 
     protected void testGetSetIntegerProperty() throws Exception
@@ -378,7 +380,7 @@ public abstract class AbstractXMPSchemaTest
 
         setMethod.invoke(schema, it);
         Integer found = ((IntegerType) getMethod.invoke(schema)).getValue();
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
     }
 
     protected void testGetSetTextProperty() throws Exception
@@ -392,7 +394,7 @@ public abstract class AbstractXMPSchemaTest
 
         setMethod.invoke(schema, tt);
         String found = ((TextType) getMethod.invoke(schema)).getStringValue();
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
 
     }
 
@@ -407,7 +409,7 @@ public abstract class AbstractXMPSchemaTest
 
         setMethod.invoke(schema, tt);
         String found = ((TextType) getMethod.invoke(schema)).getStringValue();
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
 
     }
 
@@ -422,7 +424,7 @@ public abstract class AbstractXMPSchemaTest
 
         setMethod.invoke(schema, tt);
         String found = ((TextType) getMethod.invoke(schema)).getStringValue();
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
 
     }
 
@@ -438,7 +440,7 @@ public abstract class AbstractXMPSchemaTest
 
         setMethod.invoke(schema, tt);
         String found = ((AgentNameType) getMethod.invoke(schema)).getStringValue();
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
 
     }
 
@@ -459,7 +461,7 @@ public abstract class AbstractXMPSchemaTest
         List<String> fields = (List<String>) getMethod.invoke(schema);
         for (String field : fields)
         {
-            Assert.assertTrue(field + " should be found in list", Arrays.binarySearch(svalue, field) >= 0);
+            assertTrue(Arrays.binarySearch(svalue, field) >= 0, field + " should be found in list");
         }
     }
 
@@ -480,7 +482,7 @@ public abstract class AbstractXMPSchemaTest
         List<Calendar> fields = (List<Calendar>) getMethod.invoke(schema);
         for (Calendar field : fields)
         {
-            Assert.assertTrue(field + " should be found in list", Arrays.binarySearch(svalue, field) >= 0);
+            assertTrue(Arrays.binarySearch(svalue, field) >= 0, field + " should be found in list");
         }
     }
 
@@ -496,12 +498,12 @@ public abstract class AbstractXMPSchemaTest
         String img = "/9j/4AAQSkZJRgABAgEASABIAAD";
         setMethod.invoke(schema, height, width, format, img);
         List<ThumbnailType> found = ((List<ThumbnailType>) getMethod.invoke(schema));
-        Assert.assertEquals(1, found.size());
+        assertEquals(1, found.size());
         ThumbnailType t1 = found.get(0);
-        Assert.assertEquals(height, t1.getHeight());
-        Assert.assertEquals(width, t1.getWidth());
-        Assert.assertEquals(format, t1.getFormat());
-        Assert.assertEquals(img, t1.getImage());
+        assertEquals(height, t1.getHeight());
+        assertEquals(width, t1.getWidth());
+        assertEquals(format, t1.getFormat());
+        assertEquals(img, t1.getImage());
     }
 
     protected void testGetSetLangAltValue() throws Exception
@@ -524,7 +526,7 @@ public abstract class AbstractXMPSchemaTest
         {
             Method getMethod = schemaClass.getMethod(getName, String.class);
             String res = (String) getMethod.invoke(schema, string);
-            Assert.assertEquals(res, svalue.get(string));
+            assertEquals(res, svalue.get(string));
         }
     }
 
@@ -545,7 +547,7 @@ public abstract class AbstractXMPSchemaTest
         {
             Method getMethod = schemaClass.getMethod(getName, String.class);
             String res = (String) getMethod.invoke(schema, string);
-            Assert.assertEquals(res, svalue);
+            assertEquals(res, svalue);
         }
     }
 
@@ -560,7 +562,7 @@ public abstract class AbstractXMPSchemaTest
         setMethod.invoke(schema, value);
         String found = (String) getMethod.invoke(schema);
 
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
     }
 
     protected void testGetSetBooleanValue() throws Exception
@@ -574,7 +576,7 @@ public abstract class AbstractXMPSchemaTest
         setMethod.invoke(schema, value);
         Boolean found = (Boolean) getMethod.invoke(schema);
 
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
     }
 
     protected void testGetSetDateValue() throws Exception
@@ -588,7 +590,7 @@ public abstract class AbstractXMPSchemaTest
         setMethod.invoke(schema, value);
         Calendar found = (Calendar) getMethod.invoke(schema);
 
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
     }
 
     protected void testGetSetIntegerValue() throws Exception
@@ -602,6 +604,6 @@ public abstract class AbstractXMPSchemaTest
         setMethod.invoke(schema, value);
         Integer found = (Integer) getMethod.invoke(schema);
 
-        Assert.assertEquals(value, found);
+        assertEquals(value, found);
     }
 }

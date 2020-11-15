@@ -21,6 +21,10 @@
 
 package org.apache.xmpbox.parser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -35,19 +39,17 @@ import org.apache.xmpbox.type.ThumbnailType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpParsingException.ErrorType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.apache.xmpbox.xml.XmpSerializer;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
-public class DeserializationTest
-{
+public class DeserializationTest {
 
     protected ByteArrayOutputStream bos;
 
     protected XmpSerializer serializer;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception
     {
         bos = new ByteArrayOutputStream();
@@ -98,7 +100,7 @@ public class DeserializationTest
         XMPMetadata meta = xdb.parse(fis);
         DublinCoreSchema dc = meta.getDublinCoreSchema();
         String s = dc.getTitle(null);
-        Assert.assertEquals("title value", s);
+        assertEquals("title value", s);
     }
 
     @Test
@@ -124,35 +126,35 @@ public class DeserializationTest
         XMPMetadata metadata = xdb.parse(fis);
 
         // <xmpMM:DocumentID>
-        Assert.assertEquals("uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7", metadata.getXMPMediaManagementSchema()
+        assertEquals("uuid:09C78666-2F91-3A9C-92AF-3691A6D594F7", metadata.getXMPMediaManagementSchema()
                 .getDocumentID());
 
         // <xmp:CreateDate>
         // <xmp:ModifyDate>
         // <xmp:MetadataDate>
-        Assert.assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
+        assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
                 .getCreateDate());
-        Assert.assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
+        assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
                 .getModifyDate());
-        Assert.assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
+        assertEquals(DateConverter.toCalendar("2008-01-18T16:59:54+01:00"), metadata.getXMPBasicSchema()
                 .getMetadataDate());
 
         // THUMBNAILS TEST
         List<ThumbnailType> thumbs = metadata.getXMPBasicSchema().getThumbnailsProperty();
-        Assert.assertNotNull(thumbs);
-        Assert.assertEquals(2, thumbs.size());
+        assertNotNull(thumbs);
+        assertEquals(2, thumbs.size());
 
         ThumbnailType thumb = thumbs.get(0);
-        Assert.assertEquals(Integer.valueOf(162), thumb.getHeight());
-        Assert.assertEquals(Integer.valueOf(216), thumb.getWidth());
-        Assert.assertEquals("JPEG", thumb.getFormat());
-        Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
+        assertEquals(Integer.valueOf(162), thumb.getHeight());
+        assertEquals(Integer.valueOf(216), thumb.getWidth());
+        assertEquals("JPEG", thumb.getFormat());
+        assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
         thumb = thumbs.get(1);
-        Assert.assertEquals(Integer.valueOf(162), thumb.getHeight());
-        Assert.assertEquals(Integer.valueOf(216), thumb.getWidth());
-        Assert.assertEquals("JPEG", thumb.getFormat());
-        Assert.assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
+        assertEquals(Integer.valueOf(162), thumb.getHeight());
+        assertEquals(Integer.valueOf(216), thumb.getWidth());
+        assertEquals("JPEG", thumb.getFormat());
+        assertEquals("/9j/4AAQSkZJRgABAgEASABIAAD", thumb.getImage());
 
     }
 
@@ -165,11 +167,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.XpacketBadStart, e.getErrorType());
+            assertEquals(ErrorType.XpacketBadStart, e.getErrorType());
         }
     }
 
@@ -182,11 +184,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.XpacketBadEnd, e.getErrorType());
+            assertEquals(ErrorType.XpacketBadEnd, e.getErrorType());
         }
     }
 
@@ -199,11 +201,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.Format, e.getErrorType());
+            assertEquals(ErrorType.Format, e.getErrorType());
         }
     }
 
@@ -216,11 +218,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.Format, e.getErrorType());
+            assertEquals(ErrorType.Format, e.getErrorType());
         }
     }
 
@@ -233,11 +235,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.Format, e.getErrorType());
+            assertEquals(ErrorType.Format, e.getErrorType());
         }
     }
 
@@ -250,11 +252,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.Format, e.getErrorType());
+            assertEquals(ErrorType.Format, e.getErrorType());
         }
     }
 
@@ -267,11 +269,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.NoSchema, e.getErrorType());
+            assertEquals(ErrorType.NoSchema, e.getErrorType());
         }
     }
 
@@ -284,11 +286,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.NoType, e.getErrorType());
+            assertEquals(ErrorType.NoType, e.getErrorType());
         }
     }
 
@@ -301,11 +303,11 @@ public class DeserializationTest
         try
         {
             xdb.parse(fis);
-            Assert.fail("Should fail during parse");
+            fail("Should fail during parse");
         }
         catch (XmpParsingException e)
         {
-            Assert.assertEquals(ErrorType.NoValueType, e.getErrorType());
+            assertEquals(ErrorType.NoValueType, e.getErrorType());
         }
     }
 
@@ -318,7 +320,7 @@ public class DeserializationTest
         List<XMPSchema> schemas = meta.getAllSchemas();
         for (XMPSchema xmpSchema : schemas)
         {
-            Assert.assertNotNull(xmpSchema.getAboutAttribute());
+            assertNotNull(xmpSchema.getAboutAttribute());
         }
     }
 
@@ -330,13 +332,13 @@ public class DeserializationTest
         XMPMetadata meta = xdb.parse(fis);
 
         AdobePDFSchema pdf = meta.getAdobePDFSchema();
-        Assert.assertEquals("GPL Ghostscript 8.64", pdf.getProducer());
+        assertEquals("GPL Ghostscript 8.64", pdf.getProducer());
 
         DublinCoreSchema dc = meta.getDublinCoreSchema();
-        Assert.assertEquals("application/pdf", dc.getFormat());
+        assertEquals("application/pdf", dc.getFormat());
 
         XMPBasicSchema basic = meta.getXMPBasicSchema();
-        Assert.assertNotNull(basic.getCreateDate());
+        assertNotNull(basic.getCreateDate());
 
     }
 
@@ -349,9 +351,9 @@ public class DeserializationTest
         DomXmpParser xdb = new DomXmpParser();
         XMPMetadata meta = xdb.parse(is);
         // check producer
-        Assert.assertEquals(" ", meta.getAdobePDFSchema().getProducer());
+        assertEquals(" ", meta.getAdobePDFSchema().getProducer());
         // check creator tool
-        Assert.assertEquals("Canon ",meta.getXMPBasicSchema().getCreatorTool());
+        assertEquals("Canon ",meta.getXMPBasicSchema().getCreatorTool());
 
     }
 }

@@ -21,12 +21,12 @@
 
 package org.apache.xmpbox;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the date conversion utility.

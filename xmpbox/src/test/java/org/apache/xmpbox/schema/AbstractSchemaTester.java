@@ -20,6 +20,11 @@
 
 package org.apache.xmpbox.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -33,8 +38,7 @@ import org.apache.xmpbox.type.TypeMapping;
 import org.apache.xmpbox.type.AbstractTypeTester;
 import org.apache.xmpbox.type.Types;
 import org.apache.xmpbox.xml.DomXmpParser;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractSchemaTester extends AbstractTypeTester
 {
@@ -77,14 +81,14 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
     {
         XMPSchema schema = getSchema();
         // default method
-        Assert.assertNull(schema.getProperty(fieldName));
+        assertNull(schema.getProperty(fieldName));
         // accessor
         if (cardinality == Cardinality.Simple)
         {
             String getter = calculateSimpleGetter(fieldName);
             Method get = getSchemaClass().getMethod(getter);
             Object result = get.invoke(schema);
-            Assert.assertNull(result);
+            assertNull(result);
         }
         else
         {
@@ -92,7 +96,7 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
             String getter = calculateArrayGetter(fieldName);
             Method get = getSchemaClass().getMethod(getter);
             Object result = get.invoke(schema);
-            Assert.assertNull(result);
+            assertNull(result);
         }
 
     }
@@ -125,7 +129,7 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
         AbstractSimpleProperty property = schema.instanciateSimple(fieldName, value);
         schema.addProperty(property);
         String qn = getPropertyQualifiedName(fieldName);
-        Assert.assertNotNull(schema.getProperty(fieldName));
+        assertNotNull(schema.getProperty(fieldName));
         // check other properties not modified
         List<Field> fields = getXmpFields(getSchemaClass());
         for (Field field : fields)
@@ -134,7 +138,7 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
             String fqn = getPropertyQualifiedName(field.get(null).toString());
             if (!fqn.equals(qn))
             {
-                Assert.assertNull(schema.getProperty(fqn));
+                assertNull(schema.getProperty(fqn));
             }
         }
     }
@@ -177,7 +181,7 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
                 throw new Exception("Unexpected case in test : " + cardinality.name());
         }
         String qn = getPropertyQualifiedName(fieldName);
-        Assert.assertNotNull(schema.getProperty(fieldName));
+        assertNotNull(schema.getProperty(fieldName));
         // check other properties not modified
         List<Field> fields = getXmpFields(getSchemaClass());
         for (Field field : fields)
@@ -186,7 +190,7 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
             String fqn = getPropertyQualifiedName(field.get(null).toString());
             if (!fqn.equals(qn))
             {
-                Assert.assertNull(schema.getProperty(fqn));
+                assertNull(schema.getProperty(fqn));
             }
         }
     }
@@ -222,13 +226,13 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
         set.invoke(schema, asp);
         // check property set
         AbstractSimpleProperty stored = (AbstractSimpleProperty) schema.getProperty(fieldName);
-        Assert.assertEquals(value, stored.getValue());
+        assertEquals(value, stored.getValue());
         // check getter
         String getter = calculateSimpleGetter(fieldName) + "Property";
         Method get = getSchemaClass().getMethod(getter);
         Object result = get.invoke(schema);
-        Assert.assertTrue(type.getImplementingClass().isAssignableFrom(result.getClass()));
-        Assert.assertEquals(asp, result);
+        assertTrue(type.getImplementingClass().isAssignableFrom(result.getClass()));
+        assertEquals(asp, result);
     }
 
     @Test
@@ -265,19 +269,19 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
         String getter = calculateArrayGetter(fieldName) + "Property";
         Method getcp = getSchemaClass().getMethod(getter);
         Object ocp = getcp.invoke(schema);
-        Assert.assertTrue(ocp instanceof ArrayProperty);
+        assertTrue(ocp instanceof ArrayProperty);
         ArrayProperty cp = (ArrayProperty) ocp;
         // check size is ok (1)
-        Assert.assertEquals(1, cp.getContainer().getAllProperties().size());
+        assertEquals(1, cp.getContainer().getAllProperties().size());
         // add a new one
         Object value2 = getJavaValue(type);
         set.invoke(schema, value2);
-        Assert.assertEquals(2, cp.getContainer().getAllProperties().size());
+        assertEquals(2, cp.getContainer().getAllProperties().size());
         // remove the first
         String remover = "remove" + calculateFieldNameForMethod(fieldName);
         Method remove = getSchemaClass().getMethod(remover, getJavaType(type));
         remove.invoke(schema, value1);
-        Assert.assertEquals(1, cp.getContainer().getAllProperties().size());
+        assertEquals(1, cp.getContainer().getAllProperties().size());
 
     }
 

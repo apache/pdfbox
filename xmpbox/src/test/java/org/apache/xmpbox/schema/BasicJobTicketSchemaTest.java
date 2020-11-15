@@ -20,6 +20,9 @@
 
 package org.apache.xmpbox.schema;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.ByteArrayOutputStream;
 
 import org.apache.xmpbox.XMPMetadata;
@@ -27,10 +30,9 @@ import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpSerializer;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class BasicJobTicketSchemaTest
 {
@@ -41,13 +43,13 @@ public class BasicJobTicketSchemaTest
 
     protected XmpSerializer serializer;
 
-    @BeforeClass
+    @BeforeAll
     public static void bc() throws Exception
     {
         builder = new DomXmpParser();
     }
 
-    @Before
+    @BeforeEach
     public void initTempMetaData() throws Exception
     {
         metadata = XMPMetadata.createXMPMetadata();
@@ -70,8 +72,8 @@ public class BasicJobTicketSchemaTest
         XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-        Assert.assertNotNull(jt);
-        Assert.assertEquals(2, jt.getJobs().size());
+        assertNotNull(jt);
+        assertEquals(2, jt.getJobs().size());
 
     }
 
@@ -91,17 +93,17 @@ public class BasicJobTicketSchemaTest
         XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-        Assert.assertNotNull(jt);
-        Assert.assertEquals(1, jt.getJobs().size());
+        assertNotNull(jt);
+        assertEquals(1, jt.getJobs().size());
         StructuredType stjob = JobType.class.getAnnotation(StructuredType.class);
 
         JobType job = jt.getJobs().get(0);
-        Assert.assertEquals("zeid2", job.getId());
-        Assert.assertEquals("zename2", job.getName());
-        Assert.assertEquals("zeurl2", job.getUrl());
-        // Assert.assertEquals("Invalid namespace",stjob.namespace(),
+        assertEquals("zeid2", job.getId());
+        assertEquals("zename2", job.getName());
+        assertEquals("zeurl2", job.getUrl());
+        // assertEquals("Invalid namespace",stjob.namespace(),
         // job.getNamespace());
-        // Assert.assertEquals(stjob.preferedPrefix(), job.getPrefix());
+        // assertEquals(stjob.preferedPrefix(), job.getPrefix());
 
     }
 
@@ -122,8 +124,8 @@ public class BasicJobTicketSchemaTest
         XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
-        Assert.assertNotNull(jt);
-        Assert.assertEquals(1, jt.getJobs().size());
+        assertNotNull(jt);
+        assertEquals(1, jt.getJobs().size());
 
         JobType job = jt.getJobs().get(0);
         // SaveMetadataHelper.serialize(rxmp, System.out);
@@ -131,11 +133,11 @@ public class BasicJobTicketSchemaTest
         // StructuredType stjob =
         // JobType.class.getAnnotation(StructuredType.class);
 
-        Assert.assertEquals("zeid2", job.getId());
-        Assert.assertEquals("zename2", job.getName());
-        Assert.assertEquals("zeurl2", job.getUrl());
-        // Assert.assertEquals(stjob.namespace(), job.getNamespace());
-        // Assert.assertEquals("aaa", job.getPrefix());
+        assertEquals("zeid2", job.getId());
+        assertEquals("zename2", job.getName());
+        assertEquals("zeurl2", job.getUrl());
+        // assertEquals(stjob.namespace(), job.getNamespace());
+        // assertEquals("aaa", job.getPrefix());
 
     }
 

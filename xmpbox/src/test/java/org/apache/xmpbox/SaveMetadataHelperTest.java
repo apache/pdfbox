@@ -23,7 +23,7 @@ package org.apache.xmpbox;
 
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SaveMetadataHelperTest
 {
