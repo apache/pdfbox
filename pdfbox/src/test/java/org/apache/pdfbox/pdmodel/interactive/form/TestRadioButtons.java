@@ -16,65 +16,42 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
+import org.junit.Test;
+
+
 /**
  * This will test the functionality of Radio Buttons in PDFBox.
  */
-public class TestRadioButtons extends TestCase
+public class TestRadioButtons
 {
-    
-    /**
-     * Constructor.
-     *
-     * @param name The name of the test to run.
-     */
-    public TestRadioButtons( String name )
-    {
-        super( name );
-    }
-
-    /**
-     * This will get the suite of test that this class holds.
-     *
-     * @return All of the tests that this class holds.
-     */
-    public static Test suite()
-    {
-        return new TestSuite( TestRadioButtons.class );
-    }
-
-    /**
-     * infamous main method.
-     *
-     * @param args The command line arguments.
-     */
-    public static void main( String[] args )
-    {
-        String[] arg = {TestRadioButtons.class.getName() };
-        junit.textui.TestRunner.main( arg );
-    }
-
     /**
      * This will test the radio button PDModel.
      *
      * @throws IOException If there is an error creating the field.
      */
+    @Test
     public void testRadioButtonPDModel() throws IOException
     {
         PDDocument doc = null;
@@ -139,12 +116,12 @@ public class TestRadioButtons extends TestCase
 
             // assert that the values have been correctly set
             assertNotNull(radioButton.getCOSObject().getItem(COSName.OPT));
-            assertEquals(optItem.size(),2);
+            assertEquals(2, optItem.size());
             assertEquals(options.get(0), optItem.getString(0));
             
             // assert that the values can be retrieved correctly
             List<String> retrievedOptions = radioButton.getExportValues();
-            assertEquals(retrievedOptions.size(),2);
+            assertEquals(2, retrievedOptions.size());
             assertEquals(retrievedOptions, options);
 
             // assert that the Opt entry is removed
@@ -155,10 +132,181 @@ public class TestRadioButtons extends TestCase
         }
         finally
         {
-            if( doc != null )
             {
-                doc.close();
+                IOUtils.closeQuietly(doc);
             }
         }
     }
+
+    /**
+     * PDFBOX-3656 Radio button field with FLAG_RADIOS_IN_UNISON false
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3656NotInUnison() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-3656 Set by value
+     * 
+     * There are 6 radio buttons where 3 share the same common values but they are not set in unison
+     * Setting by the first export value shall only select the first radio button
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3656ByValidExportValue() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            // check defaults
+            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
+            assertEquals("initially no option shall be selected", "Off", field.getValue());
+            // set the field to a valid export value
+            field.setValue("Checking");
+            assertEquals("setting by the export value should also return that", "Checking", field.getValue());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-3656 Set by invalid export value
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3656ByInvalidExportValue() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            // check defaults
+            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
+            assertEquals("initially no option shall be selected", "Off", field.getValue());
+
+            try {
+                field.setValue("Invalid");
+                fail("Expected an IndexOutOfBoundsException to be thrown");
+            } catch (Exception ex) {
+                // compare the messages
+                String expectedMessage = "value 'Invalid' is not a valid option for the field Checking/Savings, valid values are: [Checking, Savings] and Off";
+                String actualMessage = ex.getMessage();
+                assertTrue(actualMessage.contains(expectedMessage));
+            }
+
+            assertEquals("no option shall be selected", "Off", field.getValue());
+            assertTrue("no export values are selected", field.getSelectedExportValues().isEmpty());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-3656 Set by a valid index
+     * 
+     * There are 6 radio buttons where 3 share the same common values but they are not set in unison
+     * Setting by the index shall only select the corresponding radio button
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3656ByValidIndex() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            // check defaults
+            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
+            assertEquals("initially no option shall be selected", "Off", field.getValue());
+            // set the field to a valid index
+            field.setValue(4);
+            assertEquals("setting by the index value should return the corresponding export", "Checking", field.getValue());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
+
+    /**
+     * PDFBOX-3656 Set by an invalid index
+     * 
+     * There are 6 radio buttons where 3 share the same common values but they are not set in unison
+     * Setting by the index shall only select the corresponding radio button
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox3656ByInvalidIndex() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
+            PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
+            // check defaults
+            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
+            assertEquals("initially no option shall be selected", "Off", field.getValue());
+
+            try {
+                field.setValue(6);
+                fail("Expected an IndexOutOfBoundsException to be thrown");
+            } catch (Exception ex) {
+                // compare the messages
+                String expectedMessage = "index '6' is not a valid index for the field Checking/Savings, valid indizes are from 0 to 5";
+                String actualMessage = ex.getMessage();
+                assertTrue(actualMessage.contains(expectedMessage));
+            }
+
+            assertEquals("no option shall be selected", "Off", field.getValue());
+            assertTrue("no export values are selected", field.getSelectedExportValues().isEmpty());
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+   }
 }
