@@ -22,48 +22,34 @@
 package org.apache.xmpbox;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.xmpbox.xml.DomXmpParser;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
+
+
 public class TestXMPWithDefinedSchemas
 {
-
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Stream<String> initializeParameters() throws Exception
     {
-        List<Object[]> data = new ArrayList<>();
-        data.add(new Object[] { "/validxmp/override_ns.rdf" });
-        data.add(new Object[] { "/validxmp/ghost2.xmp" });
-        data.add(new Object[] { "/validxmp/history2.rdf" });
-        data.add(new Object[] { "/validxmp/Notepad++_A1b.xmp" });
-        data.add(new Object[] { "/validxmp/metadata.rdf" });
-        return data;
+        return Stream.of(
+            "/validxmp/override_ns.rdf",
+            "/validxmp/ghost2.xmp",
+            "/validxmp/history2.rdf",
+            "/validxmp/Notepad++_A1b.xmp",
+            "/validxmp/metadata.rdf"
+        );
     }
 
-    private final String path;
-
-    public TestXMPWithDefinedSchemas(String path)
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void main(String path) throws Exception
     {
-        this.path = path;
-    }
-
-    @Test
-    public void main() throws Exception
-    {
-
         InputStream is = this.getClass().getResourceAsStream(path);
 
         DomXmpParser builder = new DomXmpParser();
         XMPMetadata rxmp = builder.parse(is);
-
     }
-
 }
