@@ -16,7 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.common.function.type4;
 
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Testing helper class for testing type 4 functions from the PDF specification.
@@ -53,7 +54,7 @@ public class Type4Tester
     public Type4Tester pop(boolean expected)
     {
         boolean value = (Boolean)context.getStack().pop();
-        Assert.assertEquals(expected, value);
+        assertEquals(expected, value);
         return this;
     }
 
@@ -76,7 +77,7 @@ public class Type4Tester
     public Type4Tester popReal(float expected, double delta)
     {
         Float value = (Float)context.getStack().pop();
-        Assert.assertEquals(expected, value, delta);
+        assertEquals(expected, value, delta);
         return this;
     }
 
@@ -88,7 +89,7 @@ public class Type4Tester
     public Type4Tester pop(int expected)
     {
         int value = context.popInt();
-        Assert.assertEquals(expected, value);
+        assertEquals(expected, value);
         return this;
     }
 
@@ -111,7 +112,7 @@ public class Type4Tester
     public Type4Tester pop(float expected, double delta)
     {
         Number value = context.popNumber();
-        Assert.assertEquals(expected, value.doubleValue(), delta);
+        assertEquals(expected, value.doubleValue(), delta);
         return this;
     }
 
@@ -121,7 +122,7 @@ public class Type4Tester
      */
     public Type4Tester isEmpty()
     {
-        Assert.assertTrue(context.getStack().isEmpty());
+        assertTrue(context.getStack().isEmpty());
         return this;
     }
 
