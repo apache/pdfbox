@@ -18,8 +18,8 @@ package org.apache.pdfbox.util;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSFloat;
 import org.apache.pdfbox.cos.COSName;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -187,36 +187,36 @@ public class MatrixTest
         assertMatrixValuesEqualTo(new float[] { 5, 8, 11, 8, 14, 20, 11, 20, 29 }, retVal);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalValueNaN1()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.MAX_VALUE);
-        m.multiply(m);
+        assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalValueNaN2()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.NaN);
-        m.multiply(m);
+        assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalValuePositiveInfinity()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.POSITIVE_INFINITY);
-        m.multiply(m);
+        assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalValueNegativeInfinity()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.NEGATIVE_INFINITY);
-        m.multiply(m);
+        assertThrows(IllegalArgumentException.class, () -> m.multiply(m));
     }
 
     /**
@@ -322,7 +322,7 @@ public class MatrixTest
             StringBuilder failureMsg = new StringBuilder();
             failureMsg.append("Incorrect value for matrix[").append(row).append(",").append(column)
                     .append("]");
-            assertEquals(failureMsg.toString(), values[i], m.getValue(row, column), delta);
+            assertEquals(values[i], m.getValue(row, column), delta, failureMsg.toString());
         }
     }
 
