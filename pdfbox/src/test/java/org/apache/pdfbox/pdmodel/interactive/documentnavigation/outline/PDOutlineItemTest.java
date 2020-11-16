@@ -16,10 +16,11 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Andrea Vacondio
@@ -32,7 +33,7 @@ public class PDOutlineItemTest
     private PDOutlineItem second;
     private PDOutlineItem newSibling;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         root = new PDOutlineItem();
@@ -171,21 +172,21 @@ public class PDOutlineItemTest
         assertEquals(root.getNextSibling(), newSibling);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void cannotInsertSiblingBeforeAList()
     {
         PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
-        root.insertSiblingBefore(child);
+        assertThrows(IllegalArgumentException.class, () -> root.insertSiblingBefore(child));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void cannotInsertSiblingAfterAList()
     {
         PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
-        root.insertSiblingAfter(child);
+        assertThrows(IllegalArgumentException.class, () -> root.insertSiblingAfter(child));
     }
 }

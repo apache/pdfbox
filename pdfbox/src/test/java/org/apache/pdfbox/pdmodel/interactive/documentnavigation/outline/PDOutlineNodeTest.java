@@ -16,14 +16,15 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Andrea Vacondio
@@ -33,7 +34,7 @@ public class PDOutlineNodeTest
 {
     private PDOutlineItem root;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         root = new PDOutlineItem();
@@ -316,22 +317,22 @@ public class PDOutlineNodeTest
         assertEquals(-2, root.getOpenCount());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void cannotAddLastAList()
     {
         PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
-        root.addLast(child);
+        assertThrows(IllegalArgumentException.class, () -> root.addLast(child));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void cannotAddFirstAList()
     {
         PDOutlineItem child = new PDOutlineItem();
         child.insertSiblingAfter(new PDOutlineItem());
         child.insertSiblingAfter(new PDOutlineItem());
-        root.addFirst(child);
+        assertThrows(IllegalArgumentException.class, () -> root.addFirst(child));
     }
 
     @Test
@@ -367,6 +368,7 @@ public class PDOutlineNodeTest
         }
         assertEquals(0, counter);
     }
+
     @Test
     public void openNodeAndAppend()
     {
