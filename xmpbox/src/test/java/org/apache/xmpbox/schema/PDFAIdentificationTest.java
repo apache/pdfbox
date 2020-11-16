@@ -21,43 +21,37 @@
 
 package org.apache.xmpbox.schema;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.xmpbox.XMPMetadata;
-import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.Types;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
-public class PDFAIdentificationTest extends AbstractXMPSchemaTest
+public class PDFAIdentificationTest
 {
-
-    @Before
-    public void initTempMetaData() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testElementValue(XMPSchemaTester xmpSchemaTester) throws Exception
     {
-        metadata = XMPMetadata.createXMPMetadata();
-        schema = metadata.createAndAddPFAIdentificationSchema();
-        schemaClass = PDFAIdentificationSchema.class;
+        xmpSchemaTester.testGetSetValue();
     }
 
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testElementProperty(XMPSchemaTester xmpSchemaTester) throws Exception
     {
-        List<Object[]> data = new ArrayList<>();
-        data.add(wrapProperty("part", Types.Integer, 1));
-        data.add(wrapProperty("amd", Types.Text, "2005"));
-        data.add(wrapProperty("conformance", Types.Text, "B"));
-        return data;
+        xmpSchemaTester.testGetSetProperty();
     }
 
-    public PDFAIdentificationTest(String property, PropertyType type, Object value)
+    static XMPSchemaTester[] initializeParameters() throws Exception
     {
-        super(property, type, value);
-    }
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        XMPSchema schema = metadata.createAndAddPFAIdentificationSchema();
+        Class<?> schemaClass = PDFAIdentificationSchema.class;
 
+        return new XMPSchemaTester[] {
+            new XMPSchemaTester(metadata, schema, schemaClass, "part", XMPSchemaTester.createPropertyType(Types.Integer), 1),
+            new XMPSchemaTester(metadata, schema, schemaClass, "amd", XMPSchemaTester.createPropertyType(Types.Text), "2005"),
+            new XMPSchemaTester(metadata, schema, schemaClass, "conformance", XMPSchemaTester.createPropertyType(Types.Text), "B")
+        };
+    }
 }
