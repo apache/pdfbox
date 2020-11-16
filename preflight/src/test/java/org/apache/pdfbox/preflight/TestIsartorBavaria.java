@@ -21,6 +21,10 @@
 
 package org.apache.pdfbox.preflight;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,26 +41,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-@RunWith(Parameterized.class)
 public class TestIsartorBavaria
 {
     private static final String FILTER_FILE = "isartor.filter";
     private static final String SKIP_BAVARIA = "skip-bavaria";
     private static FileOutputStream isartorResultFile;
 
-    @Parameters(name = "{0}")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
         String filter = System.getProperty(FILTER_FILE);
@@ -129,7 +124,7 @@ public class TestIsartorBavaria
         return data;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception
     {
         String irp = System.getProperty("isartor.results.path");
@@ -152,7 +147,7 @@ public class TestIsartorBavaria
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception
     {
         if (isartorResultFile != null)
@@ -161,23 +156,14 @@ public class TestIsartorBavaria
         }
     }
 
-    private final Set<String> expectedErrorSet;
-    private final File file;
-
-    public TestIsartorBavaria(File path, Set<String> errorSet)
-    {
-        System.out.println("  " + path.getName());
-        this.file = path;
-        this.expectedErrorSet = errorSet;
-    }
-
-    @Test()
-    public void validate() throws Exception
+    @ParameterizedTest
+	@MethodSource("initializeParameters")
+    public void validate(File file, Set<String> expectedErrorSet) throws Exception
     {
         ValidationResult result = PreflightParser.validate(file);
         if (result != null)
         {
-            if (this.expectedErrorSet.isEmpty())
+            if (expectedErrorSet.isEmpty())
             {
                 Set<String> errorSet = new HashSet<>();
                 for (ValidationError error : result.getErrorsList())
@@ -197,21 +183,20 @@ public class TestIsartorBavaria
                     message.append(' ');
                     message.append(errMsg);
                 }
-                assertTrue(message.toString(), result.isValid());
-                assertTrue(message.toString(), result.getErrorsList().isEmpty());
+                assertTrue(result.isValid(), message.toString());
+                assertTrue(result.getErrorsList().isEmpty(), message.toString());
             }
             else
             {
-                assertFalse(file.getName() + " : PDF/A file should be invalid (expected "
-                        + this.expectedErrorSet + ")", result.isValid()); // TODO
+                assertFalse(result.isValid(), file.getName() + " : PDF/A file should be invalid (expected "
+                    + expectedErrorSet + ")"); // TODO
 
-                assertTrue(file.getName() + " : Should find at least one error",
-                        result.getErrorsList().size() > 0);
+                assertTrue(result.getErrorsList().size() > 0, file.getName() + " : Should find at least one error");
 
                 // each expected error should occur
                 boolean logged = false;
                 boolean allFound = true;
-                for (String expectedError : this.expectedErrorSet)
+                for (String expectedError : expectedErrorSet)
                 {
                     boolean oneFound = false;
                     for (ValidationError error : result.getErrorsList())

@@ -1,5 +1,9 @@
 package org.apache.pdfbox.preflight.integration;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /*****************************************************************************
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,15 +38,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class TestValidFiles
 {
 
@@ -58,22 +58,15 @@ public class TestValidFiles
 
     protected Log logger = null;
 
-    public TestValidFiles(File path)
-    {
-        this.path = path;
-        this.logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
-    }
-
-    protected static Collection<Object[]> stopIfExpected() throws Exception
+    protected static Collection<File> stopIfExpected() throws Exception
     {
         // throw new Exception("Test badly configured");
-        List<Object[]> ret = new ArrayList<>();
-        ret.add(new Object[] { null });
+        List<File> ret = new ArrayList<>();
+        ret.add(null);
         return ret;
     }
 
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<File> initializeParameters() throws Exception
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);
@@ -85,19 +78,18 @@ public class TestValidFiles
         File root = new File(isartor);
         // load expected errors
         // prepare config
-        List<Object[]> data = new ArrayList<>();
+        List<File> data = new ArrayList<>();
         Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
         for (Object object : files)
         {
             File file = (File) object;
-            Object[] tmp = new Object[] { file };
-            data.add(tmp);
+            data.add(file);
         }
         return data;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception
     {
         String irp = System.getProperty(RESULTS_FILE);
@@ -113,15 +105,17 @@ public class TestValidFiles
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception
     {
         IOUtils.closeQuietly(isartorResultFile);
     }
 
-    @Test()
-    public void validate() throws Exception
+    @ParameterizedTest
+	@MethodSource("initializeParameters")
+    public void validate(File path) throws Exception
     {
+        logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
         if (path == null)
         {
             logger.warn("This is an empty test");
@@ -129,14 +123,12 @@ public class TestValidFiles
         }
         ValidationResult result = PreflightParser.validate(path);
 
-        Assert.assertFalse(path + " : Isartor file should be invalid (" + path + ")",
-                result.isValid());
-        Assert.assertTrue(path + " : Should find at least one error",
-                result.getErrorsList().size() > 0);
+        assertFalse(result.isValid(), path + " : Isartor file should be invalid (" + path + ")");
+        assertTrue(result.getErrorsList().size() > 0, path + " : Should find at least one error");
         // could contain more than one error
         if (result.getErrorsList().size() > 0)
         {
-            Assert.fail("File expected valid : " + path.getAbsolutePath());
+            fail("File expected valid : " + path.getAbsolutePath());
         }
     }
 
