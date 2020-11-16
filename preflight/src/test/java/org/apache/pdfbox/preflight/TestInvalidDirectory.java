@@ -21,42 +21,31 @@
 
 package org.apache.pdfbox.preflight;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
 public class TestInvalidDirectory
 {
-
-    protected static File directory;
-
-    protected File target = null;
-
-    public TestInvalidDirectory(File file)
-    {
-        this.target = file;
-    }
-
-    @Test
-    public void validate() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void validate(File target) throws Exception
     {
         System.out.println(target);
         ValidationResult result = PreflightParser.validate(target);
-        Assert.assertFalse("Test of " + target, result.isValid());
+        assertFalse(result.isValid(), "Test of " + target);
 
     }
 
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<File> initializeParameters() throws Exception
     {
         // check directory
         File directory = null;
@@ -80,21 +69,20 @@ public class TestInvalidDirectory
         // create list
         if (directory == null)
         {
-            return new ArrayList<>(0);
+            return Collections.emptyList();
         }
         else
         {
             File[] files = directory.listFiles();
-            List<Object[]> data = new ArrayList<>(files.length);
+            List<File> data = new ArrayList<>(files.length);
             for (File file : files)
             {
                 if (file.isFile())
                 {
-                    data.add(new Object[] { file });
+                    data.add(file);
                 }
             }
             return data;
         }
     }
-
 }
