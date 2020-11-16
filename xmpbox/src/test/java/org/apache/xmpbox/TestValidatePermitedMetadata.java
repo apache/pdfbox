@@ -25,10 +25,12 @@ import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.schema.XMPSchemaFactory;
 import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.TypeMapping;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -38,15 +40,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
-@RunWith(Parameterized.class)
 public class TestValidatePermitedMetadata
 {
 
-    @Parameters(name="{0} {1} {2}")
     public static Collection<Object[]> initializeParameters() throws Exception
     {
         List<Object[]> params = new ArrayList<>();
@@ -71,26 +68,15 @@ public class TestValidatePermitedMetadata
         return params;
     }
 
-    private final String namespace;
-
-    private final String fieldname;
-
-    private final String preferred;
-
-    public TestValidatePermitedMetadata(String ns, String prf, String fn)
-    {
-        this.namespace = ns;
-        this.preferred = prf;
-        this.fieldname = fn;
-    }
-    @Test
-    public void checkExistence() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void checkExistence(String namespace, String preferred, String fieldname) throws Exception
     {
         // ensure schema exists
         XMPMetadata xmpmd = new XMPMetadata();
         TypeMapping mapping = new TypeMapping(xmpmd);
         XMPSchemaFactory factory = mapping.getSchemaFactory(namespace);
-        assertNotNull("Schema not existing: " + namespace, factory);
+        assertNotNull(factory, "Schema not existing: " + namespace);
         // ensure preferred is as expected
         XMPSchema schema = factory.createXMPSchema(xmpmd,"aa");
         assertEquals(preferred,schema.getPreferedPrefix());
@@ -124,7 +110,7 @@ public class TestValidatePermitedMetadata
         }
         String msg = String.format("Did not find field definition for '%s' in %s (%s)",
                 fieldname,clz.getSimpleName(),namespace);
-        assertTrue(msg,found);
+        assertTrue(found, msg);
     }
 
 }

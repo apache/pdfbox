@@ -42,22 +42,12 @@ import org.apache.xmpbox.type.DateType;
 import org.apache.xmpbox.type.IntegerType;
 import org.apache.xmpbox.type.TextType;
 import org.apache.xmpbox.type.TypeMapping;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class XMPSchemaTest
 {
-
-    protected XMPMetadata parent;
-    protected XMPSchema schem;
-
-    @BeforeEach
-    public void resetDocument() throws Exception
-    {
-        parent = XMPMetadata.createXMPMetadata();
-        schem = new XMPSchema(parent, "nsURI", "nsSchem");
-
-    }
+    private final XMPMetadata parent = XMPMetadata.createXMPMetadata();
+    private final XMPSchema schem = new XMPSchema(parent, "nsURI", "nsSchem");
 
     /**
      * Check if Bag (Unordered Array) management is ok
@@ -98,7 +88,6 @@ public class XMPSchemaTest
         List<AbstractField> list = schem.getUnqualifiedArrayList("seqType");
         assertTrue(list.contains(li1));
         assertTrue(list.contains(li2));
-
     }
 
     /**

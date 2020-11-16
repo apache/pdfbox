@@ -26,23 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PDFAIdentificationOthersTest
 {
-
-    protected XMPMetadata metadata;
-
-    @BeforeEach
-    public void initTempMetaData() throws Exception
-    {
-        metadata = XMPMetadata.createXMPMetadata();
-    }
-
     @Test
     public void testPDFAIdentification() throws Exception
     {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
 
         Integer versionId = 1;
@@ -70,6 +61,7 @@ public class PDFAIdentificationOthersTest
     @Test
     public void testBadPDFAConformanceId() throws BadFieldValueException
     {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
         assertThrows(BadFieldValueException.class, () -> {
@@ -80,6 +72,7 @@ public class PDFAIdentificationOthersTest
     @Test
     public void testBadVersionIdValueType() throws Exception
     {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
         assertThrows(IllegalArgumentException.class, () -> {
             pdfaid.setPartValueWithString("1");

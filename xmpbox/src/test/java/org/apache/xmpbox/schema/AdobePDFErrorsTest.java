@@ -27,23 +27,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
-import org.apache.xmpbox.xml.DomXmpParser;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class AdobePDFErrorsTest
 {
 
-    protected XMPMetadata metadata;
-
-    protected DomXmpParser builder;
-
-    @BeforeEach
-    public void initTempMetaData() throws Exception
-    {
-        builder = new DomXmpParser();
-        metadata = XMPMetadata.createXMPMetadata();
-    }
+    private XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
     public void testPDFAIdentification() throws Exception
@@ -91,10 +80,9 @@ public class AdobePDFErrorsTest
     public void testBadVersionIdValueType() throws Exception
     {
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
-        assertThrows(BadFieldValueException.class, () -> {
+        assertThrows(IllegalArgumentException.class, () -> {
             pdfaid.setPartValueWithString("1");
             pdfaid.setPartValueWithString("ojoj");
 	    });
     }
-
 }

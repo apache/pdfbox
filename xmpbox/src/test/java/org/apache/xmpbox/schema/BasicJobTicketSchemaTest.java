@@ -30,38 +30,18 @@ import org.apache.xmpbox.type.JobType;
 import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpSerializer;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class BasicJobTicketSchemaTest
 {
-
-    protected static DomXmpParser builder;
-
-    protected XMPMetadata metadata;
-
-    protected XmpSerializer serializer;
-
-    @BeforeAll
-    public static void bc() throws Exception
-    {
-        builder = new DomXmpParser();
-    }
-
-    @BeforeEach
-    public void initTempMetaData() throws Exception
-    {
-        metadata = XMPMetadata.createXMPMetadata();
-        serializer = new XmpSerializer();
-    }
-
     @Test
     public void testAddTwoJobs() throws Exception
     {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        XmpSerializer serializer = new XmpSerializer();
+        DomXmpParser builder = new DomXmpParser();
 
         XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
-
         basic.addJob("zeid1", "zename1", "zeurl1", "aaa");
         basic.addJob("zeid2", "zename2", "zeurl2");
 
@@ -69,17 +49,20 @@ public class BasicJobTicketSchemaTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         serializer.serialize(metadata, bos, true);
+
         XMPMetadata rxmp = builder.parse(bos.toByteArray());
 
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         assertNotNull(jt);
         assertEquals(2, jt.getJobs().size());
-
     }
 
     @Test
     public void testAddWithDefaultPrefix() throws Exception
     {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        XmpSerializer serializer = new XmpSerializer();
+        DomXmpParser builder = new DomXmpParser();
 
         XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 
@@ -110,6 +93,9 @@ public class BasicJobTicketSchemaTest
     @Test
     public void testAddWithDefinedPrefix() throws Exception
     {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        XmpSerializer serializer = new XmpSerializer();
+        DomXmpParser builder = new DomXmpParser();
 
         XMPBasicJobTicketSchema basic = metadata.createAndAddBasicJobTicketSchema();
 

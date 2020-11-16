@@ -29,7 +29,6 @@ import java.util.List;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.type.StructuredType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,16 +37,10 @@ import org.junit.jupiter.api.Test;
  * @author a183132
  * 
  */
-public class DoubleSameTypeSchemaTest
+ public class DoubleSameTypeSchemaTest
 {
 
-    protected XMPMetadata metadata;
-
-    @BeforeEach
-    public void testInit() throws Exception
-    {
-        metadata = XMPMetadata.createXMPMetadata();
-    }
+    private final  XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
     public void testDoubleDublinCore() throws Exception

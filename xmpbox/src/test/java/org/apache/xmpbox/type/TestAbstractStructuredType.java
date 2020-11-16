@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Calendar;
 import org.apache.xmpbox.XMPMetadata;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TestAbstractStructuredType
@@ -49,18 +48,12 @@ public class TestAbstractStructuredType
 
     }
 
-    protected MyStructuredType st;
+    XMPMetadata xmp = XMPMetadata.createXMPMetadata();
 
     public static final String MY_NS = "http://www.apache.org/test#";
-
     public static final String MY_PREFIX = "test";
 
-    @BeforeEach
-    public void before() throws Exception
-    {
-        XMPMetadata xmp = XMPMetadata.createXMPMetadata();
-        st = new MyStructuredType(xmp, MY_NS, MY_PREFIX);
-    }
+    protected MyStructuredType st = new MyStructuredType(xmp, MY_NS, MY_PREFIX);
 
     @Test
     public void validate() throws Exception

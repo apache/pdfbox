@@ -30,7 +30,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.xmpbox.XMPMetadata;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -42,13 +41,7 @@ import org.junit.jupiter.api.Test;
 public class TestSimpleMetadataProperties
 {
 
-    protected XMPMetadata parent;
-
-    @BeforeEach
-    public void resetDocument() throws Exception
-    {
-        parent = XMPMetadata.createXMPMetadata();
-    }
+    private final XMPMetadata parent = XMPMetadata.createXMPMetadata();
 
     /**
      * Check the detection of a bad type

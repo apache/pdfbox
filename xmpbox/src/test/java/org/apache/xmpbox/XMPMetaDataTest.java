@@ -37,9 +37,7 @@ import org.apache.xmpbox.schema.XMPSchema;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpParsingException;
 import org.apache.xmpbox.xml.XmpSerializationException;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.w3c.dom.Document;
 
 /**
  * Test XMP MetaData Transformer
@@ -48,17 +46,12 @@ import org.w3c.dom.Document;
  * 
  */
 public class XMPMetaDataTest {
-
-    protected XMPMetadata metadata;
-    protected Document parent;
-    protected XMPSchema tmp, tmp2;
-
-    @BeforeAll
-    public void init() throws Exception
+    @Test
+    public void testAddingSchem()
     {
-        metadata = XMPMetadata.createXMPMetadata();
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         String tmpNsURI = "http://www.test.org/schem/";
-        tmp = new XMPSchema(metadata, tmpNsURI, "test");
+        XMPSchema tmp = new XMPSchema(metadata, tmpNsURI, "test");
         tmp.addQualifiedBagValue("BagContainer", "Value1");
         tmp.addQualifiedBagValue("BagContainer", "Value2");
         tmp.addQualifiedBagValue("BagContainer", "Value3");
@@ -69,7 +62,7 @@ public class XMPMetaDataTest {
 
         tmp.addProperty(metadata.getTypeMapping().createText(null, "test", "simpleProperty", "YEP"));
 
-        tmp2 = new XMPSchema(metadata, "http://www.space.org/schem/", "space", "space");
+        XMPSchema tmp2 = new XMPSchema(metadata, "http://www.space.org/schem/", "space", "space");
         tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace1");
         tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace2");
         tmp2.addUnqualifiedSequenceValue("SeqSpContainer", "ValueSpace3");
@@ -81,11 +74,6 @@ public class XMPMetaDataTest {
         // Check schema getting
         assertEquals(tmp, metadata.getSchema(tmpNsURI));
         assertNull(metadata.getSchema("THIS URI NOT EXISTS !"));
-    }
-
-    @Test
-    public void testAddingSchem()
-    {
 
         List<XMPSchema> vals = metadata.getAllSchemas();
         assertTrue(vals.contains(tmp));
@@ -120,7 +108,7 @@ public class XMPMetaDataTest {
     public void testInitMetaDataWithInfo() throws Exception
     {
         String xpacketBegin = "TESTBEG", xpacketId = "TESTID", xpacketBytes = "TESTBYTES", xpacketEncoding = "TESTENCOD";
-        metadata = XMPMetadata.createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
         assertEquals(xpacketBegin, metadata.getXpacketBegin());
         assertEquals(xpacketId, metadata.getXpacketId());
         assertEquals(xpacketBytes, metadata.getXpacketBytes());
