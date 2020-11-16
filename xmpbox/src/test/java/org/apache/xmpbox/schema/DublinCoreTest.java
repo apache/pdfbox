@@ -20,55 +20,97 @@
 
 package org.apache.xmpbox.schema;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.Types;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
-public class DublinCoreTest extends AbstractSchemaTester
+
+public class DublinCoreTest
 {
-
-    public DublinCoreSchema getSchema()
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testInitializedToNull(SchemaTester schemaTester) throws Exception
     {
-        return xmp.createAndAddDublinCoreSchema();
+        schemaTester.testInitializedToNull();
     }
 
-    @Before
-    public void before() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testSettingValue(SchemaTester schemaTester) throws Exception
     {
-        super.before();
+        schemaTester.testSettingValue();
     }
 
-    public DublinCoreTest(String fieldName, Types type, Cardinality card)
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomSettingValue(SchemaTester schemaTester) throws Exception
     {
-        super(fieldName, type, card);
+        schemaTester.testRandomSettingValue();
     }
 
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testSettingValueInArray(SchemaTester schemaTester) throws Exception
     {
-        Collection<Object[]> result = new ArrayList<>();
-
-        result.add(new Object[] { "contributor", Types.ProperName, Cardinality.Bag });
-        result.add(new Object[] { "coverage", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "creator", Types.ProperName, Cardinality.Seq });
-        result.add(new Object[] { "date", Types.Date, Cardinality.Seq });
-        result.add(new Object[] { "format", Types.MIMEType, Cardinality.Simple });
-        result.add(new Object[] { "identifier", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "language", Types.Locale, Cardinality.Bag });
-        result.add(new Object[] { "publisher", Types.ProperName, Cardinality.Bag });
-        result.add(new Object[] { "relation", Types.Text, Cardinality.Bag });
-        result.add(new Object[] { "source", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "subject", Types.Text, Cardinality.Bag });
-        result.add(new Object[] { "type", Types.Text, Cardinality.Bag });
-
-        return result;
+        schemaTester.testSettingValueInArray();
     }
 
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomSettingValueInArray(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testRandomSettingValueInArray();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testPropertySetterSimple(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testPropertySetterSimple();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomPropertySetterSimple(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testRandomPropertySetterSimple();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testPropertySetterInArray(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testPropertySetterInArray();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomPropertySetterInArray(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testRandomPropertySetterInArray();
+    }
+    
+    private static SchemaTester[] initializeParameters()
+    {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        XMPSchema schema = metadata.createAndAddDublinCoreSchema();
+        
+        return new SchemaTester[] {
+            // data for JobType
+            new SchemaTester(metadata, schema, "contributor", Types.ProperName, Cardinality.Bag),
+            new SchemaTester(metadata, schema, "coverage", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "creator", Types.ProperName, Cardinality.Seq),
+            new SchemaTester(metadata, schema, "date", Types.Date, Cardinality.Seq),
+            new SchemaTester(metadata, schema, "format", Types.MIMEType, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "identifier", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "language", Types.Locale, Cardinality.Bag),
+            new SchemaTester(metadata, schema, "publisher", Types.ProperName, Cardinality.Bag),
+            new SchemaTester(metadata, schema, "relation", Types.Text, Cardinality.Bag),
+            new SchemaTester(metadata, schema, "source", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "subject", Types.Text, Cardinality.Bag),
+            new SchemaTester(metadata, schema, "type", Types.Text, Cardinality.Bag)
+        };
+    }
 }

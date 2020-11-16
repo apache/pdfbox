@@ -20,63 +20,102 @@
 
 package org.apache.xmpbox.schema;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.Cardinality;
 import org.apache.xmpbox.type.Types;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
-public class PhotoshopSchemaTest extends AbstractSchemaTester
-{
-
-    @Override
-    public PhotoshopSchema getSchema()
+public class PhotoshopSchemaTest
+{    
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testInitializedToNull(SchemaTester schemaTester) throws Exception
     {
-        return xmp.createAndAddPhotoshopSchema();
+        schemaTester.testInitializedToNull();
     }
 
-    @Before
-    @Override
-    public void before() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testSettingValue(SchemaTester schemaTester) throws Exception
     {
-        super.before();
+        schemaTester.testSettingValue();
     }
 
-    public PhotoshopSchemaTest(String fieldName, Types type, Cardinality card)
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomSettingValue(SchemaTester schemaTester) throws Exception
     {
-        super(fieldName, type, card);
+        schemaTester.testRandomSettingValue();
     }
 
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testSettingValueInArray(SchemaTester schemaTester) throws Exception
     {
-        Collection<Object[]> result = new ArrayList<>();
-
-        result.add(new Object[] { "AncestorID", Types.URI, Cardinality.Simple });
-        result.add(new Object[] { "AuthorsPosition", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "CaptionWriter", Types.ProperName, Cardinality.Simple });
-        result.add(new Object[] { "Category", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "City", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "ColorMode", Types.Integer, Cardinality.Simple });
-        result.add(new Object[] { "Country", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "Credit", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "DateCreated", Types.Date, Cardinality.Simple });
-        result.add(new Object[] { "Headline", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "History", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "ICCProfile", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "Instructions", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "Source", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "State", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "SupplementalCategories", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "TransmissionReference", Types.Text, Cardinality.Simple });
-        result.add(new Object[] { "Urgency", Types.Integer, Cardinality.Simple });
-
-        return result;
+        schemaTester.testSettingValueInArray();
     }
 
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomSettingValueInArray(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testRandomSettingValueInArray();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testPropertySetterSimple(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testPropertySetterSimple();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomPropertySetterSimple(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testRandomPropertySetterSimple();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testPropertySetterInArray(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testPropertySetterInArray();
+    }
+
+    @ParameterizedTest
+    @MethodSource("initializeParameters")
+    public void testRandomPropertySetterInArray(SchemaTester schemaTester) throws Exception
+    {
+        schemaTester.testRandomPropertySetterInArray();
+    }
+
+    private static SchemaTester[] initializeParameters()
+    {
+        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+        XMPSchema schema = metadata.createAndAddPhotoshopSchema();
+        
+        return new SchemaTester[] {
+            // data for JobType
+            new SchemaTester(metadata, schema, "AncestorID", Types.URI, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "AuthorsPosition", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "CaptionWriter", Types.ProperName, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "Category", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "City", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "ColorMode", Types.Integer, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "Country", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "Credit", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "DateCreated", Types.Date, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "Headline", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "History", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "ICCProfile", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "Instructions", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "Source", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "State", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "SupplementalCategories", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "TransmissionReference", Types.Text, Cardinality.Simple),
+            new SchemaTester(metadata, schema, "Urgency", Types.Integer, Cardinality.Simple)
+        };
+    }
 }
