@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.IOException;
 import java.text.ParsePosition;
 import java.util.Calendar;
@@ -24,11 +27,8 @@ import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.apache.pdfbox.cos.COSString;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test the date conversion utility.
@@ -37,34 +37,18 @@ import org.apache.pdfbox.cos.COSString;
  * @author Fred Hansen
  * 
  */
-public class TestDateUtil extends TestCase
+public class TestDateUtil
 {
     private static final int MINS = 60*1000, HRS = 60*MINS;
     // expect parse fail
     private static final int BAD = -666;  
     
     /**
-     * Test class constructor.
-     *
-     * @param name The name of the test class.
-     *
-     * @throws IOException If there is an error creating the test.
-     */
-    public TestDateUtil( String name ) throws IOException
-    {
-        super( name );
-    }
-
-    
-    ////////////////////////////////////////////////////
-    // Test body follows
-    
-    
-    /**
      * Test common date formats.
      *
      * @throws Exception when there is an exception
      */
+    @Test
     public void testExtract() throws Exception
     {
         TimeZone timezone = TimeZone.getDefault();
@@ -86,7 +70,7 @@ public class TestDateUtil extends TestCase
      * @param expect the expected calendar value
      * @param was the calendar value to be checked
      */
-    public void assertCalendarEquals(Calendar expect, Calendar was) 
+    private void assertCalendarEquals(Calendar expect, Calendar was)
     {
         assertEquals( expect.getTimeInMillis(), was.getTimeInMillis() );
         assertEquals( expect.getTimeZone().getRawOffset(), 
@@ -99,6 +83,7 @@ public class TestDateUtil extends TestCase
      * 
      * @throws IOException if something went wrong.
      */
+    @Test
     public void testDateConversion() throws IOException 
     { 
         Calendar c = DateConverter.toCalendar("D:20050526205258+01'00'"); 
@@ -157,6 +142,7 @@ public class TestDateUtil extends TestCase
      * Years differ to make it easier to find failures.
      * @throws Exception none expected
      */
+    @Test
     public void testDateConverter() throws Exception 
     {
             int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -327,6 +313,7 @@ public class TestDateUtil extends TestCase
      * 
      * @throws Exception if something went wrong.
      */
+    @Test
     public void testToString() throws Exception 
     {                                                              // std DST
         TimeZone tzPgh = TimeZone.getTimeZone("America/New_York");   // -5 -4
@@ -375,6 +362,7 @@ public class TestDateUtil extends TestCase
     /**
      * Timezone testcase.
      */
+    @Test
     public void testParseTZ() 
     {
         // 1st parameter is what to expect
@@ -415,6 +403,7 @@ public class TestDateUtil extends TestCase
     /**
      * Timezone offset testcase.
      */
+    @Test
     public void testFormatTZoffset()
     {
         // 2nd parameter is what to expect
@@ -439,30 +428,4 @@ public class TestDateUtil extends TestCase
         checkFormatOffset(-14, "-14:00");
     }
     
-    // testbody precedes
-    ////////////////////////////////////////////////////
-    
-    /**
-     * Set the tests in the suite for this test class.
-     *
-     * @return the Suite.
-     */
-    public static Test suite()
-    {
-        return new TestSuite( TestDateUtil.class );
-    }
-
-    /**
-     * Command line execution.
-     *
-     * @param args Command line arguments.
-     */
-    public static void main( String[] args )
-    {
-        String[] arg = 
-        {
-            TestDateUtil.class.getName() 
-        };
-        junit.textui.TestRunner.main( arg );
-    }
 }
