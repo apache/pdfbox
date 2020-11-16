@@ -17,7 +17,7 @@
 
 package org.apache.pdfbox.text;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,9 +33,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for the PDButton class.
@@ -59,7 +59,7 @@ public class BidiTest
     
     private boolean bFail = false;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException
     {
         if (!outDir.exists()) 
@@ -89,7 +89,7 @@ public class BidiTest
         doTestFile(testFile, outDir, false, false);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException
     {
         document.close();
@@ -104,7 +104,7 @@ public class BidiTest
      * @param bSort Whether or not the extracted text is sorted
      * @throws Exception when there is an exception
      */
-    public void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
+    private void doTestFile(File inFile, File outDir, boolean bLogResult, boolean bSort)
     throws IOException
     {
         if(bSort)
