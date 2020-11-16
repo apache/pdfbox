@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionRemoteGoTo;
 import org.apache.pdfbox.preflight.PreflightConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestGotoRemoteAction extends AbstractTestAction
 {

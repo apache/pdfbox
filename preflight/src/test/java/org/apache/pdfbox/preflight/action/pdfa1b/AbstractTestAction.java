@@ -21,6 +21,9 @@
 
 package org.apache.pdfbox.preflight.action.pdfa1b;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.util.List;
 
@@ -36,8 +39,7 @@ import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.action.AbstractActionManager;
 import org.apache.pdfbox.preflight.action.ActionManagerFactory;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
 
 public abstract class AbstractTestAction
 {

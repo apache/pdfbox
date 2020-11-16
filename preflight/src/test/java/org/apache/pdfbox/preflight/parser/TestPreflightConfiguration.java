@@ -21,23 +21,27 @@
 
 package org.apache.pdfbox.preflight.parser;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.pdfbox.preflight.PreflightConfiguration;
 import org.apache.pdfbox.preflight.PreflightContext;
 import org.apache.pdfbox.preflight.exception.MissingValidationProcessException;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.ValidationProcess;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestPreflightConfiguration
 {
 
-    @Test(expected = MissingValidationProcessException.class)
+    @Test
     public void testGetValidationProcess_MissingProcess() throws Exception
     {
         PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
-        configuration.getInstanceOfProcess("unknownProcess");
+        assertThrows(MissingValidationProcessException.class, () -> {
+            configuration.getInstanceOfProcess("unknownProcess");
+        });
     }
 
     @Test
@@ -45,7 +49,9 @@ public class TestPreflightConfiguration
     {
         PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
         configuration.setErrorOnMissingProcess(false);
-        configuration.getInstanceOfProcess("unknownProcess");
+        assertDoesNotThrow(() -> {
+            configuration.getInstanceOfProcess("unknownProcess");
+        });
     }
 
     @Test

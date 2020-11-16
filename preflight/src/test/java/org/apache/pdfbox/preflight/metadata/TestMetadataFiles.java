@@ -21,16 +21,17 @@
 
 package org.apache.pdfbox.preflight.metadata;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class TestMetadataFiles
 {
@@ -40,27 +41,22 @@ public class TestMetadataFiles
         String testfileDirectory = "src/test/resources/org/apache/pdfbox/preflight/metadata/";
 
         File validFile = new File(testfileDirectory + "PDFAMetaDataValidationTestTrailingNul.pdf");
-        assertTrue("Metadata test file " + validFile + " has to be valid ", checkPDF(validFile));
+        assertTrue(checkPDF(validFile), "Metadata test file " + validFile + " has to be valid ");
 
         File invalidFile1 = new File(testfileDirectory
                 + "PDFAMetaDataValidationTestTrailingSpaces.pdf");
-        assertFalse("Metadata test file " + invalidFile1 + " has to be invalid ",
-                checkPDF(invalidFile1));
+        assertFalse(checkPDF(invalidFile1), "Metadata test file " + invalidFile1 + " has to be invalid ");
 
         File invalidFile2 = new File(testfileDirectory
                 + "PDFAMetaDataValidationTestTrailingControlChar.pdf");
-        assertFalse("Metadata test file " + invalidFile2 + " has to be invalid ",
-                checkPDF(invalidFile2));
+        assertFalse(checkPDF(invalidFile2), "Metadata test file " + invalidFile2 + " has to be invalid ");
 
         File invalidFile3 = new File(testfileDirectory + "PDFAMetaDataValidationTestMiddleNul.pdf");
-        assertFalse("Metadata test file " + invalidFile3 + " has to be invalid ",
-                checkPDF(invalidFile3));
+        assertFalse(checkPDF(invalidFile3), "Metadata test file " + invalidFile3 + " has to be invalid ");
 
         File invalidFile4 = new File(testfileDirectory
                 + "PDFAMetaDataValidationTestMiddleControlChar.pdf");
-        assertFalse("Metadata test file " + invalidFile4 + " has to be invalid ",
-                checkPDF(invalidFile4));
-
+        assertFalse(checkPDF(invalidFile4), "Metadata test file " + invalidFile4 + " has to be invalid ");
     }
 
     private boolean checkPDF(File pdf)

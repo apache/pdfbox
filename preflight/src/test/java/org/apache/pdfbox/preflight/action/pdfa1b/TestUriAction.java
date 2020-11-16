@@ -28,7 +28,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDAction;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.preflight.PreflightConstants;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestUriAction extends AbstractTestAction
 {

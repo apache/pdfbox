@@ -21,12 +21,15 @@
 
 package org.apache.pdfbox.preflight.metadata;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-
-import org.junit.Assert;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -37,10 +40,11 @@ import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.AdobePDFSchema;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.schema.XMPBasicSchema;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Test Class of SynchronizedMetaDataValidation (for 6-7-3 Isartor Tests)
@@ -59,13 +63,13 @@ public class TestSynchronizedMetadataValidation
     protected static SynchronizedMetaDataValidation sync;
     protected List<ValidationError> ve;
 
-    @BeforeClass
+    @BeforeAll
     public static void initSynchronizedMetadataValidation()
     {
         sync = new SynchronizedMetaDataValidation();
     }
 
-    @Before
+    @BeforeEach
     public void initNewDocumentInformation() throws Exception
     {
         doc = new PDDocument();
@@ -78,10 +82,12 @@ public class TestSynchronizedMetadataValidation
      * 
      * @throws ValidationException
      */
-    @Test(expected = ValidationException.class)
+    @Test
     public void TestNullDocument() throws ValidationException
     {
-        sync.validateMetadataSynchronization(null, metadata);
+        assertThrows(ValidationException.class, () -> {
+            sync.validateMetadataSynchronization(null, metadata);
+        });
     }
 
     /**
@@ -89,10 +95,12 @@ public class TestSynchronizedMetadataValidation
      * 
      * @throws ValidationException
      */
-    @Test(expected = ValidationException.class)
+    @Test
     public void TestNullMetaData() throws ValidationException
     {
-        sync.validateMetadataSynchronization(doc, null);
+        assertThrows(ValidationException.class, () -> {
+            sync.validateMetadataSynchronization(doc, null);
+        });
     }
 
     /**
@@ -107,7 +115,7 @@ public class TestSynchronizedMetadataValidation
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Test without any information
-            Assert.assertEquals(0, ve.size());
+            assertEquals(0, ve.size());
         }
         catch (ValidationException e)
         {
@@ -149,7 +157,7 @@ public class TestSynchronizedMetadataValidation
             // Test Detection of an Empty XMP (without any schemas)
             for (ValidationError valid : ve)
             {
-                Assert.assertEquals(PreflightConstants.ERROR_METADATA_MISMATCH, valid.getErrorCode());
+                assertEquals(PreflightConstants.ERROR_METADATA_MISMATCH, valid.getErrorCode());
             }
         }
         catch (ValidationException e)
@@ -195,7 +203,7 @@ public class TestSynchronizedMetadataValidation
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Test Detection of absent XMP values
-            Assert.assertEquals(8, ve.size());
+            assertEquals(8, ve.size());
         }
         catch (ValidationException e)
         {
@@ -209,7 +217,7 @@ public class TestSynchronizedMetadataValidation
      * 
      * @throws Exception
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNullArrayValue() throws Exception
     {
         // building temporary XMP metadata
@@ -218,18 +226,22 @@ public class TestSynchronizedMetadataValidation
 
         // AUTHOR
         dico.setAuthor("dicoAuthor");
-        dc.addCreator(null);
-
+        assertThrows(IllegalArgumentException.class, () -> {
+            dc.addCreator(null);
+        });
+        
         // SUBJECT
         dico.setSubject("dicoSubj");
-        dc.addSubject(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            dc.addSubject(null);
+        });
 
         // Launching synchronization test
         try
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Test unsychronized value
-            Assert.assertEquals(2, ve.size());
+            assertEquals(2, ve.size());
 
         }
         catch (ValidationException e)
@@ -288,7 +300,7 @@ public class TestSynchronizedMetadataValidation
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Test unsychronized value
-            Assert.assertEquals(8, ve.size());
+            assertEquals(8, ve.size());
         }
         catch (ValidationException e)
         {
@@ -344,7 +356,7 @@ public class TestSynchronizedMetadataValidation
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Test unsychronized value
-            Assert.assertEquals(8, ve.size());
+            assertEquals(8, ve.size());
         }
         catch (ValidationException e)
         {
@@ -398,7 +410,7 @@ public class TestSynchronizedMetadataValidation
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Checking all is synchronized
-            Assert.assertEquals(0, ve.size());
+            assertEquals(0, ve.size());
         }
         catch (ValidationException e)
         {
@@ -415,7 +427,7 @@ public class TestSynchronizedMetadataValidation
     public void checkSchemaAccessException() throws Exception
     {
         Throwable cause = new Throwable();
-        Assert.assertSame(cause, sync.schemaAccessException("test", cause).getCause());
+        assertSame(cause, sync.schemaAccessException("test", cause).getCause());
     }
 
     /**
@@ -468,7 +480,7 @@ public class TestSynchronizedMetadataValidation
             ve = sync.validateMetadataSynchronization(doc, metadata);
             for (ValidationError valid : ve)
             {
-                Assert.assertEquals(PreflightConstants.ERROR_METADATA_WRONG_NS_PREFIX, valid.getErrorCode());
+                assertEquals(PreflightConstants.ERROR_METADATA_WRONG_NS_PREFIX, valid.getErrorCode());
             }
         }
         catch (ValidationException e)
@@ -534,7 +546,7 @@ public class TestSynchronizedMetadataValidation
         try
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
-            Assert.assertTrue(ve.isEmpty());
+            assertTrue(ve.isEmpty());
         }
         catch (ValidationException e)
         {
@@ -568,7 +580,7 @@ public class TestSynchronizedMetadataValidation
         {
             ve = sync.validateMetadataSynchronization(doc, metadata);
             // Test unsychronized value
-            Assert.assertEquals(0, ve.size());
+            assertEquals(0, ve.size());
         }
         catch (ValidationException e)
         {
@@ -576,7 +588,7 @@ public class TestSynchronizedMetadataValidation
         }
     }
 
-    @After
+    @AfterEach
     public void checkErrors() throws Exception
     {
         try
