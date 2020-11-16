@@ -16,25 +16,29 @@
  */
 package org.apache.pdfbox.cos;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
-
 import org.apache.pdfbox.filter.Filter;
 import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
+import org.junit.jupiter.api.Test;
 
-public class TestCOSStream extends TestCase
+public class TestCOSStream
 {
     /**
      * Tests encoding of a stream without any filter applied.
      *
      * @throws IOException
      */
+    @Test
     public void testUncompressedStreamEncode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
@@ -47,6 +51,7 @@ public class TestCOSStream extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testUncompressedStreamDecode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
@@ -59,6 +64,7 @@ public class TestCOSStream extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testCompressedStream1Encode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
@@ -72,6 +78,7 @@ public class TestCOSStream extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testCompressedStream1Decode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
@@ -92,6 +99,7 @@ public class TestCOSStream extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testCompressedStream2Encode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
@@ -111,6 +119,7 @@ public class TestCOSStream extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testCompressedStream2Decode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
@@ -138,6 +147,7 @@ public class TestCOSStream extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testCompressedStreamDoubleClose() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
@@ -150,6 +160,7 @@ public class TestCOSStream extends TestCase
         validateEncoded(stream, testStringEncoded);
     }
 
+    @Test
     public void testHasStreamData() throws IOException
     {
         COSStream stream = new COSStream();
@@ -195,13 +206,13 @@ public class TestCOSStream extends TestCase
     {
         byte[] decoded = IOUtils.toByteArray(stream.createRawInputStream());
         stream.close();
-        assertTrue("Encoded data doesn't match input", Arrays.equals(expected, decoded));
+        assertTrue(Arrays.equals(expected, decoded), "Encoded data doesn't match input");
     }
 
     private void validateDecoded(COSStream stream, byte[] expected) throws IOException
     {
         byte[] encoded = IOUtils.toByteArray(stream.createInputStream());
         stream.close();
-        assertTrue("Decoded data doesn't match input", Arrays.equals(expected, encoded));
+        assertTrue(Arrays.equals(expected, encoded), "Decoded data doesn't match input");
     }
 }

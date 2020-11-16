@@ -16,15 +16,18 @@
  */
 package org.apache.pdfbox.cos;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.apache.pdfbox.pdfwriter.COSWriter;
-import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 /**
  * A test case for COSInteger
@@ -33,8 +36,8 @@ import org.junit.Assert;
  */
 public class TestCOSInteger extends TestCOSNumber
 {
-    @Override
-    public void setUp()
+    @BeforeAll
+    static void setUp()
     {
         try
         {
@@ -51,6 +54,7 @@ public class TestCOSInteger extends TestCOSNumber
      * a range of arbitrary values to ensure Consistency, Reflexivity, Symmetry, Transitivity and
      * non-nullity.
      */
+    @Test
     public void testEquals()
     {
         // Consistency
@@ -60,17 +64,17 @@ public class TestCOSInteger extends TestCOSNumber
             COSInteger test2 = COSInteger.get(i);
             COSInteger test3 = COSInteger.get(i);
             // Reflexive (x == x)
-            Assert.assertEquals(test1, test1);
+            assertEquals(test1, test1);
             // Symmetric is preserved ( x==y then y===x)
-            Assert.assertEquals(test2, test1);
-            Assert.assertEquals(test1, test2);
+            assertEquals(test2, test1);
+            assertEquals(test1, test2);
             // Transitive (if x==y && y==z then x===z)
-            Assert.assertEquals(test1, test2);
-            Assert.assertEquals(test2, test3);
-            Assert.assertEquals(test1, test3);
+            assertEquals(test1, test2);
+            assertEquals(test2, test3);
+            assertEquals(test1, test3);
 
             COSInteger test4 = COSInteger.get(i + 1);
-            Assert.assertNotEquals(test4, test1);
+            assertNotEquals(test4, test1);
         }
     }
 
@@ -78,13 +82,14 @@ public class TestCOSInteger extends TestCOSNumber
      * Tests hashCode() - ensures that the Object.hashCode() contract is obeyed over a range of
      * arbitrary values.
      */
+    @Test
     public void testHashCode()
     {
         for (int i = -1000; i < 3000; i += 200)
         {
             COSInteger test1 = COSInteger.get(i);
             COSInteger test2 = COSInteger.get(i);
-            Assert.assertEquals(test1.hashCode(), test2.hashCode());
+            assertEquals(test1.hashCode(), test2.hashCode());
             
             COSInteger test3 = COSInteger.get(i + 1);
             assertNotSame(test3.hashCode(), test1.hashCode());
@@ -92,6 +97,7 @@ public class TestCOSInteger extends TestCOSNumber
     }
 
     @Override
+    @Test
     public void testFloatValue()
     {
         for (int i = -1000; i < 3000; i += 200)
@@ -101,24 +107,27 @@ public class TestCOSInteger extends TestCOSNumber
     }
 
     @Override
+    @Test
     public void testIntValue()
     {
         for (int i = -1000; i < 3000; i += 200)
         {
-            Assert.assertEquals(i, COSInteger.get(i).intValue());
+            assertEquals(i, COSInteger.get(i).intValue());
         }
     }
 
     @Override
+    @Test
     public void testLongValue()
     {
         for (int i = -1000; i < 3000; i += 200)
         {
-            Assert.assertEquals((long) i, COSInteger.get(i).longValue());
+            assertEquals((long) i, COSInteger.get(i).longValue());
         }
     }
 
     @Override
+    @Test
     public void testAccept()
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -144,6 +153,7 @@ public class TestCOSInteger extends TestCOSNumber
     /**
      * Tests writePDF() - this method takes an {@link java.io.OutputStream} and writes this object to it.
      */
+    @Test
     public void testWritePDF()
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -163,15 +173,5 @@ public class TestCOSInteger extends TestCOSNumber
         {
             fail("Failed to write " + index + " exception: " + e.getMessage());
         }
-    }
-
-    /**
-     * This will get the suite of test that this class holds.
-     *
-     * @return All of the tests that this class holds.
-     */
-    public static Test suite()
-    {
-        return new TestSuite(TestCOSInteger.class);
     }
 }

@@ -17,21 +17,26 @@
 
 package org.apache.pdfbox.cos;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link COSBase}.
  */
-public abstract class TestCOSBase extends TestCase
+public abstract class TestCOSBase
 {
     /** The COSBase abstraction of the object being tested. */
-    protected COSBase testCOSBase;
+    protected static COSBase testCOSBase;
 
     /**
      * Tests getCOSObject() - tests that the underlying object is returned.
      */
+    @Test
     public void testGetCOSObject()
     {
         assertEquals(testCOSBase, testCOSBase.getCOSObject());
@@ -45,6 +50,7 @@ public abstract class TestCOSBase extends TestCase
     /**
      * Tests isDirect() and setDirect() - tests the getter/setter methods.
      */
+    @Test
     public void testIsSetDirect()
     {
         testCOSBase.setDirect(true);

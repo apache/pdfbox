@@ -17,7 +17,14 @@
 
 package org.apache.pdfbox.cos;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link COSNumber}
@@ -42,6 +49,7 @@ public abstract class TestCOSNumber extends TestCOSBase
     /**
      * Tests get() - tests a static constructor for COSNumber classes.
      */
+    @Test
     public void testGet()
     {
         try
@@ -86,12 +94,14 @@ public abstract class TestCOSNumber extends TestCOSBase
      * 
      * @throws IOException
      */
+    @Test
     public void testLargeNumber() throws IOException
     {
         assertNull(COSNumber.get("18446744073307448448"));
         assertNull(COSNumber.get("-18446744073307448448"));
     }
 
+    @Test
     public void testInvalidNumber()
     {
         try

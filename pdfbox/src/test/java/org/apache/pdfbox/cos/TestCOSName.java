@@ -16,14 +16,16 @@
 
 package org.apache.pdfbox.cos;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestCOSName
 {
@@ -49,8 +51,8 @@ public class TestCOSName
         try (PDDocument document = Loader.loadPDF(baos.toByteArray()))
         {
             COSDictionary catalogDict = document.getDocumentCatalog().getCOSObject();
-            Assert.assertTrue(catalogDict.containsKey(special));
-            Assert.assertEquals(special, catalogDict.getString(special));
+            assertTrue(catalogDict.containsKey(special));
+            assertEquals(special, catalogDict.getString(special));
         }
     }
 }
