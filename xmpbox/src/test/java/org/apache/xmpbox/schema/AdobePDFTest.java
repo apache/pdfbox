@@ -53,11 +53,11 @@ public class AdobePDFTest
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         XMPSchema schema = metadata.createAndAddAdobePDFSchema();
         Class<?> schemaClass = AdobePDFSchema.class;
-
+        
         return new XMPSchemaTester[] {
             new XMPSchemaTester(metadata, schema, schemaClass, "Keywords", XMPSchemaTester.createPropertyType(Types.Text), "kw1 kw2 kw3"),
             new XMPSchemaTester(metadata, schema, schemaClass, "PDFVersion", XMPSchemaTester.createPropertyType(Types.Text), "1.4"),
-            new XMPSchemaTester(metadata, schema, schemaClass, "conformance", XMPSchemaTester.createPropertyType(Types.Text), "testcase")
+            new XMPSchemaTester(metadata, schema, schemaClass, "Producer", XMPSchemaTester.createPropertyType(Types.Text), "testcase")
         };
     }
 
