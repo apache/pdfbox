@@ -64,10 +64,14 @@
 	      <groupId>org.junit.jupiter</groupId>
 	      <artifactId>junit-jupiter-api</artifactId>
 	    </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+		</dependency>
 	    <dependency>
 	        <groupId>org.junit.vintage</groupId>
 	        <artifactId>junit-vintage-engine</artifactId>
-	    </dependency>  
+	    </dependency>
         <dependency>
             <groupId>com.googlecode.java-diff-utils</groupId>
             <artifactId>diffutils</artifactId>
