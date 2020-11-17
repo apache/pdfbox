@@ -26,7 +26,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AlignmentTest
+class AlignmentTest
 {
     private static final File OUT_DIR = new File("target/test-output");
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
@@ -46,7 +46,7 @@ public class AlignmentTest
     }
 
     @Test
-    public void fillFields() throws IOException
+    void fillFields() throws IOException
     {
         PDTextField field = (PDTextField) acroForm.getField("AlignLeft");
         field.setValue(TEST_VALUE);

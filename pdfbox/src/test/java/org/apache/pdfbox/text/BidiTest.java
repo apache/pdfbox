@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * Test for the PDButton class.
  *
  */
-public class BidiTest
+class BidiTest
 {
     /**
      * Logger instance.
@@ -76,14 +76,14 @@ public class BidiTest
     }
 
     @Test
-    public void testSorted() throws IOException
+    void testSorted() throws IOException
     {
         File testFile = new File(IN_DIR, NAME_OF_PDF);
         doTestFile(testFile, outDir, false, true);
     }
 
     @Test
-    public void testNotSorted() throws IOException
+    void testNotSorted() throws IOException
     {
         File testFile = new File(IN_DIR, NAME_OF_PDF);
         doTestFile(testFile, outDir, false, false);

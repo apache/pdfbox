@@ -33,13 +33,13 @@ import org.junit.jupiter.api.Test;
  *
  * @author Michael Doswald
  */
-public class TestNumberFormatUtil
+class TestNumberFormatUtil
 {
 
     private final byte[] buffer = new byte[64];
 
     @Test
-    public void testFormatOfIntegerValues()
+    void testFormatOfIntegerValues()
     {
         assertEquals(2, NumberFormatUtil.formatFloatFast(51, 5, buffer));
         assertArrayEquals(new byte[]{'5', '1'}, Arrays.copyOfRange(buffer, 0, 2));
@@ -68,7 +68,7 @@ public class TestNumberFormatUtil
     }
 
     @Test
-    public void testFormatOfRealValues()
+    void testFormatOfRealValues()
     {
         assertEquals(3, NumberFormatUtil.formatFloatFast(0.7f, 5, buffer));
         assertArrayEquals(new byte[]{'0', '.', '7'}, Arrays.copyOfRange(buffer, 0, 3));
@@ -85,7 +85,7 @@ public class TestNumberFormatUtil
     }
 
     @Test
-    public void testFormatOfRealValuesReturnsMinusOneIfItCannotBeFormatted()
+    void testFormatOfRealValuesReturnsMinusOneIfItCannotBeFormatted()
     {
         assertEquals(-1, NumberFormatUtil.formatFloatFast(Float.NaN, 5, buffer),
                 "NaN should not be formattable");
@@ -100,7 +100,7 @@ public class TestNumberFormatUtil
     }
 
     @Test
-    public void testRoundingUp()
+    void testRoundingUp()
     {
         assertEquals(1, NumberFormatUtil.formatFloatFast(0.999999f, 5, buffer));
         assertArrayEquals(new byte[]{'1'}, Arrays.copyOfRange(buffer, 0, 1));
@@ -113,7 +113,7 @@ public class TestNumberFormatUtil
     }
     
     @Test
-    public void testRoundingDown()
+    void testRoundingDown()
     {
         assertEquals(4, NumberFormatUtil.formatFloatFast(0.994f, 2, buffer));
         assertArrayEquals(new byte[]{'0','.','9','9'}, Arrays.copyOfRange(buffer, 0, 4));
@@ -130,7 +130,7 @@ public class TestNumberFormatUtil
      * </ul>
      */
     @Test
-    public void testFormattingInRange()
+    void testFormattingInRange()
     {
         //Define a range to test
         BigDecimal minVal = new BigDecimal("-10");

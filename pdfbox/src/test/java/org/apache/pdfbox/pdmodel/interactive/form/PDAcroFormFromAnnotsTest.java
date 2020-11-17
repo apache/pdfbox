@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * Tests for building AcroForm entries form Widget annotations.
  *
  */
-public class PDAcroFormFromAnnotsTest
+class PDAcroFormFromAnnotsTest
 {
     /**
      * PDFBOX-4985 AcroForms entry but empty Fields array 
@@ -51,7 +51,7 @@ public class PDAcroFormFromAnnotsTest
      * @throws IOException
      */
     @Test
-    public void testFromAnnots4985DefaultMode() throws IOException
+    void testFromAnnots4985DefaultMode() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
@@ -86,7 +86,7 @@ public class PDAcroFormFromAnnotsTest
      * @throws IOException
      */
     @Test
-    public void testFromAnnots4985CorrectionMode() throws IOException
+    void testFromAnnots4985CorrectionMode() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
@@ -121,7 +121,7 @@ public class PDAcroFormFromAnnotsTest
      * @throws IOException
      */
     @Test
-    public void testFromAnnots4985WithoutCorrectionMode() throws IOException
+    void testFromAnnots4985WithoutCorrectionMode() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13013354/POPPLER-806.pdf";
@@ -149,7 +149,7 @@ public class PDAcroFormFromAnnotsTest
      * @throws IOException
      */
     @Test
-    public void testFromAnnots3891DontCreateFields() throws IOException
+    void testFromAnnots3891DontCreateFields() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
@@ -174,7 +174,7 @@ public class PDAcroFormFromAnnotsTest
      * @throws IOException
      */
     @Test
-    public void testFromAnnots3891CreateFields() throws IOException
+    void testFromAnnots3891CreateFields() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";
@@ -229,7 +229,7 @@ public class PDAcroFormFromAnnotsTest
      * @throws IOException
      */
     @Test
-    public void testFromAnnots3891ValidateFont() throws IOException
+    void testFromAnnots3891ValidateFont() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12881055/merge-test.pdf";

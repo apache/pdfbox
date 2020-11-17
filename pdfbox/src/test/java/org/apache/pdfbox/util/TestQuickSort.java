@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Uwe Pachler
  */
-public class TestQuickSort
+class TestQuickSort
 {
 
     <T extends Comparable<T>> void doTest(T[] input, T[] expected)
@@ -43,7 +43,7 @@ public class TestQuickSort
      * Test for different cases.
      */
     @Test
-    public void testSort()
+    void testSort()
     {
 
         {

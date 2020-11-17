@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * as the test results need manual inspection. Enable as needed.
  *
  */
-public class PDAcroFormFlattenTest
+class PDAcroFormFlattenTest
 {
 
     private static final File IN_DIR = new File("target/test-output/flatten/in");
@@ -93,7 +93,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX2469Empty() throws IOException
+    void testFlattenPDFBOX2469Empty() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12682897/FormI-9-English.pdf";
         String targetFileName = "FormI-9-English.pdf";
@@ -107,7 +107,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX2469Filled() throws IOException
+    void testFlattenPDFBOX2469Filled() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12678455/testPDF_acroForm.pdf";
         String targetFileName = "testPDF_acroForm.pdf";
@@ -121,7 +121,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX2586() throws IOException
+    void testFlattenPDFBOX2586() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12689788/test.pdf";
         String targetFileName = "test-2586.pdf";
@@ -150,7 +150,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX3262() throws IOException
+    void testFlattenPDFBOX3262() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf";
         String targetFileName = "hidden_fields.pdf";
@@ -164,7 +164,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX3396_1() throws IOException
+    void testFlattenPDFBOX3396_1() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12816014/Signed-Document-1.pdf";
         String targetFileName = "Signed-Document-1.pdf";
@@ -178,7 +178,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX3396_2() throws IOException
+    void testFlattenPDFBOX3396_2() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12816016/Signed-Document-2.pdf";
         String targetFileName = "Signed-Document-2.pdf";
@@ -192,7 +192,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX3396_3() throws IOException
+    void testFlattenPDFBOX3396_3() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12821307/Signed-Document-3.pdf";
         String targetFileName = "Signed-Document-3.pdf";
@@ -206,7 +206,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBOX3396_4() throws IOException
+    void testFlattenPDFBOX3396_4() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12821308/Signed-Document-4.pdf";
         String targetFileName = "Signed-Document-4.pdf";
@@ -296,7 +296,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBox4693() throws IOException
+    void testFlattenPDFBox4693() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12986337/stenotypeTest-3_rotate_no_flatten.pdf";
         String targetFileName = "PDFBOX-4693-filled.pdf";
@@ -311,7 +311,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException
      */
     @Test
-    public void testFlattenPDFBox4788() throws IOException
+    void testFlattenPDFBox4788() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12994791/flatten.pdf";
         String targetFileName = "PDFBOX-4788.pdf";
@@ -325,7 +325,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException 
      */
     @Test
-    public void testFlattenPDFBox4889() throws IOException
+    void testFlattenPDFBox4889() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf";
         String targetFileName = "PDFBOX-4889.pdf";
@@ -339,7 +339,7 @@ public class PDAcroFormFlattenTest
      * @throws IOException 
      */
     @Test
-    public void testFlattenPDFBox4955() throws IOException
+    void testFlattenPDFBox4955() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13011410/PDFBOX-4955.pdf";
         String targetFileName = "PDFBOX-4955.pdf";

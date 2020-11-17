@@ -27,14 +27,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Michael Doswald
  */
-public class TestHexUtil
+class TestHexUtil
 {
     
     /**
      * Test conversion from short to char[]
      */
     @Test
-    public void testGetCharsFromShortWithoutPassingInABuffer()
+    void testGetCharsFromShortWithoutPassingInABuffer()
     {
         assertArrayEquals(new char[]{'0','0','0','0'}, Hex.getChars((short)0x0000));
         assertArrayEquals(new char[]{'0','0','0','F'}, Hex.getChars((short)0x000F));
@@ -48,7 +48,7 @@ public class TestHexUtil
      *
      */
     @Test
-    public void testGetCharsUTF16BE()
+    void testGetCharsUTF16BE()
     {
         assertArrayEquals(new char[]{'0','0','6','1','0','0','6','2'}, Hex.getCharsUTF16BE("ab"));
         assertArrayEquals(new char[]{'5','E','2','E','5','2','A','9'}, Hex.getCharsUTF16BE("帮助"));
@@ -58,7 +58,7 @@ public class TestHexUtil
      * Test getBytes() and getString() and decodeHex()
      */
     @Test
-    public void testMisc()
+    void testMisc()
     {
         byte[] byteSrcArray = new byte[256];
         for (int i = 0; i < 256; ++i)

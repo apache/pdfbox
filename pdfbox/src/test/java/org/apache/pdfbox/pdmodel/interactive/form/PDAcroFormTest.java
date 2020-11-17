@@ -50,7 +50,7 @@ import org.junit.jupiter.api.Test;
  * Test for the PDButton class.
  *
  */
-public class PDAcroFormTest
+class PDAcroFormTest
 {
     
     private PDDocument document;
@@ -68,7 +68,7 @@ public class PDAcroFormTest
     }
 
     @Test
-    public void testFieldsEntry()
+    void testFieldsEntry()
     {
         // the /Fields entry has been created with the AcroForm
         // as this is a required entry
@@ -91,7 +91,7 @@ public class PDAcroFormTest
     }
     
     @Test
-    public void testAcroFormProperties()
+    void testAcroFormProperties()
     {
         assertTrue(acroForm.getDefaultAppearance().isEmpty());
         acroForm.setDefaultAppearance("/Helv 0 Tf 0 g");
@@ -99,7 +99,7 @@ public class PDAcroFormTest
     }
     
     @Test
-    public void testFlatten() throws IOException
+    void testFlatten() throws IOException
     {
         File file = new File(OUT_DIR, "AlignmentTests-flattened.pdf");
         try (PDDocument testPdf = Loader.loadPDF(new File(IN_DIR, "AlignmentTests.pdf")))
@@ -124,7 +124,7 @@ public class PDAcroFormTest
      * (PDFBOX-3301)
      */
     @Test
-    public void testFlattenWidgetNoRef() throws IOException
+    void testFlattenWidgetNoRef() throws IOException
     {
         File file = new File(OUT_DIR, "AlignmentTests-flattened-noRef.pdf");
 
@@ -154,7 +154,7 @@ public class PDAcroFormTest
     }
     
     @Test
-    public void testFlattenSpecificFieldsOnly() throws IOException
+    void testFlattenSpecificFieldsOnly() throws IOException
     {
         File file = new File(OUT_DIR, "AlignmentTests-flattened-specificFields.pdf");
         
@@ -188,7 +188,7 @@ public class PDAcroFormTest
      * (PDFBOX-3752)
      */
     @Test
-    public void testDontAddMissingInformationOnDocumentLoad()
+    void testDontAddMissingInformationOnDocumentLoad()
     {
         try
         {
@@ -220,7 +220,7 @@ public class PDAcroFormTest
      * (PDFBOX-3752)
      */
     @Test
-    public void testAddMissingInformationOnAcroFormAccess()
+    void testAddMissingInformationOnAcroFormAccess()
     {
         try
         {
@@ -259,7 +259,7 @@ public class PDAcroFormTest
      * @throws IOException 
      */
     @Test
-    public void testBadDA() throws IOException
+    void testBadDA() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -302,7 +302,7 @@ public class PDAcroFormTest
      * they don't exist.
      */
     @Test
-    public void testAcroFormDefaultFonts() throws IOException
+    void testAcroFormDefaultFonts() throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (PDDocument doc = new PDDocument())

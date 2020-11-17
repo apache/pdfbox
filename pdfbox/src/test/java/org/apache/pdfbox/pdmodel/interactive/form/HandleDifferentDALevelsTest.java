@@ -30,7 +30,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class HandleDifferentDALevelsTest
+class HandleDifferentDALevelsTest
 {
     private static final File OUT_DIR = new File("target/test-output");
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
@@ -62,7 +62,7 @@ public class HandleDifferentDALevelsTest
     }
 
     @Test
-    public void checkSingleAnnotation() throws IOException
+    void checkSingleAnnotation() throws IOException
     {
         PDTextField field = (PDTextField) acroForm.getField("SingleAnnotation");
         String fieldFontSetting = getFontSettingFromDA(field);
@@ -75,7 +75,7 @@ public class HandleDifferentDALevelsTest
     }
     
     @Test
-    public void checkSameLayout() throws IOException
+    void checkSameLayout() throws IOException
     {
         PDTextField field = (PDTextField) acroForm.getField("MultipeAnnotations-SameLayout");
         String fieldFontSetting = getFontSettingFromDA(field);
@@ -89,7 +89,7 @@ public class HandleDifferentDALevelsTest
     
     // TODO: enable the test after issue 3687 has been fixed
     @Test
-    public void checkDifferentLayout() throws IOException
+    void checkDifferentLayout() throws IOException
     {
         PDTextField field = (PDTextField) acroForm.getField("MultipleAnnotations-DifferentLayout");
         String fieldFontSetting = getFontSettingFromDA(field);

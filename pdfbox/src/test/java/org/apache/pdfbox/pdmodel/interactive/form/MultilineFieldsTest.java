@@ -36,7 +36,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MultilineFieldsTest
+class MultilineFieldsTest
 {
     private static final File OUT_DIR = new File("target/test-output");
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
@@ -57,7 +57,7 @@ public class MultilineFieldsTest
     }
 
     @Test
-    public void fillFields() throws IOException
+    void fillFields() throws IOException
     {
         PDTextField field = (PDTextField) acroForm.getField("AlignLeft");
         field.setValue(TEST_VALUE);
@@ -108,7 +108,7 @@ public class MultilineFieldsTest
 
     // Test for PDFBOX-3812
     @Test
-    public void testMultilineAuto() throws IOException
+    void testMultilineAuto() throws IOException
     {
         PDDocument document = Loader.loadPDF(new File(IN_DIR, "PDFBOX3812-acrobat-multiline-auto.pdf"));
         PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
@@ -139,7 +139,7 @@ public class MultilineFieldsTest
 
     // Test for PDFBOX-3835
     @Test
-    public void testMultilineBreak() throws IOException
+    void testMultilineBreak() throws IOException
     {
         final String TEST_PDF = "PDFBOX-3835-input-acrobat-wrap.pdf";
         PDDocument document = Loader.loadPDF(new File(IN_DIR, TEST_PDF));

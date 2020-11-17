@@ -27,7 +27,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AcroFormsRotationTest
+class AcroFormsRotationTest
 {
 
     private static final File OUT_DIR = new File("target/test-output");
@@ -48,7 +48,7 @@ public class AcroFormsRotationTest
     }
 
     @Test
-    public void fillFields() throws IOException
+    void fillFields() throws IOException
     {
 
         // portrait page

@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,8 @@ import org.junit.jupiter.api.Test;
  * @see <a href="https://issues.apache.org/jira/browse/PDFBOX-3461">https://issues.apache.org/jira/browse/PDFBOX-3461</a>
  * 
  */
-public class ControlCharacterTest {
+class ControlCharacterTest
+{
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/pdmodel/interactive/form");
     private static final String NAME_OF_PDF = "ControlCharacters.pdf";
 
@@ -74,7 +74,7 @@ public class ControlCharacterTest {
     }
     
     @Test
-    public void characterNUL() throws IOException
+    void characterNUL() throws IOException
     {
         assertThrows(IllegalArgumentException.class, () -> {
             acroForm.getField("pdfbox-nul").setValue("NUL\0NUL");
@@ -82,13 +82,13 @@ public class ControlCharacterTest {
     }
 
     @Test
-    public void characterTAB() throws IOException
+    void characterTAB() throws IOException
     {
     	acroForm.getField("pdfbox-tab").setValue("TAB\tTAB");
     }
     
     @Test
-    public void characterSPACE() throws IOException
+    void characterSPACE() throws IOException
     {
     	PDField field = acroForm.getField("pdfbox-space");
     	field.setValue("SPACE SPACE");
@@ -100,7 +100,7 @@ public class ControlCharacterTest {
     }
 
     @Test
-    public void characterCR() throws IOException
+    void characterCR() throws IOException
     {
     	PDField field = acroForm.getField("pdfbox-cr");
     	field.setValue("CR\rCR");
@@ -112,7 +112,7 @@ public class ControlCharacterTest {
     }
 
     @Test
-    public void characterLF() throws IOException
+    void characterLF() throws IOException
     {
     	PDField field = acroForm.getField("pdfbox-lf");
     	field.setValue("LF\nLF");
@@ -124,7 +124,7 @@ public class ControlCharacterTest {
     }
     
     @Test
-    public void characterCRLF() throws IOException
+    void characterCRLF() throws IOException
     {
     	PDField field = acroForm.getField("pdfbox-crlf");
     	field.setValue("CRLF\r\nCRLF");
@@ -136,7 +136,7 @@ public class ControlCharacterTest {
     }
 
     @Test
-    public void characterLFCR() throws IOException
+    void characterLFCR() throws IOException
     {
     	PDField field = acroForm.getField("pdfbox-lfcr");
     	field.setValue("LFCR\n\rLFCR");
@@ -148,7 +148,7 @@ public class ControlCharacterTest {
     }
     
     @Test
-    public void characterUnicodeLinebreak() throws IOException
+    void characterUnicodeLinebreak() throws IOException
     {
     	PDField field = acroForm.getField("pdfbox-linebreak");
     	field.setValue("linebreak\u2028linebreak");
@@ -160,7 +160,7 @@ public class ControlCharacterTest {
     }
     
     @Test
-    public void characterUnicodeParagraphbreak() throws IOException
+    void characterUnicodeParagraphbreak() throws IOException
     {
     	PDField field = acroForm.getField("pdfbox-paragraphbreak");
     	field.setValue("paragraphbreak\u2029paragraphbreak");

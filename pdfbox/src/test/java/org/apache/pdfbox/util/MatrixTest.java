@@ -26,11 +26,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Neil McErlean
  * @author Tilman Hausherr
  */
-public class MatrixTest
+class MatrixTest
 {
     
     @Test
-    public void testConstructionAndCopy() throws Exception
+    void testConstructionAndCopy() throws Exception
     {
         Matrix m1 = new Matrix();
         assertMatrixIsPristine(m1);
@@ -41,7 +41,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testGetScalingFactor()
+    void testGetScalingFactor()
     {
         // check scaling factor of an initial matrix
         Matrix m1 = new Matrix();
@@ -55,7 +55,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testCreateMatrixUsingInvalidInput()
+    void testCreateMatrixUsingInvalidInput()
     {
         // anything but a COSArray is invalid and leads to an initial matrix
         Matrix createMatrix = Matrix.createMatrix(COSName.A);
@@ -78,7 +78,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testMultiplication()
+    void testMultiplication()
     {
         // These matrices will not change - we use it to drive the various multiplications.
         final Matrix const1 = new Matrix();
@@ -139,7 +139,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testOldMultiplication() throws Exception
+    void testOldMultiplication() throws Exception
     {
         // This matrix will not change - we use it to drive the various multiplications.
         final Matrix testMatrix = new Matrix();
@@ -188,7 +188,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testIllegalValueNaN1()
+    void testIllegalValueNaN1()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.MAX_VALUE);
@@ -196,7 +196,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testIllegalValueNaN2()
+    void testIllegalValueNaN2()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.NaN);
@@ -204,7 +204,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testIllegalValuePositiveInfinity()
+    void testIllegalValuePositiveInfinity()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.POSITIVE_INFINITY);
@@ -212,7 +212,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testIllegalValueNegativeInfinity()
+    void testIllegalValueNegativeInfinity()
     {
         Matrix m = new Matrix();
         m.setValue(0, 0, Float.NEGATIVE_INFINITY);
@@ -223,7 +223,7 @@ public class MatrixTest
      * Test of PDFBOX-2872 bug
      */
     @Test
-    public void testPdfbox2872()
+    void testPdfbox2872()
     {
         Matrix m = new Matrix(2, 4, 5, 8, 2, 0);
         COSArray toCOSArray = m.toCOSArray();
@@ -237,7 +237,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testGetValues()
+    void testGetValues()
     {
         Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
         float[][] values = m.getValues();
@@ -253,7 +253,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testScaling()
+    void testScaling()
     {
         Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
         m.scale(2, 3);
@@ -274,7 +274,7 @@ public class MatrixTest
     }
 
     @Test
-    public void testTranslation()
+    void testTranslation()
     {
         Matrix m = new Matrix(2, 4, 4, 2, 15, 30);
         m.translate(2, 3);

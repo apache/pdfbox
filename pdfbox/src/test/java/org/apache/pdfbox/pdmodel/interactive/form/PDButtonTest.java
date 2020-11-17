@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * Test for the PDButton class.
  *
  */
-public class PDButtonTest
+class PDButtonTest
 {
     
     
@@ -70,7 +70,7 @@ public class PDButtonTest
     }
 
     @Test
-    public void createCheckBox()
+    void createCheckBox()
     {
         PDButton buttonField = new PDCheckBox(acroForm);
         
@@ -81,7 +81,7 @@ public class PDButtonTest
     }
 
     @Test
-    public void createPushButton()
+    void createPushButton()
     {
         PDButton buttonField = new PDPushButton(acroForm);
         
@@ -92,7 +92,7 @@ public class PDButtonTest
     }
 
     @Test
-    public void createRadioButton()
+    void createRadioButton()
     {
         PDButton buttonField = new PDRadioButton(acroForm);
         
@@ -102,7 +102,6 @@ public class PDButtonTest
         assertFalse(buttonField.isPushButton());
     }
     
-    @Test
     /**
      * PDFBOX-3656
      * 
@@ -112,7 +111,8 @@ public class PDButtonTest
      * 
      * @throws IOException
      */
-    public void testRadioButtonWithOptions() throws MalformedURLException
+    @Test
+    void testRadioButtonWithOptions() throws MalformedURLException
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3656.pdf");
         
@@ -133,7 +133,6 @@ public class PDButtonTest
         }
     }
     
-    @Test
     /**
      * PDFBOX-3682
      * 
@@ -143,7 +142,8 @@ public class PDButtonTest
      * 
      * @throws IOException
      */
-    public void testOptionsAndNamesNotNumbers() throws MalformedURLException
+    @Test
+    void testOptionsAndNamesNotNumbers() throws MalformedURLException
     {
         File file = new File(TARGET_PDF_DIR, "PDFBOX-3682.pdf");
         try (InputStream is = new FileInputStream(file);
@@ -154,12 +154,16 @@ public class PDButtonTest
             radioButton.setValue("c");
 
             // test that the old behavior is now invalid
-            assertNotEquals("This shall no longer be 2", "2", radioButton.getValueAsString());
-            assertNotEquals("This shall no longer be 2", "2", radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS));
+            assertNotEquals("2", radioButton.getValueAsString(), "This shall no longer be 2");
+            assertNotEquals("2",
+                    radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS),
+                    "This shall no longer be 2");
             
             // test for the correct behavior
-            assertEquals("This shall be c", "c", radioButton.getValueAsString());
-            assertEquals("This shall be c", "c", radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS));
+            assertEquals("c", radioButton.getValueAsString(), "This shall be c");
+            assertEquals("c",
+                    radioButton.getWidgets().get(2).getCOSObject().getNameAsString(COSName.AS),
+                    "This shall be c");
         }
         catch (IOException e)
         {
@@ -168,7 +172,7 @@ public class PDButtonTest
     }
         
     @Test
-    public void retrieveAcrobatCheckBoxProperties()
+    void retrieveAcrobatCheckBoxProperties()
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         assertNotNull(checkbox);
@@ -178,7 +182,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void testAcrobatCheckBoxProperties() throws IOException
+    void testAcrobatCheckBoxProperties() throws IOException
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         assertEquals("Off", checkbox.getValue());
@@ -206,7 +210,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void setValueForAbstractedAcrobatCheckBox() throws IOException
+    void setValueForAbstractedAcrobatCheckBox() throws IOException
     {
         PDField checkbox = acrobatAcroForm.getField("Checkbox");
 
@@ -222,7 +226,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void testAcrobatCheckBoxGroupProperties() throws IOException
+    void testAcrobatCheckBoxGroupProperties() throws IOException
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("CheckboxGroup");
         assertEquals("Off", checkbox.getValue());
@@ -264,7 +268,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void setValueForAbstractedCheckBoxGroup() throws IOException
+    void setValueForAbstractedCheckBoxGroup() throws IOException
     {
         PDField checkbox = acrobatAcroForm.getField("CheckboxGroup");
 
@@ -293,7 +297,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void setCheckboxInvalidValue() throws IOException
+    void setCheckboxInvalidValue() throws IOException
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
@@ -303,7 +307,7 @@ public class PDButtonTest
     }    
 
     @Test
-    public void setCheckboxGroupInvalidValue() throws IOException
+    void setCheckboxGroupInvalidValue() throws IOException
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list 
@@ -313,7 +317,7 @@ public class PDButtonTest
     }    
 
     @Test
-    public void setAbstractedCheckboxInvalidValue() throws IOException
+    void setAbstractedCheckboxInvalidValue() throws IOException
     {
         PDField checkbox = acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
@@ -323,7 +327,7 @@ public class PDButtonTest
     }    
 
     @Test
-    public void setAbstractedCheckboxGroupInvalidValue() throws IOException
+    void setAbstractedCheckboxGroupInvalidValue() throws IOException
     {
         PDField checkbox = acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list
@@ -333,7 +337,7 @@ public class PDButtonTest
     }    
 
     @Test
-    public void retrieveAcrobatRadioButtonProperties()
+    void retrieveAcrobatRadioButtonProperties()
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
         assertNotNull(radioButton);
@@ -343,7 +347,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void testAcrobatRadioButtonProperties() throws IOException
+    void testAcrobatRadioButtonProperties() throws IOException
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
 
@@ -367,7 +371,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void setValueForAbstractedAcrobatRadioButton() throws IOException
+    void setValueForAbstractedAcrobatRadioButton() throws IOException
     {
         PDField radioButton = acrobatAcroForm.getField("RadioButtonGroup");
 
@@ -391,7 +395,7 @@ public class PDButtonTest
     }
     
     @Test
-    public void setRadioButtonInvalidValue() throws IOException
+    void setRadioButtonInvalidValue() throws IOException
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
         // Set a value which doesn't match the radio button list
@@ -401,7 +405,7 @@ public class PDButtonTest
     }
 
     @Test
-    public void setAbstractedRadioButtonInvalidValue() throws IOException
+    void setAbstractedRadioButtonInvalidValue() throws IOException
     {
         PDField radioButton = acrobatAcroForm.getField("RadioButtonGroup");
         // Set a value which doesn't match the radio button list

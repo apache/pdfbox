@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * Test for the PDSignatureField class.
  *
  */
-public class PDTextFieldTest
+class PDTextFieldTest
 {
     private PDDocument document;
     private PDAcroForm acroForm;
@@ -42,7 +42,7 @@ public class PDTextFieldTest
     }
 
     @Test
-    public void createDefaultTextField()
+    void createDefaultTextField()
     {
         PDField textField = new PDTextField(acroForm);
         
@@ -51,7 +51,7 @@ public class PDTextFieldTest
     }
 
     @Test
-    public void createWidgetForGet()
+    void createWidgetForGet()
     {
         PDTextField textField = new PDTextField(acroForm);
 

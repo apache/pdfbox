@@ -106,7 +106,7 @@ import org.junit.jupiter.api.Test;
  * @author Robert Dickinson
  * @author Ben Litchfield
  */
-public class TestTextStripper
+class TestTextStripper
 {
 
     /**
@@ -436,7 +436,7 @@ public class TestTextStripper
      * @throws URISyntaxException
      */
     @Test
-    public void testStripByOutlineItems() throws IOException, URISyntaxException
+    void testStripByOutlineItems() throws IOException, URISyntaxException
     {
         PDDocument doc = Loader
                 .loadPDF(new File(TestPDPageTree.class.getResource("with_outline.pdf").toURI()));
@@ -562,7 +562,7 @@ public class TestTextStripper
      * @throws Exception when there is an exception
      */
     @Test
-    public void testExtract() throws Exception
+    void testExtract() throws Exception
     {
         String filename = System.getProperty("org.apache.pdfbox.util.TextStripper.file");
         File inDir = new File("src/test/resources/input");
@@ -593,7 +593,7 @@ public class TestTextStripper
     }
 
     @Test
-    public void testTabula() throws IOException
+    void testTabula() throws IOException
     {
         File pdfFile = new File("src/test/resources/input","eu-001.pdf");
         File outFile = new File("target/test-output","eu-001.pdf-tabula.txt");

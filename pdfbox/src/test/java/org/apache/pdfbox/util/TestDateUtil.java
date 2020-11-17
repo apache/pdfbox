@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * @author Fred Hansen
  * 
  */
-public class TestDateUtil
+class TestDateUtil
 {
     private static final int MINS = 60*1000, HRS = 60*MINS;
     // expect parse fail
@@ -49,7 +49,7 @@ public class TestDateUtil
      * @throws Exception when there is an exception
      */
     @Test
-    public void testExtract() throws Exception
+    void testExtract() throws Exception
     {
         TimeZone timezone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -84,7 +84,7 @@ public class TestDateUtil
      * @throws IOException if something went wrong.
      */
     @Test
-    public void testDateConversion() throws IOException 
+    void testDateConversion() throws IOException
     { 
         Calendar c = DateConverter.toCalendar("D:20050526205258+01'00'"); 
         assertEquals(2005, c.get(Calendar.YEAR)); 
@@ -143,7 +143,7 @@ public class TestDateUtil
      * @throws Exception none expected
      */
     @Test
-    public void testDateConverter() throws Exception 
+    void testDateConverter() throws Exception
     {
             int year = Calendar.getInstance().get(Calendar.YEAR);
             checkParse(2010, 4,23, 0, 0, 0, 0, 0, "D:20100423");
@@ -314,7 +314,7 @@ public class TestDateUtil
      * @throws Exception if something went wrong.
      */
     @Test
-    public void testToString() throws Exception 
+    void testToString() throws Exception
     {                                                              // std DST
         TimeZone tzPgh = TimeZone.getTimeZone("America/New_York");   // -5 -4
         TimeZone tzBerlin = TimeZone.getTimeZone("Europe/Berlin");   // +1 +2
@@ -363,7 +363,7 @@ public class TestDateUtil
      * Timezone testcase.
      */
     @Test
-    public void testParseTZ() 
+    void testParseTZ()
     {
         // 1st parameter is what to expect
         checkParseTZ(0*HRS+0*MINS, "+00:00");
@@ -404,7 +404,7 @@ public class TestDateUtil
      * Timezone offset testcase.
      */
     @Test
-    public void testFormatTZoffset()
+    void testFormatTZoffset()
     {
         // 2nd parameter is what to expect
         checkFormatOffset(-12.1, "-12:06");

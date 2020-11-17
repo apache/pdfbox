@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class PDDefaultAppearanceStringTest
+class PDDefaultAppearanceStringTest
 {
     // Used to check resources lookup 
     private PDResources resources;
@@ -45,7 +45,7 @@ public class PDDefaultAppearanceStringTest
     }
     
     @Test
-    public void testParseDAString() throws IOException
+    void testParseDAString() throws IOException
     {
         COSString sampleString = new COSString("/" + fontResourceName.getName() + " 12 Tf 0.019 0.305 0.627 rg");
 
@@ -60,7 +60,7 @@ public class PDDefaultAppearanceStringTest
     }
     
     @Test
-    public void testFontResourceUnavailable() throws IOException
+    void testFontResourceUnavailable() throws IOException
     {
         COSString sampleString = new COSString("/Helvetica 12 Tf 0.019 0.305 0.627 rg");
         assertThrows(IOException.class, () -> {
@@ -69,7 +69,7 @@ public class PDDefaultAppearanceStringTest
     }
     
     @Test
-    public void testWrongNumberOfColorArguments() throws IOException
+    void testWrongNumberOfColorArguments() throws IOException
     {
         COSString sampleString = new COSString("/Helvetica 12 Tf 0.305 0.627 rg");
         assertThrows(IOException.class, () -> {

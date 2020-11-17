@@ -29,11 +29,11 @@ import org.junit.jupiter.api.Test;
  * @author Andrea Vacondio
  *
  */
-public class PDTransitionTest
+class PDTransitionTest
 {
 
     @Test
-    public void defaultStyle()
+    void defaultStyle()
     {
         PDTransition transition = new PDTransition();
         assertEquals(COSName.TRANS, transition.getCOSObject().getCOSName(COSName.TYPE));
@@ -41,7 +41,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void getStyle()
+    void getStyle()
     {
         PDTransition transition = new PDTransition(PDTransitionStyle.Fade);
         assertEquals(COSName.TRANS, transition.getCOSObject().getCOSName(COSName.TYPE));
@@ -49,7 +49,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void defaultValues()
+    void defaultValues()
     {
         PDTransition transition = new PDTransition(new COSDictionary());
         assertEquals(PDTransitionStyle.R.name(), transition.getStyle());
@@ -62,7 +62,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void dimension()
+    void dimension()
     {
         PDTransition transition = new PDTransition();
         transition.setDimension(PDTransitionDimension.H);
@@ -70,7 +70,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void directionNone()
+    void directionNone()
     {
         PDTransition transition = new PDTransition();
         transition.setDirection(PDTransitionDirection.NONE);
@@ -79,7 +79,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void directionNumber()
+    void directionNumber()
     {
         PDTransition transition = new PDTransition();
         transition.setDirection(PDTransitionDirection.LEFT_TO_RIGHT);
@@ -88,7 +88,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void motion()
+    void motion()
     {
         PDTransition transition = new PDTransition();
         transition.setMotion(PDTransitionMotion.O);
@@ -96,7 +96,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void duration()
+    void duration()
     {
         PDTransition transition = new PDTransition();
         transition.setDuration(4);
@@ -104,7 +104,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void flyScale()
+    void flyScale()
     {
         PDTransition transition = new PDTransition();
         transition.setFlyScale(4);
@@ -112,7 +112,7 @@ public class PDTransitionTest
     }
 
     @Test
-    public void flyArea()
+    void flyArea()
     {
         PDTransition transition = new PDTransition();
         transition.setFlyAreaOpaque(true);

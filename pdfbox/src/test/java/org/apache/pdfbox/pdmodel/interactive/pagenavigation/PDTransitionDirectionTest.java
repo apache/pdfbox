@@ -26,11 +26,11 @@ import org.junit.jupiter.api.Test;
  * @author Andrea Vacondio
  *
  */
-public class PDTransitionDirectionTest
+class PDTransitionDirectionTest
 {
 
     @Test
-    public void getCOSBase()
+    void getCOSBase()
     {
         assertEquals(COSName.NONE, PDTransitionDirection.NONE.getCOSBase());
         assertEquals(0, ((COSInteger) PDTransitionDirection.LEFT_TO_RIGHT.getCOSBase()).intValue());

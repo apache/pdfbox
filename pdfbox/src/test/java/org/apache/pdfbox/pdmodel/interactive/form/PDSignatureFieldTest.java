@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * Test for the PDSignatureField class.
  *
  */
-public class PDSignatureFieldTest
+class PDSignatureFieldTest
 {
     private PDDocument document;
     private PDAcroForm acroForm;
@@ -50,7 +50,7 @@ public class PDSignatureFieldTest
     }
 
     @Test
-    public void createDefaultSignatureField()
+    void createDefaultSignatureField()
     {
         PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");
@@ -70,7 +70,7 @@ public class PDSignatureFieldTest
     }
     
     @Test
-    public void setValueForAbstractedSignatureField()
+    void setValueForAbstractedSignatureField()
     {
         PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");
@@ -85,7 +85,7 @@ public class PDSignatureFieldTest
      * @throws IOException 
      */
     @Test
-    public void testGetContents() throws IOException
+    void testGetContents() throws IOException
     {
         // Normally, range0 + range1 = position of "<", and range2 = position after ">"
         PDSignature signature = new PDSignature();

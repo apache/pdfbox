@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Test for the PDChoice class.
  *
  */
-public class PDChoiceTest
+class PDChoiceTest
 {
     private PDDocument document;
     private PDAcroForm acroForm;
@@ -52,7 +52,7 @@ public class PDChoiceTest
     }
 
     @Test
-    public void createListBox()
+    void createListBox()
     {
         PDChoice choiceField = new PDListBox(acroForm);
         
@@ -62,7 +62,7 @@ public class PDChoiceTest
     }
 
     @Test
-    public void createComboBox()
+    void createComboBox()
     {
         PDChoice choiceField = new PDComboBox(acroForm);
         
@@ -72,7 +72,7 @@ public class PDChoiceTest
     }
     
     @Test
-    public void getOptionsFromStrings()
+    void getOptionsFromStrings()
     {
         PDChoice choiceField = new PDComboBox(acroForm);
         COSArray choiceFieldOptions = new COSArray();
@@ -88,7 +88,7 @@ public class PDChoiceTest
     }
 
     @Test
-    public void getOptionsFromCOSArray()
+    void getOptionsFromCOSArray()
     {
         PDChoice choiceField = new PDComboBox(acroForm);
         COSArray choiceFieldOptions = new COSArray();
@@ -119,7 +119,7 @@ public class PDChoiceTest
      * Get the entries form a moxed values array. See PDFBOX-4185
      */
     @Test
-    public void getOptionsFromMixed()
+    void getOptionsFromMixed()
     {
         PDChoice choiceField = new PDComboBox(acroForm);
         COSArray choiceFieldOptions = new COSArray();
