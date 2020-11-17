@@ -16,8 +16,9 @@
  */
 package org.apache.pdfbox.pdfwriter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 public class COSWriterXRefEntryTest
 {
@@ -32,6 +33,6 @@ public class COSWriterXRefEntryTest
         final int retval = objectUnderTest.compareTo(obj);
 
         // Assert result
-        Assert.assertEquals(-1, retval);
+        assertEquals(-1, retval);
     }
 }

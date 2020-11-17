@@ -17,6 +17,8 @@
 
 package org.apache.pdfbox.pdfwriter;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -31,12 +33,11 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
-import org.junit.After;
-import org.junit.AfterClass;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -53,22 +54,22 @@ public class ContentStreamWriterTest
         testDirOut.mkdirs();
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass()
     {
     }
     
-    @AfterClass
+    @AfterAll
     public static void tearDownClass()
     {
     }
     
-    @Before
+    @BeforeEach
     public void setUp()
     {
     }
     
-    @After
+    @AfterEach
     public void tearDown()
     {
     }
