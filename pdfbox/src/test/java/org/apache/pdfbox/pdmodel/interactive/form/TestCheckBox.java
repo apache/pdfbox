@@ -16,13 +16,14 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
@@ -35,50 +36,21 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceCharacteristicsDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
+import org.junit.jupiter.api.Test;
 
 /**
  * This will test the functionality of checkboxes in PDFBox.
  */
-public class TestCheckBox extends TestCase
+class TestCheckBox
 {
     
-    /**
-     * Constructor.
-     *
-     * @param name The name of the test to run.
-     */
-    public TestCheckBox( String name )
-    {
-        super( name );
-    }
-
-    /**
-     * This will get the suite of test that this class holds.
-     *
-     * @return All of the tests that this class holds.
-     */
-    public static Test suite()
-    {
-        return new TestSuite( TestCheckBox.class );
-    }
-
-    /**
-     * infamous main method.
-     *
-     * @param args The command line arguments.
-     */
-    public static void main( String[] args )
-    {
-        String[] arg = {TestCheckBox.class.getName() };
-        junit.textui.TestRunner.main( arg );
-    }
-
     /**
      * This will test the checkbox PDModel.
      *
      * @throws IOException If there is an error creating the field.
      */
-    public void testCheckboxPDModel() throws IOException
+    @Test
+    void testCheckboxPDModel() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -121,7 +93,8 @@ public class TestCheckBox extends TestCase
      * 
      * @throws IOException 
      */
-    public void testCheckBoxNoAppearance() throws IOException
+    @Test
+    void testCheckBoxNoAppearance() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {

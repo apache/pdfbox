@@ -16,12 +16,12 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,12 +38,12 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceDictionary;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * This will test the functionality of Radio Buttons in PDFBox.
  */
-public class TestRadioButtons
+class TestRadioButtons
 {
     /**
      * This will test the radio button PDModel.
@@ -51,7 +51,7 @@ public class TestRadioButtons
      * @throws IOException If there is an error creating the field.
      */
     @Test
-    public void testRadioButtonPDModel() throws IOException
+    void testRadioButtonPDModel() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -135,7 +135,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox3656NotInUnison() throws IOException
+    void testPDFBox3656NotInUnison() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
@@ -144,7 +144,8 @@ public class TestRadioButtons
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
-            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
+            assertFalse(field.isRadiosInUnison(),
+                    "the radio buttons can be selected individually although having the same ON value");
         }
     }
 
@@ -157,7 +158,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox3656ByValidExportValue() throws IOException
+    void testPDFBox3656ByValidExportValue() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
@@ -166,11 +167,13 @@ public class TestRadioButtons
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
             // check defaults
-            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
-            assertEquals("initially no option shall be selected", "Off", field.getValue());
+            assertFalse(field.isRadiosInUnison(),
+                    "the radio buttons can be selected individually although having the same ON value");
+            assertEquals("Off", field.getValue(), "initially no option shall be selected");
             // set the field to a valid export value
             field.setValue("Checking");
-            assertEquals("setting by the export value should also return that", "Checking", field.getValue());
+            assertEquals("Checking", field.getValue(),
+                    "setting by the export value should also return that");
         }
     }
 
@@ -180,7 +183,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox3656ByInvalidExportValue() throws IOException
+    void testPDFBox3656ByInvalidExportValue() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
@@ -189,8 +192,9 @@ public class TestRadioButtons
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
             // check defaults
-            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
-            assertEquals("initially no option shall be selected", "Off", field.getValue());
+            assertFalse(field.isRadiosInUnison(),
+                    "the radio buttons can be selected individually although having the same ON value");
+            assertEquals("Off", field.getValue(), "initially no option shall be selected");
 
             // set the field to an invalid value shall throw
             Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -203,8 +207,8 @@ public class TestRadioButtons
 	 
             assertTrue(actualMessage.contains(expectedMessage));
 
-            assertEquals("no option shall be selected", "Off", field.getValue());
-            assertTrue("no export values are selected", field.getSelectedExportValues().isEmpty());
+            assertEquals("Off", field.getValue(), "no option shall be selected");
+            assertTrue(field.getSelectedExportValues().isEmpty(), "no export values are selected");
         }
     }
 
@@ -217,7 +221,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox3656ByValidIndex() throws IOException
+    void testPDFBox3656ByValidIndex() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
@@ -226,11 +230,13 @@ public class TestRadioButtons
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
             // check defaults
-            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
-            assertEquals("initially no option shall be selected", "Off", field.getValue());
+            assertFalse(field.isRadiosInUnison(),
+                    "the radio buttons can be selected individually although having the same ON value");
+            assertEquals("Off", field.getValue(), "initially no option shall be selected");
             // set the field to a valid index
             field.setValue(4);
-            assertEquals("setting by the index value should return the corresponding export", "Checking", field.getValue());
+            assertEquals("Checking", field.getValue(),
+                    "setting by the index value should return the corresponding export");
         }
     }
 
@@ -243,7 +249,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox3656ByInvalidIndex() throws IOException
+    void testPDFBox3656ByInvalidIndex() throws IOException
     {
 
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
@@ -253,8 +259,9 @@ public class TestRadioButtons
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
             // check defaults
-            assertFalse("the radio buttons can be selected individually although having the same ON value", field.isRadiosInUnison());
-            assertEquals("initially no option shall be selected", "Off", field.getValue());
+            assertFalse(field.isRadiosInUnison(),
+                    "the radio buttons can be selected individually although having the same ON value");
+            assertEquals("Off", field.getValue(), "initially no option shall be selected");
 
             // set the field to an invalid index shall throw
             Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -267,8 +274,8 @@ public class TestRadioButtons
 	 
             assertTrue(actualMessage.contains(expectedMessage));
 
-            assertEquals("no option shall be selected", "Off", field.getValue());
-            assertTrue("no export values are selected", field.getSelectedExportValues().isEmpty());
+            assertEquals("Off", field.getValue(), "no option shall be selected");
+            assertTrue(field.getSelectedExportValues().isEmpty(),"no export values are selected");
         }
     }
 
@@ -278,7 +285,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox4617IndexNoneSelected() throws IOException
+    void testPDFBox4617IndexNoneSelected() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
@@ -286,7 +293,8 @@ public class TestRadioButtons
         {
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
-            assertEquals("if there is no value set the index shall be -1", -1, field.getSelectedIndex());
+            assertEquals(-1, field.getSelectedIndex(),
+                    "if there is no value set the index shall be -1");
         }
     }
 
@@ -296,7 +304,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox4617IndexForSetByOption() throws IOException
+    void testPDFBox4617IndexForSetByOption() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
@@ -305,7 +313,8 @@ public class TestRadioButtons
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
             field.setValue( "Checking");
-            assertEquals("the index shall be equal with the first entry of Checking which is 0", 0, field.getSelectedIndex());
+            assertEquals(0, field.getSelectedIndex(),
+                    "the index shall be equal with the first entry of Checking which is 0");
         }
     }
 
@@ -315,7 +324,7 @@ public class TestRadioButtons
      * @throws IOException
      */
     @Test
-    public void testPDFBox4617IndexForSetByIndex() throws IOException
+    void testPDFBox4617IndexForSetByIndex() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12848122/SF1199AEG%20%28Complete%29.pdf";
 
@@ -324,8 +333,10 @@ public class TestRadioButtons
             PDAcroForm acroForm = testPdf.getDocumentCatalog().getAcroForm();
             PDRadioButton field = (PDRadioButton) acroForm.getField("Checking/Savings");
             field.setValue(4);
-            assertEquals("setting by the index value should return the corresponding export", "Checking", field.getValue());
-            assertEquals("the index shall be equals with the set value of 4", 4, field.getSelectedIndex());
+            assertEquals("Checking", field.getValue(),
+                    "setting by the index value should return the corresponding export");
+            assertEquals(4, field.getSelectedIndex(),
+                    "the index shall be equals with the set value of 4");
         }
     }
 }

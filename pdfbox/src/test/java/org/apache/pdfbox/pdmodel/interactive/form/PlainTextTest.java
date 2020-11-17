@@ -16,9 +16,9 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test if a sequence of linebreak/paragraph characters produces the same
@@ -26,44 +26,46 @@ import org.junit.Test;
  * via JavaScript.
  * 
  */
-public class PlainTextTest {
+class PlainTextTest
+{
+
     @Test
-    public void characterCR()
+    void characterCR()
     {
     	PlainText text = new PlainText("CR\rCR");
     	assertEquals(2,text.getParagraphs().size());
     }
 
     @Test
-    public void characterLF()
+    void characterLF()
     {
     	PlainText text = new PlainText("LF\nLF");
     	assertEquals(2,text.getParagraphs().size());
     }
     
     @Test
-    public void characterCRLF()
+    void characterCRLF()
     {
     	PlainText text = new PlainText("CRLF\r\nCRLF");
     	assertEquals(2,text.getParagraphs().size());
     }
 
     @Test
-    public void characterLFCR()
+    void characterLFCR()
     {
     	PlainText text = new PlainText("LFCR\n\rLFCR");
     	assertEquals(3,text.getParagraphs().size());
     }
     
     @Test
-    public void characterUnicodeLinebreak()
+    void characterUnicodeLinebreak()
     {
     	PlainText text = new PlainText("linebreak\u2028linebreak");
     	assertEquals(2,text.getParagraphs().size());
     }
     
     @Test
-    public void characterUnicodeParagraphbreak()
+    void characterUnicodeParagraphbreak()
     {
     	PlainText text = new PlainText("paragraphbreak\u2029paragraphbreak");
     	assertEquals(2,text.getParagraphs().size());

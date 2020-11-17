@@ -16,14 +16,15 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
@@ -34,50 +35,21 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.junit.jupiter.api.Test;
 
 /**
  * This will test the functionality of choice fields in PDFBox.
  */
-public class TestListBox extends TestCase
+class TestListBox
 {
     
-    /**
-     * Constructor.
-     *
-     * @param name The name of the test to run.
-     */
-    public TestListBox( String name )
-    {
-        super( name );
-    }
-
-    /**
-     * This will get the suite of test that this class holds.
-     *
-     * @return All of the tests that this class holds.
-     */
-    public static Test suite()
-    {
-        return new TestSuite( TestListBox.class );
-    }
-
-    /**
-     * infamous main method.
-     *
-     * @param args The command line arguments.
-     */
-    public static void main( String[] args )
-    {
-        String[] arg = {TestListBox.class.getName() };
-        junit.textui.TestRunner.main( arg );
-    }
-
     /**
      * This will test the list box PDModel.
      *
      * @throws IOException If there is an error creating the field.
      */
-    public void testListboxPDModel() throws IOException
+    @Test
+    void testListboxPDModel() throws IOException
     {
 
         /*
@@ -169,7 +141,7 @@ public class TestListBox extends TestCase
 
             // assert that the field value can be set
             choice.setValue("export01");
-            assertEquals(choice.getValue().get(0),"export01");
+            assertEquals("export01", choice.getValue().get(0));
             
             // ensure that the choice field doesn't allow multiple selections
             choice.setMultiSelect(false);
@@ -210,7 +182,7 @@ public class TestListBox extends TestCase
             choice.setOptions(null);
             assertNull(choice.getCOSObject().getItem(COSName.OPT));
             // if there is no Opt entry an empty List shall be returned
-            assertEquals(choice.getOptions(), Collections.<String>emptyList());
+            assertEquals(Collections.emptyList(), choice.getOptions());
             
             /*
              * Test for setting export and display values
@@ -224,12 +196,12 @@ public class TestListBox extends TestCase
             /*
              * Testing the sort option
              */
-            assertEquals(choice.getOptionsDisplayValues().get(0),"display02");
+            assertEquals("display02", choice.getOptionsDisplayValues().get(0));
             choice.setSort(true);
             choice.setOptions(exportValues, displayValues);
-            assertEquals(choice.getOptionsDisplayValues().get(0),"display01");
-            assertEquals(choice.getOptionsDisplayValues().get(1),"display02");
-            assertEquals(choice.getOptionsDisplayValues().get(2),"display03");
+            assertEquals("display01", choice.getOptionsDisplayValues().get(0));
+            assertEquals("display02", choice.getOptionsDisplayValues().get(1));
+            assertEquals("display03", choice.getOptionsDisplayValues().get(2));
 
             /*
              * Setting options with an empty list
@@ -239,9 +211,9 @@ public class TestListBox extends TestCase
             assertNull(choice.getCOSObject().getItem(COSName.OPT));
             
             // if there is no Opt entry an empty list shall be returned
-            assertEquals(choice.getOptions(), Collections.<String>emptyList());
-            assertEquals(choice.getOptionsDisplayValues(), Collections.<String>emptyList());
-            assertEquals(choice.getOptionsExportValues(), Collections.<String>emptyList());
+            assertEquals(Collections.emptyList(), choice.getOptions());
+            assertEquals(Collections.emptyList(), choice.getOptionsDisplayValues());
+            assertEquals(Collections.emptyList(), choice.getOptionsExportValues());
             
             // test that an IllegalArgumentException is thrown when export and display 
             // value lists have different sizes

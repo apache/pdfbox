@@ -16,24 +16,28 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
+import org.junit.jupiter.api.Test;
 
 /**
  * This will test the form fields in PDFBox.
  *
  * @author Ben Litchfield
  */
-public class TestFields extends TestCase
+class TestFields
 {
     //private static Logger log = Logger.getLogger(TestFDF.class);
 
@@ -41,42 +45,12 @@ public class TestFields extends TestCase
 
     
     /**
-     * Constructor.
-     *
-     * @param name The name of the test to run.
-     */
-    public TestFields( String name )
-    {
-        super( name );
-    }
-
-    /**
-     * This will get the suite of test that this class holds.
-     *
-     * @return All of the tests that this class holds.
-     */
-    public static Test suite()
-    {
-        return new TestSuite( TestFields.class );
-    }
-
-    /**
-     * infamous main method.
-     *
-     * @param args The command line arguments.
-     */
-    public static void main( String[] args )
-    {
-        String[] arg = {TestFields.class.getName() };
-        junit.textui.TestRunner.main( arg );
-    }
-
-    /**
      * This will test setting field flags on the PDField.
      *
      * @throws IOException If there is an error creating the field.
      */
-    public void testFlags() throws IOException
+    @Test
+    void testFlags() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -123,7 +97,8 @@ public class TestFields extends TestCase
      *
      * @throws IOException If there is an error creating the field.
      */
-    public void testAcroFormsBasicFields() throws IOException
+    @Test
+    void testAcroFormsBasicFields() throws IOException
     {       
         try (PDDocument doc = Loader.loadPDF(new File(PATH_OF_PDF)))
         {            
@@ -137,7 +112,7 @@ public class TestFields extends TestCase
             assertNull(textField.getCOSObject().getItem(COSName.V));
             textField.setValue("field value");
             assertNotNull(textField.getCOSObject().getItem(COSName.V));
-            assertEquals(textField.getValue(),"field value");
+            assertEquals("field value", textField.getValue());
             
             // assert when setting to null the key has also been removed
             assertNotNull(textField.getCOSObject().getItem(COSName.V));
@@ -147,31 +122,30 @@ public class TestFields extends TestCase
             // get the TextField with a DV entry
             textField = (PDTextField)form.getField("TextField-DefaultValue");
             assertNotNull(textField);
-            assertEquals(textField.getDefaultValue(),"DefaultValue");
+            assertEquals("DefaultValue", textField.getDefaultValue());
             assertEquals(textField.getDefaultValue(),
                     ((COSString)textField.getCOSObject().getDictionaryObject(COSName.DV)).getString());
-            assertEquals(textField.getDefaultAppearance(),"/Helv 12 Tf 0 g");
+            assertEquals("/Helv 12 Tf 0 g", textField.getDefaultAppearance());
 
             // get a rich text field with a  DV entry
             textField = (PDTextField)form.getField("RichTextField-DefaultValue");
             assertNotNull(textField);
-            assertEquals(textField.getDefaultValue(),"DefaultValue");
+            assertEquals("DefaultValue", textField.getDefaultValue());
             assertEquals(textField.getDefaultValue(),
                     ((COSString)textField.getCOSObject().getDictionaryObject(COSName.DV)).getString());
-            assertEquals(textField.getValue(), "DefaultValue");
-            assertEquals(textField.getDefaultAppearance(), "/Helv 12 Tf 0 g");
-            assertEquals(textField.getDefaultStyleString(),
-                    "font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 ");
+            assertEquals("DefaultValue", textField.getValue());
+            assertEquals("/Helv 12 Tf 0 g", textField.getDefaultAppearance());
+            assertEquals("font: Helvetica,sans-serif 12.0pt; text-align:left; color:#000000 ",
+                    textField.getDefaultStyleString());
             // do not test for the full content as this is a rather long xml string
-            assertEquals(textField.getRichTextValue().length(),338);
+            assertEquals(338, textField.getRichTextValue().length());
             
             // get a rich text field with a text stream for the value
             textField = (PDTextField)form.getField("LongRichTextField");
             assertNotNull(textField);
-            assertEquals(textField.getCOSObject().getDictionaryObject(
-                    COSName.V).getClass().getName(),
-                    "org.apache.pdfbox.cos.COSStream");
-            assertEquals(textField.getValue().length(),145396);
+            assertEquals("org.apache.pdfbox.cos.COSStream",
+                    textField.getCOSObject().getDictionaryObject(COSName.V).getClass().getName());
+            assertEquals(145396, textField.getValue().length());
             
         }
     }
@@ -182,7 +156,8 @@ public class TestFields extends TestCase
      *
      * @throws IOException If there is an error loading the form or the field.
      */
-    public void testWidgetMissingRect() throws IOException
+    @Test
+    void testWidgetMissingRect() throws IOException
     {        
         try (PDDocument doc = Loader.loadPDF(new File(PATH_OF_PDF)))
         {            
