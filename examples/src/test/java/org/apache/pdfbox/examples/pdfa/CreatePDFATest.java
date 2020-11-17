@@ -15,7 +15,8 @@
  */
 package org.apache.pdfbox.examples.pdfa;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,26 +34,28 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.schema.DublinCoreSchema;
 import org.apache.xmpbox.xml.DomXmpParser;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Tilman Hausherr
  */
-public class CreatePDFATest extends TestCase
+class CreatePDFATest
 {
     private final String outDir = "target/test-output";
 
-    @Override
+    @BeforeEach
     protected void setUp() throws Exception
     {
-        super.setUp();
         new File(outDir).mkdirs();
     }
 
     /**
      * Test of doIt method of class CreatePDFA.
      */
-    public void testCreatePDFA() throws Exception
+    @Test
+    void testCreatePDFA() throws Exception
     {
         System.out.println("testCreatePDFA");
         String pdfaFilename = outDir + "/PDFA.pdf";
@@ -75,7 +78,7 @@ public class CreatePDFATest extends TestCase
         {
             System.err.println(ve.getErrorCode() + ": " + ve.getDetails());
         }
-        assertTrue("PDF file created with CreatePDFA is not valid PDF/A-1b", result.isValid());
+        assertTrue(result.isValid(), "PDF file created with CreatePDFA is not valid PDF/A-1b");
 
         // check the XMP metadata
         try (PDDocument document = Loader.loadPDF(new File(pdfaFilename)))
