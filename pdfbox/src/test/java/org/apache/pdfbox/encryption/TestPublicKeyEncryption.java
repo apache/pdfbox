@@ -16,6 +16,11 @@
  */
 package org.apache.pdfbox.encryption;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,14 +39,10 @@ import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
 import org.apache.pdfbox.text.PDFTextStripper;
-
-import org.junit.After;
-import org.junit.Assert;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Tests for public key encryption. These tests are not perfect - to be sure, encrypt a file by
@@ -50,7 +51,6 @@ import org.junit.runners.Parameterized;
  *
  * @author Ben Litchfield
  */
-@RunWith(Parameterized.class)
 public class TestPublicKeyEncryption
 {
     private final File testResultsDir = new File("target/test-output/crypto");
@@ -75,7 +75,6 @@ public class TestPublicKeyEncryption
     private String text;
     private String producer;
 
-    @Parameterized.Parameter
     public int keyLength;
 
     /**
@@ -83,29 +82,24 @@ public class TestPublicKeyEncryption
      *
      * @return
      */
-    @Parameterized.Parameters
     public static Collection<Integer> keyLengths()
     {
         return Arrays.asList(40, 128, 256);
     }
 
-    public TestPublicKeyEncryption()
-    {
-        testResultsDir.mkdirs();
-    }
-
     /**
      * {@inheritDoc}
      */
-    @Before
-    public void setUp() throws Exception 
+    @BeforeEach
+    void setUp() throws Exception 
     {
         if (Cipher.getMaxAllowedKeyLength("AES") != Integer.MAX_VALUE)
         {
             // we need strong encryption for these tests
             fail("JCE unlimited strength jurisdiction policy files are not installed");
         }
-        
+        testResultsDir.mkdirs();
+
         permission1 = new AccessPermission();
         permission1.setCanAssembleDocument(false);
         permission1.setCanExtractContent(false);
@@ -144,7 +138,7 @@ public class TestPublicKeyEncryption
     /**
      * {@inheritDoc}
      */
-    @After
+    @AfterEach
     public void tearDown() throws Exception 
     {
         document.close();
@@ -156,8 +150,9 @@ public class TestPublicKeyEncryption
      *
      * @throws Exception If there is an unexpected error during the test.
      */
-    @Test
-    public void testProtectionError() throws Exception
+    @ParameterizedTest
+	@MethodSource("keyLengths")
+    public void testProtectionError(int keyLength) throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -169,14 +164,13 @@ public class TestPublicKeyEncryption
         {
             File file = save("testProtectionError");
             encryptedDoc = reload(file, password2, getKeyStore(keyStore2));
-            Assert.assertTrue(encryptedDoc.isEncrypted());
+            assertTrue(encryptedDoc.isEncrypted());
             fail("No exception when using an incorrect decryption key");
         }
         catch (IOException ex)
         {
             String msg = ex.getMessage();
-            Assert.assertTrue("not the expected exception: " + msg, 
-                    msg.contains("serial-#: rid 2 vs. cert 3"));
+            assertTrue(msg.contains("serial-#: rid 2 vs. cert 3"), "not the expected exception: " + msg);
         }
         finally 
         {
@@ -194,8 +188,9 @@ public class TestPublicKeyEncryption
      *
      * @throws Exception If there is an unexpected error during the test.
      */
-    @Test
-    public void testProtection() throws Exception
+    @ParameterizedTest
+    @MethodSource("keyLengths")
+    public void testProtection(int keyLength) throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -205,17 +200,17 @@ public class TestPublicKeyEncryption
         File file = save("testProtection");
         try (PDDocument encryptedDoc = reload(file, password1, getKeyStore(keyStore1)))
         {
-            Assert.assertTrue(encryptedDoc.isEncrypted());
+            assertTrue(encryptedDoc.isEncrypted());
 
             AccessPermission permission = encryptedDoc.getCurrentAccessPermission();
-            Assert.assertFalse(permission.canAssembleDocument());
-            Assert.assertFalse(permission.canExtractContent());
-            Assert.assertTrue(permission.canExtractForAccessibility());
-            Assert.assertFalse(permission.canFillInForm());
-            Assert.assertFalse(permission.canModify());
-            Assert.assertFalse(permission.canModifyAnnotations());
-            Assert.assertFalse(permission.canPrint());
-            Assert.assertFalse(permission.canPrintDegraded());
+            assertFalse(permission.canAssembleDocument());
+            assertFalse(permission.canExtractContent());
+            assertTrue(permission.canExtractForAccessibility());
+            assertFalse(permission.canFillInForm());
+            assertFalse(permission.canModify());
+            assertFalse(permission.canModifyAnnotations());
+            assertFalse(permission.canPrint());
+            assertFalse(permission.canPrintDegraded());
         }
     }
 
@@ -225,8 +220,9 @@ public class TestPublicKeyEncryption
      *
      * @throws Exception If there is an error during the test.
      */
-    @Test
-    public void testMultipleRecipients() throws Exception
+    @ParameterizedTest
+    @MethodSource("keyLengths")
+    public void testMultipleRecipients(int keyLength) throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -239,28 +235,28 @@ public class TestPublicKeyEncryption
         try (PDDocument encryptedDoc1 = reload(file, password1, getKeyStore(keyStore1)))
         {
             AccessPermission permission = encryptedDoc1.getCurrentAccessPermission();
-            Assert.assertFalse(permission.canAssembleDocument());
-            Assert.assertFalse(permission.canExtractContent());
-            Assert.assertTrue(permission.canExtractForAccessibility());
-            Assert.assertFalse(permission.canFillInForm());
-            Assert.assertFalse(permission.canModify());
-            Assert.assertFalse(permission.canModifyAnnotations());
-            Assert.assertFalse(permission.canPrint());
-            Assert.assertFalse(permission.canPrintDegraded());
+            assertFalse(permission.canAssembleDocument());
+            assertFalse(permission.canExtractContent());
+            assertTrue(permission.canExtractForAccessibility());
+            assertFalse(permission.canFillInForm());
+            assertFalse(permission.canModify());
+            assertFalse(permission.canModifyAnnotations());
+            assertFalse(permission.canPrint());
+            assertFalse(permission.canPrintDegraded());
         }
 
         // open second time
         try (PDDocument encryptedDoc2 = reload(file, password2, getKeyStore(keyStore2)))
         {
             AccessPermission permission = encryptedDoc2.getCurrentAccessPermission();
-            Assert.assertFalse(permission.canAssembleDocument());
-            Assert.assertFalse(permission.canExtractContent());
-            Assert.assertTrue(permission.canExtractForAccessibility());
-            Assert.assertFalse(permission.canFillInForm());
-            Assert.assertFalse(permission.canModify());
-            Assert.assertFalse(permission.canModifyAnnotations());
-            Assert.assertTrue(permission.canPrint());
-            Assert.assertFalse(permission.canPrintDegraded());
+            assertFalse(permission.canAssembleDocument());
+            assertFalse(permission.canExtractContent());
+            assertTrue(permission.canExtractForAccessibility());
+            assertFalse(permission.canFillInForm());
+            assertFalse(permission.canModify());
+            assertFalse(permission.canModifyAnnotations());
+            assertTrue(permission.canPrint());
+            assertFalse(permission.canPrintDegraded());
         }
     }
 
@@ -278,12 +274,10 @@ public class TestPublicKeyEncryption
     {
         PDDocument doc2 = Loader.loadPDF(file, decryptionPassword,
                 keyStore, null, MemoryUsageSetting.setupMainMemoryOnly());
-        Assert.assertEquals("Extracted text is different",
-                                text,
-                                new PDFTextStripper().getText(doc2));
-        Assert.assertEquals("Producer is different",
-                                producer,
-                                doc2.getDocumentInformation().getProducer());
+        assertEquals(text, new PDFTextStripper().getText(doc2),
+                "Extracted text is different");
+        assertEquals(producer, doc2.getDocumentInformation().getProducer(),
+                "Producer is different");
         return doc2;
     }
 
@@ -296,7 +290,7 @@ public class TestPublicKeyEncryption
      * @return recipient specification
      * @throws Exception if the certificate could not be read
      */
-    private PublicKeyRecipient getRecipient(String certificate, AccessPermission permission) throws Exception
+    private static PublicKeyRecipient getRecipient(String certificate, AccessPermission permission) throws Exception
     {
         try (InputStream input = TestPublicKeyEncryption.class.getResourceAsStream(certificate))
         {
@@ -326,8 +320,9 @@ public class TestPublicKeyEncryption
      *
      * @throws IOException
      */
-    @Test
-    public void testReadPubkeyEncryptedAES128() throws IOException
+    @ParameterizedTest
+    @MethodSource("keyLengths")
+    public void testReadPubkeyEncryptedAES128(int keyLength) throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength128.pdf");
              PDDocument doc = Loader.loadPDF(is,
@@ -335,11 +330,11 @@ public class TestPublicKeyEncryption
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
         {
-            Assert.assertEquals("PublicKeySecurityHandler",
+            assertEquals("PublicKeySecurityHandler",
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
-            Assert.assertEquals(128, doc.getEncryption().getSecurityHandler().getKeyLength());
+            assertEquals(128, doc.getEncryption().getSecurityHandler().getKeyLength());
             PDFTextStripper stripper = new PDFTextStripper();
-            Assert.assertEquals("Key length: 128", stripper.getText(doc).trim());
+            assertEquals("Key length: 128", stripper.getText(doc).trim());
         }
     }
 
@@ -349,8 +344,9 @@ public class TestPublicKeyEncryption
      *
      * @throws IOException
      */
-    @Test
-    public void testReadPubkeyEncryptedAES256() throws IOException
+    @ParameterizedTest
+    @MethodSource("keyLengths")
+    public void testReadPubkeyEncryptedAES256(int keyLength) throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength256.pdf");
              PDDocument doc = Loader.loadPDF(is,
@@ -358,11 +354,11 @@ public class TestPublicKeyEncryption
                 TestPublicKeyEncryption.class.getResourceAsStream("PDFBOX-4421-keystore.pfx"),
                 "testnutzer"))
         {
-            Assert.assertEquals("PublicKeySecurityHandler",
+            assertEquals("PublicKeySecurityHandler",
                     doc.getEncryption().getSecurityHandler().getClass().getSimpleName());
-            Assert.assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
+            assertEquals(256, doc.getEncryption().getSecurityHandler().getKeyLength());
             PDFTextStripper stripper = new PDFTextStripper();
-            Assert.assertEquals("Key length: 256", stripper.getText(doc).trim());
+            assertEquals("Key length: 256", stripper.getText(doc).trim());
         }
     }
 }
