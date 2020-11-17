@@ -272,7 +272,7 @@ class PDAcroFormFromAnnotsTest
                     {
                         PDFont font = acroFormResources.getFont(fontName);
                         String pdfBoxFontName = font.getFontDescriptor().getFontName();
-                        assertEquals("font resource added by Acrobat shall match font resource added by PDFBox", fontNames.get(fontName.getName()), pdfBoxFontName);
+                        assertEquals(fontNames.get(fontName.getName()), pdfBoxFontName, "font resource added by Acrobat shall match font resource added by PDFBox");
                     }
                     catch (IOException ioe)
                     {
