@@ -34,12 +34,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.io.IOUtils;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
-public class TestInvalidFiles extends AbstractInvalidFileTester
+public class TestInvalidFiles
 {
 
     private static final String RESULTS_FILE = "results.file";
@@ -50,20 +51,35 @@ public class TestInvalidFiles extends AbstractInvalidFileTester
 
     protected static Log staticLogger = LogFactory.getLog("Test");
 
-    public TestInvalidFiles(File path, String error)
+    private static InvalidFileTester tester;
+
+    @BeforeAll
+    static void setup() throws Exception
     {
-        super(path, error);
+        tester = new InvalidFileTester(RESULTS_FILE);
     }
 
-    protected static Collection<Object[]> stopIfExpected() throws Exception
+    @AfterAll
+    static void closeDown() throws Exception
     {
-        List<Object[]> ret = new ArrayList<>();
-        ret.add(new Object[] { null, null });
+        tester.after();
+    }
+
+    @ParameterizedTest
+	@MethodSource("initializeParameters")
+    public void validate(File path, String expectedError) throws Exception
+    {
+        tester.validate(path, expectedError);
+    }
+
+    protected static Collection<Arguments> stopIfExpected() throws Exception
+    {
+        List<Arguments> ret = new ArrayList<>();
+        ret.add(Arguments.of(null, null));
         return ret;
     }
 
-    @Parameters
-    public static Collection<Object[]> initializeParameters() throws Exception
+    public static Collection<Arguments> initializeParameters() throws Exception
     {
         // find isartor files
         String isartor = System.getProperty(ISARTOR_FILES);
@@ -94,7 +110,7 @@ public class TestInvalidFiles extends AbstractInvalidFileTester
             IOUtils.closeQuietly(expected);
         }
         // prepare config
-        List<Object[]> data = new ArrayList<>();
+        List<Arguments> data = new ArrayList<>();
         Collection<?> files = FileUtils.listFiles(root, new String[] { "pdf" }, true);
 
         for (Object object : files)
@@ -103,25 +119,16 @@ public class TestInvalidFiles extends AbstractInvalidFileTester
             String fn = file.getName();
             if (props.getProperty(fn) != null)
             {
-                String error = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
-                Object[] tmp = new Object[] { file, error };
-                data.add(tmp);
+                String expectedError = new StringTokenizer(props.getProperty(fn), "//").nextToken().trim();
+                data.add(Arguments.of(file, expectedError));
             }
             else
             {
                 // no expected error
-                Object[] tmp = new Object[] { file, null };
-                data.add(tmp);
+                data.add(Arguments.of(file, null));
             }
 
         }
         return data;
     }
-
-    @Override
-    protected String getResultFileKey()
-    {
-        return RESULTS_FILE;
-    }
-
 }
