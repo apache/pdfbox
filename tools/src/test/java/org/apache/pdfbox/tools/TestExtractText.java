@@ -16,15 +16,18 @@
  */
 package org.apache.pdfbox.tools;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+
 
 /**
  * Test suite for ExtractText. 
  */
-public class TestExtractText extends TestCase
+public class TestExtractText
 {
     
     /**
@@ -32,6 +35,7 @@ public class TestExtractText extends TestCase
      * 
      * @throws Exception if something went wrong
      */
+    @Test
     public void testEmbeddedPDFs() throws Exception 
     {
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();

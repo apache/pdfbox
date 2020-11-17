@@ -16,35 +16,24 @@
  */
 package org.apache.pdfbox.tools;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
 import java.io.StringReader;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test suite for TextToPDF.
  */
-public class TestTextToPdf extends TestCase
+public class TestTextToPdf
 {
-    /**
-     * Test class constructor.
-     *
-     * @param name The name of the test class.
-     *
-     * @throws IOException If there is an error creating the test.
-     */
-    public TestTextToPdf( String name ) throws IOException
-    {
-        super( name );
-    }
-
     /**
      * This test ensures that a PDF created from an empty String is still readable by Adobe Reader
      */
+    @Test
     public void testCreateEmptyPdf() throws Exception
     {
         TextToPDF pdfCreator = new TextToPDF();
@@ -57,29 +46,8 @@ public class TestTextToPdf extends TestCase
         // In order for the PDF document to be openable by Adobe Reader, it needs
         // to have some pages in it. So we'll check that.
         int pageCount = pdfDoc.getNumberOfPages();
-        assertNotNull("All Pages was unexpectedly zero.", pageCount);
-        assertEquals("Wrong number of pages.", 1, pageCount);
+        assertNotNull(pageCount, "All Pages was unexpectedly zero.");
+        assertEquals(1, pageCount, "Wrong number of pages.");
         pdfDoc.close();
-    }
-
-    /**
-     * Set the tests in the suite for this test class.
-     *
-     * @return the Suite.
-     */
-    public static Test suite()
-    {
-        return new TestSuite( TestTextToPdf.class );
-    }
-
-    /**
-     * Command line execution.
-     *
-     * @param args Command line arguments.
-     */
-    public static void main( String[] args )
-    {
-        String[] arg = {TestTextToPdf.class.getName() };
-        junit.textui.TestRunner.main( arg );
     }
 }
