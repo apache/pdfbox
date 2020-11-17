@@ -26,11 +26,11 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-public class GlyphArraySplitterRegexImplTest
+class GlyphArraySplitterRegexImplTest
 {
 
     @Test
-    public void testSplit_1()
+    void testSplit_1()
     {
         // given
         Set<List<Integer>> matchers = new HashSet<>(Arrays.asList(Arrays.asList(84, 93),
@@ -47,7 +47,7 @@ public class GlyphArraySplitterRegexImplTest
     }
 
     @Test
-    public void testSplit_2()
+    void testSplit_2()
     {
 
         // given
@@ -65,7 +65,7 @@ public class GlyphArraySplitterRegexImplTest
     }
 
     @Test
-    public void testSplit_3()
+    void testSplit_3()
     {
 
         // given
@@ -83,7 +83,7 @@ public class GlyphArraySplitterRegexImplTest
     }
 
     @Test
-    public void testSplit_4()
+    void testSplit_4()
     {
 
         // given

@@ -28,11 +28,11 @@ import org.apache.fontbox.cff.CharStringCommand.Type1KeyWord;
 import org.apache.fontbox.cff.CharStringCommand.Type2KeyWord;
 import org.junit.jupiter.api.Test;
 
-public class CharStringCommandTest
+class CharStringCommandTest
 {
 
     @Test
-    public void testKey()
+    void testKey()
     {
         Key key1 = new Key(1);
         int[] value1 = key1.getValue();
@@ -65,7 +65,7 @@ public class CharStringCommandTest
     }
 
     @Test
-    public void testCharStringCommand()
+    void testCharStringCommand()
     {
         CharStringCommand charStringCommand1 = new CharStringCommand(1);
         assertEquals(1, charStringCommand1.getKey().getValue()[0]);
@@ -96,7 +96,7 @@ public class CharStringCommandTest
     }
 
     @Test
-    public void testUnknownCharStringCommand()
+    void testUnknownCharStringCommand()
     {
         CharStringCommand charStringCommandUnknown = new CharStringCommand(99);
         assertEquals(99, charStringCommandUnknown.getKey().getValue()[0]);

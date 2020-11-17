@@ -22,12 +22,14 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.junit.jupiter.api.Test;
+
 /**
  * This will test the TTFParser implementation.
  *
  * @author Tim Allison
  */
-public class TestTTFParser
+class TestTTFParser
 {
 
     /**
@@ -35,7 +37,8 @@ public class TestTTFParser
      *
      * @throws IOException If something went wrong
      */
-    public void testUTCDate() throws IOException
+    @Test
+    void testUTCDate() throws IOException
     {
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TimeZone utc = TimeZone.getTimeZone("UTC");

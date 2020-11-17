@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class LigatureTest
+class LigatureTest
 {
     @Test
-    public void testLigature()
+    void testLigature()
     {
         Ligature ligature = new Ligature("successor", "ligature");
         assertEquals("successor", ligature.getSuccessor());

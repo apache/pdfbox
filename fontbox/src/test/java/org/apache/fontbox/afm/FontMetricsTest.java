@@ -26,10 +26,10 @@ import java.util.List;
 import org.apache.fontbox.util.BoundingBox;
 import org.junit.jupiter.api.Test;
 
-public class FontMetricsTest
+class FontMetricsTest
 {
     @Test
-    public void testFontMetricsNames()
+    void testFontMetricsNames()
     {
         FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setFontName("fontName");
@@ -59,7 +59,7 @@ public class FontMetricsTest
     }
 
     @Test
-    public void testFontMetricsSimpleValues()
+    void testFontMetricsSimpleValues()
     {
         FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setAFMVersion(4.3f);
@@ -104,7 +104,7 @@ public class FontMetricsTest
     }
 
     @Test
-    public void testFontMetricsComplexValues()
+    void testFontMetricsComplexValues()
     {
         FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setFontBBox(new BoundingBox(10, 20, 30, 40));
@@ -121,7 +121,7 @@ public class FontMetricsTest
     }
 
     @Test
-    public void testMetricSets()
+    void testMetricSets()
     {
         FontMetrics fontMetrics = new FontMetrics();
         fontMetrics.setMetricSets(1);
@@ -150,7 +150,7 @@ public class FontMetricsTest
     }
 
     @Test
-    public void testCharMetrics()
+    void testCharMetrics()
     {
         FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getCharMetrics().size());
@@ -170,7 +170,7 @@ public class FontMetricsTest
     }
 
     @Test
-    public void testComposites()
+    void testComposites()
     {
         FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getComposites().size());
@@ -190,7 +190,7 @@ public class FontMetricsTest
     }
 
     @Test
-    public void testKernData()
+    void testKernData()
     {
         FontMetrics fontMetrics = new FontMetrics();
         // KernPairs
@@ -254,7 +254,7 @@ public class FontMetricsTest
     }
 
     @Test
-    public void testCharMetricDimensions()
+    void testCharMetricDimensions()
     {
         FontMetrics fontMetrics = new FontMetrics();
         assertEquals(0, fontMetrics.getAverageCharacterWidth(), 0f);

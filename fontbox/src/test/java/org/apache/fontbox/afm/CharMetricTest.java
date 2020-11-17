@@ -25,10 +25,10 @@ import java.util.List;
 import org.apache.fontbox.util.BoundingBox;
 import org.junit.jupiter.api.Test;
 
-public class CharMetricTest
+class CharMetricTest
 {
     @Test
-    public void testCharMetricSimpleValues()
+    void testCharMetricSimpleValues()
     {
         CharMetric charMetric = new CharMetric();
         charMetric.setCharacterCode(0);
@@ -51,7 +51,7 @@ public class CharMetricTest
     }
 
     @Test
-    public void testCharMetricArrayValues()
+    void testCharMetricArrayValues()
     {
         CharMetric charMetric = new CharMetric();
         charMetric.setW(new float[] { 10f, 20f });
@@ -69,7 +69,7 @@ public class CharMetricTest
     }
 
     @Test
-    public void testCharMetricComplexValues()
+    void testCharMetricComplexValues()
     {
         CharMetric charMetric = new CharMetric();
         charMetric.setBoundingBox(new BoundingBox(10, 20, 30, 40));

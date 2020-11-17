@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class KernPairTest
+class KernPairTest
 {
     @Test
-    public void testKernPair()
+    void testKernPair()
     {
         KernPair kernPair = new KernPair("firstKernCharacter", "secondKernCharacter", 10f, 20f);
         assertEquals("firstKernCharacter", kernPair.getFirstKernCharacter());

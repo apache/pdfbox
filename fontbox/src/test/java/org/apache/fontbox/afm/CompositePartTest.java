@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class CompositePartTest
+class CompositePartTest
 {
     @Test
-    public void testCompositePart()
+    void testCompositePart()
     {
         CompositePart compositePart = new CompositePart("name", 10, 20);
         assertEquals("name", compositePart.getName());

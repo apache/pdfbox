@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * @author Cameron Rollhieser
  * @author Tilman Hausherr
  */
-public class BufferedRandomAccessFileTest
+class BufferedRandomAccessFileTest
 {
 
     /**
@@ -37,7 +37,7 @@ public class BufferedRandomAccessFileTest
      * @throws IOException
      */
     @Test
-    public void ensureReadFinishes() throws IOException
+    void ensureReadFinishes() throws IOException
     {
         final File file = File.createTempFile("apache-pdfbox", ".dat");
 
@@ -68,7 +68,7 @@ public class BufferedRandomAccessFileTest
      * @throws IOException
      */
     @Test
-    public void testReadBuffer() throws IOException
+    void testReadBuffer() throws IOException
     {
         final File file = File.createTempFile("apache-pdfbox", ".dat");
 

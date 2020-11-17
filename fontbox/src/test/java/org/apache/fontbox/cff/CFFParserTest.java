@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Petr Slaby
  */
-public class CFFParserTest
+class CFFParserTest
 {
     /**
      * PDFBOX-4038: Test whether BlueValues and other delta encoded lists are read correctly. The
@@ -37,7 +37,7 @@ public class CFFParserTest
      * @throws IOException 
      */
     @Test
-    public void testDeltaLists() throws IOException
+    void testDeltaLists() throws IOException
     {
         List<CFFFont> fonts = readFont("target/pdfs/SourceSansProBold.otf");
         CFFType1Font font = (CFFType1Font) fonts.get(0);

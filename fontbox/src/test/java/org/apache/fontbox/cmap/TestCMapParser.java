@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  * This will test the CMapParser implementation.
  *
  */
-public class TestCMapParser
+class TestCMapParser
 {
 
     /**
@@ -39,7 +39,7 @@ public class TestCMapParser
      * @throws IOException If something went wrong
      */
     @Test
-    public void testLookup() throws IOException
+    void testLookup() throws IOException
     {
         final String resourceDir = "src/test/resources/cmap";
         File inDir = new File(resourceDir);
@@ -88,7 +88,7 @@ public class TestCMapParser
     }
 
     @Test
-    public void testIdentity() throws IOException
+    void testIdentity() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
         File inDir = new File(resourceDir);
@@ -103,7 +103,7 @@ public class TestCMapParser
     }
 
     @Test
-    public void testUniJIS_UTF16_H() throws IOException
+    void testUniJIS_UTF16_H() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
         File inDir = new File(resourceDir);
@@ -131,7 +131,7 @@ public class TestCMapParser
     }
 
     @Test
-    public void testUniJIS_UCS2_H() throws IOException
+    void testUniJIS_UCS2_H() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
         File inDir = new File(resourceDir);
@@ -143,7 +143,7 @@ public class TestCMapParser
     }
 
     @Test
-    public void testAdobe_GB1_UCS2() throws IOException
+    void testAdobe_GB1_UCS2() throws IOException
     {
         final String resourceDir = "src/main/resources/org/apache/fontbox/cmap";
         File inDir = new File(resourceDir);
@@ -160,7 +160,7 @@ public class TestCMapParser
      * @throws IOException If something went wrong
      */
     @Test
-    public void testParserWithPoorWhitespace() throws IOException 
+    void testParserWithPoorWhitespace() throws IOException
     {
         CMap cMap = new CMapParser().parse(new File("src/test/resources/cmap", "CMapNoWhitespace"));
 
@@ -168,7 +168,7 @@ public class TestCMapParser
     }
 
     @Test
-    public void testParserWithMalformedbfrange1() throws IOException
+    void testParserWithMalformedbfrange1() throws IOException
     {
         CMap cMap = new CMapParser()
                 .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange1"));
@@ -184,7 +184,7 @@ public class TestCMapParser
     }
 
     @Test
-    public void testParserWithMalformedbfrange2() throws IOException
+    void testParserWithMalformedbfrange2() throws IOException
     {
         CMap cMap = new CMapParser()
                 .parse(new File("src/test/resources/cmap", "CMapMalformedbfrange2"));

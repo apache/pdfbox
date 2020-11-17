@@ -26,11 +26,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class CompoundCharacterTokenizerTest
+class CompoundCharacterTokenizerTest
 {
 
     @Test
-    public void testTokenize_happyPath_1()
+    void testTokenize_happyPath_1()
     {
 
         // given
@@ -48,7 +48,7 @@ public class CompoundCharacterTokenizerTest
     }
 
     @Test
-    public void testTokenize_happyPath_2()
+    void testTokenize_happyPath_2()
     {
 
         // given
@@ -66,7 +66,7 @@ public class CompoundCharacterTokenizerTest
     }
 
     @Test
-    public void testTokenize_happyPath_3()
+    void testTokenize_happyPath_3()
     {
 
         // given
@@ -83,7 +83,7 @@ public class CompoundCharacterTokenizerTest
     }
 
     @Test
-    public void testTokenize_happyPath_4()
+    void testTokenize_happyPath_4()
     {
 
         // given
@@ -100,7 +100,7 @@ public class CompoundCharacterTokenizerTest
     }
 
     @Test
-    public void testTokenize_happyPath_5()
+    void testTokenize_happyPath_5()
     {
 
         // given
@@ -117,7 +117,7 @@ public class CompoundCharacterTokenizerTest
     }
 
     @Test
-    public void testTokenize_regexAtStart()
+    void testTokenize_regexAtStart()
     {
         // given
         CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
@@ -133,7 +133,7 @@ public class CompoundCharacterTokenizerTest
     }
 
     @Test
-    public void testTokenize_regexAtEnd()
+    void testTokenize_regexAtEnd()
     {
         // given
         CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(
@@ -151,7 +151,7 @@ public class CompoundCharacterTokenizerTest
     }
 
     @Test
-    public void testTokenize_Bangla()
+    void testTokenize_Bangla()
     {
         // given
         CompoundCharacterTokenizer tokenizer = new CompoundCharacterTokenizer(new HashSet<>(

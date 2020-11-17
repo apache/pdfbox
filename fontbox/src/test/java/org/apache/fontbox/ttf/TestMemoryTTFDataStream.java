@@ -23,10 +23,10 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-public class TestMemoryTTFDataStream
+class TestMemoryTTFDataStream
 {
     @Test
-    public void testEOF() throws IOException
+    void testEOF() throws IOException
     {
         byte[] byteArray = new byte[10];
         ByteArrayInputStream inputStream = new ByteArrayInputStream(byteArray);

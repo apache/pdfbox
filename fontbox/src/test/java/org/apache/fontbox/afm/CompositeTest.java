@@ -24,10 +24,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class CompositeTest
+class CompositeTest
 {
     @Test
-    public void testComposite()
+    void testComposite()
     {
         Composite composite = new Composite("name");
         assertEquals("name", composite.getName());

@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Villu Ruusmann
  */
-public class Type1FontUtilTest
+class Type1FontUtilTest
 {
     static final long DEFAULTSEED = 12345;
     static final long LOOPS = 1000;
@@ -34,7 +34,7 @@ public class Type1FontUtilTest
      * Tests the hex encoding/decoding.
      */
     @Test
-    public void testHexEncoding()
+    void testHexEncoding()
     {
         long seed = DEFAULTSEED;
         tryHexEncoding(seed);
@@ -58,7 +58,7 @@ public class Type1FontUtilTest
      * Tests the eexec encryption/decryption.
      */
     @Test
-    public void testEexecEncryption()
+    void testEexecEncryption()
     {
         long seed = DEFAULTSEED;
         tryEexecEncryption(seed);
@@ -82,7 +82,7 @@ public class Type1FontUtilTest
      * Tests the charstring encryption/decryption.
      */
     @Test
-    public void testCharstringEncryption()
+    void testCharstringEncryption()
     {
         long seed = DEFAULTSEED;
         tryCharstringEncryption(seed);

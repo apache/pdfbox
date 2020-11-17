@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class TrackKernTest
+class TrackKernTest
 {
     @Test
-    public void testTrackKern()
+    void testTrackKern()
     {
         TrackKern trackKern = new TrackKern(0, 1.0f, 1.0f, 10.0f, 10.0f);
         assertEquals(0, trackKern.getDegree());

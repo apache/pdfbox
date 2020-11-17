@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class TTFSubsetterTest
+class TTFSubsetterTest
 {
 
     /**
@@ -45,7 +45,7 @@ public class TTFSubsetterTest
      * @throws java.io.IOException
      */
     @Test
-    public void testEmptySubset() throws IOException
+    void testEmptySubset() throws IOException
     {
         TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TTFSubsetter ttfSubsetter = new TTFSubsetter(x);
@@ -66,7 +66,7 @@ public class TTFSubsetterTest
      * @throws java.io.IOException
      */
     @Test
-    public void testEmptySubset2() throws IOException
+    void testEmptySubset2() throws IOException
     {
         TrueTypeFont x = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
         // List copied from TrueTypeEmbedder.java
@@ -99,7 +99,7 @@ public class TTFSubsetterTest
      * @throws java.io.IOException
      */
     @Test
-    public void testNonEmptySubset() throws IOException
+    void testNonEmptySubset() throws IOException
     {
         TrueTypeFont full = new TTFParser().parse("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
@@ -128,7 +128,7 @@ public class TTFSubsetterTest
      * @throws java.io.IOException
      */
     @Test
-    public void testPDFBox3319() throws IOException
+    void testPDFBox3319() throws IOException
     {
         System.out.println("Searching for SimHei font...");
         FontFileFinder fontFileFinder = new FontFileFinder();
@@ -196,7 +196,7 @@ public class TTFSubsetterTest
      * @throws java.io.IOException
      */
     @Test
-    public void testPDFBox3379() throws IOException
+    void testPDFBox3379() throws IOException
     {
         TrueTypeFont full = new TTFParser().parse("target/pdfs/DejaVuSansMono.ttf");
         TTFSubsetter ttfSubsetter = new TTFSubsetter(full);
@@ -230,7 +230,7 @@ public class TTFSubsetterTest
      * @throws java.io.IOException
      */
     @Test
-    public void testPDFBox3757() throws IOException
+    void testPDFBox3757() throws IOException
     {
         final File testFile = new File("src/test/resources/ttf/LiberationSans-Regular.ttf");
         TrueTypeFont ttf = new TTFParser().parse(testFile);

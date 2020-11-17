@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * This will test the CMap implementation.
  *
  */
-public class TestCMap
+class TestCMap
 {
 
     /**
@@ -37,7 +37,7 @@ public class TestCMap
      * @throws IOException If something went wrong during adding a mapping
      */
     @Test
-    public void testLookup() throws IOException
+    void testLookup() throws IOException
     {
         byte[] bs = new byte[] { (byte) 200 };
         CMap cMap = new CMap();
@@ -52,7 +52,7 @@ public class TestCMap
      * @throws IOException
      */
     @Test
-    public void testPDFBox3997() throws IOException
+    void testPDFBox3997() throws IOException
     {
         try (TrueTypeFont ttf = new TTFParser().parse("target/pdfs/NotoEmoji-Regular.ttf"))
         {

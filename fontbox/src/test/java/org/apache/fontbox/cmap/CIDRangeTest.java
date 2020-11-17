@@ -19,11 +19,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class CIDRangeTest
+class CIDRangeTest
 {
 
     @Test
-    public void testCIDRangeOneByte()
+    void testCIDRangeOneByte()
     {
         CIDRange cidRange = new CIDRange(0, 20, 65, 1);
         assertEquals(1, cidRange.getCodeLength());
@@ -49,7 +49,7 @@ public class CIDRangeTest
     }
 
     @Test
-    public void testCIDRangeTwoByte()
+    void testCIDRangeTwoByte()
     {
         CIDRange cidRange = new CIDRange(256, 280, 65, 2);
         assertEquals(2, cidRange.getCodeLength());

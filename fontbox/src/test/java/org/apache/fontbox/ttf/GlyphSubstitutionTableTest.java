@@ -37,7 +37,7 @@ import org.apache.fontbox.ttf.model.MapBackedScriptFeature;
 import org.apache.fontbox.ttf.model.ScriptFeature;
 import org.junit.jupiter.api.Test;
 
-public class GlyphSubstitutionTableTest
+class GlyphSubstitutionTableTest
 {
 
     static final int DATA_POSITION_FOR_GSUB_TABLE = 120544;
@@ -46,7 +46,7 @@ public class GlyphSubstitutionTableTest
             "blwf", "blws", "half", "haln", "init", "nukt", "pres", "pstf", "rphf", "vatu");
 
     @Test
-    public void testGetGsubData() throws IOException
+    void testGetGsubData() throws IOException
     {
         // given
         MemoryTTFDataStream memoryTTFDataStream = new MemoryTTFDataStream(
@@ -121,12 +121,9 @@ public class GlyphSubstitutionTableTest
                 }
 
                 Integer newGlyphId = Integer.valueOf(lineSplittedByKeyValue[1]);
-
                 gsubData.put(oldGlyphIds, newGlyphId);
-
             }
         }
-
         return gsubData;
     }
 

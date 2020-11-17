@@ -38,10 +38,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class AFMParserTest
+class AFMParserTest
 {
     @Test
-    public void testStartFontMetrics() throws IOException
+    void testStartFontMetrics() throws IOException
     {
         try
         {
@@ -57,7 +57,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testEndFontMetrics() throws IOException
+    void testEndFontMetrics() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/NoEndFontMetrics.afm"));
@@ -74,7 +74,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testMalformedFloat() throws IOException
+    void testMalformedFloat() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/MalformedFloat.afm"));
@@ -91,7 +91,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testMalformedInteger() throws IOException
+    void testMalformedInteger() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/MalformedInteger.afm"));
@@ -108,7 +108,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testHelveticaFontMetrics() throws IOException
+    void testHelveticaFontMetrics() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
@@ -116,7 +116,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testHelveticaCharMetrics() throws IOException
+    void testHelveticaCharMetrics() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
@@ -127,7 +127,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testHelveticaKernPairs() throws IOException
+    void testHelveticaKernPairs() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
@@ -149,7 +149,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testHelveticaFontMetricsReducedDataset() throws IOException
+    void testHelveticaFontMetricsReducedDataset() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
@@ -157,7 +157,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testHelveticaCharMetricsReducedDataset() throws IOException
+    void testHelveticaCharMetricsReducedDataset() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));
@@ -168,7 +168,7 @@ public class AFMParserTest
     }
 
     @Test
-    public void testHelveticaKernPairsReducedDataset() throws IOException
+    void testHelveticaKernPairsReducedDataset() throws IOException
     {
         AFMParser parser = new AFMParser(
                 new FileInputStream("src/test/resources/afm/Helvetica.afm"));

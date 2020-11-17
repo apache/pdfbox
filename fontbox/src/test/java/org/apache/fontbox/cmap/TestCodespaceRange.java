@@ -21,17 +21,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.Test;
+
 /**
  * This will test the CodeSpaceRange implementation.
  *
  */
-public class TestCodespaceRange
+class TestCodespaceRange
 {
 
     /**
      * Check whether the code length calculation works.
      */
-    public void testCodeLength()
+    @Test
+    void testCodeLength()
     {
         byte[] startBytes1 = new byte[] { 0x00 };
         byte[] endBytes1 = new byte[] { 0x20 };
@@ -47,7 +50,8 @@ public class TestCodespaceRange
     /**
      * Check whether the constructor checks the length of the start and end bytes
      */
-    public void testConstructor()
+    @Test
+    void testConstructor()
     {
         // PDFBOX-4923 "1 begincodespacerange <00> <ffff> endcodespacerange" case is accepted
         byte[] startBytes1 = new byte[] { 0x00 };
@@ -68,7 +72,8 @@ public class TestCodespaceRange
         }
     }
 
-    public void testMatches()
+    @Test
+    void testMatches()
     {
         byte[] startBytes1 = new byte[] { 0x00 };
         byte[] endBytes1 = new byte[] { (byte) 0xA0 };

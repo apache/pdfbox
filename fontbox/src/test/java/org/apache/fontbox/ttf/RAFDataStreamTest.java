@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class RAFDataStreamTest
+class RAFDataStreamTest
 {
     /**
      * Test of PDFBOX-4242: make sure that the Closeable.close() contract is fulfilled.
@@ -31,7 +31,7 @@ public class RAFDataStreamTest
      * @throws IOException 
      */
     @Test
-    public void testDoubleClose() throws IOException
+    void testDoubleClose() throws IOException
     {
         RAFDataStream raf = new RAFDataStream("src/test/resources/ttf/LiberationSans-Regular.ttf", "r");
         raf.close();
