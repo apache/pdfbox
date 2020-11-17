@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.pdfbox.preflight.parser.PreflightParser;
@@ -39,9 +38,12 @@ public class TestValidDirectory
     @MethodSource("initializeParameters")
     public void validate(File target) throws Exception
     {
-        System.out.println(target);
-        ValidationResult result = PreflightParser.validate(target);
-        assertTrue(result.isValid(), "Validation of " + target);
+        if (target != null)
+        {
+            System.out.println(target);
+            ValidationResult result = PreflightParser.validate(target);
+            assertTrue(result.isValid(), "Validation of " + target);
+        }
     }
 
     public static Collection<File> initializeParameters() throws Exception
@@ -68,7 +70,12 @@ public class TestValidDirectory
         // create list
         if (directory == null)
         {
-            return Collections.emptyList();
+            // add null to signal that test can be skipped
+            // needed for parameterized test as an empty list 
+            // will lead to a PreconditionViolation
+            List<File> data = new ArrayList<>(1);
+            data.add(null);
+            return data;
         }
         else
         {
