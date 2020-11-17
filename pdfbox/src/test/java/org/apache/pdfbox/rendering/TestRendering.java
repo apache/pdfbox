@@ -18,11 +18,10 @@
 package org.apache.pdfbox.rendering;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.ParallelParameterized;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,28 +37,20 @@ import java.util.stream.Stream;
  *
  * @author John Hewson
  */
-@RunWith(ParallelParameterized.class)
 public class TestRendering
 {
     private static final String INPUT_DIR = "src/test/resources/input/rendering";
 
-    @Parameters(name = "{0}")
-    public static Collection<Object[]> data()
+    public static Collection<Arguments> data()
     {
         File[] testFiles = new File(INPUT_DIR).listFiles(
                 (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
-        return Stream.of(testFiles).map(file -> new Object[] { file.getName() }).collect(Collectors.toList());
+        return Stream.of(testFiles).map(file -> Arguments.of(file.getName())).collect(Collectors.toList());
     }
 
-    private final String fileName;
-
-    public TestRendering(String fileName)
-    {
-        this.fileName = fileName;
-    }
-
-    @Test
-    public void render() throws IOException
+    @ParameterizedTest
+	@MethodSource("data")
+    public void render(String fileName) throws IOException
     {
         File file = new File(INPUT_DIR, fileName);
         PDDocument document = Loader.loadPDF(file);
