@@ -16,6 +16,12 @@
  */
 package org.apache.pdfbox.examples.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -37,19 +43,15 @@ import org.apache.pdfbox.pdmodel.interactive.form.PDCheckBox;
 import org.apache.pdfbox.pdmodel.interactive.form.PDRadioButton;
 import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.apache.pdfbox.rendering.PDFRenderer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test of some the form examples.
  *
  * @author Tilman Hausherr
  */
-public class TestCreateSimpleForms
+class TestCreateSimpleForms
 {
-    public TestCreateSimpleForms()
-    {
-    }
 
     /**
      * Test of CreateSimpleForm
@@ -57,7 +59,7 @@ public class TestCreateSimpleForms
      * @throws java.io.IOException
      */
     @Test
-    public void testCreateSimpleForm() throws IOException
+    void testCreateSimpleForm() throws IOException
     {
         CreateSimpleForm.main(null);
         try (PDDocument doc = Loader.loadPDF(new File("target/SimpleForm.pdf")))
@@ -65,24 +67,24 @@ public class TestCreateSimpleForms
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
-            Assert.assertEquals("Sample field content", textBox.getValue());
+            assertEquals("Sample field content", textBox.getValue());
             try
             {
                 textBox.setValue("Łódź");
-                Assert.fail("should have failed with IllegalArgumentException");
+                fail("should have failed with IllegalArgumentException");
             }
             catch (IllegalArgumentException ex)
             {
-                Assert.assertTrue(ex.getMessage().contains("U+0141 ('Lslash') is not available"));
+                assertTrue(ex.getMessage().contains("U+0141 ('Lslash') is not available"));
             }
             PDFont font = getFontFromWidgetResources(textBox, "Helv");
-            Assert.assertEquals("Helvetica", font.getName());
-            Assert.assertTrue(font.isStandard14());
+            assertEquals("Helvetica", font.getName());
+            assertTrue(font.isStandard14());
         }
     }
 
     @Test
-    public void testAddBorderToField() throws IOException
+    void testAddBorderToField() throws IOException
     {
         CreateSimpleForm.main(null);
 
@@ -94,10 +96,10 @@ public class TestCreateSimpleForms
             PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
             PDColor borderColour = appearanceCharacteristics.getBorderColour();
             PDColor backgroundColour = appearanceCharacteristics.getBackground();
-            Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour.getColorSpace());
-            Assert.assertEquals(PDDeviceRGB.INSTANCE, backgroundColour.getColorSpace());
-            Assert.assertArrayEquals(new float[]{0,1,0}, borderColour.getComponents(), 0);
-            Assert.assertArrayEquals(new float[]{1,1,0}, backgroundColour.getComponents(), 0);
+            assertEquals(PDDeviceRGB.INSTANCE, borderColour.getColorSpace());
+            assertEquals(PDDeviceRGB.INSTANCE, backgroundColour.getColorSpace());
+            assertArrayEquals(new float[] { 0, 1, 0 }, borderColour.getComponents(), 0);
+            assertArrayEquals(new float[] { 1, 1, 0 }, backgroundColour.getComponents(), 0);
         }
 
         AddBorderToField.main(null);
@@ -110,8 +112,8 @@ public class TestCreateSimpleForms
             PDAnnotationWidget widget = textBox.getWidgets().get(0);
             PDAppearanceCharacteristicsDictionary appearanceCharacteristics = widget.getAppearanceCharacteristics();
             PDColor borderColour = appearanceCharacteristics.getBorderColour();
-            Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour.getColorSpace());
-            Assert.assertArrayEquals(new float[]{1,0,0}, borderColour.getComponents(), 0);
+            assertEquals(PDDeviceRGB.INSTANCE, borderColour.getColorSpace());
+            assertArrayEquals(new float[] { 1, 0, 0 }, borderColour.getComponents(), 0);
         }
     }
 
@@ -121,7 +123,7 @@ public class TestCreateSimpleForms
      * @throws java.io.IOException
      */
     @Test
-    public void testCreateSimpleFormWithEmbeddedFont() throws IOException
+    void testCreateSimpleFormWithEmbeddedFont() throws IOException
     {
         CreateSimpleFormWithEmbeddedFont.main(null);
         try (PDDocument doc = Loader.loadPDF(new File("target/SimpleFormWithEmbeddedFont.pdf")))
@@ -129,10 +131,10 @@ public class TestCreateSimpleForms
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
-            Assert.assertEquals("Sample field İ", textBox.getValue());
+            assertEquals("Sample field İ", textBox.getValue());
             textBox.setValue("Łódź");
             PDFont font = getFontFromWidgetResources(textBox, "F1");
-            Assert.assertEquals("LiberationSans", font.getName());
+            assertEquals("LiberationSans", font.getName());
         }
     }
 
@@ -142,49 +144,49 @@ public class TestCreateSimpleForms
      * @throws java.io.IOException
      */
     @Test
-    public void testCreateMultiWidgetsForm() throws IOException
+    void testCreateMultiWidgetsForm() throws IOException
     {
         CreateMultiWidgetsForm.main(null);
 
         try (PDDocument doc = Loader.loadPDF(new File("target/MultiWidgetsForm.pdf")))
         {
-            Assert.assertEquals(2, doc.getNumberOfPages());
+            assertEquals(2, doc.getNumberOfPages());
             new PDFRenderer(doc).renderImage(0);
             new PDFRenderer(doc).renderImage(1);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDTextField textBox = (PDTextField) acroForm.getField("SampleField");
-            Assert.assertEquals("Sample field", textBox.getValue());
+            assertEquals("Sample field", textBox.getValue());
             List<PDAnnotationWidget> widgets = textBox.getWidgets();
-            Assert.assertEquals(2, widgets.size());
+            assertEquals(2, widgets.size());
             PDAnnotationWidget w1 = widgets.get(0);
             PDAnnotationWidget w2 = widgets.get(1);
             PDPage page1 = w1.getPage();
             PDPage page2 = w2.getPage();
-            Assert.assertNotEquals(page1.getCOSObject(), page2.getCOSObject());
-            Assert.assertEquals(page1, doc.getPage(0));
-            Assert.assertEquals(page2, doc.getPage(1));
-            Assert.assertEquals(page1.getAnnotations().get(0), w1);
-            Assert.assertEquals(page2.getAnnotations().get(0), w2);
-            Assert.assertNotEquals(w1, w2);
+            assertNotEquals(page1.getCOSObject(), page2.getCOSObject());
+            assertEquals(page1, doc.getPage(0));
+            assertEquals(page2, doc.getPage(1));
+            assertEquals(page1.getAnnotations().get(0), w1);
+            assertEquals(page2.getAnnotations().get(0), w2);
+            assertNotEquals(w1, w2);
             PDAppearanceCharacteristicsDictionary appearanceCharacteristics1 = w1.getAppearanceCharacteristics();
             PDAppearanceCharacteristicsDictionary appearanceCharacteristics2 = w2.getAppearanceCharacteristics();
             PDColor backgroundColor1 = appearanceCharacteristics1.getBackground();
             PDColor backgroundColor2 = appearanceCharacteristics2.getBackground();
             PDColor borderColour1 = appearanceCharacteristics1.getBorderColour();
             PDColor borderColour2 = appearanceCharacteristics2.getBorderColour();
-            Assert.assertEquals(PDDeviceRGB.INSTANCE, backgroundColor1.getColorSpace());
-            Assert.assertEquals(PDDeviceRGB.INSTANCE, backgroundColor2.getColorSpace());
-            Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour1.getColorSpace());
-            Assert.assertEquals(PDDeviceRGB.INSTANCE, borderColour2.getColorSpace());
-            Assert.assertArrayEquals(new float[]{1,1,0}, backgroundColor1.getComponents(), 0);
-            Assert.assertArrayEquals(new float[]{0,1,0}, backgroundColor2.getComponents(), 0);
-            Assert.assertArrayEquals(new float[]{0,1,0}, borderColour1.getComponents(), 0);
-            Assert.assertArrayEquals(new float[]{1,0,0}, borderColour2.getComponents(), 0);
+            assertEquals(PDDeviceRGB.INSTANCE, backgroundColor1.getColorSpace());
+            assertEquals(PDDeviceRGB.INSTANCE, backgroundColor2.getColorSpace());
+            assertEquals(PDDeviceRGB.INSTANCE, borderColour1.getColorSpace());
+            assertEquals(PDDeviceRGB.INSTANCE, borderColour2.getColorSpace());
+            assertArrayEquals(new float[] { 1, 1, 0 }, backgroundColor1.getComponents(), 0);
+            assertArrayEquals(new float[] { 0, 1, 0 }, backgroundColor2.getComponents(), 0);
+            assertArrayEquals(new float[] { 0, 1, 0 }, borderColour1.getComponents(), 0);
+            assertArrayEquals(new float[] { 1, 0, 0 }, borderColour2.getComponents(), 0);
         }
     }
 
     @Test
-    public void testCreateCheckBox() throws IOException
+    void testCreateCheckBox() throws IOException
     {
         CreateCheckBox.main(null);
         try (PDDocument doc = Loader.loadPDF(new File("target/CheckBoxSample.pdf")))
@@ -192,10 +194,10 @@ public class TestCreateSimpleForms
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDCheckBox checkbox = (PDCheckBox) acroForm.getField("MyCheckBox");
-            Assert.assertEquals("Yes", checkbox.getOnValue());
-            Assert.assertEquals("Off", checkbox.getValue());
+            assertEquals("Yes", checkbox.getOnValue());
+            assertEquals("Off", checkbox.getValue());
             checkbox.check();
-            Assert.assertEquals("Yes", checkbox.getValue());
+            assertEquals("Yes", checkbox.getValue());
             doc.save("target/CheckBoxSample-modified.pdf");
         }
         try (PDDocument doc = Loader.loadPDF(new File("target/CheckBoxSample-modified.pdf")))
@@ -203,12 +205,12 @@ public class TestCreateSimpleForms
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDCheckBox checkbox = (PDCheckBox) acroForm.getField("MyCheckBox");
-            Assert.assertEquals("Yes", checkbox.getValue());
+            assertEquals("Yes", checkbox.getValue());
         }
     }
 
     @Test
-    public void testRadioButtons() throws IOException
+    void testRadioButtons() throws IOException
     {
         CreateRadioButtons.main(null);
         try (PDDocument doc = Loader.loadPDF(new File("target/RadioButtonsSample.pdf")))
@@ -216,14 +218,14 @@ public class TestCreateSimpleForms
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDRadioButton radioButton = (PDRadioButton) acroForm.getField("MyRadioButton");
-            Assert.assertEquals(3, radioButton.getWidgets().size());
-            Assert.assertEquals("c", radioButton.getValue());
-            Assert.assertEquals(1, radioButton.getSelectedExportValues().size());
-            Assert.assertEquals("c", radioButton.getSelectedExportValues().get(0));
-            Assert.assertEquals(3, radioButton.getExportValues().size());
-            Assert.assertEquals("a", radioButton.getExportValues().get(0));
-            Assert.assertEquals("b", radioButton.getExportValues().get(1));
-            Assert.assertEquals("c", radioButton.getExportValues().get(2));
+            assertEquals(3, radioButton.getWidgets().size());
+            assertEquals("c", radioButton.getValue());
+            assertEquals(1, radioButton.getSelectedExportValues().size());
+            assertEquals("c", radioButton.getSelectedExportValues().get(0));
+            assertEquals(3, radioButton.getExportValues().size());
+            assertEquals("a", radioButton.getExportValues().get(0));
+            assertEquals("b", radioButton.getExportValues().get(1));
+            assertEquals("c", radioButton.getExportValues().get(2));
             radioButton.setValue("b");
             doc.save("target/RadioButtonsSample-modified.pdf");
         }
@@ -232,10 +234,10 @@ public class TestCreateSimpleForms
             new PDFRenderer(doc).renderImage(0);
             PDAcroForm acroForm = doc.getDocumentCatalog().getAcroForm();
             PDRadioButton radioButton = (PDRadioButton) acroForm.getField("MyRadioButton");
-            Assert.assertEquals("b", radioButton.getValue());
-            Assert.assertEquals(1, radioButton.getSelectedExportValues().size());
-            Assert.assertEquals("b", radioButton.getSelectedExportValues().get(0));
-            Assert.assertEquals(3, radioButton.getExportValues().size());
+            assertEquals("b", radioButton.getValue());
+            assertEquals(1, radioButton.getSelectedExportValues().size());
+            assertEquals("b", radioButton.getSelectedExportValues().get(0));
+            assertEquals(3, radioButton.getExportValues().size());
         }
     }
 
