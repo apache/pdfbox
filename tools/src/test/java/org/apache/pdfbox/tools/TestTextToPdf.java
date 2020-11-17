@@ -17,9 +17,8 @@
 package org.apache.pdfbox.tools;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.io.StringReader;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -46,7 +45,7 @@ public class TestTextToPdf
         // In order for the PDF document to be openable by Adobe Reader, it needs
         // to have some pages in it. So we'll check that.
         int pageCount = pdfDoc.getNumberOfPages();
-        assertNotNull(pageCount, "All Pages was unexpectedly zero.");
+        assertTrue(pageCount > 0, "All Pages was unexpectedly zero.");
         assertEquals(1, pageCount, "Wrong number of pages.");
         pdfDoc.close();
     }
