@@ -17,18 +17,19 @@ package org.apache.pdfbox.pdfparser;
 
 import java.io.IOException;
 import java.util.List;
-import junit.framework.TestCase;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for PDFStreamParser.
  *
  * @author Tilman Hausherr
  */
-public class PDFStreamParserTest extends TestCase
+public class PDFStreamParserTest
 {
 
     /**
@@ -38,6 +39,7 @@ public class PDFStreamParserTest extends TestCase
      *
      * @throws IOException
      */
+    @Test
     public void testInlineImages() throws IOException
     {
         testInlineImage2ops("ID\n12345EI Q", "12345", "Q");

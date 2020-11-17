@@ -16,6 +16,8 @@
 
 package org.apache.pdfbox.pdfparser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,8 +33,7 @@ import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
 import org.apache.pdfbox.pdmodel.PDEmbeddedFilesNameTreeNode;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecification;
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -51,7 +52,7 @@ public class EndstreamFilterStreamTest
         feos.filter(tab2, 0, tab2.length);
         feos.filter(tab3, 0, tab3.length);
         byte[] expectedResult1 = { 1, 2, 3, 4, 5, 6, 7, '\r', '\n', 8, 9 };
-        Assert.assertEquals(expectedResult1.length, feos.calculateLength());
+        assertEquals(expectedResult1.length, feos.calculateLength());
 
         feos = new EndstreamFilterStream();
         byte[] tab4 = { 1, 2, 3, 4 };
@@ -61,7 +62,7 @@ public class EndstreamFilterStreamTest
         feos.filter(tab5, 0, tab5.length);
         feos.filter(tab6, 0, tab6.length);
         byte[] expectedResult2 = { 1, 2, 3, 4, 5, 6, 7, '\r', 8, 9 };
-        Assert.assertEquals(expectedResult2.length, feos.calculateLength());
+        assertEquals(expectedResult2.length, feos.calculateLength());
 
         feos = new EndstreamFilterStream();
         byte[] tab7 = { 1, 2, 3, 4, '\r' };
@@ -71,7 +72,7 @@ public class EndstreamFilterStreamTest
         feos.filter(tab8, 0, tab8.length);
         feos.filter(tab9, 0, tab9.length);
         byte[] expectedResult3 = { 1, 2, 3, 4, '\r', '\n', 5, 6, 7, '\n', 8, 9, '\r' };
-        Assert.assertEquals(expectedResult3.length, feos.calculateLength());
+        assertEquals(expectedResult3.length, feos.calculateLength());
 
         feos = new EndstreamFilterStream();
         byte[] tab10 = { 1, 2, 3, 4, '\r' };
@@ -83,7 +84,7 @@ public class EndstreamFilterStreamTest
         feos.filter(tab12, 0, tab12.length);
         feos.filter(tab13, 0, tab13.length);
         byte[] expectedResult4 = { 1, 2, 3, 4, '\r', '\n', 5, 6, 7, '\r', 8, 9 };
-        Assert.assertEquals(expectedResult4.length, feos.calculateLength());
+        assertEquals(expectedResult4.length, feos.calculateLength());
 
         feos = new EndstreamFilterStream();
         byte[] tab14 = { 1, 2, 3, 4, '\r' };
@@ -95,7 +96,7 @@ public class EndstreamFilterStreamTest
         feos.filter(tab16, 0, tab16.length);
         feos.filter(tab17, 0, tab17.length);
         byte[] expectedResult5 = { 1, 2, 3, 4, '\r', '\n', 5, 6, 7, '\r', 8, 9, '\n', '\r' };
-        Assert.assertEquals(expectedResult5.length, feos.calculateLength());
+        assertEquals(expectedResult5.length, feos.calculateLength());
     }
 
     @Test
@@ -114,7 +115,7 @@ public class EndstreamFilterStreamTest
             PDDocumentNameDictionary names = catalog.getNames();
             PDEmbeddedFilesNameTreeNode node = names.getEmbeddedFiles();
             Map<String, PDComplexFileSpecification> map = node.getNames();
-            Assert.assertEquals(1, map.size());
+            assertEquals(1, map.size());
             PDComplexFileSpecification spec = map.get("My first attachment");
             PDEmbeddedFile file = spec.getEmbeddedFile();
             InputStream input = file.createInputStream();
@@ -125,7 +126,7 @@ public class EndstreamFilterStreamTest
             {
                 IOUtils.copy(input, os);
             }
-            Assert.assertEquals(17660, f.length());
+            assertEquals(17660, f.length());
         }
     }
 }

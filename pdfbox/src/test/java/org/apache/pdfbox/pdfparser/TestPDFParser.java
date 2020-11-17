@@ -17,8 +17,8 @@
 
 package org.apache.pdfbox.pdfparser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDDocume
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.outline.PDOutlineItem;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.DateConverter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestPDFParser
 {
