@@ -23,7 +23,6 @@ import java.util.Set;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 
 /**
  * Radio button fields contain a set of related buttons that can each be on or off.
