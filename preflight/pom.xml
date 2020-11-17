@@ -180,10 +180,6 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
 		</dependency>
-	    <dependency>
-	        <groupId>org.junit.vintage</groupId>
-	        <artifactId>junit-vintage-engine</artifactId>
-	    </dependency>  
 		<!-- TODO find a suitable place to store the isator test pdfs <dependency> 
 			<groupId>org.pdfa</groupId> <artifactId>isartor</artifactId> <version>1.0-20080813</version> 
 			<scope>test</scope> </dependency> -->
