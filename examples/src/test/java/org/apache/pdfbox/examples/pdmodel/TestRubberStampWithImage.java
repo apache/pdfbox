@@ -16,6 +16,9 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.image.BufferedImage;
 
 import java.io.File;
@@ -33,16 +36,15 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceEntry;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAppearanceStream;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for RubberStampWithImage
  */
-public class TestRubberStampWithImage
+class TestRubberStampWithImage
 {
     @Test
-    public void test() throws IOException
+    void test() throws IOException
     {
         String documentFile = "src/test/resources/org/apache/pdfbox/examples/pdmodel/document.pdf";
         String stampFile = "src/test/resources/org/apache/pdfbox/examples/pdmodel/stamp.jpg";
@@ -63,7 +65,7 @@ public class TestRubberStampWithImage
         try (PDDocument doc2 = Loader.loadPDF(new File(outFile)))
         {
             BufferedImage bim2 = new PDFRenderer(doc2).renderImage(0);
-            Assert.assertFalse(compareImages(bim1, bim2));
+            assertFalse(compareImages(bim1, bim2));
             PDAnnotationRubberStamp rubberStampAnnotation = (PDAnnotationRubberStamp) doc2.getPage(0).getAnnotations().get(0);
             PDAppearanceDictionary appearance = rubberStampAnnotation.getAppearance();
             PDAppearanceEntry normalAppearance = appearance.getNormalAppearance();
@@ -71,7 +73,7 @@ public class TestRubberStampWithImage
             PDImageXObject ximage = (PDImageXObject) appearanceStream.getResources().getXObject(COSName.getPDFName("Im1"));
             BufferedImage actualStampImage = ximage.getImage();
             BufferedImage expectedStampImage = ImageIO.read(new File(stampFile));
-            Assert.assertTrue(compareImages(expectedStampImage, actualStampImage));
+            assertTrue(compareImages(expectedStampImage, actualStampImage));
         }
     }
 
