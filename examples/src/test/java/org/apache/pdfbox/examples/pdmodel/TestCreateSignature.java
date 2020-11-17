@@ -16,6 +16,14 @@
  */
 package org.apache.pdfbox.examples.pdmodel;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -102,17 +110,14 @@ import org.bouncycastle.tsp.TimeStampTokenInfo;
 import org.bouncycastle.util.CollectionStore;
 import org.bouncycastle.util.Selector;
 import org.bouncycastle.util.Store;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Test for CreateSignature. Each test case will run twice: once with SignatureInterface
  * and once using external signature creation scenario.
  */
-@RunWith(Parameterized.class)
 public class TestCreateSignature
 {
     private static CertificateFactory certificateFactory = null;
@@ -126,20 +131,20 @@ public class TestCreateSignature
     private static Certificate certificate;
     private static String tsa;
 
-    @Parameterized.Parameter
+
     public boolean externallySign;
 
     /**
      * Values for {@link #externallySign} test parameter to specify if signing should be conducted
      * using externally signing scenario ({@code true}) or SignatureInterface ({@code false}).
      */
-    @Parameterized.Parameters
+
     public static Collection<Boolean> signingTypes()
     {
         return Arrays.asList(false, true);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception
     {
         Security.addProvider(SecurityProvider.getProvider());
@@ -165,8 +170,9 @@ public class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException
      */
-    @Test
-    public void testDetachedSHA256()
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testDetachedSHA256(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -208,8 +214,9 @@ public class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException
      */
-    @Test
-    public void testDetachedSHA256WithTSA()
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testDetachedSHA256WithTSA(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -235,11 +242,11 @@ public class TestCreateSignature
         try
         {
             signing1.signDetached(new File(inPath), new File(outPath), brokenMockTSA);
-            Assert.fail("This should have failed");
+            fail("This should have failed");
         }
         catch (IOException e)
         {
-            Assert.assertTrue(e.getCause() instanceof TSPValidationException);
+            assertTrue(e.getCause() instanceof TSPValidationException);
             new File(outPath).delete();
         }
 
@@ -268,8 +275,9 @@ public class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException 
      */
-    @Test
-    public void testCreateSignedTimeStamp()
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testCreateSignedTimeStamp(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -298,7 +306,7 @@ public class TestCreateSignature
 
             String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
             // compare the hash of the signed content with the hash in the timestamp
-            Assert.assertArrayEquals(MessageDigest.getInstance(hashAlgorithm).digest(signedFileContent),
+            assertArrayEquals(MessageDigest.getInstance(hashAlgorithm).digest(signedFileContent),
                     timeStampToken.getTimeStampInfo().getMessageImprintDigest());
 
             X509Certificate certFromTimeStamp = (X509Certificate) certs.iterator().next();
@@ -320,8 +328,9 @@ public class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException
      */
-    @Test
-    public void testCreateVisibleSignature()
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testCreateVisibleSignature(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -351,8 +360,9 @@ public class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException
      */
-    @Test
-    public void testCreateVisibleSignature2()
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testCreateVisibleSignature2(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -384,8 +394,9 @@ public class TestCreateSignature
      * @throws TSPException
      * @throws CertificateVerificationException
      */
-    @Test
-    public void testPDFBox3978() throws IOException, NoSuchAlgorithmException, 
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testPDFBox3978(boolean externallySign) throws IOException, NoSuchAlgorithmException, 
                                         CertificateException, UnrecoverableKeyException, 
                                         CMSException, OperatorCreationException, GeneralSecurityException,
                                         TSPException, CertificateVerificationException
@@ -412,7 +423,7 @@ public class TestCreateSignature
         try (PDDocument doc1 = Loader.loadPDF(new File(filenameSigned1)))
         {
             List<PDSignature> signatureDictionaries = doc1.getSignatureDictionaries();
-            Assert.assertEquals(1, signatureDictionaries.size());
+            assertEquals(1, signatureDictionaries.size());
         }
 
         // do visual signing in the field
@@ -430,7 +441,7 @@ public class TestCreateSignature
         try (PDDocument doc2 = Loader.loadPDF(new File(filenameSigned2)))
         {
             List<PDSignature> signatureDictionaries = doc2.getSignatureDictionaries();
-            Assert.assertEquals(2, signatureDictionaries.size());
+            assertEquals(2, signatureDictionaries.size());
         }
     }
 
@@ -453,12 +464,12 @@ public class TestCreateSignature
         try (PDDocument document = Loader.loadPDF(signedFile))
         {
             // PDFBOX-4261: check that object number stays the same 
-            Assert.assertEquals(origPageKey, document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString());
+            assertEquals(origPageKey, document.getDocumentCatalog().getCOSObject().getItem(COSName.PAGES).toString());
 
             List<PDSignature> signatureDictionaries = document.getSignatureDictionaries();
             if (signatureDictionaries.isEmpty())
             {
-                Assert.fail("no signature found");
+                fail("no signature found");
             }
             for (PDSignature sig : document.getSignatureDictionaries())
             {
@@ -469,16 +480,16 @@ public class TestCreateSignature
                 byte[] totalFileContent = Files.readAllBytes(signedFile.toPath());
                 byte[] signedFileContent1 = sig.getSignedContent(new ByteArrayInputStream(totalFileContent));
                 byte[] signedFileContent2 = sig.getSignedContent(totalFileContent);
-                Assert.assertArrayEquals(signedFileContent1, signedFileContent2);
+                assertArrayEquals(signedFileContent1, signedFileContent2);
 
                 // verify that all getContents() methods returns the same content
                 try (FileInputStream fis = new FileInputStream(signedFile))
                 {
                     byte[] contents2 = sig.getContents(IOUtils.toByteArray(fis));
-                    Assert.assertArrayEquals(contents, contents2);
+                    assertArrayEquals(contents, contents2);
                 }
                 byte[] contents3 = sig.getContents(new FileInputStream(signedFile));
-                Assert.assertArrayEquals(contents, contents3);
+                assertArrayEquals(contents, contents3);
 
                 // inspiration:
                 // http://stackoverflow.com/a/26702631/535646
@@ -491,17 +502,17 @@ public class TestCreateSignature
                 Collection<X509CertificateHolder> matches = certificatesStore
                         .getMatches((Selector<X509CertificateHolder>) signerInformation.getSID());
                 X509CertificateHolder certificateHolder = matches.iterator().next();
-                Assert.assertArrayEquals(certificate.getEncoded(), certificateHolder.getEncoded());
+                assertArrayEquals(certificate.getEncoded(), certificateHolder.getEncoded());
                 // CMSVerifierCertificateNotValidException means that the keystore wasn't valid at signing time
                 if (!signerInformation.verify(new JcaSimpleSignerInfoVerifierBuilder().build(certificateHolder)))
                 {
-                    Assert.fail("Signature verification failed");
+                    fail("Signature verification failed");
                 }
 
                 TimeStampToken timeStampToken = SigUtils.extractTimeStampTokenFromSignerInformation(signerInformation);
                 if (checkTimeStamp)
                 {
-                    Assert.assertNotNull(timeStampToken);
+                    assertNotNull(timeStampToken);
                     SigUtils.validateTimestampToken(timeStampToken);
 
                     TimeStampTokenInfo timeStampInfo = timeStampToken.getTimeStampInfo();
@@ -510,7 +521,7 @@ public class TestCreateSignature
                     byte[] tsMessageImprintDigest = timeStampInfo.getMessageImprintDigest();
                     String hashAlgorithm = timeStampInfo.getMessageImprintAlgOID().getId();
                     byte[] sigMessageImprintDigest = MessageDigest.getInstance(hashAlgorithm).digest(signerInformation.getSignature());
-                    Assert.assertArrayEquals("timestamp signature verification failed", sigMessageImprintDigest, tsMessageImprintDigest);                    
+                    assertArrayEquals(sigMessageImprintDigest, tsMessageImprintDigest, "timestamp signature verification failed");                    
 
                     Store<X509CertificateHolder> tsCertStore = timeStampToken.getCertificates();
 
@@ -525,7 +536,7 @@ public class TestCreateSignature
                 }
                 else
                 {
-                    Assert.assertNull(timeStampToken);
+                    assertNull(timeStampToken);
                 }
             }
         }
@@ -544,8 +555,9 @@ public class TestCreateSignature
      * @throws IOException
      * @throws NoSuchAlgorithmException 
      */
-    @Test
-    public void testPDFBox3811() throws IOException, NoSuchAlgorithmException
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testPDFBox3811(boolean externallySign) throws IOException, NoSuchAlgorithmException
     {
         if (!externallySign)
         {
@@ -581,9 +593,9 @@ public class TestCreateSignature
         {
             caught = true;
         }
-        Assert.assertTrue("IllegalStateException should have been thrown", caught);
+        assertTrue(caught, "IllegalStateException should have been thrown");
         signature.setByteRange(reserveByteRange);
-        Assert.assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent()));
+        assertEquals(digestString, calculateDigestString(document.saveIncrementalForExternalSigning(new ByteArrayOutputStream()).getContent()));
     }
 
     /**
@@ -593,8 +605,9 @@ public class TestCreateSignature
      *
      * @throws Exception
      */
-    @Test
-    public void testSaveIncrementalAfterSign() throws Exception
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
     {
         BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
 
@@ -622,19 +635,19 @@ public class TestCreateSignature
             // Test of PDFBOX-4509: only "Helv" font should be there
             Collection<COSName> fonts = (Collection<COSName>) field.getWidgets().get(0).getAppearance().
                     getNormalAppearance().getAppearanceStream().getResources().getFontNames();
-            Assert.assertTrue(fonts.contains(COSName.HELV));
-            Assert.assertEquals(1, fonts.size());
+            assertTrue(fonts.contains(COSName.HELV));
+            assertEquals(1, fonts.size());
 
             expectedImage1 = new PDFRenderer(doc).renderImage(0);
 
             // compare images, image must has changed
-            Assert.assertEquals(oldImage.getWidth(), expectedImage1.getWidth());
-            Assert.assertEquals(oldImage.getHeight(), expectedImage1.getHeight());
-            Assert.assertEquals(oldImage.getType(), expectedImage1.getType());
+            assertEquals(oldImage.getWidth(), expectedImage1.getWidth());
+            assertEquals(oldImage.getHeight(), expectedImage1.getHeight());
+            assertEquals(oldImage.getType(), expectedImage1.getType());
             DataBufferInt expectedData = (DataBufferInt) oldImage.getRaster().getDataBuffer();
             DataBufferInt actualData = (DataBufferInt) expectedImage1.getRaster().getDataBuffer();
-            Assert.assertEquals(expectedData.getData().length, actualData.getData().length);
-            Assert.assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
+            assertEquals(expectedData.getData().length, actualData.getData().length);
+            assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
 
             // old style incremental save: create a "path" from the root to the objects that need an update
             doc.getDocumentCatalog().getCOSObject().setNeedToBeUpdated(true);
@@ -649,15 +662,15 @@ public class TestCreateSignature
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameResaved1)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
-            Assert.assertEquals("New Value 1", field.getValueAsString());
+            assertEquals("New Value 1", field.getValueAsString());
             actualImage1 = new PDFRenderer(doc).renderImage(0);
             // compare images, equality proves that the appearance has been updated too
-            Assert.assertEquals(expectedImage1.getWidth(), actualImage1.getWidth());
-            Assert.assertEquals(expectedImage1.getHeight(), actualImage1.getHeight());
-            Assert.assertEquals(expectedImage1.getType(), actualImage1.getType());
+            assertEquals(expectedImage1.getWidth(), actualImage1.getWidth());
+            assertEquals(expectedImage1.getHeight(), actualImage1.getHeight());
+            assertEquals(expectedImage1.getType(), actualImage1.getType());
             DataBufferInt expectedData = (DataBufferInt) expectedImage1.getRaster().getDataBuffer();
             DataBufferInt actualData = (DataBufferInt) actualImage1.getRaster().getDataBuffer();
-            Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+            assertArrayEquals(expectedData.getData(), actualData.getData());
         }
 
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameSigned)))
@@ -668,13 +681,13 @@ public class TestCreateSignature
             expectedImage2 = new PDFRenderer(doc).renderImage(0);
 
             // compare images, image must has changed
-            Assert.assertEquals(oldImage.getWidth(), expectedImage2.getWidth());
-            Assert.assertEquals(oldImage.getHeight(), expectedImage2.getHeight());
-            Assert.assertEquals(oldImage.getType(), expectedImage2.getType());
+            assertEquals(oldImage.getWidth(), expectedImage2.getWidth());
+            assertEquals(oldImage.getHeight(), expectedImage2.getHeight());
+            assertEquals(oldImage.getType(), expectedImage2.getType());
             DataBufferInt expectedData = (DataBufferInt) oldImage.getRaster().getDataBuffer();
             DataBufferInt actualData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
-            Assert.assertEquals(expectedData.getData().length, actualData.getData().length);
-            Assert.assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
+            assertEquals(expectedData.getData().length, actualData.getData().length);
+            assertFalse(Arrays.equals(expectedData.getData(), actualData.getData()));
 
             // new style incremental save: add only the objects that have changed
             Set<COSDictionary> objectsToWrite = new HashSet<>();
@@ -687,20 +700,21 @@ public class TestCreateSignature
         try (PDDocument doc = Loader.loadPDF(new File(OUT_DIR, fileNameResaved2)))
         {
             PDField field = doc.getDocumentCatalog().getAcroForm().getField("SampleField");
-            Assert.assertEquals("New Value 2", field.getValueAsString());
+            assertEquals("New Value 2", field.getValueAsString());
             actualImage2 = new PDFRenderer(doc).renderImage(0);
             // compare images, equality proves that the appearance has been updated too
-            Assert.assertEquals(expectedImage2.getWidth(), actualImage2.getWidth());
-            Assert.assertEquals(expectedImage2.getHeight(), actualImage2.getHeight());
-            Assert.assertEquals(expectedImage2.getType(), actualImage2.getType());
+            assertEquals(expectedImage2.getWidth(), actualImage2.getWidth());
+            assertEquals(expectedImage2.getHeight(), actualImage2.getHeight());
+            assertEquals(expectedImage2.getType(), actualImage2.getType());
             DataBufferInt expectedData = (DataBufferInt) expectedImage2.getRaster().getDataBuffer();
             DataBufferInt actualData = (DataBufferInt) actualImage2.getRaster().getDataBuffer();
-            Assert.assertArrayEquals(expectedData.getData(), actualData.getData());
+            assertArrayEquals(expectedData.getData(), actualData.getData());
         }
     }
 
-    @Test
-    public void testPDFBox4784() throws Exception
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testPDFBox4784(boolean externallySign) throws Exception
     {
         if (!externallySign)
         {
@@ -710,14 +724,14 @@ public class TestCreateSignature
 
         byte[] defaultSignedOne = signEncrypted(null, signingTime);
         byte[] defaultSignedTwo = signEncrypted(null, signingTime);
-        Assert.assertFalse(Arrays.equals(defaultSignedOne, defaultSignedTwo));
+        assertFalse(Arrays.equals(defaultSignedOne, defaultSignedTwo));
 
         // a dummy value for FixedSecureRandom is used (for real use-cases a secure value should be provided)
         byte[] fixedRandomSignedOne = signEncrypted(new FixedSecureRandom(new byte[128]),
                 signingTime);
         byte[] fixedRandomSignedTwo = signEncrypted(new FixedSecureRandom(new byte[128]),
                 signingTime);
-        Assert.assertArrayEquals(fixedRandomSignedOne, fixedRandomSignedTwo);
+        assertArrayEquals(fixedRandomSignedOne, fixedRandomSignedTwo);
     }
 
     /**
@@ -733,8 +747,9 @@ public class TestCreateSignature
      * @throws CertificateVerificationException
      * @throws NoSuchAlgorithmException 
      */
-    @Test
-    public void testCRL() throws IOException, CMSException, CertificateException, TSPException,
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testCRL(boolean externallySign) throws IOException, CMSException, CertificateException, TSPException,
             OperatorCreationException, CertificateVerificationException, NoSuchAlgorithmException
     {
         if (externallySign)
@@ -778,7 +793,7 @@ public class TestCreateSignature
         byte[] tsMessageImprintDigest = timeStampToken.getTimeStampInfo().getMessageImprintDigest();
         String hashAlgorithm = timeStampToken.getTimeStampInfo().getMessageImprintAlgOID().getId();
         byte[] sigMessageImprintDigest = MessageDigest.getInstance(hashAlgorithm).digest(signerInformation.getSignature());
-        Assert.assertArrayEquals(tsMessageImprintDigest, sigMessageImprintDigest);
+        assertArrayEquals(tsMessageImprintDigest, sigMessageImprintDigest);
 
         certFromSignedData.checkValidity(timeStampToken.getTimeStampInfo().getGenTime());
         SigUtils.verifyCertificateChain(certificatesStore, certFromSignedData, timeStampToken.getTimeStampInfo().getGenTime());
@@ -798,8 +813,9 @@ public class TestCreateSignature
      * @throws org.bouncycastle.operator.OperatorCreationException
      * @throws org.bouncycastle.cms.CMSException
      */
-    @Test
-    public void testAddValidationInformation()
+    @ParameterizedTest
+	@MethodSource("signingTypes")
+    public void testAddValidationInformation(boolean externallySign)
             throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException, CMSException
     {
         if (externallySign)
@@ -847,8 +863,8 @@ public class TestCreateSignature
                 {
                     continue; // not relevant here
                 }
-                Assert.assertTrue("VRI/signaturehash/Cert array doesn't contain " + holder.getSubject(),
-                        sigCertHolderSetFromVRIArray.contains(holder));
+                assertTrue(sigCertHolderSetFromVRIArray.contains(holder),
+                        "VRI/signaturehash/Cert array doesn't contain " + holder.getSubject());
             }
             // Get all certificates. Each one should either be issued (= signed) by a certificate of the set
             Set<X509Certificate> certSet = new HashSet<>();
@@ -876,8 +892,8 @@ public class TestCreateSignature
                         // not the issuer
                     }
                 }
-                Assert.assertTrue("Certificate " + cert.getSubjectX500Principal() +
-                        " not issued by any certificate in the Certs array", verified);
+                assertTrue(verified,
+                    "Certificate " + cert.getSubjectX500Principal() + " not issued by any certificate in the Certs array");
             }
             // Each CRL should be signed by one of the certificates in Certs
             Set<X509CRL> crlSet = new HashSet<>();
@@ -908,7 +924,7 @@ public class TestCreateSignature
                         // not the issuer
                     }
                 }
-                Assert.assertTrue("issuer of CRL not found in Certs array", crlVerified);
+                assertTrue(crlVerified, "issuer of CRL not found in Certs array");
                 
                 byte[] crlSignatureHash = MessageDigest.getInstance("SHA-1").digest(crl.getSignature());
                 String hexCrlSignatureHash = Hex.getString(crlSignatureHash);
@@ -924,8 +940,8 @@ public class TestCreateSignature
                     certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
                 }
                 
-                Assert.assertEquals("CRL issuer certificate missing in VRI " + hexCrlSignatureHash,
-                        certHolder2, new X509CertificateHolder(crlIssuerCert.getEncoded()));
+                assertEquals(certHolder2, new X509CertificateHolder(crlIssuerCert.getEncoded()),
+                        "CRL issuer certificate missing in VRI " + hexCrlSignatureHash);
             }   Set<OCSPResp> oscpSet = new HashSet<>();
             COSArray ocspArray = dssDict.getCOSArray(COSName.getPDFName("OCSPs"));
             for (int i = 0; i < ocspArray.size(); ++i)
@@ -940,18 +956,17 @@ public class TestCreateSignature
             for (OCSPResp ocspResp : oscpSet)
             {
                 BasicOCSPResp basicResponse = (BasicOCSPResp) ocspResp.getResponseObject();
-                Assert.assertEquals(OCSPResponseStatus.SUCCESSFUL, ocspResp.getStatus());
-                Assert.assertTrue("OCSP should have at least 1 certificate", basicResponse.getCerts().length >= 1);
+                assertEquals(OCSPResponseStatus.SUCCESSFUL, ocspResp.getStatus());
+                assertTrue(basicResponse.getCerts().length >= 1, "OCSP should have at least 1 certificate");
                 byte[] ocspSignatureHash = MessageDigest.getInstance("SHA-1").digest(basicResponse.getSignature());
                 String hexOcspSignatureHash = Hex.getString(ocspSignatureHash);
                 System.out.println("ocspSignatureHash: " + hexOcspSignatureHash);
                 long secondsOld = (System.currentTimeMillis() - basicResponse.getProducedAt().getTime()) / 1000;
-                Assert.assertTrue("OCSP answer is too old, is from " + secondsOld + " seconds ago",
-                        secondsOld < 10);
+                assertTrue(secondsOld < 10, "OCSP answer is too old, is from " + secondsOld + " seconds ago");
                 
                 X509CertificateHolder ocspCertHolder = basicResponse.getCerts()[0];
                 ContentVerifierProvider verifier = new JcaContentVerifierProviderBuilder().setProvider(SecurityProvider.getProvider()).build(ocspCertHolder);
-                Assert.assertTrue(basicResponse.isSignatureValid(verifier));
+                assertTrue(basicResponse.isSignatureValid(verifier));
 
                 COSDictionary ocspSigDict = vriDict.getCOSDictionary(COSName.getPDFName(hexOcspSignatureHash));
 
@@ -964,7 +979,7 @@ public class TestCreateSignature
                     certHolder2 = new X509CertificateHolder(IOUtils.toByteArray(is2));
                 }
 
-                Assert.assertEquals("OCSP certificate is not in the VRI array", certHolder2, ocspCertHolder);
+                assertEquals(certHolder2, ocspCertHolder, "OCSP certificate is not in the VRI array");
             }
         }
     }
