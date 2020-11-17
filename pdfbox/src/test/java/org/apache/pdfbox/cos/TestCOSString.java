@@ -326,11 +326,10 @@ public class TestCOSString extends TestCOSBase
      * 
      * @throws java.io.IOException
      */
+    @SuppressWarnings({"java:S5863"}) // don't flag tests for reflexivity
     @Test
     public void testCompareFromHexString() throws IOException
     {
-        @SuppressWarnings({"java:S5863"}) // don't flag tests for reflexivity
-
         COSString test1 = COSString.parseHex("000000FF000000");
         COSString test2 = COSString.parseHex("000000FF00FFFF");
         assertEquals(test1, test1);

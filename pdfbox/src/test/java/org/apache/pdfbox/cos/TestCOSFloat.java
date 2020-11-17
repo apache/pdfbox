@@ -114,9 +114,9 @@ public class TestCOSFloat extends TestCOSNumber
         new BaseTester()
         {
             @Override
+            @SuppressWarnings({"java:S5863"}) // don't flag tests for reflexivity
             void runTest(float num)
             {
-                @SuppressWarnings({"java:S5863"}) // don't flag tests for reflexivity
 
                 COSFloat test1 = new COSFloat(num);
                 COSFloat test2 = new COSFloat(num);

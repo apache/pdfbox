@@ -20,6 +20,7 @@ package org.apache.pdfbox.cos;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public abstract class TestCOSNumber extends TestCOSBase
     {
         try
         {
+            
             // Ensure the basic static numbers are recognized
             assertEquals(COSInteger.ZERO, COSNumber.get("0"));
             assertEquals(COSInteger.ONE, COSNumber.get("1"));
@@ -72,16 +74,10 @@ public abstract class TestCOSNumber extends TestCOSBase
             // but obviously there some
             assertNotNull(COSNumber.get("-2e-006"));
             assertNotNull(COSNumber.get("-8e+05"));
-            try
-            {
-                assertEquals("Null Value...", COSNumber.get(null));
-                fail("Failed to throw a NullPointerException");
-            }
-            catch (NullPointerException e)
-            {
-                // PASS
-            }
 
+            assertThrows(NullPointerException.class, () -> {
+                    COSNumber.get(null);
+            });
         }
         catch (IOException e)
         {
