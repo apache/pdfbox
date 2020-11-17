@@ -24,20 +24,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.ParallelParameterized;
 import org.apache.pdfbox.pdmodel.PDDocument;
-
-import static org.junit.Assert.fail;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 /**
  * Test suite for rendering.
@@ -63,7 +54,6 @@ import org.junit.runners.Parameterized;
  * @author Ben Litchfield
  * @author Tilman Hausherr
  */
-@RunWith(ParallelParameterized.class)
 public class TestPDFToImage
 {
 
@@ -76,26 +66,6 @@ public class TestPDFToImage
     static String outDir = "target/test-output/rendering/";
     
     String filename;
-    
-    @Parameterized.Parameters(name = "{0}")
-    public static Collection<Object[]> data()
-    {
-        File[] testFiles = new File(inDir).listFiles(new FilenameFilter()
-        {
-            @Override
-            public boolean accept(File dir, String name)
-            {
-                return (name.toLowerCase().endsWith(".pdf") || name.toLowerCase().endsWith(".ai"));
-            }
-        });
-
-        List<Object[]> params = new ArrayList<>();
-        for (File file : testFiles)
-        {
-            params.add(new Object[] { file.getName() });
-        }
-        return params;
-    }
 
     /**
      * Test class constructor.
@@ -107,22 +77,6 @@ public class TestPDFToImage
     public TestPDFToImage(String filename) throws IOException
     {
         this.filename = filename;
-    }
-    
-   /**
-     * Test to validate image rendering of file.
-     *
-     * @throws IOException when there is an exception
-     */
-    @Test
-    public void testRenderImage() throws IOException
-    {
-        new File(outDir).mkdirs();
-
-        if (!doTestFile(new File(inDir, filename), inDir, outDir))
-        {
-            fail("failure, see test log for details");
-        }
     }
 
     /**

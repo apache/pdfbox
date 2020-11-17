@@ -23,6 +23,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -40,6 +42,7 @@ import java.util.stream.Stream;
 public class TestRendering
 {
     private static final String INPUT_DIR = "src/test/resources/input/rendering";
+    private static final String OUTPUT_DIR = "target/test-output/rendering/";
 
     public static Collection<Arguments> data()
     {
@@ -63,5 +66,19 @@ public class TestRendering
         // during the rendering process.
 
         document.close();
+    }
+
+    // @ParameterizedTest
+	@MethodSource("data")
+    public void renderAndCompare(String fileName) throws IOException
+    {
+
+        new File(OUTPUT_DIR).mkdirs();
+        // compare rendering
+        TestPDFToImage testPDFToImage = new TestPDFToImage(TestPDFToImage.class.getName());
+        if (!testPDFToImage.doTestFile(new File(INPUT_DIR, fileName), INPUT_DIR, OUTPUT_DIR))
+        {
+            fail("Rendering of " + fileName + " failed or is not identical to expected rendering in " + INPUT_DIR + " directory");
+        }
     }
 }
