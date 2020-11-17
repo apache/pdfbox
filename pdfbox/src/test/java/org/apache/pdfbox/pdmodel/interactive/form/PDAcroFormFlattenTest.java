@@ -16,7 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,9 +34,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
-import static org.junit.Assert.fail;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test flatten different forms and compare with rendering.
@@ -50,7 +50,7 @@ public class PDAcroFormFlattenTest
     private static final File IN_DIR = new File("target/test-output/flatten/in");
     private static final File OUT_DIR = new File("target/test-output/flatten/out");
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         IN_DIR.mkdirs();

@@ -16,7 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +26,9 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HandleDifferentDALevelsTest
 {
@@ -39,7 +39,7 @@ public class HandleDifferentDALevelsTest
     private PDDocument document;
     private PDAcroForm acroForm;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException
     {
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
@@ -83,7 +83,7 @@ public class HandleDifferentDALevelsTest
         for (PDAnnotationWidget widget : widgets)
         {
             String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
-            assertTrue("font setting in content stream shall be " + fieldFontSetting, contentAsString.indexOf(fieldFontSetting) > 0);
+            assertTrue(contentAsString.indexOf(fieldFontSetting) > 0, "font setting in content stream shall be " + fieldFontSetting);
         }
     }
     
@@ -99,11 +99,11 @@ public class HandleDifferentDALevelsTest
             String widgetFontSetting = getFontSettingFromDA(widget);
             String fontSetting = widgetFontSetting == null ? fieldFontSetting : widgetFontSetting;
             String contentAsString = new String(widget.getNormalAppearanceStream().getContentStream().toByteArray());
-            assertTrue("font setting in content stream shall be " + fontSetting, contentAsString.indexOf(fontSetting) > 0);
+            assertTrue(contentAsString.indexOf(fontSetting) > 0, "font setting in content stream shall be " + fontSetting);
         }
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws IOException
     {
         document.close();

@@ -16,6 +16,10 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -26,11 +30,8 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.apache.pdfbox.pdmodel.interactive.digitalsignature.PDSignature;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for the PDSignatureField class.
@@ -41,7 +42,7 @@ public class PDSignatureFieldTest
     private PDDocument document;
     private PDAcroForm acroForm;
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         document = new PDDocument();
@@ -68,13 +69,14 @@ public class PDSignatureFieldTest
         assertNotNull(acroForm.getField("SignatureField"));
     }
     
-    @Test(expected=UnsupportedOperationException.class)
+    @Test
     public void setValueForAbstractedSignatureField()
     {
         PDSignatureField sigField = new PDSignatureField(acroForm);
         sigField.setPartialName("SignatureField");
-
-        sigField.setValue("Can't set value using String");
+        assertThrows(UnsupportedOperationException.class, () -> {
+            sigField.setValue("Can't set value using String");
+        });
     }
     
     /**

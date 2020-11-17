@@ -16,7 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
@@ -25,8 +26,8 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.color.PDDeviceRGB;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PDDefaultAppearanceStringTest
 {
@@ -34,7 +35,7 @@ public class PDDefaultAppearanceStringTest
     private PDResources resources;
     private COSName fontResourceName;
     
-    @Before
+    @BeforeEach
     public void setUp()
     {
         resources = new PDResources();
@@ -58,17 +59,21 @@ public class PDDefaultAppearanceStringTest
         assertEquals(0.627, defaultAppearanceString.getFontColor().getComponents()[2], 0.0001);
     }
     
-    @Test(expected=IOException.class)
+    @Test
     public void testFontResourceUnavailable() throws IOException
     {
         COSString sampleString = new COSString("/Helvetica 12 Tf 0.019 0.305 0.627 rg");
-        new PDDefaultAppearanceString(sampleString, resources);
+        assertThrows(IOException.class, () -> {
+            new PDDefaultAppearanceString(sampleString, resources);
+        });
     }
     
-    @Test(expected=IOException.class)
+    @Test
     public void testWrongNumberOfColorArguments() throws IOException
     {
         COSString sampleString = new COSString("/Helvetica 12 Tf 0.305 0.627 rg");
-        new PDDefaultAppearanceString(sampleString, resources);
+        assertThrows(IOException.class, () -> {
+            new PDDefaultAppearanceString(sampleString, resources);
+        });
     } 
 }

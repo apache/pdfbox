@@ -16,11 +16,13 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,10 +35,9 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
-import org.junit.After;
-import static org.junit.Assert.assertNotEquals;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -58,7 +59,7 @@ public class PDButtonTest
     private PDAcroForm acrobatAcroForm;
     
     
-    @Before
+    @BeforeEach
     public void setUp() throws IOException
     {
         document = new PDDocument();
@@ -122,7 +123,7 @@ public class PDButtonTest
             radioButton.setValue("Off");
             for (PDAnnotationWidget widget : radioButton.getWidgets())
             {
-                assertEquals("The widget should be set to Off", COSName.Off, widget.getCOSObject().getItem(COSName.AS));
+                assertEquals(COSName.Off, widget.getCOSObject().getItem(COSName.AS), "The widget should be set to Off");
             }
             
         }
@@ -291,36 +292,44 @@ public class PDButtonTest
         assertEquals("Option3",checkbox.getWidgets().get(3).getAppearanceState().getName());
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void setCheckboxInvalidValue() throws IOException
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
-        checkbox.setValue("InvalidValue");
+        assertThrows(IllegalArgumentException.class, () -> {
+            checkbox.setValue("InvalidValue");
+        });
     }    
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void setCheckboxGroupInvalidValue() throws IOException
     {
         PDCheckBox checkbox = (PDCheckBox) acrobatAcroForm.getField("CheckboxGroup");
         // Set a value which doesn't match the radio button list 
-        checkbox.setValue("InvalidValue");
+        assertThrows(IllegalArgumentException.class, () -> {
+            checkbox.setValue("InvalidValue");
+        });
     }    
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void setAbstractedCheckboxInvalidValue() throws IOException
     {
         PDField checkbox = acrobatAcroForm.getField("Checkbox");
         // Set a value which doesn't match the radio button list 
-        checkbox.setValue("InvalidValue");
+        assertThrows(IllegalArgumentException.class, () -> {
+            checkbox.setValue("InvalidValue");
+        });
     }    
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void setAbstractedCheckboxGroupInvalidValue() throws IOException
     {
         PDField checkbox = acrobatAcroForm.getField("CheckboxGroup");
-        // Set a value which doesn't match the radio button list 
-        checkbox.setValue("InvalidValue");
+        // Set a value which doesn't match the radio button list
+        assertThrows(IllegalArgumentException.class, () -> {
+            checkbox.setValue("InvalidValue");
+        });
     }    
 
     @Test
@@ -381,23 +390,27 @@ public class PDButtonTest
                 radioButton.getWidgets().get(1).getCOSObject().getDictionaryObject(COSName.AS));
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void setRadioButtonInvalidValue() throws IOException
     {
         PDRadioButton radioButton = (PDRadioButton) acrobatAcroForm.getField("RadioButtonGroup");
-        // Set a value which doesn't match the radio button list 
-        radioButton.setValue("InvalidValue");
+        // Set a value which doesn't match the radio button list
+        assertThrows(IllegalArgumentException.class, () -> {
+            radioButton.setValue("InvalidValue");
+        });
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void setAbstractedRadioButtonInvalidValue() throws IOException
     {
         PDField radioButton = acrobatAcroForm.getField("RadioButtonGroup");
-        // Set a value which doesn't match the radio button list 
-        radioButton.setValue("InvalidValue");
+        // Set a value which doesn't match the radio button list
+        assertThrows(IllegalArgumentException.class, () -> {
+            radioButton.setValue("InvalidValue");
+        });
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws IOException
     {
         document.close();

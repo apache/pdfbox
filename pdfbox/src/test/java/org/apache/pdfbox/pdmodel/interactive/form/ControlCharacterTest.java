@@ -16,7 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,9 +30,9 @@ import org.apache.pdfbox.cos.COSString;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test handling some special characters when setting a fields value.
@@ -65,17 +66,19 @@ public class ControlCharacterTest {
     private PDDocument document;
     private PDAcroForm acroForm;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException
     {
         document = Loader.loadPDF(new File(IN_DIR, NAME_OF_PDF));
         acroForm = document.getDocumentCatalog().getAcroForm();
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void characterNUL() throws IOException
     {
-    	acroForm.getField("pdfbox-nul").setValue("NUL\0NUL");
+        assertThrows(IllegalArgumentException.class, () -> {
+            acroForm.getField("pdfbox-nul").setValue("NUL\0NUL");
+          });
     }
 
     @Test
@@ -168,7 +171,7 @@ public class ControlCharacterTest {
     	assertEquals(pdfboxValues, acrobatValues);
     }
     
-    @After
+    @AfterEach
     public void tearDown() throws IOException
     {
         document.close();

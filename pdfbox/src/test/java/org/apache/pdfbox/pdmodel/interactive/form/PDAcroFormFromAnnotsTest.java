@@ -16,8 +16,8 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,7 +35,7 @@ import org.apache.pdfbox.pdmodel.fixup.AbstractFixup;
 import org.apache.pdfbox.pdmodel.fixup.AcroFormDefaultFixup;
 import org.apache.pdfbox.pdmodel.fixup.processor.AcroFormOrphanWidgetsProcessor;
 import org.apache.pdfbox.pdmodel.font.PDFont;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for building AcroForm entries form Widget annotations.
@@ -72,9 +72,9 @@ public class PDAcroFormFromAnnotsTest
             // need to do a low level cos access as the PDModel access will build the AcroForm 
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
-            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
             PDAcroForm acroForm = catalog.getAcroForm();
-            assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
+            assertEquals(numFormFieldsByAcrobat, acroForm.getFields().size(), "After rebuild there shall be " + numFormFieldsByAcrobat + " fields");
         }
     }
 
@@ -107,9 +107,9 @@ public class PDAcroFormFromAnnotsTest
             // need to do a low level cos access as the PDModel access will build the AcroForm 
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
-            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
             PDAcroForm acroForm = catalog.getAcroForm(new AcroFormDefaultFixup(testPdf));
-            assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
+            assertEquals(numFormFieldsByAcrobat, acroForm.getFields().size(), "After rebuild there shall be " + numFormFieldsByAcrobat + " fields");
         }
     } 
 
@@ -135,9 +135,9 @@ public class PDAcroFormFromAnnotsTest
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
             numCosFormFields = cosFields.size();
-            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
             PDAcroForm acroForm = catalog.getAcroForm(null);
-            assertEquals("After call without correction there shall be " + numCosFormFields + " fields", numCosFormFields, acroForm.getFields().size());
+            assertEquals(numCosFormFields, acroForm.getFields().size(), "After call without correction there shall be " + numCosFormFields + " fields");
         }
     }
 
@@ -160,9 +160,9 @@ public class PDAcroFormFromAnnotsTest
             // need to do a low level cos access as the PDModel access will build the AcroForm
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
-            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
             PDAcroForm acroForm = catalog.getAcroForm();
-            assertEquals("After call with default correction there shall be 0 fields", 0, acroForm.getFields().size());
+            assertEquals(0, acroForm.getFields().size(), "After call with default correction there shall be 0 fields");
         }
     }
 
@@ -202,9 +202,9 @@ public class PDAcroFormFromAnnotsTest
             // need to do a low level cos access as the PDModel access will build the AcroForm
             COSDictionary cosAcroForm = (COSDictionary) catalog.getCOSObject().getDictionaryObject(COSName.ACRO_FORM);
             COSArray cosFields = (COSArray) cosAcroForm.getDictionaryObject(COSName.FIELDS);
-            assertEquals("Initially there shall be 0 fields", 0, cosFields.size());
+            assertEquals(0, cosFields.size(), "Initially there shall be 0 fields");
             PDAcroForm acroForm = catalog.getAcroForm(new CreateFieldsFixup(testPdf));
-            assertEquals("After rebuild there shall be " + numFormFieldsByAcrobat + " fields", numFormFieldsByAcrobat, acroForm.getFields().size());
+            assertEquals(numFormFieldsByAcrobat, acroForm.getFields().size(), "After rebuild there shall be " + numFormFieldsByAcrobat + " fields");
 
             // the the fields found are contained in the map
             for (PDField field : acroForm.getFieldTree())
