@@ -19,8 +19,6 @@ package org.apache.pdfbox.contentstream.operator.state;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.contentstream.operator.MissingOperandException;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.contentstream.operator.OperatorName;
@@ -35,8 +33,6 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class SetLineMiterLimit extends OperatorProcessor
 {
-    private static final Log LOG = LogFactory.getLog(SetLineMiterLimit.class);
-
     @Override
     public void process(Operator operator, List<COSBase> arguments) throws IOException
     {
@@ -45,12 +41,7 @@ public class SetLineMiterLimit extends OperatorProcessor
             throw new MissingOperandException(operator, arguments);
         }
         COSNumber miterLimit = (COSNumber)arguments.get( 0 );
-        float lim = miterLimit.floatValue();
-        if (lim < 1)
-        {
-            LOG.warn("Miter limit must be >= 1, value " + lim + " is ignored");
-        }
-        context.getGraphicsState().setMiterLimit(lim);
+        context.getGraphicsState().setMiterLimit(miterLimit.floatValue());
     }
 
     @Override
