@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  * @author Cornelis Hoeflake
  * @author Tilman Hausherr
  */
-public class PDFCloneUtilityTest
+class PDFCloneUtilityTest
 {
     /**
      * original (minimal) test from PDFBOX-2052.
@@ -48,7 +48,7 @@ public class PDFCloneUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testClonePDFWithCosArrayStream() throws IOException
+    void testClonePDFWithCosArrayStream() throws IOException
     {
         try (PDDocument srcDoc = new PDDocument();
              PDDocument dstDoc = new PDDocument())
@@ -68,7 +68,7 @@ public class PDFCloneUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testClonePDFWithCosArrayStream2() throws IOException
+    void testClonePDFWithCosArrayStream2() throws IOException
     {
         final String TESTDIR = "target/test-output/clone/";
         final String CLONESRC = "clone-src.pdf";
@@ -121,7 +121,7 @@ public class PDFCloneUtilityTest
      * @throws IOException
      */
     @Test
-    public void testDirectIndirect() throws IOException
+    void testDirectIndirect() throws IOException
     {
         try (PDDocument doc1 = new PDDocument())
         {

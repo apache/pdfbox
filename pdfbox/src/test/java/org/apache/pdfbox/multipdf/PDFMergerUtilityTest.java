@@ -67,7 +67,7 @@ import org.junit.jupiter.api.Test;
  * @author Maruan Sahyoun (PDF files)
  * @author Tilman Hausherr (code)
  */
-public class PDFMergerUtilityTest
+class PDFMergerUtilityTest
 {
     final String SRCDIR = "src/test/resources/input/merge/";
     final String TARGETTESTDIR = "target/test-output/merge/";
@@ -93,7 +93,7 @@ public class PDFMergerUtilityTest
      * @throws IOException if something goes wrong.
      */
     @Test
-    public void testPDFMergerUtility() throws IOException
+    void testPDFMergerUtility() throws IOException
     {
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.decoded.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.decoded.pdf",
@@ -115,7 +115,7 @@ public class PDFMergerUtilityTest
      * @throws IOException if something goes wrong.
      */
     @Test
-    public void testJpegCcitt() throws IOException
+    void testJpegCcitt() throws IOException
     {
         checkMergeIdentical("jpegrgb.pdf",
                 "multitiff.pdf",
@@ -131,7 +131,7 @@ public class PDFMergerUtilityTest
 
     // see PDFBOX-2893
     @Test
-    public void testPDFMergerUtility2() throws IOException
+    void testPDFMergerUtility2() throws IOException
     {
         checkMergeIdentical("PDFBox.GlobalResourceMergeTest.Doc01.pdf",
                 "PDFBox.GlobalResourceMergeTest.Doc02.pdf",
@@ -151,7 +151,7 @@ public class PDFMergerUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testPDFMergerOpenAction() throws IOException
+    void testPDFMergerOpenAction() throws IOException
     {
         try (PDDocument doc1 = new PDDocument())
         {
@@ -195,7 +195,7 @@ public class PDFMergerUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testStructureTreeMerge() throws IOException
+    void testStructureTreeMerge() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader
@@ -235,7 +235,7 @@ public class PDFMergerUtilityTest
      * @throws IOException
      */
     @Test
-    public void testStructureTreeMerge2() throws IOException
+    void testStructureTreeMerge2() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument doc = Loader
@@ -284,7 +284,7 @@ public class PDFMergerUtilityTest
      * @throws IOException
      */
     @Test
-    public void testStructureTreeMerge3() throws IOException
+    void testStructureTreeMerge3() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
@@ -323,7 +323,7 @@ public class PDFMergerUtilityTest
      * @throws IOException
      */
     @Test
-    public void testStructureTreeMerge4() throws IOException
+    void testStructureTreeMerge4() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
@@ -361,7 +361,7 @@ public class PDFMergerUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testStructureTreeMerge5() throws IOException
+    void testStructureTreeMerge5() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(SRCDIR, "PDFBOX-4417-054080.pdf"));
@@ -397,7 +397,7 @@ public class PDFMergerUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testStructureTreeMerge6() throws IOException
+    void testStructureTreeMerge6() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4418-000671.pdf"));
@@ -448,7 +448,7 @@ public class PDFMergerUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testStructureTreeMerge7() throws IOException
+    void testStructureTreeMerge7() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4423-000746.pdf"));
@@ -488,7 +488,7 @@ public class PDFMergerUtilityTest
      * PDFBOX-4009: Test that ParentTreeNextKey is recalculated correctly.
      */
     @Test
-    public void testMissingParentTreeNextKey() throws IOException
+    void testMissingParentTreeNextKey() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4418-000314.pdf"));
@@ -516,7 +516,7 @@ public class PDFMergerUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testStructureTreeMergeIDTree() throws IOException
+    void testStructureTreeMergeIDTree() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(SRCDIR, "PDFBOX-4417-001031.pdf"));
@@ -560,7 +560,7 @@ public class PDFMergerUtilityTest
      * @throws IOException
      */
     @Test
-    public void testMergeBogusStructParents1() throws IOException
+    void testMergeBogusStructParents1() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
@@ -582,7 +582,7 @@ public class PDFMergerUtilityTest
      * @throws IOException
      */
     @Test
-    public void testMergeBogusStructParents2() throws IOException
+    void testMergeBogusStructParents2() throws IOException
     {
         PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
         PDDocument src = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4408.pdf"));
@@ -604,7 +604,7 @@ public class PDFMergerUtilityTest
      * @throws IOException
      */
     @Test
-    public void testParentTree() throws IOException
+    void testParentTree() throws IOException
     {
         PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3999-GeneralForbearance.pdf"));
@@ -691,7 +691,7 @@ public class PDFMergerUtilityTest
      * @throws IOException 
      */
     @Test
-    public void testFileDeletion() throws IOException
+    void testFileDeletion() throws IOException
     {
         File outFile = new File(TARGETTESTDIR, "PDFBOX-4383-result.pdf");
 

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Adam Nichols
  */
-public class PageExtractorTest
+class PageExtractorTest
 {
     
     private void closeDoc(PDDocument doc)
@@ -55,7 +55,7 @@ public class PageExtractorTest
      * Test of extract method, of class org.apache.pdfbox.util.PageExtractor.
      */
     @Test
-    public void testExtract() throws Exception
+    void testExtract() throws Exception
     {
         PDDocument sourcePdf = null;
         PDDocument result = null;

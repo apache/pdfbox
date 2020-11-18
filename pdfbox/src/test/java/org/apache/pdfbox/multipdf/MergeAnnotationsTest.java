@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test merging different PDFs with Annotations.
  */
-public class MergeAnnotationsTest
+class MergeAnnotationsTest
 {
     private static final File OUT_DIR = new File("target/test-output/merge/");
     private static final File TARGET_PDF_DIR = new File("target/pdfs");
@@ -54,7 +54,8 @@ public class MergeAnnotationsTest
      * annotations and they point to the correct page.
      */
     @Test
-    public void testLinkAnnotations() throws IOException {
+    void testLinkAnnotations() throws IOException
+    {
         
         // Merge the PDFs from PDFBOX-1065
         PDFMergerUtility merger = new PDFMergerUtility();

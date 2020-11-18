@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class OverlayTest
+class OverlayTest
 {
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
     private static final File OUT_DIR = new File("target/test-output/overlay");
@@ -55,13 +55,8 @@ public class OverlayTest
         OUT_DIR.mkdirs();
     }
     
-    @AfterEach
-    public void tearDown()
-    {
-    }
-
     @Test
-    public void testRotatedOverlays() throws Exception
+    void testRotatedOverlays() throws Exception
     {
         testRotatedOverlay(0);
         testRotatedOverlay(90);

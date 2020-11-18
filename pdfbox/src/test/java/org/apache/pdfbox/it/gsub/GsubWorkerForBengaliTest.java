@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * @author Palash Ray
  *
  */
-public class GsubWorkerForBengaliTest
+class GsubWorkerForBengaliTest
 {
 
     private static final String LOHIT_BENGALI_TTF = "/org/apache/pdfbox/ttf/Lohit-Bengali.ttf";
@@ -64,7 +64,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_simple_hosshoi_kar()
+    void testApplyTransforms_simple_hosshoi_kar()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(56, 102, 91);
@@ -77,7 +77,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_ja_phala()
+    void testApplyTransforms_ja_phala()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(89, 156, 101, 97);
@@ -90,7 +90,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_e_kar()
+    void testApplyTransforms_e_kar()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(438, 89, 94, 101);
@@ -103,7 +103,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_o_kar()
+    void testApplyTransforms_o_kar()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(108, 89, 101, 97);
@@ -116,7 +116,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Disabled
-    public void testApplyTransforms_o_kar_repeated_1_not_working_yet()
+    void testApplyTransforms_o_kar_repeated_1_not_working_yet()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(108, 96, 101, 108, 94, 101);
@@ -129,7 +129,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Disabled
-    public void testApplyTransforms_o_kar_repeated_2_not_working_yet()
+    void testApplyTransforms_o_kar_repeated_2_not_working_yet()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(108, 73, 101, 108, 77, 101);
@@ -142,7 +142,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_ou_kar()
+    void testApplyTransforms_ou_kar()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(108, 91, 114, 94);
@@ -155,7 +155,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_oi_kar()
+    void testApplyTransforms_oi_kar()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(439, 89, 93);
@@ -168,7 +168,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_kha_e_murddhana_swa_e_khiwa()
+    void testApplyTransforms_kha_e_murddhana_swa_e_khiwa()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(167, 103, 438, 93, 93);
@@ -181,7 +181,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_ra_phala()
+    void testApplyTransforms_ra_phala()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(274, 82);
@@ -194,7 +194,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_ref()
+    void testApplyTransforms_ref()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(85, 104, 440, 82);
@@ -207,7 +207,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_ra_e_hosshu()
+    void testApplyTransforms_ra_e_hosshu()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(352, 108, 87, 101);
@@ -220,7 +220,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_la_e_la_e()
+    void testApplyTransforms_la_e_la_e()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(67, 108, 369, 101, 94);
@@ -233,7 +233,7 @@ public class GsubWorkerForBengaliTest
     }
 
     @Test
-    public void testApplyTransforms_khanda_ta()
+    void testApplyTransforms_khanda_ta()
     {
         // given
         List<Integer> glyphsAfterGsub = Arrays.asList(98, 78, 101, 113);

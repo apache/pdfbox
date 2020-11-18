@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * 
  * 
  */
-public class MergeAcroFormsTest
+class MergeAcroFormsTest
 {
     private static final File IN_DIR = new File("src/test/resources/org/apache/pdfbox/multipdf");
     private static final File OUT_DIR = new File("target/test-output/merge/");
@@ -58,7 +58,7 @@ public class MergeAcroFormsTest
      * Test LegacyMode merge
      */
     @Test
-    public void testLegacyModeMerge() throws IOException
+    void testLegacyModeMerge() throws IOException
     {
         PDFMergerUtility merger = new PDFMergerUtility();
         File toBeMerged = new File(IN_DIR,"AcroFormForMerge.pdf");
@@ -132,7 +132,8 @@ public class MergeAcroFormsTest
      * PDFBOX-1031 Ensure that after merging the PDFs there is an Annots entry per page.
      */
     @Test
-    public void testAnnotsEntry() throws IOException {
+    void testAnnotsEntry() throws IOException
+    {
 
         // Merge the PDFs form PDFBOX-1031
         PDFMergerUtility merger = new PDFMergerUtility();
@@ -171,7 +172,8 @@ public class MergeAcroFormsTest
      * PDFBOX-1100 Ensure that after merging the PDFs there is an AP and V entry.
      */
     @Test
-    public void testAPEntry() throws IOException {
+    void testAPEntry() throws IOException
+    {
 
         File file1 = new File(TARGET_PDF_DIR, "PDFBOX-1100-1.pdf");
         File file2 = new File(TARGET_PDF_DIR, "PDFBOX-1100-2.pdf");
@@ -209,7 +211,5 @@ public class MergeAcroFormsTest
                     "There shall be a /V entry for the field");
         }
     }
-    
-    
     
 }
