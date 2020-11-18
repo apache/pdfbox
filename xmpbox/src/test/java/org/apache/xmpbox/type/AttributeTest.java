@@ -25,11 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class AttributeTest
+class AttributeTest
 {
 
     @Test
-    public void testAtt()
+    void testAtt()
     {
         String nsUri = "nsUri";
         String prefix = "prefix";
@@ -58,7 +58,7 @@ public class AttributeTest
     }
 
     @Test
-    public void testAttWithoutPrefix()
+    void testAttWithoutPrefix()
     {
         String nsUri = "nsUri";
         String localName = "localName";

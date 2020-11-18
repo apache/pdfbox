@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  * Test the date conversion utility.
  *
  */
-public class DateConverterTest
+class DateConverterTest
 {
 
     /**
@@ -44,7 +44,7 @@ public class DateConverterTest
      * @throws Exception when there is an exception
      */
     @Test
-    public void testDateConversion() throws Exception
+    void testDateConversion() throws Exception
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar jaxbCal;
@@ -109,7 +109,7 @@ public class DateConverterTest
      * @throws Exception when there is an exception
      */
     @Test
-    public void testDateFormatting() throws Exception
+    void testDateFormatting() throws Exception
     {
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Calendar cal = DateConverter.toCalendar("2015-02-02T16:37:19.192Z");

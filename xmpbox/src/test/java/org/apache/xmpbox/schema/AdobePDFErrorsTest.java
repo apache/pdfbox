@@ -29,13 +29,13 @@ import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.junit.jupiter.api.Test;
 
-public class AdobePDFErrorsTest
+class AdobePDFErrorsTest
 {
 
     private XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
-    public void testPDFAIdentification() throws Exception
+    void testPDFAIdentification() throws Exception
     {
         AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
 
@@ -67,7 +67,7 @@ public class AdobePDFErrorsTest
     }
 
     @Test
-    public void testBadPDFAConformanceId() throws Exception
+    void testBadPDFAConformanceId() throws Exception
     {
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
         String conformance = "kiohiohiohiohio";
@@ -77,7 +77,7 @@ public class AdobePDFErrorsTest
     }
 
     @Test
-    public void testBadVersionIdValueType() throws Exception
+    void testBadVersionIdValueType() throws Exception
     {
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
         assertThrows(IllegalArgumentException.class, () -> {

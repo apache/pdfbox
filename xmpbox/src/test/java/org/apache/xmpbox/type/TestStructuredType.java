@@ -37,12 +37,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TestStructuredType extends AbstractTypeTester
+class TestStructuredType extends AbstractTypeTester
 {
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testInitializedToNull(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testInitializedToNull(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
         assertNull(structured.getProperty(fieldName));
         // accessor
@@ -53,14 +53,14 @@ public class TestStructuredType extends AbstractTypeTester
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testSettingValue(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testSettingValue(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
         internalTestSettingValue(structured, clz, fieldName, type);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testRandomSettingValue(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testRandomSettingValue(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -88,14 +88,14 @@ public class TestStructuredType extends AbstractTypeTester
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
         internalTestPropertyType(structured, clz, fieldName, type);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testRandomPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testRandomPropertyType(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)
@@ -118,14 +118,14 @@ public class TestStructuredType extends AbstractTypeTester
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testSetter(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testSetter(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
         internalTestSetter(structured, clz, fieldName, type);
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testRandomSetter(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
+    void testRandomSetter(AbstractStructuredType structured, Class<? extends AbstractStructuredType> clz, String fieldName, Types type) throws Exception
     {
         initializeSeed(new Random());
         for (int i=0; i < RAND_LOOP_COUNT;i++)

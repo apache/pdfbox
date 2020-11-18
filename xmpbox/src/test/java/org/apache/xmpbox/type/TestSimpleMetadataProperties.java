@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * @author a183132
  * 
  */
-public class TestSimpleMetadataProperties
+class TestSimpleMetadataProperties
 {
 
     private final XMPMetadata parent = XMPMetadata.createXMPMetadata();
@@ -49,7 +49,7 @@ public class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    public void testBooleanBadTypeDetection()
+    void testBooleanBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
 	        new BooleanType(parent, null, "test", "boolean", "Not a Boolean");
@@ -62,7 +62,7 @@ public class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    public void testDateBadTypeDetection()
+    void testDateBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
 	        new DateType(parent, null, "test", "date", "Bad Date");
@@ -75,7 +75,7 @@ public class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    public void testIntegerBadTypeDetection()
+    void testIntegerBadTypeDetection()
     {
         assertThrows(IllegalArgumentException.class, () -> {
 	        new IntegerType(parent, null, "test", "integer", "Not an int");
@@ -88,7 +88,7 @@ public class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    public void testRealBadTypeDetection() throws Exception
+    void testRealBadTypeDetection() throws Exception
     {
         assertThrows(IllegalArgumentException.class, () -> {
 	        new RealType(parent, null, "test", "real", "Not a real");
@@ -101,7 +101,7 @@ public class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    public void testTextBadTypeDetection() throws Exception
+    void testTextBadTypeDetection() throws Exception
     {
         assertThrows(IllegalArgumentException.class, () -> {
 	        new TextType(parent, null, "test", "text", Calendar.getInstance());
@@ -114,7 +114,7 @@ public class TestSimpleMetadataProperties
      * @throws Exception
      */
     @Test
-    public void testElementAndObjectSynchronization() throws Exception
+    void testElementAndObjectSynchronization() throws Exception
     {
         boolean boolv = true;
         Calendar datev = Calendar.getInstance();
@@ -141,7 +141,7 @@ public class TestSimpleMetadataProperties
      * @throws Exception
      */
     @Test
-    public void testCreationFromString() throws Exception
+    void testCreationFromString() throws Exception
     {
         String boolv = "False";
         String datev = "2010-03-22T14:33:11+01:00";
@@ -168,7 +168,7 @@ public class TestSimpleMetadataProperties
      * @throws Exception
      */
     @Test
-    public void testObjectCreationWithNamespace() throws Exception
+    void testObjectCreationWithNamespace() throws Exception
     {
         String ns = "http://www.test.org/pdfa/";
         BooleanType bool = parent.getTypeMapping().createBoolean(ns, "test", "boolean", true);
@@ -191,7 +191,7 @@ public class TestSimpleMetadataProperties
      * @throws IllegalArgumentException
      */
     @Test
-    public void testExceptionWithCause() throws Exception
+    void testExceptionWithCause() throws Exception
     {
         assertThrows(IllegalArgumentException.class, () -> {
 	        throw new IllegalArgumentException("TEST", new Throwable());
@@ -204,7 +204,7 @@ public class TestSimpleMetadataProperties
      * @throws Exception
      */
     @Test
-    public void testAttribute() throws Exception
+    void testAttribute() throws Exception
     {
 
         IntegerType integer = new IntegerType(parent, null, "test", "integer", 1);

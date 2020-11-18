@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class TestValidatePermitedMetadata
+class TestValidatePermitedMetadata
 {
 
     public static Collection<Object[]> initializeParameters() throws Exception

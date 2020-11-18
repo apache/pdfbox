@@ -28,10 +28,10 @@ import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
 import org.junit.jupiter.api.Test;
 
-public class PDFAIdentificationOthersTest
+class PDFAIdentificationOthersTest
 {
     @Test
-    public void testPDFAIdentification() throws Exception
+    void testPDFAIdentification() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
@@ -59,7 +59,7 @@ public class PDFAIdentificationOthersTest
     }
 
     @Test
-    public void testBadPDFAConformanceId() throws BadFieldValueException
+    void testBadPDFAConformanceId() throws BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
@@ -70,7 +70,7 @@ public class PDFAIdentificationOthersTest
     }
 
     @Test
-    public void testBadVersionIdValueType() throws Exception
+    void testBadVersionIdValueType() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();

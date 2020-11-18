@@ -24,7 +24,7 @@ package org.apache.xmpbox.parser;
 import org.apache.xmpbox.type.PropertiesDescription;
 import org.junit.jupiter.api.BeforeEach;
 
-public class PropMappingTest
+class PropMappingTest
 {
 
     protected PropertiesDescription propMap;

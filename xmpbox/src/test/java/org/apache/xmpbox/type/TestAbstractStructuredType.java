@@ -29,7 +29,7 @@ import java.util.Calendar;
 import org.apache.xmpbox.XMPMetadata;
 import org.junit.jupiter.api.Test;
 
-public class TestAbstractStructuredType
+class TestAbstractStructuredType
 {
 
     private static class MyStructuredType extends AbstractStructuredType
@@ -64,19 +64,19 @@ public class TestAbstractStructuredType
     }
 
     @Test
-    public void testNonExistingProperty() throws Exception
+    void testNonExistingProperty() throws Exception
     {
         assertNull(st.getProperty("NOT_EXISTING"));
     }
 
     @Test
-    public void testNotValuatedPropertyProperty() throws Exception
+    void testNotValuatedPropertyProperty() throws Exception
     {
         assertNull(st.getProperty(MyStructuredType.MYTEXT));
     }
 
     @Test
-    public void testValuatedTextProperty() throws Exception
+    void testValuatedTextProperty() throws Exception
     {
         String s = "my value";
         st.addSimpleProperty(MyStructuredType.MYTEXT, s);
@@ -86,7 +86,7 @@ public class TestAbstractStructuredType
     }
 
     @Test
-    public void testValuatedDateProperty() throws Exception
+    void testValuatedDateProperty() throws Exception
     {
         Calendar c = Calendar.getInstance();
         st.addSimpleProperty(MyStructuredType.MYDATE, c);

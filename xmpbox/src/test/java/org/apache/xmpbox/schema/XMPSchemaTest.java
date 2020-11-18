@@ -44,7 +44,7 @@ import org.apache.xmpbox.type.TextType;
 import org.apache.xmpbox.type.TypeMapping;
 import org.junit.jupiter.api.Test;
 
-public class XMPSchemaTest
+class XMPSchemaTest
 {
     private final XMPMetadata parent = XMPMetadata.createXMPMetadata();
     private final XMPSchema schem = new XMPSchema(parent, "nsURI", "nsSchem");
@@ -55,7 +55,7 @@ public class XMPSchemaTest
      * @throws IllegalArgumentException
      */
     @Test
-    public void testBagManagement() throws Exception
+    void testBagManagement() throws Exception
     {
         String bagName = "BAGTEST";
         String value1 = "valueOne";
@@ -75,7 +75,7 @@ public class XMPSchemaTest
     }
 
     @Test
-    public void testArrayList() throws Exception
+    void testArrayList() throws Exception
     {
         XMPMetadata meta = XMPMetadata.createXMPMetadata();
         ArrayProperty newSeq = meta.getTypeMapping().createArrayProperty(null, "nsSchem", "seqType", Cardinality.Seq);
@@ -97,7 +97,7 @@ public class XMPSchemaTest
      * @throws java.io.IOException
      */
     @Test
-    public void testSeqManagement() throws Exception
+    void testSeqManagement() throws Exception
     {
         Calendar date = Calendar.getInstance();
         BooleanType bool = parent.getTypeMapping().createBoolean(null, "rdf", "li", true);
@@ -141,7 +141,7 @@ public class XMPSchemaTest
     }
 
     @Test
-    public void testBadRdfAbout() throws Exception
+    void testBadRdfAbout() throws Exception
     {
         assertThrows(BadFieldValueException.class, () -> {
 	        schem.setAbout(new Attribute(null, "about", ""));
@@ -149,7 +149,7 @@ public class XMPSchemaTest
     }
 
     @Test
-    public void testSetSpecifiedSimpleTypeProperty() throws Exception
+    void testSetSpecifiedSimpleTypeProperty() throws Exception
     {
         String prop = "testprop";
         String val = "value";
@@ -163,7 +163,7 @@ public class XMPSchemaTest
     }
 
     @Test
-    public void testSpecifiedSimplePropertyFormer() throws Exception
+    void testSpecifiedSimplePropertyFormer() throws Exception
     {
         String prop = "testprop";
         String val = "value";
@@ -176,7 +176,7 @@ public class XMPSchemaTest
     }
 
     @Test
-    public void testAsSimpleMethods() throws Exception
+    void testAsSimpleMethods() throws Exception
     {
         String bool = "bool";
         boolean boolVal = true;
@@ -235,7 +235,7 @@ public class XMPSchemaTest
      * @throws BadFieldValueException
      */
     @Test
-    public void testProperties() throws Exception
+    void testProperties() throws Exception
     {
 
         assertEquals("nsURI", schem.getNamespace());
@@ -331,7 +331,7 @@ public class XMPSchemaTest
     }
 
     @Test
-    public void testAltProperties() throws Exception
+    void testAltProperties() throws Exception
     {
         String altProp = "AltProp";
 
@@ -380,7 +380,7 @@ public class XMPSchemaTest
      * @throws java.io.IOException
      */
     @Test
-    public void testMergeSchema() throws Exception
+    void testMergeSchema() throws Exception
     {
         String bagName = "bagName";
         String seqName = "seqName";
@@ -428,7 +428,7 @@ public class XMPSchemaTest
     }
 
     @Test
-    public void testListAndContainerAccessor() throws Exception
+    void testListAndContainerAccessor() throws Exception
     {
         String boolname = "bool";
         boolean boolVal = true;

@@ -30,7 +30,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class PhotoshopSchemaTest
+class PhotoshopSchemaTest
 {    
     private XMPMetadata metadata;
     private Class<?> schemaClass;
@@ -44,7 +44,7 @@ public class PhotoshopSchemaTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testInitializedToNull(String fieldName, Types type, Cardinality card) throws Exception
+    void testInitializedToNull(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testInitializedToNull();
@@ -52,7 +52,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testSettingValue(String fieldName, Types type, Cardinality card) throws Exception
+    void testSettingValue(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValue();
@@ -60,7 +60,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testRandomSettingValue(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomSettingValue(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValue();
@@ -68,7 +68,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValueInArray();
@@ -76,7 +76,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testRandomSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValueInArray();
@@ -84,7 +84,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
+    void testPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterSimple();
@@ -92,7 +92,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testRandomPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterSimple();
@@ -100,7 +100,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterInArray();
@@ -108,7 +108,7 @@ public class PhotoshopSchemaTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testRandomPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
+    void testRandomPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
         SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterInArray();

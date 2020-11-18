@@ -35,10 +35,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 
-public class TestExifXmp
+class TestExifXmp
 {
     @Test
-    public void testNonStrict() throws Exception
+    void testNonStrict() throws Exception
     {
         InputStream is = this.getClass().getResourceAsStream("/validxmp/exif.xmp");
 
@@ -52,7 +52,7 @@ public class TestExifXmp
     }
 
     @Test
-    public void testGenerate() throws Exception
+    void testGenerate() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         TypeMapping tmapping = metadata.getTypeMapping();

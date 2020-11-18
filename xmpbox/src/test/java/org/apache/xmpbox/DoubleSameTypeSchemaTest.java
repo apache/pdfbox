@@ -37,13 +37,13 @@ import org.junit.jupiter.api.Test;
  * @author a183132
  * 
  */
- public class DoubleSameTypeSchemaTest
+class DoubleSameTypeSchemaTest
 {
 
     private final  XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
-    public void testDoubleDublinCore() throws Exception
+    void testDoubleDublinCore() throws Exception
     {
         DublinCoreSchema dc1 = metadata.createAndAddDublinCoreSchema();
         String ownPrefix = "test";

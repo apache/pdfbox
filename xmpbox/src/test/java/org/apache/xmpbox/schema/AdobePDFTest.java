@@ -37,7 +37,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class AdobePDFTest
+class AdobePDFTest
 {
 
     private XMPMetadata metadata;
@@ -54,7 +54,7 @@ public class AdobePDFTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementValue(String property, PropertyType type, String value) throws Exception
+    void testElementValue(String property, PropertyType type, String value) throws Exception
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
@@ -62,7 +62,7 @@ public class AdobePDFTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementProperty(String property, PropertyType type, String value) throws Exception
+    void testElementProperty(String property, PropertyType type, String value) throws Exception
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
@@ -78,7 +78,7 @@ public class AdobePDFTest
     }
 
     @Test
-    public void testPDFAIdentification() throws Exception
+    void testPDFAIdentification() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         AdobePDFSchema schem = metadata.createAndAddAdobePDFSchema();
@@ -109,7 +109,7 @@ public class AdobePDFTest
     }
 
     @Test
-    public void testBadPDFAConformanceId() throws BadFieldValueException
+    void testBadPDFAConformanceId() throws BadFieldValueException
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();

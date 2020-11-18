@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class PDFAIdentificationTest
+class PDFAIdentificationTest
 {
     private XMPMetadata metadata;
     private XMPSchema schema;
@@ -47,7 +47,7 @@ public class PDFAIdentificationTest
     
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementValue(String property, PropertyType type, Object value) throws Exception
+    void testElementValue(String property, PropertyType type, Object value) throws Exception
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
@@ -55,7 +55,7 @@ public class PDFAIdentificationTest
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementProperty(String property, PropertyType type, Object value) throws Exception
+    void testElementProperty(String property, PropertyType type, Object value) throws Exception
     {
         XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();

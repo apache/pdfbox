@@ -28,7 +28,7 @@ import org.apache.xmpbox.xml.DomXmpParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TestXMPWithDefinedSchemas
+class TestXMPWithDefinedSchemas
 {
     public static Stream<String> initializeParameters() throws Exception
     {

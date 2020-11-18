@@ -45,7 +45,8 @@ import org.junit.jupiter.api.Test;
  * @author a183132
  * 
  */
-public class XMPMetaDataTest {
+class XMPMetaDataTest
+{
     @Test
     public void testAddingSchem()
     {

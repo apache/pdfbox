@@ -43,7 +43,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.apache.xmpbox.xml.XmpSerializer;
 
-public class DeserializationTest {
+class DeserializationTest {
 
     protected ByteArrayOutputStream bos;
 
@@ -57,7 +57,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testStructuredRecursive() throws Exception
+    void testStructuredRecursive() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/structured_recursive.xml");
 
@@ -68,7 +68,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testEmptyLi() throws Exception
+    void testEmptyLi() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/empty_list.xml");
 
@@ -79,7 +79,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testEmptyLi2() throws Exception
+    void testEmptyLi2() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
 
@@ -91,7 +91,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testGetTitle() throws Exception
+    void testGetTitle() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
 
@@ -104,7 +104,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testAltBagSeq() throws Exception
+    void testAltBagSeq() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/AltBagSeqTest.xml");
 
@@ -116,7 +116,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testIsartorStyleWithThumbs() throws Exception
+    void testIsartorStyleWithThumbs() throws Exception
     {
 
         InputStream fis = DomXmpParser.class.getResourceAsStream("/org/apache/xmpbox/parser/ThumbisartorStyle.xml");
@@ -159,7 +159,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testWithNoXPacketStart() throws Exception
+    void testWithNoXPacketStart() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacket.xml");
 
@@ -176,7 +176,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testWithNoXPacketEnd() throws Exception
+    void testWithNoXPacketEnd() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noxpacketend.xml");
 
@@ -193,7 +193,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testWithNoRDFElement() throws Exception
+    void testWithNoRDFElement() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/noroot.xml");
 
@@ -210,7 +210,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testWithTwoRDFElement() throws Exception
+    void testWithTwoRDFElement() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/tworoot.xml");
 
@@ -227,7 +227,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testWithInvalidRDFElementPrefix() throws Exception
+    void testWithInvalidRDFElementPrefix() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot2.xml");
 
@@ -244,7 +244,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testWithRDFRootAsText() throws Exception
+    void testWithRDFRootAsText() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/invalidroot.xml");
 
@@ -261,7 +261,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testUndefinedSchema() throws Exception
+    void testUndefinedSchema() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedschema.xml");
 
@@ -278,7 +278,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testUndefinedPropertyWithDefinedSchema() throws Exception
+    void testUndefinedPropertyWithDefinedSchema() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedpropertyindefinedschema.xml");
 
@@ -295,7 +295,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testUndefinedStructuredWithDefinedSchema() throws Exception
+    void testUndefinedStructuredWithDefinedSchema() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/invalidxmp/undefinedstructuredindefinedschema.xml");
 
@@ -312,7 +312,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testRdfAboutFound() throws Exception
+    void testRdfAboutFound() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/emptyli.xml");
         DomXmpParser xdb = new DomXmpParser();
@@ -325,7 +325,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testWihtAttributesAsProperties() throws Exception
+    void testWihtAttributesAsProperties() throws Exception
     {
         InputStream fis = DomXmpParser.class.getResourceAsStream("/validxmp/attr_as_props.xml");
         DomXmpParser xdb = new DomXmpParser();
@@ -343,7 +343,7 @@ public class DeserializationTest {
     }
 
     @Test
-    public void testSpaceTextValues() throws Exception
+    void testSpaceTextValues() throws Exception
     {
         // check values with spaces at start or end
         // in this case, the value should not be trimmed

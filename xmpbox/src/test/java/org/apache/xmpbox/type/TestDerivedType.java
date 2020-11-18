@@ -33,7 +33,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 
-public class TestDerivedType
+class TestDerivedType
 {
 
     public static final String PREFIX = "myprefix";
@@ -83,7 +83,7 @@ public class TestDerivedType
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void test1(Class<? extends TextType> clz, String type) throws Exception
+    void test1(Class<? extends TextType> clz, String type) throws Exception
     {
         constructor = clz.getDeclaredConstructor(XMPMetadata.class, String.class, String.class, String.class, Object.class);
         TextType element = instanciate(xmp, null, PREFIX, NAME, VALUE);

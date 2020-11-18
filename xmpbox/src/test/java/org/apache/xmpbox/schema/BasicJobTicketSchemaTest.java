@@ -32,10 +32,10 @@ import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.jupiter.api.Test;
 
-public class BasicJobTicketSchemaTest
+class BasicJobTicketSchemaTest
 {
     @Test
-    public void testAddTwoJobs() throws Exception
+    void testAddTwoJobs() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         XmpSerializer serializer = new XmpSerializer();
@@ -58,7 +58,7 @@ public class BasicJobTicketSchemaTest
     }
 
     @Test
-    public void testAddWithDefaultPrefix() throws Exception
+    void testAddWithDefaultPrefix() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         XmpSerializer serializer = new XmpSerializer();
@@ -91,7 +91,7 @@ public class BasicJobTicketSchemaTest
     }
 
     @Test
-    public void testAddWithDefinedPrefix() throws Exception
+    void testAddWithDefinedPrefix() throws Exception
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         XmpSerializer serializer = new XmpSerializer();
