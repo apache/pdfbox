@@ -765,8 +765,14 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         }
         int lineCap = Math.min(2, Math.max(0, state.getLineCap()));
         int lineJoin = Math.min(2, Math.max(0, state.getLineJoin()));
+        float miterLimit = state.getMiterLimit();
+        if (miterLimit < 1)
+        {
+            LOG.warn("Miter limit must be >= 1, value " + miterLimit + " is ignored");
+            miterLimit = 10;
+        }
         return new BasicStroke(lineWidth, lineCap, lineJoin,
-                               state.getMiterLimit(), dashArray, phaseStart);
+                               miterLimit, dashArray, phaseStart);
     }
 
     private float[] getDashArray(PDLineDashPattern dashPattern)
