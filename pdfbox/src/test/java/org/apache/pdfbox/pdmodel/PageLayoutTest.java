@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
-public class PageLayoutTest
+class PageLayoutTest
 {
     /**
      * @author Tilman Hausherr
@@ -30,7 +30,7 @@ public class PageLayoutTest
      * Test for completeness (PDFBOX-3362).
      */
     @Test
-    public void testValues()
+    void testValues()
     {
         Set<PageLayout> pageLayoutSet = EnumSet.noneOf(PageLayout.class);
         Set<String> stringSet = new HashSet<>();
@@ -48,7 +48,7 @@ public class PageLayoutTest
      * @author John Bergqvist
      */
     @Test
-    public void fromStringInputNotNullOutputIllegalArgumentException()
+    void fromStringInputNotNullOutputIllegalArgumentException()
     {
         assertThrows(IllegalArgumentException.class, () -> PageLayout.fromString("SinglePag"));
     }

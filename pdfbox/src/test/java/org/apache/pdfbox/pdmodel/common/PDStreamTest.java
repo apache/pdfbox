@@ -31,14 +31,14 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDStreamTest
+class PDStreamTest
 {
     
     /**
      * Test for null filter list (PDFBOX-2948)
      */
     @Test
-    public void testCreateInputStreamNullFilters() throws Exception
+    void testCreateInputStreamNullFilters() throws Exception
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -62,7 +62,7 @@ public class PDStreamTest
      * Test for empty filter list
      */
     @Test
-    public void testCreateInputStreamEmptyFilters() throws Exception
+    void testCreateInputStreamEmptyFilters() throws Exception
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -86,7 +86,7 @@ public class PDStreamTest
      * Test for null stop filters
      */
     @Test
-    public void testCreateInputStreamNullStopFilters() throws Exception
+    void testCreateInputStreamNullStopFilters() throws Exception
     {
         try (PDDocument doc = new PDDocument())
         {

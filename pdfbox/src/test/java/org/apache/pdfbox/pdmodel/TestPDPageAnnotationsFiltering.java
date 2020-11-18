@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  * @author <a href="mailto:maxime.veron.pro@gmail.com">Maxime Veron</a>
  *
  */
-public class TestPDPageAnnotationsFiltering
+class TestPDPageAnnotationsFiltering
 {
     // test mock page for annotations filtering
     private PDPage page;
@@ -57,7 +57,7 @@ public class TestPDPageAnnotationsFiltering
     }
 
     @Test
-    public void validateNoFiltering() throws IOException
+     void validateNoFiltering() throws IOException
     {
         List<PDAnnotation> annotations = page.getAnnotations();
         assertEquals(3, annotations.size());
@@ -67,14 +67,14 @@ public class TestPDPageAnnotationsFiltering
     }
 
     @Test
-    public void validateAllFiltered() throws IOException
+     void validateAllFiltered() throws IOException
     {
         List<PDAnnotation> annotations = page.getAnnotations(annotation -> false);
         assertEquals(0, annotations.size());
     }
 
     @Test
-    public void validateSelectedFew() throws IOException
+     void validateSelectedFew() throws IOException
     {
         List<PDAnnotation> annotations = page.getAnnotations(annotation -> 
             (annotation instanceof PDAnnotationLink || annotation instanceof PDAnnotationSquare));

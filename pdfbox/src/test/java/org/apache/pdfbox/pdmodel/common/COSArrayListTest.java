@@ -40,7 +40,8 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationSquare;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class COSArrayListTest {
+class COSArrayListTest
+{
     // next two entries are to be used for comparison with
     // COSArrayList behaviour in order to ensure that the
     // intended object is now at the correct position.
@@ -110,7 +111,8 @@ public class COSArrayListTest {
      * Test getting a PDModel element is in sync with underlying COSArray
      */
     @Test
-    public void getFromList() throws Exception {
+    void getFromList() throws Exception
+    {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         for (int i = 0; i < cosArrayList.size(); i++) {
@@ -152,7 +154,8 @@ public class COSArrayListTest {
      * Test removing a PDModel element by index is in sync with underlying COSArray
      */
     @Test
-    public void removeFromListByIndex() throws Exception {
+    void removeFromListByIndex() throws Exception
+    {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 2;
@@ -174,7 +177,8 @@ public class COSArrayListTest {
      * COSArray
      */
     @Test
-    public void removeUniqueFromListByObject() throws Exception {
+    void removeUniqueFromListByObject() throws Exception
+    {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 2;
@@ -206,7 +210,8 @@ public class COSArrayListTest {
      * COSArray
      */
     @Test
-    public void removeAllUniqueFromListByObject() throws Exception {
+    void removeAllUniqueFromListByObject() throws Exception
+    {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 2;
@@ -228,7 +233,8 @@ public class COSArrayListTest {
      * underlying COSArray
      */
     @Test
-    public void removeMultipleFromListByObject() throws Exception {
+    void removeMultipleFromListByObject() throws Exception
+    {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 1;
@@ -248,7 +254,8 @@ public class COSArrayListTest {
      * COSArray
      */
     @Test
-    public void removeAllMultipleFromListByObject() throws Exception {
+    void removeAllMultipleFromListByObject() throws Exception
+    {
         COSArrayList<PDAnnotation> cosArrayList = new COSArrayList<>(annotationsList, annotationsArray);
 
         int positionToRemove = 1;
@@ -266,7 +273,8 @@ public class COSArrayListTest {
     }
 
     @Test
-    public void removeFromFilteredListByIndex() throws Exception {
+    void removeFromFilteredListByIndex() throws Exception
+    {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
         AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
@@ -278,7 +286,8 @@ public class COSArrayListTest {
     }
 
     @Test
-    public void removeFromFilteredListByObject() throws Exception {
+    void removeFromFilteredListByObject() throws Exception
+    {
         // retrieve all annotations from page but the link annotation
         // which is 2nd in list - see above setup
         AnnotationFilter annotsFilter = annotation -> !(annotation instanceof PDAnnotationLink);
@@ -294,7 +303,8 @@ public class COSArrayListTest {
     }
 
     @Test
-    public void removeSingleDirectObject() throws IOException {
+    void removeSingleDirectObject() throws IOException
+    {
 
         // generate test file
         try (PDDocument pdf = new PDDocument()) {
@@ -339,7 +349,8 @@ public class COSArrayListTest {
     }
 
     @Test
-    public void removeSingleIndirectObject() throws IOException {
+    void removeSingleIndirectObject() throws IOException
+    {
 
         // generate test file
         try (PDDocument pdf = new PDDocument()) {
@@ -381,7 +392,8 @@ public class COSArrayListTest {
     }
 
     @Test
-    public void retainIndirectObject() throws IOException {
+    void retainIndirectObject() throws IOException
+    {
 
         // generate test file
         try (PDDocument pdf = new PDDocument()) {

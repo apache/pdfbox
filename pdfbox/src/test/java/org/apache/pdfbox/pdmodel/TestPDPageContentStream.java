@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
 /**
  * @author Yegor Kozlov
  */
-public class TestPDPageContentStream
+class TestPDPageContentStream
 {
     @Test
-    public void testSetCmykColors() throws IOException
+    void testSetCmykColors() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -89,7 +89,7 @@ public class TestPDPageContentStream
     }
 
     @Test
-    public void testSetRGBandGColors() throws IOException
+    void testSetRGBandGColors() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -142,7 +142,7 @@ public class TestPDPageContentStream
      * @throws IOException 
      */
     @Test
-    public void testMissingContentStream() throws IOException
+    void testMissingContentStream() throws IOException
     {
         PDPage page = new PDPage();
         PDFStreamParser parser = new PDFStreamParser(page);
@@ -156,7 +156,7 @@ public class TestPDPageContentStream
      * @throws IOException 
      */
     @Test
-    public void testCloseContract() throws IOException
+    void testCloseContract() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {

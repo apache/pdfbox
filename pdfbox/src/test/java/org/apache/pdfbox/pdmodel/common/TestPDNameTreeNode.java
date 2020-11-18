@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @author Koch
  */
-public class TestPDNameTreeNode
+class TestPDNameTreeNode
 {
     private PDNameTreeNode<COSInteger> node1;
     private PDNameTreeNode<COSInteger> node2;
@@ -92,7 +92,7 @@ public class TestPDNameTreeNode
     }
 
     @Test
-    public void testUpperLimit() throws IOException
+    void testUpperLimit() throws IOException
     {
         assertEquals("Astatine", this.node5.getUpperLimit());
         assertEquals("Astatine", this.node2.getUpperLimit());
@@ -104,7 +104,7 @@ public class TestPDNameTreeNode
     }
 
     @Test
-    public void testLowerLimit() throws IOException
+    void testLowerLimit() throws IOException
     {
         assertEquals("Actinium", this.node5.getLowerLimit());
         assertEquals("Actinium", this.node2.getLowerLimit());

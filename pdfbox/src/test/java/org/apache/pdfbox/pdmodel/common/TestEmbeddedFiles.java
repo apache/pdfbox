@@ -36,10 +36,10 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDComplexFileSpecifica
 import org.apache.pdfbox.pdmodel.common.filespecification.PDEmbeddedFile;
 import org.junit.jupiter.api.Test;
 
-public class TestEmbeddedFiles
+class TestEmbeddedFiles
 {
     @Test
-    public void testNullEmbeddedFile() throws IOException
+    void testNullEmbeddedFile() throws IOException
     {
         PDEmbeddedFile embeddedFile = null;
         boolean ok = false;
@@ -76,7 +76,7 @@ public class TestEmbeddedFiles
     }
 
     @Test
-    public void testOSSpecificAttachments() throws IOException
+    void testOSSpecificAttachments() throws IOException
     {
         PDEmbeddedFile nonOSFile = null;
         PDEmbeddedFile macFile = null;

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @author Dominic Tubach
  */
-public class TestPDNumberTreeNode
+class TestPDNumberTreeNode
 {
 
     private PDNumberTreeNode node1;
@@ -145,7 +145,7 @@ public class TestPDNumberTreeNode
     }
     
     @Test
-    public void testGetValue() throws IOException
+    void testGetValue() throws IOException
     {
         assertEquals(new PDTest( 51 ), this.node5.getValue( 4 ));
         assertEquals(new PDTest(70), this.node1.getValue( 9 ));
@@ -156,7 +156,7 @@ public class TestPDNumberTreeNode
     }
 
     @Test
-    public void testUpperLimit() throws IOException
+    void testUpperLimit() throws IOException
     {
         assertEquals(7, (int) this.node5.getUpperLimit());
         assertEquals(7, (int) this.node2.getUpperLimit());
@@ -177,7 +177,7 @@ public class TestPDNumberTreeNode
     }
 
     @Test
-    public void testLowerLimit() throws IOException
+    void testLowerLimit() throws IOException
     {
         assertEquals(1, (int) this.node5.getLowerLimit());
         assertEquals(1, (int) this.node2.getLowerLimit());

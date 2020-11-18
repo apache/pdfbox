@@ -33,11 +33,11 @@ import org.junit.jupiter.api.Test;
  * @author Neil McErlean
  * @since 1.3.0
  */
-public class TestPDDocumentInformation
+class TestPDDocumentInformation
 {
 
     @Test
-    public void testMetadataExtraction() throws Exception
+    void testMetadataExtraction() throws Exception
     {
         // This document has been selected for this test as it contains custom metadata.
         try (PDDocument doc = Loader.loadPDF(new File("src/test/resources/input/hello3.pdf")))
@@ -77,7 +77,7 @@ public class TestPDDocumentInformation
      * @throws Exception 
      */
     @Test
-    public void testPDFBox3068() throws Exception
+    void testPDFBox3068() throws Exception
     {
         try (PDDocument doc = Loader
                 .loadPDF(TestPDDocumentInformation.class.getResourceAsStream("PDFBOX-3068.pdf")))

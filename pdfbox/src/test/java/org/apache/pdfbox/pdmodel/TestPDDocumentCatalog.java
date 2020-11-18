@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Test PDDocument Catalog functionality.
  *
  */
-public class TestPDDocumentCatalog
+class TestPDDocumentCatalog
 {
 
     /**
@@ -47,7 +47,7 @@ public class TestPDDocumentCatalog
      * @throws IOException in case the document can not be parsed.
      */
     @Test
-    public void retrievePageLabels() throws IOException
+    void retrievePageLabels() throws IOException
     {
         PDDocument doc = null;
         try
@@ -89,7 +89,7 @@ public class TestPDDocumentCatalog
      * @throws IOException in case the document can not be parsed.
      */
     @Test
-    public void retrievePageLabelsOnMalformedPdf() throws IOException
+    void retrievePageLabelsOnMalformedPdf() throws IOException
     {
         PDDocument doc = null;
         try
@@ -120,7 +120,7 @@ public class TestPDDocumentCatalog
      * @throws IOException in case the document can not be parsed.
      */
     @Test
-    public void retrieveNumberOfPages() throws IOException
+    void retrieveNumberOfPages() throws IOException
     {
         PDDocument doc = null;
         try
@@ -147,7 +147,7 @@ public class TestPDDocumentCatalog
      * @throws IOException in case the document can not be parsed.
      */
     @Test
-    public void handleOutputIntents() throws IOException
+    void handleOutputIntents() throws IOException
     {
         PDDocument doc = null;
         InputStream colorProfile = null;
@@ -196,7 +196,7 @@ public class TestPDDocumentCatalog
     }
 
     @Test
-    public void handleBooleanInOpenAction() throws IOException
+    void handleBooleanInOpenAction() throws IOException
     {
         //PDFBOX-3772 -- allow for COSBoolean
         PDDocument doc = new PDDocument();

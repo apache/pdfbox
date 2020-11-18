@@ -34,11 +34,11 @@ import org.junit.jupiter.api.Test;
  * @author Andrea Vacondio
  *
  */
-public class TestPDPageTransitions
+class TestPDPageTransitions
 {
 
     @Test
-    public void readTransitions() throws IOException, URISyntaxException
+    void readTransitions() throws IOException, URISyntaxException
     {
         try (PDDocument doc = Loader.loadPDF(new File(this.getClass().getResource(
                 "/org/apache/pdfbox/pdmodel/interactive/pagenavigation/transitions_test.pdf").toURI())))
@@ -52,7 +52,7 @@ public class TestPDPageTransitions
     }
 
     @Test
-    public void saveAndReadTransitions() throws IOException
+    void saveAndReadTransitions() throws IOException
     {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

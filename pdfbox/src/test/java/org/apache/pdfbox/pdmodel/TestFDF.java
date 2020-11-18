@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * @author Tilman Hausherr
  * 
  */
-public class TestFDF
+class TestFDF
 {
     /**
      * Test load two simple fdf files with two fields. One of the files does not have a
@@ -48,7 +48,7 @@ public class TestFDF
      * @throws IOException
      */
     @Test
-    public void testLoad2() throws URISyntaxException, IOException
+    void testLoad2() throws URISyntaxException, IOException
     {
         checkFields("/org/apache/pdfbox/pdfparser/withcatalog.fdf");
         checkFields("/org/apache/pdfbox/pdfparser/nocatalog.fdf");

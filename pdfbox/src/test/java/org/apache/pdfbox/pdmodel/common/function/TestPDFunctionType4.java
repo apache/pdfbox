@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests the {@link PDFunctionType4} class.
  */
-public class TestPDFunctionType4
+class TestPDFunctionType4
 {
 
     private PDFunctionType4 createFunction(String function, float[] domain, float[] range)
@@ -57,7 +57,7 @@ public class TestPDFunctionType4
      * @throws Exception if an error occurs
      */
     @Test
-    public void testFunctionSimple() throws Exception
+    void testFunctionSimple() throws Exception
     {
         String functionText = "{ add }";
         //Simply adds the two arguments and returns the result
@@ -90,7 +90,7 @@ public class TestPDFunctionType4
      * @throws Exception if an error occurs
      */
     @Test
-    public void testFunctionArgumentOrder() throws Exception
+    void testFunctionArgumentOrder() throws Exception
     {
         String functionText = "{ pop }";
         // pops an argument (2nd) and returns the next argument (1st)

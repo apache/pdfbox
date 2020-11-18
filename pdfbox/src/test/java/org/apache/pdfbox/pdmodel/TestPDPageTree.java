@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * @author Andrea Vacondio
  *
  */
-public class TestPDPageTree
+class TestPDPageTree
 {
     private PDDocument doc;
 
@@ -45,7 +45,7 @@ public class TestPDPageTree
     }
 
     @Test
-    public void indexOfPageFromOutlineDestination() throws IOException
+    void indexOfPageFromOutlineDestination() throws IOException
     {
         doc = Loader.loadPDF(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
         PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
@@ -59,7 +59,7 @@ public class TestPDPageTree
     }
 
     @Test
-    public void positiveSingleLevel() throws IOException
+    void positiveSingleLevel() throws IOException
     {
         doc = Loader.loadPDF(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
         for (int i = 0; i < doc.getNumberOfPages(); i++)
@@ -69,7 +69,7 @@ public class TestPDPageTree
     }
 
     @Test
-    public void positiveMultipleLevel() throws IOException
+    void positiveMultipleLevel() throws IOException
     {
         doc = Loader
                 .loadPDF(TestPDPageTree.class.getResourceAsStream("page_tree_multiple_levels.pdf"));
@@ -80,14 +80,15 @@ public class TestPDPageTree
     }
 
     @Test
-    public void negative() throws IOException
+    void negative() throws IOException
     {
         doc = Loader.loadPDF(TestPDPageTree.class.getResourceAsStream("with_outline.pdf"));
         assertEquals(-1, doc.getPages().indexOf(new PDPage()));
     }
 
     @Test
-    public void testInsertBeforeBlankPage() throws Exception {
+    void testInsertBeforeBlankPage() throws Exception
+    {
         try (PDDocument document = new PDDocument()) {
             PDPage pageOne = new PDPage();
             PDPage pageTwo = new PDPage();
@@ -105,7 +106,8 @@ public class TestPDPageTree
     }
 
     @Test
-    public void testInsertAfterBlankPage() throws Exception {
+    void testInsertAfterBlankPage() throws Exception
+    {
         try (PDDocument document = new PDDocument()) {
             PDPage pageOne = new PDPage();
             PDPage pageTwo = new PDPage();

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * Test case introduced with PDFBOX-1581.
  * 
  */
-public class TestPDDocument
+class TestPDDocument
 {
     static private final File TESTRESULTSDIR = new File("target/test-output");
 
@@ -56,7 +56,7 @@ public class TestPDDocument
      * @throws IOException if something went wrong
      */
     @Test
-    public void testSaveLoadStream() throws IOException
+    void testSaveLoadStream() throws IOException
     {
         ByteArrayOutputStream baos;
         // Create PDF with one blank page
@@ -86,7 +86,7 @@ public class TestPDDocument
      * @throws IOException if something went wrong
      */
     @Test
-    public void testSaveLoadFile() throws IOException
+    void testSaveLoadFile() throws IOException
     {
         File targetFile = new File(TESTRESULTSDIR, "pddocument-saveloadfile.pdf");
 
@@ -118,7 +118,7 @@ public class TestPDDocument
      * @throws IOException if something went wrong
      */
     @Test
-    public void testVersions() throws IOException
+    void testVersions() throws IOException
     {
         // test default version
         try (PDDocument document = new PDDocument())
@@ -162,7 +162,7 @@ public class TestPDDocument
      * @throws java.io.IOException
      */
     @Test
-    public void testDeleteBadFile() throws IOException
+    void testDeleteBadFile() throws IOException
     {
         File f = new File(TESTRESULTSDIR, "testDeleteBadFile.pdf");
         System.out.println("f: " + f.getAbsolutePath());
@@ -187,7 +187,7 @@ public class TestPDDocument
      * @throws java.io.IOException
      */
     @Test
-    public void testDeleteGoodFile() throws IOException
+    void testDeleteGoodFile() throws IOException
     {
         File f = new File(TESTRESULTSDIR, "testDeleteGoodFile.pdf");
         try (PDDocument doc = new PDDocument())
@@ -215,7 +215,7 @@ public class TestPDDocument
      * @throws java.io.IOException
      */
     @Test
-    public void testSaveArabicLocale() throws IOException
+    void testSaveArabicLocale() throws IOException
     {
         Locale defaultLocale = Locale.getDefault();
         Locale arabicLocale = new Locale.Builder().setLanguageTag("ar-EG-u-nu-arab").build();

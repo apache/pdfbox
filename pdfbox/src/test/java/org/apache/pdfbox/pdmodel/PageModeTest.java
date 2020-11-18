@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public class PageModeTest
+class PageModeTest
 {
     @Test
-    public void fromStringInputNotNullOutputNotNull()
+    void fromStringInputNotNullOutputNotNull()
     {
         // Arrange
         final String value = "FullScreen";
@@ -37,7 +37,7 @@ public class PageModeTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull2()
+    void fromStringInputNotNullOutputNotNull2()
     {
         // Arrange
         final String value = "UseThumbs";
@@ -50,7 +50,7 @@ public class PageModeTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull3()
+    void fromStringInputNotNullOutputNotNull3()
     {
         // Arrange
         final String value = "UseOC";
@@ -63,7 +63,7 @@ public class PageModeTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull4()
+    void fromStringInputNotNullOutputNotNull4()
     {
         // Arrange
         final String value = "UseNone";
@@ -76,7 +76,7 @@ public class PageModeTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull5()
+    void fromStringInputNotNullOutputNotNull5()
     {
         // Arrange
         final String value = "UseAttachments";
@@ -89,7 +89,7 @@ public class PageModeTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull6()
+    void fromStringInputNotNullOutputNotNull6()
     {
         // Arrange
         final String value = "UseOutlines";
@@ -102,19 +102,19 @@ public class PageModeTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputIllegalArgumentException()
+    void fromStringInputNotNullOutputIllegalArgumentException()
     {
         assertThrows(IllegalArgumentException.class, () -> PageMode.fromString(""));
     }
 
     @Test
-    public void fromStringInputNotNullOutputIllegalArgumentException2()
+    void fromStringInputNotNullOutputIllegalArgumentException2()
     {
         assertThrows(IllegalArgumentException.class, () -> PageMode.fromString("Dulacb`ecj"));
     }
 
     @Test
-    public void stringValueOutputNotNull()
+    void stringValueOutputNotNull()
     {
         // Arrange
         final PageMode objectUnderTest = PageMode.USE_OPTIONAL_CONTENT;
