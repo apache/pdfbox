@@ -54,7 +54,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests optional content group functionality (also called layers).
  */
-public class TestOptionalContentGroups
+class TestOptionalContentGroups
 {
     private static final File testResultsDir = new File("target/test-output");
 
@@ -69,7 +69,7 @@ public class TestOptionalContentGroups
      * @throws Exception if an error occurs
      */
     @Test
-    public void testOCGGeneration() throws Exception
+    void testOCGGeneration() throws Exception
     {
         PDDocument doc = new PDDocument();
         try
@@ -163,7 +163,7 @@ public class TestOptionalContentGroups
      * @throws Exception if an error occurs
      */
     @Test
-    public void testOCGConsumption() throws Exception
+    void testOCGConsumption() throws Exception
     {
         File pdfFile = new File(testResultsDir, "ocg-generation.pdf");
         if (!pdfFile.exists())
@@ -222,7 +222,7 @@ public class TestOptionalContentGroups
     }
 
     @Test
-    public void testOCGsWithSameNameCanHaveDifferentVisibility() throws Exception
+    void testOCGsWithSameNameCanHaveDifferentVisibility() throws Exception
     {
         try (PDDocument doc = new PDDocument())
         {
@@ -297,7 +297,7 @@ public class TestOptionalContentGroups
      * @throws IOException
      */
     @Test
-    public void testOCGGenerationSameNameCanHaveSameVisibilityOff() throws IOException
+    void testOCGGenerationSameNameCanHaveSameVisibilityOff() throws IOException
     {
         BufferedImage expectedImage;
         BufferedImage actualImage;

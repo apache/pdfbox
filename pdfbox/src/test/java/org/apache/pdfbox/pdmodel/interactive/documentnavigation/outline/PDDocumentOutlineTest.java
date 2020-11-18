@@ -25,13 +25,13 @@ import org.junit.jupiter.api.Test;
  * @author Andrea Vacondio
  *
  */
-public class PDDocumentOutlineTest
+class PDDocumentOutlineTest
 {
     /**
      * see PDF 32000-1:2008 table 152
      */
     @Test
-    public void outlinesCountShouldNotBeNegative()
+    void outlinesCountShouldNotBeNegative()
     {
         PDDocumentOutline outline = new PDDocumentOutline();
         PDOutlineItem firstLevelChild = new PDOutlineItem();
@@ -45,7 +45,7 @@ public class PDDocumentOutlineTest
     }
 
     @Test
-    public void outlinesCount()
+    void outlinesCount()
     {
         PDDocumentOutline outline = new PDDocumentOutline();
         PDOutlineItem root = new PDOutlineItem();

@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDCircleAnnotationTest
+class PDCircleAnnotationTest
 {
     @Test
-    public void createDefaultCircleAnnotation()
+    void createDefaultCircleAnnotation()
     {
         PDAnnotation annotation = new PDAnnotationCircle();
         assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));

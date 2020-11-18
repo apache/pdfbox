@@ -26,14 +26,14 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDActionURITest
+class PDActionURITest
 {
     /**
      * PDFBOX-3913: Check that URIs encoded in UTF-8 are also supported.
      * PDFBOX-3946: Check that there is no NPE if URI missing.
      */
     @Test
-    public void testUTF8URI()
+    void testUTF8URI()
     {
         PDActionURI actionURI = new PDActionURI();
         assertNull(actionURI.getURI());
@@ -47,7 +47,7 @@ public class PDActionURITest
      * @throws IOException
      */
     @Test
-    public void testUTF16BEURI() throws IOException
+    void testUTF16BEURI() throws IOException
     {
         PDActionURI actionURI = new PDActionURI();
         
@@ -65,7 +65,7 @@ public class PDActionURITest
      * @throws IOException
      */
     @Test
-    public void testUTF16LEURI() throws IOException
+    void testUTF16LEURI() throws IOException
     {
         PDActionURI actionURI = new PDActionURI();
         
@@ -75,7 +75,7 @@ public class PDActionURITest
     }
 
     @Test
-    public void testUTF7URI()
+    void testUTF7URI()
     {
         PDActionURI actionURI = new PDActionURI();
         actionURI.setURI("http://pdfbox.apache.org/");

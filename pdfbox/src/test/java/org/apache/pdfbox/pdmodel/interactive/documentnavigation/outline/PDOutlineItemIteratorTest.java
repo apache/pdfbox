@@ -27,11 +27,11 @@ import org.junit.jupiter.api.Test;
  * @author Andrea Vacondio
  *
  */
-public class PDOutlineItemIteratorTest
+class PDOutlineItemIteratorTest
 {
 
     @Test
-    public void singleItem()
+    void singleItem()
     {
         PDOutlineItem first = new PDOutlineItem();
         PDOutlineItemIterator iterator = new PDOutlineItemIterator(first);
@@ -41,7 +41,7 @@ public class PDOutlineItemIteratorTest
     }
 
     @Test
-    public void multipleItem()
+    void multipleItem()
     {
         PDOutlineItem first = new PDOutlineItem();
         PDOutlineItem second = new PDOutlineItem();
@@ -54,7 +54,8 @@ public class PDOutlineItemIteratorTest
         assertFalse(iterator.hasNext());
     }
 
-    public void removeUnsupported()
+    @Test
+    void removeUnsupported()
     {
         assertThrows(UnsupportedOperationException.class,
                 () -> 
@@ -62,7 +63,7 @@ public class PDOutlineItemIteratorTest
     }
 
     @Test
-    public void noChildren()
+    void noChildren()
     {
         PDOutlineItemIterator iterator = new PDOutlineItemIterator(null);
         assertFalse(iterator.hasNext());

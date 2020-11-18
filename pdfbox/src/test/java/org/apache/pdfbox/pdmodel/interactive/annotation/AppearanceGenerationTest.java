@@ -52,7 +52,7 @@ import org.junit.jupiter.api.Test;
  * verified.
  * 
  */
-public class AppearanceGenerationTest
+class AppearanceGenerationTest
 {
 
     // delta for comparing equality of float values
@@ -80,7 +80,7 @@ public class AppearanceGenerationTest
     
     // Test currently disabled as the content stream differs
     @Test
-    public void rectangleFullStrokeNoFill() throws IOException
+    void rectangleFullStrokeNoFill() throws IOException
     {
         PDPage page = document.getPage(0);
         
@@ -134,7 +134,7 @@ public class AppearanceGenerationTest
     
     // we should render similar to Adobe Reader using the original file
     @Test
-    public void renderTest() throws IOException
+    void renderTest() throws IOException
     {
         File file = new File(OUT_DIR, NAME_OF_PDF);
         document.save(file);

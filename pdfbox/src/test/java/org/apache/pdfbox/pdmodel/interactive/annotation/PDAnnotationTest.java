@@ -29,11 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * Test for the PDAnnotation classes.
  *
  */
-public class PDAnnotationTest
+class PDAnnotationTest
 {
 
     @Test
-    public void createDefaultWidgetAnnotation()
+    void createDefaultWidgetAnnotation()
     {
         PDAnnotation annotation = new PDAnnotationWidget();
         assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));
@@ -41,7 +41,7 @@ public class PDAnnotationTest
     }
 
     @Test
-    public void createWidgetAnnotationFromField()
+    void createWidgetAnnotationFromField()
     {
         PDDocument document = new PDDocument();
         PDAcroForm acroForm = new PDAcroForm(document);

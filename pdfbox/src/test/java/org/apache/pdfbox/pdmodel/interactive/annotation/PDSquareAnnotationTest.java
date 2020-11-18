@@ -43,7 +43,7 @@ import java.util.List;
  * Test for the PDAnnotation classes.
  *
  */
-public class PDSquareAnnotationTest
+class PDSquareAnnotationTest
 {
 
     // delta for comparing equality of float values
@@ -66,7 +66,7 @@ public class PDSquareAnnotationTest
     }
 
     @Test
-    public void createDefaultSquareAnnotation()
+    void createDefaultSquareAnnotation()
     {
         PDAnnotation annotation = new PDAnnotationSquare();
         assertEquals(COSName.ANNOT, annotation.getCOSObject().getItem(COSName.TYPE));
@@ -75,7 +75,7 @@ public class PDSquareAnnotationTest
     }
 
     @Test
-    public void createWithAppearance() throws IOException
+    void createWithAppearance() throws IOException
     {
         // the width of the <nnotations border
         final int borderWidth = 1;
@@ -105,7 +105,7 @@ public class PDSquareAnnotationTest
     }
     
     @Test
-    public void validateAppearance() throws IOException
+    void validateAppearance() throws IOException
     {
         // the width of the <nnotations border
         final int borderWidth = 1;

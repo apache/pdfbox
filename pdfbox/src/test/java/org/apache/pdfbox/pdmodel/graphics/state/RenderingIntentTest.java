@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class RenderingIntentTest
+class RenderingIntentTest
 {
     @Test
-    public void fromStringInputNotNullOutputNotNull()
+    void fromStringInputNotNullOutputNotNull()
     {
         // Arrange
         final String value = "AbsoluteColorimetric";
@@ -36,7 +36,7 @@ public class RenderingIntentTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull2()
+    void fromStringInputNotNullOutputNotNull2()
     {
         // Arrange
         final String value = "RelativeColorimetric";
@@ -49,7 +49,7 @@ public class RenderingIntentTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull3()
+    void fromStringInputNotNullOutputNotNull3()
     {
         // Arrange
         final String value = "Perceptual";
@@ -62,7 +62,7 @@ public class RenderingIntentTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull4()
+    void fromStringInputNotNullOutputNotNull4()
     {
         // Arrange
         final String value = "Saturation";
@@ -75,7 +75,7 @@ public class RenderingIntentTest
     }
 
     @Test
-    public void fromStringInputNotNullOutputNotNull5()
+    void fromStringInputNotNullOutputNotNull5()
     {
         // Arrange
         final String value = "";
@@ -88,7 +88,7 @@ public class RenderingIntentTest
     }
 
     @Test
-    public void stringValueOutputNotNull()
+    void stringValueOutputNotNull()
     {
         // Arrange
         final RenderingIntent objectUnderTest = RenderingIntent.ABSOLUTE_COLORIMETRIC;
@@ -101,7 +101,7 @@ public class RenderingIntentTest
     }
 
     @Test
-    public void testIsFill()
+    void testIsFill()
     {
         // Arrange
         final RenderingMode objectUnderTest = RenderingMode.FILL;
