@@ -51,7 +51,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * @author Ben Litchfield
  */
-public class TestPublicKeyEncryption
+class TestPublicKeyEncryption
 {
     private final File testResultsDir = new File("target/test-output/crypto");
 
@@ -152,7 +152,7 @@ public class TestPublicKeyEncryption
      */
     @ParameterizedTest
 	@MethodSource("keyLengths")
-    public void testProtectionError(int keyLength) throws Exception
+    void testProtectionError(int keyLength) throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -190,7 +190,7 @@ public class TestPublicKeyEncryption
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    public void testProtection(int keyLength) throws Exception
+    void testProtection(int keyLength) throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -222,7 +222,7 @@ public class TestPublicKeyEncryption
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    public void testMultipleRecipients(int keyLength) throws Exception
+    void testMultipleRecipients(int keyLength) throws Exception
     {
         PublicKeyProtectionPolicy policy = new PublicKeyProtectionPolicy();
         policy.addRecipient(recipient1);
@@ -322,7 +322,7 @@ public class TestPublicKeyEncryption
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    public void testReadPubkeyEncryptedAES128(int keyLength) throws IOException
+    void testReadPubkeyEncryptedAES128(int keyLength) throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength128.pdf");
              PDDocument doc = Loader.loadPDF(is,
@@ -346,7 +346,7 @@ public class TestPublicKeyEncryption
      */
     @ParameterizedTest
     @MethodSource("keyLengths")
-    public void testReadPubkeyEncryptedAES256(int keyLength) throws IOException
+    void testReadPubkeyEncryptedAES256(int keyLength) throws IOException
     {
         try (InputStream is = TestPublicKeyEncryption.class.getResourceAsStream("AESkeylength256.pdf");
              PDDocument doc = Loader.loadPDF(is,

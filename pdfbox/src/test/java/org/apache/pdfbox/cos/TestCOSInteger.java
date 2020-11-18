@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Koch
  */
-public class TestCOSInteger extends TestCOSNumber
+class TestCOSInteger extends TestCOSNumber
 {
     @BeforeAll
     static void setUp()
@@ -55,7 +55,7 @@ public class TestCOSInteger extends TestCOSNumber
      * non-nullity.
      */
     @Test
-    public void testEquals()
+    void testEquals()
     {
         // Consistency
         for (int i = -1000; i < 3000; i += 200)
@@ -83,7 +83,7 @@ public class TestCOSInteger extends TestCOSNumber
      * arbitrary values.
      */
     @Test
-    public void testHashCode()
+    void testHashCode()
     {
         for (int i = -1000; i < 3000; i += 200)
         {
@@ -98,7 +98,7 @@ public class TestCOSInteger extends TestCOSNumber
 
     @Override
     @Test
-    public void testFloatValue()
+    void testFloatValue()
     {
         for (int i = -1000; i < 3000; i += 200)
         {
@@ -108,7 +108,7 @@ public class TestCOSInteger extends TestCOSNumber
 
     @Override
     @Test
-    public void testIntValue()
+    void testIntValue()
     {
         for (int i = -1000; i < 3000; i += 200)
         {
@@ -118,7 +118,7 @@ public class TestCOSInteger extends TestCOSNumber
 
     @Override
     @Test
-    public void testLongValue()
+    void testLongValue()
     {
         for (int i = -1000; i < 3000; i += 200)
         {
@@ -128,7 +128,7 @@ public class TestCOSInteger extends TestCOSNumber
 
     @Override
     @Test
-    public void testAccept()
+    void testAccept()
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         COSWriter visitor = new COSWriter(outStream);
@@ -154,7 +154,7 @@ public class TestCOSInteger extends TestCOSNumber
      * Tests writePDF() - this method takes an {@link java.io.OutputStream} and writes this object to it.
      */
     @Test
-    public void testWritePDF()
+    void testWritePDF()
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         int index = 0;

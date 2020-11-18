@@ -31,7 +31,7 @@ import org.apache.pdfbox.filter.FilterFactory;
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class TestCOSStream
+class TestCOSStream
 {
     /**
      * Tests encoding of a stream without any filter applied.
@@ -39,7 +39,7 @@ public class TestCOSStream
      * @throws IOException
      */
     @Test
-    public void testUncompressedStreamEncode() throws IOException
+    void testUncompressedStreamEncode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
         COSStream stream = createStream(testString, null);
@@ -52,7 +52,7 @@ public class TestCOSStream
      * @throws IOException
      */
     @Test
-    public void testUncompressedStreamDecode() throws IOException
+    void testUncompressedStreamDecode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
         COSStream stream = createStream(testString, null);
@@ -65,7 +65,7 @@ public class TestCOSStream
      * @throws IOException
      */
     @Test
-    public void testCompressedStream1Encode() throws IOException
+    void testCompressedStream1Encode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
@@ -79,7 +79,7 @@ public class TestCOSStream
      * @throws IOException
      */
     @Test
-    public void testCompressedStream1Decode() throws IOException
+    void testCompressedStream1Decode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
@@ -100,7 +100,7 @@ public class TestCOSStream
      * @throws IOException
      */
     @Test
-    public void testCompressedStream2Encode() throws IOException
+    void testCompressedStream2Encode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
@@ -120,7 +120,7 @@ public class TestCOSStream
      * @throws IOException
      */
     @Test
-    public void testCompressedStream2Decode() throws IOException
+    void testCompressedStream2Decode() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
@@ -148,7 +148,7 @@ public class TestCOSStream
      * @throws IOException
      */
     @Test
-    public void testCompressedStreamDoubleClose() throws IOException
+    void testCompressedStreamDoubleClose() throws IOException
     {
         byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
@@ -161,7 +161,7 @@ public class TestCOSStream
     }
 
     @Test
-    public void testHasStreamData() throws IOException
+    void testHasStreamData() throws IOException
     {
         COSStream stream = new COSStream();
         assertFalse(stream.hasData());

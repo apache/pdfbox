@@ -25,14 +25,14 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link COSUpdateInfo}.
  */
-public class TestCOSUpdateInfo
+class TestCOSUpdateInfo
 {
     
     /**
      * Tests isNeedToBeUpdate() and setNeedToBeUpdate() - tests the getter/setter methods.
      */
     @Test
-    public void testIsSetNeedToBeUpdate()
+    void testIsSetNeedToBeUpdate()
     {
         // COSDictionary
         COSUpdateInfo testCOSDictionary = new COSDictionary();

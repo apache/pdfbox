@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class COSDictionaryTest
+class COSDictionaryTest
 {
     @Test
-    public void testCOSDictionaryNotEqualsCOSStream()
+    void testCOSDictionaryNotEqualsCOSStream()
     {
         COSDictionary cosDictionary = new COSDictionary();
         COSStream cosStream = new COSStream();

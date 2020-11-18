@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link COSBase}.
  */
-public abstract class TestCOSBase
+abstract class TestCOSBase
 {
     /** The COSBase abstraction of the object being tested. */
     protected static COSBase testCOSBase;
@@ -37,7 +37,7 @@ public abstract class TestCOSBase
      * Tests getCOSObject() - tests that the underlying object is returned.
      */
     @Test
-    public void testGetCOSObject()
+    void testGetCOSObject()
     {
         assertEquals(testCOSBase, testCOSBase.getCOSObject());
     }
@@ -45,13 +45,13 @@ public abstract class TestCOSBase
     /**
      * Test accept() - tests the interface for visiting a document at the COS level.
      */
-    public abstract void testAccept() throws IOException;
+    abstract void testAccept() throws IOException;
 
     /**
      * Tests isDirect() and setDirect() - tests the getter/setter methods.
      */
     @Test
-    public void testIsSetDirect()
+    void testIsSetDirect()
     {
         testCOSBase.setDirect(true);
         assertTrue(testCOSBase.isDirect());

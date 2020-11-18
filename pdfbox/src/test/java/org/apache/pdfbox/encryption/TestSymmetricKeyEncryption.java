@@ -73,7 +73,7 @@ import org.junit.jupiter.api.Test;
  * @author Tilman Hausherr
  *
  */
-public class TestSymmetricKeyEncryption
+class TestSymmetricKeyEncryption
 {
     /**
      * Logger instance.
@@ -122,7 +122,7 @@ public class TestSymmetricKeyEncryption
      * @throws java.io.IOException
      */
     @Test
-    public void testPermissions() throws IOException
+    void testPermissions() throws IOException
     {
         AccessPermission fullAP = new AccessPermission();
         AccessPermission restrAP = new AccessPermission();
@@ -206,7 +206,7 @@ public class TestSymmetricKeyEncryption
      * @throws Exception If there is an unexpected error during the test.
      */
     @Test
-    public void testProtection() throws Exception
+    void testProtection() throws Exception
     {
         byte[] inputFileAsByteArray = getFileResourceAsByteArray("Acroform-PDFBOX-2333.pdf");
         int sizePriorToEncryption = inputFileAsByteArray.length;
@@ -236,7 +236,7 @@ public class TestSymmetricKeyEncryption
      * @throws IOException
      */
     @Test
-    public void testPDFBox4308() throws IOException
+    void testPDFBox4308() throws IOException
     {
         byte[] inputFileAsByteArray = Files.readAllBytes(Paths.get("target/pdfs/PDFBOX-4308.pdf"));
         int sizePriorToEncryption = inputFileAsByteArray.length;
@@ -252,7 +252,7 @@ public class TestSymmetricKeyEncryption
      * @throws Exception If there is an unexpected error during the test.
      */
     @Test
-    public void testProtectionInnerAttachment() throws Exception
+    void testProtectionInnerAttachment() throws Exception
     {
         String testFileName = "preEnc_20141025_105451.pdf";
         byte[] inputFileWithEmbeddedFileAsByteArray = getFileResourceAsByteArray(testFileName);
@@ -281,7 +281,7 @@ public class TestSymmetricKeyEncryption
      * @throws IOException 
      */
     @Test
-    public void testPDFBox4453() throws IOException
+    void testPDFBox4453() throws IOException
     {
         final int TESTCOUNT = 1000;
         File file = new File(testResultsDir,"PDFBOX-4453.pdf");

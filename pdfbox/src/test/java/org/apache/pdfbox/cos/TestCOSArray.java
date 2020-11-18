@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Unittests for {@link COSArray}
  */
-public class TestCOSArray
+class TestCOSArray
 {
     @Test
-    public void testCreate()
+    void testCreate()
     {
         COSArray cosArray = new COSArray();
         assertEquals(0, cosArray.size());
@@ -54,7 +54,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testConvertString2COSNameAndBack()
+    void testConvertString2COSNameAndBack()
     {
         COSArray cosArray = COSArray.convertStringListToCOSNameCOSArray(
                 Arrays.asList(COSName.A.getName(), COSName.B.getName(), COSName.C.getName()));
@@ -71,7 +71,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testConvertString2COSStringAndBack()
+    void testConvertString2COSStringAndBack()
     {
         COSArray cosArray = COSArray
                 .convertStringListToCOSStringCOSArray(Arrays.asList("A", "B", "C"));
@@ -88,7 +88,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testConvertInteger2COSStringAndBack()
+    void testConvertInteger2COSStringAndBack()
     {
         COSArray cosArray = COSArray.convertIntegerListToCOSIntegerCOSArray(Arrays.asList(1, 2, 3));
         assertEquals(3, cosArray.size());
@@ -116,7 +116,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testConvertFloat2COSStringAndBack()
+    void testConvertFloat2COSStringAndBack()
     {
         float[] floatArrayStart = new float[] { 1.0f, 0.1f, 0.02f };
         COSArray cosArray = new COSArray();
@@ -159,7 +159,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testGetSetName()
+    void testGetSetName()
     {
         COSArray cosArray = new COSArray();
         cosArray.growToSize(3);
@@ -181,7 +181,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testGetSetInt()
+    void testGetSetInt()
     {
         COSArray cosArray = new COSArray();
         cosArray.growToSize(3);
@@ -203,7 +203,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testGetSetString()
+    void testGetSetString()
     {
         COSArray cosArray = new COSArray();
         cosArray.growToSize(3);
@@ -225,7 +225,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testRemove()
+    void testRemove()
     {
         COSArray cosArray = COSArray
                 .convertIntegerListToCOSIntegerCOSArray(Arrays.asList(1, 2, 3, 4, 5, 6));
@@ -263,7 +263,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testGrowToSize()
+    void testGrowToSize()
     {
         COSArray cosArray = new COSArray();
         assertEquals(0, cosArray.size());
@@ -284,7 +284,7 @@ public class TestCOSArray
     }
 
     @Test
-    public void testToList()
+    void testToList()
     {
         COSArray cosArray = COSArray
                 .convertIntegerListToCOSIntegerCOSArray(Arrays.asList(0, 1, 2, 3, 4, 5));

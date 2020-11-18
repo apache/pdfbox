@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  * Test for PDFDocEncoding.
  *
  */
-public class PDFDocEncodingTest
+class PDFDocEncodingTest
 {
 
     static List<String> deviations = new ArrayList<>();
@@ -81,7 +81,7 @@ public class PDFDocEncodingTest
     }
     
     @Test
-    public void testDeviations()
+    void testDeviations()
     {
         for (String deviation: deviations)
         {
@@ -97,7 +97,7 @@ public class PDFDocEncodingTest
      * @throws IOException
      */
     @Test
-    public void testPDFBox3864() throws IOException
+    void testPDFBox3864() throws IOException
     {
         for (int i = 0; i < 256; i++)
         {

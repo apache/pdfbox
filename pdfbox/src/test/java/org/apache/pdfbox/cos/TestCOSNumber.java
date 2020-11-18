@@ -30,28 +30,28 @@ import org.junit.jupiter.api.Test;
 /**
  * Test class for {@link COSNumber}
  */
-public abstract class TestCOSNumber extends TestCOSBase
+abstract class TestCOSNumber extends TestCOSBase
 {
     /**
      * Test floatValue() - test that the correct float value is returned.
      */
-    public abstract void testFloatValue();
+    abstract void testFloatValue();
 
     /**
      * Test intValue() - test that the correct int value is returned.
      */
-    public abstract void testIntValue();
+    abstract void testIntValue();
 
     /**
      * Test longValue() - test that the correct long value is returned.
      */
-    public abstract void testLongValue();
+    abstract void testLongValue();
 
     /**
      * Tests get() - tests a static constructor for COSNumber classes.
      */
     @Test
-    public void testGet()
+    void testGet()
     {
         try
         {
@@ -91,14 +91,14 @@ public abstract class TestCOSNumber extends TestCOSBase
      * @throws IOException
      */
     @Test
-    public void testLargeNumber() throws IOException
+    void testLargeNumber() throws IOException
     {
         assertNull(COSNumber.get("18446744073307448448"));
         assertNull(COSNumber.get("-18446744073307448448"));
     }
 
     @Test
-    public void testInvalidNumber()
+    void testInvalidNumber()
     {
         try
         {

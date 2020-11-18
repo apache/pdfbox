@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class COSObjectKeyTest
+class COSObjectKeyTest
 {
     @Test
-    public void compareToInputNotNullOutputZero()
+    void compareToInputNotNullOutputZero()
     {
         // Arrange
         final COSObjectKey objectUnderTest = new COSObjectKey(0L, 0);
@@ -38,7 +38,7 @@ public class COSObjectKeyTest
     }
 
     @Test
-    public void compareToInputNotNullOutputPositive()
+    void compareToInputNotNullOutputPositive()
     {
         // Arrange
         final COSObjectKey objectUnderTest = new COSObjectKey(0L, 0);
@@ -52,7 +52,7 @@ public class COSObjectKeyTest
     }
 
     @Test
-    public void checkHashCode()
+    void checkHashCode()
     {
         // same object number 100 0
         assertEquals(new COSObjectKey(100, 0).hashCode(),

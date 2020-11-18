@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link COSFloat}.
  */
-public class TestCOSFloat extends TestCOSNumber
+class TestCOSFloat extends TestCOSNumber
 {
     @BeforeAll
     static void setUp()
@@ -109,7 +109,7 @@ public class TestCOSFloat extends TestCOSNumber
      * Reflexivity, Symmetry, Transitivity and non-nullity.
      */
     @Test
-    public void testEquals()
+    void testEquals()
     {
         new BaseTester()
         {
@@ -159,7 +159,7 @@ public class TestCOSFloat extends TestCOSNumber
      * over a range of arbitrary values.
      */
     @Test
-    public void testHashCode()
+    void testHashCode()
     {
         new HashCodeTester().runTests();
     }
@@ -178,7 +178,7 @@ public class TestCOSFloat extends TestCOSNumber
 
     @Override
     @Test
-    public void testFloatValue()
+    void testFloatValue()
     {
         new FloatValueTester().runTests();
     }
@@ -197,7 +197,7 @@ public class TestCOSFloat extends TestCOSNumber
 
     @Override
     @Test
-    public void testIntValue()
+    void testIntValue()
     {
         new IntValueTester().runTests();
     }
@@ -216,7 +216,7 @@ public class TestCOSFloat extends TestCOSNumber
     
     @Override
     @Test
-    public void testLongValue()
+    void testLongValue()
     {
         new LongValueTester().runTests();
     }
@@ -247,7 +247,7 @@ public class TestCOSFloat extends TestCOSNumber
 
     @Override
     @Test
-    public void testAccept()
+    void testAccept()
     {
         new AcceptTester().runTests();
     }
@@ -294,7 +294,7 @@ public class TestCOSFloat extends TestCOSNumber
      * this object to it.
      */
     @Test
-    public void testWritePDF()
+    void testWritePDF()
     {
         WritePDFTester writePDFTester = new WritePDFTester();
         writePDFTester.runTests();
@@ -304,7 +304,7 @@ public class TestCOSFloat extends TestCOSNumber
     }
 
     @Test
-    public void testDoubleNegative() throws IOException
+    void testDoubleNegative() throws IOException
     {
         // PDFBOX-4289
         COSFloat cosFloat = new COSFloat("--16.33");
@@ -312,7 +312,7 @@ public class TestCOSFloat extends TestCOSNumber
     }
 
     @Test
-    public void testVerySmallValues() throws IOException
+    void testVerySmallValues() throws IOException
     {
         double smallValue = Float.MIN_VALUE / 10d;
 
@@ -343,7 +343,7 @@ public class TestCOSFloat extends TestCOSNumber
     }
 
     @Test
-    public void testVeryLargeValues() throws IOException
+    void testVeryLargeValues() throws IOException
     {
         double largeValue = Float.MAX_VALUE * 10d;
 
@@ -374,7 +374,7 @@ public class TestCOSFloat extends TestCOSNumber
     }
 
     @Test
-    public void testMisplacedNegative() throws IOException
+    void testMisplacedNegative() throws IOException
     {
         // PDFBOX-2990, PDFBOX-3369 have 0.00000-33917698
         // PDFBOX-3500 has 0.-262
@@ -387,7 +387,7 @@ public class TestCOSFloat extends TestCOSNumber
     }
 
     @Test
-    public void testDuplicateMisplacedNegative()
+    void testDuplicateMisplacedNegative()
     {
         assertThrows(IOException.class, () -> new COSFloat("0.-26-2"));
         assertThrows(IOException.class, () -> new COSFloat("-0.-262"));
@@ -396,7 +396,7 @@ public class TestCOSFloat extends TestCOSNumber
     }
 
     @Test
-    public void testStubOperatorMinMaxValues()
+    void testStubOperatorMinMaxValues()
     {
         float largeValue = 32768f;
         float largeNegativeValue = -32768f;

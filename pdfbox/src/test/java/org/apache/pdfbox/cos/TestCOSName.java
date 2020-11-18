@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.jupiter.api.Test;
 
-public class TestCOSName
+class TestCOSName
 {
     /**
      * PDFBOX-4076: Check that characters outside of US_ASCII are not replaced with "?".
@@ -35,7 +35,7 @@ public class TestCOSName
      * @throws IOException 
      */
     @Test
-    public void PDFBox4076() throws IOException
+    void PDFBox4076() throws IOException
     {
         String special = "中国你好!";
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

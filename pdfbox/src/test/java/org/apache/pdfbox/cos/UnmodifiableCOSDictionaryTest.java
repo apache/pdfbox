@@ -23,10 +23,10 @@ import java.util.Calendar;
 import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
 import org.junit.jupiter.api.Test;
 
-public class UnmodifiableCOSDictionaryTest
+class UnmodifiableCOSDictionaryTest
 {
     @Test
-    public void testUnmodifiableCOSDictionary()
+    void testUnmodifiableCOSDictionary()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -82,7 +82,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetItem()
+    void testSetItem()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -128,7 +128,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetBoolean()
+    void testSetBoolean()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -153,7 +153,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetName()
+    void testSetName()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -178,7 +178,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetDate()
+    void testSetDate()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         Calendar calendar = Calendar.getInstance();
@@ -204,7 +204,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetEmbeddedDate()
+    void testSetEmbeddedDate()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         Calendar calendar = Calendar.getInstance();
@@ -230,7 +230,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetString()
+    void testSetString()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -255,7 +255,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetEmbeddedString()
+    void testSetEmbeddedString()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -280,7 +280,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetInt()
+    void testSetInt()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -305,7 +305,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetEmbeddedInt()
+    void testSetEmbeddedInt()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -330,7 +330,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetLong()
+    void testSetLong()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
@@ -355,7 +355,7 @@ public class UnmodifiableCOSDictionaryTest
     }
 
     @Test
-    public void testSetFloat()
+    void testSetFloat()
     {
         COSDictionary unmodifiableCOSDictionary = new COSDictionary().asUnmodifiableDictionary();
         try
