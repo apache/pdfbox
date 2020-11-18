@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
  * @author John Hewson
  * @author Tilman Hausherr
  */
-public class TestFontEmbedding
+class TestFontEmbedding
 {
     private static final File OUT_DIR = new File("target/test-output");
 
@@ -61,7 +61,7 @@ public class TestFontEmbedding
      * @throws IOException
      */
     @Test
-    public void testCIDFontType2() throws IOException
+    void testCIDFontType2() throws IOException
     {
         validateCIDFontType2(false);
     }
@@ -72,7 +72,7 @@ public class TestFontEmbedding
      * @throws IOException
      */
     @Test
-    public void testCIDFontType2Subset() throws IOException
+    void testCIDFontType2Subset() throws IOException
     {
         validateCIDFontType2(true);
     }
@@ -83,7 +83,7 @@ public class TestFontEmbedding
      * @throws IOException
      */
     @Test
-    public void testCIDFontType2VerticalSubsetMonospace() throws IOException
+    void testCIDFontType2VerticalSubsetMonospace() throws IOException
     {
         String text = "「ABC」";
         String expectedExtractedtext = "「\nA\nB\nC\n」";
@@ -132,7 +132,7 @@ public class TestFontEmbedding
      * @throws IOException
      */
     @Test
-    public void testCIDFontType2VerticalSubsetProportional() throws IOException
+    void testCIDFontType2VerticalSubsetProportional() throws IOException
     {
         String text = "「ABC」";
         String expectedExtractedtext = "「\nA\nB\nC\n」";
@@ -184,7 +184,7 @@ public class TestFontEmbedding
     }
 
     @Test
-    public void testBengali() throws IOException
+    void testBengali() throws IOException
     {
         String BANGLA_TEXT_1 = "আমি কোন পথে ক্ষীরের লক্ষ্মী ষন্ড পুতুল রুপো গঙ্গা ঋষি";
         String BANGLA_TEXT_2 = "দ্রুত গাঢ় শেয়াল অলস কুকুর জুড়ে জাম্প ধুর্ত  হঠাৎ ভাঙেনি মৌলিক ঐশি দৈ";
@@ -237,7 +237,7 @@ public class TestFontEmbedding
      * @throws java.io.IOException
      */
     @Test
-    public void testMaxEntries() throws IOException
+    void testMaxEntries() throws IOException
     {
         File file;
         String text;

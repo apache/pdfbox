@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * A test for correctly parsing TTF files.
  */
-public class TestTTFParser
+class TestTTFParser
 {
 
     /**
@@ -41,7 +41,7 @@ public class TestTTFParser
      * @throws IOException if an error occurs.
      */
     @Test
-    public void testPostTable() throws IOException
+    void testPostTable() throws IOException
     {
         InputStream input = PDFont.class.getResourceAsStream(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");

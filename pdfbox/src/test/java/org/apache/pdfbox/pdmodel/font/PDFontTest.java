@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
  * @author adam
  * @author Tilman Hausherr
  */
-public class PDFontTest
+class PDFontTest
 {
     private static final File OUT_DIR = new File("target/test-output");
 
@@ -70,7 +70,7 @@ public class PDFontTest
      * @throws URISyntaxException
      */
     @Test
-    public void testPDFBox988() throws IOException, URISyntaxException
+    void testPDFBox988() throws IOException, URISyntaxException
     {
         try (PDDocument doc = 
                 Loader.loadPDF(new File(PDFontTest.class.getResource("F001u_3_7j.pdf").toURI())))
@@ -89,7 +89,7 @@ public class PDFontTest
      * @throws IOException
      */
     @Test
-    public void testPDFBox3747() throws IOException
+    void testPDFBox3747() throws IOException
     {
         File file = new File("c:/windows/fonts", "calibri.ttf");
         if (!file.exists())
@@ -130,7 +130,7 @@ public class PDFontTest
      * @throws URISyntaxException
      */
     @Test
-    public void testPDFBox3826() throws IOException, URISyntaxException
+    void testPDFBox3826() throws IOException, URISyntaxException
     {
         URL url = PDFont.class.getResource(
                 "/org/apache/pdfbox/resources/ttf/LiberationSans-Regular.ttf");
@@ -154,7 +154,7 @@ public class PDFontTest
      * @throws IOException 
      */
     @Test
-    public void testPDFBOX4115() throws IOException
+    void testPDFBOX4115() throws IOException
     {
         File fontFile = new File("target/fonts", "n019003l.pfb");
         File outputFile = new File(OUT_DIR, "FontType1.pdf");
@@ -200,7 +200,7 @@ public class PDFontTest
      * @throws java.io.IOException
      */
     @Test
-    public void testPDFox4318() throws IOException
+    void testPDFox4318() throws IOException
     {
         assertThrows(IllegalArgumentException.class,
                 () -> PDType1Font.HELVETICA_BOLD.encode("\u0080"),
@@ -212,7 +212,7 @@ public class PDFontTest
     }
 
     @Test
-    public void testFullEmbeddingTTC() throws IOException
+    void testFullEmbeddingTTC() throws IOException
     {
         FontFileFinder fff = new FontFileFinder();
         TrueTypeCollection ttc = null;
@@ -321,7 +321,7 @@ public class PDFontTest
      * @throws IOException 
      */
     @Test
-    public void testDeleteFont() throws IOException
+    void testDeleteFont() throws IOException
     {
         File tempFontFile = new File(OUT_DIR, "LiberationSans-Regular.ttf");
         File tempPdfFile = new File(OUT_DIR, "testDeleteFont.pdf");

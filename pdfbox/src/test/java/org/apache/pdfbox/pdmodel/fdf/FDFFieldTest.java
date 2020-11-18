@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
 /*
  * Test some characteristics of FDFFields
  */
-public class FDFFieldTest
+class FDFFieldTest
 {
     @Test
-    public void testCOSStringValue() throws IOException
+    void testCOSStringValue() throws IOException
     {
         String testString = "Test value";
         COSString testCOSString = new COSString(testString);
@@ -51,7 +51,7 @@ public class FDFFieldTest
 
     
     @Test
-    public void testTextAsCOSStreamValue() throws IOException
+    void testTextAsCOSStreamValue() throws IOException
     {
         String testString = "Test value";
         byte[] testBytes = testString.getBytes("ASCII");
@@ -64,7 +64,7 @@ public class FDFFieldTest
     }
         
     @Test
-    public void testCOSNameValue() throws IOException
+    void testCOSNameValue() throws IOException
     {
         String testString = "Yes";
         COSName testCOSSName = COSName.getPDFName(testString);
@@ -77,7 +77,7 @@ public class FDFFieldTest
     }
 
     @Test
-    public void testCOSArrayValue() throws IOException
+    void testCOSArrayValue() throws IOException
     {
         List<String> testList = new ArrayList<>();
         testList.add("A");

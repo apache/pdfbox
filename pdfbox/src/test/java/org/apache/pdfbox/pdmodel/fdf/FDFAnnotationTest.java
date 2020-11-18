@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
  * @author Johanneke Lamberink
  *
  */
-public class FDFAnnotationTest
+class FDFAnnotationTest
 {
     @Test
-    public void loadXFDFAnnotations() throws IOException, URISyntaxException
+    void loadXFDFAnnotations() throws IOException, URISyntaxException
     {
         File f = new File(FDFAnnotationTest.class.getResource("xfdf-test-document-annotations.xml").toURI());
         try (FDFDocument fdfDoc = Loader.loadXFDF(f))

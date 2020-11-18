@@ -41,13 +41,13 @@ import org.junit.jupiter.api.Test;
  * Tests font encoding.
  *
  */
-public class TestFontEncoding
+class TestFontEncoding
 {
     /**
      * Test the add method of a font encoding.
      */
     @Test
-    public void testAdd() throws Exception
+    void testAdd() throws Exception
     {
         // see PDFDBOX-3332
         int codeForSpace = WinAnsiEncoding.INSTANCE.getNameToCodeMap().get("space");
@@ -58,7 +58,7 @@ public class TestFontEncoding
     }
 
     @Test
-    public void testOverwrite() throws Exception
+    void testOverwrite() throws Exception
     {
         // see PDFDBOX-3332
         COSDictionary dictEncodingDict = new COSDictionary();
@@ -80,7 +80,7 @@ public class TestFontEncoding
      * @throws IOException
      */
     @Test
-    public void testPDFBox3884() throws IOException
+    void testPDFBox3884() throws IOException
     {
         PDDocument doc = new PDDocument();
         PDPage page = new PDPage();

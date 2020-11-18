@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDStructureElementTest
+class PDStructureElementTest
 {
     private static final File TARGETPDFDIR = new File("target/pdfs");
 
@@ -46,7 +46,7 @@ public class PDStructureElementTest
      * @throws IOException 
      */
     @Test
-    public void testPDFBox4197() throws IOException
+    void testPDFBox4197() throws IOException
     {
         Set<Revisions<PDAttributeObject>> attributeSet = new HashSet<>();
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4197.pdf")))

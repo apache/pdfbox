@@ -31,14 +31,14 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDLineDashPatternTest
+class PDLineDashPatternTest
 {
 
     /**
      * Test of getCOSObject method, of class PDLineDashPattern.
      */
     @Test
-    public void testGetCOSObject()
+    void testGetCOSObject()
     {
         COSArray ar = new COSArray();
         ar.add(COSInteger.ONE);
