@@ -25,13 +25,13 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PredictorTest
+class PredictorTest
 {
     /**
      * Test of getBitSeq method, of class Predictor.
      */
     @Test
-    public void testGetBitSeq()
+    void testGetBitSeq()
     {
         assertEquals(Integer.parseInt("11111111", 2), getBitSeq(Integer.parseInt("11111111", 2), 0, 8));
         assertEquals(Integer.parseInt("00000000", 2), getBitSeq(Integer.parseInt("00000000", 2), 0, 8));
@@ -59,7 +59,7 @@ public class PredictorTest
      * Test of calcSetBitSeq method, of class Predictor.
      */
     @Test
-    public void testCalcSetBitSeq()
+    void testCalcSetBitSeq()
     {
         assertEquals(Integer.parseInt("00000000", 2), calcSetBitSeq(Integer.parseInt("11111111", 2), 0, 8, 0));
         assertEquals(Integer.parseInt("00000001", 2), calcSetBitSeq(Integer.parseInt("11111111", 2), 0, 8, 1));

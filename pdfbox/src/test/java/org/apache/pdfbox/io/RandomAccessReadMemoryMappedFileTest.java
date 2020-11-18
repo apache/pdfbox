@@ -34,10 +34,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Unittest for {@link org.apache.pdfbox.io.RandomAccessReadMemoryMappedFile}
  */
-public class RandomAccessReadMemoryMappedFileTest
+class RandomAccessReadMemoryMappedFileTest
 {
     @Test
-    public void testPositionSkip() throws IOException, URISyntaxException
+    void testPositionSkip() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -51,7 +51,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testPositionRead() throws IOException, URISyntaxException
+    void testPositionRead() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -68,7 +68,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testSeekEOF() throws IOException, URISyntaxException
+    void testSeekEOF() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -105,7 +105,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testPositionReadBytes() throws IOException, URISyntaxException
+    void testPositionReadBytes() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -128,7 +128,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testPositionPeek() throws IOException, URISyntaxException
+    void testPositionPeek() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -144,7 +144,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testPositionUnreadBytes() throws IOException, URISyntaxException
+    void testPositionUnreadBytes() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -168,7 +168,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testEmptyBuffer() throws IOException, URISyntaxException
+    void testEmptyBuffer() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadEmptyFile.txt").toURI()));
@@ -197,7 +197,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testUnmapping() throws IOException
+    void testUnmapping() throws IOException
     {
         // This is a special test case for some unmapping issues limited to windows enviroments
         // see https://bugs.openjdk.java.net/browse/JDK-4724038
@@ -215,7 +215,7 @@ public class RandomAccessReadMemoryMappedFileTest
     }
 
     @Test
-    public void testView() throws IOException, URISyntaxException
+    void testView() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadMemoryMappedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));

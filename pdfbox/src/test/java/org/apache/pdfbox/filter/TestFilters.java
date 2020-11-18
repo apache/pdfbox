@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * This will test all of the filters in the PDFBox system.
  */
-public class TestFilters
+class TestFilters
 {
     /**
      * This will test all of the filters in the system. There will be COUNT
@@ -44,7 +44,7 @@ public class TestFilters
      * @throws IOException If there is an exception while encoding.
      */
     @Test
-    public void testFilters() throws IOException
+    void testFilters() throws IOException
     {
         final int COUNT = 10;
         Random rd = new Random(123456);
@@ -125,7 +125,7 @@ public class TestFilters
      * @throws IOException
      */
     @Test
-    public void testPDFBOX4517() throws IOException
+    void testPDFBOX4517() throws IOException
     {
         Loader.loadPDF(new File("target/pdfs/PDFBOX-4517-cryptfilter.pdf"),
                 "userpassword1234");
@@ -139,7 +139,7 @@ public class TestFilters
      * @throws IOException 
      */
     @Test
-    public void testPDFBOX1977() throws IOException
+    void testPDFBOX1977() throws IOException
     {
         Filter lzwFilter = FilterFactory.INSTANCE.getFilter(COSName.LZW_DECODE);
         byte[] byteArray = IOUtils.toByteArray(this.getClass().getResourceAsStream("PDFBOX-1977.bin"));
@@ -153,7 +153,7 @@ public class TestFilters
      * @throws IOException
      */
     @Test
-    public void testRLE() throws IOException
+    void testRLE() throws IOException
     {
         Filter rleFilter = FilterFactory.INSTANCE.getFilter(COSName.RUN_LENGTH_DECODE);
         byte[] input0 = new byte[0];

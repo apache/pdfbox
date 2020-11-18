@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Unittest for {@link org.apache.pdfbox.io.RandomAccessReadBufferedFile}
  */
-public class RandomAccessReadBufferedFileTest
+class RandomAccessReadBufferedFileTest
 {
     @Test
-    public void testPositionSkip() throws IOException, URISyntaxException
+    void testPositionSkip() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -47,7 +47,7 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionRead() throws IOException, URISyntaxException
+    void testPositionRead() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -64,7 +64,7 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testSeekEOF() throws IOException, URISyntaxException
+    void testSeekEOF() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -101,7 +101,7 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionReadBytes() throws IOException, URISyntaxException
+    void testPositionReadBytes() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -124,7 +124,7 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionPeek() throws IOException, URISyntaxException
+    void testPositionPeek() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -140,7 +140,7 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testPositionUnreadBytes() throws IOException, URISyntaxException
+    void testPositionUnreadBytes() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));
@@ -164,7 +164,7 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testEmptyBuffer() throws IOException, URISyntaxException
+    void testEmptyBuffer() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadEmptyFile.txt").toURI()));
@@ -193,7 +193,7 @@ public class RandomAccessReadBufferedFileTest
     }
 
     @Test
-    public void testView() throws IOException, URISyntaxException
+    void testView() throws IOException, URISyntaxException
     {
         RandomAccessRead randomAccessSource = new RandomAccessReadBufferedFile(
                 new File(getClass().getResource("RandomAccessReadFile1.txt").toURI()));

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 /**
  * This is a unit test for {@link IOUtils}.
  */
-public class TestIOUtils
+class TestIOUtils
 {
 
     /**
@@ -38,7 +38,7 @@ public class TestIOUtils
      * @throws IOException if an I/O error occursn
      */
     @Test
-    public void testPopulateBuffer() throws IOException
+    void testPopulateBuffer() throws IOException
     {
         byte[] data = "Hello World!".getBytes();
         byte[] buffer = new byte[data.length];

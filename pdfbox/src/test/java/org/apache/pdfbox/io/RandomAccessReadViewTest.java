@@ -27,12 +27,12 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unittest for org.apache.pdfbox.io.RandomAccessReadBuffer
+ * Unittest for {@link org.apache.pdfbox.io.RandomAccessReadView}
  */
-public class RandomAccessReadViewTest
+class RandomAccessReadViewTest
 {
     @Test
-    public void testPositionSkip() throws IOException
+    void testPositionSkip() throws IOException
     {
         byte[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
                 20 };
@@ -52,7 +52,7 @@ public class RandomAccessReadViewTest
     }
 
     @Test
-    public void testPositionRead() throws IOException
+    void testPositionRead() throws IOException
     {
         byte[] values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
                 20 };

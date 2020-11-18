@@ -27,10 +27,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Unittest for {@link org.apache.pdfbox.io.RandomAccessInputStream}
  */
-public class RandomAccessInputStreamTest
+class RandomAccessInputStreamTest
 {
     @Test
-    public void testPositionSkip() throws IOException
+    void testPositionSkip() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -48,7 +48,7 @@ public class RandomAccessInputStreamTest
     }
 
     @Test
-    public void testPositionRead() throws IOException
+    void testPositionRead() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -66,7 +66,7 @@ public class RandomAccessInputStreamTest
     }
 
     @Test
-    public void testSeekEOF() throws IOException
+    void testSeekEOF() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -84,7 +84,7 @@ public class RandomAccessInputStreamTest
     }
 
     @Test
-    public void testPositionReadBytes() throws IOException
+    void testPositionReadBytes() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -110,7 +110,7 @@ public class RandomAccessInputStreamTest
     }
 
     @Test
-    public void testEmptyBuffer() throws IOException
+    void testEmptyBuffer() throws IOException
     {
         RandomAccessInputStream randomAccessInputStream = new RandomAccessInputStream(
                 new RandomAccessReadBuffer(new ByteArrayOutputStream().toByteArray()));

@@ -33,11 +33,11 @@ import org.junit.jupiter.api.Test;
  * Unittest for org.apache.pdfbox.io.SequenceRandomAccessRead
  * 
  */
-public class SequenceRandomAccessReadTest
+class SequenceRandomAccessReadTest
 {
 
     @Test
-    public void TestCreateAndRead() throws IOException
+    void TestCreateAndRead() throws IOException
     {
         String input1 = "This is a test string number 1";
         RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
@@ -96,7 +96,7 @@ public class SequenceRandomAccessReadTest
     }
 
     @Test
-    public void TestSeekPeekAndRewind() throws IOException
+    void TestSeekPeekAndRewind() throws IOException
     {
         String input1 = "01234567890123456789";
         RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
@@ -143,7 +143,7 @@ public class SequenceRandomAccessReadTest
     }
 
     @Test
-    public void TestBorderCases() throws IOException
+    void TestBorderCases() throws IOException
     {
         String input1 = "01234567890123456789";
         RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
@@ -187,7 +187,7 @@ public class SequenceRandomAccessReadTest
     }
 
     @Test
-    public void TestEOF() throws IOException
+    void TestEOF() throws IOException
     {
         String input1 = "01234567890123456789";
         RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(
@@ -239,7 +239,7 @@ public class SequenceRandomAccessReadTest
     }
 
     @Test
-    public void TestEmptyStream() throws IOException
+    void TestEmptyStream() throws IOException
     {
         String input1 = "01234567890123456789";
         RandomAccessReadBuffer randomAccessReadBuffer1 = new RandomAccessReadBuffer(

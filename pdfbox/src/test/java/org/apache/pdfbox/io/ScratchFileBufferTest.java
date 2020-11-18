@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Kühn &amp; Weyh Software GmbH
  */
-public class ScratchFileBufferTest
+class ScratchFileBufferTest
 {
 
     private static final int PAGE_SIZE = 4096;
@@ -40,7 +40,7 @@ public class ScratchFileBufferTest
      * @throws IOException
      */
     @Test
-    public void testEOFBugInSeek() throws IOException
+    void testEOFBugInSeek() throws IOException
     {
         try (ScratchFile scratchFile = new ScratchFile(MemoryUsageSetting.setupTempFileOnly()))
         {

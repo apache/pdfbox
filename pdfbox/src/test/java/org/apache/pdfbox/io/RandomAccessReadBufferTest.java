@@ -30,10 +30,10 @@ import org.junit.jupiter.api.Test;
 /**
  * Unittest for org.apache.pdfbox.io.RandomAccessReadBuffer
  */
-public class RandomAccessReadBufferTest
+class RandomAccessReadBufferTest
 {
     @Test
-    public void testPositionSkip() throws IOException
+    void testPositionSkip() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -49,7 +49,7 @@ public class RandomAccessReadBufferTest
     }
 
     @Test
-    public void testPositionRead() throws IOException
+    void testPositionRead() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -68,7 +68,7 @@ public class RandomAccessReadBufferTest
     }
 
     @Test
-    public void testSeekEOF() throws IOException
+    void testSeekEOF() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -107,7 +107,7 @@ public class RandomAccessReadBufferTest
     }
 
     @Test
-    public void testPositionReadBytes() throws IOException
+    void testPositionReadBytes() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -132,7 +132,7 @@ public class RandomAccessReadBufferTest
     }
 
     @Test
-    public void testPositionPeek() throws IOException
+    void testPositionPeek() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -150,7 +150,7 @@ public class RandomAccessReadBufferTest
     }
 
     @Test
-    public void testPositionUnreadBytes() throws IOException
+    void testPositionUnreadBytes() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
@@ -176,7 +176,7 @@ public class RandomAccessReadBufferTest
     }
 
     @Test
-    public void testEmptyBuffer() throws IOException
+    void testEmptyBuffer() throws IOException
     {
         RandomAccessReadBuffer randomAccessSource = new RandomAccessReadBuffer(
                 new ByteArrayOutputStream().toByteArray());
@@ -205,7 +205,7 @@ public class RandomAccessReadBufferTest
     }
 
     @Test
-    public void testView() throws IOException
+    void testView() throws IOException
     {
         byte[] inputValues = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         ByteArrayInputStream bais = new ByteArrayInputStream(inputValues);
