@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDInlineImageTest
+class PDInlineImageTest
 {
     private static final File testResultsDir = new File("target/test-output/graphics");
 
@@ -60,7 +60,7 @@ public class PDInlineImageTest
      * Map<String, PDColorSpace> colorSpaces)
      */
     @Test
-    public void testInlineImage() throws IOException
+    void testInlineImage() throws IOException
     {
         COSDictionary dict = new COSDictionary();
         dict.setBoolean(COSName.IM, true);

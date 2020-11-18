@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Tilman Hausherr
  */
-public class JPEGFactoryTest
+class JPEGFactoryTest
 {
     private final File testResultsDir = new File("target/test-output/graphics");
 
@@ -63,7 +63,7 @@ public class JPEGFactoryTest
      * stream) with color JPEG file
      */
     @Test
-    public void testCreateFromStream() throws IOException
+    void testCreateFromStream() throws IOException
     {
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg");
@@ -79,7 +79,7 @@ public class JPEGFactoryTest
      * stream) with CMYK color JPEG file
      */
     @Test
-    public void testCreateFromStreamCMYK() throws IOException
+    void testCreateFromStreamCMYK() throws IOException
     {
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpegcmyk.jpg");
@@ -95,7 +95,7 @@ public class JPEGFactoryTest
      * stream) with gray JPEG file
      */
     @Test
-    public void testCreateFromStream256() throws IOException
+    void testCreateFromStream256() throws IOException
     {
         PDDocument document = new PDDocument();
         InputStream stream = JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg");
@@ -111,7 +111,7 @@ public class JPEGFactoryTest
      * image) with color JPEG image
      */
     @Test
-    public void testCreateFromImageRGB() throws IOException
+    void testCreateFromImageRGB() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg.jpg"));
@@ -127,7 +127,7 @@ public class JPEGFactoryTest
      * image) with gray JPEG image
      */
     @Test
-    public void testCreateFromImage256() throws IOException
+    void testCreateFromImage256() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(JPEGFactoryTest.class.getResourceAsStream("jpeg256.jpg"));
@@ -143,7 +143,7 @@ public class JPEGFactoryTest
      * image)
      */
     @Test
-    public void testCreateFromImageINT_ARGB() throws IOException
+    void testCreateFromImageINT_ARGB() throws IOException
     {
         // workaround Open JDK bug
         // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
@@ -188,7 +188,7 @@ public class JPEGFactoryTest
      * image)
      */
     @Test
-    public void testCreateFromImage4BYTE_ABGR() throws IOException
+    void testCreateFromImage4BYTE_ABGR() throws IOException
     {
         // workaround Open JDK bug
         // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758
@@ -234,7 +234,7 @@ public class JPEGFactoryTest
      * @throws java.io.IOException
      */
     @Test
-    public void testCreateFromImageUSHORT_555_RGB() throws IOException
+    void testCreateFromImageUSHORT_555_RGB() throws IOException
     {
         // workaround Open JDK bug
         // http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7044758

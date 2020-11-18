@@ -35,20 +35,17 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDImageXObjectTest
+class PDImageXObjectTest
 {
     
-    public PDImageXObjectTest()
-    {
-    }
-    
+
     /**
      * Test of createFromFileByExtension method, of class PDImageXObject.
      * @throws java.io.IOException
      * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromFileByExtension() throws IOException, URISyntaxException
+    void testCreateFromFileByExtension() throws IOException, URISyntaxException
     {
         testCompareCreatedFileByExtensionWithCreatedByCCITTFactory("ccittg4.tif");
 
@@ -67,7 +64,7 @@ public class PDImageXObjectTest
      * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromFile() throws IOException, URISyntaxException
+    void testCreateFromFile() throws IOException, URISyntaxException
     {
         testCompareCreatedFileWithCreatedByCCITTFactory("ccittg4.tif");
 
@@ -87,7 +84,7 @@ public class PDImageXObjectTest
      * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromFileByContent() throws IOException, URISyntaxException
+    void testCreateFromFileByContent() throws IOException, URISyntaxException
     {
         testCompareCreateByContentWithCreatedByCCITTFactory("ccittg4.tif");
 
@@ -107,7 +104,7 @@ public class PDImageXObjectTest
      * @throws java.net.URISyntaxException
      */
     @Test
-    public void testCreateFromByteArray() throws IOException, URISyntaxException
+    void testCreateFromByteArray() throws IOException, URISyntaxException
     {
         testCompareCreatedFromByteArrayWithCreatedByCCITTFactory("ccittg4.tif");
 

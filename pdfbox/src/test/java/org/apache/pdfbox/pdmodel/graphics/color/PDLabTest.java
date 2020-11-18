@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDLabTest
+class PDLabTest
 {
 
     /**
@@ -37,7 +37,7 @@ public class PDLabTest
      * and checks getters and setters.
      */
     @Test
-    public void testLAB()
+    void testLAB()
     {
         PDLab pdLab = new PDLab();
         COSArray cosArray = (COSArray) pdLab.getCOSObject();

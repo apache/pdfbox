@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author John Hewson
  */
-public class PDDeviceCMYKTest
+class PDDeviceCMYKTest
 {
     @Test
-    public void testCMYK() throws IOException
+    void testCMYK() throws IOException
     {
         PDDeviceCMYK.INSTANCE = new CustomDeviceCMYK();
     }

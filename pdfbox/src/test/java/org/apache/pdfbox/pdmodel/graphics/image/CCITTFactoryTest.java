@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * @author Tilman Hausherr
  */
-public class CCITTFactoryTest
+class CCITTFactoryTest
 {
     private final File testResultsDir = new File("target/test-output/graphics");
 
@@ -61,7 +61,7 @@ public class CCITTFactoryTest
      * RandomAccess reader) with a single page TIFF
      */
     @Test
-    public void testCreateFromRandomAccessSingle() throws IOException
+    void testCreateFromRandomAccessSingle() throws IOException
     {
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
         String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
@@ -101,7 +101,7 @@ public class CCITTFactoryTest
      * RandomAccess reader) with a multi page TIFF
      */
     @Test
-    public void testCreateFromRandomAccessMulti() throws IOException
+    void testCreateFromRandomAccessMulti() throws IOException
     {
         String tiffPath = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4multi.tif";
         
@@ -148,7 +148,7 @@ public class CCITTFactoryTest
     }
 
     @Test
-    public void testCreateFromBufferedImage() throws IOException
+    void testCreateFromBufferedImage() throws IOException
     {
         String tiffG4Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg4.tif";
 
@@ -174,7 +174,7 @@ public class CCITTFactoryTest
     }    
     
     @Test
-    public void testCreateFromBufferedChessImage() throws IOException
+    void testCreateFromBufferedChessImage() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage bim = new BufferedImage(343, 287, BufferedImage.TYPE_BYTE_BINARY);
@@ -213,7 +213,7 @@ public class CCITTFactoryTest
      * source file
      */
     @Test
-    public void testCreateFromFileLock() throws IOException
+    void testCreateFromFileLock() throws IOException
     {
         // copy the source file to a temp directory, as we will be deleting it
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
@@ -229,7 +229,7 @@ public class CCITTFactoryTest
      * lock the source file
      */
     @Test
-    public void testCreateFromFileNumberLock() throws IOException
+    void testCreateFromFileNumberLock() throws IOException
     {
         // copy the source file to a temp directory, as we will be deleting it
         String tiffG3Path = "src/test/resources/org/apache/pdfbox/pdmodel/graphics/image/ccittg3.tif";
@@ -245,7 +245,7 @@ public class CCITTFactoryTest
      * bytes).
      */
     @Test
-    public void testByteShortPaddedWithGarbage() throws IOException
+    void testByteShortPaddedWithGarbage() throws IOException
     {
         try (PDDocument document = new PDDocument())
         {

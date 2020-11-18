@@ -24,18 +24,14 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDICCBasedTest
+class PDICCBasedTest
 {
-
-    public PDICCBasedTest()
-    {
-    }
 
     /**
      * Test of Constructor for PDFBOX-2812.
      */
     @Test
-    public void testConstructor()
+    void testConstructor()
     {
         PDDocument doc = new PDDocument();
         PDICCBased iccBased = new PDICCBased(doc);

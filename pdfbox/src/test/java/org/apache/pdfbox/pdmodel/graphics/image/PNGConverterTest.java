@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class PNGConverterTest
+class PNGConverterTest
 {
     private static final File parentDir = new File("target/test-output/graphics/graphics");
 
@@ -88,75 +88,75 @@ public class PNGConverterTest
     }
 
     @Test
-    public void testImageConversionRGB() throws IOException
+    void testImageConversionRGB() throws IOException
     {
         checkImageConvert("png.png");
     }
 
     @Test
-    public void testImageConversionRGBGamma() throws IOException
+    void testImageConversionRGBGamma() throws IOException
     {
         checkImageConvert("png_rgb_gamma.png");
     }
 
     @Test
-    public void testImageConversionRGB16BitICC() throws IOException
+    void testImageConversionRGB16BitICC() throws IOException
     {
         checkImageConvert("png_rgb_romm_16bit.png");
     }
 
     @Test
-    public void testImageConversionRGBIndexed() throws IOException
+    void testImageConversionRGBIndexed() throws IOException
     {
         checkImageConvert("png_indexed.png");
     }
 
     @Test
-    public void testImageConversionRGBIndexedAlpha1Bit() throws IOException
+    void testImageConversionRGBIndexedAlpha1Bit() throws IOException
     {
         checkImageConvert("png_indexed_1bit_alpha.png");
     }
 
     @Test
-    public void testImageConversionRGBIndexedAlpha2Bit() throws IOException
+    void testImageConversionRGBIndexedAlpha2Bit() throws IOException
     {
         checkImageConvert("png_indexed_2bit_alpha.png");
     }
 
     @Test
-    public void testImageConversionRGBIndexedAlpha4Bit() throws IOException
+    void testImageConversionRGBIndexedAlpha4Bit() throws IOException
     {
         checkImageConvert("png_indexed_4bit_alpha.png");
     }
 
     @Test
-    public void testImageConversionRGBIndexedAlpha8Bit() throws IOException
+    void testImageConversionRGBIndexedAlpha8Bit() throws IOException
     {
         checkImageConvert("png_indexed_8bit_alpha.png");
     }
 
     @Test
-    public void testImageConversionRGBAlpha() throws IOException
+    void testImageConversionRGBAlpha() throws IOException
     {
         // We can't handle Alpha RGB
         checkImageConvertFail("png_alpha_rgb.png");
     }
 
     @Test
-    public void testImageConversionGrayAlpha() throws IOException
+    void testImageConversionGrayAlpha() throws IOException
     {
         // We can't handle Alpha RGB
         checkImageConvertFail("png_alpha_gray.png");
     }
 
     @Test
-    public void testImageConversionGray() throws IOException
+    void testImageConversionGray() throws IOException
     {
         checkImageConvertFail("png_gray.png");
     }
 
     @Test
-    public void testImageConversionGrayGamma() throws IOException
+    void testImageConversionGrayGamma() throws IOException
     {
         checkImageConvertFail("png_gray_with_gama.png");
     }
@@ -249,7 +249,7 @@ public class PNGConverterTest
     }
 
     @Test
-    public void testCheckConverterState()
+    void testCheckConverterState()
     {
         assertFalse(PNGConverter.checkConverterState(null));
         PNGConverter.PNGConverterState state = new PNGConverter.PNGConverterState();
@@ -313,7 +313,7 @@ public class PNGConverterTest
     }
 
     @Test
-    public void testChunkSane()
+    void testChunkSane()
     {
         PNGConverter.Chunk chunk = new PNGConverter.Chunk();
         assertTrue(PNGConverter.checkChunkSane(null));
@@ -336,7 +336,7 @@ public class PNGConverterTest
     }
 
     @Test
-    public void testCRCImpl()
+    void testCRCImpl()
     {
         byte[] b1 = "Hello World!".getBytes();
         assertEquals(472456355, PNGConverter.crc(b1, 0, b1.length));
@@ -344,7 +344,7 @@ public class PNGConverterTest
     }
 
     @Test
-    public void testMapPNGRenderIntent()
+    void testMapPNGRenderIntent()
     {
         assertEquals(COSName.PERCEPTUAL, PNGConverter.mapPNGRenderIntent(0));
         assertEquals(COSName.RELATIVE_COLORIMETRIC, PNGConverter.mapPNGRenderIntent(1));
@@ -360,7 +360,7 @@ public class PNGConverterTest
      * @throws IOException 
      */
     @Test
-    public void testImageConversionIntentIndexed() throws IOException
+    void testImageConversionIntentIndexed() throws IOException
     {
         checkImageConvert("929316.png");
 
