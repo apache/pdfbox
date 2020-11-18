@@ -40,31 +40,19 @@ import org.apache.xmpbox.type.Types;
 
 class SchemaTester extends AbstractTypeTester {
 
-    private XMPMetadata xmp;
-
-    private XMPSchema xmpSchema;
-
-    private String fieldName;
-
+    private final XMPSchema schema;
+    private final Class<?> schemaClass;
+    private final String fieldName;
     private Types type;
-
     private Cardinality cardinality;
 
-    private TypeMapping typeMapping;;
+    private TypeMapping typeMapping;
 
-    private XMPSchema getSchema() {
-        return xmpSchema;
-    }
-
-    private Class<? extends XMPSchema> getSchemaClass() {
-        return getSchema().getClass();
-    }
-
-    public SchemaTester(XMPMetadata xmp, XMPSchema schema, String fieldName, Types type, Cardinality card)
+    public SchemaTester(XMPMetadata metadata, XMPSchema schema, Class<?> schemaClass, String fieldName, Types type, Cardinality card)
     {
-        this.xmp = xmp;
-        this.xmpSchema = schema;
-        this.typeMapping = xmp.getTypeMapping();
+        this.schema = schema;
+        this.schemaClass = schemaClass;
+        this.typeMapping = metadata.getTypeMapping();
         this.fieldName = fieldName;
         this.type = type;
         this.cardinality = card;
@@ -72,14 +60,13 @@ class SchemaTester extends AbstractTypeTester {
 
     public void testInitializedToNull() throws Exception
     {
-        XMPSchema schema = getSchema();
         // default method
         assertNull(schema.getProperty(fieldName));
         // accessor
         if (cardinality == Cardinality.Simple)
         {
             String getter = calculateSimpleGetter(fieldName);
-            Method get = getSchemaClass().getMethod(getter);
+            Method get = schemaClass.getMethod(getter);
             Object result = get.invoke(schema);
             assertNull(result);
         }
@@ -87,7 +74,7 @@ class SchemaTester extends AbstractTypeTester {
         {
             // arrays
             String getter = calculateArrayGetter(fieldName);
-            Method get = getSchemaClass().getMethod(getter);
+            Method get = schemaClass.getMethod(getter);
             Object result = get.invoke(schema);
             assertNull(result);
         }
@@ -114,7 +101,7 @@ class SchemaTester extends AbstractTypeTester {
         {
             return;
         }
-        XMPSchema schema = getSchema();
+
         // only test simple properties
         Object value = getJavaValue(type);
         AbstractSimpleProperty property = schema.instanciateSimple(fieldName, value);
@@ -122,7 +109,7 @@ class SchemaTester extends AbstractTypeTester {
         String qn = getPropertyQualifiedName(fieldName);
         assertNotNull(schema.getProperty(fieldName));
         // check other properties not modified
-        List<Field> fields = getXmpFields(getSchemaClass());
+        List<Field> fields = getXmpFields(schemaClass);
         for (Field field : fields)
         {
             // do not check the current name
@@ -154,7 +141,7 @@ class SchemaTester extends AbstractTypeTester {
         {
             return;
         }
-        XMPSchema schema = getSchema();
+
         // only test array properties
         Object value = getJavaValue(type);
         AbstractSimpleProperty property = schema.instanciateSimple(fieldName, value);
@@ -172,7 +159,7 @@ class SchemaTester extends AbstractTypeTester {
         String qn = getPropertyQualifiedName(fieldName);
         assertNotNull(schema.getProperty(fieldName));
         // check other properties not modified
-        List<Field> fields = getXmpFields(getSchemaClass());
+        List<Field> fields = getXmpFields(schemaClass);
         for (Field field : fields)
         {
             // do not check the current name
@@ -204,19 +191,19 @@ class SchemaTester extends AbstractTypeTester {
         {
             return;
         }
-        XMPSchema schema = getSchema();
+
         String setter = calculateSimpleSetter(fieldName) + "Property";
         Object value = getJavaValue(type);
         AbstractSimpleProperty asp = typeMapping.instanciateSimpleProperty(schema.getNamespace(), schema
                 .getPrefix(), fieldName, value, type);
-        Method set = getSchemaClass().getMethod(setter, type.getImplementingClass());
+        Method set = schemaClass.getMethod(setter, type.getImplementingClass());
         set.invoke(schema, asp);
         // check property set
         AbstractSimpleProperty stored = (AbstractSimpleProperty) schema.getProperty(fieldName);
         assertEquals(value, stored.getValue());
         // check getter
         String getter = calculateSimpleGetter(fieldName) + "Property";
-        Method get = getSchemaClass().getMethod(getter);
+        Method get = schemaClass.getMethod(getter);
         Object result = get.invoke(schema);
         assertTrue(type.getImplementingClass().isAssignableFrom(result.getClass()));
         assertEquals(asp, result);
@@ -242,17 +229,17 @@ class SchemaTester extends AbstractTypeTester {
         {
             return;
         }
-        XMPSchema schema = getSchema();
+
         // add value
         String setter = "add" + calculateFieldNameForMethod(fieldName);
         // TypeDescription<AbstractSimpleProperty> td =
         // typeMapping.getSimpleDescription(type);
         Object value1 = getJavaValue(type);
-        Method set = getSchemaClass().getMethod(setter, getJavaType(type));
+        Method set = schemaClass.getMethod(setter, getJavaType(type));
         set.invoke(schema, value1);
         // retrieve complex property
         String getter = calculateArrayGetter(fieldName) + "Property";
-        Method getcp = getSchemaClass().getMethod(getter);
+        Method getcp = schemaClass.getMethod(getter);
         Object ocp = getcp.invoke(schema);
         assertTrue(ocp instanceof ArrayProperty);
         ArrayProperty cp = (ArrayProperty) ocp;
@@ -264,7 +251,7 @@ class SchemaTester extends AbstractTypeTester {
         assertEquals(2, cp.getContainer().getAllProperties().size());
         // remove the first
         String remover = "remove" + calculateFieldNameForMethod(fieldName);
-        Method remove = getSchemaClass().getMethod(remover, getJavaType(type));
+        Method remove = schemaClass.getMethod(remover, getJavaType(type));
         remove.invoke(schema, value1);
         assertEquals(1, cp.getContainer().getAllProperties().size());
 
@@ -273,8 +260,7 @@ class SchemaTester extends AbstractTypeTester {
     protected String getPropertyQualifiedName(String name)
     {
         StringBuilder sb = new StringBuilder();
-        sb.append(getSchema().getPrefix()).append(":").append(name);
+        sb.append(schema.getPrefix()).append(":").append(name);
         return sb.toString();
     }
-
 }
