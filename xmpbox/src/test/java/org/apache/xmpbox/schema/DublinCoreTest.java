@@ -35,14 +35,12 @@ public class DublinCoreTest
 {
 
     private XMPMetadata metadata;
-    private XMPSchema schema;
     private Class<?> schemaClass;
 
     @BeforeEach
     void initMetadata()
     {
         metadata = XMPMetadata.createXMPMetadata();
-        schema = metadata.createAndAddDublinCoreSchema();
         schemaClass = DublinCoreSchema.class;
     }
     
@@ -50,7 +48,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testInitializedToNull(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testInitializedToNull();
     }
 
@@ -58,7 +56,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testSettingValue(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValue();
     }
 
@@ -66,7 +64,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testRandomSettingValue(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValue();
     }
 
@@ -74,7 +72,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testSettingValueInArray();
     }
 
@@ -82,7 +80,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testRandomSettingValueInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomSettingValueInArray();
     }
 
@@ -90,7 +88,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterSimple();
     }
 
@@ -98,7 +96,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testRandomPropertySetterSimple(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterSimple();
     }
 
@@ -106,7 +104,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testPropertySetterInArray();
     }
 
@@ -114,7 +112,7 @@ public class DublinCoreTest
     @MethodSource("initializeParameters")
     public void testRandomPropertySetterInArray(String fieldName, Types type, Cardinality card) throws Exception
     {
-        SchemaTester schemaTester = new SchemaTester(metadata, schema, schemaClass, fieldName, type, card);
+        SchemaTester schemaTester = new SchemaTester(metadata, schemaClass, fieldName, type, card);
         schemaTester.testRandomPropertySetterInArray();
     }
     
