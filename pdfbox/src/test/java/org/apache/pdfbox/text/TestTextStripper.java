@@ -438,7 +438,7 @@ class TestTextStripper
     void testStripByOutlineItems() throws IOException, URISyntaxException
     {
         PDDocument doc = Loader
-                .loadPDF(new File(this.getClass().getResource("with_outline.pdf").toURI()));
+                .loadPDF(new File(this.getClass().getResource("../pdmodel/with_outline.pdf").toURI()));
         PDDocumentOutline outline = doc.getDocumentCatalog().getDocumentOutline();
         Iterable<PDOutlineItem> children = outline.children();
         Iterator<PDOutlineItem> it = children.iterator();
