@@ -25,40 +25,56 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.stream.Stream;
+
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.BadFieldValueException;
+import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.Types;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class AdobePDFTest
 {
+
+    private XMPMetadata metadata;
+    private XMPSchema schema;
+    private Class<?> schemaClass;
+
+    @BeforeEach
+    void initMetadata()
+    {
+        metadata = XMPMetadata.createXMPMetadata();
+        schema = metadata.createAndAddAdobePDFSchema();
+        schemaClass = AdobePDFSchema.class;
+    }
+
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementValue(XMPSchemaTester xmpSchemaTester) throws Exception
+    public void testElementValue(String property, PropertyType type, String value) throws Exception
     {
+        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementProperty(XMPSchemaTester xmpSchemaTester) throws Exception
+    public void testElementProperty(String property, PropertyType type, String value) throws Exception
     {
+        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static XMPSchemaTester[] initializeParameters() throws Exception
-    {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        XMPSchema schema = metadata.createAndAddAdobePDFSchema();
-        Class<?> schemaClass = AdobePDFSchema.class;
-        
-        return new XMPSchemaTester[] {
-            new XMPSchemaTester(metadata, schema, schemaClass, "Keywords", XMPSchemaTester.createPropertyType(Types.Text), "kw1 kw2 kw3"),
-            new XMPSchemaTester(metadata, schema, schemaClass, "PDFVersion", XMPSchemaTester.createPropertyType(Types.Text), "1.4"),
-            new XMPSchemaTester(metadata, schema, schemaClass, "Producer", XMPSchemaTester.createPropertyType(Types.Text), "testcase")
-        };
+    static Stream<Arguments> initializeParameters() throws Exception
+    {  
+        return Stream.of(
+            Arguments.of("Keywords", XMPSchemaTester.createPropertyType(Types.Text), "kw1 kw2 kw3"),
+            Arguments.of("PDFVersion", XMPSchemaTester.createPropertyType(Types.Text), "1.4"),
+            Arguments.of("Producer", XMPSchemaTester.createPropertyType(Types.Text), "testcase")
+        );
     }
 
     @Test

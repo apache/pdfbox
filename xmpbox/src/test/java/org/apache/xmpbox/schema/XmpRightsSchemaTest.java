@@ -23,45 +23,59 @@ package org.apache.xmpbox.schema;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.Cardinality;
+import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.Types;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class XmpRightsSchemaTest
 {
+    private XMPMetadata metadata;
+    private XMPSchema schema;
+    private Class<?> schemaClass;
+
+    @BeforeEach
+    void initMetadata()
+    {
+        metadata = XMPMetadata.createXMPMetadata();
+        schema = metadata.createAndAddXMPRightsManagementSchema();
+        schemaClass = XMPRightsManagementSchema.class;
+    }
+    
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementValue(XMPSchemaTester xmpSchemaTester) throws Exception
+    public void testElementValue(String property, PropertyType type, Object value) throws Exception
     {
+        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementProperty(XMPSchemaTester xmpSchemaTester) throws Exception
+    public void testElementProperty(String property, PropertyType type, Object value) throws Exception
     {
+        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static XMPSchemaTester[] initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters() throws Exception
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        XMPSchema schema = metadata.createAndAddXMPRightsManagementSchema();
-        Class<?> schemaClass = XMPRightsManagementSchema.class;
-
         Map<String, String> desc = new HashMap<>(2);
         desc.put("fr", "Termes d'utilisation");
         desc.put("en", "Usage Terms");
 
-        return new XMPSchemaTester[] {
-            new XMPSchemaTester(metadata, schema, schemaClass, "Certificate", XMPSchemaTester.createPropertyType(Types.URL), "http://une.url.vers.un.certificat/moncert.cer"),
-            new XMPSchemaTester(metadata, schema, schemaClass, "Marked", XMPSchemaTester.createPropertyType(Types.Boolean), true),
-            new XMPSchemaTester(metadata, schema, schemaClass, "Owner", XMPSchemaTester.createPropertyType(Types.ProperName, Cardinality.Bag), new String[] { "OwnerName" }),
-            new XMPSchemaTester(metadata, schema, schemaClass, "UsageTerms", XMPSchemaTester.createPropertyType(Types.LangAlt), desc),
-            new XMPSchemaTester(metadata, schema, schemaClass, "WebStatement", XMPSchemaTester.createPropertyType(Types.URL), "http://une.url.vers.une.page.fr/"),
-        };
+        return Stream.of(
+            Arguments.of("Certificate", XMPSchemaTester.createPropertyType(Types.URL), "http://une.url.vers.un.certificat/moncert.cer"),
+            Arguments.of("Marked", XMPSchemaTester.createPropertyType(Types.Boolean), true),
+            Arguments.of("Owner", XMPSchemaTester.createPropertyType(Types.ProperName, Cardinality.Bag), new String[] { "OwnerName" }),
+            Arguments.of("UsageTerms", XMPSchemaTester.createPropertyType(Types.LangAlt), desc),
+            Arguments.of("WebStatement", XMPSchemaTester.createPropertyType(Types.URL), "http://une.url.vers.une.page.fr/")
+        );
     }
 }

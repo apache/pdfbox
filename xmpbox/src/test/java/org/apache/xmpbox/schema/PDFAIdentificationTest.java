@@ -21,37 +21,52 @@
 
 package org.apache.xmpbox.schema;
 
+import java.util.stream.Stream;
+
 import org.apache.xmpbox.XMPMetadata;
+import org.apache.xmpbox.type.PropertyType;
 import org.apache.xmpbox.type.Types;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class PDFAIdentificationTest
 {
+    private XMPMetadata metadata;
+    private XMPSchema schema;
+    private Class<?> schemaClass;
+
+    @BeforeEach
+    void initMetadata()
+    {
+        metadata = XMPMetadata.createXMPMetadata();
+        schema = metadata.createAndAddPFAIdentificationSchema();
+        schemaClass = PDFAIdentificationSchema.class;
+    }
+    
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementValue(XMPSchemaTester xmpSchemaTester) throws Exception
+    public void testElementValue(String property, PropertyType type, Object value) throws Exception
     {
+        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetValue();
     }
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void testElementProperty(XMPSchemaTester xmpSchemaTester) throws Exception
+    public void testElementProperty(String property, PropertyType type, Object value) throws Exception
     {
+        XMPSchemaTester xmpSchemaTester = new XMPSchemaTester(metadata, schema, schemaClass, property, type, value);
         xmpSchemaTester.testGetSetProperty();
     }
 
-    static XMPSchemaTester[] initializeParameters() throws Exception
+    static Stream<Arguments> initializeParameters() throws Exception
     {
-        XMPMetadata metadata = XMPMetadata.createXMPMetadata();
-        XMPSchema schema = metadata.createAndAddPFAIdentificationSchema();
-        Class<?> schemaClass = PDFAIdentificationSchema.class;
-
-        return new XMPSchemaTester[] {
-            new XMPSchemaTester(metadata, schema, schemaClass, "part", XMPSchemaTester.createPropertyType(Types.Integer), 1),
-            new XMPSchemaTester(metadata, schema, schemaClass, "amd", XMPSchemaTester.createPropertyType(Types.Text), "2005"),
-            new XMPSchemaTester(metadata, schema, schemaClass, "conformance", XMPSchemaTester.createPropertyType(Types.Text), "B")
-        };
+        return Stream.of(
+            Arguments.of("part", XMPSchemaTester.createPropertyType(Types.Integer), 1),
+            Arguments.of("amd", XMPSchemaTester.createPropertyType(Types.Text), "2005"),
+            Arguments.of("conformance", XMPSchemaTester.createPropertyType(Types.Text), "B")
+        );
     }
 }
