@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class COSWriterXRefEntryTest
+class COSWriterXRefEntryTest
 {
     @Test
-    public void compareToInputNullOutputNegative()
+    void compareToInputNullOutputNegative()
     {
         // Arrange
         final COSWriterXRefEntry objectUnderTest = new COSWriterXRefEntry(0L, null, null);

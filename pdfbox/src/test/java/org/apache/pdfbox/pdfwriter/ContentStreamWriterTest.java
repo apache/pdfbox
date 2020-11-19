@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class ContentStreamWriterTest
+class ContentStreamWriterTest
 {
     private final File testDirIn = new File("target/test-output/contentstream/in");
     private final File testDirOut = new File("target/test-output/contentstream/out");
@@ -79,7 +79,7 @@ public class ContentStreamWriterTest
      * @throws java.io.IOException
      */
     @Test
-    public void testPDFBox4750() throws IOException
+    void testPDFBox4750() throws IOException
     {
         String filename = "PDFBOX-4750.pdf";
         File file = new File("target/pdfs", filename);

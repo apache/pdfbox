@@ -39,10 +39,10 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class EndstreamFilterStreamTest
+class EndstreamFilterStreamTest
 {
     @Test
-    public void testEndstreamFilterStream() throws IOException
+    void testEndstreamFilterStream() throws IOException
     {
         EndstreamFilterStream feos = new EndstreamFilterStream();
         byte[] tab1 = { 1, 2, 3, 4 };
@@ -100,7 +100,7 @@ public class EndstreamFilterStreamTest
     }
 
     @Test
-    public void testPDFBox2079EmbeddedFile() throws IOException
+    void testPDFBox2079EmbeddedFile() throws IOException
     {
         // there should be 17660 bytes in the zip file.
         // in PDFBox 1.8.5, windows newline is appended to the byte stream

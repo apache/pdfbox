@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author Tilman Hausherr
  */
-public class PDFStreamParserTest
+class PDFStreamParserTest
 {
 
     /**
@@ -40,7 +40,7 @@ public class PDFStreamParserTest
      * @throws IOException
      */
     @Test
-    public void testInlineImages() throws IOException
+    void testInlineImages() throws IOException
     {
         testInlineImage2ops("ID\n12345EI Q", "12345", "Q");
         testInlineImage2ops("ID\n12345EI EMC", "12345", "EMC");

@@ -33,12 +33,12 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.util.DateConverter;
 import org.junit.jupiter.api.Test;
 
-public class TestPDFParser
+class TestPDFParser
 {
     private static final File TARGETPDFDIR = new File("target/pdfs");
 
     @Test
-    public void testPDFParserMissingCatalog() throws URISyntaxException
+    void testPDFParserMissingCatalog() throws URISyntaxException
     {
         // PDFBOX-3060
         try
@@ -60,7 +60,7 @@ public class TestPDFParser
      * @throws IOException
      */
     @Test
-    public void testPDFBox3208() throws IOException
+    void testPDFBox3208() throws IOException
     {
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3208-L33MUTT2SVCWGCS6UIYL5TH3PNPXHIS6.pdf")))
@@ -84,7 +84,7 @@ public class TestPDFParser
      * @throws IOException
      */
     @Test
-    public void testPDFBox3940() throws IOException
+    void testPDFBox3940() throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-3940-079977.pdf")))
         {
@@ -103,7 +103,7 @@ public class TestPDFParser
      * PDFBOX-3783: test parsing of file with trash after %%EOF.
      */
     @Test
-    public void testPDFBox3783()
+    void testPDFBox3783()
     {
         try
         {
@@ -125,7 +125,7 @@ public class TestPDFParser
      * @throws IOException 
      */
     @Test
-    public void testPDFBox3785() throws IOException
+    void testPDFBox3785() throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-3785-202097.pdf")))
         {
@@ -137,7 +137,7 @@ public class TestPDFParser
      * PDFBOX-3947: test parsing of file with broken object stream.
      */
     @Test
-    public void testPDFBox3947()
+    void testPDFBox3947()
     {
         try
         {
@@ -153,7 +153,7 @@ public class TestPDFParser
      * PDFBOX-3948: test parsing of file with object stream containing some unexpected newlines.
      */
     @Test
-    public void testPDFBox3948()
+    void testPDFBox3948()
     {
         try
         {
@@ -171,7 +171,7 @@ public class TestPDFParser
      * PDFBOX-3949: test parsing of file with incomplete object stream.
      */
     @Test
-    public void testPDFBox3949()
+    void testPDFBox3949()
     {
         try
         {
@@ -191,7 +191,7 @@ public class TestPDFParser
      * @throws IOException 
      */
     @Test
-    public void testPDFBox3950() throws IOException
+    void testPDFBox3950() throws IOException
     {
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3950-23EGDHXSBBYQLKYOKGZUOVYVNE675PRD.pdf")))
@@ -222,7 +222,7 @@ public class TestPDFParser
      * @throws IOException 
      */
     @Test
-    public void testPDFBox3951() throws IOException
+    void testPDFBox3951() throws IOException
     {
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3951-FIHUZWDDL2VGPOE34N6YHWSIGSH5LVGZ.pdf")))
@@ -237,7 +237,7 @@ public class TestPDFParser
      * @throws IOException 
      */
     @Test
-    public void testPDFBox3964() throws IOException
+    void testPDFBox3964() throws IOException
     {
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3964-c687766d68ac766be3f02aaec5e0d713_2.pdf")))
@@ -253,7 +253,7 @@ public class TestPDFParser
      * @throws IOException
      */
     @Test
-    public void testPDFBox3977() throws IOException
+    void testPDFBox3977() throws IOException
     {
         try (PDDocument doc = Loader
                 .loadPDF(new File(TARGETPDFDIR, "PDFBOX-3977-63NGFQRI44HQNPIPEJH5W2TBM6DJZWMI.pdf")))
@@ -271,7 +271,7 @@ public class TestPDFParser
      * Test parsing the "genko_oc_shiryo1.pdf" file, which is susceptible to regression.
      */
     @Test
-    public void testParseGenko()
+    void testParseGenko()
     {
         try
         {
@@ -288,7 +288,7 @@ public class TestPDFParser
      * ArrayIndexOutOfBoundsException before the bug was fixed.
      */
     @Test
-    public void testPDFBox4338()
+    void testPDFBox4338()
     {
         try
         {
@@ -305,7 +305,7 @@ public class TestPDFParser
      * NullPointerException before the bug was fixed.
      */
     @Test
-    public void testPDFBox4339()
+    void testPDFBox4339()
     {
         try
         {
@@ -324,7 +324,7 @@ public class TestPDFParser
      * @throws IOException
      */
     @Test
-    public void testPDFBox4153() throws IOException
+    void testPDFBox4153() throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4153-WXMDXCYRWFDCMOSFQJ5OAJIAFXYRZ5OA.pdf")))
         {
@@ -340,7 +340,7 @@ public class TestPDFParser
      * @throws IOException
      */
     @Test
-    public void testPDFBox4490() throws IOException
+    void testPDFBox4490() throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(new File(TARGETPDFDIR, "PDFBOX-4490.pdf")))
         {

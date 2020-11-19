@@ -23,7 +23,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.junit.jupiter.api.Test;
 
-public class COSWriterTest
+class COSWriterTest
 {
     /**
      * PDFBOX-4241: check whether the output stream is closed twice.
@@ -31,7 +31,7 @@ public class COSWriterTest
      * @throws IOException 
      */
     @Test
-    public void testPDFBox4241() throws IOException
+    void testPDFBox4241() throws IOException
     {
         try (PDDocument doc = new PDDocument())
         {
