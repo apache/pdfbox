@@ -598,7 +598,7 @@ class LosslessFactoryTest
     }
 
     @Test
-    public void testCreateLosslessFromImageINT_BGR() throws IOException
+    void testCreateLosslessFromImageINT_BGR() throws IOException
     {
         PDDocument document = new PDDocument();
         BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("png.png"));

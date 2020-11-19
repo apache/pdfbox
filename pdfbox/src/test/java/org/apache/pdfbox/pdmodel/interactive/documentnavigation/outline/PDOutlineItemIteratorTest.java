@@ -57,9 +57,8 @@ class PDOutlineItemIteratorTest
     @Test
     void removeUnsupported()
     {
-        assertThrows(UnsupportedOperationException.class,
-                () -> 
-                new PDOutlineItemIterator(new PDOutlineItem()).remove());
+        PDOutlineItemIterator pdOutlineItemIterator = new PDOutlineItemIterator(new PDOutlineItem());
+        assertThrows(UnsupportedOperationException.class, () -> pdOutlineItemIterator.remove());
     }
 
     @Test
