@@ -72,12 +72,12 @@ class TestCheckBox
 
             // assert that the values have been correctly set
             assertNotNull(checkBox.getCOSObject().getItem(COSName.OPT));
-            assertEquals(optItem.size(),2);
+            assertEquals(2, optItem.size());
             assertEquals(options.get(0), optItem.getString(0));
             
             // assert that the values can be retrieved correctly
             List<String> retrievedOptions = checkBox.getExportValues();
-            assertEquals(retrievedOptions.size(),2);
+            assertEquals(2, retrievedOptions.size());
             assertEquals(retrievedOptions, options);
 
             // assert that the Opt entry is removed
