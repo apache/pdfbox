@@ -43,7 +43,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TestValidFiles
+class TestValidFiles
 {
 
     private static final String RESULTS_FILE = "results.file";
@@ -113,7 +113,7 @@ public class TestValidFiles
 
     @ParameterizedTest
 	@MethodSource("initializeParameters")
-    public void validate(File path) throws Exception
+    void validate(File path) throws Exception
     {
         logger = LogFactory.getLog(path != null ? path.getName() : "dummy");
         if (path == null)

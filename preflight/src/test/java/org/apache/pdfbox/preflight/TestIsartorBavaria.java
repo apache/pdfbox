@@ -46,7 +46,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TestIsartorBavaria
+class TestIsartorBavaria
 {
     private static final String FILTER_FILE = "isartor.filter";
     private static final String SKIP_BAVARIA = "skip-bavaria";
@@ -158,7 +158,7 @@ public class TestIsartorBavaria
 
     @ParameterizedTest
 	@MethodSource("initializeParameters")
-    public void validate(File file, Set<String> expectedErrorSet) throws Exception
+    void validate(File file, Set<String> expectedErrorSet) throws Exception
     {
         ValidationResult result = PreflightParser.validate(file);
         if (result != null)

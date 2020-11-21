@@ -32,11 +32,11 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TestValidDirectory
+class TestValidDirectory
 {
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void validate(File target) throws Exception
+    void validate(File target) throws Exception
     {
         if (target != null)
         {

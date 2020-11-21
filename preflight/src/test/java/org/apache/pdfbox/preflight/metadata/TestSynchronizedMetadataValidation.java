@@ -52,7 +52,7 @@ import org.junit.jupiter.api.Test;
  * @author Germain Costenobel
  * 
  */
-public class TestSynchronizedMetadataValidation
+class TestSynchronizedMetadataValidation
 {
 
     protected PDDocument doc;
@@ -83,7 +83,7 @@ public class TestSynchronizedMetadataValidation
      * @throws ValidationException
      */
     @Test
-    public void TestNullDocument() throws ValidationException
+    void TestNullDocument() throws ValidationException
     {
         assertThrows(ValidationException.class, () -> {
             sync.validateMetadataSynchronization(null, metadata);
@@ -96,7 +96,7 @@ public class TestSynchronizedMetadataValidation
      * @throws ValidationException
      */
     @Test
-    public void TestNullMetaData() throws ValidationException
+    void TestNullMetaData() throws ValidationException
     {
         assertThrows(ValidationException.class, () -> {
             sync.validateMetadataSynchronization(doc, null);
@@ -109,7 +109,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void TestDocumentWithoutInformation() throws Exception
+    void TestDocumentWithoutInformation() throws Exception
     {
         try
         {
@@ -129,7 +129,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testEmptyXMP() throws Exception
+    void testEmptyXMP() throws Exception
     {
         initValues();
 
@@ -172,7 +172,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testEmptyXMPSchemas() throws Exception
+    void testEmptyXMPSchemas() throws Exception
     {
         initValues();
 
@@ -218,7 +218,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testNullArrayValue() throws Exception
+    void testNullArrayValue() throws Exception
     {
         // building temporary XMP metadata
 
@@ -257,7 +257,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testBadSizeOfArrays() throws Exception
+    void testBadSizeOfArrays() throws Exception
     {
         // building temporary XMP metadata
 
@@ -315,7 +315,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testAllInfoUnsynchronized() throws Exception
+    void testAllInfoUnsynchronized() throws Exception
     {
         // building temporary XMP metadata
 
@@ -371,7 +371,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testAllInfoSynchronized() throws Exception
+    void testAllInfoSynchronized() throws Exception
     {
         initValues();
 
@@ -424,7 +424,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void checkSchemaAccessException() throws Exception
+    void checkSchemaAccessException() throws Exception
     {
         Throwable cause = new Throwable();
         assertSame(cause, sync.schemaAccessException("test", cause).getCause());
@@ -436,7 +436,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testBadPrefixSchemas() throws Exception
+    void testBadPrefixSchemas() throws Exception
     {
         initValues();
 
@@ -496,7 +496,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testdoublePrefixSchemas() throws Exception
+    void testdoublePrefixSchemas() throws Exception
     {
         initValues();
 
@@ -561,7 +561,7 @@ public class TestSynchronizedMetadataValidation
      * @throws Exception
      */
     @Test
-    public void testPDFBox4292() throws Exception
+    void testPDFBox4292() throws Exception
     {
         initValues();
 

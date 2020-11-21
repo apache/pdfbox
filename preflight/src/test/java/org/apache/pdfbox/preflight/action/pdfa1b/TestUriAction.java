@@ -30,7 +30,7 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.jupiter.api.Test;
 
-public class TestUriAction extends AbstractTestAction
+class TestUriAction extends AbstractTestAction
 {
 
     protected PDActionURI createAction()
@@ -41,21 +41,21 @@ public class TestUriAction extends AbstractTestAction
     }
 
     @Test
-    public void test() throws Exception
+    void test() throws Exception
     {
         PDAction action = createAction();
         valid(action, true);
     }
 
     @Test
-    public void testMissingURI() throws Exception
+    void testMissingURI() throws Exception
     {
         PDActionURI action = new PDActionURI();
         valid(action, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }
 
     @Test
-    public void testInvalidURI() throws Exception
+    void testInvalidURI() throws Exception
     {
         PDActionURI action = new PDActionURI();
         action.getCOSObject().setBoolean(COSName.URI, true);
@@ -63,7 +63,7 @@ public class TestUriAction extends AbstractTestAction
     }
 
     @Test
-    public void testNextValid() throws Exception
+    void testNextValid() throws Exception
     {
         PDActionURI action = createAction();
         action.setNext(Arrays.asList(createAction()));
@@ -71,7 +71,7 @@ public class TestUriAction extends AbstractTestAction
     }
 
     @Test
-    public void testNextInvalid() throws Exception
+    void testNextInvalid() throws Exception
     {
         PDActionURI action = createAction();
         action.setNext(Arrays.asList(new PDActionJavaScript()));

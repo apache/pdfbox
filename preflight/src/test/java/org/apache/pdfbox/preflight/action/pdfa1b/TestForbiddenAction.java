@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.jupiter.api.Test;
 
-public class TestForbiddenAction extends AbstractTestAction
+class TestForbiddenAction extends AbstractTestAction
 {
 
     protected COSDictionary createAction(String type)
@@ -38,42 +38,42 @@ public class TestForbiddenAction extends AbstractTestAction
     }
 
     @Test
-    public void testLaunch() throws Exception
+    void testLaunch() throws Exception
     {
         COSDictionary action = createAction("Launch");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
-    public void testSound() throws Exception
+    void testSound() throws Exception
     {
         COSDictionary action = createAction("Sound");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
-    public void testMovie() throws Exception
+    void testMovie() throws Exception
     {
         COSDictionary action = createAction("Movie");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
-    public void testImportData() throws Exception
+    void testImportData() throws Exception
     {
         COSDictionary action = createAction("ImportData");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
-    public void testResetForm() throws Exception
+    void testResetForm() throws Exception
     {
         COSDictionary action = createAction("ResetForm");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);
     }
 
     @Test
-    public void testJS() throws Exception
+    void testJS() throws Exception
     {
         COSDictionary action = createAction("JavaScript");
         valid(action, false, PreflightConstants.ERROR_ACTION_FORBIDDEN_ACTIONS_EXPLICITLY_FORBIDDEN);

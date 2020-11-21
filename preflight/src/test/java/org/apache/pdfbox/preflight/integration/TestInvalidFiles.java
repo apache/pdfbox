@@ -40,7 +40,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TestInvalidFiles
+class TestInvalidFiles
 {
 
     private static final String RESULTS_FILE = "results.file";
@@ -67,7 +67,7 @@ public class TestInvalidFiles
 
     @ParameterizedTest
 	@MethodSource("initializeParameters")
-    public void validate(File path, String expectedError) throws Exception
+    void validate(File path, String expectedError) throws Exception
     {
         tester.validate(path, expectedError);
     }

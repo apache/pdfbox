@@ -28,11 +28,11 @@ import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDDe
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.jupiter.api.Test;
 
-public class TestGotoAction extends AbstractTestAction
+class TestGotoAction extends AbstractTestAction
 {
 
     @Test
-    public void testGoto_OK() throws Exception
+    void testGoto_OK() throws Exception
     {
         PDActionGoTo gotoAction = new PDActionGoTo();
         gotoAction.setDestination(new PDDestination()
@@ -48,7 +48,7 @@ public class TestGotoAction extends AbstractTestAction
     }
 
     @Test
-    public void testGoto_KO_invalidContent() throws Exception
+    void testGoto_KO_invalidContent() throws Exception
     {
         PDActionGoTo gotoAction = new PDActionGoTo();
         gotoAction.setDestination(new PDDestination()
@@ -64,7 +64,7 @@ public class TestGotoAction extends AbstractTestAction
     }
 
     @Test
-    public void testGoto_KO_missingD() throws Exception
+    void testGoto_KO_missingD() throws Exception
     {
         PDActionGoTo gotoAction = new PDActionGoTo();
         valid(gotoAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);

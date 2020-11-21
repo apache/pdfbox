@@ -27,11 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class TestPreflightPath
+class TestPreflightPath
 {
 
     @Test
-    public void test()
+    void test()
     {
         PreflightPath path = new PreflightPath();
 
@@ -81,7 +81,7 @@ public class TestPreflightPath
     }
 
     @Test
-    public void testPush()
+    void testPush()
     {
         PreflightPath path = new PreflightPath();
         assertTrue(path.pushObject("a"));

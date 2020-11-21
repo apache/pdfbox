@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.jupiter.api.Test;
 
-public class TestThreadAction extends AbstractTestAction
+class TestThreadAction extends AbstractTestAction
 {
 
     protected COSDictionary createSubmitAction()
@@ -39,14 +39,14 @@ public class TestThreadAction extends AbstractTestAction
     }
 
     @Test
-    public void test() throws Exception
+    void test() throws Exception
     {
         COSDictionary action = createSubmitAction();
         valid(action, true);
     }
 
     @Test
-    public void testMissingD() throws Exception
+    void testMissingD() throws Exception
     {
         COSDictionary action = createSubmitAction();
         action.removeItem(COSName.D);
@@ -54,7 +54,7 @@ public class TestThreadAction extends AbstractTestAction
     }
 
     @Test
-    public void testInvalidD() throws Exception
+    void testInvalidD() throws Exception
     {
         COSDictionary action = createSubmitAction();
         action.setBoolean(COSName.D, false);

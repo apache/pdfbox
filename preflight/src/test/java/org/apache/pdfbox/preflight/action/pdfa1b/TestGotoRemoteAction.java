@@ -28,11 +28,11 @@ import org.apache.pdfbox.pdmodel.interactive.action.PDActionRemoteGoTo;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.jupiter.api.Test;
 
-public class TestGotoRemoteAction extends AbstractTestAction
+class TestGotoRemoteAction extends AbstractTestAction
 {
 
     @Test
-    public void testGoto_OK() throws Exception
+    void testGoto_OK() throws Exception
     {
         PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setD(COSName.getPDFName("ADest"));
@@ -59,7 +59,7 @@ public class TestGotoRemoteAction extends AbstractTestAction
     }
 
     @Test
-    public void testGoto_KO_InvalidContent() throws Exception
+    void testGoto_KO_InvalidContent() throws Exception
     {
         PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setD(new COSDictionary());
@@ -86,7 +86,7 @@ public class TestGotoRemoteAction extends AbstractTestAction
     }
 
     @Test
-    public void testGoto_KO_MissingD() throws Exception
+    void testGoto_KO_MissingD() throws Exception
     {
         PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setFile(new PDFileSpecification()
@@ -112,7 +112,7 @@ public class TestGotoRemoteAction extends AbstractTestAction
     }
 
     @Test
-    public void testGoto_KO_MissingF() throws Exception
+    void testGoto_KO_MissingF() throws Exception
     {
         PDActionRemoteGoTo gotoAction = new PDActionRemoteGoTo();
         gotoAction.setD(COSName.getPDFName("ADest"));

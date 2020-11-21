@@ -32,7 +32,7 @@ import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.ValidationProcess;
 import org.junit.jupiter.api.Test;
 
-public class TestPreflightConfiguration
+class TestPreflightConfiguration
 {
 
     @Test
@@ -45,7 +45,7 @@ public class TestPreflightConfiguration
     }
 
     @Test
-    public void testGetValidationProcess_MissingProcess_NoError() throws Exception
+    void testGetValidationProcess_MissingProcess_NoError() throws Exception
     {
         PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
         configuration.setErrorOnMissingProcess(false);
@@ -55,7 +55,7 @@ public class TestPreflightConfiguration
     }
 
     @Test
-    public void testReplaceValidationProcess() throws Exception
+    void testReplaceValidationProcess() throws Exception
     {
         PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
 

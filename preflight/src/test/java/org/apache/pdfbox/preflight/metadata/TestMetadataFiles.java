@@ -33,10 +33,10 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.jupiter.api.Test;
 
 
-public class TestMetadataFiles
+class TestMetadataFiles
 {
     @Test()
-    public void validate() throws Exception
+    void validate() throws Exception
     {
         String testfileDirectory = "src/test/resources/org/apache/pdfbox/preflight/metadata/";
 

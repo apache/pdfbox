@@ -26,7 +26,7 @@ import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.jupiter.api.Test;
 
-public class TestNamedAction extends AbstractTestAction
+class TestNamedAction extends AbstractTestAction
 {
     protected COSDictionary createNamedAction()
     {
@@ -38,7 +38,7 @@ public class TestNamedAction extends AbstractTestAction
     }
 
     @Test
-    public void testFirstPage() throws Exception
+    void testFirstPage() throws Exception
     {
         COSDictionary namedAction = createNamedAction();
         namedAction
@@ -47,7 +47,7 @@ public class TestNamedAction extends AbstractTestAction
     }
 
     @Test
-    public void testLastPage() throws Exception
+    void testLastPage() throws Exception
     {
         COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_LAST));
@@ -55,7 +55,7 @@ public class TestNamedAction extends AbstractTestAction
     }
 
     @Test
-    public void testNextPage() throws Exception
+    void testNextPage() throws Exception
     {
         COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_NEXT));
@@ -63,7 +63,7 @@ public class TestNamedAction extends AbstractTestAction
     }
 
     @Test
-    public void testPrevPage() throws Exception
+    void testPrevPage() throws Exception
     {
         COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName(PreflightConstants.ACTION_DICTIONARY_VALUE_ATYPE_NAMED_PREV));
@@ -71,14 +71,14 @@ public class TestNamedAction extends AbstractTestAction
     }
 
     @Test
-    public void testMissingN() throws Exception
+    void testMissingN() throws Exception
     {
         COSDictionary namedAction = createNamedAction();
         valid(namedAction, false, PreflightConstants.ERROR_ACTION_MISING_KEY);
     }
 
     @Test
-    public void testForbiddenN() throws Exception
+    void testForbiddenN() throws Exception
     {
         COSDictionary namedAction = createNamedAction();
         namedAction.setItem(COSName.N, COSName.getPDFName("unknown"));

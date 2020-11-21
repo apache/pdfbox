@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.common.filespecification.PDFileSpecification;
 import org.apache.pdfbox.preflight.PreflightConstants;
 import org.junit.jupiter.api.Test;
 
-public class TestSubmitAction extends AbstractTestAction
+class TestSubmitAction extends AbstractTestAction
 {
 
     protected COSDictionary createSubmitAction()
@@ -58,14 +58,14 @@ public class TestSubmitAction extends AbstractTestAction
     }
 
     @Test
-    public void test() throws Exception
+    void test() throws Exception
     {
         COSDictionary action = createSubmitAction();
         valid(action, true);
     }
 
     @Test
-    public void testMissngF() throws Exception
+    void testMissngF() throws Exception
     {
         COSDictionary action = createSubmitAction();
         action.removeItem(COSName.F);

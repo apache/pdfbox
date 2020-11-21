@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class TestPDFBox3741
+class TestPDFBox3741
 {
     /**
      * Test whether use of default colorspace without output intent for text output is detected.
@@ -36,7 +36,7 @@ public class TestPDFBox3741
      * @throws IOException
      */
     @Test
-    public void testPDFBox3741() throws IOException
+    void testPDFBox3741() throws IOException
     {
         ValidationResult result = PreflightParser
                 .validate(new File("src/test/resources/PDFBOX-3741.pdf"));

@@ -35,7 +35,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-public class TestXmlResultParser
+class TestXmlResultParser
 {
 
     public static final String ERROR_CODE = "000";
@@ -57,7 +57,7 @@ public class TestXmlResultParser
     }
 
     @Test
-    public void testOneError() throws Exception
+    void testOneError() throws Exception
     {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError("7"));
@@ -68,7 +68,7 @@ public class TestXmlResultParser
     }
 
     @Test
-    public void testTwoError() throws Exception
+    void testTwoError() throws Exception
     {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError("7"));
@@ -80,7 +80,7 @@ public class TestXmlResultParser
     }
 
     @Test
-    public void testSameErrorTwice() throws Exception
+    void testSameErrorTwice() throws Exception
     {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError(ERROR_CODE));
@@ -94,7 +94,7 @@ public class TestXmlResultParser
     }
 
     @Test
-    public void testSameCodeWithDifferentMessages() throws Exception
+    void testSameCodeWithDifferentMessages() throws Exception
     {
         ValidationResult result = new ValidationResult(false);
         result.addError(new ValidationResult.ValidationError(ERROR_CODE,"message 1"));
