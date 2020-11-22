@@ -61,6 +61,9 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessInputStream;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
+import org.apache.pdfbox.pdfparser.xref.FreeXReference;
+import org.apache.pdfbox.pdfparser.xref.NormalXReference;
+import org.apache.pdfbox.pdfparser.xref.XReferenceEntry;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
@@ -186,7 +189,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     private final Map<COSObjectKey,COSBase> keyObject = new HashMap<>();
 
     // the list of x ref entries to be made so far
-    private final List<COSWriterXRefEntry> xRefEntries = new ArrayList<>();
+    private final List<XReferenceEntry> xRefEntries = new ArrayList<>();
     private final Set<COSBase> objectsToWriteSet = new HashSet<>();
 
     //A list of objects to write.
@@ -328,7 +331,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      *
      * @param entry The new entry to add.
      */
-    protected void addXRefEntry(COSWriterXRefEntry entry)
+    protected void addXRefEntry(XReferenceEntry entry)
     {
         getXRefEntries().add(entry);
     }
@@ -405,7 +408,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      *
      * @return All available xref entries.
      */
-    protected List<COSWriterXRefEntry> getXRefEntries()
+    protected List<XReferenceEntry> getXRefEntries()
     {
         return xRefEntries;
     }
@@ -555,7 +558,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             // find the physical reference
             currentObjectKey = getObjectKey( obj );
             // add a x ref entry
-            addXRefEntry( new COSWriterXRefEntry(getStandardOutput().getPos(), obj, currentObjectKey));
+            addXRefEntry(new NormalXReference(getStandardOutput().getPos(), currentObjectKey, obj));
             // write the object
             getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
             getStandardOutput().write(SPACE);
@@ -616,8 +619,8 @@ public class COSWriter implements ICOSVisitor, Closeable
         COSDictionary trailer = doc.getTrailer();
         //sort xref, needed only if object keys not regenerated
         Collections.sort(getXRefEntries());
-        COSWriterXRefEntry lastEntry = getXRefEntries().get( getXRefEntries().size()-1);
-        trailer.setLong(COSName.SIZE, lastEntry.getKey().getNumber()+1);
+        XReferenceEntry lastEntry = getXRefEntries().get(getXRefEntries().size() - 1);
+        trailer.setLong(COSName.SIZE, lastEntry.getReferencedKey().getNumber() + 1);
         // Only need to stay, if an incremental update will be performed
         if (!incrementalUpdate) 
         {
@@ -691,7 +694,7 @@ public class COSWriter implements ICOSVisitor, Closeable
     // writes the "xref" table
     private void doWriteXRefTable() throws IOException
     {
-        addXRefEntry(COSWriterXRefEntry.getNullEntry());
+        addXRefEntry(FreeXReference.NULL_ENTRY);
 
         // sort xref, needed only if object keys not regenerated
         Collections.sort(getXRefEntries());
@@ -863,15 +866,15 @@ public class COSWriter implements ICOSVisitor, Closeable
         getStandardOutput().writeEOL();
     }
 
-    private void writeXrefEntry(COSWriterXRefEntry entry) throws IOException
+    private void writeXrefEntry(XReferenceEntry entry) throws IOException
     {
-        String offset = formatXrefOffset.format(entry.getOffset());
-        String generation = formatXrefGeneration.format(entry.getKey().getGeneration());
+        String offset = formatXrefOffset.format(entry.getSecondColumnValue());
+        String generation = formatXrefGeneration.format(entry.getThirdColumnValue());
         getStandardOutput().write(offset.getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
         getStandardOutput().write(generation.getBytes(StandardCharsets.ISO_8859_1));
         getStandardOutput().write(SPACE);
-        getStandardOutput().write(entry.isFree() ? XREF_FREE : XREF_USED);
+        getStandardOutput().write(entry instanceof FreeXReference ? XREF_FREE : XREF_USED);
         getStandardOutput().writeCRLF();
     }
 
@@ -893,15 +896,15 @@ public class COSWriter implements ICOSVisitor, Closeable
      * @param xRefEntriesList list with the xRef entries that was written
      * @return a integer array with the ranges
      */
-    protected Long[] getXRefRanges(List<COSWriterXRefEntry> xRefEntriesList)
+    protected Long[] getXRefRanges(List<XReferenceEntry> xRefEntriesList)
     {
         long last = -2;
         long count = 1;
 
         List<Long> list = new ArrayList<>();
-        for (COSWriterXRefEntry object : xRefEntriesList)
+        for (XReferenceEntry entry : xRefEntriesList)
         {
-            long nr = object.getKey().getNumber();
+            long nr = entry.getReferencedKey().getNumber();
             if (nr == last + 1)
             {
                 ++count;
@@ -920,12 +923,12 @@ public class COSWriter implements ICOSVisitor, Closeable
             }
         }
         // If no new entry is found, we need to write out the last result
-        if(xRefEntriesList.size() > 0)
+        if (xRefEntriesList.size() > 0)
         {
             list.add(last - count + 1);
             list.add(count);
         }
-        return list.toArray(new Long[list.size()]);
+        return list.toArray(new Long[0]);
     }
     
     /**
