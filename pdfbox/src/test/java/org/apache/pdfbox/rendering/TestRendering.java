@@ -48,7 +48,14 @@ public class TestRendering
     private static final String OUTPUT_DIR = "target/test-output/rendering/";
     private static final int MAX_NUM_FILES = 20;
 
-    public static Collection<Arguments> data()
+    private static Collection<Arguments> data()
+    {
+        File[] testFiles = new File(INPUT_DIR).listFiles(
+                (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
+        return Stream.of(testFiles).map(file -> Arguments.of(file.getName())).collect(Collectors.toList());
+    }
+
+    private static Collection<Arguments> dataSubset()
     {
         File[] testFiles = new File(INPUT_DIR).listFiles(
                 (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
@@ -56,7 +63,7 @@ public class TestRendering
     }
 
     @ParameterizedTest(name = "{index} render running for {0}")
-	@MethodSource("data")
+	@MethodSource("dataSubset")
     public void render(String fileName) throws IOException
     {
         File file = new File(INPUT_DIR, fileName);
