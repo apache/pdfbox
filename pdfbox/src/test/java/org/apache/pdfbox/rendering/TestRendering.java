@@ -22,6 +22,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -39,19 +41,21 @@ import java.util.stream.Stream;
  *
  * @author John Hewson
  */
+@Execution(ExecutionMode.CONCURRENT)
 public class TestRendering
 {
     private static final String INPUT_DIR = "src/test/resources/input/rendering";
     private static final String OUTPUT_DIR = "target/test-output/rendering/";
+    private static final int MAX_NUM_FILES = 20;
 
     public static Collection<Arguments> data()
     {
         File[] testFiles = new File(INPUT_DIR).listFiles(
                 (dir, name) -> (name.endsWith(".pdf") || name.endsWith(".ai")));
-        return Stream.of(testFiles).map(file -> Arguments.of(file.getName())).collect(Collectors.toList());
+        return Stream.of(testFiles).map(file -> Arguments.of(file.getName())).limit(MAX_NUM_FILES).collect(Collectors.toList());
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} render running for {0}")
 	@MethodSource("data")
     public void render(String fileName) throws IOException
     {
@@ -68,7 +72,11 @@ public class TestRendering
         document.close();
     }
 
-    // @ParameterizedTest
+    /*
+     * Test currently disabled as different JVMs produce different results.
+     * Enable and visually inspect failing tests files.
+     */
+    // @ParameterizedTest(name = "{index} render and compare running for {0}")
 	@MethodSource("data")
     public void renderAndCompare(String fileName) throws IOException
     {
