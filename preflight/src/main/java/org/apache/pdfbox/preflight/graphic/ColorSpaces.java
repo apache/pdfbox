@@ -35,7 +35,7 @@ public enum ColorSpaces
     /**
      * Name of the ColorSpace
      */
-    public String label;
+    private final String label;
 
     private ColorSpaces(String _label)
     {
@@ -49,14 +49,4 @@ public enum ColorSpaces
     {
         return label;
     }
-
-    /**
-     * @param label
-     *            the label to set
-     */
-    public void setLabel(String label)
-    {
-        this.label = label;
-    }
-
 }
