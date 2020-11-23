@@ -20,6 +20,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
@@ -33,11 +34,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
 import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.util.Matrix;
+import org.apache.pdfbox.util.Vector;
 
 /**
  * Draws an overlay showing the locations of text found by PDFTextStripper and another heuristic.
@@ -54,7 +58,8 @@ final class DebugTextOverlay
     private final boolean showTextStripper;
     private final boolean showTextStripperBeads;
     private final boolean showFontBBox;
-        
+    private final boolean showGlyphBounds;    
+
     private class DebugTextStripper extends PDFTextStripper
     {
         private final Graphics2D graphics;
@@ -189,11 +194,96 @@ final class DebugTextOverlay
                 }
             }
         }
+
+        @Override
+        protected void showGlyph(Matrix textRenderingMatrix, PDFont font, int code, Vector displacement) throws IOException
+        {
+            super.showGlyph(textRenderingMatrix, font, code, displacement);
+
+            if (!DebugTextOverlay.this.showGlyphBounds)
+            {
+                return;
+            }
+
+            AffineTransform at = textRenderingMatrix.createAffineTransform();
+            at.concatenate(font.getFontMatrix().createAffineTransform());
+
+            // compute glyph path
+            GeneralPath path;
+            if (font instanceof PDType3Font)
+            {
+                // It is difficult to calculate the real individual glyph bounds for type 3 fonts
+                // because these are not vector fonts, the content stream could contain almost anything
+                // that is found in page content streams.
+                PDType3Font t3Font = (PDType3Font) font;
+                PDType3CharProc charProc = t3Font.getCharProc(code);
+                if (charProc == null)
+                {
+                    return;
+                }
+
+                BoundingBox fontBBox = t3Font.getBoundingBox();
+                PDRectangle glyphBBox = charProc.getGlyphBBox();
+                if (glyphBBox == null)
+                {
+                    return;
+                }
+
+                // PDFBOX-3850: glyph bbox could be larger than the font bbox
+                glyphBBox.setLowerLeftX(Math.max(fontBBox.getLowerLeftX(), glyphBBox.getLowerLeftX()));
+                glyphBBox.setLowerLeftY(Math.max(fontBBox.getLowerLeftY(), glyphBBox.getLowerLeftY()));
+                glyphBBox.setUpperRightX(Math.min(fontBBox.getUpperRightX(), glyphBBox.getUpperRightX()));
+                glyphBBox.setUpperRightY(Math.min(fontBBox.getUpperRightY(), glyphBBox.getUpperRightY()));
+                path = glyphBBox.toGeneralPath();
+            }
+            else
+            {
+                PDVectorFont vectorFont = (PDVectorFont) font;
+                path = vectorFont.getNormalizedPath(code);
+
+                if (path == null)
+                {
+                    return;
+                }
+
+                // stretch non-embedded glyph if it does not match the width contained in the PDF
+                if (!font.isEmbedded() && !font.isVertical() && !font.isStandard14() && font.hasExplicitWidth(code))
+                {
+                    float fontWidth = font.getWidthFromFont(code);
+                    if (fontWidth > 0 && // ignore spaces
+                        Math.abs(fontWidth - displacement.getX() * 1000) > 0.0001)
+                    {
+                        float pdfWidth = displacement.getX() * 1000;
+                        at.scale(pdfWidth / fontWidth, 1);
+                    }
+                }
+            }
+
+            // compute visual bounds
+            Shape bbox = at.createTransformedShape(path.getBounds2D());
+            Shape transformedBBox = flip.createTransformedShape(bbox);
+
+            // save
+            Color color = graphics.getColor();
+            Stroke stroke = graphics.getStroke();
+            Shape clip = graphics.getClip();
+
+            // draw
+            graphics.setClip(graphics.getDeviceConfiguration().getBounds());
+            graphics.setColor(Color.cyan);
+            graphics.setStroke(new BasicStroke(.5f));                
+            graphics.draw(transformedBBox);
+
+            // restore
+            graphics.setStroke(stroke);
+            graphics.setColor(color);
+            graphics.setClip(clip);
+        }
     }
 
     DebugTextOverlay(PDDocument document, int pageIndex, float scale,
-                            boolean showTextStripper, boolean showTextStripperBeads,
-                            boolean showFontBBox)
+                      boolean showTextStripper, boolean showTextStripperBeads,
+                      boolean showFontBBox, boolean showGlyphBounds)
     {
         this.document = document;
         this.pageIndex = pageIndex;
@@ -201,6 +291,7 @@ final class DebugTextOverlay
         this.showTextStripper = showTextStripper;
         this.showTextStripperBeads = showTextStripperBeads;
         this.showFontBBox = showFontBBox;
+        this.showGlyphBounds = showGlyphBounds;
     }
     
     public void renderTo(Graphics2D graphics) throws IOException

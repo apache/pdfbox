@@ -473,7 +473,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             label.setText(labelText);
             statuslabel.setText(labelText);
 
-            PDFRenderer renderer = new DebugPDFRenderer(document, ViewMenu.isShowGlyphBounds());
+            PDFRenderer renderer = new PDFRenderer(document);
             renderer.setSubsamplingAllowed(ViewMenu.isAllowSubsampling());
 
             long t0 = System.nanoTime();
@@ -487,7 +487,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
             // debug overlays
             DebugTextOverlay debugText = new DebugTextOverlay(document, pageIndex, scale, 
                                                               showTextStripper, showTextStripperBeads,
-                                                              showFontBBox);
+                                                              showFontBBox, ViewMenu.isShowGlyphBounds());
             Graphics2D g = image.createGraphics();
             debugText.renderTo(g);
             g.dispose();
