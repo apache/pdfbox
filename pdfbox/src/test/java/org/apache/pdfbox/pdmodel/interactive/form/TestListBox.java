@@ -153,8 +153,6 @@ class TestListBox
         choice.setValue(exportValues);
 
         // assert that the option values have been correctly set
-        System.out.println(choice.getCOSObject());
-
         COSArray valueItems = (COSArray) choice.getCOSObject().getItem(COSName.V);
         assertNotNull(valueItems);
         assertEquals(valueItems.size(),exportValues.size());
