@@ -118,7 +118,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * Test for CreateSignature. Each test case will run twice: once with SignatureInterface
  * and once using external signature creation scenario.
  */
-public class TestCreateSignature
+class TestCreateSignature
 {
     private static CertificateFactory certificateFactory = null;
     private static KeyStore keyStore = null;
@@ -139,13 +139,13 @@ public class TestCreateSignature
      * using externally signing scenario ({@code true}) or SignatureInterface ({@code false}).
      */
 
-    public static Collection<Boolean> signingTypes()
+    private static Collection<Boolean> signingTypes()
     {
         return Arrays.asList(false, true);
     }
 
     @BeforeAll
-    public static void init() throws Exception
+    static void init() throws Exception
     {
         Security.addProvider(SecurityProvider.getProvider());
         certificateFactory = CertificateFactory.getInstance("X.509");
@@ -172,7 +172,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testDetachedSHA256(boolean externallySign)
+    void testDetachedSHA256(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -216,7 +216,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testDetachedSHA256WithTSA(boolean externallySign)
+    void testDetachedSHA256WithTSA(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -277,7 +277,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testCreateSignedTimeStamp(boolean externallySign)
+    void testCreateSignedTimeStamp(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -330,7 +330,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testCreateVisibleSignature(boolean externallySign)
+    void testCreateVisibleSignature(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -362,7 +362,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testCreateVisibleSignature2(boolean externallySign)
+    void testCreateVisibleSignature2(boolean externallySign)
             throws IOException, CMSException, OperatorCreationException, GeneralSecurityException,
                    TSPException, CertificateVerificationException
     {
@@ -396,7 +396,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testPDFBox3978(boolean externallySign) throws IOException, NoSuchAlgorithmException, 
+    void testPDFBox3978(boolean externallySign) throws IOException, NoSuchAlgorithmException, 
                                         CertificateException, UnrecoverableKeyException, 
                                         CMSException, OperatorCreationException, GeneralSecurityException,
                                         TSPException, CertificateVerificationException
@@ -557,7 +557,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testPDFBox3811(boolean externallySign) throws IOException, NoSuchAlgorithmException
+    void testPDFBox3811(boolean externallySign) throws IOException, NoSuchAlgorithmException
     {
         if (!externallySign)
         {
@@ -607,7 +607,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
+    void testSaveIncrementalAfterSign(boolean externallySign) throws Exception
     {
         BufferedImage oldImage, expectedImage1, actualImage1, expectedImage2, actualImage2;
 
@@ -714,7 +714,7 @@ public class TestCreateSignature
 
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testPDFBox4784(boolean externallySign) throws Exception
+    void testPDFBox4784(boolean externallySign) throws Exception
     {
         if (!externallySign)
         {
@@ -749,7 +749,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testCRL(boolean externallySign) throws IOException, CMSException, CertificateException, TSPException,
+    void testCRL(boolean externallySign) throws IOException, CMSException, CertificateException, TSPException,
             OperatorCreationException, CertificateVerificationException, NoSuchAlgorithmException
     {
         if (externallySign)
@@ -815,7 +815,7 @@ public class TestCreateSignature
      */
     @ParameterizedTest
 	@MethodSource("signingTypes")
-    public void testAddValidationInformation(boolean externallySign)
+    void testAddValidationInformation(boolean externallySign)
             throws IOException, GeneralSecurityException, OCSPException, OperatorCreationException, CMSException
     {
         if (externallySign)
