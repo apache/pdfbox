@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * Tests the type 4 function parser.
  *
  */
-public class TestParser
+class TestParser
 {
 
     /**
@@ -32,7 +32,7 @@ public class TestParser
      * @throws Exception if an error occurs
      */
     @Test
-    public void testParserBasics() throws Exception
+    void testParserBasics() throws Exception
     {
         Type4Tester.create("3 4 add 2 sub").pop(5).isEmpty();
     }
@@ -42,7 +42,7 @@ public class TestParser
      * @throws Exception if an error occurs
      */
     @Test
-    public void testNested() throws Exception
+    void testNested() throws Exception
     {
         Type4Tester.create("true { 2 1 add } { 2 1 sub } ifelse")
             .pop(3).isEmpty();
@@ -55,7 +55,7 @@ public class TestParser
      * @throws Exception if an error occurs
      */
     @Test
-    public void testParseFloat() throws Exception
+    void testParseFloat() throws Exception
     {
         assertEquals(0, InstructionSequenceBuilder.parseReal("0"), 0.00001f);
         assertEquals(1, InstructionSequenceBuilder.parseReal("1"), 0.00001f);
@@ -72,7 +72,7 @@ public class TestParser
      * @throws Exception if an error occurs
      */
     @Test
-    public void testJira804() throws Exception
+    void testJira804() throws Exception
     {
         //This is an example of a tint to CMYK function
         //Problems here were:
