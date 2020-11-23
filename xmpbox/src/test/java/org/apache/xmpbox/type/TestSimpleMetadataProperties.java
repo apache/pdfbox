@@ -103,8 +103,9 @@ class TestSimpleMetadataProperties
     @Test
     void testTextBadTypeDetection() throws Exception
     {
+        Calendar calendar = Calendar.getInstance();
         assertThrows(IllegalArgumentException.class, () -> {
-	        new TextType(parent, null, "test", "text", Calendar.getInstance());
+	        new TextType(parent, null, "test", "text", calendar);
 	    });   
     }
 
@@ -193,8 +194,9 @@ class TestSimpleMetadataProperties
     @Test
     void testExceptionWithCause() throws Exception
     {
+        Throwable throwable = new Throwable();
         assertThrows(IllegalArgumentException.class, () -> {
-	        throw new IllegalArgumentException("TEST", new Throwable());
+	        throw new IllegalArgumentException("TEST", throwable);
 	    });
     }
 

@@ -48,7 +48,7 @@ import org.junit.jupiter.api.Test;
 class XMPMetaDataTest
 {
     @Test
-    public void testAddingSchem()
+    void testAddingSchem()
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         String tmpNsURI = "http://www.test.org/schem/";
@@ -90,7 +90,7 @@ class XMPMetaDataTest
      */
 
     @Test
-    public void testTransformerExceptionMessage() throws XmpSerializationException
+    void testTransformerExceptionMessage() throws XmpSerializationException
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
 	        throw new XmpSerializationException("TEST");
@@ -98,7 +98,7 @@ class XMPMetaDataTest
     }
 
     @Test
-    public void testTransformerExceptionWithCause() throws XmpSerializationException
+    void testTransformerExceptionWithCause() throws XmpSerializationException
     {
         assertThrows(org.apache.xmpbox.xml.XmpSerializationException.class, () -> {
 	        throw new XmpSerializationException("TEST", new Throwable());
@@ -106,7 +106,7 @@ class XMPMetaDataTest
     }
 
     @Test
-    public void testInitMetaDataWithInfo() throws Exception
+    void testInitMetaDataWithInfo() throws Exception
     {
         String xpacketBegin = "TESTBEG", xpacketId = "TESTID", xpacketBytes = "TESTBYTES", xpacketEncoding = "TESTENCOD";
         XMPMetadata metadata = XMPMetadata.createXMPMetadata(xpacketBegin, xpacketId, xpacketBytes, xpacketEncoding);
@@ -125,7 +125,7 @@ class XMPMetaDataTest
      * @throws XmpParsingException 
      */
     @Test
-    public void testPDFBOX3257() throws IOException, XmpParsingException
+    void testPDFBOX3257() throws IOException, XmpParsingException
     {
         // taken from file test-landscape2.pdf
         String xmpmeta = "<?xpacket id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n"

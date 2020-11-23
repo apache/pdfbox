@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class TestXMPWithDefinedSchemas
 {
-    public static Stream<String> initializeParameters() throws Exception
+    static Stream<String> initializeParameters() throws Exception
     {
         return Stream.of(
             "/validxmp/override_ns.rdf",
@@ -43,7 +43,7 @@ class TestXMPWithDefinedSchemas
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void main(String path) throws Exception
+    void main(String path) throws Exception
     {
         InputStream is = this.getClass().getResourceAsStream(path);
 

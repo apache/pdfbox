@@ -74,8 +74,8 @@ class PDFAIdentificationOthersTest
     {
         XMPMetadata metadata = XMPMetadata.createXMPMetadata();
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
+        pdfaid.setPartValueWithString("1");
         assertThrows(IllegalArgumentException.class, () -> {
-            pdfaid.setPartValueWithString("1");
             pdfaid.setPartValueWithString("ojoj");
 	    });
     }

@@ -128,7 +128,7 @@ class XMPSchemaTest
     }
 
     @Test
-    public void rdfAboutTest()
+    void rdfAboutTest()
     {
         assertEquals("",schem.getAboutValue());
         String about = "about";

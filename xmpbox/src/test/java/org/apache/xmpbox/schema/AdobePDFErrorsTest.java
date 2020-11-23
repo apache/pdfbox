@@ -80,8 +80,8 @@ class AdobePDFErrorsTest
     void testBadVersionIdValueType() throws Exception
     {
         PDFAIdentificationSchema pdfaid = metadata.createAndAddPFAIdentificationSchema();
-        assertThrows(IllegalArgumentException.class, () -> {
-            pdfaid.setPartValueWithString("1");
+        pdfaid.setPartValueWithString("1");
+        assertThrows(IllegalArgumentException.class, () -> {    
             pdfaid.setPartValueWithString("ojoj");
 	    });
     }

@@ -56,7 +56,7 @@ class TestAbstractStructuredType
     protected MyStructuredType st = new MyStructuredType(xmp, MY_NS, MY_PREFIX);
 
     @Test
-    public void validate() throws Exception
+    void validate() throws Exception
     {
         assertEquals(MY_NS, st.getNamespace());
         assertEquals(MY_PREFIX, st.getPrefix());
