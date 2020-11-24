@@ -61,6 +61,8 @@ public final class MetaUtil
             StringWriter xmlStringWriter = new StringWriter();
             StreamResult streamResult = new StreamResult(xmlStringWriter);
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
             transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             Transformer transformer = transformerFactory.newTransformer();
             // see http://stackoverflow.com/a/1264872/535646
