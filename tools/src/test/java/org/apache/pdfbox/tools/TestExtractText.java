@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test suite for ExtractText. 
  */
-public class TestExtractText
+class TestExtractText
 {
     
     /**
@@ -36,7 +36,7 @@ public class TestExtractText
      * @throws Exception if something went wrong
      */
     @Test
-    public void testEmbeddedPDFs() throws Exception 
+    void testEmbeddedPDFs() throws Exception 
     {
         ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
         PrintStream stdout = System.out;

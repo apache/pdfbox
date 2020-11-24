@@ -27,13 +27,13 @@ import org.junit.jupiter.api.Test;
 /**
  * Test suite for TextToPDF.
  */
-public class TestTextToPdf
+class TestTextToPdf
 {
     /**
      * This test ensures that a PDF created from an empty String is still readable by Adobe Reader
      */
     @Test
-    public void testCreateEmptyPdf() throws Exception
+    void testCreateEmptyPdf() throws Exception
     {
         TextToPDF pdfCreator = new TextToPDF();
         PDDocument pdfDoc;

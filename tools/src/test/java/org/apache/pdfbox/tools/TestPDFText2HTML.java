@@ -32,7 +32,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
-public class TestPDFText2HTML
+class TestPDFText2HTML
 {
     private PDDocument createDocument(String title, PDFont font, String text) throws IOException
     {
@@ -52,7 +52,7 @@ public class TestPDFText2HTML
     }
 
     @Test
-    public void testEscapeTitle() throws IOException
+    void testEscapeTitle() throws IOException
     {
         PDFTextStripper stripper = new PDFText2HTML();
         PDDocument doc = createDocument("<script>\u3042", PDType1Font.HELVETICA, "<foo>");
@@ -65,7 +65,7 @@ public class TestPDFText2HTML
     }
 
     @Test
-    public void testStyle() throws IOException
+    void testStyle() throws IOException
     {
         PDFTextStripper stripper = new PDFText2HTML();
         PDDocument doc = createDocument("t", PDType1Font.HELVETICA_BOLD, "<bold>");

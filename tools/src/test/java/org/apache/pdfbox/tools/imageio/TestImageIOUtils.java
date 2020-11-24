@@ -63,7 +63,7 @@ import org.w3c.dom.NodeList;
 /**
  * Test suite for ImageIOUtil.
  */
-public class TestImageIOUtils
+class TestImageIOUtils
 {
     private static final Log LOG = LogFactory.getLog(TestImageIOUtils.class);
     
@@ -287,7 +287,7 @@ public class TestImageIOUtils
      * @throws Exception when there is an exception
      */
     @Test
-    public void testRenderImage() throws Exception
+    void testRenderImage() throws Exception
     {
         String inDir = "src/test/resources/input/ImageIOUtil";
         String outDir = "target/test-output/ImageIOUtil/";
@@ -328,7 +328,7 @@ public class TestImageIOUtils
             checkBmpResolution(filename, expectedResolution);
             return;
         }
-        Iterator readers = ImageIO.getImageReadersBySuffix(suffix);
+        Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix(suffix);
         assertTrue(readers.hasNext(), "No image reader found for suffix " + suffix);
         ImageReader reader = (ImageReader) readers.next();
         try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
@@ -395,7 +395,7 @@ public class TestImageIOUtils
      */
     void checkTiffCompression(String filename, String expectedCompression) throws IOException
     {
-        Iterator readers = ImageIO.getImageReadersBySuffix("tiff");
+        Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("tiff");
         ImageReader reader = (ImageReader) readers.next();
         try (ImageInputStream iis = ImageIO.createImageInputStream(new File(filename)))
         {
