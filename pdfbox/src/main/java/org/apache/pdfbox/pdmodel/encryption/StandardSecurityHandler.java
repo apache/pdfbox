@@ -285,7 +285,7 @@ public final class StandardSecurityHandler extends SecurityHandler<StandardProte
         {
             // "Decrypt the 16-byte Perms string using AES-256 in ECB mode with an 
             // initialization vector of zero and the file encryption key as the key."
-            @SuppressWarnings({"squid:S4432"})
+            @SuppressWarnings({"squid:S5542"})
             Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(getEncryptionKey(), "AES"));
             byte[] perms = cipher.doFinal(encryption.getPerms());
