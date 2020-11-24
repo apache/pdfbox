@@ -363,6 +363,19 @@ public class TestPDFParser
         doc.close();
     }
 
+    /**
+     * Test that PDFBOX-5026 has pages tree.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox5026() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-5026.pdf"));
+        assertNotNull(doc.getPages());
+        doc.close();
+    }
+
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);

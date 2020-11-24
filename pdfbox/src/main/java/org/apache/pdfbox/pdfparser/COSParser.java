@@ -313,7 +313,7 @@ public class COSParser extends BaseParser
             return false;
         }
         COSDictionary rootDict = (COSDictionary) base;
-        return rootDict.getDictionaryObject(COSName.PAGES) != null;
+        return rootDict.getCOSObject(COSName.PAGES) != null;
     }
 
     /**
