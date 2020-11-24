@@ -25,8 +25,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.cos.COSNull;
-import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.io.ScratchFile;
@@ -171,7 +169,6 @@ public class PDFParser extends COSParser
     protected void initialParse() throws IOException
     {
         COSDictionary trailer = retrieveTrailer();
-    
         COSBase base = parseTrailerValuesDynamically(trailer);
         if (!(base instanceof COSDictionary))
         {
@@ -193,12 +190,60 @@ public class PDFParser extends COSParser
         }
         // check pages dictionaries
         checkPages(root);
-        if (!(root.getDictionaryObject(COSName.PAGES) instanceof COSDictionary))
+        boolean foundPages = false;
+        if (root.getDictionaryObject(COSName.PAGES) instanceof COSDictionary)
+        {
+            foundPages = true;
+        }
+        if (!foundPages && isLenient())
+        {
+            root = rebuildTrailerRoot();
+            if (root.getDictionaryObject(COSName.PAGES) instanceof COSDictionary)
+            {
+                foundPages = true;
+            }
+        }
+        if (!foundPages)
         {
             throw new IOException("Page tree root must be a dictionary");
         }
         document.setDecrypted();
         initialParseDone = true;
+    }
+
+    /**
+     * Rebuild the trailer/root dictionary if Pages can't be found.
+     *
+     * @return the rebuild trailer/root dictionary
+     *
+     * @throws IOException if something went wrong
+     */
+    private COSDictionary rebuildTrailerRoot() throws IOException
+    {
+        // Brute force the trailer when pages couldn't be found on the original one
+        COSDictionary trailer = rebuildTrailer();
+        COSBase base = parseTrailerValuesDynamically(trailer);
+        if (!(base instanceof COSDictionary))
+        {
+            throw new IOException("Expected root dictionary, but got this: " + base);
+        }
+        COSDictionary root = (COSDictionary) base;
+        // in some pdfs the type value "Catalog" is missing in the root object
+        if (isLenient() && !root.containsKey(COSName.TYPE))
+        {
+            root.setItem(COSName.TYPE, COSName.CATALOG);
+        }
+        // parse all objects, starting at the root dictionary
+        parseDictObjects(root, (COSName[]) null);
+        // parse all objects of the info dictionary
+        COSBase infoBase = trailer.getDictionaryObject(COSName.INFO);
+        if (infoBase instanceof COSDictionary)
+        {
+            parseDictObjects((COSDictionary) infoBase, (COSName[]) null);
+        }
+        // check pages dictionaries
+        checkPages(root);
+        return root;
     }
 
     /**
