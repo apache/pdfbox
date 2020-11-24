@@ -363,6 +363,19 @@ public class TestPDFParser
         doc.close();
     }
 
+    /**
+     * Test that PDFBOX-5025 has 1 page.
+     *
+     * @throws IOException
+     */
+    @Test
+    public void testPDFBox5025() throws IOException
+    {
+        PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-5025.pdf"));
+        assertEquals(1, doc.getNumberOfPages());
+        doc.close();
+    }
+
     private void executeParserTest(RandomAccessRead source, MemoryUsageSetting memUsageSetting) throws IOException
     {
         ScratchFile scratchFile = new ScratchFile(memUsageSetting);
