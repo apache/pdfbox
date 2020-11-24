@@ -92,7 +92,7 @@ public class Validator_A1b
             }
             else
             {
-                @SuppressWarnings({"squid:S4435"}) // self-created XML
+                @SuppressWarnings({"squid:S2755"}) // self-created XML
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
