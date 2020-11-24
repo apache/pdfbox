@@ -272,7 +272,7 @@ public class COSParser extends BaseParser
             }
         }
         // check if the trailer contains a Root object
-        if (trailer != null && trailer.getItem(COSName.ROOT) == null)
+        if (trailer != null && !isValidTrailer(trailer))
         {
             rebuildTrailer = isLenient();
         }
@@ -290,6 +290,30 @@ public class COSParser extends BaseParser
             }
         }
         return trailer;
+    }
+
+    /**
+     * Check that the trailer contains a Root object and that the Root
+     * contains a Pages object.
+     *
+     * @param trailer the trailer to validate
+     * @return whether or not the trailer is valid.
+     * @throws IOException if an error occurs
+     */
+    private boolean isValidTrailer(COSDictionary trailer) throws IOException
+    {
+        COSObject root = trailer.getCOSObject(COSName.ROOT);
+        if (root == null)
+        {
+            return false;
+        }
+        COSBase base = parseObjectDynamically(root, false);
+        if (!(base instanceof COSDictionary))
+        {
+            return false;
+        }
+        COSDictionary rootDict = (COSDictionary) base;
+        return rootDict.getDictionaryObject(COSName.PAGES) != null;
     }
 
     /**
