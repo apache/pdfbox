@@ -206,61 +206,12 @@ final class DebugTextOverlay
             }
 
             AffineTransform at = textRenderingMatrix.createAffineTransform();
-            at.concatenate(font.getFontMatrix().createAffineTransform());
-
-            // compute glyph path
-            GeneralPath path;
-            if (font instanceof PDType3Font)
+            Shape bbox = calculateGlyphBounds(at, font, code, displacement);
+            if (bbox == null)
             {
-                // It is difficult to calculate the real individual glyph bounds for type 3 fonts
-                // because these are not vector fonts, the content stream could contain almost anything
-                // that is found in page content streams.
-                PDType3Font t3Font = (PDType3Font) font;
-                PDType3CharProc charProc = t3Font.getCharProc(code);
-                if (charProc == null)
-                {
-                    return;
-                }
-
-                BoundingBox fontBBox = t3Font.getBoundingBox();
-                PDRectangle glyphBBox = charProc.getGlyphBBox();
-                if (glyphBBox == null)
-                {
-                    return;
-                }
-
-                // PDFBOX-3850: glyph bbox could be larger than the font bbox
-                glyphBBox.setLowerLeftX(Math.max(fontBBox.getLowerLeftX(), glyphBBox.getLowerLeftX()));
-                glyphBBox.setLowerLeftY(Math.max(fontBBox.getLowerLeftY(), glyphBBox.getLowerLeftY()));
-                glyphBBox.setUpperRightX(Math.min(fontBBox.getUpperRightX(), glyphBBox.getUpperRightX()));
-                glyphBBox.setUpperRightY(Math.min(fontBBox.getUpperRightY(), glyphBBox.getUpperRightY()));
-                path = glyphBBox.toGeneralPath();
-            }
-            else
-            {
-                PDVectorFont vectorFont = (PDVectorFont) font;
-                path = vectorFont.getNormalizedPath(code);
-
-                if (path == null)
-                {
-                    return;
-                }
-
-                // stretch non-embedded glyph if it does not match the width contained in the PDF
-                if (!font.isEmbedded() && !font.isVertical() && !font.isStandard14() && font.hasExplicitWidth(code))
-                {
-                    float fontWidth = font.getWidthFromFont(code);
-                    if (fontWidth > 0 && // ignore spaces
-                        Math.abs(fontWidth - displacement.getX() * 1000) > 0.0001)
-                    {
-                        float pdfWidth = displacement.getX() * 1000;
-                        at.scale(pdfWidth / fontWidth, 1);
-                    }
-                }
+                return;
             }
 
-            // compute visual bounds
-            Shape bbox = at.createTransformedShape(path.getBounds2D());
             Shape transformedBBox = flip.createTransformedShape(bbox);
 
             // save
@@ -278,6 +229,64 @@ final class DebugTextOverlay
             graphics.setStroke(stroke);
             graphics.setColor(color);
             graphics.setClip(clip);
+        }
+
+        private Shape calculateGlyphBounds(
+                AffineTransform at, PDFont font, int code,Vector displacement) throws IOException
+        {
+            at.concatenate(font.getFontMatrix().createAffineTransform());
+            // compute glyph path
+            GeneralPath path;
+            if (font instanceof PDType3Font)
+            {
+                // It is difficult to calculate the real individual glyph bounds for type 3 fonts
+                // because these are not vector fonts, the content stream could contain almost anything
+                // that is found in page content streams.
+                PDType3Font t3Font = (PDType3Font) font;
+                PDType3CharProc charProc = t3Font.getCharProc(code);
+                if (charProc == null)
+                {
+                    return null;
+                }
+
+                BoundingBox fontBBox = t3Font.getBoundingBox();
+                PDRectangle glyphBBox = charProc.getGlyphBBox();
+                if (glyphBBox == null)
+                {
+                    return null;
+                }
+
+                // PDFBOX-3850: glyph bbox could be larger than the font bbox
+                glyphBBox.setLowerLeftX(Math.max(fontBBox.getLowerLeftX(), glyphBBox.getLowerLeftX()));
+                glyphBBox.setLowerLeftY(Math.max(fontBBox.getLowerLeftY(), glyphBBox.getLowerLeftY()));
+                glyphBBox.setUpperRightX(Math.min(fontBBox.getUpperRightX(), glyphBBox.getUpperRightX()));
+                glyphBBox.setUpperRightY(Math.min(fontBBox.getUpperRightY(), glyphBBox.getUpperRightY()));
+                path = glyphBBox.toGeneralPath();
+            }
+            else
+            {
+                PDVectorFont vectorFont = (PDVectorFont) font;
+                path = vectorFont.getNormalizedPath(code);
+
+                if (path == null)
+                {
+                    return null;
+                }
+
+                // stretch non-embedded glyph if it does not match the width contained in the PDF
+                if (!font.isEmbedded() && !font.isVertical() && !font.isStandard14() && font.hasExplicitWidth(code))
+                {
+                    float fontWidth = font.getWidthFromFont(code);
+                    if (fontWidth > 0 && // ignore spaces
+                            Math.abs(fontWidth - displacement.getX() * 1000) > 0.0001)
+                    {
+                        float pdfWidth = displacement.getX() * 1000;
+                        at.scale(pdfWidth / fontWidth, 1);
+                    }
+                }
+            }
+            // compute visual bounds
+            return at.createTransformedShape(path.getBounds2D());
         }
     }
 
