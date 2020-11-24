@@ -372,7 +372,7 @@ public class TestPDFParser
     public void testPDFBox5026() throws IOException
     {
         PDDocument doc = PDDocument.load(new File(TARGETPDFDIR, "PDFBOX-5026.pdf"));
-        assertNotNull(doc.getPages());
+        assertEquals(1, doc.getNumberOfPages());
         doc.close();
     }
 
