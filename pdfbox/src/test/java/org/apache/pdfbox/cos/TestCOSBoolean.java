@@ -19,14 +19,11 @@ package org.apache.pdfbox.cos;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import org.apache.pdfbox.pdfwriter.COSWriter;
 import org.junit.jupiter.api.BeforeAll;
@@ -39,6 +36,12 @@ class TestCOSBoolean extends TestCOSBase
 {
     final COSBoolean cosBooleanTrue = COSBoolean.TRUE;
     final COSBoolean cosBooleanFalse = COSBoolean.FALSE;
+
+    @BeforeAll
+    static void setUp()
+    {
+        testCOSBase = COSBoolean.TRUE;
+    }
 
     @Test
     void testGetValue()
@@ -108,5 +111,4 @@ class TestCOSBoolean extends TestCOSBase
             fail("Failed to write " + index + " exception: " + e.getMessage());
         }
     }
-
 }
