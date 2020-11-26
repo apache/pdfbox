@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -93,8 +95,8 @@ class TestFontEmbedding
         {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            File ipafont = new File("target/fonts/ipag00303", "ipag.ttf");
-            PDType0Font vfont = PDType0Font.loadVertical(document, ipafont);
+            Path ipaFont = Paths.get("target/fonts/ipag00303/ipag.ttf").toAbsolutePath();
+            PDType0Font vfont = PDType0Font.loadVertical(document, ipaFont.toFile());
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
@@ -142,8 +144,8 @@ class TestFontEmbedding
         {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            File ipafont = new File("target/fonts/ipagp00303", "ipagp.ttf");
-            PDType0Font vfont = PDType0Font.loadVertical(document, ipafont);
+            Path ipafont = Paths.get("target/fonts/ipagp00303/ipagp.ttf").toAbsolutePath();
+            PDType0Font vfont = PDType0Font.loadVertical(document, ipafont.toFile());
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
@@ -257,8 +259,8 @@ class TestFontEmbedding
         {
             PDPage page = new PDPage(PDRectangle.A0);
             document.addPage(page);
-            File ipafont = new File("target/fonts/ipag00303", "ipag.ttf");
-            PDType0Font font = PDType0Font.load(document, ipafont);
+            Path ipafont = Paths.get("./target/fonts/ipag00303/ipag.ttf").toAbsolutePath();
+            PDType0Font font = PDType0Font.load(document, ipafont.toFile());
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page))
             {
                 contentStream.beginText();
