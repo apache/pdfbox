@@ -769,6 +769,7 @@ public class COSParser extends BaseParser implements ICOSParser
             {
                 parser = new PDFObjectStreamParser((COSStream) objstmBaseObj, document);
                 objectStreamObject = parser.parseObject(key.getNumber());
+                objectStreamObject.setKey(key);
             }
             catch (IOException ex)
             {

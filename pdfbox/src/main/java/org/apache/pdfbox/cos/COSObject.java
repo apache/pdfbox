@@ -45,7 +45,19 @@ public class COSObject extends COSBase implements COSUpdateInfo
      */
     public COSObject(COSBase object)
     {
-        this(object, null);
+        baseObject = object;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param object The object that this encapsulates.
+     * @param objectKey The COSObjectKey of the encapsulated object
+     */
+    public COSObject(COSBase object, COSObjectKey objectKey)
+    {
+        this(objectKey, null);
+        baseObject = object;
     }
 
     /**
@@ -73,6 +85,7 @@ public class COSObject extends COSBase implements COSUpdateInfo
         this.parser = parser;
         objectNumber = key.getNumber();
         generationNumber = key.getGeneration();
+        setKey(key);
     }
 
     /**
