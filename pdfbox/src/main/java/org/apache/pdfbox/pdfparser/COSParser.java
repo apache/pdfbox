@@ -611,46 +611,19 @@ public class COSParser extends BaseParser implements ICOSParser
     protected synchronized COSBase parseObjectDynamically(long objNr, int objGenNr,
             boolean requireExistingNotCompressedObj) throws IOException
     {
-        // ---- create object key and get object (container) from pool
         final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
-        final COSObject pdfObject = document.getObjectFromPool(objKey);
-        COSBase referencedObject = !pdfObject.isObjectNull() ? pdfObject.getObject() : null;
-
-        // not previously parsed
-        if (referencedObject == null)
+        COSObject pdfObject = document.getObjectFromPool(objKey);
+        if (!pdfObject.isObjectNull())
         {
-            // read offset or object stream object number from xref table
-            Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
+            return pdfObject.getObject();
+        }
+        Long offsetOrObjstmObNr = getObjectOffset(objKey, requireExistingNotCompressedObj);
+        COSBase referencedObject = null;
+        if (offsetOrObjstmObNr != null)
+        {
 
-            // maybe something is wrong with the xref table -> perform brute force search for all objects
-            if (offsetOrObjstmObNr == null && isLenient)
+            if (offsetOrObjstmObNr > 0)
             {
-                Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
-                offsetOrObjstmObNr = bfCOSObjectKeyOffsets.get(objKey);
-                if (offsetOrObjstmObNr != null)
-                {
-                    LOG.debug("Set missing offset " + offsetOrObjstmObNr + " for object " + objKey);
-                    document.getXrefTable().put(objKey, offsetOrObjstmObNr);
-                }
-            }
-
-            // sanity test to circumvent loops with broken documents
-            if (requireExistingNotCompressedObj
-                    && ((offsetOrObjstmObNr == null) || (offsetOrObjstmObNr <= 0)))
-            {
-                throw new IOException("Object must be defined and must not be compressed object: "
-                        + objKey.getNumber() + ":" + objKey.getGeneration());
-            }
-
-            if (offsetOrObjstmObNr == null)
-            {
-                // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
-                // remove parser to avoid endless recursion
-                pdfObject.setToNull();
-            }
-            else if (offsetOrObjstmObNr > 0)
-            {
-                // offset of indirect object in file
                 referencedObject = parseFileObject(offsetOrObjstmObNr, objKey);
             }
             else
@@ -659,12 +632,43 @@ public class COSParser extends BaseParser implements ICOSParser
                 // since our object was not found it means object stream was not parsed so far
                 referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
             }
-            if (referencedObject == null || referencedObject instanceof COSNull)
-            {
-                pdfObject.setToNull();
-            }
+        }
+        if (referencedObject == null || referencedObject instanceof COSNull)
+        {
+            // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
+            // or some other issue with dereferencing
+            // remove parser to avoid endless recursion
+            pdfObject.setToNull();
         }
         return referencedObject;
+    }
+
+    private Long getObjectOffset(COSObjectKey objKey, boolean requireExistingNotCompressedObj)
+            throws IOException
+    {
+        // read offset or object stream object number from xref table
+        Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
+
+        // maybe something is wrong with the xref table -> perform brute force search for all objects
+        if (offsetOrObjstmObNr == null && isLenient)
+        {
+            Map<COSObjectKey, Long> bfCOSObjectKeyOffsets = getBFCOSObjectOffsets();
+            offsetOrObjstmObNr = bfCOSObjectKeyOffsets.get(objKey);
+            if (offsetOrObjstmObNr != null)
+            {
+                LOG.debug("Set missing offset " + offsetOrObjstmObNr + " for object " + objKey);
+                document.getXrefTable().put(objKey, offsetOrObjstmObNr);
+            }
+        }
+
+        // sanity test to circumvent loops with broken documents
+        if (requireExistingNotCompressedObj
+                && ((offsetOrObjstmObNr == null) || (offsetOrObjstmObNr <= 0)))
+        {
+            throw new IOException("Object must be defined and must not be compressed object: "
+                    + objKey.getNumber() + ":" + objKey.getGeneration());
+        }
+        return offsetOrObjstmObNr;
     }
 
     private COSBase parseFileObject(Long offsetOrObjstmObNr, final COSObjectKey objKey)

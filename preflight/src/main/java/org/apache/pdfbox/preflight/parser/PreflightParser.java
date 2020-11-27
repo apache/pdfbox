@@ -629,37 +629,35 @@ public class PreflightParser extends PDFParser
     {
         // ---- create object key and get object (container) from pool
         final COSObjectKey objKey = new COSObjectKey(objNr, objGenNr);
-        final COSObject pdfObject = document.getObjectFromPool(objKey);
-        COSBase referencedObject = !pdfObject.isObjectNull() ? pdfObject.getObject() : null;
-
-        // not previously parsed
-        if (referencedObject == null)
+        COSObject pdfObject = document.getObjectFromPool(objKey);
+        if (!pdfObject.isObjectNull())
         {
-            // read offset or object stream object number from xref table
-            Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
+            return pdfObject.getObject();
+        }
+        COSBase referencedObject = null;
 
-            // sanity test to circumvent loops with broken documents
-            if (requireExistingNotCompressedObj && ((offsetOrObjstmObNr == null)))
-            {
-                addValidationError(new ValidationError(ERROR_SYNTAX_MISSING_OFFSET,
-                        "Object must be defined and must not be compressed object: " + objKey.getNumber() + ":"
-                                + objKey.getGeneration()));
-                throw new SyntaxValidationException("Object must be defined and must not be compressed object: "
-                                + objKey.getNumber() + ":" + objKey.getGeneration(),
-                        validationResult);
-            }
+        // read offset or object stream object number from xref table
+        Long offsetOrObjstmObNr = document.getXrefTable().get(objKey);
 
-            if (offsetOrObjstmObNr == null)
-            {
-                // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
-                // remove parser to avoid endless recursion
-                pdfObject.setToNull();
+        // sanity test to circumvent loops with broken documents
+        if (requireExistingNotCompressedObj && offsetOrObjstmObNr == null)
+        {
+            addValidationError(new ValidationError(ERROR_SYNTAX_MISSING_OFFSET,
+                    "Object must be defined and must not be compressed object: "
+                            + objKey.getNumber() + ":" + objKey.getGeneration()));
+            throw new SyntaxValidationException(
+                    "Object must be defined and must not be compressed object: "
+                            + objKey.getNumber() + ":" + objKey.getGeneration(),
+                    validationResult);
+        }
 
-            }
-            else if (offsetOrObjstmObNr == 0)
+        if (offsetOrObjstmObNr != null)
+        {
+            if (offsetOrObjstmObNr == 0)
             {
-                addValidationError(new ValidationError(ERROR_SYNTAX_INVALID_OFFSET, "Object {" + objKey.getNumber()
-                        + ":" + objKey.getGeneration() + "} has an offset of 0"));
+                addValidationError(new ValidationError(ERROR_SYNTAX_INVALID_OFFSET,
+                        "Object {" + objKey.getNumber() + ":" + objKey.getGeneration()
+                                + "} has an offset of 0"));
             }
             else if (offsetOrObjstmObNr > 0)
             {
@@ -672,10 +670,13 @@ public class PreflightParser extends PDFParser
                 // since our object was not found it means object stream was not parsed so far
                 referencedObject = parseObjectStreamObject((int) -offsetOrObjstmObNr, objKey);
             }
-            if (referencedObject == null || referencedObject instanceof COSNull)
-            {
-                pdfObject.setToNull();
-            }
+        }
+        if (referencedObject == null || referencedObject instanceof COSNull)
+        {
+            // not defined object -> NULL object (Spec. 1.7, chap. 3.2.9)
+            // or some other issue with dereferencing
+            // remove parser to avoid endless recursion
+            pdfObject.setToNull();
         }
         return referencedObject;
     }
