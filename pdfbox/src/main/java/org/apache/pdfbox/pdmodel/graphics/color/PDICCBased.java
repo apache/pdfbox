@@ -41,7 +41,6 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDResources;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRange;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
@@ -521,7 +520,7 @@ public final class PDICCBased extends PDCIEBasedColorSpace
         COSArray altArray = null;
         if(list != null)
         {
-            altArray = COSArrayList.converterToCOSArray(list);
+            altArray = new COSArray(list);
         }
         stream.getCOSObject().setItem(COSName.ALTERNATE, altArray);
     }

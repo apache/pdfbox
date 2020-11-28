@@ -584,7 +584,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public void setThreadBeads(List<PDThreadBead> beads)
     {
-        page.setItem(COSName.B, COSArrayList.converterToCOSArray(beads));
+        page.setItem(COSName.B, new COSArray(beads));
     }
 
     /**
@@ -729,7 +729,7 @@ public class PDPage implements COSObjectable, PDContentStream
      */
     public void setAnnotations(List<PDAnnotation> annotations)
     {
-        page.setItem(COSName.ANNOTS, COSArrayList.converterToCOSArray(annotations));
+        page.setItem(COSName.ANNOTS, new COSArray(annotations));
     }
 
     @Override

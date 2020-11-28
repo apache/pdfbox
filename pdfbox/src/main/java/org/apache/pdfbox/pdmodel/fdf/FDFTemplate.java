@@ -117,7 +117,7 @@ public class FDFTemplate implements COSObjectable
      */
     public void setFields(List<FDFField> fields)
     {
-        template.setItem(COSName.FIELDS, COSArrayList.converterToCOSArray(fields));
+        template.setItem(COSName.FIELDS, new COSArray(fields));
     }
 
     /**

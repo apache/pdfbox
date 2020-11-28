@@ -138,7 +138,7 @@ public abstract class PDNameTreeNode<T extends COSObjectable> implements COSObje
         if (kids != null && !kids.isEmpty())
         {
             kids.forEach(kidsNode -> kidsNode.setParent(this));
-            node.setItem( COSName.KIDS, COSArrayList.converterToCOSArray( kids ) );
+            node.setItem(COSName.KIDS, new COSArray(kids));
             // root nodes with kids don't have Names
             if (isRootNode())
             {

@@ -153,8 +153,8 @@ public abstract class PDAction implements PDDestinationOrAction
      *
      * @param next The Next action or sequence of actions.
      */
-    public void setNext( List<?> next )
+    public void setNext(List<PDAction> next)
     {
-        action.setItem(COSName.NEXT, COSArrayList.converterToCOSArray(next));
+        action.setItem(COSName.NEXT, new COSArray(next));
     }
 }

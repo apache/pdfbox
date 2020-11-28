@@ -114,16 +114,17 @@ public class PDNumberTreeNode implements COSObjectable
             PDNumberTreeNode firstKid = kids.get(0);
             PDNumberTreeNode lastKid = kids.get(kids.size() - 1);
             Integer lowerLimit = firstKid.getLowerLimit();
-            this.setLowerLimit(lowerLimit);
+            setLowerLimit(lowerLimit);
             Integer upperLimit = lastKid.getUpperLimit();
-            this.setUpperLimit(upperLimit);
+            setUpperLimit(upperLimit);
+            node.setItem(COSName.KIDS, new COSArray(kids));
         }
         else if ( node.getDictionaryObject( COSName.NUMS ) == null )
         {
             // Remove limits if there are no kids and no numbers set.
             node.setItem( COSName.LIMITS, null);
+            node.setItem(COSName.KIDS, null);
         }
-        node.setItem( COSName.KIDS, COSArrayList.converterToCOSArray( kids ) );
     }
 
     /**

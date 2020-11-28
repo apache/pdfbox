@@ -233,7 +233,7 @@ public class PDDocumentCatalog implements COSObjectable
      */
     public void setThreads(List<PDThread> threads)
     {
-        root.setItem(COSName.THREADS, COSArrayList.converterToCOSArray(threads));
+        root.setItem(COSName.THREADS, new COSArray(threads));
     }
 
     /**

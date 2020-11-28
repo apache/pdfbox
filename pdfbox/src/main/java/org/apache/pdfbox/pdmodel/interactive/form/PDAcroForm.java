@@ -391,7 +391,7 @@ public final class PDAcroForm implements COSObjectable
      */
     public void setFields(List<PDField> fields)
     {
-        dictionary.setItem(COSName.FIELDS, COSArrayList.converterToCOSArray(fields));
+        dictionary.setItem(COSName.FIELDS, new COSArray(fields));
     }
     
     /**

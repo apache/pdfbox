@@ -91,7 +91,7 @@ public class FDFPage implements COSObjectable
      */
     public void setTemplates(List<FDFTemplate> templates)
     {
-        page.setItem(COSName.TEMPLATES, COSArrayList.converterToCOSArray(templates));
+        page.setItem(COSName.TEMPLATES, new COSArray(templates));
     }
 
     /**

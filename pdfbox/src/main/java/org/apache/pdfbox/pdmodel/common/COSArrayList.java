@@ -300,7 +300,7 @@ public class COSArrayList<E> implements List<E>
      * @throws IllegalArgumentException if an object type is not supported for conversion to a
      * COSBase object.
      */
-    public static COSArray converterToCOSArray( List<?> cosObjectableList )
+    public static COSArray converterToCOSArray(List<?> cosObjectableList)
     {
         COSArray array = null;
         if( cosObjectableList != null )

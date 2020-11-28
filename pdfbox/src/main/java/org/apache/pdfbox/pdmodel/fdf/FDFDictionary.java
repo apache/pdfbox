@@ -338,7 +338,7 @@ public class FDFDictionary implements COSObjectable
      */
     public final void setFields(List<FDFField> fields)
     {
-        fdf.setItem(COSName.FIELDS, COSArrayList.converterToCOSArray(fields));
+        fdf.setItem(COSName.FIELDS, new COSArray(fields));
     }
 
     /**
@@ -390,7 +390,7 @@ public class FDFDictionary implements COSObjectable
      */
     public void setPages(List<FDFPage> pages)
     {
-        fdf.setItem(COSName.PAGES, COSArrayList.converterToCOSArray(pages));
+        fdf.setItem(COSName.PAGES, new COSArray(pages));
     }
 
     /**
@@ -451,7 +451,7 @@ public class FDFDictionary implements COSObjectable
      */
     public final void setAnnotations(List<FDFAnnotation> annots)
     {
-        fdf.setItem(COSName.ANNOTS, COSArrayList.converterToCOSArray(annots));
+        fdf.setItem(COSName.ANNOTS, new COSArray(annots));
     }
 
     /**
@@ -526,7 +526,7 @@ public class FDFDictionary implements COSObjectable
      */
     public void setEmbeddedFDFs(List<PDFileSpecification> embedded)
     {
-        fdf.setItem(COSName.EMBEDDED_FDFS, COSArrayList.converterToCOSArray(embedded));
+        fdf.setItem(COSName.EMBEDDED_FDFS, new COSArray(embedded));
     }
 
     /**

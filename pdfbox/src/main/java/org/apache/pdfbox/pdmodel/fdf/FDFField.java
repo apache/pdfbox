@@ -188,7 +188,7 @@ public class FDFField implements COSObjectable
      */
     public final void setKids(List<FDFField> kids)
     {
-        field.setItem(COSName.KIDS, COSArrayList.converterToCOSArray(kids));
+        field.setItem(COSName.KIDS, new COSArray(kids));
     }
 
     /**

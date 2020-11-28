@@ -27,7 +27,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.fdf.FDFField;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 
@@ -159,7 +158,7 @@ public class PDNonTerminalField extends PDField
      */
     public void setChildren(List<PDField> children)
     {
-        COSArray kidsArray = COSArrayList.converterToCOSArray(children);
+        COSArray kidsArray = new COSArray(children);
         getCOSObject().setItem(COSName.KIDS, kidsArray);
     }
 
