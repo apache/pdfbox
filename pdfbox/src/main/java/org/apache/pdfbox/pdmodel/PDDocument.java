@@ -49,6 +49,7 @@ import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfwriter.COSWriter;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.common.COSArrayList;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.common.PDStream;
@@ -907,38 +908,65 @@ public class PDDocument implements Closeable
      */
     public void save(OutputStream output) throws IOException
     {
+        saveCompressed(output, null);
+    }
+
+    /**
+     * Compress the document and save it to a file.
+     *
+     * @param file The file to save as.
+     * @param parameters The parameters for the document's compression.
+     * @throws IOException if the output could not be written
+     */
+    public void saveCompressed(File file, CompressParameters parameters) throws IOException
+    {
+        saveCompressed(new BufferedOutputStream(new FileOutputStream(file)), parameters);
+    }
+
+    /**
+     * This will compress the document and save it to an output stream.
+     *
+     * @param output The stream to write to. It will be closed when done. It is recommended to wrap it in a
+     * {@link java.io.BufferedOutputStream}, unless it is already buffered.
+     * @param parameters The parameters for the document's compression.
+     * @throws IOException if the output could not be written
+     */
+    public void saveCompressed(OutputStream output, CompressParameters parameters)
+            throws IOException
+    {
         if (document.isClosed())
         {
             throw new IOException("Cannot save a document which has been closed");
         }
 
+        // object stream compression requires a cross reference stream.
+        document.setIsXRefStream(parameters != null);
         // subset designated fonts
         for (PDFont font : fontsToSubset)
         {
             font.subset();
         }
         fontsToSubset.clear();
-        
-         // save PDF
-        try (COSWriter writer = new COSWriter(output))
+
+        // save PDF
+        try (COSWriter writer = new COSWriter(output, parameters))
         {
             writer.write(this);
         }
     }
 
     /**
-     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a
-     * file or a stream, not if the document was created in PDFBox itself. There must be a path of
-     * objects that have {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document
-     * catalog. For signatures this is taken care by PDFBox itself.
-     *<p>
-     * Other usages of this method are for experienced users only. You will usually never need it.
-     * It is useful only if you are required to keep the current revision and append the changes. A
-     * typical use case is changing a signed file without invalidating the signature.
+     * Save the PDF as an incremental update. This is only possible if the PDF was loaded from a file or a stream, not
+     * if the document was created in PDFBox itself. There must be a path of objects that have
+     * {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document catalog. For signatures this is taken
+     * care by PDFBox itself.
+     * <p>
+     * Other usages of this method are for experienced users only. You will usually never need it. It is useful only if
+     * you are required to keep the current revision and append the changes. A typical use case is changing a signed
+     * file without invalidating the signature.
      *
-     * @param output stream to write to. It will be closed when done. It
-     * <i><b>must never</b></i> point to the source file or that one will be
-     * harmed!
+     * @param output stream to write to. It will be closed when done. It <i><b>must never</b></i> point to the source
+     * file or that one will be harmed!
      * @throws IOException if the output could not be written
      * @throws IllegalStateException if the document was not loaded from a file or a stream.
      */

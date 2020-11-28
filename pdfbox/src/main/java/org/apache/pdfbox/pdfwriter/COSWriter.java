@@ -63,7 +63,11 @@ import org.apache.pdfbox.io.RandomAccessRead;
 import org.apache.pdfbox.pdfparser.PDFXRefStream;
 import org.apache.pdfbox.pdfparser.xref.FreeXReference;
 import org.apache.pdfbox.pdfparser.xref.NormalXReference;
+import org.apache.pdfbox.pdfparser.xref.ObjectStreamXReference;
 import org.apache.pdfbox.pdfparser.xref.XReferenceEntry;
+import org.apache.pdfbox.pdfwriter.compress.COSWriterCompressionPool;
+import org.apache.pdfbox.pdfwriter.compress.COSWriterObjectStream;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.ProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.SecurityHandler;
@@ -223,6 +227,8 @@ public class COSWriter implements ICOSVisitor, Closeable
     private SignatureInterface signatureInterface;
     private byte[] incrementPart;
     private COSArray byteRangeArray;
+    private CompressParameters compressParameters = null;
+    private boolean blockAddingObject = false;
 
     /**
      * COSWriter constructor.
@@ -232,17 +238,29 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public COSWriter(OutputStream outputStream)
     {
+        this(outputStream, (CompressParameters) null);
+    }
+
+    /**
+     * COSWriter constructor.
+     *
+     * @param outputStream The output stream to write the PDF. It will be closed when this object is closed.
+     * @param compressParameters The configuration for the document's compression.
+     */
+    public COSWriter(OutputStream outputStream, CompressParameters compressParameters)
+    {
         setOutput(outputStream);
         setStandardOutput(new COSStandardOutputStream(output));
+        this.compressParameters = compressParameters;
     }
 
     /**
      * COSWriter constructor for incremental updates. There must be a path of objects that have
-     * {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document catalog. For
-     * signatures this is taken care by PDFBox itself.
+     * {@link COSUpdateInfo#isNeedToBeUpdated()} set, starting from the document catalog. For signatures this is taken
+     * care by PDFBox itself.
      *
-     * @param outputStream output stream where the new PDF data will be written. It will be closed
-     * when this object is closed.
+     * @param outputStream output stream where the new PDF data will be written. It will be closed when this object is
+     * closed.
      * @param inputData random access read containing source PDF data
      *
      * @throws IOException if something went wrong
@@ -289,6 +307,16 @@ public class COSWriter implements ICOSVisitor, Closeable
         // documentational purposes only.
         this(outputStream, inputData);
         this.objectsToWrite.addAll(objectsToWrite);
+    }
+
+    /**
+     * Returns true, if the resulting document shall be compressed.
+     *
+     * @return True, if the resulting document shall be compressed.
+     */
+    public boolean isCompress()
+    {
+        return compressParameters != null;
     }
 
     private void prepareIncrement(PDDocument doc)
@@ -485,9 +513,90 @@ public class COSWriter implements ICOSVisitor, Closeable
         doWriteObjects();
     }
 
+    /**
+     * This will write the compressed body of the document.
+     *
+     * @param document The document to write the body for.
+     * @throws IOException If there is an error writing the data.
+     */
+    private void doWriteBodyCompressed(COSDocument document) throws IOException
+    {
+        COSDictionary trailer = document.getTrailer();
+        COSDictionary root = trailer.getCOSDictionary(COSName.ROOT);
+        COSDictionary encrypt = trailer.getCOSDictionary(COSName.ENCRYPT);
+        blockAddingObject = true;
+        willEncrypt = encrypt != null;
+        if (root != null)
+        {
+            COSWriterCompressionPool compressionPool = new COSWriterCompressionPool(pdDocument,
+                    compressParameters);
+            // Append object stream entries to document.
+            for (COSObjectKey key : compressionPool.getObjectStreamObjects())
+            {
+                COSBase object = compressionPool.getObject(key);
+                writtenObjects.add(object);
+                objectKeys.put(object, key);
+                keyObject.put(key, object);
+            }
+            // Append top level objects to document.
+            for (COSObjectKey key : compressionPool.getTopLevelObjects())
+            {
+                COSBase object = compressionPool.getObject(key);
+                writtenObjects.add(object);
+                objectKeys.put(object, key);
+                keyObject.put(key, object);
+            }
+            for (COSObjectKey key : compressionPool.getTopLevelObjects())
+            {
+                currentObjectKey = key;
+                number = this.currentObjectKey.getNumber();
+                doWriteObject(key, keyObject.get(key));
+            }
+            // Append object streams to document.
+            long highestXRefObjectNumber = compressionPool.getHighestXRefObjectNumber();
+            for (COSWriterObjectStream finalizedObjectStream : compressionPool
+                    .createObjectStreams())
+            {
+                highestXRefObjectNumber++;
+                // Create new COSObject for object stream.
+                COSStream stream = finalizedObjectStream.update();
+                // Determine key for object stream.
+                COSObjectKey objectStreamKey = new COSObjectKey(highestXRefObjectNumber, 0);
+                COSObject objectStream = new COSObject(stream, objectStreamKey);
+                // Add object stream entries to xref - stream.
+                int i = 0;
+                for (COSObjectKey key : finalizedObjectStream.getPreparedKeys())
+                {
+                    COSBase object = compressionPool.getObject(key);
+                    addXRefEntry(new ObjectStreamXReference(i, key, object, objectStreamKey));
+                    i++;
+                }
+                // Include object stream in document.
+                currentObjectKey = objectStreamKey;
+                number = objectStreamKey.getNumber();
+                doWriteObject(objectStreamKey, objectStream);
+            }
+            willEncrypt = false;
+            if (encrypt != null)
+            {
+                highestXRefObjectNumber++;
+                COSObjectKey encryptKey = new COSObjectKey(highestXRefObjectNumber, 0);
+                setNumber(encryptKey.getNumber());
+                currentObjectKey = encryptKey;
+                number = currentObjectKey.getNumber();
+                writtenObjects.add(encrypt);
+                keyObject.put(encryptKey, encrypt);
+                objectKeys.put(encrypt, encryptKey);
+
+                doWriteObject(encryptKey, encrypt);
+            }
+            this.blockAddingObject = false;
+        }
+    }
+
     private void doWriteObjects() throws IOException
     {
-        while( objectsToWrite.size() > 0 )
+        while (!objectsToWrite.isEmpty())
         {
             COSBase nextObject = objectsToWrite.removeFirst();
             objectsToWriteSet.remove(nextObject);
@@ -497,6 +606,10 @@ public class COSWriter implements ICOSVisitor, Closeable
 
     private void addObjectToWrite( COSBase object )
     {
+        if (blockAddingObject)
+        {
+            return;
+        }
         COSBase actual = object;
         if( actual instanceof COSObject )
         {
@@ -532,9 +645,43 @@ public class COSWriter implements ICOSVisitor, Closeable
     }
 
     /**
+     * This will write a COS object for a predefined key.
+     *
+     * @param key The key of the object to write.
+     * @param obj The object to write.
+     *
+     * @throws IOException if the output cannot be written
+     */
+    public void doWriteObject(COSObjectKey key, COSBase obj) throws IOException
+    {
+        // add a x ref entry
+        addXRefEntry(new NormalXReference(getStandardOutput().getPos(), key, obj));
+        // write the object
+        getStandardOutput()
+                .write(String.valueOf(key.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
+        getStandardOutput().write(SPACE);
+        getStandardOutput()
+                .write(String.valueOf(key.getGeneration()).getBytes(StandardCharsets.ISO_8859_1));
+        getStandardOutput().write(SPACE);
+        getStandardOutput().write(OBJ);
+        getStandardOutput().writeEOL();
+        // null test added to please Sonar
+        // TODO: shouldn't all public methods be guarded against passing null. Passing null to most methods will
+        // fail with an NPE
+        if (obj != null)
+        {
+            obj.accept(this);
+        }
+        getStandardOutput().writeEOL();
+        getStandardOutput().write(ENDOBJ);
+        getStandardOutput().writeEOL();
+    }
+
+    /**
      * Convenience method, so that we get false for types that can't be updated.
+     * 
      * @param base
-     * @return 
+     * @return
      */
     private boolean isNeedToBeUpdated(COSBase base)
     {
@@ -557,24 +704,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             writtenObjects.add( obj );
             // find the physical reference
             currentObjectKey = getObjectKey( obj );
-            // add a x ref entry
-            addXRefEntry(new NormalXReference(getStandardOutput().getPos(), currentObjectKey, obj));
-            // write the object
-            getStandardOutput().write(String.valueOf(currentObjectKey.getNumber()).getBytes(StandardCharsets.ISO_8859_1));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(String.valueOf(currentObjectKey.getGeneration()).getBytes(StandardCharsets.ISO_8859_1));
-            getStandardOutput().write(SPACE);
-            getStandardOutput().write(OBJ);
-            getStandardOutput().writeEOL();
-            // null test added to please Sonar
-            // TODO: shouldn't all public methods be guarded against passing null. Passing null to most methods will
-            // fail with an NPE
-            if (obj != null) {
-                obj.accept( this );
-            }
-            getStandardOutput().writeEOL();
-            getStandardOutput().write(ENDOBJ);
-            getStandardOutput().writeEOL();
+            doWriteObject(currentObjectKey, obj);
     }
 
     /**
@@ -586,6 +716,11 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     protected void doWriteHeader(COSDocument doc) throws IOException
     {
+        if (isCompress())
+        {
+            doc.setVersion(
+                    Math.max(doc.getVersion(), COSWriterCompressionPool.MINIMUM_SUPPORTED_VERSION));
+        }
         String headerString;
         if (fdfDocument != null)
         {
@@ -923,7 +1058,7 @@ public class COSWriter implements ICOSVisitor, Closeable
             }
         }
         // If no new entry is found, we need to write out the last result
-        if (xRefEntriesList.size() > 0)
+        if (!xRefEntriesList.isEmpty())
         {
             list.add(last - count + 1);
             list.add(count);
@@ -1159,7 +1294,14 @@ public class COSWriter implements ICOSVisitor, Closeable
             getStandardOutput().writeCRLF();
         }
 
-        doWriteBody(doc);
+        if (isCompress())
+        {
+            doWriteBodyCompressed(doc);
+        }
+        else
+        {
+            doWriteBody(doc);
+        }
 
         // get the previous trailer
         COSDictionary trailer = doc.getTrailer();
