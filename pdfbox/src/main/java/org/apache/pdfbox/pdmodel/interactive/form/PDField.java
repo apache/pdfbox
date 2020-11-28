@@ -96,9 +96,15 @@ public abstract class PDField implements COSObjectable
      * This will set the partial name of the field.
      * 
      * @param name The new name for the field.
+     * @throws IllegalArgumentException If the name contains a period character.
      */
     public void setPartialName(String name)
     {
+        if (name.contains("."))
+        {
+            throw new IllegalArgumentException(
+                    "A field partial name shall not contain a period character: " + name);
+        }
         getDictionary().setString(COSName.T, name);
     }
 
