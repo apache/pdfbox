@@ -38,6 +38,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -268,11 +269,19 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
 
     private void startExtracting()
     {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int screenWidth = gd.getDisplayMode().getWidth();
+        int screenHeight = gd.getDisplayMode().getHeight();
+
         TextDialog textDialog = TextDialog.instance();
-        textDialog.setSize(800, 400);
+        textDialog.setSize(screenWidth / 3, screenHeight / 3);
         textDialog.setVisible(true);
-        textDialog.setLocation(getPanel().getLocationOnScreen().x + getPanel().getWidth() / 2,
-                               getPanel().getLocationOnScreen().y + getPanel().getHeight() / 2);
+
+        // avoid that the text extraction window gets outside of the screen
+        int x = Math.min(getPanel().getLocationOnScreen().x + getPanel().getWidth() / 2, screenWidth * 3 / 4);
+        int y = Math.min(getPanel().getLocationOnScreen().y + getPanel().getHeight() / 2, screenHeight * 3 / 4);
+        textDialog.setLocation(x, y);
+
         try
         {
             PDFTextStripper stripper = new PDFTextStripper();
