@@ -290,7 +290,7 @@ public class COSWriterCompressionPool
      */
     public List<COSWriterObjectStream> createObjectStreams()
     {
-        List<COSWriterObjectStream> objectStreams = new ArrayList<COSWriterObjectStream>();
+        List<COSWriterObjectStream> objectStreams = new ArrayList<>();
         COSWriterObjectStream objectStream = null;
         for (int i = 0; i < objectStreamObjects.size(); i++)
         {

@@ -34,7 +34,7 @@ public abstract class AbstractXReference implements XReferenceEntry
      *
      * @param type The {@link XReferenceType} of the crossreference stream entry.
      */
-    public AbstractXReference(XReferenceType type)
+    protected AbstractXReference(XReferenceType type)
     {
         this.type = type;
     }

@@ -41,9 +41,9 @@ import org.apache.pdfbox.pdfparser.xref.XReferenceEntry;
 public class PDFXRefStream
 {
 
-    private final List<XReferenceEntry> streamData = new ArrayList<XReferenceEntry>();
+    private final List<XReferenceEntry> streamData = new ArrayList<>();
 
-    private final Set<Long> objectNumbers = new TreeSet<>();;
+    private final Set<Long> objectNumbers = new TreeSet<>();
 
     private final COSStream stream;
 

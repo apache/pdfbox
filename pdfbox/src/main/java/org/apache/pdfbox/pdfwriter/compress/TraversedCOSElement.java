@@ -130,21 +130,10 @@ public class TraversedCOSElement
 
     public List<TraversedCOSElement> getTraversedElements()
     {
-        List<TraversedCOSElement> ancestry = this.parent == null
-                ? new ArrayList<TraversedCOSElement>() : this.parent.getTraversedElements();
+        List<TraversedCOSElement> ancestry = parent == null ? new ArrayList<>()
+                : parent.getTraversedElements();
         ancestry.add(this);
         return ancestry;
-    }
-
-    /**
-     * Returns true, if the given {@link COSBase} is equal to the object wrapped by this traversal node.
-     *
-     * @param object The object, that shall be compared.
-     * @return True, if the given {@link COSBase} is equal to the object wrapped by this traversal node.
-     */
-    public boolean equals(COSBase object)
-    {
-        return this.currentObject == object;
     }
 
     /**
@@ -157,12 +146,11 @@ public class TraversedCOSElement
     {
         for (TraversedCOSElement child : traversedChildren)
         {
-            if (child.equals(object))
+            if (child.getCurrentObject() == object)
             {
                 return child;
             }
         }
-
         return null;
     }
 

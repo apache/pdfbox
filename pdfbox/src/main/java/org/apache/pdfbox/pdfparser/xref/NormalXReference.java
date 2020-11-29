@@ -46,15 +46,14 @@ public class NormalXReference extends AbstractXReference
         this.byteOffset = byteOffset;
         this.key = key;
         this.object = object;
-        COSBase base = object;
-        if (base != null && (base instanceof COSStream || (base instanceof COSObject
-                && (base = ((COSObject) base).getObject()) instanceof COSStream)))
+        COSBase base = object instanceof COSObject ? ((COSObject) object).getObject() : object;
+        if (base instanceof COSStream)
         {
-            this.objectStream = COSName.OBJ_STM.equals(((COSStream) base).getCOSName(COSName.TYPE));
+            objectStream = COSName.OBJ_STM.equals(((COSStream) base).getCOSName(COSName.TYPE));
         }
         else
         {
-            this.objectStream = false;
+            objectStream = false;
         }
     }
 
