@@ -677,7 +677,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      * @return An array of COSInteger objects
      */
-    public static COSArray convertIntegerListToCOSIntegerCOSArray(List<Integer> integer)
+    public static COSArray withCOSIntegers(List<Integer> integer)
     {
         COSArray retval = new COSArray();
         integer.forEach(s -> retval.add(COSInteger.get(s.longValue())));
@@ -691,7 +691,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      * @return An array of COSName objects
      */
-    public static COSArray convertStringListToCOSNameCOSArray(List<String> strings)
+    public static COSArray withCOSNames(List<String> strings)
     {
         COSArray retval = new COSArray();
         strings.forEach(s -> retval.add(COSName.getPDFName(s)));
@@ -705,7 +705,7 @@ public class COSArray extends COSBase implements Iterable<COSBase>, COSUpdateInf
      *
      * @return An array of COSName objects
      */
-    public static COSArray convertStringListToCOSStringCOSArray(List<String> strings)
+    public static COSArray withCOSStrings(List<String> strings)
     {
         COSArray retval = new COSArray();
         strings.forEach(s -> retval.add(new COSString(s)));

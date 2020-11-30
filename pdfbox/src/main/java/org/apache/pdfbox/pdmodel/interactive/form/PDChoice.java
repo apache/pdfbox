@@ -114,7 +114,7 @@ public abstract class PDChoice extends PDVariableText
                 Collections.sort(displayValues);
             }
             getCOSObject().setItem(COSName.OPT,
-                    COSArray.convertStringListToCOSStringCOSArray(displayValues));
+                    COSArray.withCOSStrings(displayValues));
         }
         else
         {
@@ -253,7 +253,7 @@ public abstract class PDChoice extends PDVariableText
                 throw new IllegalArgumentException(
                         "Setting the indices is not allowed for choice fields not allowing multiple selections.");
             }
-            getCOSObject().setItem(COSName.I, COSArray.convertIntegerListToCOSIntegerCOSArray(values));
+            getCOSObject().setItem(COSName.I, COSArray.withCOSIntegers(values));
         }
         else
         {
@@ -414,7 +414,7 @@ public abstract class PDChoice extends PDVariableText
                 throw new IllegalArgumentException("The values are not contained in the selectable options.");
             }
             getCOSObject().setItem(COSName.V,
-                    COSArray.convertStringListToCOSStringCOSArray(values));
+                    COSArray.withCOSStrings(values));
             updateSelectedOptionsIndex(values);
         }
         else

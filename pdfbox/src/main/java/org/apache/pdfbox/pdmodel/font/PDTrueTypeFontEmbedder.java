@@ -108,7 +108,7 @@ final class PDTrueTypeFontEmbedder extends TrueTypeEmbedder
 
         font.setInt(COSName.FIRST_CHAR, firstChar);
         font.setInt(COSName.LAST_CHAR, lastChar);
-        font.setItem(COSName.WIDTHS, COSArray.convertIntegerListToCOSIntegerCOSArray(widths));
+        font.setItem(COSName.WIDTHS, COSArray.withCOSIntegers(widths));
     }
 
     /**

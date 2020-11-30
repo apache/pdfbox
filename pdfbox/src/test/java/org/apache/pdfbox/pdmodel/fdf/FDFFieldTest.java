@@ -83,7 +83,7 @@ class FDFFieldTest
         testList.add("A");
         testList.add("B");
         
-        COSArray testCOSArray = COSArray.convertStringListToCOSStringCOSArray(testList);
+        COSArray testCOSArray = COSArray.withCOSStrings(testList);
         
         FDFField field = new FDFField();
         field.setValue(testCOSArray);

@@ -484,7 +484,7 @@ public class PDDeviceN extends PDSpecialColorSpace
      */
     public void setColorantNames(List<String> names)
     {
-        COSArray namesArray = COSArray.convertStringListToCOSNameCOSArray(names);
+        COSArray namesArray = COSArray.withCOSNames(names);
         array.set(COLORANT_NAMES, namesArray);
     }
 

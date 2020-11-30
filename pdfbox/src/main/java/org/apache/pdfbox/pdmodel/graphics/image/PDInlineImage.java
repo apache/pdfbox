@@ -263,7 +263,7 @@ public final class PDInlineImage implements PDImage
      */
     public void setFilters(List<String> filters)
     {
-        COSBase obj = COSArray.convertStringListToCOSNameCOSArray(filters);
+        COSBase obj = COSArray.withCOSNames(filters);
         parameters.setItem(COSName.F, obj);
     }
 
