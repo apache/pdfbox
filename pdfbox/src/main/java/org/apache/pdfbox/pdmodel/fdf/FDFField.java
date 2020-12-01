@@ -295,7 +295,7 @@ public class FDFField implements COSObjectable
         COSBase cos = null;
         if (value instanceof List)
         {
-            cos = COSArray.withCOSStrings((List<String>) value);
+            cos = COSArray.ofCOSStrings((List<String>) value);
         }
         else if (value instanceof String)
         {

@@ -56,7 +56,7 @@ class TestCOSArray
     @Test
     void testConvertString2COSNameAndBack()
     {
-        COSArray cosArray = COSArray.withCOSNames(
+        COSArray cosArray = COSArray.ofCOSNames(
                 Arrays.asList(COSName.A.getName(), COSName.B.getName(), COSName.C.getName()));
         assertEquals(3, cosArray.size());
         assertEquals(COSName.A, cosArray.get(0));
@@ -74,7 +74,7 @@ class TestCOSArray
     void testConvertString2COSStringAndBack()
     {
         COSArray cosArray = COSArray
-                .withCOSStrings(Arrays.asList("A", "B", "C"));
+                .ofCOSStrings(Arrays.asList("A", "B", "C"));
         assertEquals(3, cosArray.size());
         assertEquals("A", cosArray.getString(0));
         assertEquals("B", cosArray.getString(1));
@@ -90,7 +90,7 @@ class TestCOSArray
     @Test
     void testConvertInteger2COSStringAndBack()
     {
-        COSArray cosArray = COSArray.withCOSIntegers(Arrays.asList(1, 2, 3));
+        COSArray cosArray = COSArray.ofCOSIntegers(Arrays.asList(1, 2, 3));
         assertEquals(3, cosArray.size());
         assertEquals(1, cosArray.getInt(0));
         assertEquals(2, cosArray.getInt(1));
@@ -228,11 +228,11 @@ class TestCOSArray
     void testRemove()
     {
         COSArray cosArray = COSArray
-                .withCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
+                .ofCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
         cosArray.clear();
         assertEquals(0, cosArray.size());
 
-        cosArray = COSArray.withCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
+        cosArray = COSArray.ofCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
         assertEquals(COSInteger.get(3), cosArray.remove(2));
         // 1,2,4,5,6 should be left
         assertEquals(5, cosArray.size());
@@ -246,14 +246,14 @@ class TestCOSArray
         assertEquals(4, cosArray.getInt(2));
         assertEquals(6, cosArray.getInt(3));
 
-        cosArray = COSArray.withCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
+        cosArray = COSArray.ofCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
         cosArray.removeAll(Arrays.asList(COSInteger.get(3), COSInteger.get(4)));
         // 1,2,5,6 should be left
         assertEquals(4, cosArray.size());
         assertEquals(2, cosArray.getInt(1));
         assertEquals(5, cosArray.getInt(2));
 
-        cosArray = COSArray.withCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
+        cosArray = COSArray.ofCOSIntegers(Arrays.asList(1, 2, 3, 4, 5, 6));
         cosArray.retainAll(Arrays.asList(COSInteger.get(3), COSInteger.get(4)));
         // 3,4 should be left
         assertEquals(2, cosArray.size());
@@ -287,7 +287,7 @@ class TestCOSArray
     void testToList()
     {
         COSArray cosArray = COSArray
-                .withCOSIntegers(Arrays.asList(0, 1, 2, 3, 4, 5));
+                .ofCOSIntegers(Arrays.asList(0, 1, 2, 3, 4, 5));
         List<? extends COSBase> list = cosArray.toList();
         assertEquals(6, list.size());
         assertEquals(COSInteger.get(0), list.get(0));

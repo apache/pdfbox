@@ -297,7 +297,7 @@ public class PDSeedValue implements COSObjectable
     public void setSubFilter(List<String> subfilter)
     {
         dictionary.setItem(COSName.SUB_FILTER,
-                COSArray.withCOSNames(subfilter));
+                COSArray.ofCOSNames(subfilter));
     }
 
     /**
@@ -341,7 +341,7 @@ public class PDSeedValue implements COSObjectable
             }
         }
         dictionary.setItem(COSName.DIGEST_METHOD,
-                COSArray.withCOSNames(digestMethod));
+                COSArray.ofCOSNames(digestMethod));
     }
 
     /**
@@ -402,7 +402,7 @@ public class PDSeedValue implements COSObjectable
      */
     public void setReasons(List<String> reasons)
     {
-        dictionary.setItem(COSName.REASONS, COSArray.withCOSStrings(reasons));
+        dictionary.setItem(COSName.REASONS, COSArray.ofCOSStrings(reasons));
     }
 
     /**
@@ -538,6 +538,6 @@ public class PDSeedValue implements COSObjectable
     public void setLegalAttestation(List<String> legalAttestation)
     {
         dictionary.setItem(COSName.LEGAL_ATTESTATION,
-                COSArray.withCOSStrings(legalAttestation));
+                COSArray.ofCOSStrings(legalAttestation));
     }
 }

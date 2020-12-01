@@ -367,7 +367,7 @@ public class PDStream implements COSObjectable
      */
     public void setFileFilters(List<String> filters)
     {
-        COSBase obj = COSArray.withCOSNames(filters);
+        COSBase obj = COSArray.ofCOSNames(filters);
         stream.setItem(COSName.F_FILTER, obj);
     }
 

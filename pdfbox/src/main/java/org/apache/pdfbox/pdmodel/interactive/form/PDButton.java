@@ -271,7 +271,7 @@ public abstract class PDButton extends PDTerminalField
         COSArray cosValues;
         if (values != null && !values.isEmpty())
         {
-            cosValues = COSArray.withCOSStrings(values);
+            cosValues = COSArray.ofCOSStrings(values);
             getCOSObject().setItem(COSName.OPT, cosValues);
         }
         else

@@ -372,7 +372,7 @@ public class PDSeedValueCertificate implements COSObjectable
     public void setKeyUsage(List<String> keyUsageExtensions)
     {
         dictionary.setItem(COSName.KEY_USAGE,
-                COSArray.withCOSStrings(keyUsageExtensions));
+                COSArray.ofCOSStrings(keyUsageExtensions));
     }
 
     /**
