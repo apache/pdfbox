@@ -44,7 +44,7 @@ import java.util.List;
 class TestValidatePermitedMetadata
 {
 
-    public static Collection<Object[]> initializeParameters() throws Exception
+    static Collection<Object[]> initializeParameters() throws Exception
     {
         List<Object[]> params = new ArrayList<>();
         InputStream is =  TestValidatePermitedMetadata.class.getResourceAsStream("/permited_metadata.txt");
@@ -70,7 +70,7 @@ class TestValidatePermitedMetadata
 
     @ParameterizedTest
     @MethodSource("initializeParameters")
-    public void checkExistence(String namespace, String preferred, String fieldname) throws Exception
+    void checkExistence(String namespace, String preferred, String fieldname) throws Exception
     {
         // ensure schema exists
         XMPMetadata xmpmd = new XMPMetadata();

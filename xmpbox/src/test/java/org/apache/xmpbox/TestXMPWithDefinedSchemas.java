@@ -21,6 +21,8 @@
 
 package org.apache.xmpbox;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.InputStream;
 import java.util.stream.Stream;
 
@@ -49,5 +51,7 @@ class TestXMPWithDefinedSchemas
 
         DomXmpParser builder = new DomXmpParser();
         XMPMetadata rxmp = builder.parse(is);
+        // ensure basic parsing was OK
+        assertTrue(rxmp.getAllSchemas().size()>0);
     }
 }

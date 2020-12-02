@@ -384,9 +384,7 @@ class XMPSchemaTest
     {
         String bagName = "bagName";
         String seqName = "seqName";
-        String qseqName = "test:" + seqName;
         String altName = "AltProp";
-        String qaltName = "test:" + altName;
 
         String valBagSchem1 = "BagvalSchem1";
         String valBagSchem2 = "BagvalSchem2";

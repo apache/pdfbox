@@ -27,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 
 import org.apache.xmpbox.XMPMetadata;
 import org.apache.xmpbox.type.JobType;
-import org.apache.xmpbox.type.StructuredType;
 import org.apache.xmpbox.xml.DomXmpParser;
 import org.apache.xmpbox.xml.XmpSerializer;
 import org.junit.jupiter.api.Test;
@@ -78,16 +77,11 @@ class BasicJobTicketSchemaTest
         XMPBasicJobTicketSchema jt = rxmp.getBasicJobTicketSchema();
         assertNotNull(jt);
         assertEquals(1, jt.getJobs().size());
-        StructuredType stjob = JobType.class.getAnnotation(StructuredType.class);
 
         JobType job = jt.getJobs().get(0);
         assertEquals("zeid2", job.getId());
         assertEquals("zename2", job.getName());
         assertEquals("zeurl2", job.getUrl());
-        // assertEquals("Invalid namespace",stjob.namespace(),
-        // job.getNamespace());
-        // assertEquals(stjob.preferedPrefix(), job.getPrefix());
-
     }
 
     @Test

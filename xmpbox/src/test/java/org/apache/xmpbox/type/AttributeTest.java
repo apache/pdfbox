@@ -32,7 +32,6 @@ class AttributeTest
     void testAtt()
     {
         String nsUri = "nsUri";
-        String prefix = "prefix";
         String localName = "localName";
         String value = "value";
 
@@ -43,7 +42,6 @@ class AttributeTest
         assertEquals(value, att.getValue());
 
         String nsUri2 = "nsUri2";
-        String prefix2 = "prefix2";
         String localName2 = "localName2";
         String value2 = "value2";
 
