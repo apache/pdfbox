@@ -44,6 +44,6 @@ class TestPDFBox3741
         // 2.4.3: Invalid Color space, /DeviceGray default for operator "Tj" can't be used without Color Profile
         assertFalse(result.isValid(), "File PDFBOX-3741.pdf should be detected as not PDF/A-1b");
         assertEquals(1, result.getErrorsList().size(), "List should contain one result");
-        assertEquals(result.getErrorsList().get(0).getErrorCode(), "2.4.3");
+        assertEquals("2.4.3", result.getErrorsList().get(0).getErrorCode());
     }
 }
