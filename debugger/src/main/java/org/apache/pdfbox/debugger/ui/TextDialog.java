@@ -17,6 +17,7 @@
 package org.apache.pdfbox.debugger.ui;
 
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.Frame;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
@@ -40,6 +41,8 @@ public class TextDialog extends JDialog
         super(owner);
 
         textPane = new JTextPane();
+        Font font = textPane.getFont();
+        textPane.setFont(font.deriveFont(font.getSize2D() * 1.5f));
         scrollPane = new JScrollPane(textPane);
         getContentPane().add(scrollPane);
         pack();
