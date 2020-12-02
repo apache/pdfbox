@@ -51,6 +51,7 @@ class TestOperators
     /**
      * Tests the "abs" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testAbs()
     {
@@ -61,6 +62,7 @@ class TestOperators
     /**
      * Tests the "and" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testAnd()
     {
@@ -74,6 +76,7 @@ class TestOperators
     /**
      * Tests the "atan" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testAtan()
     {
@@ -86,6 +89,7 @@ class TestOperators
     /**
      * Tests the "ceiling" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testCeiling()
     {
@@ -96,6 +100,7 @@ class TestOperators
     /**
      * Tests the "cos" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testCos()
     {
@@ -106,6 +111,7 @@ class TestOperators
     /**
      * Tests the "cvi" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testCvi()
     {
@@ -134,6 +140,7 @@ class TestOperators
     /**
      * Tests the "div" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testDiv()
     {
@@ -144,6 +151,7 @@ class TestOperators
     /**
      * Tests the "exp" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testExp()
     {
@@ -154,6 +162,7 @@ class TestOperators
     /**
      * Tests the "floor" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testFloor()
     {
@@ -184,6 +193,7 @@ class TestOperators
     /**
      * Tests the "ln" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testLn()
     {
@@ -194,6 +204,7 @@ class TestOperators
     /**
      * Tests the "log" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testLog()
     {
@@ -224,6 +235,7 @@ class TestOperators
     /**
      * Tests the "mul" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testMul()
     {
@@ -237,6 +249,7 @@ class TestOperators
     /**
      * Tests the "neg" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testNeg()
     {
@@ -253,6 +266,7 @@ class TestOperators
     /**
      * Tests the "round" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testRound()
     {
@@ -266,6 +280,7 @@ class TestOperators
     /**
      * Tests the "sin" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testSin()
     {
@@ -291,6 +306,7 @@ class TestOperators
     /**
      * Tests the "sub" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testSub()
     {
@@ -300,6 +316,7 @@ class TestOperators
     /**
      * Tests the "truncate" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testTruncate()
     {
@@ -311,6 +328,7 @@ class TestOperators
     /**
      * Tests the "bitshift" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testBitshift()
     {
@@ -321,6 +339,7 @@ class TestOperators
     /**
      * Tests the "eq" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testEq()
     {
@@ -331,6 +350,7 @@ class TestOperators
     /**
      * Tests the "ge" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testGe()
     {
@@ -341,6 +361,7 @@ class TestOperators
     /**
      * Tests the "gt" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testGt()
     {
@@ -351,6 +372,7 @@ class TestOperators
     /**
      * Tests the "le" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testLe()
     {
@@ -361,6 +383,7 @@ class TestOperators
     /**
      * Tests the "lt" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testLt()
     {
@@ -371,6 +394,7 @@ class TestOperators
     /**
      * Tests the "ne" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testNe()
     {
@@ -381,6 +405,7 @@ class TestOperators
     /**
      * Tests the "not" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testNot()
     {
@@ -394,6 +419,7 @@ class TestOperators
     /**
      * Tests the "or" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testOr()
     {
@@ -407,6 +433,7 @@ class TestOperators
     /**
      * Tests the "cor" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testXor()
     {
@@ -436,6 +463,7 @@ class TestOperators
     /**
      * Tests the "ifelse" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testIfElse()
     {
@@ -449,6 +477,7 @@ class TestOperators
     /**
      * Tests the "copy" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testCopy()
     {
@@ -462,6 +491,7 @@ class TestOperators
     /**
      * Tests the "dup" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testDup()
     {
@@ -476,6 +506,7 @@ class TestOperators
     /**
      * Tests the "exch" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testExch()
     {
@@ -488,6 +519,7 @@ class TestOperators
     /**
      * Tests the "index" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testIndex()
     {
@@ -500,6 +532,7 @@ class TestOperators
     /**
      * Tests the "pop" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testPop()
     {
@@ -512,6 +545,7 @@ class TestOperators
     /**
      * Tests the "roll" operator.
      */
+    @SuppressWarnings("squid:S2699") // Assertion done in Type4Tester
     @Test
     void testRoll()
     {
