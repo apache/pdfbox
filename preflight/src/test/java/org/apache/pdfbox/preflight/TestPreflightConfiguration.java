@@ -20,10 +20,13 @@
  ****************************************************************************/
 package org.apache.pdfbox.preflight;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.apache.pdfbox.preflight.exception.MissingValidationProcessException;
 import org.apache.pdfbox.preflight.exception.ValidationException;
 import org.apache.pdfbox.preflight.process.BookmarkValidationProcess;
 import org.apache.pdfbox.preflight.process.EmptyValidationProcess;
@@ -33,7 +36,38 @@ import org.junit.jupiter.api.Test;
 
 class TestPreflightConfiguration
 {
+    @Test
+    void testGetValidationProcess_MissingProcess() throws Exception
+    {
+        PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
+        assertThrows(MissingValidationProcessException.class, () -> {
+            configuration.getInstanceOfProcess("unknownProcess");
+        });
+    }
 
+    @Test
+    void testGetValidationProcess_MissingProcess_NoError() throws Exception
+    {
+        PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
+        configuration.setErrorOnMissingProcess(false);
+        assertDoesNotThrow(() -> {
+            configuration.getInstanceOfProcess("unknownProcess");
+        });
+    }
+
+    @Test
+    void testReplaceValidationProcess() throws Exception
+    {
+        PreflightConfiguration configuration = PreflightConfiguration.createPdfA1BConfiguration();
+
+        String processName = "mock-process";
+        configuration.replaceProcess(processName, MockProcess.class);
+        assertEquals(MockProcess.class, configuration.getInstanceOfProcess(processName).getClass());
+
+        configuration.replaceProcess(processName, MockProcess2.class);
+        assertEquals(MockProcess2.class, configuration.getInstanceOfProcess(processName).getClass());
+    }
+    
     @Test
     void testGetValidationProcess() throws Exception
     {
@@ -112,5 +146,19 @@ class TestPreflightConfiguration
         assertThrows(ValidationException.class, () -> {
             confg.getInstanceOfProcess(PreflightConfiguration.RESOURCES_PROCESS);
         });
+    }
+
+    static class MockProcess implements ValidationProcess
+    {
+        public void validate(PreflightContext ctx) throws ValidationException
+        {
+        }
+    }
+
+    static class MockProcess2 extends MockProcess
+    {
+        public void validate(PreflightContext ctx) throws ValidationException
+        {
+        }
     }
 }
