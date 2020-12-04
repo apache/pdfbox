@@ -18,94 +18,81 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.concurrent.Callable;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
+
 import org.apache.pdfbox.pdmodel.fdf.FDFDocument;
 
 /**
- * This example will take a PDF document and fill the fields with data from the
- * FDF fields.
+ * This will take a PDF document and export the AcroForm form data to FDF.
  *
  * @author Ben Litchfield
  */
-public class ExportXFDF
+@Command(name = "ExportXFDF", description = "Exports AcroForm form data to XFDF.")
+public final class ExportXFDF implements Callable<Integer>
 {
-    /**
-     * Creates a new instance of ImportFDF.
-     */
-    public ExportXFDF()
-    {
-    }
+    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to export.")
+    private File infile;
 
+    @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the XFDF data file.")
+    private File outfile;
+
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private PrintStream err = System.err;
+    
     /**
-     * This will import an fdf document and write out another pdf.
-     * <br>
-     * see usage() for commandline
+     * This is the entry point for the application.
      *
-     * @param args command line arguments
-     * @throws IOException in case the file can not be read or the data can not be exported.
+     * @param args The command-line arguments.
      *
      */
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        ExportXFDF exporter = new ExportXFDF();
-        exporter.exportXFDF( args );
+        int exitCode = new CommandLine(new ExportXFDF()).execute(args);
+        System.exit(exitCode);
     }
 
-    private void exportXFDF( String[] args ) throws IOException
+    public Integer call()
     {
-        if( args.length != 1 && args.length != 2 )
+        try (PDDocument pdf = Loader.loadPDF(infile))
         {
-            usage();
-        }
-        else
-        {
-            try (PDDocument pdf = Loader.loadPDF(new File(args[0])))
+            PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
+            if( form == null )
             {
-                PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
-                if( form == null )
+                err.println( "Error: This PDF does not contain a form." );
+            }
+            else
+            {
+                if (outfile == null)
                 {
-                    System.err.println( "Error: This PDF does not contain a form." );
+                    String outPath = FilenameUtils.removeExtension(infile.getAbsolutePath()) + ".xfdf";
+                    outfile = new File(outPath);
                 }
-                else
+                
+                try (FDFDocument fdf = form.exportFDF())
                 {
-                    String fdfName = null;
-                    if( args.length == 2 )
-                    {
-                        fdfName = args[1];
-                    }
-                    else
-                    {
-                        if( args[0].length() > 4 )
-                        {
-                            fdfName = args[0].substring( 0, args[0].length() -4 ) + ".xfdf";
-                        }
-                    }
-                    
-                    try (FDFDocument fdf = form.exportFDF())
-                    {
-                        fdf.saveXFDF( fdfName );
-                    }
+                    fdf.saveXFDF(outfile);
                 }
             }
         }
-    }
-
-    /**
-     * This will print out a message telling how to use this example.
-     */
-    private static void usage()
-    {
-        String message = "Usage: org.apache.pdfbox.ExportXFDF <inputfile> [output-xfdf-file]\n"
-                + "\nOptions:\n"
-                + "  [output-xfdf-file] : Default is pdf name, test.pdf->test.xfdf";
-        
-        System.err.println(message);
-        System.exit(1);
+        catch (IOException ioe)
+        {
+            err.println( "Error exporting XFDF data: " + ioe.getMessage());
+            return 4;
+        }
+        return 0;
     }
 }
