@@ -62,6 +62,7 @@ public final class Decrypt implements Callable<Integer>
     private Decrypt()
     {
     }
+    
     /**
      * This is the entry point for the application.
      *

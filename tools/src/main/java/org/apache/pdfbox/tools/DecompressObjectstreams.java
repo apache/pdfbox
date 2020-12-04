@@ -17,9 +17,15 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 /**
  * This program will just save the loaded pdf without any changes. As PDFBox doesn't support writing compressed object
@@ -29,8 +35,18 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * 
  * @author Adam Nichols
  */
-public final class DecompressObjectstreams 
+@Command(name = "DecompressObjectstreams", description = "Decompresses object streams in a PDF file.")
+public final class DecompressObjectstreams implements Callable<Integer>
 {
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+    
+    @Parameters(paramLabel = "inputfile", index = "0", description = "the PDF file to decompress.")
+    private File infile;
+
+    @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the decompressed PDF file. " +
+        "If omitted the original file is overwritten.")
+    private File outfile;
     
     /**
      * private constructor.
@@ -40,62 +56,39 @@ public final class DecompressObjectstreams
     }
 
     /**
-     * This is a very simple program, so everything is in the main method.
-     * @param args arguments to the program
+     * This is the entry point for the application.
+     *
+     * @param args The command-line arguments.
      */
     public static void main(String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        if(args.length < 1)
-        {
-            usage();
-        }
+        int exitCode = new CommandLine(new DecompressObjectstreams()).execute(args);
+        System.exit(exitCode);
+    }
 
-        String inputFilename = args[0];
-        String outputFilename;
-        if(args.length > 1)
+    /**
+     * This is a very simple program, so everything is in the main method.
+     * @param args arguments to the program
+     */
+    public Integer call()
+    {
+        try (PDDocument doc = Loader.loadPDF(infile))
         {
-            outputFilename = args[1];
-        }
-        else
-        {
-            if(inputFilename.matches(".*\\.[pP][dD][fF]$"))
-            {
-                outputFilename = inputFilename.replaceAll("\\.[pP][dD][fF]$", ".unc.pdf");
+            // overwrite inputfile if no outputfile was specified
+            if (outfile == null) {
+                outfile = infile;
             }
-            else
-            {
-                outputFilename = inputFilename + ".unc.pdf";
-            }
-        }
 
-        try (PDDocument doc = Loader.loadPDF(new File(inputFilename)))
-        {
-            // It is sufficient to simply write the loaded pdf without further processing.
-            // As PDFBox doesn't support writing compressed object streams that streams will
-            // be simply omitted
-            doc.save(outputFilename);
+            doc.save(outfile);
         }
         catch (IOException e)
         {
             System.err.println("Error processing file: " + e.getMessage());
+            return 1;
         }
-    }
-
-    /**
-     * Explains how to use the program.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -cp pdfbox-app-x.y.z.jar "
-                + "org.apache.pdfbox.tools.DecompressObjectstreams <inputfile> [<outputfile>]\n"
-                + "\nOptions:\n"
-                + "  <inputfile>  : The PDF document to decompress\n"
-                + "  <outputfile> : The output filename (default is to replace .pdf with .unc.pdf)";
-        
-        System.err.println(message);
-        System.exit(1);
+        return 0;
     }
 }
