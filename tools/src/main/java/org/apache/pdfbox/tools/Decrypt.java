@@ -82,16 +82,9 @@ public final class Decrypt implements Callable<Integer>
 
     public Integer call() throws IOException
     {
-        PDDocument document = null;
-        InputStream keyStoreStream = null;
-        try
+        try (InputStream keyStoreStream = keyStore == null ? null : new FileInputStream(keyStore); 
+                PDDocument document = Loader.loadPDF(infile, password, keyStoreStream, alias))
         {
-            if( keyStore != null )
-            {
-                keyStoreStream = new FileInputStream(keyStore);
-            }
-            document = Loader.loadPDF(infile, password, keyStoreStream, alias);
-
             // overwrite inputfile if no outputfile was specified
             if (outfile == null) {
                 outfile = infile;
@@ -116,14 +109,6 @@ public final class Decrypt implements Callable<Integer>
                 System.err.println( "Error: Document is not encrypted." );
                 return 1;
             }
-        }
-        finally
-        {
-            if( document != null )
-            {
-                document.close();
-            }
-            IOUtils.closeQuietly(keyStoreStream);
         }
         return 0;
     }
