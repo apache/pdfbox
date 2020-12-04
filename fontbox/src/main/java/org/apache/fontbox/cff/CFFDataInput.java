@@ -72,13 +72,19 @@ public class CFFDataInput extends DataInput
     }
 
     /**
-     * Read the offsize from the buffer.
-     * @return the offsize
-     * @throws IOException if an error occurs during reading
+     * Read offSize from the buffer. This is a 1 byte value between 1 and 4.
+     *
+     * @return the offSize.
+     * @throws IOException if an error occurs during reading or if the value is illegal.
      */
     public int readOffSize() throws IOException
     {
-        return readUnsignedByte();
+        int offSize = readUnsignedByte();
+        if (offSize < 1 || offSize > 4)
+        {
+            throw new IOException("Illegal (< 1 or > 4) offSize value " + offSize + " in CFF font at position " + (getPosition() - 1));
+        }
+        return offSize;        
     }
 
     /**
