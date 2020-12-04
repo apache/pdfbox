@@ -1400,24 +1400,14 @@ public class COSDictionary extends COSBase implements COSUpdateInfo
     }
 
     /**
-     * This will add all of the dictionaries keys/values to this dictionary.
-     * Only called when adding keys to a trailer that already exists.
+     * This will add all of the dictionaries keys/values to this dictionary. Existing key/value pairs will be
+     * overwritten.
      *
-     * @param dic The dictionaries to get the keys from.
+     * @param dic The dictionaries to get the key/value pairs from.
      */
     public void addAll(COSDictionary dic)
     {
-        dic.forEach((key, value) ->
-        {
-            /*
-             * If we're at a second trailer, we have a linearized pdf file, meaning that the first Size entry represents
-             * all of the objects so we don't need to grab the second.
-             */
-            if (!COSName.SIZE.equals(key) || !items.containsKey(COSName.SIZE))
-            {
-                setItem(key, value);
-            }
-        });
+        dic.forEach(this::setItem);
     }
 
     /**
