@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.Loader;
@@ -59,18 +60,17 @@ public final class Decrypt implements Callable<Integer>
     @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the decrypted PDF file.")
     private File outfile;
 
-    private Decrypt()
-    {
-    }
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private PrintStream err = System.err;
     
     /**
      * This is the entry point for the application.
      *
      * @param args The command-line arguments.
      *
-     * @throws IOException If there is an error decrypting the document.
      */
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
@@ -80,7 +80,7 @@ public final class Decrypt implements Callable<Integer>
     }
 
 
-    public Integer call() throws IOException
+    public Integer call()
     {
         try (InputStream keyStoreStream = keyStore == null ? null : new FileInputStream(keyStore); 
                 PDDocument document = Loader.loadPDF(infile, password, keyStoreStream, alias))
@@ -100,15 +100,20 @@ public final class Decrypt implements Callable<Integer>
                 }
                 else
                 {
-                    throw new IOException(
-                            "Error: You are only allowed to decrypt a document with the owner password." );
+                    err.println( "Error: You are only allowed to decrypt a document with the owner password.");
+                    return 1;
                 }
             }
             else
             {
-                System.err.println( "Error: Document is not encrypted." );
+                err.println( "Error: Document is not encrypted.");
                 return 1;
             }
+        }
+        catch (IOException ioe)
+        {
+            err.println( "Error decrypting document: " + ioe.getMessage());
+            return 4;
         }
         return 0;
     }
