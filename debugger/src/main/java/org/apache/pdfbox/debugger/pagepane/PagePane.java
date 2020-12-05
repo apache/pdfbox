@@ -18,6 +18,8 @@ package org.apache.pdfbox.debugger.pagepane;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
@@ -28,6 +30,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,6 +53,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.debugger.PDFDebugger;
+import org.apache.pdfbox.debugger.ui.ErrorDialog;
 import org.apache.pdfbox.debugger.ui.HighResolutionImageIcon;
 import org.apache.pdfbox.debugger.ui.ImageTypeMenu;
 import org.apache.pdfbox.debugger.ui.RenderDestinationMenu;
@@ -87,6 +92,7 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     private final JLabel statuslabel;
     private final PDPage page;
     private String labelText = "";
+    private String currentURI = "";
     private final Map<PDRectangle, String> rectMap = new HashMap<PDRectangle, String>();
     private final AffineTransform defaultTransform = GraphicsEnvironment.getLocalGraphicsEnvironment().
                         getDefaultScreenDevice().getDefaultConfiguration().getDefaultTransform();
@@ -351,15 +357,24 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
         }
         String text = "x: " + x1 + ", y: " + y1;
 
-        // are we in a field widget?
-        for (Map.Entry<PDRectangle, String> entry : rectMap.entrySet())
+        // are we in a field widget or a link annotation?
+        Cursor cursor = Cursor.getDefaultCursor();
+        currentURI = "";
+        for (Map.Entry<PDRectangle,String> entry : rectMap.entrySet())
         {
             if (entry.getKey().contains(x1, y1))
             {
-                text += ", " + rectMap.get(entry.getKey());
+                String s = rectMap.get(entry.getKey());
+                text += ", " + s;
+                if (s.startsWith("URI: "))
+                {
+                    currentURI = s.substring(5);
+                    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+                }
                 break;
             }
         }
+        panel.setCursor(cursor);
 
         statuslabel.setText(text);
     }
@@ -367,7 +382,24 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        // do nothing
+        if (!currentURI.isEmpty())
+        {
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
+            {
+                try
+                {
+                    Desktop.getDesktop().browse(new URI(currentURI));
+                }
+                catch (URISyntaxException ex)
+                {
+                    new ErrorDialog(ex).setVisible(true);
+                }
+                catch (IOException ex)
+                {
+                    new ErrorDialog(ex).setVisible(true);
+                }
+            }
+        }
     }
 
     @Override
