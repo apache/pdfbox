@@ -21,16 +21,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -44,6 +48,11 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.TextPosition;
 import org.apache.pdfbox.util.Matrix;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 /**
  * This is the main program that simply parses the pdf document and transforms it
  * into text.
@@ -51,274 +60,212 @@ import org.apache.pdfbox.util.Matrix;
  * @author Ben Litchfield
  * @author Tilman Hausherr
  */
-public final class ExtractText
+@Command(name = "ExtractText", description = "Extract all text from the given PDF document.")
+public final class ExtractText  implements Callable<Integer>
 {
     private static final Log LOG = LogFactory.getLog(ExtractText.class);
 
-    @SuppressWarnings({"squid:S2068"})
-    private static final String PASSWORD = "-password";
-    private static final String ENCODING = "-encoding";
-    private static final String CONSOLE = "-console";
-    private static final String START_PAGE = "-startPage";
-    private static final String END_PAGE = "-endPage";
-    private static final String SORT = "-sort";
-    private static final String IGNORE_BEADS = "-ignoreBeads";
-    private static final String DEBUG = "-debug";
-    private static final String HTML = "-html";
-    private static final String ALWAYSNEXT = "-alwaysNext";
-    private static final String ROTATION_MAGIC = "-rotationMagic";
     private static final String STD_ENCODING = "UTF-8";
 
-    /*
-     * debug flag
-     */
-    private boolean debugOutput = false;
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSOUT = System.out;
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
 
-    /**
-     * private constructor.
-    */
-    private ExtractText()
-    {
-        //static class
-    }
+    @Option(names = "-alwaysNext", description = "Process next page (if applicable) despite IOException " + 
+        "(ignored when -html)")
+    private boolean alwaysNext = false;
+
+    @Option(names = "-console", description = "Send text to console instead of file")
+    private boolean toConsole = false;
+
+    @Option(names = "-debug", description = "Enables debug output about the time consumption of every stage")
+    private boolean debug = false;
+
+    @Option(names = "-encoding", description = "UTF-8 or ISO-8859-1, UTF-16BE, UTF-16LE, etc. (default: ${DEFAULT-VALUE})")
+    private String encoding = STD_ENCODING;
+
+    @Option(names = "-endPage", description = "The last page to extract (1 based, inclusive)")
+    private int endPage = Integer.MAX_VALUE;
+
+    @Option(names = "-html", description = "Output in HTML format instead of raw text")
+    private boolean toHTML = false;
+
+    @Option(names = "-ignoreBeads", description = "Disables the separation by beads")
+    private boolean ignoreBeads = false;
+
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
+    private String password = "";
+
+    @Option(names = "-rotationMagic", description = "Analyze each page for rotated/skewed text, rotate to 0° " +
+        "and extract separately (slower, and ignored when -html)" )
+    private boolean rotationMagic = false;
+
+    @Option(names = "-sort", description = "Sort the text before writing of every stage")
+    private boolean sort = false;
+
+    @Option(names = "-startPage", description = "The first page to start extraction (1 based)")
+    private int startPage = 1;
+
+    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
+    private File infile;
+
+    @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the decrypted PDF file.")
+    private File outfile;
 
     /**
      * Infamous main method.
      *
      * @param args Command line arguments, should be one and a reference to a file.
-     *
-     * @throws IOException if there is an error reading the document or extracting the text.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main( String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        ExtractText extractor = new ExtractText();
-        extractor.startExtraction(args);
+        int exitCode = new CommandLine(new ExtractText()).execute(args);
+        System.exit(exitCode);
     }
+
+    /*
+     * For testing as SureFire doesn't support testing methods which 
+     * call System.exit 
+     */
+    static int test (String[] args)
+    {
+        return new CommandLine(new ExtractText()).execute(args);
+    }
+
     /**
      * Starts the text extraction.
      *  
-     * @param args the commandline arguments.
-     * @throws IOException if there is an error reading the document or extracting the text.
      */
-    public void startExtraction( String[] args ) throws IOException
+    public Integer call()
     {
-        boolean toConsole = false;
-        boolean toHTML = false;
-        boolean sort = false;
-        boolean separateBeads = true;
-        boolean alwaysNext = false;
-        boolean rotationMagic = false;
-        @SuppressWarnings({"squid:S2068"})
-        String password = "";
-        String encoding = STD_ENCODING;
-        String pdfFile = null;
-        String outputFile = null;
-        // Defaults to text files
-        String ext = ".txt";
-        int startPage = 1;
-        int endPage = Integer.MAX_VALUE;
-        for (int i = 0; i < args.length; i++)
+        // set file extension
+        String ext = toHTML ? ".html" : ".txt";
+
+        if (outfile == null)
         {
-            switch (args[i])
+            String outPath = FilenameUtils.removeExtension(infile.getAbsolutePath()) + ext;
+            outfile = new File(outPath);
+        }
+
+        try (PDDocument document = Loader.loadPDF(infile, password);
+             Writer output = toConsole ? new OutputStreamWriter( SYSOUT, encoding ) : new OutputStreamWriter( new FileOutputStream( outfile ), encoding ))
+        {
+            long startTime = startProcessing("Loading PDF " + infile);
+
+            AccessPermission ap = document.getCurrentAccessPermission();
+            if( ! ap.canExtractContent() )
             {
-                case PASSWORD:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                    break;
-                case ENCODING:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    encoding = args[i];
-                    break;
-                case START_PAGE:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    startPage = Integer.parseInt(args[i]);
-                    break;
-                case HTML:
-                    toHTML = true;
-                    ext = ".html";
-                    break;
-                case SORT:
-                    sort = true;
-                    break;
-                case IGNORE_BEADS:
-                    separateBeads = false;
-                    break;
-                case DEBUG:
-                    debugOutput = true;
-                    break;
-                case ALWAYSNEXT:
-                    alwaysNext = true;
-                    break;
-                case ROTATION_MAGIC:
-                    rotationMagic = true;
-                    break;
-                case END_PAGE:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    endPage = Integer.parseInt(args[i]);
-                    break;
-                case CONSOLE:
-                    toConsole = true;
-                    break;
-                default:
-                    if (pdfFile == null)
-                    {
-                        pdfFile = args[i];
-                    }
-                    else
-                    {
-                        outputFile = args[i];
-                    }
-                    break;
+                SYSERR.println( "You do not have permission to extract text");
+                return 1;
             }
-        }
+            
+            stopProcessing("Time for loading: ", startTime);
 
-        if( pdfFile == null )
-        {
-            usage();
-        }
-        else
-        {
-
-            Writer output = null;
-            PDDocument document = null;
-            try
+            if (toHTML && !STD_ENCODING.equals(encoding))
             {
-                long startTime = startProcessing("Loading PDF "+pdfFile);
-                if( outputFile == null && pdfFile.length() >4 )
-                {
-                    outputFile = new File( pdfFile.substring( 0, pdfFile.length() -4 ) + ext ).getAbsolutePath();
-                }
-                document = Loader.loadPDF(new File(pdfFile), password);
-                
-                AccessPermission ap = document.getCurrentAccessPermission();
-                if( ! ap.canExtractContent() )
-                {
-                    throw new IOException( "You do not have permission to extract text" );
-                }
-                
-                stopProcessing("Time for loading: ", startTime);
+                encoding = STD_ENCODING;
+                SYSOUT.println("The encoding parameter is ignored when writing html output.");
+            }
 
-                if( toConsole )
+            startTime = startProcessing("Starting text extraction");
+
+            if (debug)
+            {
+                SYSERR.println("Writing to " + outfile.getAbsolutePath());
+            }
+
+            PDFTextStripper stripper;
+            if(toHTML)
+            {
+                // HTML stripper can't work page by page because of startDocument() callback
+                stripper = new PDFText2HTML();
+                stripper.setSortByPosition(sort);
+                stripper.setShouldSeparateByBeads(!ignoreBeads);
+                stripper.setStartPage(startPage);
+                stripper.setEndPage(endPage);
+
+                // Extract text for main document:
+                stripper.writeText(document, output);
+            }
+            else
+            {
+                if (rotationMagic)
                 {
-                    output = new OutputStreamWriter( System.out, encoding );
+                    stripper = new FilteredTextStripper();
                 }
                 else
                 {
-                    if (toHTML && !STD_ENCODING.equals(encoding))
-                    {
-                        encoding = STD_ENCODING;
-                        System.out.println("The encoding parameter is ignored when writing html output.");
-                    }
-                    output = new OutputStreamWriter( new FileOutputStream( outputFile ), encoding );
+                    stripper = new PDFTextStripper();
                 }
-                startTime = startProcessing("Starting text extraction");
-                if (debugOutput)
-                {
-                    System.err.println("Writing to " + outputFile);
-                }
+                stripper.setSortByPosition(sort);
+                stripper.setShouldSeparateByBeads(!ignoreBeads);
 
-                PDFTextStripper stripper;
-                if(toHTML)
-                {
-                    // HTML stripper can't work page by page because of startDocument() callback
-                    stripper = new PDFText2HTML();
-                    stripper.setSortByPosition(sort);
-                    stripper.setShouldSeparateByBeads(separateBeads);
-                    stripper.setStartPage(startPage);
-                    stripper.setEndPage(endPage);
+                // Extract text for main document:
+                extractPages(startPage, Math.min(endPage, document.getNumberOfPages()), 
+                             stripper, document, output, rotationMagic, alwaysNext);
+            }
 
-                    // Extract text for main document:
-                    stripper.writeText(document, output);
-                }
-                else
+            // ... also for any embedded PDFs:
+            PDDocumentCatalog catalog = document.getDocumentCatalog();
+            PDDocumentNameDictionary names = catalog.getNames();    
+            if (names != null)
+            {
+                PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
+                if (embeddedFiles != null)
                 {
-                    if (rotationMagic)
+                    Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
+                    if (embeddedFileNames != null)
                     {
-                        stripper = new FilteredTextStripper();
-                    }
-                    else
-                    {
-                        stripper = new PDFTextStripper();
-                    }
-                    stripper.setSortByPosition(sort);
-                    stripper.setShouldSeparateByBeads(separateBeads);
-
-                    // Extract text for main document:
-                    extractPages(startPage, Math.min(endPage, document.getNumberOfPages()), 
-                                 stripper, document, output, rotationMagic, alwaysNext);
-                }
-
-                // ... also for any embedded PDFs:
-                PDDocumentCatalog catalog = document.getDocumentCatalog();
-                PDDocumentNameDictionary names = catalog.getNames();    
-                if (names != null)
-                {
-                    PDEmbeddedFilesNameTreeNode embeddedFiles = names.getEmbeddedFiles();
-                    if (embeddedFiles != null)
-                    {
-                        Map<String, PDComplexFileSpecification> embeddedFileNames = embeddedFiles.getNames();
-                        if (embeddedFileNames != null)
+                        for (Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet()) 
                         {
-                            for (Map.Entry<String, PDComplexFileSpecification> ent : embeddedFileNames.entrySet()) 
+                            if (debug)
                             {
-                                if (debugOutput)
+                                SYSERR.println("Processing embedded file " + ent.getKey() + ":");
+                            }
+                            PDComplexFileSpecification spec = ent.getValue();
+                            PDEmbeddedFile file = spec.getEmbeddedFile();
+                            if (file != null && "application/pdf".equals(file.getSubtype()))
+                            {
+                                if (debug)
                                 {
-                                    System.err.println("Processing embedded file " + ent.getKey() + ":");
+                                    SYSERR.println("  is PDF (size=" + file.getSize() + ")");
                                 }
-                                PDComplexFileSpecification spec = ent.getValue();
-                                PDEmbeddedFile file = spec.getEmbeddedFile();
-                                if (file != null && "application/pdf".equals(file.getSubtype()))
+                                try (InputStream fis = file.createInputStream();
+                                        PDDocument subDoc = Loader.loadPDF(fis))
                                 {
-                                    if (debugOutput)
+                                    if (toHTML)
                                     {
-                                        System.err.println("  is PDF (size=" + file.getSize() + ")");
+                                        // will not really work because of HTML header + footer
+                                        stripper.writeText( subDoc, output );
                                     }
-                                    try (InputStream fis = file.createInputStream();
-                                            PDDocument subDoc = Loader.loadPDF(fis))
+                                    else
                                     {
-                                        if (toHTML)
-                                        {
-                                            // will not really work because of HTML header + footer
-                                            stripper.writeText( subDoc, output );
-                                        }
-                                        else
-                                        {
-                                            extractPages(1, subDoc.getNumberOfPages(),
-                                                         stripper, subDoc, output, rotationMagic, alwaysNext);
-                                        }
-                                    } 
-                                }
-                            } 
-                        }
+                                        extractPages(1, subDoc.getNumberOfPages(),
+                                                     stripper, subDoc, output, rotationMagic, alwaysNext);
+                                    }
+                                } 
+                            }
+                        } 
                     }
                 }
-                stopProcessing("Time for extraction: ", startTime);
             }
-            finally
-            {
-                IOUtils.closeQuietly(output);
-                IOUtils.closeQuietly(document);
-            }
+            stopProcessing("Time for extraction: ", startTime);
         }
+        catch (IOException ioe)
+        {
+            SYSERR.println( "Error extracting test for document: " + ioe.getMessage());
+            return 4;
+        }
+
+        return 0;
     }
 
     private void extractPages(int startPage, int endPage,
@@ -376,20 +323,20 @@ public final class ExtractText
 
     private long startProcessing(String message) 
     {
-        if (debugOutput) 
+        if (debug) 
         {
-            System.err.println(message);
+            SYSERR.println(message);
         }
         return System.currentTimeMillis();
     }
     
     private void stopProcessing(String message, long startTime) 
     {
-        if (debugOutput)
+        if (debug)
         {
             long stopTime = System.currentTimeMillis();
             float elapsedTime = ((float)(stopTime - startTime))/1000;
-            System.err.println(message + elapsedTime + " seconds");
+            SYSERR.println(message + elapsedTime + " seconds");
         }
     }
 
@@ -399,36 +346,6 @@ public final class ExtractText
         Matrix m = text.getTextMatrix().clone();
         m.concatenate(text.getFont().getFontMatrix());
         return (int) Math.round(Math.toDegrees(Math.atan2(m.getShearY(), m.getScaleY())));
-    }
-
-    /**
-     * This will print the usage requirements and exit.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar ExtractText [options] <inputfile> [output-text-file]\n"
-            + "\nOptions:\n"
-            + "  -password <password>        : Password to decrypt document\n"
-            + "  -encoding <output encoding> : UTF-8 (default) or ISO-8859-1, UTF-16BE,\n"
-            + "                                UTF-16LE, etc.\n"
-            + "  -console                    : Send text to console instead of file\n"
-            + "  -html                       : Output in HTML format instead of raw text\n"
-            + "  -sort                       : Sort the text before writing\n"
-            + "  -ignoreBeads                : Disables the separation by beads\n"
-            + "  -debug                      : Enables debug output about the time consumption\n"
-            + "                                of every stage\n"
-            + "  -alwaysNext                 : Process next page (if applicable) despite\n"
-            + "                                IOException (ignored when -html)\n"
-            + "  -rotationMagic              : Analyze each page for rotated/skewed text,\n"
-            + "                                rotate to 0° and extract separately\n"
-            + "                                (slower, and ignored when -html)\n"
-            + "  -startPage <number>         : The first page to start extraction (1 based)\n"
-            + "  -endPage <number>           : The last page to extract (1 based, inclusive)\n"
-            + "  <inputfile>                 : The PDF document to use\n"
-            + "  [output-text-file]          : The file to write the text to";
-        
-        System.err.println(message);
-        System.exit( 1 );
     }
 }
 
