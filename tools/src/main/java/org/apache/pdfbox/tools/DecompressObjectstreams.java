@@ -69,10 +69,6 @@ public final class DecompressObjectstreams implements Callable<Integer>
         System.exit(exitCode);
     }
 
-    /**
-     * This is a very simple program, so everything is in the main method.
-     * @param args arguments to the program
-     */
     public Integer call()
     {
         try (PDDocument doc = Loader.loadPDF(infile))
