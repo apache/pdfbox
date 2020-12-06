@@ -316,7 +316,7 @@ public class COSWriter implements ICOSVisitor, Closeable
      */
     public boolean isCompress()
     {
-        return compressParameters != null;
+        return compressParameters != null && compressParameters.isCompress();
     }
 
     private void prepareIncrement(PDDocument doc)
