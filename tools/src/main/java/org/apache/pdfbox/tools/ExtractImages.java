@@ -69,6 +69,16 @@ import picocli.CommandLine.Parameters;
 @Command(name = "ExtractImages", description = "Extracts the images from a PDF file.")
 public final class ExtractImages implements Callable<Integer>
 {
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSOUT = System.out;
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
+    private static final List<String> JPEG = Arrays.asList(
+            COSName.DCT_DECODE.getName(),
+            COSName.DCT_DECODE_ABBREVIATION.getName());
+
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
@@ -88,16 +98,6 @@ public final class ExtractImages implements Callable<Integer>
 
     @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
     private File infile;
-
-    // Expected for CLI app to write to System.out/Sytem.err
-    @SuppressWarnings("squid:S106")
-    private PrintStream sysout = System.out;
-    @SuppressWarnings("squid:S106")
-    private PrintStream syserr = System.err;
-
-    private static final List<String> JPEG = Arrays.asList(
-            COSName.DCT_DECODE.getName(),
-            COSName.DCT_DECODE_ABBREVIATION.getName());
 
     private final Set<COSStream> seen = new HashSet<>();
     private int imageCounter = 1;
@@ -123,7 +123,7 @@ public final class ExtractImages implements Callable<Integer>
             AccessPermission ap = document.getCurrentAccessPermission();
             if (!ap.canExtractContent())
             {
-                syserr.println("You do not have permission to extract images");
+                SYSERR.println("You do not have permission to extract images");
                 return 1;
             }
 
@@ -140,7 +140,7 @@ public final class ExtractImages implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            syserr.println("Error extracting images: " + ioe.getMessage());
+            SYSERR.println("Error extracting images: " + ioe.getMessage());
             return 4;
         }
         return 0;
@@ -364,7 +364,7 @@ public final class ExtractImages implements Callable<Integer>
                     }
                     try (FileOutputStream imageOutput = new FileOutputStream(prefix + "." + suffix))
                     {
-                        sysout.println("Writing image: " + prefix + "." + suffix);
+                        SYSOUT.println("Writing image: " + prefix + "." + suffix);
                         ImageIOUtil.writeImage(image, suffix, imageOutput);
                         imageOutput.flush();
                     }
@@ -374,7 +374,7 @@ public final class ExtractImages implements Callable<Integer>
 
             try (FileOutputStream imageOutput = new FileOutputStream(prefix + "." + suffix))
             {
-                sysout.println("Writing image: " + prefix + "." + suffix);
+                SYSOUT.println("Writing image: " + prefix + "." + suffix);
 
                 if ("jpg".equals(suffix))
                 {

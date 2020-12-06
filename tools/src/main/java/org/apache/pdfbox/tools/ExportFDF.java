@@ -40,15 +40,15 @@ import picocli.CommandLine.Parameters;
 @Command(name = "ExportFDF", description = "Exports AcroForm form data to FDF.")
 public final class ExportFDF implements Callable<Integer>
 {
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
     @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to export.")
     private File infile;
 
     @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the FDF data file.")
     private File outfile;
-
-    // Expected for CLI app to write to System.out/Sytem.err
-    @SuppressWarnings("squid:S106")
-    private PrintStream err = System.err;
     
     /**
      * This is the entry point for the application.
@@ -72,7 +72,7 @@ public final class ExportFDF implements Callable<Integer>
             PDAcroForm form = pdf.getDocumentCatalog().getAcroForm();
             if( form == null )
             {
-                err.println( "Error: This PDF does not contain a form." );
+                SYSERR.println( "Error: This PDF does not contain a form." );
                 return 1;
             }
             else
@@ -90,7 +90,7 @@ public final class ExportFDF implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            err.println( "Error exporting FDF data: " + ioe.getMessage());
+            SYSERR.println( "Error exporting FDF data: " + ioe.getMessage());
             return 4;
         }
         return 0;

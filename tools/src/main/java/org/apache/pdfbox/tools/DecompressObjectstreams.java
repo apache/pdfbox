@@ -17,6 +17,7 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.Loader;
@@ -38,6 +39,10 @@ import picocli.CommandLine.Parameters;
 @Command(name = "DecompressObjectstreams", description = "Decompresses object streams in a PDF file.")
 public final class DecompressObjectstreams implements Callable<Integer>
 {
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
     
@@ -82,7 +87,7 @@ public final class DecompressObjectstreams implements Callable<Integer>
         }
         catch (IOException e)
         {
-            System.err.println("Error processing file: " + e.getMessage());
+            SYSERR.println("Error processing file: " + e.getMessage());
             return 1;
         }
         return 0;

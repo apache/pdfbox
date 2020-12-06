@@ -41,6 +41,10 @@ import picocli.CommandLine.Parameters;
 @Command(name = "Decrypt", description = "Decrypts a PDF file.")
 public final class Decrypt implements Callable<Integer>
 {
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
     @Option(names = "-alias", description = "the alias to the certificate in the keystore.")
     private String alias;
 
@@ -59,10 +63,6 @@ public final class Decrypt implements Callable<Integer>
 
     @Parameters(paramLabel = "outputfile", index = "1", arity = "0..1", description = "the decrypted PDF file.")
     private File outfile;
-
-    // Expected for CLI app to write to System.out/Sytem.err
-    @SuppressWarnings("squid:S106")
-    private PrintStream err = System.err;
     
     /**
      * This is the entry point for the application.
@@ -100,19 +100,19 @@ public final class Decrypt implements Callable<Integer>
                 }
                 else
                 {
-                    err.println( "Error: You are only allowed to decrypt a document with the owner password.");
+                    SYSERR.println( "Error: You are only allowed to decrypt a document with the owner password.");
                     return 1;
                 }
             }
             else
             {
-                err.println( "Error: Document is not encrypted.");
+                SYSERR.println( "Error: Document is not encrypted.");
                 return 1;
             }
         }
         catch (IOException ioe)
         {
-            err.println( "Error decrypting document: " + ioe.getMessage());
+            SYSERR.println( "Error decrypting document: " + ioe.getMessage());
             return 4;
         }
         return 0;
