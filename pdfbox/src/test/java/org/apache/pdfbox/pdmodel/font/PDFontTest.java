@@ -266,7 +266,7 @@ class PDFontTest
             
             // F3 = tt full embed
             PDTrueTypeFont fontF3 = (PDTrueTypeFont) page2.getResources().getFont(COSName.getPDFName("F3"));
-            assertFalse(fontF2.getName().contains("+"));
+            assertFalse(fontF3.getName().contains("+"));
             assertEquals(fontFile.length(), fontF3.getFontDescriptor().getFontFile2().toByteArray().length);
             
             new PDFRenderer(doc).renderImage(0);
