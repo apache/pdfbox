@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
@@ -71,7 +73,7 @@ public final class Encrypt
 
             String infile = null;
             String outfile = null;
-            String certFile = null;
+            List<File> certFileList = new ArrayList<File>();
             @SuppressWarnings({"squid:S2068"})
             String userPassword = "";
             @SuppressWarnings({"squid:S2068"})
@@ -128,7 +130,7 @@ public final class Encrypt
                     }
                     else if( key.equals( "-certFile" ) )
                     {
-                        certFile = args[++i];
+                        certFileList.add(new File(args[++i]));
                     }
                     else if( key.equals( "-keyLength" ) )
                     {
@@ -167,31 +169,32 @@ public final class Encrypt
 
                 if( !document.isEncrypted() )
                 {
-                    if( certFile != null )
+                    if (!certFileList.isEmpty())
                     {
                         PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
                         PublicKeyRecipient recip = new PublicKeyRecipient();
                         recip.setPermission(ap);
 
-
                         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                        
-                        InputStream inStream = null;
-                        try
-                        {
-                            inStream = new FileInputStream(certFile);
-                            X509Certificate certificate = (X509Certificate)cf.generateCertificate(inStream);
-                            recip.setX509(certificate);
-                        }
-                        finally
-                        {
-                            if (inStream != null)
-                            {
-                                inStream.close();
-                            }
-                        }                        
 
-                        ppp.addRecipient(recip);
+                        for (File certFile : certFileList)
+                        {
+                            InputStream inStream = null;
+                            try
+                            {
+                                inStream = new FileInputStream(certFile);
+                                X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
+                                recip.setX509(certificate);
+                            }
+                            finally
+                            {
+                                if (inStream != null)
+                                {
+                                    inStream.close();
+                                }
+                            }
+                            ppp.addRecipient(recip);
+                        }
 
                         ppp.setEncryptionKeyLength(keyLength);
 
@@ -230,7 +233,7 @@ public final class Encrypt
                 + "\nOptions:\n"
                 + "  -O <password>                            : Set the owner password (ignored if certFile is set)\n"
                 + "  -U <password>                            : Set the user password (ignored if certFile is set)\n"
-                + "  -certFile <path to cert>                 : Path to X.509 certificate\n"
+                + "  -certFile <path to cert>                 : Path to X.509 certificate (repeat both if needed)\n"
                 + "  -canAssemble <true|false>                : Set the assemble permission\n"
                 + "  -canExtractContent <true|false>          : Set the extraction permission\n"
                 + "  -canExtractForAccessibility <true|false> : Set the extraction permission\n"
