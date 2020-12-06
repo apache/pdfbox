@@ -67,14 +67,7 @@ public class PDFToTextTask extends Task
                     if (pdfFile.toUpperCase().endsWith(".PDF"))
                     {
                         String textFile = pdfFile.substring(0, pdfFile.length() - 3) + "txt";
-                        try
-                        {
-                            ExtractText.main(new String[] {pdfFile, textFile});
-                        }
-                        catch (IOException e)
-                        {
-                            log("Error processing " + pdfFile + e.getMessage());
-                        }
+                        ExtractText.main(new String[] {pdfFile, textFile});
                     }
                 }
             });
