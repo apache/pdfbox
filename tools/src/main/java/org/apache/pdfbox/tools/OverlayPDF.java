@@ -16,15 +16,21 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.pdfbox.multipdf.Overlay;
 import org.apache.pdfbox.multipdf.Overlay.Position;
 import org.apache.pdfbox.pdmodel.PDDocument;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 /**
  * 
@@ -33,160 +39,118 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  * Based on code contributed by Balazs Jerk. 
  * 
  */
-public final class OverlayPDF 
+@Command(name = "OverlayPDF", description = "Add an overlay to an existing PDF document.")
+public final class OverlayPDF implements Callable<Integer>
 {
-    private static final Log LOG = LogFactory.getLog(OverlayPDF.class);
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
 
-    // Command line options
-    private static final String POSITION = "-position";
-    private static final String ODD = "-odd";
-    private static final String EVEN = "-even";
-    private static final String FIRST = "-first";
-    private static final String LAST = "-last";
-    private static final String PAGE = "-page";
-    private static final String USEALLPAGES = "-useAllPages";
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    private boolean usageHelpRequested;
 
-    private OverlayPDF()
-    {
-    }    
-    
+    @Option(names = "-odd", description = "overlay file used for odd pages")
+    private File oddPageOverlay;
+
+    @Option(names = "-even", description = "overlay file used for even pages")
+    private File evenPageOverlay;
+
+    @Option(names = "-first", description = "overlay file used for the first page")
+    private File firstPageOverlay;
+
+    @Option(names = "-last", description = "overlay file used for the last page")
+    private File lastPageOverlay;
+
+    @Option(names = "-useAllPages", description = "overlay file used for overlay, all pages are used by simply repeating them")
+    private File useAllPages;
+
+    @Option(names = "-page", description = "overlay file used for the given page number, may occur more than once")    
+    Map<Integer, String> specificPageOverlayFile = new HashMap<>();
+
+    @Option(names = "-position", description = "where to put the overlay file: foreground or background (default: ${DEFAULT-VALUE})")    
+    private Position position = Position.BACKGROUND;
+
+    @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF input file.")
+    private File infile;
+
+    @Parameters(paramLabel = "defaultOverlay", index = "1", arity = "0..1", description = "the default overlay file.")
+    private File defaultOverlay;
+
+    @Parameters(paramLabel = "outputfile", index = "2", arity = "1", description = "the PDF output file.")
+    private File outfile;
+
     /**
      * This will overlay a document and write out the results.
      *
      * @param args command line arguments
-     * @throws IOException if something went wrong
      */
-    public static void main(final String[] args) throws IOException
+    public static void main(final String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        String outputFilename = null;
+        int exitCode = new CommandLine(new OverlayPDF()).execute(args);
+        System.exit(exitCode);
+    }
+
+
+    public Integer call()
+    {
+        int retcode = 0;
+
         Overlay overlayer = new Overlay();
-        Map<Integer, String> specificPageOverlayFile = new HashMap<>();
-        // input arguments
-        for (int i = 0; i < args.length; i++) 
+        overlayer.setOverlayPosition(position);
+
+        if (firstPageOverlay != null)
         {
-            String arg = args[i].trim();
-            if (i == 0) 
-            {
-                overlayer.setInputFile(arg);
-            } 
-            else if (i == (args.length - 1)) 
-            {
-                outputFilename = arg;
-            } 
-            else if (arg.equals(POSITION) && ((i + 1) < args.length)) 
-            {
-                if (Position.FOREGROUND.toString().equalsIgnoreCase(args[i + 1].trim())) 
-                {
-                    overlayer.setOverlayPosition(Position.FOREGROUND);
-                }
-                else if (Position.BACKGROUND.toString().equalsIgnoreCase(args[i + 1].trim())) 
-                {
-                    overlayer.setOverlayPosition(Position.BACKGROUND);
-                }
-                else
-                {
-                    usage();
-                }
-                i += 1;
-            } 
-            else if (arg.equals(ODD) && ((i + 1) < args.length)) 
-            {
-                overlayer.setOddPageOverlayFile(args[i + 1].trim());
-                i += 1;
-            } 
-            else if (arg.equals(EVEN) && ((i + 1) < args.length)) 
-            {
-                overlayer.setEvenPageOverlayFile(args[i + 1].trim());
-                i += 1;
-            } 
-            else if (arg.equals(FIRST) && ((i + 1) < args.length)) 
-            {
-                overlayer.setFirstPageOverlayFile(args[i + 1].trim());
-                i += 1;
-            } 
-            else if (arg.equals(LAST) && ((i + 1) < args.length)) 
-            {
-                overlayer.setLastPageOverlayFile(args[i + 1].trim());
-                i += 1;
-            } 
-            else if (arg.equals(USEALLPAGES) && ((i + 1) < args.length)) 
-            {
-                overlayer.setAllPagesOverlayFile(args[i + 1].trim());
-                i += 1;
-            } 
-            else if (arg.equals(PAGE) && ((i + 2) < args.length) && (isInteger(args[i + 1].trim()))) 
-            {
-                specificPageOverlayFile.put(Integer.parseInt(args[i + 1].trim()), args[i + 2].trim());
-                i += 2;
-            } 
-            else if (overlayer.getDefaultOverlayFile() == null) 
-            {
-                overlayer.setDefaultOverlayFile(arg);
-            } 
-            else 
-            {
-                usage();
-            }
+            overlayer.setFirstPageOverlayFile(firstPageOverlay.getAbsolutePath());
         }
-        
-        if (overlayer.getInputFile() == null || outputFilename == null) 
+
+        if (lastPageOverlay != null)
         {
-            usage();
+            overlayer.setLastPageOverlayFile(lastPageOverlay.getAbsolutePath());
         }
+
+        if (oddPageOverlay != null)
+        {
+            overlayer.setOddPageOverlayFile(oddPageOverlay.getAbsolutePath());
+        }
+
+        if (evenPageOverlay != null)
+        {
+            overlayer.setEvenPageOverlayFile(evenPageOverlay.getAbsolutePath());
+        }
+
+        if (useAllPages != null)
+        {
+            overlayer.setAllPagesOverlayFile(useAllPages.getAbsolutePath());
+        }
+
 
         try (PDDocument result = overlayer.overlay(specificPageOverlayFile))
         {
-            result.save(outputFilename);
+            result.save(outfile);
         }
-        catch (IOException e)
+        catch (IOException ioe)
         {
-            LOG.error("Overlay failed: " + e.getMessage(), e);
-            throw e;
+            SYSERR.println( "Error adding overlay(s) to PDF: " + ioe.getMessage());
+            return 4;
         }
         finally
         {
             // close the input files AFTER saving the resulting file as some 
             // streams are shared among the input and the output files
-            overlayer.close();
+            try
+            {
+                overlayer.close();
+            }
+            catch (IOException ioe)
+            {
+                SYSERR.println( "Error adding overlay(s) to PDF: " + ioe.getMessage());
+                retcode = 4;
+            }
         }
+
+        return retcode;
     }
-
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar OverlayPDF <inputfile> [options] <outputfile>\n"
-                + "\nOptions:\n"
-                + "  <inputfile>                                  : input file\n"
-                + "  <defaultOverlay.pdf>                         : default overlay file\n"
-                + "  -odd <oddPageOverlay.pdf>                    : overlay file used for odd pages\n"
-                + "  -even <evenPageOverlay.pdf>                  : overlay file used for even pages\n"
-                + "  -first <firstPageOverlay.pdf>                : overlay file used for the first page\n"
-                + "  -last <lastPageOverlay.pdf>                  : overlay file used for the last page\n"
-                + "  -useAllPages <allPagesOverlay.pdf>           : overlay file used for overlay, all pages"
-                + " are used by simply repeating them\n"
-                + "  -page <pageNumber> <specificPageOverlay.pdf> : overlay file used for "
-                + "the given page number, may occur more than once\n"
-                + "  -position foreground|background              : where to put the overlay "
-                + "file: foreground or background\n"
-                + "  <outputfile>                                 : output file";
-
-        System.err.println(message);
-        System.exit( 1 );
-    }
-
-    private static boolean isInteger(String str) 
-    {
-        try 
-        {
-            Integer.parseInt(str);
-        } 
-        catch (NumberFormatException nfe) 
-        {
-            return false;
-        }
-        return true;
-    }
-
 }
