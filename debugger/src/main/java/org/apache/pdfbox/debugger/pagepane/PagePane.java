@@ -450,18 +450,16 @@ public class PagePane implements ActionListener, AncestorListener, MouseMotionLi
     @Override
     public void mouseClicked(MouseEvent e)
     {
-        if (!currentURI.isEmpty())
+        if (!currentURI.isEmpty() &&
+            Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
         {
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
+            try
             {
-                try
-                {
-                    Desktop.getDesktop().browse(new URI(currentURI));
-                }
-                catch (URISyntaxException | IOException ex)
-                {
-                    new ErrorDialog(ex).setVisible(true);
-                }
+                Desktop.getDesktop().browse(new URI(currentURI));
+            }
+            catch (URISyntaxException | IOException ex)
+            {
+                new ErrorDialog(ex).setVisible(true);
             }
         }
     }
