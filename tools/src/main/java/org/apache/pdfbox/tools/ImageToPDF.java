@@ -16,118 +16,108 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.PrintStream;
+import java.util.concurrent.Callable;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 /**
- * Creates a PDF document from images.
- *
+ * Create a PDF document from images.
  */
-public final class ImageToPDF
+@Command(name = "ImageToPDF", description = "Create a PDF document from images.")
+public final class ImageToPDF implements Callable<Integer>
 {
     private PDRectangle mediaBox = PDRectangle.LETTER;
-    private boolean landscape = false;
+
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
+    @Option(names = "-autoOrientation", description = "set orientation depending of image proportion")
     private boolean autoOrientation = false;
+
+    @Option(names = "-landscape", description = "set orientation to landscape")
+    private boolean landscape = false;
+
+    @Option(names = "-pageSize", description = "the page size to use: Letter, Legal, A0, A1, A2, A3, A4, A5, A6 (default: ${DEFAULT-VALUE})")
+    private String pageSize = "Letter";
+
+    @Option(names = "-resize", description = "resize to page size")
     private boolean resize = false;
 
-    private ImageToPDF()
-    {
-    }
+    @Parameters(paramLabel = "image-file", arity="1", description = "the image files to convert.")
+    private File[] infiles;
 
-    public static void main(String[] args) throws IOException
+    @Parameters(paramLabel = "outputfile", index = "1", description = "the generated PDF file.")
+    private File outfile;
+
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    public static void main(String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        ImageToPDF app = new ImageToPDF();
+        int exitCode = new CommandLine(new ImageToPDF()).execute(args);
+        System.exit(exitCode);
+    }
 
-        if (args.length < 2)
+    public Integer call()
+    {
+        if (outfile.getName().endsWith(".pdf"))
         {
-            app.usage();
+            SYSERR.println("Last argument must be the destination .pdf file");
+            return 1;
         }
 
-        List<String> imageFilenames = new ArrayList<>();
-        String pdfPath = args[args.length - 1];
-
-        if (!pdfPath.endsWith(".pdf"))
-        {
-            System.err.println("Last argument must be the destination .pdf file");
-            System.exit(1);
-        }
-        for (int i = 0; i < args.length - 1; i++)
-        {
-            if (args[i].startsWith("-"))
-            {
-                switch (args[i])
-                {
-                    case "-resize":
-                        // will be modified to something more flexible
-                        app.resize = true;
-                        break;
-                    case "-landscape":
-                        app.setLandscape(true);
-                        break;
-                    case "-autoOrientation":
-                        app.setAutoOrientation(true);
-                        break;
-                    case "-pageSize":
-                        i++;
-                        PDRectangle rectangle = createRectangle(args[i]);
-                        if (rectangle == null)
-                        {
-                            throw new IOException("Unknown argument: " + args[i]);
-                        }
-                        app.setMediaBox(rectangle);
-                        break;
-                    default:
-                        throw new IOException("Unknown argument: " + args[i]);
-                }
-            }
-            else
-            {
-                imageFilenames.add(args[i]);
-            }
-        }
+        setMediaBox(createRectangle(pageSize));
 
         try (PDDocument doc = new PDDocument())
         {
-            app.createPDFFromImages(doc, imageFilenames);
-            doc.save(pdfPath);
-        }
-    }
+            for (File imageFile : infiles)
+            {
+                PDImageXObject pdImage = PDImageXObject.createFromFile(imageFile.getAbsolutePath(), doc);
 
-    void createPDFFromImages(PDDocument doc, List<String> imageFilenames) throws IOException
-    {
-        for (String imageFileName : imageFilenames)
+                PDRectangle actualMediaBox = mediaBox;
+                if ((autoOrientation && pdImage.getWidth() > pdImage.getHeight()) || landscape)
+                {
+                    actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
+                }
+                PDPage page = new PDPage(actualMediaBox);
+                doc.addPage(page);
+
+                try (PDPageContentStream contents = new PDPageContentStream(doc, page))
+                {
+                    if (resize)
+                    {
+                        contents.drawImage(pdImage, 0, 0, actualMediaBox.getWidth(), actualMediaBox.getHeight());
+                    }
+                    else
+                    {
+                        contents.drawImage(pdImage, 0, 0, pdImage.getWidth(), pdImage.getHeight());
+                    }
+                }
+            }
+            doc.save(outfile);
+        }
+        catch (IOException ioe)
         {
-            PDImageXObject pdImage = PDImageXObject.createFromFile(imageFileName, doc);
-
-            PDRectangle actualMediaBox = mediaBox;
-            if ((autoOrientation && pdImage.getWidth() > pdImage.getHeight()) || landscape)
-            {
-                actualMediaBox = new PDRectangle(mediaBox.getHeight(), mediaBox.getWidth());
-            }
-            PDPage page = new PDPage(actualMediaBox);
-            doc.addPage(page);
-
-            try (PDPageContentStream contents = new PDPageContentStream(doc, page))
-            {
-                if (resize)
-                {
-                    contents.drawImage(pdImage, 0, 0, actualMediaBox.getWidth(), actualMediaBox.getHeight());
-                }
-                else
-                {
-                    contents.drawImage(pdImage, 0, 0, pdImage.getWidth(), pdImage.getHeight());
-                }
-            }
+            SYSERR.println( "Error extracting test for document: " + ioe.getMessage());
+            return 4;
         }
+        return 0;
     }
 
     private static PDRectangle createRectangle(String paperSize)
@@ -170,7 +160,8 @@ public final class ImageToPDF
         }
         else
         {
-            return null;
+            // return default if wron size was specified
+            return PDRectangle.LETTER;
         }
     }
 
@@ -187,7 +178,7 @@ public final class ImageToPDF
     /**
      * Sets page size of produced PDF.
      *
-     * @param mediaBox
+     * @param mediaBox the media box of the PDF document.
      */
     public void setMediaBox(PDRectangle mediaBox)
     {
@@ -207,7 +198,7 @@ public final class ImageToPDF
     /**
      * Sets paper orientation.
      *
-     * @param landscape
+     * @param landscape use landscape orientation.
      */
     public void setLandscape(boolean landscape)
     {
@@ -234,30 +225,5 @@ public final class ImageToPDF
     public void setAutoOrientation(boolean autoOrientation)
     {
         this.autoOrientation = autoOrientation;
-    }
-
-    /**
-     * This will print out a message telling how to use this example.
-     */
-    private void usage()
-    {
-        StringBuilder message = new StringBuilder();
-        message.append("Usage: jar -jar pdfbox-app-x.y.z.jar ImageToPDF [options] <image-file>..<image-file> <output-file>\n");
-        message.append("\nOptions:\n");
-        message.append("  -resize              : resize to page size\n");
-        message.append("  -pageSize <pageSize> : Letter (default)\n");
-        message.append("                         Legal\n");
-        message.append("                         A0\n");
-        message.append("                         A1\n");
-        message.append("                         A2\n");
-        message.append("                         A3\n");
-        message.append("                         A4\n");
-        message.append("                         A5\n");
-        message.append("                         A6\n");
-        message.append("  -landscape           : sets orientation to landscape\n");
-        message.append("  -autoOrientation     : sets orientation depending of image proportion\n");
-
-        System.err.println(message.toString());
-        System.exit(1);
     }
 }
