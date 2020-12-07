@@ -67,6 +67,7 @@ public class COSObjectPool
         {
             highestXRefObjectNumber++;
             actualKey = new COSObjectKey(highestXRefObjectNumber, 0);
+            object.setKey(actualKey);
         }
         else
         {
