@@ -76,12 +76,6 @@ public final class ImageToPDF implements Callable<Integer>
 
     public Integer call()
     {
-        if (outfile.getName().endsWith(".pdf"))
-        {
-            SYSERR.println("Last argument must be the destination .pdf file");
-            return 1;
-        }
-
         setMediaBox(createRectangle(pageSize));
 
         try (PDDocument doc = new PDDocument())
@@ -114,7 +108,7 @@ public final class ImageToPDF implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error extracting test for document: " + ioe.getMessage());
+            SYSERR.println( "Error converting image to PDF: " + ioe.getMessage());
             return 4;
         }
         return 0;
