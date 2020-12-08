@@ -65,7 +65,7 @@ public class TestRendering
 
     @ParameterizedTest(name = "{index} render running for {0}")
 	@MethodSource("dataSubset")
-    public void render(String fileName) throws IOException
+    void render(String fileName) throws IOException
     {
         File file = new File(INPUT_DIR, fileName);
         PDDocument document = Loader.loadPDF(file);
@@ -86,7 +86,7 @@ public class TestRendering
      */
     // @ParameterizedTest(name = "{index} render and compare running for {0}")
 	@MethodSource("data")
-    public void renderAndCompare(String fileName) throws IOException
+    void renderAndCompare(String fileName) throws IOException
     {
 
         new File(OUTPUT_DIR).mkdirs();
