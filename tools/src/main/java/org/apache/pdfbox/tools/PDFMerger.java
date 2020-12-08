@@ -16,10 +16,17 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
 
 /**
  * This is the main program that will take a list of pdf documents and merge them,
@@ -27,61 +34,52 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
  *
  * @author Ben Litchfield
  */
-public final class PDFMerger
+@Command(name = "PDFMerger", description = "Merge multiple PDFs into one.")
+public final class PDFMerger implements Callable<Integer>
 {
-    
-    private PDFMerger()
-    {
-    }
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
+    @Parameters(paramLabel = "inputfile", arity = "2..*", description = "the PDF files to merge.")
+    private File[] infiles;
+
+    @Parameters(paramLabel = "outputfile", index="1", description = "the merged PDF file.")
+    private File outfile;
+
     /**
      * Infamous main method.
      *
      * @param args Command line arguments, should be at least 3.
-     *
-     * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main( String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        PDFMerger merge = new PDFMerger();
-        merge.merge( args );
+        int exitCode = new CommandLine(new PDFMerger()).execute(args);
+        System.exit(exitCode);
     }
 
-    private void merge( String[] args ) throws IOException
+    public Integer call()
     {
-        int firstFileArgPos = 0;
-
-        if ( args.length - firstFileArgPos < 3 )
-        {
-            usage();
-        }
-
         PDFMergerUtility merger = new PDFMergerUtility();
-        for( int i=firstFileArgPos; i<args.length-1; i++ )
+
+        try
         {
-            String sourceFileName = args[i];
-            merger.addSource(sourceFileName);
+            for (File infile : infiles)
+            {
+                merger.addSource(infile);
+            }
+
+            merger.setDestinationFileName(outfile.getAbsolutePath());
+            merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
         }
-
-        String destinationFileName = args[args.length-1];
-        merger.setDestinationFileName(destinationFileName);
-        merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
-    }
-
-    /**
-     * This will print the usage requirements and exit.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFMerger "
-                + "<inputfiles 2..n> <outputfile>\n"
-                + "\nOptions:\n"
-                + "  <inputfiles 2..n> : 2 or more source PDF documents to merge\n"
-                + "  <outputfile>      : The PDF document to save the merged documents to\n";
-        
-        System.err.println(message);
-        System.exit(1);
+        catch (IOException ioe)
+        {
+            SYSERR.println( "Error merging documents: " + ioe.getMessage());
+            return 4;
+        }
+        return 0;
     }
 }

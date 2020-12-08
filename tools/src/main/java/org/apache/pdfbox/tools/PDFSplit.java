@@ -18,12 +18,19 @@ package org.apache.pdfbox.tools;
 
 import java.io.File;
 import java.io.IOException;
-
+import java.io.PrintStream;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 /**
  * This is the main program that will take a pdf document and split it into
@@ -31,181 +38,114 @@ import org.apache.pdfbox.pdmodel.PDDocument;
  *
  * @author Ben Litchfield
  */
-public final class PDFSplit
+public final class PDFSplit implements Callable<Integer>
 {
-    @SuppressWarnings({"squid:S2068"})
-    private static final String PASSWORD = "-password";
-    private static final String SPLIT = "-split";
-    private static final String START_PAGE = "-startPage";
-    private static final String END_PAGE = "-endPage";
-    private static final String OUTPUT_PREFIX = "-outputPrefix";
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
 
-    private PDFSplit()
-    {
-    }
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    @Option(names = "-password", description = "the password to decrypt the document.")    
+    private String password;
+
+    @Option(names = "-split", description = "split after this many pages (default 1, if startPage and endPage are unset).")    
+    private int split = -1;
+
+    @Option(names = "-startPage", description = "start page.")    
+    private int startPage = -1;
+
+    @Option(names = "-endPage", description = "end page.")    
+    private int endPage = -1;
+
+    @Option(names = "-outputPrefix", description = "the filename prefix for split files.")    
+    private String outputPrefix;
+
+    @Parameters(paramLabel = "inputfile", description = "the PDF file to split.")
+    private File infile;
+
     /**
      * Infamous main method.
      *
      * @param args Command line arguments, should be one and a reference to a file.
-     *
-     * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main( String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        PDFSplit split = new PDFSplit();
-        split.split( args );
+        int exitCode = new CommandLine(new PDFSplit()).execute(args);
+        System.exit(exitCode);
     }
 
-    private void split( String[] args ) throws IOException
+    public Integer call()
     {
-        @SuppressWarnings({"squid:S2068"})
-        String password = "";
-        String split = null;
-        String startPage = null;
-        String endPage = null;
         Splitter splitter = new Splitter();
-        String pdfFile = null;
-        String outputPrefix = null;
-        for( int i=0; i<args.length; i++ )
+
+        if (outputPrefix == null)
         {
-            switch (args[i])
-            {
-                case PASSWORD:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                    break;
-                case SPLIT:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    split = args[i];
-                    break;
-                case START_PAGE:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    startPage = args[i];
-                    break;
-                case END_PAGE:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    endPage = args[i];
-                    break;
-                case OUTPUT_PREFIX:
-                    i++;
-                    outputPrefix = args[i];
-                    break;
-                default:
-                    if (pdfFile == null)
-                    {
-                        pdfFile = args[i];
-                    }
-                    break;
-            }
+            outputPrefix = FilenameUtils.getBaseName(infile.getAbsolutePath());
         }
 
-        if( pdfFile == null )
+        List<PDDocument> documents = null;
+
+        try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            usage();
-        }
-        else
-        {          
-            if (outputPrefix == null)
+            int numberOfPages = document.getNumberOfPages();
+            boolean startEndPageSet = false;
+            if (startPage != -1)
             {
-                outputPrefix = pdfFile.substring(0, pdfFile.lastIndexOf('.'));
+                splitter.setStartPage(startPage);
+                startEndPageSet = true;
+                if (split == -1)
+                {
+                    splitter.setSplitAtPage(numberOfPages);
+                }
             }
-            PDDocument document = null;
-            List<PDDocument> documents = null;
-            try
+            if (endPage != -1)
             {
-                document = Loader.loadPDF(new File(pdfFile), password);
-
-                int numberOfPages = document.getNumberOfPages();
-                boolean startEndPageSet = false;
-                if (startPage != null)
+                splitter.setEndPage(endPage);
+                startEndPageSet = true;
+                if (split == -1)
                 {
-                    splitter.setStartPage(Integer.parseInt( startPage ));
-                    startEndPageSet = true;
-                    if (split == null)
-                    {
-                        splitter.setSplitAtPage(numberOfPages);
-                    }
+                    splitter.setSplitAtPage(endPage);
                 }
-                if (endPage != null)
-                {
-                    splitter.setEndPage(Integer.parseInt( endPage ));
-                    startEndPageSet = true;
-                    if (split == null)
-                    {
-                        splitter.setSplitAtPage(Integer.parseInt( endPage ));
-                    }
-                }
-                if (split != null)
-                {
-                    splitter.setSplitAtPage( Integer.parseInt( split ) );
-                }
-                else 
-                {
-                    if (!startEndPageSet)
-                    {
-                        splitter.setSplitAtPage(1);
-                    }
-                }
-                    
-                documents = splitter.split( document );
-                for( int i=0; i<documents.size(); i++ )
-                {
-                    try (PDDocument doc = documents.get(i))
-                    {
-                        doc.save(outputPrefix + "-" + (i + 1) + ".pdf");
-                    }
-                }
-
             }
-            finally
+            if (split != -1)
             {
-                if( document != null )
+                splitter.setSplitAtPage(split);
+            }
+            else 
+            {
+                if (!startEndPageSet)
                 {
-                    document.close();
+                    splitter.setSplitAtPage(1);
                 }
-                for( int i=0; documents != null && i<documents.size(); i++ )
+            }
+                
+            documents = splitter.split( document );
+            for( int i=0; i<documents.size(); i++ )
+            {
+                try (PDDocument doc = documents.get(i))
                 {
-                    PDDocument doc = documents.get(i);
-                    doc.close();
+                    doc.save(outputPrefix + "-" + (i + 1) + ".pdf");
                 }
             }
         }
-    }
-
-    /**
-     * This will print the usage requirements and exit.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFSplit [options] <inputfile>\n"
-                + "\nOptions:\n"
-                + "  -password  <password>  : Password to decrypt document\n"
-                + "  -split     <integer>   : split after this many pages (default 1, if startPage and endPage are unset)\n"
-                + "  -startPage <integer>   : start page\n"
-                + "  -endPage   <integer>   : end page\n"
-                + "  -outputPrefix <prefix> : Filename prefix for split files\n"
-                + "  <inputfile>            : The PDF document to use\n";
-        
-        System.err.println(message);
-        System.exit( 1 );
+        catch (IOException ioe)
+        {
+            SYSERR.println( "Error splitting document: " + ioe.getMessage());
+            return 4;
+        }
+        finally
+        {
+            for( int i=0; documents != null && i<documents.size(); i++ )
+            {
+                PDDocument doc = documents.get(i);
+                IOUtils.closeQuietly(doc);
+            }
+        }
+        return 0;
     }
 }
