@@ -29,6 +29,7 @@ import org.apache.pdfbox.multipdf.Splitter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
@@ -38,6 +39,7 @@ import picocli.CommandLine.Parameters;
  *
  * @author Ben Litchfield
  */
+@Command(name = "PDFSplit", description = "Split a PDF into number of new documents.")
 public final class PDFSplit implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
