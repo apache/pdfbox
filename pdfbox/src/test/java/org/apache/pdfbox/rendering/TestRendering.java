@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
@@ -69,13 +70,13 @@ public class TestRendering
         File file = new File(INPUT_DIR, fileName);
         PDDocument document = Loader.loadPDF(file);
         PDFRenderer renderer = new PDFRenderer(document);
-        renderer.renderImage(0);
-
+        
         // We don't actually do anything with the image for the same reason that
         // TestPDFToImage is disabled - different JVMs produce different results
         // but at least we can make sure that PDFBox did not throw any exceptions
         // during the rendering process.
 
+        assertDoesNotThrow(() -> renderer.renderImage(0));
         document.close();
     }
 

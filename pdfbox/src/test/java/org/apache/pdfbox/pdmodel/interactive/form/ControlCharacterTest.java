@@ -76,15 +76,27 @@ class ControlCharacterTest
     @Test
     void characterNUL() throws IOException
     {
+        PDField field = acroForm.getField("pdfbox-nul");
         assertThrows(IllegalArgumentException.class, () -> {
-            acroForm.getField("pdfbox-nul").setValue("NUL\0NUL");
+            field.setValue("NUL\0NUL");
           });
     }
 
+    /*
+     * No direct comparison to how Acrobat sets the value
+     * as we don't position with tabs.
+     */
     @Test
     void characterTAB() throws IOException
     {
-    	acroForm.getField("pdfbox-tab").setValue("TAB\tTAB");
+        PDField field = acroForm.getField("pdfbox-tab");
+    	field.setValue("TAB\tTAB");
+
+        List<String> pdfboxValues = getStringsFromStream(field);
+        for (String token : pdfboxValues)
+        {
+            assertEquals("TAB", token);
+        }
     }
     
     @Test
