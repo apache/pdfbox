@@ -21,9 +21,12 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -33,66 +36,98 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 /**
  * Convert a PDF document to an image.
  *
  * @author Ben Litchfield
  */
-public final class PDFToImage
+@Command(name = "PDFToImage", description = "Convert a PDF document to image(s).")
+public final class PDFToImage implements Callable<Integer>
 {
-    @SuppressWarnings({"squid:S2068"})
-    private static final String PASSWORD = "-password";
-    private static final String START_PAGE = "-startPage";
-    private static final String END_PAGE = "-endPage";
-    private static final String PAGE = "-page";
-    private static final String IMAGE_TYPE = "-imageType";
-    private static final String FORMAT = "-format";
-    private static final String OUTPUT_PREFIX = "-outputPrefix";
-    private static final String PREFIX = "-prefix";
-    private static final String COLOR = "-color";
-    private static final String RESOLUTION = "-resolution";
-    private static final String DPI = "-dpi";
-    private static final String QUALITY = "-quality";
-    private static final String CROPBOX = "-cropbox";
-    private static final String TIME = "-time";
-    private static final String SUBSAMPLING = "-subsampling";
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
 
-    /**
-     * private constructor.
-    */
-    private PDFToImage()
-    {
-        //static class
-    }
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    @Option(names = "-password", description = "the password to decrypt the document")
+    private String password;
+
+    @Option(names = {"-format"}, description = "the image file format (default: ${DEFAULT-VALUE})")    
+    private String imageFormat = "jpg";
+
+    @Option(names = {"-prefix", "-outputPrefix"}, description = "the filename prefix for image files")    
+    private String outputPrefix;
+
+    @Option(names = "-page", description = "the only page to extract (1-based)")    
+    private int page = -1;
+
+    @Option(names = "-startPage", description = "the first page to start extraction (1-based)")    
+    private int startPage = 1;
+
+    @Option(names = "-endPage", description = "the last page to extract (inclusive)")    
+    private int endPage = Integer.MAX_VALUE;
+
+    @Option(names = "-color", description = "the color depth (valid: ${COMPLETION-CANDIDATES}) (default: ${DEFAULT-VALUE})")    
+    private ImageType imageType = ImageType.RGB;
+
+    @Option(names = {"-dpi", "-resolution"}, description = "the DPI of the output image, default: screen resolution or 96 if unknown")
+    private int dpi;
+
+    @Option(names = "-quality", description = "the quality to be used when compressing the image (0 <= quality <= 1) " +
+        "(default: 0 for PNG and 1 for the other formats)")
+    private float quality;
+
+    @Option(names = "-cropbox", arity="4", description = "the page area to export")
+    private int[] cropbox;
+
+    @Option(names = "-time", description = "print timing information to stdout")
+    private boolean showTime;
+
+    @Option(names = "-subsampling", description = "activate subsampling (for PDFs with huge images)")
+    private boolean subsampling;
+
+    @Parameters(paramLabel = "inputfile", description = "the PDF file to convert.")
+    private File infile;
 
     /**
      * Infamous main method.
      *
      * @param args Command line arguments, should be one and a reference to a file.
      *
-     * @throws IOException If there is an error parsing the document.
      */
-    public static void main( String[] args ) throws IOException
+    public static void main( String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
+        int exitCode = new CommandLine(new PDFToImage()).execute(args);
+        System.exit(exitCode);
+    }
 
-        @SuppressWarnings({"squid:S2068"})
-        String password = "";
-        String pdfFile = null;
-        String outputPrefix = null;
-        String imageFormat = "jpg";
-        int startPage = 1;
-        int endPage = Integer.MAX_VALUE;
-        String color = "rgb";
-        int dpi;
-        float quality = -1;
-        float cropBoxLowerLeftX = 0;
-        float cropBoxLowerLeftY = 0;
-        float cropBoxUpperRightX = 0;
-        float cropBoxUpperRightY = 0;
-        boolean showTime = false;
-        boolean subsampling = false;
+    public Integer call()
+    {
+        if (outputPrefix == null)
+        {
+            outputPrefix = FilenameUtils.getBaseName(infile.getAbsolutePath());
+        }
+
+        if (getImageFormats().indexOf(imageFormat) == -1)
+        {
+            SYSERR.println( "Error: Invalid image format " + imageFormat + " - supported are: " + getImageFormats());
+            return 2;
+        }
+
+        if (quality < 0)
+        {
+            quality = "png".equals(imageFormat) ? 0f : 1f;
+        }
+
         try
         {
             dpi = Toolkit.getDefaultToolkit().getScreenResolution();
@@ -101,206 +136,56 @@ public final class PDFToImage
         {
             dpi = 96;
         }
-        for( int i = 0; i < args.length; i++ )
+
+        try (PDDocument document = Loader.loadPDF(infile, password))
         {
-            switch (args[i])
+            PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
+            if (acroForm != null && acroForm.getNeedAppearances())
             {
-                case PASSWORD:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                    break;
-                case START_PAGE:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    startPage = Integer.parseInt(args[i]);
-                    break;
-                case END_PAGE:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    endPage = Integer.parseInt(args[i]);
-                    break;
-                case PAGE:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    startPage = Integer.parseInt(args[i]);
-                    endPage = Integer.parseInt(args[i]);
-                    break;
-                case IMAGE_TYPE:
-                case FORMAT:
-                    i++;
-                    imageFormat = args[i];
-                    break;
-                case OUTPUT_PREFIX:
-                case PREFIX:
-                    i++;
-                    outputPrefix = args[i];
-                    break;
-                case COLOR:
-                    i++;
-                    color = args[i];
-                    break;
-                case RESOLUTION:
-                case DPI:
-                    i++;
-                    dpi = Integer.parseInt(args[i]);
-                    break;
-                case QUALITY:
-                    i++;
-                    quality = Float.parseFloat(args[i]);
-                    break;
-                case CROPBOX:
-                    i++;
-                    cropBoxLowerLeftX = Float.valueOf(args[i]);
-                    i++;
-                    cropBoxLowerLeftY = Float.valueOf(args[i]);
-                    i++;
-                    cropBoxUpperRightX = Float.valueOf(args[i]);
-                    i++;
-                    cropBoxUpperRightY = Float.valueOf(args[i]);
-                    break;
-                case TIME:
-                    showTime = true;
-                    break;
-                case SUBSAMPLING:
-                    subsampling = true;
-                    break;
-                default:
-                    if (pdfFile == null)
-                    {
-                        pdfFile = args[i];
-                    }
-                    break;
+                acroForm.refreshAppearances();
+            }
+
+            if (cropbox != null)
+            {
+                changeCropBox(document, cropbox[0], cropbox[1], cropbox[2], cropbox[3]);
+            }
+
+            long startTime = System.nanoTime();
+
+            // render the pages
+            boolean success = true;
+            endPage = Math.min(endPage, document.getNumberOfPages());
+            PDFRenderer renderer = new PDFRenderer(document);
+            renderer.setSubsamplingAllowed(subsampling);
+            for (int i = startPage - 1; i < endPage; i++)
+            {
+                BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
+                String fileName = outputPrefix + (i + 1) + "." + imageFormat;
+                success &= ImageIOUtil.writeImage(image, fileName, dpi, quality);
+            }
+
+            // performance stats
+            long endTime = System.nanoTime();
+            long duration = endTime - startTime;
+            int count = 1 + endPage - startPage;
+            if (showTime)
+            {
+                SYSERR.printf("Rendered %d page%s in %dms%n", count, count == 1 ? "" : "s",
+                                  duration / 1000000);
+            }
+
+            if (!success)
+            {
+                SYSERR.println( "Error: no writer found for image format '" + imageFormat + "'" );
+                return 1;
             }
         }
-        if( pdfFile == null )
+        catch (IOException ioe)
         {
-            usage();
+            SYSERR.println( "Error converting document: " + ioe.getMessage());
+            return 4;
         }
-        else
-        {
-            if(outputPrefix == null)
-            {
-                outputPrefix = pdfFile.substring( 0, pdfFile.lastIndexOf( '.' ));
-            }
-            if (quality < 0)
-            {
-                quality = "png".equals(imageFormat) ? 0f : 1f;
-            }
-
-            try (PDDocument document = Loader.loadPDF(new File(pdfFile), password))
-            {
-                PDAcroForm acroForm = document.getDocumentCatalog().getAcroForm();
-                if (acroForm != null && acroForm.getNeedAppearances())
-                {
-                    acroForm.refreshAppearances();
-                }
-                ImageType imageType = null;
-                if ("bilevel".equalsIgnoreCase(color))
-                {
-                    imageType = ImageType.BINARY;
-                }
-                else if ("gray".equalsIgnoreCase(color))
-                {
-                    imageType = ImageType.GRAY;
-                }
-                else if ("rgb".equalsIgnoreCase(color))
-                {
-                    imageType = ImageType.RGB;
-                }
-                else if ("rgba".equalsIgnoreCase(color))
-                {
-                    imageType = ImageType.ARGB;
-                }
-                
-                if (imageType == null)
-                {
-                    System.err.println( "Error: Invalid color." );
-                    System.exit( 2 );
-                }
-
-                //if a CropBox has been specified, update the CropBox:
-                //changeCropBoxes(PDDocument document,float a, float b, float c,float d)
-                if (Float.compare(cropBoxLowerLeftX, 0) !=0 ||
-                    Float.compare(cropBoxLowerLeftY, 0) !=0 ||
-                    Float.compare(cropBoxUpperRightX, 0) !=0 ||
-                    Float.compare(cropBoxUpperRightY, 0) !=0 )
-                {
-                    changeCropBox(document,
-                            cropBoxLowerLeftX, cropBoxLowerLeftY,
-                            cropBoxUpperRightX, cropBoxUpperRightY);
-                }
-
-                long startTime = System.nanoTime();
-
-                // render the pages
-                boolean success = true;
-                endPage = Math.min(endPage, document.getNumberOfPages());
-                PDFRenderer renderer = new PDFRenderer(document);
-                renderer.setSubsamplingAllowed(subsampling);
-                for (int i = startPage - 1; i < endPage; i++)
-                {
-                    BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
-                    String fileName = outputPrefix + (i + 1) + "." + imageFormat;
-                    success &= ImageIOUtil.writeImage(image, fileName, dpi, quality);
-                }
-
-                // performance stats
-                long endTime = System.nanoTime();
-                long duration = endTime - startTime;
-                int count = 1 + endPage - startPage;
-                if (showTime)
-                {
-                    System.err.printf("Rendered %d page%s in %dms%n", count, count == 1 ? "" : "s",
-                                      duration / 1000000);
-                }
-
-                if (!success)
-                {
-                    System.err.println( "Error: no writer found for image format '"
-                            + imageFormat + "'" );
-                    System.exit(1);
-                }
-            }
-        }
-    }
-
-    /**
-     * This will print the usage requirements and exit.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar PDFToImage [options] <inputfile>\n"
-            + "\nOptions:\n"
-            + "  -password  <password>            : Password to decrypt document\n"
-            + "  -format <string>                 : Available image formats: " + getImageFormats() + "\n"
-            + "  -prefix <string>                 : Filename prefix for image files\n"
-            + "  -page <int>                      : The only page to extract (1-based)\n"
-            + "  -startPage <int>                 : The first page to start extraction (1-based)\n"
-            + "  -endPage <int>                   : The last page to extract (inclusive)\n"
-            + "  -color <string>                  : The color depth (valid: bilevel, gray, rgb (default), rgba)\n"
-            + "  -dpi <int>                       : The DPI of the output image, default: screen resolution or 96 if unknown\n"
-            + "  -quality <float>                 : The quality to be used when compressing the image (0 <= quality <= 1)\n"
-            + "                                     (default: 0 for PNG and 1 for the other formats)\n"
-            + "  -cropbox <int> <int> <int> <int> : The page area to export\n"
-            + "  -time                            : Prints timing information to stdout\n"
-            + "  -subsampling                     : Activate subsampling (for PDFs with huge images)\n"
-            + "  <inputfile>                      : The PDF document to use\n";
-        
-        System.err.println(message);
-        System.exit( 1 );
+        return 0;
     }
 
     private static String getImageFormats()
@@ -325,7 +210,6 @@ public final class PDFToImage
     {
         for (PDPage page : document.getPages())
         {
-            System.out.println("resizing page");
             PDRectangle rectangle = new PDRectangle();
             rectangle.setLowerLeftX(a);
             rectangle.setLowerLeftY(b);
