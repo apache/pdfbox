@@ -286,8 +286,11 @@ public class PDFRenderer
         PDRectangle cropbBox = page.getCropBox();
         float widthPt = cropbBox.getWidth();
         float heightPt = cropbBox.getHeight();
-        int widthPx = Math.round(widthPt * scale);
-        int heightPx = Math.round(heightPt * scale);
+
+        // PDFBOX-4306 avoid single blank pixel line on the right or on the bottom
+        int widthPx = (int) Math.max(Math.floor(widthPt * scale), 1);
+        int heightPx = (int) Math.max(Math.floor(heightPt * scale), 1);
+
         // PDFBOX-4518 the maximum size (w*h) of a buffered image is limited to Integer.MAX_VALUE
         if ((long) widthPx * (long) heightPx > Integer.MAX_VALUE)
         {
