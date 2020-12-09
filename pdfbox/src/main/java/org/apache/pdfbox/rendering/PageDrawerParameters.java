@@ -35,21 +35,21 @@ public final class PageDrawerParameters
     private final boolean subsamplingAllowed;
     private final RenderDestination destination; 
     private final RenderingHints renderingHints;
-    private final float imageDownscalingOptimizationThreshhold;
+    private final float imageDownscalingOptimizationThreshold;
 
     /**
      * Package-private constructor.
      */
     PageDrawerParameters(PDFRenderer renderer, PDPage page, boolean subsamplingAllowed,
                          RenderDestination destination, RenderingHints renderingHints,
-                         float imageDownscalingOptimizationThreshhold)
+                         float imageDownscalingOptimizationThreshold)
     {
         this.renderer = renderer;
         this.page = page;
         this.subsamplingAllowed = subsamplingAllowed;
         this.destination = destination;
         this.renderingHints = renderingHints;
-        this.imageDownscalingOptimizationThreshhold = imageDownscalingOptimizationThreshhold;
+        this.imageDownscalingOptimizationThreshold = imageDownscalingOptimizationThreshold;
     }
 
     /**
@@ -94,11 +94,11 @@ public final class PageDrawerParameters
 
     /**
      * 
-     * @return the imageDownscalingOptimizationThreshhold
+     * @return the imageDownscalingOptimizationThreshold
      */
 
-    public float getImageDownscalingOptimizationThreshhold()
+    public float getImageDownscalingOptimizationThreshold()
     {
-        return imageDownscalingOptimizationThreshhold;
+        return imageDownscalingOptimizationThreshold;
     }
 }

@@ -163,7 +163,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
 
     private final RenderDestination destination;
     private final RenderingHints renderingHints;
-    private final float imageDownscalingOptimizationThreshhold;
+    private final float imageDownscalingOptimizationThreshold;
 
     static final int JAVA_VERSION = PageDrawer.getJavaVersion();
 
@@ -192,8 +192,8 @@ public class PageDrawer extends PDFGraphicsStreamEngine
         this.subsamplingAllowed = parameters.isSubsamplingAllowed();
         this.destination = parameters.getDestination();
         this.renderingHints = parameters.getRenderingHints();
-        this.imageDownscalingOptimizationThreshhold =
-                parameters.getImageDownscalingOptimizationThreshhold();
+        this.imageDownscalingOptimizationThreshold =
+                parameters.getImageDownscalingOptimizationThreshold();
     }
 
     /**
@@ -1256,7 +1256,7 @@ public class PageDrawer extends PDFGraphicsStreamEngine
             float scaleX = Math.abs(imageTransformMatrix.getScalingFactorX() * graphicsTransformMatrix.getScalingFactorX());
             float scaleY = Math.abs(imageTransformMatrix.getScalingFactorY() * graphicsTransformMatrix.getScalingFactorY());
 
-            if ((scaleX < imageDownscalingOptimizationThreshhold || scaleY < imageDownscalingOptimizationThreshhold) &&
+            if ((scaleX < imageDownscalingOptimizationThreshold || scaleY < imageDownscalingOptimizationThreshold) &&
                 RenderingHints.VALUE_RENDER_QUALITY.equals(graphics.getRenderingHint(RenderingHints.KEY_RENDERING)) &&
                 RenderingHints.VALUE_INTERPOLATION_BICUBIC.equals(graphics.getRenderingHint(RenderingHints.KEY_INTERPOLATION)))
             {

@@ -76,7 +76,7 @@ public class PDFRenderer
 
     private static boolean kcmsLogged = false;
 
-    private float imageDownscalingOptimizationThreshhold = 0.5f;
+    private float imageDownscalingOptimizationThreshold = 0.5f;
 
     /**
      * Creates a new PDFRenderer.
@@ -183,25 +183,25 @@ public class PDFRenderer
 
     /**
      *
-     * @return get the image downscaling optimization threshhold. See
-     * {@link #getImageDownscalingOptimizationThreshhold()} for details.
+     * @return get the image downscaling optimization threshold. See
+     * {@link #getImageDownscalingOptimizationThreshold()} for details.
      */
-    public float getImageDownscalingOptimizationThreshhold()
+    public float getImageDownscalingOptimizationThreshold()
     {
-        return imageDownscalingOptimizationThreshhold;
+        return imageDownscalingOptimizationThreshold;
     }
 
     /**
-     * Set the image downscaling optimization threshhold. This must be a value between 0 and 1. When
+     * Set the image downscaling optimization threshold. This must be a value between 0 and 1. When
      * rendering downscaled images and rendering hints are set to bicubic+quality and the scaling is
-     * smaller than the threshhold, a more quality-optimized but slower method will be used. The
+     * smaller than the threshold, a more quality-optimized but slower method will be used. The
      * default is 0.5 which is a good compromise.
      *
-     * @param imageDownscalingOptimizationThreshhold
+     * @param imageDownscalingOptimizationThreshold
      */
-    public void setImageDownscalingOptimizationThreshhold(float imageDownscalingOptimizationThreshhold)
+    public void setImageDownscalingOptimizationThreshold(float imageDownscalingOptimizationThreshold)
     {
-        this.imageDownscalingOptimizationThreshhold = imageDownscalingOptimizationThreshhold;
+        this.imageDownscalingOptimizationThreshold = imageDownscalingOptimizationThreshold;
     }
 
     /**
@@ -342,7 +342,7 @@ public class PDFRenderer
                 renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
         PageDrawerParameters parameters =
                 new PageDrawerParameters(this, page, subsamplingAllowed, destination,
-                        actualRenderingHints, imageDownscalingOptimizationThreshhold);
+                        actualRenderingHints, imageDownscalingOptimizationThreshold);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(g, page.getCropBox());       
         
@@ -453,7 +453,7 @@ public class PDFRenderer
                 renderingHints == null ? createDefaultRenderingHints(graphics) : renderingHints;
         PageDrawerParameters parameters =
                 new PageDrawerParameters(this, page, subsamplingAllowed, destination,
-                        actualRenderingHints, imageDownscalingOptimizationThreshhold);
+                        actualRenderingHints, imageDownscalingOptimizationThreshold);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
     }
