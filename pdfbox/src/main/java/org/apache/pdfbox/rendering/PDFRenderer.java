@@ -67,6 +67,8 @@ public class PDFRenderer
 
     private static boolean kcmsLogged = false;
 
+    private float imageDownscalingOptimizationThreshhold = 0.5f;
+
     /**
      * Creates a new PDFRenderer.
      * @param document the document to render
@@ -168,6 +170,29 @@ public class PDFRenderer
     public void setRenderingHints(RenderingHints renderingHints)
     {
         this.renderingHints = renderingHints;
+    }
+
+    /**
+     *
+     * @return get the image downscaling optimization threshhold. See
+     * {@link #getImageDownscalingOptimizationThreshhold()} for details.
+     */
+    public float getImageDownscalingOptimizationThreshhold()
+    {
+        return imageDownscalingOptimizationThreshhold;
+    }
+
+    /**
+     * Set the image downscaling optimization threshhold. This must be a value between 0 and 1. When
+     * rendering downscaled images and rendering hints are set to bicubic+quality and the scaling is
+     * smaller than the threshhold, a more quality-optimized but slower method will be used. The
+     * default is 0.5 which is a good compromise.
+     *
+     * @param imageDownscalingOptimizationThreshhold
+     */
+    public void setImageDownscalingOptimizationThreshhold(float imageDownscalingOptimizationThreshhold)
+    {
+        this.imageDownscalingOptimizationThreshhold = imageDownscalingOptimizationThreshhold;
     }
 
     /**
@@ -306,8 +331,9 @@ public class PDFRenderer
         // the end-user may provide a custom PageDrawer
         RenderingHints actualRenderingHints =
                 renderingHints == null ? createDefaultRenderingHints(g) : renderingHints;
-        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed,
-                                                                   destination, actualRenderingHints);
+        PageDrawerParameters parameters =
+                new PageDrawerParameters(this, page, subsamplingAllowed, destination,
+                        actualRenderingHints, imageDownscalingOptimizationThreshhold);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(g, page.getCropBox());       
         
@@ -416,8 +442,9 @@ public class PDFRenderer
         // the end-user may provide a custom PageDrawer
         RenderingHints actualRenderingHints =
                 renderingHints == null ? createDefaultRenderingHints(graphics) : renderingHints;
-        PageDrawerParameters parameters = new PageDrawerParameters(this, page, subsamplingAllowed,
-                                                                   destination, actualRenderingHints);
+        PageDrawerParameters parameters =
+                new PageDrawerParameters(this, page, subsamplingAllowed, destination,
+                        actualRenderingHints, imageDownscalingOptimizationThreshhold);
         PageDrawer drawer = createPageDrawer(parameters);
         drawer.drawPage(graphics, cropBox);
     }
