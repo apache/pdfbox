@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.fontbox.util.BoundingBox;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSString;
@@ -33,6 +35,10 @@ import org.apache.pdfbox.pdfwriter.ContentStreamWriter;
 import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
+import org.apache.pdfbox.pdmodel.font.PDType3CharProc;
+import org.apache.pdfbox.pdmodel.font.PDType3Font;
+import org.apache.pdfbox.pdmodel.font.PDVectorFont;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColor;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionJavaScript;
 import org.apache.pdfbox.pdmodel.interactive.action.PDFormFieldAdditionalActions;
@@ -502,8 +508,20 @@ class AppearanceGeneratorHelper
             // calculate font metrics at font size
             float fontScaleY = fontSize / FONTSCALE;
             float fontBoundingBoxAtSize = font.getBoundingBox().getHeight() * fontScaleY;
-            float fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
-            float fontDescentAtSize = font.getFontDescriptor().getDescent() * fontScaleY;
+
+            float fontCapAtSize = 0;
+            float fontDescentAtSize = 0;
+    
+            if (font.getFontDescriptor() != null) {
+                fontCapAtSize = font.getFontDescriptor().getCapHeight() * fontScaleY;
+                fontDescentAtSize = font.getFontDescriptor().getDescent() * fontScaleY;
+            } else {
+                float fontCapHeight = resolveCapHeight(font);
+                float fontDescent = resolveDescent(font);
+                LOG.debug("missing font descriptor - resolved Cap/Descent to " + fontCapHeight + "/" + fontDescent);
+                fontCapAtSize = fontCapHeight * fontScaleY;
+                fontDescentAtSize = fontDescent * fontScaleY;
+            }
             
             if (field instanceof PDTextField && ((PDTextField) field).isMultiline())
             {
@@ -862,6 +880,67 @@ class AppearanceGeneratorHelper
             }
         }
         return fontSize;
+    }
+
+    /*
+     * Resolve the cap height.
+     * 
+     * This is a very basic implementation using the height of "H" as reference.
+     */
+    private float resolveCapHeight(PDFont font) throws IOException {
+        return resolveGlyphHeight(font, "H".codePointAt(0));
+    }
+
+    /*
+     * Resolve the descent.
+     * 
+     * This is a very basic implementation using the height of "y" - "a" as reference.
+     */
+    private float resolveDescent(PDFont font) throws IOException {
+        return resolveGlyphHeight(font, "y".codePointAt(0)) - resolveGlyphHeight(font, "a".codePointAt(0));
+    }
+
+    // this calculates the real (except for type 3 fonts) individual glyph bounds
+    private float resolveGlyphHeight(PDFont font, int code) throws IOException {
+        GeneralPath path = null;
+        if (font instanceof PDType3Font) {
+            // It is difficult to calculate the real individual glyph bounds for type 3
+            // fonts
+            // because these are not vector fonts, the content stream could contain almost
+            // anything
+            // that is found in page content streams.
+            PDType3Font t3Font = (PDType3Font) font;
+            PDType3CharProc charProc = t3Font.getCharProc(code);
+            if (charProc != null) {
+                BoundingBox fontBBox = t3Font.getBoundingBox();
+                PDRectangle glyphBBox = charProc.getGlyphBBox();
+                if (glyphBBox != null) {
+                    // PDFBOX-3850: glyph bbox could be larger than the font bbox
+                    glyphBBox.setLowerLeftX(Math.max(fontBBox.getLowerLeftX(), glyphBBox.getLowerLeftX()));
+                    glyphBBox.setLowerLeftY(Math.max(fontBBox.getLowerLeftY(), glyphBBox.getLowerLeftY()));
+                    glyphBBox.setUpperRightX(Math.min(fontBBox.getUpperRightX(), glyphBBox.getUpperRightX()));
+                    glyphBBox.setUpperRightY(Math.min(fontBBox.getUpperRightY(), glyphBBox.getUpperRightY()));
+                    path = glyphBBox.toGeneralPath();
+                }
+            }
+        } else if (font instanceof PDVectorFont) {
+            PDVectorFont vectorFont = (PDVectorFont) font;
+            path = vectorFont.getPath(code);
+        } else if (font instanceof PDSimpleFont) {
+            PDSimpleFont simpleFont = (PDSimpleFont) font;
+
+            // these two lines do not always work, e.g. for the TT fonts in file 032431.pdf
+            // which is why PDVectorFont is tried first.
+            String name = simpleFont.getEncoding().getName(code);
+            path = simpleFont.getPath(name);
+        } else {
+            // shouldn't happen, please open issue in JIRA
+            LOG.warn("Unknown font class: " + font.getClass());
+        }
+        if (path == null) {
+            return -1;
+        }
+        return (float) path.getBounds2D().getHeight();
     }
     
     /**
