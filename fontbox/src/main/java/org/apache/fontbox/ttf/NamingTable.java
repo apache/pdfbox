@@ -150,13 +150,13 @@ public class NamingTable extends TTFTable
         psName = getName(NameRecord.NAME_POSTSCRIPT_NAME,
                          NameRecord.PLATFORM_MACINTOSH,
                          NameRecord.ENCODING_MACINTOSH_ROMAN,
-                         NameRecord.LANGUGAE_MACINTOSH_ENGLISH);
+                         NameRecord.LANGUAGE_MACINTOSH_ENGLISH);
         if (psName == null)
         {
             psName = getName(NameRecord.NAME_POSTSCRIPT_NAME,
                              NameRecord.PLATFORM_WINDOWS,
                              NameRecord.ENCODING_WINDOWS_UNICODE_BMP,
-                             NameRecord.LANGUGAE_WINDOWS_EN_US);
+                             NameRecord.LANGUAGE_WINDOWS_EN_US);
         }
         if (psName != null)
         {
@@ -178,7 +178,7 @@ public class NamingTable extends TTFTable
                     getName(nameId,
                             NameRecord.PLATFORM_UNICODE,
                             i,
-                            NameRecord.LANGUGAE_UNICODE);
+                            NameRecord.LANGUAGE_UNICODE);
             if (nameUni != null)
             {
                 return nameUni;
@@ -190,7 +190,7 @@ public class NamingTable extends TTFTable
                 getName(nameId,
                         NameRecord.PLATFORM_WINDOWS,
                         NameRecord.ENCODING_WINDOWS_UNICODE_BMP,
-                        NameRecord.LANGUGAE_WINDOWS_EN_US);
+                        NameRecord.LANGUAGE_WINDOWS_EN_US);
         if (nameWin != null)
         {
             return nameWin;
@@ -201,7 +201,7 @@ public class NamingTable extends TTFTable
                 getName(nameId,
                         NameRecord.PLATFORM_MACINTOSH,
                         NameRecord.ENCODING_MACINTOSH_ROMAN,
-                        NameRecord.LANGUGAE_MACINTOSH_ENGLISH);
+                        NameRecord.LANGUAGE_MACINTOSH_ENGLISH);
         if (nameMac != null)
         {
             return nameMac;
