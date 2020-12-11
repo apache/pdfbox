@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.junit.jupiter.api.Test;
@@ -38,20 +37,30 @@ public class PDAcroFormGenerateAppearancesTest {
     @Test
     public void test5041MissingFontDescriptor() throws IOException
     {
-
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016941/REDHAT-1301016-0.pdf";
 
-        PDDocument testPdf = null;
-        try
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            testPdf = Loader.loadPDF(new URL(sourceUrl).openStream());
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 
             assertDoesNotThrow(() -> catalog.getAcroForm(), "Getting the AcroForm shall not throw an exception");
         }
-        finally
+    }
+
+    /**
+     * PDFBOX-4086 Character missing for encoding
+     * @throws IOException
+     */
+    @Test
+    public void test4086CharNotEncodable() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12908175/AML1.PDF";
+
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
         {
-            IOUtils.closeQuietly(testPdf);
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+
+            assertDoesNotThrow(() -> catalog.getAcroForm(), "Getting the AcroForm shall not throw an exception");
         }
-    } 
+    }
 }
