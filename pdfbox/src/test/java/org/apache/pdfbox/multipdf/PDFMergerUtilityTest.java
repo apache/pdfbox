@@ -623,19 +623,10 @@ class PDFMergerUtilityTest
     // incorrect merging of /K entries
     private void checkStructTreeRootCount(File file) throws IOException
     {
-        int count = 0;
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file))))
+        try (PDDocument pdf = Loader.loadPDF(file))
         {
-            String line;
-            while ((line = br.readLine()) != null)
-            {
-                if (line.equals("/Type /StructTreeRoot"))
-                {
-                    ++count;
-                }
-            }
+            assertEquals(1, pdf.getDocument().getObjectsByType(COSName.STRUCT_TREE_ROOT).size());
         }
-        assertEquals(1, count);
     }
 
     /**
