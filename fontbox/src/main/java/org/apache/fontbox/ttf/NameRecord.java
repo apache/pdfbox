@@ -38,6 +38,11 @@ public class NameRecord
     public static final int ENCODING_UNICODE_2_0_FULL = 4;
 
     // Unicode encoding ids
+    /**
+     * @deprecated use {@link #LANGUAGE_UNICODE} instead.  
+     */
+    @Deprecated
+    public static final int LANGUGAE_UNICODE = 0;
     public static final int LANGUAGE_UNICODE = 0;
 
     // Windows encoding ids
@@ -46,12 +51,22 @@ public class NameRecord
     public static final int ENCODING_WINDOWS_UNICODE_UCS4 = 10;
 
     // Windows language ids
+    /**
+     * @deprecated use {@link #LANGUAGE_WINDOWS_EN_US} instead.  
+     */
+    @Deprecated
+    public static final int LANGUGAE_WINDOWS_EN_US = 0x0409;
     public static final int LANGUAGE_WINDOWS_EN_US = 0x0409;
 
     // Macintosh encoding ids
     public static final int ENCODING_MACINTOSH_ROMAN = 0;
 
     // Macintosh language ids
+    /**
+     * @deprecated use {@link #LANGUAGE_MACINTOSH_ENGLISH} instead.  
+     */
+    @Deprecated
+    public static final int LANGUGAE_MACINTOSH_ENGLISH = 0;
     public static final int LANGUAGE_MACINTOSH_ENGLISH = 0;
 
     // name ids
