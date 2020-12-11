@@ -60,5 +60,37 @@ public class PDAcroFormGenerateAppearancesTest {
         {
             IOUtils.closeQuietly(testPdf);
         }
-    } 
+    }
+
+    /**
+     * PDFBOX-4086 Character missing for encoding
+     * @throws IOException
+     */
+    @Test
+    public void test4086CharNotEncodable() throws IOException
+    {
+
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12908175/AML1.PDF";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            boolean thrown = false;
+            try
+            {
+                catalog.getAcroForm();
+            }
+            catch (Exception e)
+            {
+                thrown = true;                
+            }
+            assertFalse("There shall be no exception when getting the AcroForm", thrown);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }
 }
