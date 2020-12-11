@@ -254,11 +254,15 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
             return;
         }
         XMPSchema schema = getSchema();
+
+        System.out.println(fieldName);
+
         // add value
         String setter = "add" + calculateFieldNameForMethod(fieldName);
         // TypeDescription<AbstractSimpleProperty> td =
         // typeMapping.getSimpleDescription(type);
         Object value1 = getJavaValue(type);
+        System.out.println(type);
         Method set = getSchemaClass().getMethod(setter, getJavaType(type));
         set.invoke(schema, value1);
         // retrieve complex property
@@ -268,6 +272,7 @@ public abstract class AbstractSchemaTester extends AbstractTypeTester
         Assert.assertTrue(ocp instanceof ArrayProperty);
         ArrayProperty cp = (ArrayProperty) ocp;
         // check size is ok (1)
+        System.out.println(cp.getContainer().getAllProperties());
         Assert.assertEquals(1, cp.getContainer().getAllProperties().size());
         // add a new one
         Object value2 = getJavaValue(type);
