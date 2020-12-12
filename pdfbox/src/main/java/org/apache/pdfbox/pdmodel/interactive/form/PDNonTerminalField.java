@@ -130,7 +130,11 @@ public class PDNonTerminalField extends PDField
         //TODO: why not return a COSArrayList like in PDPage.getAnnotations() ?
  
         List<PDField> children = new ArrayList<>();
-        COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
+        COSArray kids = getCOSObject().getCOSArray(COSName.KIDS);
+        if (kids == null)
+        {
+            return children;
+        }
         for (int i = 0; i < kids.size(); i++)
         {
             COSBase kid = kids.getObject(i);
