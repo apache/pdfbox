@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -282,6 +283,25 @@ class PDAcroFormFromAnnotsTest
             }
         }
     }
+
+    /**
+     * PDFBOX-3891 null PDFieldFactory.createField 
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testFromAnnots3891NullField() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016993/poppler-14433-0.pdf";
+
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            assertDoesNotThrow(() -> catalog.getAcroForm(new CreateFieldsFixup(testPdf)), "Getting the AcroForm shall not throw an exception");
+        }
+    }
+
+
 
     /*
      * Create fields from widget annotations
