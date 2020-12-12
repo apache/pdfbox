@@ -129,7 +129,11 @@ public class PDNonTerminalField extends PDField
     public List<PDField> getChildren()
     {
         List<PDField> children = new ArrayList<PDField>();
-        COSArray kids = (COSArray)getCOSObject().getDictionaryObject(COSName.KIDS);
+        COSArray kids = getCOSObject().getCOSArray(COSName.KIDS);
+        if (kids == null)
+        {
+            return children;
+        }
         for (int i = 0; i < kids.size(); i++)
         {
             COSBase kid = kids.getObject(i);
