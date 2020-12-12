@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSBase;
@@ -831,8 +832,12 @@ public class COSWriter implements ICOSVisitor, Closeable
     {
         addXRefEntry(FreeXReference.NULL_ENTRY);
 
+        // Filter for NormalXReferences
         // sort xref, needed only if object keys not regenerated
-        Collections.sort(getXRefEntries());
+        List<XReferenceEntry> normalXReferences = getXRefEntries().stream() //
+                .filter(e -> e instanceof NormalXReference) //
+                .sorted() //
+                .collect(Collectors.toList());
 
         // remember the position where x ref was written
         setStartxref(getStandardOutput().getPos());
@@ -842,7 +847,7 @@ public class COSWriter implements ICOSVisitor, Closeable
         // write start object number and object count for this x ref section
         // we assume starting from scratch
 
-        Long[] xRefRanges = getXRefRanges(getXRefEntries());
+        Long[] xRefRanges = getXRefRanges(normalXReferences);
         int xRefLength = xRefRanges.length;
         int x = 0;
         int j = 0;
@@ -852,7 +857,7 @@ public class COSWriter implements ICOSVisitor, Closeable
 
             for (int i = 0; i < xRefRanges[x + 1]; ++i)
             {
-                writeXrefEntry(xRefEntries.get(j++));
+                writeXrefEntry(normalXReferences.get(j++));
             }
             x += 2;
         }
