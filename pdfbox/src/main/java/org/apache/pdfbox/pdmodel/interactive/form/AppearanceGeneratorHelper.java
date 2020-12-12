@@ -185,6 +185,12 @@ class AppearanceGeneratorHelper
 
         for (PDAnnotationWidget widget : field.getWidgets())
         {
+            if (widget.getCOSObject().containsKey("PMD"))
+            {
+                LOG.warn("widget of field " + field.getFullyQualifiedName() + " is a PaperMetaData widet, no appearance stream created");
+                continue;
+            }
+
             // some fields have the /Da at the widget level if the 
             // widgets differ in layout.
             PDDefaultAppearanceString acroFormAppearance = defaultAppearance;
