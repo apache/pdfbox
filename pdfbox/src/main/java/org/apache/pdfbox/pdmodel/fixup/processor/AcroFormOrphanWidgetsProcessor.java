@@ -17,6 +17,7 @@
 package org.apache.pdfbox.pdmodel.fixup.processor;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +79,7 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         Map<String, PDField> nonTerminalFieldsMap = new HashMap<String, PDField>();
 
         LOG.debug("rebuilding fields from widgets");
-        List<PDField> fields = acroForm.getFields();
+        List<PDField> fields = new ArrayList<PDField>();
         for (PDPage page : document.getPages())
         {
             try
