@@ -17,17 +17,24 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.util.ArrayDeque;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Queue;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.pdfbox.cos.COSDictionary;
 
 /**
  * The field tree.
  */
 public class PDFieldTree implements Iterable<PDField>
 {
+    private static final Log LOG = LogFactory.getLog(PDFieldTree.class);
+
     private final PDAcroForm acroForm;
 
     /**
@@ -60,6 +67,10 @@ public class PDFieldTree implements Iterable<PDField>
     {
         private final Queue<PDField> queue = new ArrayDeque<>();
         
+        // PDFBOX-5044: to prevent recursion
+        // must be COSDictionary and not PDField, because PDField is newly created each time
+        private final Set<COSDictionary> set = new HashSet<>();
+
         private FieldIterator(PDAcroForm form)
         {
             List<PDField> fields = form.getFields();
@@ -78,7 +89,8 @@ public class PDFieldTree implements Iterable<PDField>
         @Override
         public PDField next()
         {
-            if(!hasNext()){
+            if(!hasNext())
+            {
                 throw new NoSuchElementException();
             }
             
@@ -94,12 +106,21 @@ public class PDFieldTree implements Iterable<PDField>
         private void enqueueKids(PDField node)
         {
             queue.add(node);
+            set.add(node.getCOSObject());
             if (node instanceof PDNonTerminalField)
             {
                 List<PDField> kids = ((PDNonTerminalField) node).getChildren();
                 for (PDField kid : kids)
                 {
-                    enqueueKids(kid);
+                    if (set.contains(kid.getCOSObject()))
+                    {
+                        LOG.error("Child of field '" + node.getFullyQualifiedName() +
+                                "' already exists elsewhere, ignored to avoid recursion");
+                    }
+                    else
+                    {
+                        enqueueKids(kid);
+                    }
                 }
             }
         }
