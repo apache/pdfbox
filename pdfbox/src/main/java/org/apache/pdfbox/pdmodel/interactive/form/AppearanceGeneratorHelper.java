@@ -173,7 +173,7 @@ class AppearanceGeneratorHelper {
             
             if (widget.getCOSObject().containsKey("PMD"))
             {
-                LOG.warn("widget of field " + field.getFullyQualifiedName() + " is a PaperMetaData widet, no appearance stream created");
+                LOG.warn("widget of field " + field.getFullyQualifiedName() + " is a PaperMetaData widget, no appearance stream created");
                 continue;
             }
 
