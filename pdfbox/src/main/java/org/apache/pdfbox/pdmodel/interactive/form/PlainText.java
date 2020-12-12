@@ -206,7 +206,7 @@ class PlainText
                     while (true)
                     {
                         splitOffset--;
-                        String substring = word.trim().substring(0, splitOffset);
+                        String substring = word.substring(0, splitOffset);
                         float substringWidth = font.getStringWidth(substring) * scale;
                         if (substringWidth < width)
                         {

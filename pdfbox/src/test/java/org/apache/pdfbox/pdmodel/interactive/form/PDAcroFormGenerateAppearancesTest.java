@@ -93,4 +93,36 @@ public class PDAcroFormGenerateAppearancesTest {
             IOUtils.closeQuietly(testPdf);
         }
     }
+
+    /**
+     * PDFBOX-5043 PaperMetaData
+     * @throws IOException
+     */
+    @Test
+    public void test5043PaperMetaData() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016992/PDFBOX-3891-5.pdf";
+
+        PDDocument testPdf = null;
+        try
+        {
+            testPdf = PDDocument.load(new URL(sourceUrl).openStream());
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+            boolean thrown = false;
+            try
+            {
+                catalog.getAcroForm();
+            }
+            catch (Exception e)
+            {
+                thrown = true;                
+            }
+            assertFalse("There shall be no exception when getting the AcroForm", thrown);
+        }
+        finally
+        {
+            IOUtils.closeQuietly(testPdf);
+        }
+    }    
+
 }
