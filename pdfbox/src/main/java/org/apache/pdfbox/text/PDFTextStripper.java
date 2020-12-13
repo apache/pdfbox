@@ -405,7 +405,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
         beadRectangles = new ArrayList<PDRectangle>();
         for (PDThreadBead bead : page.getThreadBeads())
         {
-            if (bead == null)
+            if (bead == null || bead.getRectangle() == null)
             {
                 // can't skip, because of null entry handling in processTextPosition()
                 beadRectangles.add(null);
