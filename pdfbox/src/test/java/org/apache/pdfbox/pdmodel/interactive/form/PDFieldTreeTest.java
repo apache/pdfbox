@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Tilman Hausherr
  */
-public class PDFieldTreeTest
+class PDFieldTreeTest
 {
 
     /**
@@ -40,7 +40,7 @@ public class PDFieldTreeTest
      * @throws IOException
      */
     @Test
-    public void test5044() throws IOException
+    void test5044() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016994/PDFBOX-4131-0.pdf";
 
