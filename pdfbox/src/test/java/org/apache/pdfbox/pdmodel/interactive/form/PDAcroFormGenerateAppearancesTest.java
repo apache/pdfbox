@@ -27,7 +27,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.junit.jupiter.api.Test;
 
-public class PDAcroFormGenerateAppearancesTest {
+class PDAcroFormGenerateAppearancesTest {
 
     /**
      * PDFBOX-5041 Missing font descriptor
@@ -35,7 +35,7 @@ public class PDAcroFormGenerateAppearancesTest {
      * @throws IOException
      */
     @Test
-    public void test5041MissingFontDescriptor() throws IOException
+    void test5041MissingFontDescriptor() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016941/REDHAT-1301016-0.pdf";
 
@@ -52,7 +52,7 @@ public class PDAcroFormGenerateAppearancesTest {
      * @throws IOException
      */
     @Test
-    public void test4086CharNotEncodable() throws IOException
+    void test4086CharNotEncodable() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12908175/AML1.PDF";
 
@@ -69,7 +69,7 @@ public class PDAcroFormGenerateAppearancesTest {
      * @throws IOException
      */
     @Test
-    public void test5043PaperMetaData() throws IOException
+    void test5043PaperMetaData() throws IOException
     {
         String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016992/PDFBOX-3891-5.pdf";
 

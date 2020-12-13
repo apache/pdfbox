@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * @author John Hewson
  */
 @Execution(ExecutionMode.CONCURRENT)
-public class TestRendering
+class TestRendering
 {
     private static final String INPUT_DIR = "src/test/resources/input/rendering";
     private static final String OUTPUT_DIR = "target/test-output/rendering/";
