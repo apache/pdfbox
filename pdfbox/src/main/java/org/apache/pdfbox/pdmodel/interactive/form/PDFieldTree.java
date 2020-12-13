@@ -17,7 +17,8 @@
 package org.apache.pdfbox.pdmodel.interactive.form;
 
 import java.util.ArrayDeque;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Queue;
 
@@ -69,7 +70,8 @@ public class PDFieldTree implements Iterable<PDField>
         
         // PDFBOX-5044: to prevent recursion
         // must be COSDictionary and not PDField, because PDField is newly created each time
-        private final Set<COSDictionary> set = new HashSet<>();
+        private final Set<COSDictionary> set =
+                Collections.newSetFromMap(new IdentityHashMap<COSDictionary, Boolean>());
 
         private FieldIterator(PDAcroForm form)
         {
