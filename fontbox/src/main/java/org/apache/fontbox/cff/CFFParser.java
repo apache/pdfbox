@@ -638,6 +638,10 @@ public class CFFParser
         int fontDictOffset = fdArrayEntry.getNumber(0).intValue();
         input.setPosition(fontDictOffset);
         byte[][] fdIndex = readIndexData(input);
+        if (fdIndex == null)
+        {
+            throw new IOException("Font dict index is missing for a CIDKeyed Font");
+        }
 
         List<Map<String, Object>> privateDictionaries = new LinkedList<>();
         List<Map<String, Object>> fontDictionaries = new LinkedList<>();
