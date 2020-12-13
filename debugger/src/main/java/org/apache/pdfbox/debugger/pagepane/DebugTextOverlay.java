@@ -96,7 +96,7 @@ final class DebugTextOverlay
                 List<PDThreadBead> pageArticles = page.getThreadBeads();
                 for (PDThreadBead bead : pageArticles)
                 {
-                    if (bead == null)
+                    if (bead == null || bead.getRectangle() == null)
                     {
                         continue;
                     }
