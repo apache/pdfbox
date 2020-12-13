@@ -16,6 +16,7 @@
  */
 package org.apache.pdfbox.pdmodel.interactive.form;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -348,6 +350,25 @@ class PDAcroFormTest
             assertNotEquals(PDType1Font.ZAPF_DINGBATS, zadb);          
         }
     }
+
+    /**
+     * PDFBOX-3777 Illegal Fields definition COSDictionary instead of Array
+     * 
+     * @throws IOException
+     */
+    @Test
+    void testIllegalFieldsDefinition() throws IOException
+    {
+        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12866226/D1790B.PDF";
+
+        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        {
+            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+
+            assertDoesNotThrow(() -> catalog.getAcroForm(), "Getting the AcroForm shall not throw an exception");
+        }
+    }
+
 
     @AfterEach
     public void tearDown() throws IOException
