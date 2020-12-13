@@ -184,6 +184,10 @@ public class DataInput
      */
     public byte[] readBytes(int length) throws IOException
     {
+        if (length < 0)
+        {
+            throw new IOException("length is negative"); 
+        }
         if (inputBuffer.length - bufferPosition < length)
         {
             throw new EOFException(); 
