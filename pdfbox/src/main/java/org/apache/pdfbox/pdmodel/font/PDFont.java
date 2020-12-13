@@ -114,7 +114,7 @@ public abstract class PDFont implements COSObjectable, PDFontLike
 
     private PDFontDescriptor loadFontDescriptor()
     {
-        COSDictionary fd = (COSDictionary) dict.getDictionaryObject(COSName.FONT_DESC);
+        COSDictionary fd = dict.getCOSDictionary(COSName.FONT_DESC);
         if (fd != null)
         {
             return new PDFontDescriptor(fd);
