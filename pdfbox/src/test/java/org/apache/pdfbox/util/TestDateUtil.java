@@ -353,18 +353,10 @@ public class TestDateUtil extends TestCase
         checkToString(2015, 8, 28, 3, 14, 15, tzAdelaide, +9, 30);
         checkToString(2016, 2, 28, 3, 14, 15, tzAdelaide, +10, 30);
         // McMurdo has a daylightsavings rule, but it seems never to apply
-        checkToString(1981, 1, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1982, 2, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1983, 3, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1984, 4, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1985, 5, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1986, 6, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1987, 7, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1988, 8, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1989, 9, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1990, 10, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1991, 11, 1, 1, 14, 15, tzMcMurdo, +0, 0);
-        checkToString(1992, 12, 1, 1, 14, 15, tzMcMurdo, +0, 0);
+        for (int m = 1; m <= 12; ++m)
+        {
+            checkToString(1980 + m, m, 1, 1, 14, 15, tzMcMurdo, +0, 0);
+        }
     }
 
     private static void checkParseTZ(int expect, String src)
