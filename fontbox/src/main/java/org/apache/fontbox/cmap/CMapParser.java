@@ -244,7 +244,14 @@ public class CMapParser
             }
             byte[] startRange = (byte[]) nextToken;
             byte[] endRange = (byte[]) parseNextToken(cmapStream);
-            result.addCodespaceRange(new CodespaceRange(startRange, endRange));
+            try
+            {
+                result.addCodespaceRange(new CodespaceRange(startRange, endRange));
+            }
+            catch (IllegalArgumentException ex)
+            {
+                throw new IOException(ex);
+            }
         }
     }
 
