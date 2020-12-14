@@ -74,7 +74,7 @@ public class PDComplexFileSpecification extends PDFileSpecification
     {
         if (efDictionary == null && fs != null)
         {
-            efDictionary = (COSDictionary)fs.getDictionaryObject( COSName.EF );            
+            efDictionary = fs.getCOSDictionary(COSName.EF);           
         }
         return efDictionary;
     }
@@ -223,14 +223,13 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * @return The embedded file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFile()
-    {
-        PDEmbeddedFile file = null;
-        COSStream stream = (COSStream)getObjectFromEFDictionary(COSName.F);
-        if( stream != null )
+    {        
+        COSBase base = getObjectFromEFDictionary(COSName.F);
+        if (base instanceof COSStream)
         {
-            file = new PDEmbeddedFile( stream );
+            return new PDEmbeddedFile((COSStream) base);
         }
-        return file;
+        return null;
     }
 
     /**
@@ -260,14 +259,13 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * @return The embedded dos file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFileDos()
-    {
-        PDEmbeddedFile file = null;
-        COSStream stream = (COSStream)getObjectFromEFDictionary( COSName.DOS );
-        if( stream != null )
+    {        
+        COSBase base = getObjectFromEFDictionary( COSName.DOS );
+        if (base instanceof COSStream)
         {
-            file = new PDEmbeddedFile( stream );
+            return new PDEmbeddedFile((COSStream) base);
         }
-        return file;
+        return null;
     }
 
     /**
@@ -276,14 +274,13 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * @return The embedded Mac file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFileMac()
-    {
-        PDEmbeddedFile file = null;
-        COSStream stream = (COSStream)getObjectFromEFDictionary( COSName.MAC );
-        if( stream != null )
+    {        
+        COSBase base = getObjectFromEFDictionary( COSName.MAC );
+        if (base instanceof COSStream)
         {
-            file = new PDEmbeddedFile( stream );
+            return new PDEmbeddedFile((COSStream) base);
         }
-        return file;
+        return null;
     }
 
     /**
@@ -292,14 +289,13 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * @return The embedded file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFileUnix()
-    {
-        PDEmbeddedFile file = null;
-        COSStream stream = (COSStream)getObjectFromEFDictionary( COSName.UNIX );
-        if( stream != null )
+    {        
+        COSBase base = getObjectFromEFDictionary( COSName.UNIX );
+        if (base instanceof COSStream)
         {
-            file = new PDEmbeddedFile( stream );
+            return new PDEmbeddedFile((COSStream) base);
         }
-        return file;
+        return null;
     }
 
     /**
@@ -308,14 +304,13 @@ public class PDComplexFileSpecification extends PDFileSpecification
      * @return The embedded unicode file for this file spec.
      */
     public PDEmbeddedFile getEmbeddedFileUnicode()
-    {
-        PDEmbeddedFile file = null;
-        COSStream stream = (COSStream)getObjectFromEFDictionary( COSName.UF );
-        if( stream != null )
+    {        
+        COSBase base = getObjectFromEFDictionary( COSName.UF );
+        if (base instanceof COSStream)
         {
-            file = new PDEmbeddedFile( stream );
+            return new PDEmbeddedFile((COSStream) base);
         }
-        return file;
+        return null;
     }
 
     /**
