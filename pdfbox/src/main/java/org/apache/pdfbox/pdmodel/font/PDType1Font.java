@@ -235,9 +235,13 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
 
                     // repair Length1 and Length2 if necessary
                     byte[] bytes = fontFile.toByteArray();
+                    if (bytes.length == 0)
+                    {
+                        throw new IOException("Font data unavailable");
+                    }
                     length1 = repairLength1(bytes, length1);
                     length2 = repairLength2(bytes, length1, length2);
-                    
+
                     if (bytes.length > 0 && (bytes[0] & 0xff) == PFB_START_MARKER)
                     {
                         // some bad files embed the entire PFB, see PDFBOX-2607
@@ -246,6 +250,11 @@ public class PDType1Font extends PDSimpleFont implements PDVectorFont
                     else
                     {
                         // the PFB embedded as two segments back-to-back
+                        if (length1 < 0 || length1 > length1 + length2)
+                        {
+                            throw new IOException("Invalid length data, actual length: " +
+                                    bytes.length + ", /Length1: " + length1 + ", /Length2: " + length2);
+                        }
                         byte[] segment1 = Arrays.copyOfRange(bytes, 0, length1);
                         byte[] segment2 = Arrays.copyOfRange(bytes, length1, length1 + length2);
 
