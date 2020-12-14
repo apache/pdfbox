@@ -326,6 +326,8 @@ class TestDateUtil
         
         assertNull(DateConverter.toCalendar((COSString) null));
         assertNull(DateConverter.toCalendar((String) null));
+        assertNull(DateConverter.toCalendar("D:    "));
+        assertNull(DateConverter.toCalendar("D:"));
         
         checkToString(2013, 8, 28, 3, 14, 15, tzPgh, -4, 0);
         checkToString(2014, 2, 28, 3, 14, 15, tzPgh, -5, 0);
