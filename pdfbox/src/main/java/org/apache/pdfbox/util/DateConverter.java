@@ -615,7 +615,7 @@ public final class DateConverter
      */
     private static Calendar parseDate(String text, ParsePosition initialWhere)
     {
-        if (text == null || text.isEmpty())
+        if (text == null || text.isEmpty() || "D:".equals(text.trim()))
         {
             return null;
         }
