@@ -576,6 +576,11 @@ public class CMapParser
                     if (multiplyer == 16)
                     {
                         bufferIndex++;
+                        if (bufferIndex >= tokenParserByteBuffer.length)
+                        {
+                            throw new IOException("cmap token ist larger than buffer size " +
+                                    tokenParserByteBuffer.length);
+                        }
                         tokenParserByteBuffer[bufferIndex] = 0;
                         multiplyer = 1;
                     }
