@@ -398,7 +398,7 @@ class Type1Lexer
     /**
      * Reads a (string).
      */
-    private Token readString()
+    private Token readString() throws IOException
     {
         StringBuilder sb = new StringBuilder();
 
@@ -442,8 +442,15 @@ class Type1Lexer
                     if (Character.isDigit(c1))
                     {
                         String num = String.valueOf(new char[] { c1, getChar(), getChar() });
-                        Integer code = Integer.parseInt(num, 8);
-                        sb.append((char)(int)code);
+                        try
+                        {
+                            Integer code = Integer.parseInt(num, 8);
+                            sb.append((char) (int) code);
+                        }
+                        catch (NumberFormatException ex)
+                        {
+                            throw new IOException(ex);
+                        }
                     }
                     break;
                 case '\r':
