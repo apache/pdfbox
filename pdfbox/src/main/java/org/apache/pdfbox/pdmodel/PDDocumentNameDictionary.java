@@ -148,10 +148,11 @@ public class PDDocumentNameDictionary implements COSObjectable
     }
 
     /**
-     * Get the document level javascript entries. The values in this name tree
-     * will be PDTextStream objects.
+     * Get the document level JavaScript name tree. When the document is opened, all the JavaScript
+     * actions in it shall be executed, defining JavaScript functions for use by other scripts in
+     * the document.
      *
-     * @return The document level named javascript.
+     * @return The document level JavaScript name tree.
      */
     public PDJavascriptNameTreeNode getJavaScript()
     {
