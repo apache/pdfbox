@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 import picocli.CommandLine;
@@ -83,7 +84,7 @@ public final class DecompressObjectstreams implements Callable<Integer>
                 outfile = infile;
             }
 
-            doc.save(outfile);
+            doc.save(outfile, CompressParameters.NO_COMPRESSION);
         }
         catch (IOException e)
         {
