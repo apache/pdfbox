@@ -942,10 +942,10 @@ public class PDDocument implements Closeable
      *
      * @param output The stream to write to. It will be closed when done. It is recommended to wrap it in a
      * {@link java.io.BufferedOutputStream}, unless it is already buffered.
-     * @param parameters The parameters for the document's compression.
+     * @param compressParameters The parameters for the document's compression.
      * @throws IOException if the output could not be written
      */
-    public void save(OutputStream output, CompressParameters parameters)
+    public void save(OutputStream output, CompressParameters compressParameters)
             throws IOException
     {
         if (document.isClosed())
@@ -954,7 +954,8 @@ public class PDDocument implements Closeable
         }
 
         // object stream compression requires a cross reference stream.
-        document.setIsXRefStream(parameters != null);
+        document.setIsXRefStream(compressParameters != null //
+                && CompressParameters.NO_COMPRESSION != compressParameters);
         // subset designated fonts
         for (PDFont font : fontsToSubset)
         {
@@ -963,7 +964,7 @@ public class PDDocument implements Closeable
         fontsToSubset.clear();
 
         // save PDF
-        try (COSWriter writer = new COSWriter(output, parameters))
+        try (COSWriter writer = new COSWriter(output, compressParameters))
         {
             writer.write(this);
         }
