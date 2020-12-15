@@ -35,7 +35,10 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.rendering.TestPDFToImage;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Test flatten different forms and compare with rendering.
@@ -44,6 +47,7 @@ import org.junit.jupiter.api.Test;
  * as the test results need manual inspection. Enable as needed.
  *
  */
+@Execution(ExecutionMode.CONCURRENT)
 class PDAcroFormFlattenTest
 {
 
@@ -57,308 +61,81 @@ class PDAcroFormFlattenTest
         OUT_DIR.mkdirs();
     }
 
-    /*
-     * PDFBOX-142 Filled template.
-     *
-     * @throws IOException
-     */
-    // disabled as there is a small difference which can not be seen visually
-    // @Test
-    public void testFlattenPDFBOX142() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12742551/Testformular1.pdf";
-        String targetFileName = "Testformular1.pdf";
+    @ParameterizedTest
+    @CsvSource({
+        // PDFBOX-142 Filled template.
+        // disabled as there is a small difference which can not be seen visually
+        // "https://issues.apache.org/jira/secure/attachment/12742551/Testformular1.pdf,Testformular1.pdf",
+        
+        // PDFBOX-563 Filled template.
+        // Disabled as there is a minimal difference which can not be seen visually on ci-builds
+        // "https://issues.apache.org/jira/secure/attachment/12425859/TestFax_56972.pdf,TestFax_56972.pdf",
+        
+        // PDFBOX-2469 Empty template.
+        "https://issues.apache.org/jira/secure/attachment/12682897/FormI-9-English.pdf,FormI-9-English.pdf",
+        
+        // PDFBOX-2469 Filled template.
+        "https://issues.apache.org/jira/secure/attachment/12678455/testPDF_acroForm.pdf,testPDF_acroForm.pdf",
+        
+        //PDFBOX-2586 Empty template.
+        "https://issues.apache.org/jira/secure/attachment/12689788/test.pdf,test-2586.pdf",
+        
+        // PDFBOX-3083 Filled template rotated.
+        // disabled as there is a small difference which can not be seen visually
+        // "https://issues.apache.org/jira/secure/attachment/12770263/mypdf.pdf,mypdf.pdf",
 
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
+        // PDFBOX-3262 Hidden fields.
+        "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf,hidden_fields.pdf",
+        
+        // PDFBOX-3396 Signed Document 1.
+        "https://issues.apache.org/jira/secure/attachment/12816014/Signed-Document-1.pdf,Signed-Document-1.pdf",
+        
+        // PDFBOX-3396 Signed Document 2.
+        "https://issues.apache.org/jira/secure/attachment/12816016/Signed-Document-2.pdf,Signed-Document-2.pdf",
 
-    /*
-     * PDFBOX-563 Filled template.
-     *
-     * @throws IOException
-     */
-    // Disabled as there is a minimal difference which can not be seen visually on ci-builds
-    // @Test
-    public void testFlattenPDFBOX563() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12425859/TestFax_56972.pdf";
-        String targetFileName = "TestFax_56972.pdf";
+        // PDFBOX-3396 Signed Document 3.
+        "https://issues.apache.org/jira/secure/attachment/12821307/Signed-Document-3.pdf,Signed-Document-3.pdf",
+        
+        // PDFBOX-3396 Signed Document 4.
+        "https://issues.apache.org/jira/secure/attachment/12821308/Signed-Document-4.pdf,Signed-Document-4.pdf",
 
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
+        // PDFBOX-3587 Empty template.
+        // disabled as there is a missing character with the available fonts on the test server
+        // "https://issues.apache.org/jira/secure/attachment/12839977/OpenOfficeForm.pdf,OpenOfficeForm.pdf",
 
-    /*
-     * PDFBOX-2469 Empty template.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX2469Empty() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12682897/FormI-9-English.pdf";
-        String targetFileName = "FormI-9-English.pdf";
+        // PDFBOX-3587 Filled template.
+        // disabled as there is a small difference which can not be seen visually
+        // "https://issues.apache.org/jira/secure/attachment/12840280/OpenOfficeForm_filled.pdf,OpenOfficeForm_filled.pdf",
 
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
+        // PDFBOX-4157 Filled template.
+        // disabled as there is a small difference which can not be seen visually
+        // "https://issues.apache.org/jira/secure/attachment/12976553/PDFBOX-4157-filled.pdf,PDFBOX-4157-filled.pdf",
 
-    /*
-     * PDFBOX-2469 Filled template.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX2469Filled() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12678455/testPDF_acroForm.pdf";
-        String targetFileName = "testPDF_acroForm.pdf";
+        // PDFBOX-4172 Filled template.
+        // disabled as there is a minimal difference which can not be seen visually
+        // "https://issues.apache.org/jira/secure/attachment/12976552/PDFBOX-4172-filled.pdf,PDFBOX-4172-filled.pdf",
 
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
+        // PDFBOX-4615 Filled template.
+        // disabled as there is a minimal difference which can not be seen visually on ci-builds
+        // "https://issues.apache.org/jira/secure/attachment/12976452/resetboundingbox-filled.pdf,PDFBOX-4615-filled.pdf",
 
-    /*
-     * PDFBOX-2586 Empty template.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX2586() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12689788/test.pdf";
-        String targetFileName = "test-2586.pdf";
+        // PDFBOX-4693: page is not rotated, but the appearance stream is.
+        "https://issues.apache.org/jira/secure/attachment/12986337/stenotypeTest-3_rotate_no_flatten.pdf,PDFBOX-4693-filled.pdf",
+        
+        // PDFBOX-4788: non-widget annotations are not to be removed on a page that has no widget
+        // annotations.
+        "https://issues.apache.org/jira/secure/attachment/12994791/flatten.pdf,PDFBOX-4788.pdf",
+    
+        // PDFBOX-4889: appearance streams with empty /BBox.
+        "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf,PDFBOX-4889.pdf",
 
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
+        // PDFBOX-4955: appearance streams with forms that are not used.
+        "https://issues.apache.org/jira/secure/attachment/13011410/PDFBOX-4955.pdf,PDFBOX-4955.pdf",
 
-    /*
-     * PDFBOX-3083 Filled template rotated.
-     *
-     * @throws IOException
-     */
-    // disabled as there is a small difference which can not be seen visually
-    // @Test
-    public void testFlattenPDFBOX3083() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12770263/mypdf.pdf";
-        String targetFileName = "mypdf.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /*
-     * PDFBOX-3262 Hidden fields.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX3262() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12792007/hidden_fields.pdf";
-        String targetFileName = "hidden_fields.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /*
-     * PDFBOX-3396 Signed Document 1.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX3396_1() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12816014/Signed-Document-1.pdf";
-        String targetFileName = "Signed-Document-1.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /*
-     * PDFBOX-3396 Signed Document 2.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX3396_2() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12816016/Signed-Document-2.pdf";
-        String targetFileName = "Signed-Document-2.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /*
-     * PDFBOX-3396 Signed Document 3.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX3396_3() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12821307/Signed-Document-3.pdf";
-        String targetFileName = "Signed-Document-3.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /*
-     * PDFBOX-3396 Signed Document 4.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBOX3396_4() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12821308/Signed-Document-4.pdf";
-        String targetFileName = "Signed-Document-4.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /*
-     * PDFBOX-3587 Empty template.
-     *
-     * @throws IOException
-     */
-    // disabled as there is a missing character with the available fonts on the test server
-    // @Test
-    public void testFlattenOpenOfficeForm() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12839977/OpenOfficeForm.pdf";
-        String targetFileName = "OpenOfficeForm.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /*
-     * PDFBOX-3587 Filled template.
-     *
-     * @throws IOException
-     */
-    // disabled as there is a small difference which can not be seen visually
-    // @Test
-    public void testFlattenOpenOfficeFormFilled() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12840280/OpenOfficeForm_filled.pdf";
-        String targetFileName = "OpenOfficeForm_filled.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-
-    /**
-     * PDFBOX-4157 Filled template.
-     *
-     * @throws IOException
-     */
-    // disabled as there is a small difference which can not be seen visually
-    // @Test
-    public void testFlattenPDFBox4157() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976553/PDFBOX-4157-filled.pdf";
-        String targetFileName = "PDFBOX-4157-filled.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /**
-     * PDFBOX-4172 Filled template.
-     *
-     * @throws IOException
-     */
-    // Disabled as there is a minimal differnece which can not be seen visually
-    // @Test
-    public void testFlattenPDFBox4172() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976552/PDFBOX-4172-filled.pdf";
-        String targetFileName = "PDFBOX-4172-filled.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /**
-     * PDFBOX-4615 Filled template.
-     *
-     * @throws IOException
-     */
-    // Disabled as there is a minimal difference which can not be seen visually on ci-builds
-    // @Test
-    public void testFlattenPDFBox4615() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12976452/resetboundingbox-filled.pdf";
-        String targetFileName = "PDFBOX-4615-filled.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /**
-     * PDFBOX-4693: page is not rotated, but the appearance stream is.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBox4693() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12986337/stenotypeTest-3_rotate_no_flatten.pdf";
-        String targetFileName = "PDFBOX-4693-filled.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /**
-     * PDFBOX-4788: non-widget annotations are not to be removed on a page that has no widget
-     * annotations.
-     *
-     * @throws IOException
-     */
-    @Test
-    void testFlattenPDFBox4788() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12994791/flatten.pdf";
-        String targetFileName = "PDFBOX-4788.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /**
-     * PDFBOX-4889: appearance streams with empty /BBox.
-     * 
-     * @throws IOException 
-     */
-    @Test
-    void testFlattenPDFBox4889() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13005793/f1040sb%20test.pdf";
-        String targetFileName = "PDFBOX-4889.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /**
-     * PDFBOX-4955: appearance streams with forms that are not used.
-     * 
-     * @throws IOException 
-     */
-    @Test
-    void testFlattenPDFBox4955() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13011410/PDFBOX-4955.pdf";
-        String targetFileName = "PDFBOX-4955.pdf";
-
-        flattenAndCompare(sourceUrl, targetFileName);
-    }
-
-    /**
-     * PDFBOX-4958 text and button with image.
-     *
-     * @throws IOException
-     */
-    // Disabled as there is a minimal difference which can not be seen visually on ci-builds
-    // @Test
-    public void testFlattenPDFBox4958() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13012242/PDFBOX-4958.pdf";
-        String targetFileName = "PDFBOX-4958-flattened.pdf";
-
+        // PDFBOX-4958 text and button with image.
+        "https://issues.apache.org/jira/secure/attachment/13012242/PDFBOX-4958.pdf,PDFBOX-4958-flattened.pdf"
+    })
+    public void testFlatten(String sourceUrl, String targetFileName) throws IOException {
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
