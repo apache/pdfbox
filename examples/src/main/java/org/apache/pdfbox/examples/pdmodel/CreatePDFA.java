@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.xml.transform.TransformerException;
+
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -125,7 +127,7 @@ public final class CreatePDFA
             intent.setRegistryName("http://www.color.org");
             doc.getDocumentCatalog().addOutputIntent(intent);
 
-            doc.save(file);
+            doc.save(file, CompressParameters.NO_COMPRESSION);
         }
     }
 }
