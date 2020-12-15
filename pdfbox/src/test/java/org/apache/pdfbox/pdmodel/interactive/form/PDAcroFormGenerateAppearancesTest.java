@@ -20,60 +20,36 @@ package org.apache.pdfbox.pdmodel.interactive.form;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-class PDAcroFormGenerateAppearancesTest {
-
-    /**
-     * PDFBOX-5041 Missing font descriptor
-     * 
-     * @throws IOException
-     */
-    @Test
-    void test5041MissingFontDescriptor() throws IOException
+@Execution(ExecutionMode.CONCURRENT)
+class PDAcroFormGenerateAppearancesTest
+{
+    @ParameterizedTest
+    @ValueSource(strings =
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016941/REDHAT-1301016-0.pdf";
+        // PDFBOX-5041 Missing font descriptor
+        "https://issues.apache.org/jira/secure/attachment/13016941/REDHAT-1301016-0.pdf",
 
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
-        {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
+        // PDFBOX-4086 Character missing for encoding
+        "https://issues.apache.org/jira/secure/attachment/12908175/AML1.PDF",
 
-            assertDoesNotThrow(() -> catalog.getAcroForm(), "Getting the AcroForm shall not throw an exception");
-        }
-    }
-
-    /**
-     * PDFBOX-4086 Character missing for encoding
-     * @throws IOException
-     */
-    @Test
-    void test4086CharNotEncodable() throws IOException
+        // PDFBOX-5043 PaperMetaData
+        "https://issues.apache.org/jira/secure/attachment/13016992/PDFBOX-3891-5.pdf"
+    })
+    void testGetAcroForm(String sourceUrl) throws IOException
     {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/12908175/AML1.PDF";
-
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
-        {
-            PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
-
-            assertDoesNotThrow(() -> catalog.getAcroForm(), "Getting the AcroForm shall not throw an exception");
-        }
-    }
-
-    /**
-     * PDFBOX-5043 PaperMetaData
-     * @throws IOException
-     */
-    @Test
-    void test5043PaperMetaData() throws IOException
-    {
-        String sourceUrl = "https://issues.apache.org/jira/secure/attachment/13016992/PDFBOX-3891-5.pdf";
-
-        try (PDDocument testPdf = Loader.loadPDF(new URL(sourceUrl).openStream()))
+        try (InputStream is = new URL(sourceUrl).openStream();
+             PDDocument testPdf = Loader.loadPDF(is))
         {
             PDDocumentCatalog catalog = testPdf.getDocumentCatalog();
 
