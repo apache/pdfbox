@@ -71,8 +71,7 @@ class TestOptionalContentGroups
     @Test
     void testOCGGeneration() throws Exception
     {
-        PDDocument doc = new PDDocument();
-        try
+        try (PDDocument doc = new PDDocument())
         {
             //Create new page
             PDPage page = new PDPage();
@@ -152,10 +151,6 @@ class TestOptionalContentGroups
             File targetFile = new File(testResultsDir, "ocg-generation.pdf");
             doc.save(targetFile.getAbsolutePath());
         }
-        finally
-        {
-            doc.close();
-        }
     }
 
     /**
@@ -171,10 +166,9 @@ class TestOptionalContentGroups
             testOCGGeneration();
         }
 
-        PDDocument doc = Loader.loadPDF(pdfFile);
-        try
+        try (PDDocument doc = Loader.loadPDF(pdfFile))
         {
-            assertEquals(1.5f, doc.getVersion());
+            assertEquals(1.6f, doc.getVersion());
             PDDocumentCatalog catalog = doc.getDocumentCatalog();
 
             PDPage page = doc.getPage(0);
@@ -214,10 +208,6 @@ class TestOptionalContentGroups
             assertTrue(nameSet.contains("background"));
             assertTrue(nameSet.contains("enabled"));
             assertTrue(nameSet.contains("disabled"));
-        }
-        finally
-        {
-            doc.close();
         }
     }
 

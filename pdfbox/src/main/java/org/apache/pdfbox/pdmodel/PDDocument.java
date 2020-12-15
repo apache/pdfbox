@@ -874,8 +874,9 @@ public class PDDocument implements Closeable
     {
         return fontsToSubset;
     }
+    
     /**
-     * Save the document to a file.
+     * Save the document to a file using default compression.
      * 
      * @param fileName The file to save as.
      *
@@ -887,7 +888,7 @@ public class PDDocument implements Closeable
     }
 
     /**
-     * Save the document to a file.
+     * Save the document to a file using default compression.
      * 
      * @param file The file to save as.
      *
@@ -895,7 +896,7 @@ public class PDDocument implements Closeable
      */
     public void save(File file) throws IOException
     {
-        save(new BufferedOutputStream(new FileOutputStream(file)));
+        save(file, CompressParameters.DEFAULT_COMPRESSION);
     }
 
     /**
@@ -908,30 +909,43 @@ public class PDDocument implements Closeable
      */
     public void save(OutputStream output) throws IOException
     {
-        saveCompressed(output, null);
+        save(output, CompressParameters.DEFAULT_COMPRESSION);
     }
 
     /**
-     * Compress the document and save it to a file.
+     * Save the document using the given compression.
      *
      * @param file The file to save as.
-     * @param parameters The parameters for the document's compression.
+     * @param compressParameters The parameters for the document's compression.
      * @throws IOException if the output could not be written
      */
-    public void saveCompressed(File file, CompressParameters parameters) throws IOException
+    public void save(File file, CompressParameters compressParameters) throws IOException
     {
-        saveCompressed(new BufferedOutputStream(new FileOutputStream(file)), parameters);
+        save(new BufferedOutputStream(new FileOutputStream(file)), compressParameters);
     }
 
     /**
-     * This will compress the document and save it to an output stream.
+     * Save the document to a file using the given compression.
+     * 
+     * @param fileName The file to save as.
+     * @param compressParameters The parameters for the document's compression.
+     *
+     * @throws IOException if the output could not be written
+     */
+    public void save(String fileName, CompressParameters compressParameters) throws IOException
+    {
+        save(new File(fileName), compressParameters);
+    }
+
+    /**
+     * Save the document using the given compression.
      *
      * @param output The stream to write to. It will be closed when done. It is recommended to wrap it in a
      * {@link java.io.BufferedOutputStream}, unless it is already buffered.
      * @param parameters The parameters for the document's compression.
      * @throws IOException if the output could not be written
      */
-    public void saveCompressed(OutputStream output, CompressParameters parameters)
+    public void save(OutputStream output, CompressParameters parameters)
             throws IOException
     {
         if (document.isClosed())

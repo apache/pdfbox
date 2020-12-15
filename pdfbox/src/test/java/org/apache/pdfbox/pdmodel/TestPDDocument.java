@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -65,7 +66,7 @@ class TestPDDocument
             document.addPage(new PDPage());
             // Save
             baos = new ByteArrayOutputStream();
-            document.save(baos);
+            document.save(baos, CompressParameters.NO_COMPRESSION);
         }
 
         // Verify content
@@ -94,7 +95,7 @@ class TestPDDocument
         try (PDDocument document = new PDDocument())
         {
             document.addPage(new PDPage());
-            document.save(targetFile);
+            document.save(targetFile, CompressParameters.NO_COMPRESSION);
         }
 
         // Verify content
@@ -165,7 +166,6 @@ class TestPDDocument
     void testDeleteBadFile() throws IOException
     {
         File f = new File(TESTRESULTSDIR, "testDeleteBadFile.pdf");
-        System.out.println("f: " + f.getAbsolutePath());
         try (PrintWriter pw = new PrintWriter(new FileOutputStream(f)))
         {
             pw.write("<script language='JavaScript'>");

@@ -44,6 +44,7 @@ import org.apache.pdfbox.cos.COSObject;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.io.IOUtils;
 import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
@@ -335,17 +336,32 @@ public class PDFMergerUtility
      */
     public void mergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
     {
+        mergeDocuments(memUsageSetting, CompressParameters.DEFAULT_COMPRESSION);
+    }
+
+    /**
+     * Merge the list of source documents, saving the result in the destination file.
+     *
+     * @param memUsageSetting defines how memory is used for buffering PDF streams; in case of <code>null</code>
+     * unrestricted main memory is used
+     * @param compressParameters defines if compressed object streams are enabled
+     * 
+     * @throws IOException If there is an error saving the document.
+     */
+    public void mergeDocuments(MemoryUsageSetting memUsageSetting, CompressParameters compressParameters) throws IOException
+    {
         if (documentMergeMode == DocumentMergeMode.PDFBOX_LEGACY_MODE)
         {
-            legacyMergeDocuments(memUsageSetting);
+            legacyMergeDocuments(memUsageSetting, compressParameters);
         }
         else if (documentMergeMode == DocumentMergeMode.OPTIMIZE_RESOURCES_MODE)
         {
-            optimizedMergeDocuments(memUsageSetting);
+            optimizedMergeDocuments(memUsageSetting, compressParameters);
         }
     }
     
-    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
+    private void optimizedMergeDocuments(MemoryUsageSetting memUsageSetting,
+            CompressParameters compressParameters) throws IOException
     {
         try (PDDocument destination = new PDDocument(memUsageSetting))
         {
@@ -393,11 +409,11 @@ public class PDFMergerUtility
             
             if (destinationStream == null)
             {
-                destination.save(destinationFileName);
+                destination.save(destinationFileName, compressParameters);
             }
             else
             {
-                destination.save(destinationStream);
+                destination.save(destinationStream, compressParameters);
             }
         }
     }
@@ -412,7 +428,8 @@ public class PDFMergerUtility
      * 
      * @throws IOException If there is an error saving the document.
      */
-    private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting) throws IOException
+    private void legacyMergeDocuments(MemoryUsageSetting memUsageSetting,
+            CompressParameters compressParameters) throws IOException
     {
         if (sources != null && !sources.isEmpty())
         {
@@ -456,11 +473,11 @@ public class PDFMergerUtility
                 
                 if (destinationStream == null)
                 {
-                    destination.save(destinationFileName);
+                    destination.save(destinationFileName, compressParameters);
                 }
                 else
                 {
-                    destination.save(destinationStream);
+                    destination.save(destinationStream, compressParameters);
                 }
             }
             finally

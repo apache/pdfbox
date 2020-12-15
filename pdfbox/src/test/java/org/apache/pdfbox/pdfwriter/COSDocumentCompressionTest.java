@@ -18,7 +18,6 @@ package org.apache.pdfbox.pdfwriter;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSName;
-import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -69,7 +68,7 @@ class COSDocumentCompressionTest
         PDDocument document = Loader.loadPDF(source);
         try
         {
-            document.saveCompressed(target, new CompressParameters());
+            document.save(target);
         }
         finally
         {
@@ -144,7 +143,7 @@ class COSDocumentCompressionTest
         PDDocument document = Loader.loadPDF(source);
         try
         {
-            document.saveCompressed(target, new CompressParameters());
+            document.save(target);
         }
         finally
         {
@@ -188,7 +187,7 @@ class COSDocumentCompressionTest
         {
             document.protect(
                     new StandardProtectionPolicy("owner", "user", new AccessPermission(0)));
-            document.saveCompressed(target, new CompressParameters());
+            document.save(target);
         }
         finally
         {
@@ -233,7 +232,6 @@ class COSDocumentCompressionTest
             }
 
             document.save(target);
-            // document.saveCompressed(target, new CompressParameters());
         }
         catch (Throwable t)
         {
