@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSString;
@@ -32,6 +33,9 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationWidget;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Test handling some special characters when setting a fields value.
@@ -98,91 +102,32 @@ class ControlCharacterTest
             assertEquals("TAB", token);
         }
     }
-    
-    @Test
-    void characterSPACE() throws IOException
+
+    private static Stream<Arguments> provideParameters()
     {
-    	PDField field = acroForm.getField("pdfbox-space");
-    	field.setValue("SPACE SPACE");
+        return Stream.of(
+                Arguments.of("space", "SPACE SPACE"),
+                Arguments.of("cr", "CR\rCR"),
+                Arguments.of("lf", "LF\nLF"),
+                Arguments.of("crlf", "CRLF\r\nCRLF"),
+                Arguments.of("lfcr", "LFCR\n\rLFCR"),
+                Arguments.of("linebreak", "linebreak\u2028linebreak"),
+                Arguments.of("paragraphbreak", "paragraphbreak\u2029paragraphbreak")
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("provideParameters")
+    void testCharacter(String nameSuffix, String value) throws IOException
+    {
+        PDField field = acroForm.getField("pdfbox-" + nameSuffix);
+        field.setValue(value);
 
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-space"));
+        List<String> pdfboxValues = getStringsFromStream(field);
+        List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-" + nameSuffix));
 
-    	assertEquals(pdfboxValues, acrobatValues);
+        assertEquals(pdfboxValues, acrobatValues);
     }
 
-    @Test
-    void characterCR() throws IOException
-    {
-    	PDField field = acroForm.getField("pdfbox-cr");
-    	field.setValue("CR\rCR");
-
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-cr"));
-
-    	assertEquals(pdfboxValues, acrobatValues);
-    }
-
-    @Test
-    void characterLF() throws IOException
-    {
-    	PDField field = acroForm.getField("pdfbox-lf");
-    	field.setValue("LF\nLF");
-
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-lf"));
-
-    	assertEquals(pdfboxValues, acrobatValues);
-    }
-    
-    @Test
-    void characterCRLF() throws IOException
-    {
-    	PDField field = acroForm.getField("pdfbox-crlf");
-    	field.setValue("CRLF\r\nCRLF");
-
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-crlf"));
-
-    	assertEquals(pdfboxValues, acrobatValues);
-    }
-
-    @Test
-    void characterLFCR() throws IOException
-    {
-    	PDField field = acroForm.getField("pdfbox-lfcr");
-    	field.setValue("LFCR\n\rLFCR");
-    	
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-lfcr"));
-
-    	assertEquals(pdfboxValues, acrobatValues);
-    }
-    
-    @Test
-    void characterUnicodeLinebreak() throws IOException
-    {
-    	PDField field = acroForm.getField("pdfbox-linebreak");
-    	field.setValue("linebreak\u2028linebreak");
-    	
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-linebreak"));
-
-    	assertEquals(pdfboxValues, acrobatValues);
-    }
-    
-    @Test
-    void characterUnicodeParagraphbreak() throws IOException
-    {
-    	PDField field = acroForm.getField("pdfbox-paragraphbreak");
-    	field.setValue("paragraphbreak\u2029paragraphbreak");
-    	
-    	List<String> pdfboxValues = getStringsFromStream(field);
-    	List<String> acrobatValues = getStringsFromStream(acroForm.getField("acrobat-paragraphbreak"));
-
-    	assertEquals(pdfboxValues, acrobatValues);
-    }
-    
     @AfterEach
     public void tearDown() throws IOException
     {
