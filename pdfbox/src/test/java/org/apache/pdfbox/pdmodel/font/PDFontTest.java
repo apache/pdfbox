@@ -278,15 +278,15 @@ public class PDFontTest
      * @throws IOException 
      */
     @Test
-    void testPDFox5048() throws IOException
+    public void testPDFox5048() throws IOException
     {
         InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf").openStream();
         PDDocument doc = PDDocument.load(is);
         PDPage page = doc.getPage(0);
         PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));
         Assert.assertTrue(font.isDamaged());
-        Assert.assertEquals(0, font.getHeight(0));
-        Assert.assertEquals(0, font.getStringWidth("Pa"));
+        Assert.assertEquals(0f, font.getHeight(0), 0);
+        Assert.assertEquals(0f, font.getStringWidth("Pa"), 0);
         doc.close();
         is.close();
     }
