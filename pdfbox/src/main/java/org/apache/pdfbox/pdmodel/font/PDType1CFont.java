@@ -321,7 +321,12 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
         float height;
         if (!glyphHeights.containsKey(name))
         {
-            height = (float)cffFont.getType1CharString(name).getBounds().getHeight(); // todo: cffFont could be null
+            if (cffFont == null)
+            {
+                LOG.warn("No embedded CFF font, returning 0");
+                return 0;
+            }
+            height = (float) cffFont.getType1CharString(name).getBounds().getHeight();
             glyphHeights.put(name, height);
         }
         else
@@ -359,6 +364,11 @@ public class PDType1CFont extends PDSimpleFont implements PDVectorFont
     @Override
     public float getStringWidth(String string) throws IOException
     {
+        if (cffFont == null)
+        {
+            LOG.warn("No embedded CFF font, returning 0");
+            return 0;
+        }
         float width = 0;
         for (int i = 0; i < string.length(); i++)
         {

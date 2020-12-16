@@ -248,6 +248,25 @@ class PDFontTest
         assertEquals("Full embedding of TrueType font collections not supported", ex.getMessage());
     }
 
+    /**
+     * Test using broken Type1C font.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFox5048() throws IOException
+    {
+        try (InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf").openStream();
+             PDDocument doc = Loader.loadPDF(is))
+        {
+            PDPage page = doc.getPage(0);
+            PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));
+            assertTrue(font.isDamaged());
+            assertEquals(0, font.getHeight(0));
+            assertEquals(0, font.getStringWidth("Pa"));
+        }
+    }
+
     private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
     {
         try (PDDocument doc = Loader.loadPDF(byteArray))
