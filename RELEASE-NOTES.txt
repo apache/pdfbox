@@ -1,11 +1,11 @@
-Release Notes -- Apache PDFBox -- Version 2.0.21
+Release Notes -- Apache PDFBox -- Version 2.0.22
 
 Introduction
 ------------
 
 The Apache PDFBox library is an open source Java tool for working with PDF documents.
 
-This is an incremental bugfix release based on the earlier 2.0.20 release. It contains
+This is an incremental bugfix release based on the earlier 2.0.21 release. It contains
 a couple of fixes and small improvements.
 
 For more details on these changes and all the other fixes and improvements
@@ -14,56 +14,84 @@ PDFBox issue tracker at https://issues.apache.org/jira/browse/PDFBOX.
 
 Bug
 
-[PDFBOX-3835] - Wrap long words for multiline text fields
-[PDFBOX-4568] - Field text poorly vertically aligned
-[PDFBOX-4729] - Wrong position of text in PDTextField with multiline
-[PDFBOX-4850] - Image rendering issue
-[PDFBOX-4860] - Preflight doesn't catch repetition of elements in XMP
-[PDFBOX-4863] - Bitmapped fonts are rendered very blurry
-[PDFBOX-4866] - java.lang.IndexOutOfBoundsException
-[PDFBOX-4871] - java.lang.ArrayIndexOutOfBoundsException: 3
-[PDFBOX-4872] - java.lang.ClassCastException: org.apache.fontbox.cmap.CMapParser$Operator cannot be cast to java.lang.Number
-[PDFBOX-4878] - Call to DictionaryEncoding.getEncoding () throws NullPointerException for some PDF's
-[PDFBOX-4879] - Binary compatibility is broken in 2.0.20
-[PDFBOX-4880] - NullPointerException in TrueTypeEmbedder.createFontDescriptor() with OCR-B font
-[PDFBOX-4882] - Two conditions are always false in TrueTypeEmbedder.isEmbeddingPermitted
-[PDFBOX-4887] - Using the same font fully embedded in plain text and PDTextField, it throws an exception in PDTextField.setValue
-[PDFBOX-4889] - Cannot flatten this file.
-[PDFBOX-4890] - Stack overflow in BufferedRandomAccessFile.read() while creating font cache
-[PDFBOX-4891] - nbspace missing in WinAnsiEncoding and MacRomanEncoding
-[PDFBOX-4894] - Invalid file offsets for PDF files larger than 2G
-[PDFBOX-4897] - PDFObjectStreamParser doesnt use offset
-[PDFBOX-4900] - PDFBox Rendering of PDF Page incorrect when using the special None Named Separation
-[PDFBOX-4902] - PDF/A validation fails when system time zone has minutes
-[PDFBOX-4904] - Bold text leads to wrong order - Text extraction
-[PDFBOX-4906] - PDOptionalContentProperties hasGroup can null pointer if OCGs data is missing
-[PDFBOX-4907] - Signature not detected by Acrobat Reader
-[PDFBOX-4913] - ArrayIndexOutOfBoundsException in ShadingContext.convertToRGB()
-[PDFBOX-4915] - "Page tree root must be a dictionary" on PDDocument.load
-[PDFBOX-4920] - OCSP validation takes very long in ci build
-[PDFBOX-4923] - IllegalArgumentException: The start and the end values must not have different lengths
-[PDFBOX-4927] - IllegalStateException: Expected 'Page' but found COSName{Annot} in PDPageTree.sanitizeType
-[PDFBOX-4930] - Font thickness issue when we use PDFBox for generating images from PDF
+[PDFBOX-1532] - extra space added to rotated text
+[PDFBOX-1752] - Rendering PDF containing Jpeg2000 fails
+[PDFBOX-2633] - saveIncremental java.lang.NullPointerException
+[PDFBOX-3683] - Unexpected behavior when setting value for radio button with /Opts entry
+[PDFBOX-3891] - Missing data if document is merged with itself
+[PDFBOX-3953] - StackOverflowError in org.apache.pdfbox.pdmodel.PDPageTree.getKids
+[PDFBOX-4270] - Image in field disappears after flattening
+[PDFBOX-4421] - Add support for AES128 encryption for public key
+[PDFBOX-4430] - Missing transformation in flatterning when an XObject is used as appearance of a form field
+[PDFBOX-4617] - PDButton.setValue and PDButton.getOnValueForWidget cannot handle radios with duplicate names and choices
+[PDFBOX-4761] - Alignment Issue in textfield
+[PDFBOX-4934] - Could not find referenced cmap stream Adobe-Japan1-XXXX
+[PDFBOX-4941] - PDRadioButton.getSelectedExportValues() always returns the first entry
+[PDFBOX-4944] - Built-in fonts are reporting nbsp char as having zero width.
+[PDFBOX-4946] - ArrayIndexOutOfBoundsException while trying to get text from a page
+[PDFBOX-4947] - UnsupportedOperationException when using FontMapperImpl.addSubstitute()
+[PDFBOX-4949] - "W n" applied to non existent path produces empty clipping result
+[PDFBOX-4955] - Flattened form-fields are rendered at the bottom of the page
+[PDFBOX-4956] - COSName.hashCode initialized after put to cache, instead before
+[PDFBOX-4958] - AcroForm flatten - correct calculation of appearence position
+[PDFBOX-4959] - ClassCastException: org.apache.pdfbox.cos.COSStream cannot be cast to org.apache.pdfbox.cos.COSNumber
+[PDFBOX-4964] - PDFDebugger Text View for Streams hides errors
+[PDFBOX-4969] - java.lang.IndexOutOfBoundsException
+[PDFBOX-4980] - Java 6 compile error
+[PDFBOX-4984] - Widget Quadding ignored
+[PDFBOX-4988] - Space rendered as missing glyph (2)
+[PDFBOX-4997] - Incremental update adds certain objects not marked as needing update
+[PDFBOX-4999] - Dangerous COSDictionary.addAll(COSDictionary) method
+[PDFBOX-5002] - PDFTextStripper sometimes fuses two words on different lines
+[PDFBOX-5005] - Resource missing at https://ipafont.ipa.go.jp/
+[PDFBOX-5016] - PDButton set subtype methods don't reset toggled subtype
+[PDFBOX-5019] - IllegalArgumentException: miter limit < 1
+[PDFBOX-5028] - Partial field names must not contain period characters
+[PDFBOX-5033] - CFF FontParser exits with illegal offset in font
+[PDFBOX-5040] - Typo in NameRecord table LANGUGAE -> LANGUAGE
+[PDFBOX-5041] - NullPointerException in AppearanceGeneratorHelper.insertGeneratedAppearance
+[PDFBOX-5042] - IllegalArgumentException when generation of appearances fails
+[PDFBOX-5043] - StringIndexOutOfBoundsException in refreshAppearances()
+[PDFBOX-5044] - Stack overflow in PDFieldTree.enqueueKids()
+[PDFBOX-5046] - StringIndexOutOfBoundsException when doing DateConverter.parseDate()
+[PDFBOX-5048] - NullPointerException in PDType1CFont.getStringWidth() and PDType1CFont.getHeight()
+
+New Feature
+
+[PDFBOX-45] - Support incremental save
+[PDFBOX-2626] - Regenerate field appearances if NeedAppearances is set prior to rendering
+[PDFBOX-2857] - Saving XFA document caused prompt saying Extended features has been disabled
+[PDFBOX-2858] - Saving document caused prompt saying Extended features has been disabled
+[PDFBOX-4847] - [PATCH] Allow to access raw image data and fix ICC profile embedding in PNGConverter
 
 Improvement
 
-[PDFBOX-3812] - Support auto size font for multiline PDTextField
-[PDFBOX-4594] - Multiline field text with auto font sizing should be size adjusted
-[PDFBOX-4869] - Reading standard 14 fonts is slow
-[PDFBOX-4875] - Lazy load standard 14 fonts, only if needed
-[PDFBOX-4877] - Matrix class performance improvements
-[PDFBOX-4895] - Faster COSNumber
-[PDFBOX-4896] - Don't save and restore graphic states around showGlyph in LegacyPDFStreamEngine
-[PDFBOX-4909] - Don't calculate font height for every glyph
+[PDFBOX-3393] - Javascript actions on form fields cause data to become hidden
+[PDFBOX-3667] - Handle Widget Annotations as Fields even if there is no AcroForm Fields entry
+[PDFBOX-4948] - Add substitute font "ZapfDingbatsITCbyBT-Regular" for ZapfDingbats
+[PDFBOX-4971] - Show "raw" pane for content streams in PDFDebugger
+[PDFBOX-4977] - Provide format action support capability for AcroForm field
+[PDFBOX-4985] - Render orphan annotation widgets
+[PDFBOX-4990] - say which resource not found when a font is missing
+[PDFBOX-4991] - say when GlyphList is not found what was sought for
+[PDFBOX-4993] - if infile is missing, say which one
+[PDFBOX-5000] - Allow PDFDebugger and PDF/A validation to skip AcroForm fix ups
+[PDFBOX-5004] - Repair AcroForm in PDFDebugger
+[PDFBOX-5027] - Protect/Encrypt PDF with multiple certificates on command line
+
+Wish
+
+[PDFBOX-4928] - Could the new rendering method of PageDrawer be optional?
 
 Task
 
-[PDFBOX-4071] - Improve code quality (3)
-[PDFBOX-4933] - Correct PDFBOX-1777 to PDFBOX-1977 in tests
+[PDFBOX-4939] - Increase test coverage for AcroForm examples
+[PDFBOX-4940] - Increase code coverage for PDImageXObject tests
+[PDFBOX-5009] - Corrupt PDF can lead to a StackOverflow
 
 Sub-task
 
-[PDFBOX-3910] - Support auto font sizing in multiline text fields
+[PDFBOX-2859] - Support Incremental Update for forms
 
 Release Contents
 ----------------
