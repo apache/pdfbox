@@ -272,6 +272,25 @@ public class PDFontTest
         Assert.fail("should have thrown IOException");
     }
 
+    /**
+     * Test using broken Type1C font.
+     *
+     * @throws IOException 
+     */
+    @Test
+    void testPDFox5048() throws IOException
+    {
+        InputStream is = new URL("https://issues.apache.org/jira/secure/attachment/13017227/stringwidth.pdf").openStream();
+        PDDocument doc = PDDocument.load(is);
+        PDPage page = doc.getPage(0);
+        PDFont font = page.getResources().getFont(COSName.getPDFName("F70"));
+        Assert.assertTrue(font.isDamaged());
+        Assert.assertEquals(0, font.getHeight(0));
+        Assert.assertEquals(0, font.getStringWidth("Pa"));
+        doc.close();
+        is.close();
+    }
+
     private void testPDFBox3826checkFonts(byte[] byteArray, File fontFile) throws IOException
     {
         PDDocument doc = PDDocument.load(byteArray);
