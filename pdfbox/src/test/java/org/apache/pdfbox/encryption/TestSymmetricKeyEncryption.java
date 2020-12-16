@@ -44,6 +44,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.io.IOUtils;
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDDocumentNameDictionary;
@@ -385,7 +386,7 @@ class TestSymmetricKeyEncryption
 
         File pdfFile = new File(testResultsDir, prefix + keyLength + "-bit-" + (preferAES ? "AES" : "RC4") + "-encrypted.pdf");
 
-        doc.save(pdfFile);
+        doc.save(pdfFile, CompressParameters.NO_COMPRESSION);
         doc.close();
         long sizeEncrypted = pdfFile.length();
         assertNotEquals(sizeEncrypted, sizePriorToEncr,
