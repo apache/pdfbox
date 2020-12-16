@@ -135,7 +135,7 @@ class PDAcroFormFlattenTest
         // PDFBOX-4958 text and button with image.
         "https://issues.apache.org/jira/secure/attachment/13012242/PDFBOX-4958.pdf,PDFBOX-4958-flattened.pdf"
     })
-    public void testFlatten(String sourceUrl, String targetFileName) throws IOException {
+    void testFlatten(String sourceUrl, String targetFileName) throws IOException {
         flattenAndCompare(sourceUrl, targetFileName);
     }
 
