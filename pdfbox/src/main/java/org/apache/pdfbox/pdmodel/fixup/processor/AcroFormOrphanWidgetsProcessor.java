@@ -116,7 +116,8 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
             {
                 addFontFromWidget(acroFormResources, annot);
 
-                if (annot.getCOSObject().containsKey(COSName.PARENT))
+                COSDictionary parent = annot.getCOSObject().getCOSDictionary(COSName.PARENT);
+                if (parent != null)
                 {
                     PDField resolvedField = resolveNonRootField(acroForm, (PDAnnotationWidget) annot, nonTerminalFieldsMap);
                     if (resolvedField != null)
@@ -180,6 +181,10 @@ public class AcroFormOrphanWidgetsProcessor extends AbstractProcessor
         while (parent.containsKey(COSName.PARENT))
         {
             parent = parent.getCOSDictionary(COSName.PARENT);
+            if (parent == null)
+            {
+                return null;
+            }
         }
         
         if (nonTerminalFieldsMap.get(parent.getString(COSName.T)) == null)
