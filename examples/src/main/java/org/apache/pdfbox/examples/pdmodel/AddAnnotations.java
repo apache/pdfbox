@@ -112,8 +112,10 @@ public final class AddAnnotations
             // Now add the markup annotation, a highlight to PDFBox text
             PDAnnotationHighlight txtHighlight = new PDAnnotationHighlight();
             txtHighlight.setColor(new PDColor(new float[] { 0, 1, 1 }, PDDeviceRGB.INSTANCE));
-            // 20% transparent
-            txtHighlight.setConstantOpacity((float)0.2); 
+
+            // remove line below if PDF/A-2b (and possibly other PDF-A flavours)
+            // also add txtMark.setPrinted(true)
+            txtHighlight.setConstantOpacity((float) 0.2);
 
             // Set the rectangle containing the markup
             float textWidth = font.getStringWidth("PDFBox") / 1000 * 18;
