@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -33,6 +34,10 @@ import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 /**
  * This will read a document from the filesystem, encrypt it and and then write
  * the results to the filesystem.
@@ -41,6 +46,74 @@ import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
  */
 public final class Encrypt
 {
+
+    String message = "Usage: java -jar pdfbox-app-x.y.z.jar Encrypt [options] <inputfile> [outputfile]\n"
+    + "\nOptions:\n"
+    + "  -O <password>                            : Set the owner password (ignored if certFile is set)\n"
+    + "  -U <password>                            : Set the user password (ignored if certFile is set)\n"
+    + "  -certFile <path to cert>                 : Path to X.509 certificate (repeat both if needed)\n"
+    + "  -canAssemble <true|false>                : Set the assemble permission\n"
+    + "  -canExtractContent <true|false>          : Set the extraction permission\n"
+    + "  -canExtractForAccessibility <true|false> : Set the extraction permission\n"
+    + "  -canFillInForm <true|false>              : Set the fill in form permission\n"
+    + "  -canModify <true|false>                  : Set the modify permission\n"
+    + "  -canModifyAnnotations <true|false>       : Set the modify annots permission\n"
+    + "  -canPrint <true|false>                   : Set the print permission\n"
+    + "  -canPrintDegraded <true|false>           : Set the print degraded permission\n"
+    + "  -keyLength <length>                      : Key length in bits "
+    + "(valid values: 40, 128 or 256, default is 256)\n"
+    + "\nNote: By default all permissions are set to true!";
+
+
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
+    @Option(names = "-O", description = "set the owner password (ignored if certFile is set)")
+    private String ownerPassword;
+
+    @Option(names = "-U", description = "set the user password (ignored if certFile is set)")
+    private String userPassword;
+
+    @Option(names = "-certFile", paramLabel="certFile", description = "Path to X.509 certificate (repeat both if needed)")
+    private List<File> certFileList = new ArrayList<>();
+
+    @Option(names = "-canAssemble", description = "set the assemble permission (default: ${DEFAULT-VALUE})")
+    private boolean canAssembleDocument = true;
+
+    @Option(names = "-canExtractContent", description = "set the extraction permission (default: ${DEFAULT-VALUE})")
+    private boolean canExtractContent = true;
+
+    @Option(names = "-canExtractForAccessibility", description = "set the extraction permission (default: ${DEFAULT-VALUE})")
+    private boolean canExtractForAccessibility = true;
+
+    @Option(names = "-canFillInForm", description = "set the form fill in permission (default: ${DEFAULT-VALUE})")
+    private boolean canFillInForm = true;
+
+    @Option(names = "-canModify", description = "set the modify permission (default: ${DEFAULT-VALUE})")
+    private boolean canModify = true;
+
+    @Option(names = "-canModifyAnnotations", description = "set the modify annots permission (default: ${DEFAULT-VALUE})")
+    private boolean canModifyAnnotations = true;
+
+    @Option(names = "-canPrint", description = "set the print permission (default: ${DEFAULT-VALUE})")
+    private boolean canPrint = true;
+
+    @Option(names = "-canPrintDegraded", description = "set the print degraded permission (default: ${DEFAULT-VALUE})")
+    private boolean canPrintDegraded = true;
+
+    @Option(names = "-keyLength", description = "Key length in bits (valid values: 40, 128 or 256) (default: ${DEFAULT-VALUE})")
+    private int keyLength = 256;
+
+    @Parameters(paramLabel = "inputfile", arity="1", description = "the PDF file to encyrpt.")
+    private File infile;
+
+    @Parameters(paramLabel = "outputfile", index = "1", description = "the encrypted PDF file. If left blank the original file will be overwritten.")
+    private File outfile;
+
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
     private Encrypt()
     {
     }
@@ -53,193 +126,77 @@ public final class Encrypt
      * @throws IOException If there is an error decrypting the document.
      * @throws CertificateException If there is an error with a certificate.
      */
-    public static void main( String[] args ) throws IOException, CertificateException
+    public static void main( String[] args )
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        Encrypt encrypt = new Encrypt();
-        encrypt.encrypt( args );
+        int exitCode = new CommandLine(new Encrypt()).execute(args);
+        System.exit(exitCode);
     }
 
-    private void encrypt( String[] args ) throws IOException, CertificateException
+    public Integer call()
     {
-        if( args.length < 1 )
+        AccessPermission ap = new AccessPermission();
+        ap.setCanAssembleDocument(canAssembleDocument);
+        ap.setCanExtractContent(canExtractContent);
+        ap.setCanExtractForAccessibility(canExtractForAccessibility);
+        ap.setCanFillInForm(canFillInForm);
+        ap.setCanModify(canModify);
+        ap.setCanModifyAnnotations(canModifyAnnotations);
+        ap.setCanPrint(canPrint);
+        ap.setCanPrintDegraded(canPrintDegraded);
+
+        if (outfile == null)
         {
-            usage();
+            outfile = infile;
         }
-        else
+
+        try (PDDocument document = Loader.loadPDF(infile))
         {
-            AccessPermission ap = new AccessPermission();
-
-            String infile = null;
-            String outfile = null;
-            List<File> certFileList = new ArrayList<>();
-            @SuppressWarnings({"squid:S2068"})
-            String userPassword = "";
-            @SuppressWarnings({"squid:S2068"})
-            String ownerPassword = "";
-
-            int keyLength = 256;
-
-            PDDocument document = null;
-
-            try
+            if( !document.isEncrypted() )
             {
-                for( int i=0; i<args.length; i++ )
+                if (!certFileList.isEmpty())
                 {
-                    String key = args[i];
-                    if( key.equals( "-O" ) )
+                    PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
+                    PublicKeyRecipient recip = new PublicKeyRecipient();
+                    recip.setPermission(ap);
+
+                    CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+                    for (File certFile : certFileList)
                     {
-                        ownerPassword = args[++i];
-                    }
-                    else if( key.equals( "-U" ) )
-                    {
-                        userPassword = args[++i];
-                    }
-                    else if( key.equals( "-canAssemble" ) )
-                    {
-                        ap.setCanAssembleDocument(args[++i].equalsIgnoreCase( "true" ));
-                    }
-                    else if( key.equals( "-canExtractContent" ) )
-                    {
-                        ap.setCanExtractContent( args[++i].equalsIgnoreCase( "true" ) );
-                    }
-                    else if( key.equals( "-canExtractForAccessibility" ) )
-                    {
-                        ap.setCanExtractForAccessibility( args[++i].equalsIgnoreCase( "true" ) );
-                    }
-                    else if( key.equals( "-canFillInForm" ) )
-                    {
-                        ap.setCanFillInForm( args[++i].equalsIgnoreCase( "true" ) );
-                    }
-                    else if( key.equals( "-canModify" ) )
-                    {
-                        ap.setCanModify( args[++i].equalsIgnoreCase( "true" ) );
-                    }
-                    else if( key.equals( "-canModifyAnnotations" ) )
-                    {
-                        ap.setCanModifyAnnotations( args[++i].equalsIgnoreCase( "true" ) );
-                    }
-                    else if( key.equals( "-canPrint" ) )
-                    {
-                        ap.setCanPrint( args[++i].equalsIgnoreCase( "true" ) );
-                    }
-                    else if( key.equals( "-canPrintDegraded" ) )
-                    {
-                        ap.setCanPrintDegraded( args[++i].equalsIgnoreCase( "true" ) );
-                    }
-                    else if( key.equals( "-certFile" ) )
-                    {
-                        certFileList.add(new File(args[++i]));
-                    }
-                    else if( key.equals( "-keyLength" ) )
-                    {
-                        try
+                        try (InputStream inStream = new FileInputStream(certFile))
                         {
-                            keyLength = Integer.parseInt( args[++i] );
+                            X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
+                            recip.setX509(certificate);
                         }
-                        catch( NumberFormatException e )
-                        {
-                            throw new NumberFormatException(
-                                "Error: -keyLength is not an integer '" + args[i] + "'" );
-                        }
+                        ppp.addRecipient(recip);
                     }
-                    else if( infile == null )
-                    {
-                        infile = key;
-                    }
-                    else if( outfile == null )
-                    {
-                        outfile = key;
-                    }
-                    else
-                    {
-                        usage();
-                    }
-                }
-                if( infile == null )
-                {
-                    usage();
-                }
-                if( outfile == null )
-                {
-                    outfile = infile;
-                }
-                document = Loader.loadPDF(new File(infile));
 
-                if( !document.isEncrypted() )
-                {
-                    if (!certFileList.isEmpty())
-                    {
-                        PublicKeyProtectionPolicy ppp = new PublicKeyProtectionPolicy();
-                        PublicKeyRecipient recip = new PublicKeyRecipient();
-                        recip.setPermission(ap);
+                    ppp.setEncryptionKeyLength(keyLength);
 
-                        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
-                        for (File certFile : certFileList)
-                        {
-                            try (InputStream inStream = new FileInputStream(certFile))
-                            {
-                                X509Certificate certificate = (X509Certificate) cf.generateCertificate(inStream);
-                                recip.setX509(certificate);
-                            }
-                            ppp.addRecipient(recip);
-                        }
-
-                        ppp.setEncryptionKeyLength(keyLength);
-
-                        document.protect(ppp);
-                    }
-                    else
-                    {
-                        StandardProtectionPolicy spp =
-                            new StandardProtectionPolicy(ownerPassword, userPassword, ap);
-                        spp.setEncryptionKeyLength(keyLength);
-                        document.protect(spp);
-                    }
-                    document.save( outfile );
+                    document.protect(ppp);
                 }
                 else
                 {
-                    System.err.println( "Error: Document is already encrypted." );
+                    StandardProtectionPolicy spp =
+                        new StandardProtectionPolicy(ownerPassword, userPassword, ap);
+                    spp.setEncryptionKeyLength(keyLength);
+                    document.protect(spp);
                 }
+                document.save( outfile );
             }
-            finally
+            else
             {
-                if( document != null )
-                {
-                    document.close();
-                }
+                SYSERR.println( "Error: Document is already encrypted." );
             }
         }
+        catch (IOException | CertificateException ex)
+        {
+            SYSERR.println( "Error encrypting PDF: " + ex.getMessage());
+            return 4;
+        }
+        return 0;
     }
-
-    /**
-     * This will print a usage message.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar Encrypt [options] <inputfile> [outputfile]\n"
-                + "\nOptions:\n"
-                + "  -O <password>                            : Set the owner password (ignored if certFile is set)\n"
-                + "  -U <password>                            : Set the user password (ignored if certFile is set)\n"
-                + "  -certFile <path to cert>                 : Path to X.509 certificate (repeat both if needed)\n"
-                + "  -canAssemble <true|false>                : Set the assemble permission\n"
-                + "  -canExtractContent <true|false>          : Set the extraction permission\n"
-                + "  -canExtractForAccessibility <true|false> : Set the extraction permission\n"
-                + "  -canFillInForm <true|false>              : Set the fill in form permission\n"
-                + "  -canModify <true|false>                  : Set the modify permission\n"
-                + "  -canModifyAnnotations <true|false>       : Set the modify annots permission\n"
-                + "  -canPrint <true|false>                   : Set the print permission\n"
-                + "  -canPrintDegraded <true|false>           : Set the print degraded permission\n"
-                + "  -keyLength <length>                      : Key length in bits "
-                + "(valid values: 40, 128 or 256, default is 256)\n"
-                + "\nNote: By default all permissions are set to true!";
-
-        System.err.println(message);
-        System.exit(1);
-    }
-
 }
