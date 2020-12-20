@@ -19,6 +19,8 @@ package org.apache.pdfbox.tools;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSBase;
@@ -29,17 +31,45 @@ import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.common.PDStream;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 /**
  * load document and write with all streams decoded.
  *
  * @author Michael Traut
  */
-public class WriteDecodedDoc
+@Command(name = "WriteDecodedDoc", description = "Load document and write with all streams decoded.")
+public class WriteDecodedDoc implements Callable<Integer>
 {
 
-    @SuppressWarnings({"squid:S2068"})
-    private static final String PASSWORD = "-password";
-    private static final String SKIPIMAGES = "-skipImages";
+    String message = "Usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [options] <inputfile> [outputfile]\n"
+    + "\nOptions:\n"
+    + "  -password <password> : Password to decrypt the document\n"
+    + "  -skipImages          : Don't uncompress images\n"
+    + "  <inputfile>          : The PDF document to be decompressed\n"
+    + "  [outputfile]         : The filename for the decompressed pdf\n";
+
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
+
+    @Option(names = "-password", description = "the password to decrypt the document")
+    private String password;
+
+    @Option(names = "-skipImages", description = "don't uncompress images")
+    private boolean skipImages;
+
+    @Parameters(paramLabel = "inputfile", index="0", description = "the PDF document to be decompressed")
+    private File infile;
+
+    @Parameters(paramLabel = "outputfile", arity = "0..1", description = "the PDF file to save to.")
+    private File outfile;
 
     /**
      * Constructor.
@@ -96,7 +126,7 @@ public class WriteDecodedDoc
             }
             catch (IOException ex)
             {
-                System.err.println("skip " + cosObject.getObjectNumber() + " "
+                SYSERR.println("skip " + cosObject.getObjectNumber() + " "
                         + cosObject.getGenerationNumber() + " obj: " + ex.getMessage());
             }
         }
@@ -108,58 +138,38 @@ public class WriteDecodedDoc
      * see usage() for commandline
      *
      * @param args command line arguments
-     * @throws java.io.IOException if the output could not be written
      */
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
+        
+        int exitCode = new CommandLine(new WriteDecodedDoc()).execute(args);
+        System.exit(exitCode);
+    }
 
-        WriteDecodedDoc app = new WriteDecodedDoc();
-        @SuppressWarnings({"squid:S2068"})
-        String password = "";
-        String pdfFile = null;
-        String outputFile = null;
-        boolean skipImages = false;
-        for( int i=0; i<args.length; i++ )
+    public Integer call()
+    {
+        String outputFilename;
+
+        if (outfile == null)
         {
-            switch (args[i])
-            {
-                case PASSWORD:
-                    i++;
-                    if (i >= args.length)
-                    {
-                        usage();
-                    }
-                    password = args[i];
-                    break;
-                case SKIPIMAGES:
-                    skipImages = true;
-                    break;
-                default:
-                    if (pdfFile == null)
-                    {
-                        pdfFile = args[i];
-                    }
-                    else
-                    {
-                        outputFile = args[i];
-                    }
-                    break;
-            }
-        }
-        if( pdfFile == null )
-        {
-            usage();
+            outputFilename = calculateOutputFilename(infile.getAbsolutePath());
         }
         else
         {
-            if (outputFile == null)
-            {
-                outputFile = calculateOutputFilename(pdfFile);
-            }
-            app.doIt(pdfFile, outputFile, password, skipImages);
+            outputFilename = outfile.getAbsolutePath();
         }
+
+        try {
+            doIt(infile.getAbsolutePath(), outputFilename, password, skipImages);
+        }
+        catch (IOException ioe)
+        {
+            SYSERR.println( "Error importing FDF data: " + ioe.getMessage());
+            return 4;
+        }
+        return 0;
     }
 
     private static String calculateOutputFilename(String filename) 
@@ -175,21 +185,5 @@ public class WriteDecodedDoc
         }
         outputFilename += "_unc.pdf";
         return outputFilename;
-    }
-    
-    /**
-     * This will print out a message telling how to use this example.
-     */
-    private static void usage()
-    {
-        String message = "Usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [options] <inputfile> [outputfile]\n"
-                + "\nOptions:\n"
-                + "  -password <password> : Password to decrypt the document\n"
-                + "  -skipImages          : Don't uncompress images\n"
-                + "  <inputfile>          : The PDF document to be decompressed\n"
-                + "  [outputfile]         : The filename for the decompressed pdf\n";
-       
-        System.err.println(message);
-        System.exit(1);
     }
 }
