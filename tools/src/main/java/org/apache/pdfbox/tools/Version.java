@@ -16,13 +16,24 @@
  */
 package org.apache.pdfbox.tools;
 
+import java.io.PrintStream;
+import java.util.concurrent.Callable;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+
 /**
  * A simple command line utility to get the version of PDFBox.
  *
  * @author Ben Litchfield
  */
-final class Version
+@Command(name = "Version", description = "Get the version of PDFBox.")
+final class Version implements Callable<Integer>
 {
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSOUT = System.out;
+
     private Version()
     {
         //should not be constructed.
@@ -55,21 +66,14 @@ final class Version
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
-
-        if( args.length != 0 )
-        {
-            usage();
-            return;
-        }
-        System.out.println( "Version:" + getVersion() );
+        
+        int exitCode = new CommandLine(new Version()).execute(args);
+        System.exit(exitCode);
     }
 
-    /**
-     * This will print out a message telling how to use this example.
-     */
-    private static void usage()
+    public Integer call()
     {
-        System.err.println("Usage: " + Version.class.getName());
-        System.exit(1);
+        SYSOUT.println("Version:" + getVersion());
+        return 0;
     }
 }
