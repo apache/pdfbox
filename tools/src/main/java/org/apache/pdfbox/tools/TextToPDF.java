@@ -20,9 +20,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -33,12 +35,18 @@ import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
+
 /**
  * This will take a text file and output a pdf with that text.
  *
  * @author Ben Litchfield
  */
-public class TextToPDF
+@Command(name = "TextToPDF", description = "Create a PDF document from a text file.")
+public class TextToPDF implements Callable<Integer>
 {
     /**
      * The scaling factor for font units to PDF units
@@ -60,10 +68,36 @@ public class TextToPDF
      */
     private static final float LINE_HEIGHT_FACTOR = 1.05f;
 
-    private int fontSize = DEFAULT_FONT_SIZE;
     private PDRectangle mediaBox = PDRectangle.LETTER;
-    private boolean landscape = false;
     private PDFont font = DEFAULT_FONT;
+
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSERR = System.err;
+
+    @Option(names = "-fontSize", description = "the size of the font to use (default: ${DEFAULT-VALUE}")
+    private int fontSize = DEFAULT_FONT_SIZE;
+    
+    @Option(names = "-landscape", description = "set orientation to landscape")
+    private boolean landscape = false;
+
+    @Option(names = "-pageSize", description = "the page size to use: Letter, Legal, A0, A1, A2, A3, A4, A5, A6 (default: ${DEFAULT-VALUE})")
+    private String pageSize = "Letter";
+
+    @Option(names = "-standardFont", description = "the font to use for the text. Either this or -ttf should be specified but not both.")
+    private String standardFont;
+
+    @Option(names = "-ttf", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
+    private File ttf;
+
+    @Parameters(paramLabel = "outputfile", description = "the generated PDF file.")
+    private File outfile;
+
+    @Parameters(paramLabel = "textfile", description = "the text file to convert.")
+    private File infile;
+
+    @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
+    boolean usageHelpRequested;
 
     private static final Map<String, PDType1Font> STANDARD_14 = new HashMap<>();
     static
@@ -82,6 +116,55 @@ public class TextToPDF
         STANDARD_14.put(PDType1Font.COURIER_BOLD_OBLIQUE.getBaseFont(), PDType1Font.COURIER_BOLD_OBLIQUE);
         STANDARD_14.put(PDType1Font.SYMBOL.getBaseFont(), PDType1Font.SYMBOL);
         STANDARD_14.put(PDType1Font.ZAPF_DINGBATS.getBaseFont(), PDType1Font.ZAPF_DINGBATS);
+    }
+
+
+    /**
+     * This will create a PDF document with some text in it.
+     * <br>
+     * see usage() for commandline
+     *
+     * @param args Command line arguments.
+     */
+    public static void main(String[] args)
+    {
+        // suppress the Dock icon on OS X
+        System.setProperty("apple.awt.UIElement", "true");
+
+        int exitCode = new CommandLine(new TextToPDF()).execute(args);
+        System.exit(exitCode);
+    }
+
+    public Integer call()
+    {
+        try (PDDocument doc = new PDDocument())
+        {
+            if (ttf != null)
+            {
+                font = PDType0Font.load(doc, ttf);
+            }
+            else if (standardFont != null && getStandardFont(standardFont) != null)
+            {
+                font = getStandardFont(standardFont);
+            }
+
+            setFont(font);
+            setFontSize(fontSize);
+            setMediaBox(createRectangle(pageSize));
+            setLandscape(landscape);
+
+            try (FileReader fileReader = new FileReader(infile))
+            {
+                createPDFFromText(doc, fileReader);
+            }
+            doc.save(outfile);
+        }
+        catch (IOException ioe)
+        {
+            SYSERR.println( "Error converting image to PDF: " + ioe.getMessage());
+            return 4;
+        }
+        return 0;
     }
 
     /**
@@ -266,73 +349,6 @@ public class TextToPDF
         }
     }
 
-    /**
-     * This will create a PDF document with some text in it.
-     * <br>
-     * see usage() for commandline
-     *
-     * @param args Command line arguments.
-     *
-     * @throws IOException If there is an error with the PDF.
-     */
-    public static void main(String[] args) throws IOException
-    {
-        // suppress the Dock icon on OS X
-        System.setProperty("apple.awt.UIElement", "true");
-
-        TextToPDF app = new TextToPDF();
-                
-        try (PDDocument doc = new PDDocument())
-        {
-            if (args.length < 2)
-            {
-                app.usage();
-            }
-            else
-            {
-                for( int i=0; i<args.length-2; i++ )
-                {
-                    switch (args[i])
-                    {
-                        case "-standardFont":
-                            i++;
-                            app.setFont(getStandardFont(args[i]));
-                            break;
-                        case "-ttf":
-                            i++;
-                            PDFont font = PDType0Font.load(doc, new File(args[i]));
-                            app.setFont(font);
-                            break;
-                        case "-fontSize":
-                            i++;
-                            app.setFontSize(Integer.parseInt(args[i]));
-                            break;
-                        case "-pageSize":
-                            i++;
-                            PDRectangle rectangle = createRectangle(args[i]);
-                            if (rectangle == null)
-                            {
-                                throw new IOException("Unknown argument: " + args[i]);
-                            }
-                            app.setMediaBox(rectangle);
-                            break;
-                        case "-landscape":
-                            app.setLandscape(true);
-                            break;
-                        default:
-                            throw new IOException("Unknown argument: " + args[i]);
-                    }
-                }
-
-                try (FileReader fileReader = new FileReader(args[args.length - 1]))
-                {
-                    app.createPDFFromText(doc, fileReader);
-                }
-                doc.save(args[args.length - 2]);
-            }
-        }
-    }
-
     private static PDRectangle createRectangle( String paperSize )
     {
         if ("letter".equalsIgnoreCase(paperSize))
@@ -378,40 +394,6 @@ public class TextToPDF
     }
 
     /**
-     * This will print out a message telling how to use this example.
-     */
-    private void usage()
-    {
-        String[] std14 = getStandard14Names();
-        
-        StringBuilder message = new StringBuilder();       
-        message.append("Usage: jar -jar pdfbox-app-x.y.z.jar TextToPDF [options] <outputfile> <textfile>\n");
-        message.append("\nOptions:\n");
-        message.append("  -standardFont <name> : ").append(DEFAULT_FONT.getBaseFont()).append(" (default)\n");
-
-        for (String std14String : std14)
-        {
-            message.append("                         ").append(std14String).append("\n");
-        }
-        message.append("  -ttf <ttf file>      : The TTF font to use.\n");
-        message.append("  -fontSize <fontSize> : default: ").append(DEFAULT_FONT_SIZE).append("\n");
-        message.append("  -pageSize <pageSize> : Letter (default)\n");
-        message.append("                         Legal\n");
-        message.append("                         A0\n");
-        message.append("                         A1\n");
-        message.append("                         A2\n");
-        message.append("                         A3\n");
-        message.append("                         A4\n");
-        message.append("                         A5\n");
-        message.append("                         A6\n");
-        message.append("  -landscape           : sets orientation to landscape" );
-
-        System.err.println(message.toString());
-        System.exit(1);
-    }
-
-
-    /**
      * A convenience method to get one of the standard 14 font from name.
      *
      * @param name The name of the font to get.
@@ -422,17 +404,6 @@ public class TextToPDF
     {
         return STANDARD_14.get(name);
     }
-
-    /**
-     * This will get the names of the standard 14 fonts.
-     *
-     * @return An array of the names of the standard 14 fonts.
-     */
-    private static String[] getStandard14Names()
-    {
-        return STANDARD_14.keySet().toArray(new String[14]);
-    }
-
 
     /**
      * @return Returns the font.
