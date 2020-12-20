@@ -35,6 +35,7 @@ import org.apache.pdfbox.pdmodel.encryption.PublicKeyRecipient;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 
 import picocli.CommandLine;
+import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
@@ -44,27 +45,9 @@ import picocli.CommandLine.Parameters;
  *
  * @author  Ben Litchfield
  */
+@Command(name = "Encrypt", description = "Encrypt a PDF file.")
 public final class Encrypt
 {
-
-    String message = "Usage: java -jar pdfbox-app-x.y.z.jar Encrypt [options] <inputfile> [outputfile]\n"
-    + "\nOptions:\n"
-    + "  -O <password>                            : Set the owner password (ignored if certFile is set)\n"
-    + "  -U <password>                            : Set the user password (ignored if certFile is set)\n"
-    + "  -certFile <path to cert>                 : Path to X.509 certificate (repeat both if needed)\n"
-    + "  -canAssemble <true|false>                : Set the assemble permission\n"
-    + "  -canExtractContent <true|false>          : Set the extraction permission\n"
-    + "  -canExtractForAccessibility <true|false> : Set the extraction permission\n"
-    + "  -canFillInForm <true|false>              : Set the fill in form permission\n"
-    + "  -canModify <true|false>                  : Set the modify permission\n"
-    + "  -canModifyAnnotations <true|false>       : Set the modify annots permission\n"
-    + "  -canPrint <true|false>                   : Set the print permission\n"
-    + "  -canPrintDegraded <true|false>           : Set the print degraded permission\n"
-    + "  -keyLength <length>                      : Key length in bits "
-    + "(valid values: 40, 128 or 256, default is 256)\n"
-    + "\nNote: By default all permissions are set to true!";
-
-
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
