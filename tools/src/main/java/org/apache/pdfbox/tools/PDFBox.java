@@ -16,114 +16,54 @@
  */
 package org.apache.pdfbox.tools;
 
-import org.apache.pdfbox.debugger.PDFDebugger;
+import java.io.PrintStream;
+
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 /**
  * Simple wrapper around all the command line utilities included in PDFBox.
  * Used as the main class in the runnable standalone PDFBox jar.
  */
-public final class PDFBox 
+@Command(name="PDFBox", subcommands = {
+    Decrypt.class,
+    Encrypt.class,
+    ExtractText.class,
+    ExtractImages.class,
+    OverlayPDF.class,
+    PrintPDF.class,
+    PDFMerger.class,
+    PDFSplit.class,
+    PDFToImage.class,
+    ImageToPDF.class,
+    TextToPDF.class,
+    WriteDecodedDoc.class,
+})
+public final class PDFBox implements Runnable
 {
-    private PDFBox()
-    {
-    }
-    
+    // Expected for CLI app to write to System.out/Sytem.err
+    @SuppressWarnings("squid:S106")
+    private static final PrintStream SYSOUT = System.out;
+  
     /**
      * Main method.
      * 
      * @param args command line arguments
-     * @throws java.lang.Exception
      */
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
         // suppress the Dock icon on OS X
         System.setProperty("apple.awt.UIElement", "true");
 
-        if (args.length > 0) 
-        {
-            String command = args[0];
-            String[] arguments = new String[args.length - 1];
-            System.arraycopy(args, 1, arguments, 0, arguments.length);
-            boolean exitAfterCallingMain = true;
-            switch (command)
-            {
-                case "Decrypt":
-                    Decrypt.main(arguments);
-                    break;
-                case "Encrypt":
-                    Encrypt.main(arguments);
-                    break;
-                case "ExtractText":
-                    ExtractText.main(arguments);
-                    break;
-                case "ExtractImages":
-                    ExtractImages.main(arguments);
-                    break;
-                case "OverlayPDF":
-                    OverlayPDF.main(arguments);
-                    break;
-                case "PrintPDF":
-                    PrintPDF.main(arguments);
-                    break;
-                case "PDFDebugger":
-                case "PDFReader":
-                    PDFDebugger.main(arguments);
-                    exitAfterCallingMain = false;
-                    break;
-                case "PDFMerger":
-                    PDFMerger.main(arguments);
-                    break;
-                case "PDFSplit":
-                    PDFSplit.main(arguments);
-                    break;
-                case "PDFToImage":
-                    PDFToImage.main(arguments);
-                    break;
-                case "ImageToPDF":
-                    ImageToPDF.main(arguments);
-                    break;
-                case "TextToPDF":
-                    TextToPDF.main(arguments);
-                    break;
-                case "WriteDecodedDoc":
-                    WriteDecodedDoc.main(arguments);
-                    break;
-                default:
-                    showMessageAndExit();
-                    break;
-            }
-            if (exitAfterCallingMain)
-            {
-                System.exit(0);
-            }
-        }
-        else 
-        {
-            showMessageAndExit();
-        }
+        CommandLine cmd = new CommandLine(new PDFBox());
+        cmd.execute(args);
+    
+        if (args.length == 0) { cmd.usage(SYSOUT); }
     }
 
-    private static void showMessageAndExit() 
+    @Override
+    public void run()
     {
-        String message = "PDFBox version: \""+ Version.getVersion()+ "\""
-                + "\nUsage: java -jar pdfbox-app-x.y.z.jar <command> <args..>\n"
-                + "\nPossible commands are:\n"
-                + "  Decrypt\n"
-                + "  Encrypt\n"
-                + "  ExtractText\n"
-                + "  ExtractImages\n"
-                + "  ImageToPDF\n"
-                + "  OverlayPDF\n"
-                + "  PrintPDF\n"
-                + "  PDFDebugger\n"
-                + "  PDFMerger\n"
-                + "  PDFReader\n"
-                + "  PDFSplit\n"
-                + "  PDFToImage\n"
-                + "  TextToPDF\n"
-                + "  WriteDecodedDoc";
-        
-        System.err.println(message);
-        System.exit(1);
+        // stub method to please the Runnable interface needed by picocli
     }
 }
