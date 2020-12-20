@@ -49,6 +49,11 @@
       <artifactId>bcprov-jdk15on</artifactId>
       <scope>provided</scope>
     </dependency>
+     <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>jbig2-imageio</artifactId>
@@ -66,7 +71,7 @@
           <instructions>
             <Export-Package>org.apache.pdfbox.*</Export-Package>
             <Embed-Transitive>true</Embed-Transitive>
-            <Embed-Dependency>*;scope=provided;inline=org/apache/**|org/bouncycastle/**|META-INF/services/**</Embed-Dependency>
+            <Embed-Dependency>*;scope=provided;inline=org/apache/**|org/bouncycastle/**|picocli/**|META-INF/services/**</Embed-Dependency>
             <Bundle-DocURL>${project.url}</Bundle-DocURL>
             <Import-Package>!org.junit.jupiter,javax.*;resolution:=optional,org.apache.avalon.framework.logger;resolution:=optional,org.apache.log;resolution:=optional,*</Import-Package>
             <Main-Class>org.apache.pdfbox.tools.PDFBox</Main-Class>
