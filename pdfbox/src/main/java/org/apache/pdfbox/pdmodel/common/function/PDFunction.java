@@ -126,7 +126,7 @@ public abstract class PDFunction implements COSObjectable
         if (!(base instanceof COSDictionary))
         {
             throw new IOException("Error: Function must be a Dictionary, but is " +
-                    base.getClass().getSimpleName());
+                    (base == null ? "(null)" : base.getClass().getSimpleName()));
         }
         COSDictionary functionDictionary = (COSDictionary) base;
         int functionType = functionDictionary.getInt(COSName.FUNCTION_TYPE);
