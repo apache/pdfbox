@@ -209,19 +209,20 @@ class TestSymmetricKeyEncryption
     @Test
     void testProtection() throws Exception
     {
-        byte[] inputFileAsByteArray = getFileResourceAsByteArray("Acroform-PDFBOX-2333.pdf");
+        String filename = "Acroform-PDFBOX-2333.pdf";
+        byte[] inputFileAsByteArray = getFileResourceAsByteArray(filename);
         int sizePriorToEncryption = inputFileAsByteArray.length;
 
-        testSymmEncrForKeySize(40, false, sizePriorToEncryption, inputFileAsByteArray, 
+        testSymmEncrForKeySize(filename, 40, false, sizePriorToEncryption, inputFileAsByteArray,
                 USERPASSWORD, OWNERPASSWORD, permission);
 
-        testSymmEncrForKeySize(128, false, sizePriorToEncryption, inputFileAsByteArray, 
+        testSymmEncrForKeySize(filename, 128, false, sizePriorToEncryption, inputFileAsByteArray,
                 USERPASSWORD, OWNERPASSWORD, permission);
 
-        testSymmEncrForKeySize(128, true, sizePriorToEncryption, inputFileAsByteArray, 
+        testSymmEncrForKeySize(filename, 128, true, sizePriorToEncryption, inputFileAsByteArray,
                 USERPASSWORD, OWNERPASSWORD, permission);
 
-        testSymmEncrForKeySize(256, true, sizePriorToEncryption, inputFileAsByteArray, 
+        testSymmEncrForKeySize(filename, 256, true, sizePriorToEncryption, inputFileAsByteArray,
                 USERPASSWORD, OWNERPASSWORD, permission);
     }
 
@@ -239,10 +240,11 @@ class TestSymmetricKeyEncryption
     @Test
     void testPDFBox4308() throws IOException
     {
-        byte[] inputFileAsByteArray = Files.readAllBytes(Paths.get("target/pdfs/PDFBOX-4308.pdf"));
+        String filename = "PDFBOX-4308.pdf";
+        byte[] inputFileAsByteArray = Files.readAllBytes(Paths.get("target/pdfs/" + filename));
         int sizePriorToEncryption = inputFileAsByteArray.length;
 
-        testSymmEncrForKeySize(40, false, sizePriorToEncryption, inputFileAsByteArray,
+        testSymmEncrForKeySize(filename, 40, false, sizePriorToEncryption, inputFileAsByteArray,
                 USERPASSWORD, OWNERPASSWORD, permission);
     }
 
@@ -323,13 +325,13 @@ class TestSymmetricKeyEncryption
         }
     }
 
-    private void testSymmEncrForKeySize(int keyLength, boolean preferAES,
+    private void testSymmEncrForKeySize(String filename, int keyLength, boolean preferAES,
             int sizePriorToEncr, byte[] inputFileAsByteArray,
             String userpassword, String ownerpassword,
             AccessPermission permission) throws IOException
     {
         PDDocument document = Loader.loadPDF(inputFileAsByteArray);
-        String prefix = "Simple-";
+        String prefix = filename + "-Simple-";
         int numSrcPages = document.getNumberOfPages();
         PDFRenderer pdfRenderer = new PDFRenderer(document);
         List<BufferedImage> srcImgTab = new ArrayList<>();
