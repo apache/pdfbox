@@ -82,7 +82,7 @@ public final class PDFToImage implements Callable<Integer>
 
     @Option(names = "-quality", description = "the quality to be used when compressing the image (0 <= quality <= 1) " +
         "(default: 0 for PNG and 1 for the other formats)")
-    private float quality;
+    private float quality = -1;
 
     @Option(names = "-cropbox", arity="4", description = "the page area to export")
     private int[] cropbox;
