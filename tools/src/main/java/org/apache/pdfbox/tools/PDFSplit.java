@@ -87,7 +87,7 @@ public final class PDFSplit implements Callable<Integer>
 
         if (outputPrefix == null)
         {
-            outputPrefix = FilenameUtils.getBaseName(infile.getAbsolutePath());
+            outputPrefix = FilenameUtils.removeExtension(infile.getAbsolutePath());
         }
 
         List<PDDocument> documents = null;

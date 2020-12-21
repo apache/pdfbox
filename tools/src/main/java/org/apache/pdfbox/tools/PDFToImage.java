@@ -114,7 +114,7 @@ public final class PDFToImage implements Callable<Integer>
     {
         if (outputPrefix == null)
         {
-            outputPrefix = FilenameUtils.getBaseName(infile.getAbsolutePath());
+            outputPrefix = FilenameUtils.removeExtension(infile.getAbsolutePath());
         }
 
         if (getImageFormats().indexOf(imageFormat) == -1)
@@ -160,7 +160,7 @@ public final class PDFToImage implements Callable<Integer>
             for (int i = startPage - 1; i < endPage; i++)
             {
                 BufferedImage image = renderer.renderImageWithDPI(i, dpi, imageType);
-                String fileName = outputPrefix + (i + 1) + "." + imageFormat;
+                String fileName = outputPrefix + "-" + (i + 1) + "." + imageFormat;
                 success &= ImageIOUtil.writeImage(image, fileName, dpi, quality);
             }
 
