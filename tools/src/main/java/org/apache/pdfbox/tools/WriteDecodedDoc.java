@@ -44,14 +44,6 @@ import picocli.CommandLine.Parameters;
 @Command(name = "WriteDecodedDoc", description = "Load document and write with all streams decoded.")
 public class WriteDecodedDoc implements Callable<Integer>
 {
-
-    String message = "Usage: java -jar pdfbox-app-x.y.z.jar WriteDecodedDoc [options] <inputfile> [outputfile]\n"
-    + "\nOptions:\n"
-    + "  -password <password> : Password to decrypt the document\n"
-    + "  -skipImages          : Don't uncompress images\n"
-    + "  <inputfile>          : The PDF document to be decompressed\n"
-    + "  [outputfile]         : The filename for the decompressed pdf\n";
-
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
     private static final PrintStream SYSERR = System.err;
@@ -166,7 +158,7 @@ public class WriteDecodedDoc implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error importing FDF data: " + ioe.getMessage());
+            SYSERR.println( "Error writing decoded PDF: " + ioe.getMessage());
             return 4;
         }
         return 0;
