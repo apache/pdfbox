@@ -26,6 +26,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -46,7 +47,7 @@ import picocli.CommandLine.Parameters;
  * @author  Ben Litchfield
  */
 @Command(name = "Encrypt", description = "Encrypt a PDF file.")
-public final class Encrypt
+public final class Encrypt implements Callable<Integer>
 {
     // Expected for CLI app to write to System.out/Sytem.err
     @SuppressWarnings("squid:S106")
