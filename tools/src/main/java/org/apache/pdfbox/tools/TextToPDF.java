@@ -87,7 +87,7 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = "-standardFont", description = "the font to use for the text. Either this or -ttf should be specified but not both.")
     private String standardFont;
 
-    @Option(names = "-ttf", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
+    @Option(names = "-ttf", paramLabel="<ttf file>", description = "the TTF font to use for the text. Either this or -standardFont should be specified but not both.")
     private File ttf;
 
     @Parameters(paramLabel = "outputfile", description = "the generated PDF file.")
