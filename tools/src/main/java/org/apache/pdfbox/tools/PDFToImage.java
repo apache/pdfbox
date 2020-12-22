@@ -60,22 +60,22 @@ public final class PDFToImage implements Callable<Integer>
     private String password;
 
     @Option(names = {"-format"}, description = "the image file format (default: ${DEFAULT-VALUE})")    
-    private String imageFormat = "jpg";
+    private final String imageFormat = "jpg";
 
     @Option(names = {"-prefix", "-outputPrefix"}, description = "the filename prefix for image files")    
     private String outputPrefix;
 
     @Option(names = "-page", description = "the only page to extract (1-based)")    
-    private int page = -1;
+    private final int page = -1;
 
     @Option(names = "-startPage", description = "the first page to start extraction (1-based)")    
-    private int startPage = 1;
+    private final int startPage = 1;
 
     @Option(names = "-endPage", description = "the last page to extract (inclusive)")    
     private int endPage = Integer.MAX_VALUE;
 
     @Option(names = "-color", description = "the color depth (valid: ${COMPLETION-CANDIDATES}) (default: ${DEFAULT-VALUE})")    
-    private ImageType imageType = ImageType.RGB;
+    private final ImageType imageType = ImageType.RGB;
 
     @Option(names = {"-dpi", "-resolution"}, description = "the DPI of the output image, default: screen resolution or 96 if unknown")
     private int dpi;

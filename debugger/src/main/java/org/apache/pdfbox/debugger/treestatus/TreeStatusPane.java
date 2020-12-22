@@ -37,7 +37,7 @@ import javax.swing.tree.TreePath;
 public class TreeStatusPane implements TreeSelectionListener
 {
     private TreeStatus statusObj;
-    private JTree tree;
+    private final JTree tree;
 
     private JTextField statusField;
     private JPanel panel;

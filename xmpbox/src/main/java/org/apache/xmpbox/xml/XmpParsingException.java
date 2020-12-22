@@ -40,7 +40,7 @@ public class XmpParsingException extends Exception
                                                       // prefix used
     }
 
-    private ErrorType errorType;
+    private final ErrorType errorType;
 
     /**
      * serial version uid

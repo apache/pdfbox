@@ -46,7 +46,7 @@ public class FDFDictionary implements COSObjectable
 
     private static final Log LOG = LogFactory.getLog(FDFDictionary.class);
 
-    private COSDictionary fdf;
+    private final COSDictionary fdf;
 
     /**
      * Default constructor.

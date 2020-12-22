@@ -82,7 +82,7 @@ public class TextToPDF implements Callable<Integer>
     private boolean landscape = false;
 
     @Option(names = "-pageSize", description = "the page size to use: Letter, Legal, A0, A1, A2, A3, A4, A5, A6 (default: ${DEFAULT-VALUE})")
-    private String pageSize = "Letter";
+    private final String pageSize = "Letter";
 
     @Option(names = "-standardFont", description = "the font to use for the text. Either this or -ttf should be specified but not both.")
     private String standardFont;

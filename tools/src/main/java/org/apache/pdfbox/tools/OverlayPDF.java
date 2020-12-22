@@ -68,7 +68,7 @@ public final class OverlayPDF implements Callable<Integer>
     Map<Integer, String> specificPageOverlayFile = new HashMap<>();
 
     @Option(names = "-position", description = "where to put the overlay file: foreground or background (default: ${DEFAULT-VALUE})")    
-    private Position position = Position.BACKGROUND;
+    private final Position position = Position.BACKGROUND;
 
     @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF input file.")
     private File infile;

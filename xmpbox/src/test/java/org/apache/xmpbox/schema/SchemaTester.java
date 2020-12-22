@@ -43,10 +43,10 @@ class SchemaTester extends AbstractTypeTester {
     private final XMPMetadata metadata;
     private final Class<?> schemaClass;
     private final String fieldName;
-    private Types type;
-    private Cardinality cardinality;
+    private final Types type;
+    private final Cardinality cardinality;
 
-    private TypeMapping typeMapping;
+    private final TypeMapping typeMapping;
 
     XMPSchema getSchema()
     {

@@ -52,7 +52,7 @@ class SearchPanel
     private JLabel counterLabel;
     private JPanel panel;
     
-    private Action closeAction = new AbstractAction()
+    private final Action closeAction = new AbstractAction()
     {
         @Override
         public void actionPerformed(ActionEvent actionEvent)

@@ -53,13 +53,13 @@ public final class PDFSplit implements Callable<Integer>
     private String password;
 
     @Option(names = "-split", description = "split after this many pages (default 1, if startPage and endPage are unset).")    
-    private int split = -1;
+    private final int split = -1;
 
     @Option(names = "-startPage", description = "start page.")    
-    private int startPage = -1;
+    private final int startPage = -1;
 
     @Option(names = "-endPage", description = "end page.")    
-    private int endPage = -1;
+    private final int endPage = -1;
 
     @Option(names = "-outputPrefix", description = "the filename prefix for split files.")    
     private String outputPrefix;

@@ -68,9 +68,9 @@ import org.xml.sax.SAXException;
 
 public class DomXmpParser
 {
-    private DocumentBuilder dBuilder;
+    private final DocumentBuilder dBuilder;
 
-    private NamespaceFinder nsFinder;
+    private final NamespaceFinder nsFinder;
 
     private boolean strictParsing = true;
 

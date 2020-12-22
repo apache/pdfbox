@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.pdfbox.filter.Filter;
@@ -41,7 +42,7 @@ class TestCOSStream
     @Test
     void testUncompressedStreamEncode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         COSStream stream = createStream(testString, null);
         validateEncoded(stream, testString);
     }
@@ -54,7 +55,7 @@ class TestCOSStream
     @Test
     void testUncompressedStreamDecode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         COSStream stream = createStream(testString, null);
         validateDecoded(stream, testString);
     }
@@ -67,7 +68,7 @@ class TestCOSStream
     @Test
     void testCompressedStream1Encode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         COSStream stream = createStream(testString, COSName.FLATE_DECODE);
         validateEncoded(stream, testStringEncoded);
@@ -81,7 +82,7 @@ class TestCOSStream
     @Test
     void testCompressedStream1Decode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         COSStream stream = new COSStream();
         
@@ -102,7 +103,7 @@ class TestCOSStream
     @Test
     void testCompressedStream2Encode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         testStringEncoded = encodeData(testStringEncoded, COSName.ASCII85_DECODE);
         
@@ -122,7 +123,7 @@ class TestCOSStream
     @Test
     void testCompressedStream2Decode() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         testStringEncoded = encodeData(testStringEncoded, COSName.ASCII85_DECODE);
         COSStream stream = new COSStream();
@@ -150,7 +151,7 @@ class TestCOSStream
     @Test
     void testCompressedStreamDoubleClose() throws IOException
     {
-        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes("ASCII");
+        byte[] testString = "This is a test string to be used as input for TestCOSStream".getBytes(StandardCharsets.US_ASCII);
         byte[] testStringEncoded = encodeData(testString, COSName.FLATE_DECODE);
         COSStream stream = new COSStream();
         OutputStream output = stream.createOutputStream(COSName.FLATE_DECODE);
@@ -176,7 +177,7 @@ class TestCOSStream
         }
 
         byte[] testString = "This is a test string to be used as input for TestCOSStream"
-                .getBytes("ASCII");
+                .getBytes(StandardCharsets.US_ASCII);
         OutputStream output = stream.createOutputStream();
         output.write(testString);
         output.close();

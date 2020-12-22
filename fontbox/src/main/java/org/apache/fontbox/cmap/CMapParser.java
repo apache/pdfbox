@@ -733,7 +733,7 @@ public class CMapParser
      */
     private static final class LiteralName
     {
-        private String name;
+        private final String name;
 
         private LiteralName(String theName)
         {
@@ -746,7 +746,7 @@ public class CMapParser
      */
     private static final class Operator
     {
-        private String op;
+        private final String op;
 
         private Operator(String theOp)
         {

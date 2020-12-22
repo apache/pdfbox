@@ -29,7 +29,7 @@ import org.apache.pdfbox.pdmodel.common.PDRange;
  */
 public class FDFIconFit implements COSObjectable
 {
-    private COSDictionary fit;
+    private final COSDictionary fit;
 
     /**
      * A scale option.

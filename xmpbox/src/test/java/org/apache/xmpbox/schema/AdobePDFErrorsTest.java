@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 class AdobePDFErrorsTest
 {
 
-    private XMPMetadata metadata = XMPMetadata.createXMPMetadata();
+    private final XMPMetadata metadata = XMPMetadata.createXMPMetadata();
 
     @Test
     void testPDFAIdentification() throws Exception

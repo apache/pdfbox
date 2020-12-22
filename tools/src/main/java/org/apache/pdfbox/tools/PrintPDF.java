@@ -62,7 +62,7 @@ public final class PrintPDF implements Callable<Integer>
     private String printerName;
 
     @Option(names = "-orientation", description = "print using orientation [${COMPLETION-CANDIDATES}] (default: ${DEFAULT-VALUE}).")    
-    private Orientation orientation = Orientation.AUTO;
+    private final Orientation orientation = Orientation.AUTO;
 
     @Option(names = "-border", description = "print with border.")    
     private boolean border;

@@ -164,7 +164,7 @@ public class PDFTextStripper extends LegacyPDFStreamEngine
      */
     protected ArrayList<List<TextPosition>> charactersByArticle = new ArrayList<>();
 
-    private Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping = new HashMap<>();
+    private final Map<String, TreeMap<Float, TreeSet<Float>>> characterListMapping = new HashMap<>();
 
     protected PDDocument document;
     protected Writer output;

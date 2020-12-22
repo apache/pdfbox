@@ -69,8 +69,8 @@ public class ErrorDialog extends JDialog
 
     private boolean showingDetails;
     private boolean isFiltering = true;
-    private JComponent message;
-    private JComponent main;
+    private final JComponent message;
+    private final JComponent main;
     private JScrollPane details;
     private JTextPane stacktrace;
     private final Throwable error;

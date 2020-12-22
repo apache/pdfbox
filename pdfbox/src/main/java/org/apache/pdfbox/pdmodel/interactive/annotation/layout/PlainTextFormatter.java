@@ -84,7 +84,7 @@ public class PlainTextFormatter
     {
 
         // required parameters
-        private PDAppearanceContentStream contents;
+        private final PDAppearanceContentStream contents;
 
         // optional parameters
         private AppearanceStyle appearanceStyle;

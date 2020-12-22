@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ class FDFFieldTest
     void testTextAsCOSStreamValue() throws IOException
     {
         String testString = "Test value";
-        byte[] testBytes = testString.getBytes("ASCII");
+        byte[] testBytes = testString.getBytes(StandardCharsets.US_ASCII);
         COSStream stream = createStream(testBytes, null);
         
         FDFField field = new FDFField();

@@ -25,7 +25,7 @@ public interface ScriptingHandler {
      * @param value the current field value
      * @return the resulting field value
      */
-    public String keyboard(PDActionJavaScript javaScriptAction, String value);
+    String keyboard(PDActionJavaScript javaScriptAction, String value);
 
     /**
      * Handle the fields format event action.
@@ -34,7 +34,7 @@ public interface ScriptingHandler {
      * @param value the current field value
      * @return the formatted field value
      */
-    public String format(PDActionJavaScript javaScriptAction, String value);
+    String format(PDActionJavaScript javaScriptAction, String value);
 
     /**
      * Handle the fields validate event action.
@@ -43,7 +43,7 @@ public interface ScriptingHandler {
      * @param value the current field value
      * @return the result of the validity check
      */
-    public boolean validate(PDActionJavaScript javaScriptAction, String value);
+    boolean validate(PDActionJavaScript javaScriptAction, String value);
 
     /**
      * Handle the fields calculate event action.
@@ -51,6 +51,6 @@ public interface ScriptingHandler {
      * @param javaScriptAction the calculate event action script
      * @param value the current field value
      * @return the result of the field calculation
-     */    
-    public String calculate(PDActionJavaScript javaScriptAction, String value);
+     */
+    String calculate(PDActionJavaScript javaScriptAction, String value);
 }

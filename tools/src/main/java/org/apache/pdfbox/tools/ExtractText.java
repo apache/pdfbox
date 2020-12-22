@@ -74,41 +74,41 @@ public final class ExtractText  implements Callable<Integer>
 
     @Option(names = "-alwaysNext", description = "Process next page (if applicable) despite IOException " + 
         "(ignored when -html)")
-    private boolean alwaysNext = false;
+    private final boolean alwaysNext = false;
 
     @Option(names = "-console", description = "Send text to console instead of file")
-    private boolean toConsole = false;
+    private final boolean toConsole = false;
 
     @Option(names = "-debug", description = "Enables debug output about the time consumption of every stage")
-    private boolean debug = false;
+    private final boolean debug = false;
 
     @Option(names = "-encoding", description = "UTF-8 or ISO-8859-1, UTF-16BE, UTF-16LE, etc. (default: ${DEFAULT-VALUE})")
     private String encoding = STD_ENCODING;
 
     @Option(names = "-endPage", description = "The last page to extract (1 based, inclusive)")
-    private int endPage = Integer.MAX_VALUE;
+    private final int endPage = Integer.MAX_VALUE;
 
     @Option(names = "-html", description = "Output in HTML format instead of raw text")
-    private boolean toHTML = false;
+    private final boolean toHTML = false;
 
     @Option(names = "-ignoreBeads", description = "Disables the separation by beads")
-    private boolean ignoreBeads = false;
+    private final boolean ignoreBeads = false;
 
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
 
     @Option(names = "-password", description = "the password for the PDF or certificate in keystore.")    
-    private String password = "";
+    private final String password = "";
 
     @Option(names = "-rotationMagic", description = "Analyze each page for rotated/skewed text, rotate to 0° " +
         "and extract separately (slower, and ignored when -html)" )
-    private boolean rotationMagic = false;
+    private final boolean rotationMagic = false;
 
     @Option(names = "-sort", description = "Sort the text before writing of every stage")
-    private boolean sort = false;
+    private final boolean sort = false;
 
     @Option(names = "-startPage", description = "The first page to start extraction (1 based)")
-    private int startPage = 1;
+    private final int startPage = 1;
 
     @Parameters(paramLabel = "inputfile", index = "0", arity = "1", description = "the PDF file to decrypt.")
     private File infile;

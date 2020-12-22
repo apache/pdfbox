@@ -60,34 +60,34 @@ public final class Encrypt implements Callable<Integer>
     private String userPassword;
 
     @Option(names = "-certFile", paramLabel="certFile", description = "Path to X.509 certificate (repeat both if needed)")
-    private List<File> certFileList = new ArrayList<>();
+    private final List<File> certFileList = new ArrayList<>();
 
     @Option(names = "-canAssemble", description = "set the assemble permission (default: ${DEFAULT-VALUE})")
-    private boolean canAssembleDocument = true;
+    private final boolean canAssembleDocument = true;
 
     @Option(names = "-canExtractContent", description = "set the extraction permission (default: ${DEFAULT-VALUE})")
-    private boolean canExtractContent = true;
+    private final boolean canExtractContent = true;
 
     @Option(names = "-canExtractForAccessibility", description = "set the extraction permission (default: ${DEFAULT-VALUE})")
-    private boolean canExtractForAccessibility = true;
+    private final boolean canExtractForAccessibility = true;
 
     @Option(names = "-canFillInForm", description = "set the form fill in permission (default: ${DEFAULT-VALUE})")
-    private boolean canFillInForm = true;
+    private final boolean canFillInForm = true;
 
     @Option(names = "-canModify", description = "set the modify permission (default: ${DEFAULT-VALUE})")
-    private boolean canModify = true;
+    private final boolean canModify = true;
 
     @Option(names = "-canModifyAnnotations", description = "set the modify annots permission (default: ${DEFAULT-VALUE})")
-    private boolean canModifyAnnotations = true;
+    private final boolean canModifyAnnotations = true;
 
     @Option(names = "-canPrint", description = "set the print permission (default: ${DEFAULT-VALUE})")
-    private boolean canPrint = true;
+    private final boolean canPrint = true;
 
     @Option(names = "-canPrintDegraded", description = "set the print degraded permission (default: ${DEFAULT-VALUE})")
-    private boolean canPrintDegraded = true;
+    private final boolean canPrintDegraded = true;
 
     @Option(names = "-keyLength", description = "Key length in bits (valid values: 40, 128 or 256) (default: ${DEFAULT-VALUE})")
-    private int keyLength = 256;
+    private final int keyLength = 256;
 
     @Parameters(paramLabel = "inputfile", arity="1", description = "the PDF file to encyrpt.")
     private File infile;

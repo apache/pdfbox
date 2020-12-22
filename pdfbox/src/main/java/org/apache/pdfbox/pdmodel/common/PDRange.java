@@ -28,7 +28,7 @@ import org.apache.pdfbox.cos.COSNumber;
  */
 public class PDRange implements COSObjectable
 {
-    private COSArray rangeArray;
+    private final COSArray rangeArray;
     private int startingIndex;
 
     /**
