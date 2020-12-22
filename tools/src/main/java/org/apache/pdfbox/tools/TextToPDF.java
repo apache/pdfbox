@@ -74,8 +74,8 @@ public class TextToPDF implements Callable<Integer>
     @Option(names = "-landscape", description = "set orientation to landscape")
     private boolean landscape = false;
 
-    @Option(names = "-pageSize", description = "the page size to use: Letter, Legal, A0, A1, A2, A3, A4, A5, A6 (default: ${DEFAULT-VALUE})")
-    private String pageSize = "Letter";
+    @Option(names = "-pageSize", description = "the page size to use. \nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
+    private PageSizes pageSize = PageSizes.LETTER;
 
     @Option(names = "-standardFont", 
         description = "the font to use for the text. Either this or -ttf should be specified but not both.\nCandidates: ${COMPLETION-CANDIDATES} (default: ${DEFAULT-VALUE})")
@@ -92,6 +92,31 @@ public class TextToPDF implements Callable<Integer>
 
     @Option(names = {"-h", "--help"}, usageHelp = true, description = "display this help message")
     boolean usageHelpRequested;
+
+    private enum PageSizes
+    {
+        LETTER(PDRectangle.LETTER),
+        LEGAL(PDRectangle.LEGAL),
+        A0(PDRectangle.A0),
+        A1(PDRectangle.A1),
+        A2(PDRectangle.A2),
+        A3(PDRectangle.A3),
+        A4(PDRectangle.A4),
+        A5(PDRectangle.A5),
+        A6(PDRectangle.A6);
+
+        final PDRectangle pageSize;
+
+        private PageSizes(PDRectangle pageSize)
+        {
+            this.pageSize = pageSize;
+        }
+
+        public PDRectangle getPageSize()
+        {
+            return this.pageSize;
+        }
+    }
 
     private enum Standard14Fonts
     {
@@ -162,7 +187,7 @@ public class TextToPDF implements Callable<Integer>
 
             setFont(font);
             setFontSize(fontSize);
-            setMediaBox(createRectangle(pageSize));
+            setMediaBox(pageSize.getPageSize());
             setLandscape(landscape);
 
             try (FileReader fileReader = new FileReader(infile))
@@ -173,7 +198,7 @@ public class TextToPDF implements Callable<Integer>
         }
         catch (IOException ioe)
         {
-            SYSERR.println( "Error converting image to PDF: " + ioe.getMessage());
+            SYSERR.println( "Error converting text to PDF: " + ioe.getMessage());
             return 4;
         }
         return 0;
@@ -358,50 +383,6 @@ public class TextToPDF implements Callable<Integer>
                 doc.close();
             }
             throw io;
-        }
-    }
-
-    private static PDRectangle createRectangle( String paperSize )
-    {
-        if ("letter".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.LETTER;
-        }
-        else if ("legal".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.LEGAL;
-        }
-        else if ("A0".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.A0;
-        }
-        else if ("A1".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.A1;
-        }
-        else if ("A2".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.A2;
-        }
-        else if ("A3".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.A3;
-        }
-    	else if ("A4".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.A4;
-        }
-        else if ("A5".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.A5;
-        }
-        else if ("A6".equalsIgnoreCase(paperSize))
-        {
-            return PDRectangle.A6;
-        }
-        else
-        {
-            return null;
         }
     }
 
