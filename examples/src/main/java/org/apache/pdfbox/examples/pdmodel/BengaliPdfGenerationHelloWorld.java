@@ -182,7 +182,7 @@ public class BengaliPdfGenerationHelloWorld
         List<String> lines = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                BengaliPdfGenerationHelloWorld.class.getResourceAsStream(TEXT_SOURCE_FILE), StandardCharsets.UTF_8));)
+             BengaliPdfGenerationHelloWorld.class.getResourceAsStream(TEXT_SOURCE_FILE), StandardCharsets.UTF_8)))
         {
             while (true)
             {

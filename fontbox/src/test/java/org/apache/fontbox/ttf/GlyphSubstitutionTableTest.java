@@ -87,7 +87,7 @@ class GlyphSubstitutionTableTest
         Map<List<Integer>, Integer> gsubData = new HashMap<>();
 
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(TestTTFParser.class.getResourceAsStream(pathToResource)));)
+             new InputStreamReader(TestTTFParser.class.getResourceAsStream(pathToResource))))
         {
             while (true)
             {
