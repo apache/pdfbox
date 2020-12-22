@@ -30,7 +30,7 @@ public interface ICOSParser
      * @return the referenced object
      * @throws IOException if something went wrong when dereferencing the COSBase object
      */
-    public COSBase dereferenceCOSObject(COSObject obj) throws IOException;
+    COSBase dereferenceCOSObject(COSObject obj) throws IOException;
 
     /**
      * Creates a random access read view starting at the given position with the given length.
@@ -40,7 +40,7 @@ public interface ICOSParser
      * @return the random access read view
      * @throws IOException if something went wrong when creating the view for the RandomAccessRead
      */
-    public RandomAccessReadView createRandomAccessReadView(long startPosition, long streamLength)
+    RandomAccessReadView createRandomAccessReadView(long startPosition, long streamLength)
             throws IOException;
 
 }
